@@ -15,7 +15,6 @@ GEN('#include "chrome/browser/preloading/preloading_features.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/content_settings/core/common/features.h"');
-GEN('#include "components/performance_manager/public/features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
@@ -120,75 +119,6 @@ GEN('#endif');
 TEST_F('CrSettingsSiteDetailsTest', 'MAYBE_SiteDetails', function() {
   mocha.run();
 });
-
-var CrSettingsPerformancePageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/performance_page_test.js';
-  }
-};
-
-TEST_F('CrSettingsPerformancePageTest', 'Controls', function() {
-  runMochaSuite('PerformancePage');
-});
-
-TEST_F('CrSettingsPerformancePageTest', 'ExceptionList', function() {
-  runMochaSuite('TabDiscardExceptionList');
-});
-
-var CrSettingsPerformancePageMultistateTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/performance_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'performance_manager::features::kHighEfficiencyMultistateMode',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsPerformancePageMultistateTest', 'Controls', function() {
-  runMochaSuite('PerformancePageMultistate');
-});
-
-TEST_F('CrSettingsPerformancePageMultistateTest', 'ExceptionList', function() {
-  runMochaSuite('TabDiscardExceptionList');
-});
-
-var CrSettingsPerformancePageDiscardExceptionImprovementsTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/performance_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'performance_manager::features::kDiscardExceptionsImprovements',
-      ],
-    };
-  }
-};
-
-TEST_F(
-    'CrSettingsPerformancePageDiscardExceptionImprovementsTest', 'Controls',
-    function() {
-      runMochaSuite('PerformancePage');
-    });
-
-TEST_F(
-    'CrSettingsPerformancePageDiscardExceptionImprovementsTest',
-    'ExceptionList', function() {
-      runMochaSuite('TabDiscardExceptionList');
-    });
 
 var CrSettingsPersonalizationOptionsTest = class extends CrSettingsBrowserTest {
   /** @override */

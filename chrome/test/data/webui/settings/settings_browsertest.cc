@@ -7,6 +7,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/performance_manager/public/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -443,6 +444,53 @@ IN_PROC_BROWSER_TEST_F(SettingsLanguagePageTest, MetricsBrowser) {
   RunTest("settings/languages_page_metrics_test_browser.js", "mocha.run()");
 }
 #endif
+
+using SettingsPerformancePageTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, Controls) {
+  RunTest("settings/performance_page_test.js",
+          "runMochaSuite('PerformancePage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, ExceptionList) {
+  RunTest("settings/performance_page_test.js",
+          "runMochaSuite('TabDiscardExceptionList')");
+}
+
+class SettingsPerformancePageMultistateTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      performance_manager::features::kHighEfficiencyMultistateMode};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, Controls) {
+  RunTest("settings/performance_page_test.js",
+          "runMochaSuite('PerformancePageMultistate')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, ExceptionList) {
+  RunTest("settings/performance_page_test.js",
+          "runMochaSuite('TabDiscardExceptionList')");
+}
+
+class SettingsPerformancePageDiscardExceptionImprovementsTest
+    : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      performance_manager::features::kDiscardExceptionsImprovements};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardExceptionImprovementsTest,
+                       Controls) {
+  RunTest("settings/performance_page_test.js",
+          "runMochaSuite('PerformancePage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardExceptionImprovementsTest,
+                       ExceptionList) {
+  RunTest("settings/performance_page_test.js",
+          "runMochaSuite('TabDiscardExceptionList')");
+}
 
 using SettingsPrivacyGuideTest = SettingsBrowserTest;
 
