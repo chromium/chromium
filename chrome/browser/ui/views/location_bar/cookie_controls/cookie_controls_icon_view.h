@@ -21,7 +21,6 @@ class CookieControlsIconView : public PageActionIconView,
                                public content_settings::CookieControlsObserver {
  public:
   METADATA_HEADER(CookieControlsIconView);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieControlsIcon);
   CookieControlsIconView(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);

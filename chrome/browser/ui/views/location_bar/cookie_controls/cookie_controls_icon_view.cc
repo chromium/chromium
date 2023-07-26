@@ -8,6 +8,7 @@
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
@@ -20,9 +21,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsIconView,
-                                      kCookieControlsIcon);
 
 CookieControlsIconView::CookieControlsIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -37,7 +35,7 @@ CookieControlsIconView::CookieControlsIconView(
   SetAccessibilityProperties(
       /*role*/ absl::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
-  SetProperty(views::kElementIdentifierKey, kCookieControlsIcon);
+  SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
 
   bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(this);
 }

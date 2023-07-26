@@ -25,7 +25,6 @@ class OldCookieControlsIconView
       public content_settings::OldCookieControlsObserver {
  public:
   METADATA_HEADER(OldCookieControlsIconView);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieControlsIcon);
   OldCookieControlsIconView(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);

@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, BubbleOpens) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      PressButton(kCookieControlsIconElementId),
       InAnyContext(
           WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)));
 }
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
       CheckStateForNoException(),
       CheckViewProperty(CookieControlsContentView::kToggleButton,
@@ -193,11 +193,11 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
       CheckStateForTemporaryException(),
       PressButton(CookieControlsContentView::kToggleButton),
-      CheckViewProperty(CookieControlsIconView::kCookieControlsIcon,
+      CheckViewProperty(kCookieControlsIconElementId,
                         &CookieControlsIconView::is_animating_label, false),
       CheckStateForNoException());
 }
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      CheckViewProperty(CookieControlsIconView::kCookieControlsIcon,
+      CheckViewProperty(kCookieControlsIconElementId,
                         &CookieControlsIconView::is_animating_label, true));
 }
 
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
-      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      PressButton(kCookieControlsIconElementId),
       PressButton(CookieControlsContentView::kFeedbackButton),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
-      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
       PressButton(CookieControlsContentView::kToggleButton),
       PressButton(kLocationIconElementId),
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
-      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
       PressButton(CookieControlsContentView::kToggleButton),
       PressButton(CookieControlsContentView::kToggleButton),
