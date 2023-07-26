@@ -25,7 +25,7 @@ import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCheckmarkIcon, isNonEmptyArray} from '../utils.js';
 
-import {getLocalStorageAttribution, getWallpaperLayoutEnum, getWallpaperSrc} from './utils.js';
+import {getLocalStorageAttribution, getWallpaperAriaLabel, getWallpaperLayoutEnum, getWallpaperSrc} from './utils.js';
 import {getDailyRefreshState, selectGooglePhotosAlbum, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 import {WallpaperObserver} from './wallpaper_observer.js';
@@ -487,39 +487,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private getAriaLabel_(
       image: CurrentWallpaper|null, attribution: CurrentAttribution|null,
       dailyRefreshState: DailyRefreshState|null): string {
-    if (!image) {
-      return this.i18n('currentlySet') + ' ' +
-          this.i18n('unknownImageAttribution');
-    }
-    if (image.type === WallpaperType.kDefault) {
-      return `${this.i18n('currentlySet')} ${this.i18n('defaultWallpaper')}`;
-    }
-    const isDailyRefreshActive = !!dailyRefreshState;
-    if (!!attribution && attribution.key === image.key &&
-        isNonEmptyArray(attribution.attribution)) {
-      return isDailyRefreshActive ?
-          [
-            this.i18n('currentlySet'),
-            this.i18n('dailyRefresh'),
-            ...attribution.attribution,
-          ].join(' ') :
-          [this.i18n('currentlySet'), ...attribution.attribution].join(' ');
-    }
-    // Fallback to cached attribution.
-    const cachedAttribution = getLocalStorageAttribution(image.key);
-    if (isNonEmptyArray(cachedAttribution)) {
-      if (isDailyRefreshActive && !!attribution &&
-          attribution.key === image.key) {
-        return [
-          this.i18n('currentlySet'),
-          this.i18n('dailyRefresh'),
-          ...attribution.attribution,
-        ].join(' ');
-      }
-      return [this.i18n('currentlySet'), ...cachedAttribution].join(' ');
-    }
-    return this.i18n('currentlySet') + ' ' +
-        this.i18n('unknownImageAttribution');
+    return getWallpaperAriaLabel(image, attribution, dailyRefreshState);
   }
 
   /**

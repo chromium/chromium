@@ -20,9 +20,8 @@ import {CurrentAttribution, CurrentWallpaper, WallpaperType} from '../../persona
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isNonEmptyArray} from '../utils.js';
 
-import {getLocalStorageAttribution, getWallpaperSrc} from './utils.js';
+import {getWallpaperAriaLabel, getWallpaperSrc} from './utils.js';
 import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 
@@ -99,23 +98,8 @@ export class WallpaperPreview extends WithPersonalizationStore {
   private getImageAltDescription_(
       image: CurrentWallpaper|null,
       attribution: CurrentAttribution|null): string {
-    if (!image || !attribution || image.key !== attribution.key) {
-      return `${this.i18n('currentlySet')} ${
-          this.i18n('unknownImageAttribution')}`;
-    }
-    if (image.type === WallpaperType.kDefault) {
-      return `${this.i18n('currentlySet')} ${this.i18n('defaultWallpaper')}`;
-    }
-    if (isNonEmptyArray(attribution.attribution)) {
-      return [this.i18n('currentlySet'), ...attribution.attribution].join(' ');
-    }
-    // Fallback to cached attribution.
-    const cachedAttribution = getLocalStorageAttribution(image.key);
-    if (isNonEmptyArray(cachedAttribution)) {
-      return [this.i18n('currentlySet'), ...cachedAttribution].join(' ');
-    }
-    return `${this.i18n('currentlySet')} ${
-        this.i18n('unknownImageAttribution')}`;
+    return getWallpaperAriaLabel(
+        image, attribution, /*dailyRefreshState=*/ null);
   }
 
   private computeLoading_(): boolean {
