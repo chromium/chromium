@@ -417,14 +417,8 @@ CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
     return std::vector<const CachedServerCardInfo*>();
   std::vector<const CachedServerCardInfo*> unmasked_cards =
       autofill_manager->GetCreditCardAccessManager()->GetCachedUnmaskedCards();
-  // If the feature to show unmasked cards in manual filling view is
-  // enabled, show all cards in the view. Even if not, still show
-  // virtual cards in the manual filling view if they exist. All other cards
-  // are dropped.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowUnmaskedCachedCardInManualFillingView)) {
-    return unmasked_cards;
-  }
+  // Show unmasked virtual cards in the manual filling view if they exist. All
+  // other cards are dropped.
   auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
     return card_info->card.record_type() != CreditCard::VIRTUAL_CARD;
   };

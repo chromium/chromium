@@ -226,12 +226,6 @@ BASE_FEATURE(kAutofillSaveCardInfobarEditSupport,
              "AutofillSaveCardInfobarEditSupport_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the entire PAN and the CVC details of the unmasked cached card
-// will be shown in the manual filling view.
-BASE_FEATURE(kAutofillShowUnmaskedCachedCardInManualFillingView,
-             "AutofillShowUnmaskedCachedCardInManualFillingView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, Autofill suggestions that consist of a local and server
 // version of the same card will attempt to fill the server card upon selection
 // instead of the local card.
