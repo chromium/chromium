@@ -19,8 +19,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::string renormalized_der;
     bool renormalize_success = net::NormalizeName(
         net::der::Input(&normalized_der), &renormalized_der, &errors);
-    CHECK(renormalize_success);
-    CHECK_EQ(normalized_der, renormalized_der);
+    if (!renormalize_success) {
+      abort();
+    }
+    if (normalized_der != renormalized_der) {
+      abort();
+    }
   }
   return 0;
 }

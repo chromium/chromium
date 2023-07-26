@@ -29,7 +29,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   bool match = net::VerifyNameInSubtree(in1, in2);
   bool reverse_order_match = net::VerifyNameInSubtree(in2, in1);
   // If both InSubtree matches are true, then in1 == in2 (modulo normalization).
-  if (match && reverse_order_match)
-    CHECK(net::VerifyNameMatch(in1, in2));
+  if (match && reverse_order_match) {
+    if (!net::VerifyNameMatch(in1, in2)) {
+      abort();
+    }
+  }
   return 0;
 }
