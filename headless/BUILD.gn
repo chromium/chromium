@@ -368,9 +368,6 @@ component("headless_non_renderer") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   if (is_mac) {
     sources += [
