@@ -66,6 +66,10 @@ PageNodeImpl::PageNodeImpl(const WebContentsProxy& contents_proxy,
   DCHECK(IsValidInitialPageState(page_state));
   weak_this_ = weak_factory_.GetWeakPtr();
 
+  if (is_audible) {
+    audible_change_time_ = base::TimeTicks::Now();
+  }
+
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -133,7 +137,12 @@ void PageNodeImpl::SetIsVisible(bool is_visible) {
 
 void PageNodeImpl::SetIsAudible(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_audible_.SetAndMaybeNotify(this, is_audible);
+  if (is_audible_.SetAndMaybeNotify(this, is_audible)) {
+    // The change time needs to be updated after observers are notified, as they
+    // use this to determine time passed since the *previous* state change. They
+    // can infer the current state change time themselves via NowTicks.
+    audible_change_time_ = base::TimeTicks::Now();
+  }
 }
 
 void PageNodeImpl::SetUkmSourceId(ukm::SourceId ukm_source_id) {
@@ -199,6 +208,15 @@ base::TimeDelta PageNodeImpl::TimeSinceLastNavigation() const {
 base::TimeDelta PageNodeImpl::TimeSinceLastVisibilityChange() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::TimeTicks::Now() - visibility_change_time_;
+}
+
+absl::optional<base::TimeDelta> PageNodeImpl::TimeSinceLastAudibleChange()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (audible_change_time_.has_value()) {
+    return base::TimeTicks::Now() - audible_change_time_.value();
+  }
+  return absl::nullopt;
 }
 
 FrameNodeImpl* PageNodeImpl::GetMainFrameNodeImpl() const {
@@ -477,6 +495,12 @@ base::TimeDelta PageNodeImpl::GetTimeSinceLastVisibilityChange() const {
 bool PageNodeImpl::IsAudible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_audible();
+}
+
+absl::optional<base::TimeDelta> PageNodeImpl::GetTimeSinceLastAudibleChange()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return TimeSinceLastAudibleChange();
 }
 
 PageNode::LoadingState PageNodeImpl::GetLoadingState() const {

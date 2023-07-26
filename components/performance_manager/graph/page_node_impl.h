@@ -82,6 +82,11 @@ class PageNodeImpl
   // page node.
   base::TimeDelta TimeSinceLastVisibilityChange() const;
 
+  // Returns the time since the last audible change, or nullopt if the node has
+  // never been audible. If the node was audible on creation, returns the
+  // creation time.
+  absl::optional<base::TimeDelta> TimeSinceLastAudibleChange() const;
+
   // Returns the current main frame node (if there is one), otherwise returns
   // any of the potentially multiple main frames that currently exist. If there
   // are no main frames at the moment, returns nullptr.
@@ -212,6 +217,8 @@ class PageNodeImpl
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
+  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
+      const override;
   LoadingState GetLoadingState() const override;
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
@@ -259,6 +266,11 @@ class PageNodeImpl
 
   // The last time at which the page visibility changed.
   base::TimeTicks visibility_change_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The last time at which the audible property changed, or nullopt if the node
+  // has never been audible.
+  absl::optional<base::TimeTicks> audible_change_time_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The last time at which a main frame navigation was committed.
   base::TimeTicks navigation_committed_time_

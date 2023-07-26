@@ -139,6 +139,13 @@ class PageNode : public Node {
   // See PageNodeObserver::OnIsAudibleChanged.
   virtual bool IsAudible() const = 0;
 
+  // Returns the time since the last audible change. Unlike
+  // GetTimeSinceLastVisibilityChange(), this returns nullopt for a node which
+  // has never been audible. If a node is audible when created, it is considered
+  // to change from inaudible to audible at that point.
+  virtual absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
+      const = 0;
+
   // Returns the page's loading state.
   virtual LoadingState GetLoadingState() const = 0;
 
@@ -281,9 +288,17 @@ class PageNodeObserver {
                              PageType previous_type) = 0;
 
   // Invoked when the IsVisible property changes.
+  //
+  // GetTimeSinceLastVisibilityChange() will return the time since the previous
+  // IsVisible change. After all observers have fired it will return the time of
+  // this property change.
   virtual void OnIsVisibleChanged(const PageNode* page_node) = 0;
 
   // Invoked when the IsAudible property changes.
+  //
+  // GetTimeSinceLastAudibleChange() will return the time since the previous
+  // IsAudible change. After all observers have fired it will return the time of
+  // this property change.
   virtual void OnIsAudibleChanged(const PageNode* page_node) = 0;
 
   // Invoked when the GetLoadingState property changes.

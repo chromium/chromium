@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -41,6 +40,9 @@ constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
 constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
     base::Minutes(10);
 #endif
+
+// Time during which a tab cannot be discarded after having played audio.
+constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
 
 // Caches page node properties to facilitate sorting.
 class PageNodeSortProxy {
@@ -85,7 +87,6 @@ class PageNodeSortProxy {
 // This is a GraphRegistered object and should be accessed via
 // PageDiscardingHelper::GetFromGraph(graph()).
 class PageDiscardingHelper : public GraphOwned,
-                             public PageNode::ObserverDefaultImpl,
                              public GraphRegisteredImpl<PageDiscardingHelper>,
                              public NodeDataDescriberDefaultImpl {
  public:
@@ -135,10 +136,6 @@ class PageDiscardingHelper : public GraphOwned,
       DiscardReason discard_reason,
       base::OnceCallback<void(bool)> post_discard_cb = base::DoNothing());
 
-  // PageNodeObserver:
-  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
-  void OnIsAudibleChanged(const PageNode* page_node) override;
-
   void SetNoDiscardPatternsForProfile(const std::string& browser_context_id,
                                       const std::vector<std::string>& patterns);
   void ClearNoDiscardPatternsForProfile(const std::string& browser_context_id);
@@ -186,11 +183,6 @@ class PageDiscardingHelper : public GraphOwned,
       DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background,
       bool success);
-
-  // Map that associates a PageNode with the last time it became non audible.
-  // PageNodes that have never been audible are not present in this map.
-  base::flat_map<const PageNode*, base::TimeTicks>
-      last_change_to_non_audible_time_;
 
   // The mechanism used to do the actual discarding.
   std::unique_ptr<performance_manager::mechanism::PageDiscarder>

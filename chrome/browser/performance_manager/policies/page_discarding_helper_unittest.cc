@@ -19,6 +19,7 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 namespace policies {
@@ -148,6 +149,9 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardVisiblePage) {
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardAudiblePage) {
   page_node()->SetIsAudible(true);
+  // Ensure that the discard is being blocked because audio is playing, not
+  // because GetTimeSinceLastAudibleChange() is recent.
+  task_env().FastForwardBy(kTabAudioProtectionTime * 2);
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
@@ -168,6 +172,36 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardRecentlyAudiblePage) {
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
+}
+
+TEST_F(PageDiscardingHelperTest, TestCanDiscardNeverAudiblePage) {
+  // Ensure that if a page node is created without ever becoming audible, it
+  // isn't marked as "recently playing audio". MakePageNodeDiscardable() which
+  // is run on the default page_node() overrides audio properties, so need to
+  // create a new page node and make it discardable by hand.
+  TestNodeWrapper<PageNodeImpl> new_page_node = CreateNode<PageNodeImpl>();
+  TestNodeWrapper<FrameNodeImpl> new_frame_node =
+      CreateFrameNodeAutoId(process_node(), new_page_node.get());
+  new_frame_node->SetIsCurrent(true);
+  new_page_node->SetIsVisible(false);
+  const GURL kUrl("https://example.com");
+  new_page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
+                                                42, kUrl, "text/html");
+  new_frame_node->OnNavigationCommitted(kUrl, false);
+
+  EXPECT_FALSE(new_page_node->is_audible());
+
+  // Use a short `minimum_time_in_background` so that the page is discardable
+  // but still created inside kTabAudioProtectionTime. It should NOT be blocked
+  // from discarding due to kTabAudioProtectionTime.
+  constexpr base::TimeDelta kMinTimeInBackground = kTabAudioProtectionTime / 2;
+  task_env().FastForwardBy(kMinTimeInBackground);
+  EXPECT_TRUE(CanDiscardWithMinimumTimeInBackground(
+      new_page_node.get(), DiscardReason::URGENT, kMinTimeInBackground));
+  EXPECT_TRUE(CanDiscardWithMinimumTimeInBackground(
+      new_page_node.get(), DiscardReason::PROACTIVE, kMinTimeInBackground));
+  EXPECT_TRUE(CanDiscardWithMinimumTimeInBackground(
+      new_page_node.get(), DiscardReason::EXTERNAL, kMinTimeInBackground));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
