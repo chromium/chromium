@@ -189,11 +189,7 @@ const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
                             ui::Accelerator::KeyState::RELEASED)}},
           {AcceleratorAction::kShowShortcutViewer,
            {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
-                            ui::Accelerator::KeyState::PRESSED),
-            ui::Accelerator(
-                ui::VKEY_OEM_2,
-                ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-                ui::Accelerator::KeyState::PRESSED)}},
+                            ui::Accelerator::KeyState::PRESSED)}},
           {AcceleratorAction::kOpenGetHelp,
            {ui::Accelerator(ui::VKEY_OEM_2,
                             ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
@@ -1049,6 +1045,11 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
     return absl::nullopt;
   }
 
+  // Always allow using deprecated accelerators.
+  if (ash_accelerator_configuration_->IsDeprecated(accelerator)) {
+    return absl::nullopt;
+  }
+
   // Check that the new accelerator is not already an existing accelerator of
   // the same action. If so, return with `kConflict`.
   if (*found_ash_action == action_id) {
@@ -1072,33 +1073,32 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
 
   // The accelerator is not hidden and appears in the app, go through conflict
   // detection checks.
-  if (!ash_accelerator_configuration_->IsDeprecated(accelerator)) {
-    // Accelerator already exists, check if it belongs to a locked action.
-    const AcceleratorLayoutDetails& layout_details = layout_iter->second;
-    const std::u16string& shortcut_name =
-        l10n_util::GetStringUTF16(layout_details.description_string_id);
-    if (layout_details.locked) {
-      pending_accelerator_.reset();
-      result_data->result = AcceleratorConfigResult::kActionLocked;
-      result_data->shortcut_name = shortcut_name;
-      return result_data;
-    }
 
-    // If not locked, then check if the user has already pressed the accelerator
-    // for this action. If not, store it and return the error. If this is a
-    // different accelerator then store it.
-    if (!pending_accelerator_ || pending_accelerator_->action != action_id ||
-        pending_accelerator_->source != source ||
-        pending_accelerator_->accelerator != accelerator) {
-      result_data->result =
-          mojom::AcceleratorConfigResult::kConflictCanOverride;
-      pending_accelerator_.reset();
-      pending_accelerator_ =
-          std::make_unique<PendingAccelerator>(accelerator, source, action_id);
-      result_data->shortcut_name = shortcut_name;
-      return result_data;
-    }
+  // Accelerator already exists, check if it belongs to a locked action.
+  const AcceleratorLayoutDetails& layout_details = layout_iter->second;
+  const std::u16string& shortcut_name =
+      l10n_util::GetStringUTF16(layout_details.description_string_id);
+  if (layout_details.locked) {
+    pending_accelerator_.reset();
+    result_data->result = AcceleratorConfigResult::kActionLocked;
+    result_data->shortcut_name = shortcut_name;
+    return result_data;
   }
+
+  // If not locked, then check if the user has already pressed the accelerator
+  // for this action. If not, store it and return the error. If this is a
+  // different accelerator then store it.
+  if (!pending_accelerator_ || pending_accelerator_->action != action_id ||
+      pending_accelerator_->source != source ||
+      pending_accelerator_->accelerator != accelerator) {
+    result_data->result = mojom::AcceleratorConfigResult::kConflictCanOverride;
+    pending_accelerator_.reset();
+    pending_accelerator_ =
+        std::make_unique<PendingAccelerator>(accelerator, source, action_id);
+    result_data->shortcut_name = shortcut_name;
+    return result_data;
+  }
+
   return absl::nullopt;
 }
 

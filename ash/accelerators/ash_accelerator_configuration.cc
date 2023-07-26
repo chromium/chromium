@@ -462,7 +462,19 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
       deprecated_accelerators_to_id_.Find(accelerator);
   if (deprecated_action_id && *deprecated_action_id == action_id) {
     deprecated_accelerators_to_id_.Erase(accelerator);
-    actions_with_deprecations_.erase(action_id);
+    // Check if there are any other accelerators associated with `action_id`.
+    // If not, remove it from `actions_with_deprecations_`.
+    bool has_more_deprecated_accelerators = false;
+    for (const auto& deprecated_iter : deprecated_accelerators_to_id_) {
+      if (deprecated_iter.second == action_id) {
+        has_more_deprecated_accelerators = true;
+        break;
+      }
+    }
+
+    if (!has_more_deprecated_accelerators) {
+      actions_with_deprecations_.erase(action_id);
+    }
     return AcceleratorConfigResult::kSuccess;
   }
 

@@ -967,6 +967,9 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorDeprecatedConflict) {
   const AcceleratorData test_deprecated_accelerators[] = {
       {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
        AcceleratorAction::kShowTaskManager},
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+       AcceleratorAction::kShowTaskManager},
   };
 
   const AcceleratorData initial_expected_data[] = {
@@ -979,6 +982,9 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorDeprecatedConflict) {
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
        AcceleratorAction::kCycleBackwardMru},
       {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
+       AcceleratorAction::kShowTaskManager},
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
        AcceleratorAction::kShowTaskManager},
   };
 
@@ -995,6 +1001,10 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorDeprecatedConflict) {
                                                ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(config_->IsDeprecated(deprecated_accelerator));
 
+  const ui::Accelerator deprecated_accelerator_2(
+      ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_TRUE(config_->IsDeprecated(deprecated_accelerator_2));
+
   // Add SHIFT + ESCAPE to AcceleratorAction::kSwitchToLastUsedIme, which
   // conflicts with a deprecated accelerator.
   const AcceleratorData updated_test_data[] = {
@@ -1008,6 +1018,9 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorDeprecatedConflict) {
       {/*trigger_on_press=*/true, ui::VKEY_TAB,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
        AcceleratorAction::kCycleBackwardMru},
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+       AcceleratorAction::kShowTaskManager},
   };
 
   AcceleratorConfigResult result = config_->AddUserAccelerator(
@@ -1025,6 +1038,15 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorDeprecatedConflict) {
 
   // Confirm that the deprecated accelerator was removed.
   EXPECT_FALSE(config_->IsDeprecated(deprecated_accelerator));
+
+  // Ensure that the second deprecated accelerator still maps to a deprecated
+  // action.
+  const DeprecatedAcceleratorData* task_manager_deprecated_data =
+      config_->GetDeprecatedAcceleratorData(
+          AcceleratorAction::kShowTaskManager);
+  EXPECT_EQ(AcceleratorAction::kShowTaskManager,
+            task_manager_deprecated_data->action);
+  EXPECT_TRUE(config_->IsDeprecated(deprecated_accelerator_2));
 }
 
 // Add and then remove an accelerator.
