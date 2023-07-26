@@ -163,7 +163,7 @@ void ConsumerUpdateScreen::SetSkipButton() {
   if (view_ && !checked_update_mandatory) {
     checked_update_mandatory = true;
     base::TimeDelta time_left = version_updater_->update_info().total_time_left;
-    view_->SetIsUpdateMandatory(time_left > maximum_time_force_update_);
+    view_->SetIsUpdateMandatory(time_left < maximum_time_force_update_);
   }
 }
 
