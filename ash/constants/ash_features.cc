@@ -3790,16 +3790,14 @@ bool IsStylusBatteryStatusEnabled() {
 }
 
 bool IsTimeOfDayScreenSaverEnabled() {
-  // TODO(b/270597524): Check `kFeatureManagementTimeOfDayScreenSaver` flag as
-  // well when feature management team has completed their design.
   return base::FeatureList::IsEnabled(kTimeOfDayScreenSaver) &&
+         base::FeatureList::IsEnabled(kFeatureManagementTimeOfDayScreenSaver) &&
          IsTimeOfDayWallpaperEnabled();
 }
 
 bool IsTimeOfDayWallpaperEnabled() {
-  // TODO(b/270597524): Check `kFeatureManagementTimeOfDayWallpaper` flag as
-  // well when feature management team has completed their design.
-  return base::FeatureList::IsEnabled(kTimeOfDayWallpaper);
+  return base::FeatureList::IsEnabled(kTimeOfDayWallpaper) &&
+         base::FeatureList::IsEnabled(kFeatureManagementTimeOfDayWallpaper);
 }
 
 bool IsTabClusterUIEnabled() {

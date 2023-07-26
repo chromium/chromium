@@ -171,7 +171,9 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kTimeOfDayWallpaper,
-         ash::features::kTimeOfDayScreenSaver},
+         ash::features::kTimeOfDayScreenSaver,
+         ash::features::kFeatureManagementTimeOfDayWallpaper,
+         ash::features::kFeatureManagementTimeOfDayScreenSaver},
         {});
   }
   PersonalizationAppAmbientProviderImplTest(

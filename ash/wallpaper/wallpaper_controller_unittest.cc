@@ -791,7 +791,8 @@ class WallpaperControllerTest : public WallpaperControllerTestBase,
  public:
   WallpaperControllerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kTimeOfDayWallpaper};
+        features::kTimeOfDayWallpaper,
+        features::kFeatureManagementTimeOfDayWallpaper};
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsJellyEnabled()) {
       enabled_features.push_back(chromeos::features::kJelly);

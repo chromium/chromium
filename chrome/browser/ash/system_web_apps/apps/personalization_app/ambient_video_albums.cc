@@ -45,10 +45,7 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
     // Product name does not need to be translated.
     auto product_name =
         l10n_util::GetStringUTF16(ui::GetChromeOSDeviceTypeResourceId());
-    // TODO(b/270597524): Switch to `IsTimeOfDayScreenSaverEnabled` once
-    // `kFeatureManagementTimeOfDayScreenSaver` is used.
-    if (base::FeatureList::IsEnabled(
-            features::kFeatureManagementTimeOfDayScreenSaver)) {
+    if (features::IsTimeOfDayScreenSaverEnabled()) {
       product_name = base::UTF8ToUTF16(
           AmbientBackendController::Get()->GetTimeOfDayProductName());
     }
