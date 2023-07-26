@@ -25,6 +25,14 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // reached along the responder chain.
 @property(retain, nonatomic) NSCursor* cursor;
 
+// Closing a child window when its parent lives in an inactive space triggers
+// a Space switch. When ordering out a child window in this situation,
+// machinery in NativeWidgetMacNSWindow erases Views's connections to the child
+// window but doesn't remove the child completely until the parent becomes
+// active. Any code expecting to find the window removed can check this flag
+// to see if its continued existence in [parent childWindows] is intentional.
+@property(assign, nonatomic) BOOL willCloseLater;
+
 // Initialize with the given |parent|.
 - (instancetype)initWithBridgedNativeWidget:
     (remote_cocoa::NativeWidgetNSWindowBridge*)parent;
