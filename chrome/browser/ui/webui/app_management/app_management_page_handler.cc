@@ -139,8 +139,9 @@ apps::IntentFilters GetSupportedLinkIntentFilters(Profile* profile,
                  [&app_id, &intent_filters](const apps::AppUpdate& update) {
                    if (update.Readiness() == apps::Readiness::kReady) {
                      for (auto& filter : update.IntentFilters()) {
-                       if (apps_util::IsSupportedLinkForApp(app_id, filter))
+                       if (apps_util::IsSupportedLinkForApp(app_id, filter)) {
                          intent_filters.emplace_back(std::move(filter));
+                       }
                      }
                    }
                  });
@@ -222,13 +223,15 @@ void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady)
+        if (update.Readiness() == apps::Readiness::kReady) {
           app = CreateUIAppPtr(update);
+        }
       });
 
   // If an app with this id is not already installed, do nothing.
-  if (!app)
+  if (!app) {
     return;
+  }
 
   app->is_pinned = pinned ? OptionalBool::kTrue : OptionalBool::kFalse;
 
@@ -264,8 +267,9 @@ void AppManagementPageHandler::GetApp(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady)
+        if (update.Readiness() == apps::Readiness::kReady) {
           app = CreateUIAppPtr(update);
+        }
       });
 
   std::move(callback).Run(std::move(app));
@@ -442,12 +446,14 @@ void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady)
+        if (update.Readiness() == apps::Readiness::kReady) {
           app = CreateUIAppPtr(update);
+        }
       });
 
-  if (!app)
+  if (!app) {
     return;
+  }
 
   page_->OnAppChanged(std::move(app));
 }
@@ -525,11 +531,13 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
           bool is_potential_file_handler_action = base::ranges::any_of(
               filter->conditions.begin(), filter->conditions.end(),
               [](const std::unique_ptr<apps::Condition>& condition) {
-                if (condition->condition_type != apps::ConditionType::kAction)
+                if (condition->condition_type != apps::ConditionType::kAction) {
                   return false;
+                }
 
-                if (condition->condition_values.size() != 1U)
+                if (condition->condition_values.size() != 1U) {
                   return false;
+                }
 
                 return condition->condition_values[0]->value ==
                        apps_util::kIntentActionPotentialFileHandler;
@@ -574,8 +582,9 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
       }
 
       absl::optional<GURL> learn_more_url;
-      if (!CanShowDefaultAppAssociationsUi())
+      if (!CanShowDefaultAppAssociationsUi()) {
         learn_more_url = GURL(kFileHandlingLearnMore);
+      }
       // TODO(crbug/1252505): add file handling policy support.
       app->file_handling_state = app_management::mojom::FileHandlingState::New(
           fh_enabled, /*is_managed=*/false, file_handling_types,
@@ -597,24 +606,26 @@ void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   auto* apk_service = ash::ApkWebAppService::Get(profile_);
-  proxy->AppRegistryCache().ForOneApp(app_id, [&proxy, &apk_service](
-                                                  const apps::AppUpdate&
-                                                      update) {
-    if (update.InstallSource() == apps::InstallSource::kPlayStore) {
-      std::string package_name = update.PublisherId();
-      if (apk_service->IsWebAppInstalledFromArc(update.AppId())) {
-        package_name =
-            apk_service->GetPackageNameForWebApp(update.AppId()).value();
-      }
-      GURL url("https://play.google.com/store/apps/details?id=" + package_name);
-      proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
-                              apps::LaunchSource::kFromChromeInternal);
-    } else if (update.InstallSource() == apps::InstallSource::kChromeWebStore) {
-      GURL url("https://chrome.google.com/webstore/detail/" + update.AppId());
-      proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
-                              apps::LaunchSource::kFromChromeInternal);
-    }
-  });
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&proxy, &apk_service](const apps::AppUpdate& update) {
+        if (update.InstallSource() == apps::InstallSource::kPlayStore) {
+          std::string package_name = update.PublisherId();
+          if (apk_service->IsWebAppInstalledFromArc(update.AppId())) {
+            package_name =
+                apk_service->GetPackageNameForWebApp(update.AppId()).value();
+          }
+          GURL url("https://play.google.com/store/apps/details?id=" +
+                   package_name);
+          proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
+                                  apps::LaunchSource::kFromChromeInternal);
+        } else if (update.InstallSource() ==
+                   apps::InstallSource::kChromeWebStore) {
+          GURL url("https://chrome.google.com/webstore/detail/" +
+                   update.AppId());
+          proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
+                                  apps::LaunchSource::kFromChromeInternal);
+        }
+      });
 #endif
 }
 
@@ -646,13 +657,15 @@ void AppManagementPageHandler::OnPreferredAppChanged(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady)
+        if (update.Readiness() == apps::Readiness::kReady) {
           app = CreateUIAppPtr(update);
+        }
       });
 
   // If an app with this id is not already installed, do nothing.
-  if (!app)
+  if (!app) {
     return;
+  }
 
   app->is_preferred_app = is_preferred_app;
 
