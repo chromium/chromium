@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -442,6 +443,43 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
       mailbox, plane_format, plane_size, color_space, surface_origin,
       alpha_type, usage, std::move(debug_label), allow_shm_overlays,
       std::move(shm_backing), gpu_backing_factory->GetWeakPtr()));
+}
+
+// static
+std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
+    SharedImageBackingFactory* gpu_backing_factory,
+    bool allow_shm_overlays,
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    std::string debug_label,
+    gfx::BufferUsage buffer_usage) {
+  DCHECK(IsValidSharedMemoryBufferFormat(size, format));
+
+  auto buffer_format = ToBufferFormat(format);
+  auto handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+      gfx::GpuMemoryBufferId(0), size, buffer_format, buffer_usage);
+
+  SharedMemoryRegionWrapper shm_wrapper;
+  if (!shm_wrapper.Initialize(handle, size, buffer_format,
+                              gfx::BufferPlane::DEFAULT)) {
+    DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
+    return nullptr;
+  }
+
+  auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
+      mailbox, format, size, color_space, surface_origin, alpha_type,
+      SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper), std::move(handle));
+  shm_backing->SetNotRefCounted();
+
+  return base::WrapUnique(new CompoundImageBacking(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), allow_shm_overlays, std::move(shm_backing),
+      gpu_backing_factory->GetWeakPtr()));
 }
 
 CompoundImageBacking::CompoundImageBacking(
