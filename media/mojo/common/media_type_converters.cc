@@ -92,7 +92,7 @@ TypeConverter<scoped_refptr<media::DecoderBuffer>,
     return media::DecoderBuffer::CreateEOSBuffer();
 
   scoped_refptr<media::DecoderBuffer> buffer(
-      new media::DecoderBuffer(input->data_size));
+      new media::DecoderBuffer(base::strict_cast<size_t>(input->data_size)));
 
   if (!input->side_data.empty())
     buffer->CopySideDataFrom(input->side_data.data(), input->side_data.size());
