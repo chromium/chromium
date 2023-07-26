@@ -171,6 +171,14 @@ export class Service implements ServiceInterface {
         });
   }
 
+  /**
+   * Allows the consumer to call the API asynchronously.
+   */
+  uninstallItem(id: string): Promise<void> {
+    chrome.metricsPrivate.recordUserAction('Extensions.RemoveExtensionClick');
+    return chrome.management.uninstall(id, {showConfirmDialog: true});
+  }
+
   setItemSafetyCheckWarningAcknowledged(id: string): Promise<void> {
     return chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,

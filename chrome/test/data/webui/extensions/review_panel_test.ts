@@ -110,17 +110,18 @@ suite('ExtensionsReviewPanel', function() {
     const completionTextContainer =
         element.shadowRoot!.querySelector('.completion-container');
     assertFalse(isVisible(completionTextContainer));
-    class MockDeleteItemDelegate extends MockItemDelegate {
-      override deleteItem(id: string) {
+    class MockUninstallItemDelegate extends MockItemDelegate {
+      override uninstallItem(id: string): Promise<void> {
         // Mock deleting the extension.
         element.extensions =
             element.extensions.filter(extension => extension.id !== id);
+        return Promise.resolve();
       }
       override setItemSafetyCheckWarningAcknowledged(): void {}
     }
-    element.delegate = new MockDeleteItemDelegate();
+    element.delegate = new MockUninstallItemDelegate();
     element.shadowRoot!.querySelector('cr-icon-button')?.click();
-    flush();
+    await flushTasks();
     assertTrue(!!completionTextContainer);
     assertTrue(isVisible(completionTextContainer));
   });

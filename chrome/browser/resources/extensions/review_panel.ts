@@ -13,11 +13,11 @@ import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_bu
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ItemDelegate} from './item.js';
 import {getTemplate} from './review_panel.html.js';
 
 export interface ReviewItemDelegate {
   setItemSafetyCheckWarningAcknowledged(id: string): void;
+  uninstallItem(id: string): Promise<void>;
 }
 
 export interface ExtensionsReviewPanelElement {
@@ -80,8 +80,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
        */
       shouldShowUnsafeExtensions_: {
         type: Boolean,
-        computed:
-            'computeShouldShowUnsafeExtensions_(extensions.*, hasChangeBeenMade_)',
+        computed: 'computeShouldShowUnsafeExtensions_(extensions.*)',
       },
 
       /**
@@ -112,7 +111,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
     return ['onExtensionsChanged_(extensions.*)'];
   }
 
-  delegate: ItemDelegate&ReviewItemDelegate;
+  delegate: ReviewItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
   private hasChangeBeenMade_: boolean;
   private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[];
@@ -162,7 +161,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
   private computeShouldShowUnsafeExtensions_(): boolean {
     const updatedUnsafeExtensions =
         this.getUnsafeExtensions_(this.extensions) || [];
-    if (!this.hasChangeBeenMade_ && updatedUnsafeExtensions.length !== 0) {
+    if (updatedUnsafeExtensions.length !== 0) {
       if (!this.shouldShowUnsafeExtensions_) {
         chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewPanelShown');
       }
@@ -193,15 +192,19 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
           this.lastClickedExtensionId_);
       this.hasChangeBeenMade_ = true;
     }
-    this.hasChangeBeenMade_ = true;
   }
 
-  private onRemoveExtensionClick_(
-      e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+  private async onRemoveExtensionClick_(
+      e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): Promise<void> {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelRemoveClicked');
-    this.delegate.deleteItem(e.model.item.id);
-    this.hasChangeBeenMade_ = true;
+    try {
+      await this.delegate.uninstallItem(e.model.item.id);
+      this.hasChangeBeenMade_ = true;
+    } catch (_) {
+      // The error was almost certainly the user canceling the dialog.
+      // Do nothing.
+    }
   }
 
   private onRemoveAllExtensions_(): void {

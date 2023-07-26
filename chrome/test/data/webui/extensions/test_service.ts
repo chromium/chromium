@@ -32,6 +32,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'deleteActivitiesFromExtension',
       'deleteErrors',
       'deleteItem',
+      'uninstallItem',
       'downloadActivities',
       'getExtensionActivityLog',
       'getExtensionsInfo',
@@ -309,6 +310,11 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   deleteItem(id: string) {
     this.methodCalled('deleteItem', id);
+  }
+
+  uninstallItem(id: string) {
+    this.methodCalled('uninstallItem', id);
+    return Promise.resolve();
   }
 
   getOnExtensionActivity() {
