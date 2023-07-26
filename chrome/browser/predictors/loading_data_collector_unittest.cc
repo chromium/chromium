@@ -437,37 +437,4 @@ TEST_F(LoadingDataCollectorTest, RecordPrefetchInitiatedNoInflightNavigation) {
   EXPECT_TRUE(collector_->inflight_navigations_.empty());
 }
 
-// Make sure LoadingDataCollector is happy with and without LCPP signals
-TEST_F(LoadingDataCollectorTest, WithAndWithoutLCPPSignals) {
-  for (bool with_lcpp_signals : {false, true}) {
-    SCOPED_TRACE(testing::Message()
-                 << "with_lcpp_signals=" << with_lcpp_signals);
-
-    auto navigation_id = GetNextId();
-    GURL url("http://www.google.com");
-
-    collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
-                                      base::TimeTicks::Now());
-    collector_->RecordFinishNavigation(navigation_id, url, url,
-                                       /*is_error_page=*/false);
-    ASSERT_EQ(1U, collector_->inflight_navigations_.size());
-    auto* page_request_summary =
-        collector_->inflight_navigations_.begin()->second.get();
-
-    PageRequestSummary expected_summary = CreatePageRequestSummary(
-        "http://www.google.com", "http://www.google.com", {});
-    if (with_lcpp_signals) {
-      constexpr char kTestLocator[] = "/#lcpImage";
-      collector_->RecordLCPElementLocator(navigation_id, kTestLocator);
-      EXPECT_EQ(kTestLocator, page_request_summary->lcp_element_locator);
-
-      expected_summary.lcp_element_locator = kTestLocator;
-    }
-
-    EXPECT_CALL(*mock_predictor_, RecordPageRequestSummaryProxy(
-                                      testing::Pointee(expected_summary)));
-    collector_->RecordMainFrameLoadComplete(navigation_id, absl::nullopt);
-  }
-}
-
 }  // namespace predictors

@@ -329,7 +329,6 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
   LearnOrigins(summary->main_frame_url.host(),
                summary->main_frame_url.DeprecatedGetOriginAsURL(),
                summary->origins);
-  LearnLcpp(summary->main_frame_url.host(), summary->lcp_element_locator);
 
   if (observer_)
     observer_->OnNavigationLearned(*summary);

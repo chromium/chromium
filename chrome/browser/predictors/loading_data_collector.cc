@@ -274,17 +274,6 @@ void LoadingDataCollector::RecordFirstContentfulPaint(
     nav_it->second->first_contentful_paint = first_contentful_paint;
 }
 
-void LoadingDataCollector::RecordLCPElementLocator(
-    NavigationId navigation_id,
-    base::StringPiece lcp_element_locator) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  auto nav_it = inflight_navigations_.find(navigation_id);
-  if (nav_it != inflight_navigations_.end()) {
-    nav_it->second->lcp_element_locator = lcp_element_locator;
-  }
-}
-
 bool LoadingDataCollector::ShouldRecordResourceLoad(
     const blink::mojom::ResourceLoadInfo& resource_load_info) const {
   const GURL& url = resource_load_info.final_url;
