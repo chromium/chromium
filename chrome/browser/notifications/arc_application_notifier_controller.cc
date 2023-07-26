@@ -38,15 +38,17 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
     return std::vector<ash::NotifierMetadata>();
 
   last_used_profile_ = profile;
-  apps::AppServiceProxy* service =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  Observe(&(service->AppRegistryCache()));
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  if (!app_registry_cache_observer_.IsObservingSource(cache)) {
+    app_registry_cache_observer_.Reset();
+    app_registry_cache_observer_.Observe(cache);
+  }
 
   package_to_app_ids_.clear();
   std::vector<NotifierDataset> notifier_dataset;
 
-  service->AppRegistryCache().ForEachApp([&notifier_dataset](
-                                             const apps::AppUpdate& update) {
+  cache->ForEachApp([&notifier_dataset](const apps::AppUpdate& update) {
     if (update.AppType() != apps::AppType::kArc)
       return;
 
@@ -165,7 +167,7 @@ void ArcApplicationNotifierController::OnAppUpdate(
 
 void ArcApplicationNotifierController::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 }  // namespace arc

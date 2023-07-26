@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -37,6 +38,10 @@ class ShelfAppServiceAppUpdater : public ShelfAppUpdater,
   void OnShowInShelfChangedForAppDisabledByPolicy(const std::string& app_id,
                                                   bool show_in_shelf);
   std::set<std::string> installed_apps_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_SHELF_APP_SERVICE_APP_UPDATER_H_

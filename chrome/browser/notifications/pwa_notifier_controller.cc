@@ -31,13 +31,16 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
   if (observed_profile_ && !observed_profile_->IsSameOrParent(profile))
     weak_ptr_factory_.InvalidateWeakPtrs();
   observed_profile_ = profile;
-  apps::AppServiceProxy* service =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  Observe(&service->AppRegistryCache());
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  if (!app_registry_cache_observer_.IsObservingSource(cache)) {
+    app_registry_cache_observer_.Reset();
+    app_registry_cache_observer_.Observe(cache);
+  }
   package_to_app_ids_.clear();
 
   std::vector<NotifierDataset> notifier_dataset;
-  service->AppRegistryCache().ForEachApp(
+  cache->ForEachApp(
       [&notifier_dataset](const apps::AppUpdate& update) {
         if (update.AppType() != apps::AppType::kWeb)
           return;
@@ -158,5 +161,5 @@ void PwaNotifierController::OnAppUpdate(const apps::AppUpdate& update) {
 
 void PwaNotifierController::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }

@@ -9,6 +9,7 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -34,6 +35,10 @@ class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
 
   const apps::AppType app_type_;
   base::RunLoop run_loop_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
@@ -58,6 +63,10 @@ class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
   const std::string app_id_;
   const base::RepeatingCallback<bool(apps::Readiness)> readiness_predicate_;
   base::RunLoop run_loop_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 // Waits for the web app's scope in the App Service app cache to match the
@@ -83,6 +92,10 @@ class WebAppScopeWaiter : public apps::AppRegistryCache::Observer {
   const std::string app_id_;
   const GURL scope_;
   base::RunLoop run_loop_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 // Waits for the app's window mode in the App Service app cache to match the
@@ -108,6 +121,10 @@ class AppWindowModeWaiter : public apps::AppRegistryCache::Observer {
   const std::string app_id_;
   const apps::WindowMode window_mode_;
   base::RunLoop run_loop_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 }  // namespace web_app

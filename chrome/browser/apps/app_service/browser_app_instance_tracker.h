@@ -213,6 +213,10 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // Chrome browser windows.
   BrowserAppInstanceMap<Browser*, BrowserWindowInstance> window_instances_;
 
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
   base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
 };
 

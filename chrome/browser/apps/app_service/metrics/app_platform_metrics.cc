@@ -442,7 +442,7 @@ AppPlatformMetrics::AppPlatformMetrics(
     apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry)
     : profile_(profile), app_registry_cache_(app_registry_cache) {
-  apps::AppRegistryCache::Observer::Observe(&app_registry_cache);
+  app_registry_cache_observer_.Observe(&app_registry_cache);
   instance_registry_observation_.Observe(&instance_registry);
   user_type_by_device_type_ = GetUserTypeByDeviceTypeMetrics();
   InitRunningDuration();
@@ -757,7 +757,7 @@ void AppPlatformMetrics::OnAppTypeInitialized(AppType app_type) {
 
 void AppPlatformMetrics::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {

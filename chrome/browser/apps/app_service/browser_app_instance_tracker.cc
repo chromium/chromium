@@ -207,11 +207,10 @@ class BrowserAppInstanceTracker::WebContentsObserver
 BrowserAppInstanceTracker::BrowserAppInstanceTracker(
     Profile* profile,
     AppRegistryCache& app_registry_cache)
-    : AppRegistryCache::Observer(&app_registry_cache),
-      profile_(profile),
-      browser_tab_strip_tracker_(this, this) {
+    : profile_(profile), browser_tab_strip_tracker_(this, this) {
   BrowserList::GetInstance()->AddObserver(this);
   browser_tab_strip_tracker_.Init();
+  app_registry_cache_observer_.Observe(&app_registry_cache);
 }
 
 BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
@@ -364,7 +363,7 @@ void BrowserAppInstanceTracker::OnAppUpdate(const AppUpdate& update) {
 
 void BrowserAppInstanceTracker::OnAppRegistryCacheWillBeDestroyed(
     AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void BrowserAppInstanceTracker::OnTabStripModelChangeInsert(

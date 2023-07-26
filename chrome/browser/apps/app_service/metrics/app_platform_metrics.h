@@ -360,6 +360,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   base::ObserverList<Observer> observers_;
 
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
   base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
       instance_registry_observation_{this};
 };

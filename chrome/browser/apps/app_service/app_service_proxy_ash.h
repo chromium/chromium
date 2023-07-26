@@ -374,6 +374,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                           apps::InstanceRegistry::Observer>
       instance_registry_observer_{this};
 
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
   // A list to record outstanding launch callbacks. When the first member
   // returns true, the second member should be run and the pair can be removed
   // from the outstanding callback queue.

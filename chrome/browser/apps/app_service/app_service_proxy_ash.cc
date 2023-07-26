@@ -129,7 +129,11 @@ void AppServiceProxyAsh::Initialize() {
 
   AppServiceProxyBase::Initialize();
 
-  AppRegistryCache::Observer::Observe(&AppRegistryCache());
+  auto* cache = &AppRegistryCache();
+  if (!app_registry_cache_observer_.IsObservingSource(cache)) {
+    app_registry_cache_observer_.Reset();
+    app_registry_cache_observer_.Observe(cache);
+  }
 
   publisher_host_ = std::make_unique<PublisherHost>(this);
 
@@ -680,7 +684,7 @@ void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
 
 void AppServiceProxyAsh::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void AppServiceProxyAsh::RecordAppPlatformMetrics(
