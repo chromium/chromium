@@ -1163,6 +1163,17 @@ TEST(TagExtractorTest, CheckRange) {
   ASSERT_FALSE(tagging::internal::CheckRange(it, 1, binary.end()));
 }
 
+TEST(TagExtractorTest, UntaggedExe) {
+  ASSERT_TRUE(
+      tagging::ExtractTagFromFile(test::GetTestFilePath("signed.exe")).empty());
+}
+
+TEST(TagExtractorTest, TaggedExeEncodeUtf8) {
+  ASSERT_EQ(tagging::ExtractTagFromFile(
+                test::GetTestFilePath("tagged_encode_utf8.exe")),
+            "TestTag123");
+}
+
 class MsiTagTest : public testing::Test {
  protected:
   void SetUp() override {

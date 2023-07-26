@@ -124,11 +124,3 @@ process_version_rc_template("version_resources_test") {
     "PRODUCT_FULLNAME=\"$_product_fullname\"",
   ]
 }
-
-fuzzer_test("updater_fuzzer") {
-  sources = [ "tag_extractor_fuzzer.cc" ]
-
-  deps = [ "//chrome/updater:tagging" ]
-
-  seed_corpus = "../test/data/tag_extractor_corpus/"
-}

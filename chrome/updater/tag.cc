@@ -22,6 +22,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/updater/certificate_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -798,6 +799,32 @@ std::string ReadTagUtf16(std::vector<uint8_t>::const_iterator cert_begin,
   }
 
   return base::WideToUTF8(tag_utf16);
+}
+
+std::string ExtractTagFromFile(const base::FilePath& file) {
+  int64_t file_size = 0;
+  if (!base::GetFileSize(file, &file_size)) {
+    return {};
+  }
+
+  std::vector<uint8_t> contents(file_size);
+  if (base::ReadFile(file, reinterpret_cast<char*>(&contents.front()),
+                     contents.size()) == -1) {
+    return {};
+  }
+
+  absl::optional<tagging::Binary> bin = Binary::Parse(contents);
+  if (!bin) {
+    return {};
+  }
+
+  absl::optional<base::span<const uint8_t>> tag = bin->tag();
+  if (!tag) {
+    return {};
+  }
+
+  const std::vector<const uint8_t> tag_data = {tag->begin(), tag->end()};
+  return ReadTagUtf8(tag_data.begin(), tag_data.end());
 }
 
 absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {

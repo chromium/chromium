@@ -38,6 +38,7 @@
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -45,7 +46,6 @@
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
-#include "chrome/updater/win/tag_extractor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -55,15 +55,13 @@ using PathString = StackString<MAX_PATH>;
 namespace {
 
 // Returns the tag if the tag can be extracted. The tag is read from the
-// program file image used to create this process. Google is using UTF8 tags but
-// other embedders could use UTF16. The UTF16 tag not only uses a different
-// character width, but the tag is inserted in a different way.]
-// The implementation of this function only handles UTF8 tags.
+// program file image used to create this process. The implementation of this
+// function only handles UTF8 tags.
 std::string ExtractTag() {
   PathString path;
   return (::GetModuleFileName(nullptr, path.get(), path.capacity()) > 0 &&
           ::GetLastError() == ERROR_SUCCESS)
-             ? ExtractTagFromFile(path.get(), TagEncoding::kUtf8)
+             ? tagging::ExtractTagFromFile(base::FilePath(path.get()))
              : std::string();
 }
 
