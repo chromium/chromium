@@ -49,15 +49,6 @@ namespace pdf {
 namespace ranges = base::ranges;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PdfOcrRequestStatus {
-  kRequested = 0,
-  kPerformed = 1,
-  kMaxValue = kPerformed,
-};
-
 //
 // PdfOcrRequest
 //
@@ -125,7 +116,7 @@ void PdfOcrService::ScheduleNextQueuedTask() {
       request.image.image_data,
       base::BindOnce(&PdfOcrService::ReceiveOcrResultsForRequest,
                      weak_ptr_factory_.GetWeakPtr(), request));
-  // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+
   base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
                                 PdfOcrRequestStatus::kRequested);
 }
@@ -1708,8 +1699,6 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     UnserializeNodes();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     if (features::IsPdfOcrEnabled() && !did_get_a_text_run_ && has_image) {
-      // TODO(crbug.com/1443345): Add a browser test to validate these UMA
-      // metrics.
       base::UmaHistogramBoolean(
           "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
           ocr_service_ != nullptr);
@@ -2073,7 +2062,8 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   // more convenient and less complex if an `ui::AXTree` was never constructed
   // and if the `ui::AXTreeSource` was able to use the collection of `nodes_`
   // directly.
-  // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+  // The following UMA metric, "Accessibility.PdfOcr.PDFImages", is also
+  // recorded in `TestPdfAccessibilityTree::OnOcrDataReceived()` for testing.
   base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
                                 PdfOcrRequestStatus::kPerformed);
 

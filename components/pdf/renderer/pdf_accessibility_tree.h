@@ -49,6 +49,16 @@ class Transform;
 
 namespace pdf {
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PdfOcrRequestStatus {
+  kRequested = 0,
+  kPerformed = 1,
+  kMaxValue = kPerformed,
+};
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 class PdfAccessibilityTree : public content::PluginAXTreeSource,
                              public content::RenderFrameObserver,
                              public chrome_pdf::PdfAccessibilityDataHandler {

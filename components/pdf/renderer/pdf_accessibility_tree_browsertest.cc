@@ -33,6 +33,8 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "base/containers/queue.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -221,6 +223,8 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
                          const chrome_pdf::AccessibilityImageInfo& image,
                          const ui::AXNodeID& parent_node_id,
                          const ui::AXTreeUpdate& tree_update) override {
+    base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
+                                  PdfOcrRequestStatus::kPerformed);
     updates_.push_back(tree_update);
   }
 
@@ -262,6 +266,15 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   }
 
  protected:
+  chrome_pdf::AccessibilityImageInfo CreateMockImage() {
+    chrome_pdf::AccessibilityImageInfo image;
+    image.alt_text = "";
+    image.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
+    image.image_data.allocN32Pixels(/*width=*/1, /*height=*/1,
+                                    /*isOpaque=*/false);
+    return image;
+  }
+
   chrome_pdf::AccessibilityViewportInfo viewport_info_;
   chrome_pdf::AccessibilityDocInfo doc_info_;
   chrome_pdf::AccessibilityPageInfo page_info_;
@@ -2391,14 +2404,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
   doc_info_.text_accessible = true;
   doc_info_.text_copyable = true;
 
-  chrome_pdf::AccessibilityImageInfo image;
-  image.alt_text = "";
-  ASSERT_EQ(0u, image.text_run_index)
-      << "Images should not be anchored to any `TextRunInfo` for the "
-         "`PdfOcrService` to work with them.";
-  image.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
-  image.image_data.allocN32Pixels(/* width */ 1, /* height */ 1,
-                                  /*isOpaque=*/false);
+  chrome_pdf::AccessibilityImageInfo image = CreateMockImage();
   page_objects_.images.push_back(image);
 
   content::RenderFrame* render_frame = GetMainRenderFrame();
@@ -2467,6 +2473,110 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
               "AXTreeUpdate: root id -1\n"
               "id=-1 staticText name=Testing (0, 0)-(0, 0)\n");
   }
+}
+
+// The tests are run twice: once with PDF OCR being enabled before opening a PDF
+// and once with PDF OCR being enabled after opening a PDF.
+class PdfOcrMetricsTest : public PdfAccessibilityTreeTest,
+                          public testing::WithParamInterface<bool> {
+ public:
+  PdfOcrMetricsTest() : feature_list_(::features::kPdfOcr) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, PdfOcrMetricsTest, ::testing::Bool());
+
+TEST_P(PdfOcrMetricsTest, TestUMAMetricsWithPdfOcrOnBeforeOrAfterOpeningPDF) {
+  bool enable_pdf_ocr_before_opening_pdf = GetParam();
+
+  // Create a PDF with 5 pages.
+  doc_info_.page_count = 5;
+  doc_info_.text_accessible = true;
+  doc_info_.text_copyable = true;
+
+  chrome_pdf::AccessibilityImageInfo image = CreateMockImage();
+  page_objects_.images.push_back(image);
+
+  base::HistogramTester histograms;
+  content::RenderFrame* render_frame = GetMainRenderFrame();
+  ASSERT_TRUE(render_frame);
+  render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
+  ASSERT_TRUE(render_frame->GetRenderAccessibility());
+
+  TestPdfAccessibilityActionHandler action_handler;
+  TestPdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                                  &action_handler);
+
+  PdfAccessibilityTree::PdfOcrService* ocr_service = nullptr;
+  FakeScreenAIAnnotator fake_annotator;
+  if (enable_pdf_ocr_before_opening_pdf) {
+    ocr_service = pdf_accessibility_tree.CreateOcrService();
+    ASSERT_NE(nullptr, ocr_service);
+    ocr_service->SetScreenAIAnnotatorForTesting(
+        fake_annotator.BindNewPipeAndPassRemote());
+  }
+
+  pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
+  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
+    page_info_.page_index = i;
+    // All pages are identical.
+    pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  }
+  WaitForThreadTasks();
+
+  const ui::AXTree& ax_tree_in_pdf = pdf_accessibility_tree.tree_for_testing();
+  ui::AXNode* root_node = ax_tree_in_pdf.root();
+  ASSERT_NE(nullptr, root_node);
+  uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
+  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+
+  if (!enable_pdf_ocr_before_opening_pdf) {
+    ocr_service = pdf_accessibility_tree.CreateOcrService();
+    ASSERT_NE(nullptr, ocr_service);
+    ocr_service->SetScreenAIAnnotatorForTesting(
+        fake_annotator.BindNewPipeAndPassRemote());
+  }
+
+  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
+    ui::AXNode* page_node = root_node->children()[i + 1];
+    ASSERT_NE(nullptr, page_node);
+    ui::AXNode* paragraph_node = page_node->children()[0];
+    ASSERT_NE(nullptr, paragraph_node);
+
+    if (!enable_pdf_ocr_before_opening_pdf) {
+      ui::AXNode* image_node = paragraph_node->children()[0];
+      ASSERT_NE(nullptr, image_node);
+      base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
+      requests.emplace(image_node->id(), image, paragraph_node->id());
+      ocr_service->ScheduleOcrRequests(requests);
+    }
+
+    WaitForThreadTasks();
+  }
+
+  ASSERT_EQ(doc_info_.page_count,
+            pdf_accessibility_tree.GetTreeUpdates().size());
+
+  histograms.ExpectBucketCount(
+      "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
+      enable_pdf_ocr_before_opening_pdf,
+      /*expected_count=*/1);
+  histograms.ExpectTotalCount(
+      "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
+      /*expected_count=*/1);
+
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.PDFImages",
+                               PdfOcrRequestStatus::kRequested,
+                               /*expected_count=*/5);
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.PDFImages",
+                               PdfOcrRequestStatus::kPerformed,
+                               /*expected_count=*/5);
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.PDFImages",
+                              /*expected_count=*/10);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
