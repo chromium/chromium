@@ -1832,9 +1832,10 @@ void InjectNTP(Browser* browser) {
   __weak SceneController* weakSelf = self;
   // Copy the URL so it can be safely captured in the block.
   GURL copiedURL = url;
-  [self startSigninCoordinatorWithCompletion:^(BOOL success) {
+  [self startSigninCoordinatorWithCompletion:^(SigninCoordinatorResult result) {
     // If the sign-in is not successful or the scene controller is shut down do
     // not load the continuation URL.
+    BOOL success = result == SigninCoordinatorResultSuccess;
     if (!success || !weakSelf) {
       return;
     }
@@ -3115,7 +3116,7 @@ void InjectNTP(Browser* browser) {
 
 // Starts the sign-in coordinator with a default cleanup completion.
 - (void)startSigninCoordinatorWithCompletion:
-    (signin_ui::CompletionCallback)completion {
+    (ShowSigninCommandCompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
@@ -3125,7 +3126,7 @@ void InjectNTP(Browser* browser) {
   switch (statusService) {
     case AuthenticationService::ServiceStatus::SigninDisabledByPolicy: {
       if (completion) {
-        completion(/*success=*/NO);
+        completion(SigninCoordinatorResultDisabled);
       }
       [self.signinCoordinator stop];
       id<PolicyChangeCommands> handler = HandlerForProtocol(
@@ -3163,7 +3164,7 @@ void InjectNTP(Browser* browser) {
         uiBlocker.reset();
 
         if (completion) {
-          completion(result == SigninCoordinatorResultSuccess);
+          completion(result);
         }
 
         if (!weakSelf.dismissingSigninPromptFromExternalTrigger) {

@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -477,11 +478,15 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 // Shows the SigninSync UI with the SetUpList access point.
 - (void)showSignIn {
-  ShowSigninCommandCompletionCallback callback = ^(BOOL success) {
-    PrefService* localState = GetApplicationContext()->GetLocalState();
-    set_up_list_prefs::MarkItemComplete(localState,
-                                        SetUpListItemType::kSignInSync);
-  };
+  ShowSigninCommandCompletionCallback callback =
+      ^(SigninCoordinatorResult result) {
+        if (result == SigninCoordinatorResultSuccess ||
+            result == SigninCoordinatorResultCanceledByUser) {
+          PrefService* localState = GetApplicationContext()->GetLocalState();
+          set_up_list_prefs::MarkItemComplete(localState,
+                                              SetUpListItemType::kSignInSync);
+        }
+      };
   AuthenticationOperation operation =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? AuthenticationOperation::SigninOnly

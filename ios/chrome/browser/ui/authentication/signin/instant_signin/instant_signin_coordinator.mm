@@ -177,11 +177,10 @@
                                    completionInfo:info];
       break;
     }
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionCallbackWithSigninResult:
-                SigninCoordinatorResultCanceledByUser
-                                   completionInfo:nil];
+      [self runCompletionCallbackWithSigninResult:result completionInfo:nil];
       break;
   }
 }
@@ -228,6 +227,7 @@
       _identity = info.identity;
       [self startSignInOnlyFlow];
       break;
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
       [self runCompletionCallbackWithSigninResult:result completionInfo:nil];

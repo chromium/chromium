@@ -146,6 +146,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
           _accessPoint);
       break;
     }
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted: {
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER,

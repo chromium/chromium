@@ -68,6 +68,7 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
       // Canceling from the advanced sync settings view is not possible.
       NOTREACHED();
       break;
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
       RecordAction(
           UserMetricsAction("Signin_Signin_AbortAdvancedSyncSettings"));
