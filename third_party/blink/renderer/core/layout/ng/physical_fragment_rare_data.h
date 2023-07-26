@@ -34,7 +34,8 @@ class PhysicalFragmentRareData
     : public GarbageCollected<PhysicalFragmentRareData> {
  public:
   explicit PhysicalFragmentRareData(wtf_size_t num_fields);
-  PhysicalFragmentRareData(const NGPhysicalBoxStrut* borders,
+  PhysicalFragmentRareData(const PhysicalRect* layout_overflow,
+                           const NGPhysicalBoxStrut* borders,
                            const NGPhysicalBoxStrut* padding,
                            absl::optional<PhysicalRect> inflow_bounds,
                            NGBoxFragmentBuilder& builder,
@@ -54,7 +55,8 @@ class PhysicalFragmentRareData
   // In ARM, the size of a shift amount operand of shift instructions is same
   // as the size of shifted data. So FieldId should be RareBitFieldType.
   enum class FieldId : RareBitFieldType {
-    kBorders = 0,
+    kLayoutOverflow = 0,
+    kBorders,
     kPadding,
     kInflowBounds,
     kFrameSetLayoutData,
@@ -76,6 +78,7 @@ class PhysicalFragmentRareData
 
   struct RareField {
     union {
+      PhysicalRect layout_overflow;
       NGPhysicalBoxStrut borders;
       NGPhysicalBoxStrut padding;
       PhysicalRect inflow_bounds;
@@ -141,6 +144,12 @@ class PhysicalFragmentRareData
   // We may call this for a unique `field_id` multiple times.
   RareField& EnsureField(FieldId field_id) {
     return EnsureField<true>(field_id);
+  }
+
+  // This should be called only if this has an element for `field_id`.
+  void RemoveField(FieldId field_id) {
+    field_list_.EraseAt(GetFieldIndex(field_id));
+    bit_field_ = bit_field_ & ~FieldIdBit(field_id);
   }
 
   Vector<RareField> field_list_;
