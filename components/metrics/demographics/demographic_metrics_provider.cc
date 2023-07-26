@@ -6,7 +6,9 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
@@ -15,13 +17,8 @@ namespace metrics {
 
 namespace {
 
-bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
-  DCHECK(sync_service);
-
-  // PRIORITY_PREFERENCES is the sync datatype used to propagate demographics
-  // information to the client. In its absence, demographics info is unavailable
-  // thus cannot be uploaded.
-  switch (GetUploadToGoogleState(sync_service, syncer::PRIORITY_PREFERENCES)) {
+bool IsValidUploadState(syncer::UploadState upload_state) {
+  switch (upload_state) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     case syncer::UploadState::INITIALIZING:
@@ -30,6 +27,37 @@ bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
     case syncer::UploadState::ACTIVE:
       return true;
   }
+  NOTREACHED_NORETURN();
+}
+
+bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
+  CHECK(sync_service);
+
+  // PRIORITY_PREFERENCES is the sync datatype used to propagate demographics
+  // information to the client. In its absence, demographics info is unavailable
+  // thus cannot be uploaded.
+  if (!IsValidUploadState(syncer::GetUploadToGoogleState(
+          sync_service, syncer::PRIORITY_PREFERENCES))) {
+    return false;
+  }
+
+  // Even if GetUploadToGoogleState() reports to be active, the user may be in
+  // transport mode or full-sync (aka sync-the-feature enabled) mode. For the
+  // latter, IsSyncFeatureEnabled() returns true and no further conditions need
+  // to be checked.
+  // TODO(crbug.com/1462552): Simplify once IsSyncFeatureEnabled() is deleted
+  // from the codebase.
+  if (sync_service->IsSyncFeatureEnabled()) {
+    return true;
+  }
+
+  // For users in transport mode (signed in but without having turned on
+  // sync-the-feature), as extra precaution, allow uploading demographics only
+  // if HISTORY is also on.
+  // TODO(crbug.com/1462286): Reconsider whether HISTORY should be required, as
+  // the coupling is arbitrary.
+  return IsValidUploadState(
+      syncer::GetUploadToGoogleState(sync_service, syncer::HISTORY));
 }
 
 }  // namespace

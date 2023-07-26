@@ -40,6 +40,11 @@ TestSyncService::~TestSyncService() = default;
 
 void TestSyncService::SetDisableReasons(DisableReasonSet disable_reasons) {
   disable_reasons_ = disable_reasons;
+  if (!disable_reasons_.Empty()) {
+    transport_state_ = TransportState::DISABLED;
+  } else if (transport_state_ == TransportState::DISABLED) {
+    transport_state_ = TransportState::ACTIVE;
+  }
 }
 
 void TestSyncService::SetTransportState(TransportState transport_state) {
@@ -249,6 +254,11 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
   if (transport_state_ != TransportState::ACTIVE) {
     return ModelTypeSet();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (sync_feature_disabled_via_dashboard_) {
+    return ModelTypeSet();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return Difference(GetPreferredDataTypes(), failed_data_types_);
 }
 

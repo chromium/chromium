@@ -35,6 +35,7 @@ enum TestSyncServiceState {
   SYNC_FEATURE_NOT_ENABLED,
   SYNC_FEATURE_ENABLED,
   SYNC_FEATURE_ENABLED_BUT_PAUSED,
+  SYNC_FEATURE_DISABLED_BUT_HISTORY_ENABLED,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Represents the user clearing sync data via dashboard. On all platforms
   // except ChromeOS (Ash), this clears the primary account (which is basically
@@ -85,6 +86,15 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
         CHECK(sync_service_->GetDisableReasons().Empty());
         CHECK_EQ(syncer::SyncService::TransportState::PAUSED,
+                 sync_service_->GetTransportState());
+        break;
+
+      case SYNC_FEATURE_DISABLED_BUT_HISTORY_ENABLED:
+        sync_service_ = std::make_unique<syncer::TestSyncService>();
+        sync_service_->SetHasSyncConsent(false);
+        CHECK(!sync_service_->IsSyncFeatureEnabled());
+        CHECK(sync_service_->GetDisableReasons().Empty());
+        CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
                  sync_service_->GetTransportState());
         break;
 
@@ -207,6 +217,36 @@ TEST(DemographicMetricsProviderTest,
   // Verify histograms.
   histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
                                UserDemographicsStatus::kSyncNotEnabled, 1);
+}
+
+TEST(
+    DemographicMetricsProviderTest,
+    ProvideSyncedUserNoisedBirthYearAndGender_SyncFeatureDisabledButHistoryEnabled) {
+  base::HistogramTester histogram;
+
+  auto client = std::make_unique<TestProfileClient>(
+      /*number_of_profiles=*/1, SYNC_FEATURE_DISABLED_BUT_HISTORY_ENABLED);
+  client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
+
+  // Set birth year noise offset to not have it randomized.
+  const int kBirthYearOffset = 3;
+  client->GetLocalState()->SetInteger(kUserDemographicsBirthYearOffsetPrefName,
+                                      kBirthYearOffset);
+
+  // Run demographics provider.
+  DemographicMetricsProvider provider(
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
+
+  // Verify provided demographics.
+  EXPECT_EQ(kTestBirthYear + kBirthYearOffset,
+            uma_proto.user_demographics().birth_year());
+  EXPECT_EQ(kTestGender, uma_proto.user_demographics().gender());
+
+  // Verify histograms.
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kSuccess, 1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

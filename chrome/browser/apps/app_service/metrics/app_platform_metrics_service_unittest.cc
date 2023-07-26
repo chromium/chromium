@@ -636,7 +636,7 @@ class AppPlatformMetricsServiceTest
       test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
                                              (int)app_type_name);
     }
-    ASSERT_EQ(usage_time, duration);
+    ASSERT_EQ(usage_time, duration) << ukm_name;
   }
 
   void VerifyAppUsageTimeUkm(const std::string& app_id,
@@ -1298,6 +1298,8 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkm) {
 
   // Set sync is allowed by setting an empty disable reason set.
   sync_service()->SetDisableReasons(syncer::SyncService::DisableReasonSet());
+  sync_service()->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
 
   static constexpr base::TimeDelta kAppUsageDuration = base::Hours(1);
   task_environment_.FastForwardBy(kAppUsageDuration);
