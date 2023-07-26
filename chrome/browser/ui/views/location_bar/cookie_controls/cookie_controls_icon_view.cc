@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -75,7 +76,12 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
     // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
     if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
-        AnimateIn(GetLabelForStatus());
+        auto label = GetLabelForStatus();
+        AnimateIn(label);
+        if (label.has_value()) {
+          GetViewAccessibility().AnnounceText(
+              l10n_util::GetStringUTF16(label.value()));
+        }
       }
     }
   } else {

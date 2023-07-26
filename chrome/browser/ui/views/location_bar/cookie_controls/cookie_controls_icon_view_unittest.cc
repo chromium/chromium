@@ -11,6 +11,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/test/ax_event_counter.h"
 
 namespace {
 std::u16string AllowedLabel() {
@@ -26,19 +28,22 @@ std::u16string BlockedLabel() {
 
 class CookieControlsIconViewUnitTest : public TestWithBrowserView {
  protected:
+  CookieControlsIconViewUnitTest()
+      : a11y_counter_(views::AXEventManager::Get()) {}
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
         content_settings::features::kUserBypassUI);
     TestWithBrowserView::SetUp();
 
     delegate_ = browser_view()->GetLocationBarView();
-    view_ = std::make_unique<CookieControlsIconView>(delegate_, delegate_);
+    view_ = browser_view()->GetLocationBarView()->AddChildView(
+        std::make_unique<CookieControlsIconView>(delegate_, delegate_));
     AddTab(browser(), GURL("chrome://newtab"));
   }
 
   void TearDown() override {
     delegate_ = nullptr;
-    view_.reset();
+    view_ = nullptr;
     TestWithBrowserView::TearDown();
   }
 
@@ -52,7 +57,8 @@ class CookieControlsIconViewUnitTest : public TestWithBrowserView {
     return view_->IconLabelBubbleView::GetTooltipText();
   }
 
-  std::unique_ptr<CookieControlsIconView> view_;
+  views::test::AXEventCounter a11y_counter_;
+  raw_ptr<CookieControlsIconView> view_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -77,6 +83,10 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   EXPECT_TRUE(LabelShown());  // Animation for high confidence
   EXPECT_EQ(TooltipText(), BlockedLabel());
   EXPECT_EQ(LabelText(), BlockedLabel());
+// TODO(crbug.com/1446230): Fix screenreader tests on ChromeOS and Mac.
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
+#endif
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
@@ -89,6 +99,9 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), BlockedLabel());
   EXPECT_EQ(LabelText(), BlockedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
@@ -101,6 +114,9 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), BlockedLabel());
   EXPECT_EQ(LabelText(), BlockedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
 }
 
 //// Default third-party cookie blocking disabled.
@@ -115,6 +131,9 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
   EXPECT_EQ(LabelText(), AllowedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
@@ -127,6 +146,9 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
   EXPECT_EQ(LabelText(), AllowedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
@@ -139,6 +161,9 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
   EXPECT_EQ(LabelText(), AllowedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
 }
 
 /// Disabled third-party cookie blocking for site.
@@ -153,6 +178,9 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
   EXPECT_EQ(LabelText(), AllowedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
+#endif
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
@@ -165,6 +193,9 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
   EXPECT_EQ(LabelText(), AllowedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
@@ -177,4 +208,7 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
   EXPECT_EQ(LabelText(), AllowedLabel());
+#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
 }
