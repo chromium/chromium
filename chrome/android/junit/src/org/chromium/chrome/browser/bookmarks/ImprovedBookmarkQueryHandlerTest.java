@@ -39,8 +39,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
+import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link ImprovedBookmarkQueryHandler}. */
@@ -152,10 +156,30 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .when(mBookmarkModel)
                 .searchBookmarks(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
 
-        List<BookmarkListEntry> result = mHandler.buildBookmarkListForSearch("Url");
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForSearch("Url", Collections.emptySet());
         List<BookmarkId> expected = Arrays.asList(URL_BOOKMARK_ID_A, URL_BOOKMARK_ID_B,
                 URL_BOOKMARK_ID_C, URL_BOOKMARK_ID_D, URL_BOOKMARK_ID_E);
         verifyBookmarkIds(expected, result);
+    }
+
+    @Test
+    public void testSearchWithShoppingFilter() {
+        List<BookmarkId> queryIds = Arrays.asList(URL_BOOKMARK_ID_A, URL_BOOKMARK_ID_B);
+        doReturn(queryIds)
+                .when(mBookmarkModel)
+                .searchBookmarks(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
+        PowerBookmarkMeta metaWithShopping =
+                PowerBookmarkMeta.newBuilder()
+                        .setShoppingSpecifics(ShoppingSpecifics.newBuilder().build())
+                        .build();
+        doReturn(metaWithShopping).when(mBookmarkModel).getPowerBookmarkMeta(URL_BOOKMARK_ID_A);
+        PowerBookmarkMeta metaWithoutShopping = PowerBookmarkMeta.newBuilder().build();
+        doReturn(metaWithoutShopping).when(mBookmarkModel).getPowerBookmarkMeta(URL_BOOKMARK_ID_B);
+
+        List<BookmarkListEntry> result = mHandler.buildBookmarkListForSearch(
+                "", Collections.singleton(PowerBookmarkType.SHOPPING));
+        verifyBookmarkIds(Collections.singletonList(URL_BOOKMARK_ID_A), result);
     }
 
     private void verifyBookmarkIds(

@@ -22,6 +22,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
+
+import java.util.Collections;
+import java.util.Set;
 
 /** Unit tests for {@link BookmarkUiState} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -46,8 +50,12 @@ public class BookmarkUiStateTest {
         BookmarkUiState loadingState = BookmarkUiState.createLoadingState();
         assertEquals(loadingState, BookmarkUiState.createLoadingState());
 
-        BookmarkUiState searchState = BookmarkUiState.createSearchState(/*queryString*/ "");
-        assertEquals(searchState, BookmarkUiState.createSearchState(/*queryString*/ ""));
+        BookmarkUiState searchState =
+                BookmarkUiState.createSearchState(/*queryString*/ "", /*searchPowerFilter*/
+                        Collections.emptySet());
+        assertEquals(searchState,
+                BookmarkUiState.createSearchState(/*queryString*/ "", /*searchPowerFilter*/
+                        Collections.emptySet()));
         assertNotEquals(searchState, loadingState);
 
         BookmarkUiState shoppingFilterState = BookmarkUiState.createShoppingFilterState();
@@ -66,12 +74,32 @@ public class BookmarkUiStateTest {
 
     @Test
     public void testCreateSearchState() {
-        BookmarkUiState emptySearchState = BookmarkUiState.createSearchState("");
-        assertEquals(emptySearchState, BookmarkUiState.createSearchState(""));
+        BookmarkUiState emptySearchState =
+                BookmarkUiState.createSearchState("", Collections.emptySet());
+        assertEquals(
+                emptySearchState, BookmarkUiState.createSearchState("", Collections.emptySet()));
 
-        BookmarkUiState fooSearchState = BookmarkUiState.createSearchState("foo");
-        assertEquals(fooSearchState, BookmarkUiState.createSearchState("foo"));
+        BookmarkUiState fooSearchState =
+                BookmarkUiState.createSearchState("foo", Collections.emptySet());
+        assertEquals(
+                fooSearchState, BookmarkUiState.createSearchState("foo", Collections.emptySet()));
         assertNotEquals(emptySearchState, fooSearchState);
+
+        Set<PowerBookmarkType> filter = Collections.singleton(PowerBookmarkType.SHOPPING);
+        Set<PowerBookmarkType> differentFilter = Collections.singleton(PowerBookmarkType.UNKNOWN);
+        BookmarkUiState filteredSearchState = BookmarkUiState.createSearchState("", filter);
+        assertEquals(filteredSearchState, BookmarkUiState.createSearchState("", filter));
+        assertNotEquals(
+                filteredSearchState, BookmarkUiState.createSearchState("", differentFilter));
+        assertNotEquals(emptySearchState, filteredSearchState);
+        assertNotEquals(fooSearchState, filteredSearchState);
+
+        BookmarkUiState filteredAndQuerySearchState =
+                BookmarkUiState.createSearchState("foo", filter);
+        assertEquals(filteredAndQuerySearchState, BookmarkUiState.createSearchState("foo", filter));
+        assertNotEquals(emptySearchState, filteredAndQuerySearchState);
+        assertNotEquals(fooSearchState, filteredAndQuerySearchState);
+        assertNotEquals(filteredSearchState, filteredAndQuerySearchState);
     }
 
     @Test

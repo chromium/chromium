@@ -45,6 +45,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link LegacyBookmarkQueryHandler}. */
@@ -159,7 +160,8 @@ public class LegacyBookmarkQueryHandlerTest {
         doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A))
                 .when(mBookmarkModel)
                 .searchBookmarks("A", 500);
-        List<BookmarkListEntry> result = mHandler.buildBookmarkListForSearch("A");
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForSearch("A", Collections.emptySet());
         assertEquals(2, result.size());
     }
 }

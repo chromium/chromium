@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,14 +55,17 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.Predicate;
 
@@ -69,7 +73,6 @@ import java.util.function.Predicate;
 // TODO(crbug.com/1416611): Remove BookmarkDelegate if possible.
 class BookmarkManagerMediator
         implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
-    private static final String EMPTY_QUERY = null;
     private static final int PROMO_MAX_INDEX = 1;
     private static final int SEARCH_BOX_MAX_INDEX = 0;
 
@@ -150,7 +153,8 @@ class BookmarkManagerMediator
             clearHighlight();
 
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
-                    && TextUtils.isEmpty(getCurrentQueryString())) {
+                    && TextUtils.isEmpty(getCurrentQueryString())
+                    && getCurrentSearchPowerFilter().isEmpty()) {
                 onEndSearch();
             } else {
                 refresh();
@@ -472,8 +476,7 @@ class BookmarkManagerMediator
      * @param query The query text to search for.
      */
     void search(@Nullable String query) {
-        query = query == null ? "" : query.trim();
-        setState(BookmarkUiState.createSearchState(query));
+        onQueryCallback(query);
     }
 
     public void setOrder() {
@@ -613,7 +616,7 @@ class BookmarkManagerMediator
 
     @Override
     public void openSearchUi() {
-        setState(BookmarkUiState.createSearchState(""));
+        onQueryCallback("");
         mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
     }
 
@@ -765,7 +768,8 @@ class BookmarkManagerMediator
         } else if (state.mUiMode == BookmarkUiMode.SEARCHING) {
             String queryString = getCurrentQueryString();
             if (!preserveFolderBookmarksOnEmptySearch || !TextUtils.isEmpty(queryString)) {
-                setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(queryString));
+                setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(
+                        queryString, getCurrentSearchPowerFilter()));
             }
         }
 
@@ -1040,7 +1044,7 @@ class BookmarkManagerMediator
 
     private ListItem buildSearchBoxRow() {
         // TODO(https://crbug.com/1444122): Check if there are any bookmarks with shopping meta.
-        boolean hasAnyShopping = false;
+        boolean hasAnyShopping = true;
         PropertyModel propertyModel =
                 new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
                         .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, this::onQueryCallback)
@@ -1315,21 +1319,41 @@ class BookmarkManagerMediator
         }
     }
 
-    private void onQueryCallback(String text) {
-        final @BookmarkUiMode int currentUiMode = getCurrentUiMode();
-        if (!TextUtils.isEmpty(text)) {
-            setState(BookmarkUiState.createSearchState(text));
-        } else if (currentUiMode == BookmarkUiMode.SEARCHING) {
-            onEndSearch();
-        }
+    private void onQueryCallback(String query) {
+        query = query == null ? "" : query.trim();
+        onSearchChange(query, getCurrentSearchPowerFilter());
     }
 
     private void onShoppingFilterToggle(boolean isFiltering) {
-        // TODO(https://crbug.com/1444122): Adjust filter with query handler.
+        final @NonNull Set<PowerBookmarkType> powerFilter = isFiltering
+                ? Collections.singleton(PowerBookmarkType.SHOPPING)
+                : Collections.emptySet();
+        onSearchChange(getCurrentQueryString(), powerFilter);
+    }
+
+    private void onSearchChange(
+            @Nullable String query, @NonNull Set<PowerBookmarkType> powerFilter) {
+        if (TextUtils.isEmpty(query) && powerFilter.isEmpty()
+                && getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
+            onEndSearch();
+        } else {
+            query = query == null ? "" : query;
+            setState(BookmarkUiState.createSearchState(query, powerFilter));
+        }
     }
 
     private @Nullable String getCurrentQueryString() {
-        return mStateStack.isEmpty() ? null : mStateStack.peek().mQueryString;
+        return mStateStack.isEmpty() ? "" : mStateStack.peek().mQueryString;
+    }
+
+    private @NonNull Set<PowerBookmarkType> getCurrentSearchPowerFilter() {
+        return getCurrentUiMode() == BookmarkUiMode.SEARCHING
+                ? getCurrentUiState().mSearchPowerFilter
+                : Collections.emptySet();
+    }
+
+    private @Nullable BookmarkUiState getCurrentUiState() {
+        return mStateStack.isEmpty() ? null : mStateStack.peek();
     }
 
     // Testing methods.

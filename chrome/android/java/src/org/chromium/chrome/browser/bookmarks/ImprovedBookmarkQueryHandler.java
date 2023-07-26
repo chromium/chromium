@@ -8,11 +8,13 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrde
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /** New implementation of {@link BookmarkQueryHandler} that expands the root. */
 public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
@@ -36,7 +38,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     /**
      * Constructs a handle that operates on the given backend.
      * @param bookmarkModel The backend that holds the truth of what the bookmark state looks like.
-     * @param bookmarkUiPrefs Stores the display prefs for bookmarmks.
+     * @param bookmarkUiPrefs Stores the display prefs for bookmarks.
      */
     public ImprovedBookmarkQueryHandler(
             BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
@@ -68,9 +70,10 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForSearch(String query) {
+    public List<BookmarkListEntry> buildBookmarkListForSearch(
+            String query, Set<PowerBookmarkType> powerFilter) {
         List<BookmarkListEntry> bookmarkListEntries =
-                mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query);
+                mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query, powerFilter);
         sortByStoredPref(bookmarkListEntries);
         return bookmarkListEntries;
     }
