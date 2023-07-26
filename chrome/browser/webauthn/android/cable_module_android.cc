@@ -58,6 +58,13 @@ namespace {
 const char kRootSecretPrefName[] = "webauthn.authenticator_root_secret";
 const char kSerializedPaaskFieldsName[] = "webauthn.authenticator_info";
 
+const char kWorkProfilePrefName[] = "webauthn.in_work_profile";
+// kWorkProfilePrefName wants to be a tristate. Since there's no support for
+// that in `PrefService`, it's simulated with a string that is empty if unset,
+// and takes one of the following values when set.
+const char kInWorkProfile[] = "1";
+const char kNotInWorkProfile[] = "0";
+
 // SystemInterface connects a `RegistrationState` to the rest of the system.
 // This object is owned by the `RegistrationState`, and that is a singleton
 // object. So this object is a singleton too and so can do things like pass a
@@ -93,6 +100,33 @@ class SystemInterface : public RegistrationState::SystemInterface {
         base::BindOnce(
             &SystemInterface::GetCanDeviceSupportCableOnBackgroundSequence),
         std::move(callback));
+  }
+
+  void AmInWorkProfile(base::OnceCallback<void(bool)> callback) override {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+    // Checking whether an app is in a work profile is costly. We assume that a
+    // given Chrome profile never moves between being in a work profile or not
+    // and thus cache the result on disk.
+    const std::string work_profile_state =
+        g_browser_process->local_state()->GetString(kWorkProfilePrefName);
+    if (work_profile_state == kInWorkProfile) {
+      std::move(callback).Run(true);
+    } else if (work_profile_state == kNotInWorkProfile) {
+      std::move(callback).Run(false);
+    } else {
+      work_profile_callback_ = std::move(callback);
+      // Checking whether this Chrome is in a work profile is sufficiently
+      // expensive that doing it at startup impacts benchmarks. (See
+      // crbug.com/1459794.) Since startup is an especially contended time, we
+      // wait a few minutes before doing this check.
+      content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+          ->PostDelayedTask(
+              FROM_HERE,
+              base::BindOnce(&SystemInterface::GetWorkProfileStatus,
+                             base::Unretained(this)),
+              base::Minutes(3));
+    }
   }
 
   void CalculateIdentityKey(
@@ -145,6 +179,18 @@ class SystemInterface : public RegistrationState::SystemInterface {
     std::move(prelink_callback_).Run(std::move(cbor));
   }
 
+  // Called when the Java code has finished checking if we're running in a work
+  // profile.
+  void OnHaveWorkProfileResult(bool in_work_profile) {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+    g_browser_process->local_state()->SetString(
+        kWorkProfilePrefName,
+        in_work_profile ? kInWorkProfile : kNotInWorkProfile);
+
+    std::move(work_profile_callback_).Run(in_work_profile);
+  }
+
  private:
   static instance_id::InstanceIDDriver* GetDriver() {
     return instance_id::InstanceIDProfileServiceFactory::GetForProfile(
@@ -174,8 +220,18 @@ class SystemInterface : public RegistrationState::SystemInterface {
         base::android::AttachCurrentThread(), this_pointer);
   }
 
+  void GetWorkProfileStatus() {
+    // This Java function must run on the UI thread, but that's ok because it
+    // defers work to a worker thread itself. It returns its result by calling
+    // `OnHaveWorkProfileResult` on this object.
+    Java_CableAuthenticatorModuleProvider_amInWorkProfile(
+        base::android::AttachCurrentThread(),
+        reinterpret_cast<uintptr_t>(this));
+  }
+
   base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
       prelink_callback_;
+  base::OnceCallback<void(bool)> work_profile_callback_;
 };
 
 RegistrationState* GetRegistrationState() {
@@ -231,6 +287,12 @@ GetSyncDataIfRegisteredInternal() {
     // function will be called again.
     state->SignalSyncWhenReady();
     return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NotReady();
+  }
+
+  if (state->am_in_work_profile()) {
+    // Never publish pre-linking information when in a work profile, instead
+    // route hybrid requests into the main profile.
+    return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
   }
 
   if (state->prelink_play_services() && state->link_data_from_play_services()) {
@@ -402,6 +464,7 @@ void RegisterForCloudMessages() {
 void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kRootSecretPrefName, std::string());
   registry->RegisterStringPref(kSerializedPaaskFieldsName, std::string());
+  registry->RegisterStringPref(kWorkProfilePrefName, std::string());
 }
 
 syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
@@ -470,6 +533,19 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
                          base::Unretained(reinterpret_cast<SystemInterface*>(
                              static_cast<uintptr_t>(system_interface_pointer))),
                          std::move(optional_cbor)));
+}
+
+static void JNI_CableAuthenticatorModuleProvider_OnHaveWorkProfileResult(
+    JNIEnv* env,
+    jlong system_interface_pointer,
+    jboolean in_work_profile) {
+  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SystemInterface::OnHaveWorkProfileResult,
+                         base::Unretained(reinterpret_cast<SystemInterface*>(
+                             static_cast<uintptr_t>(system_interface_pointer))),
+                         in_work_profile));
 }
 
 static void JNI_PrivacySettingsFragment_RevokeAllLinkedDevices(JNIEnv* env) {

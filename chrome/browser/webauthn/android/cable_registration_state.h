@@ -53,6 +53,9 @@ class RegistrationState {
     virtual void CanDeviceSupportCable(
         base::OnceCallback<void(bool)> callback) = 0;
 
+    // Test whether the current process is an in Android work profile.
+    virtual void AmInWorkProfile(base::OnceCallback<void(bool)> callback) = 0;
+
     // Generate a P-256 key pair from a seed.
     virtual void CalculateIdentityKey(
         const std::array<uint8_t, 32>& secret,
@@ -91,6 +94,7 @@ class RegistrationState {
   const EC_KEY* identity_key() const { return identity_key_.get(); }
   bool device_supports_cable() const { return *device_supports_cable_; }
   bool prelink_play_services() const { return prelink_play_services_; }
+  bool am_in_work_profile() const { return *am_in_work_profile_; }
   const absl::optional<std::vector<uint8_t>>& link_data_from_play_services()
       const {
     DCHECK(prelink_play_services_);
@@ -130,6 +134,9 @@ class RegistrationState {
   // OnCanDeviceSupportCable is run with the result of `TestDeviceSupport`.
   void OnDeviceSupportResult(bool result);
 
+  // OnWorkProfileResult is run with the result of `AmInWorkProfile`.
+  void OnWorkProfileResult(bool result);
+
   // OnIdentityKeyReady is run with the result of `CalculateIdentityKey`.
   void OnIdentityKeyReady(bssl::UniquePtr<EC_KEY> identity_key);
 
@@ -153,6 +160,9 @@ class RegistrationState {
   // always use a QR code if pre-linking hasn't worked by the time they need
   // it.
   absl::optional<bool> device_supports_cable_;
+  // am_in_work_profile_ stores whether the current process is in an Android
+  // work profile.
+  absl::optional<bool> am_in_work_profile_;
   // link_data_from_play_services_ contains the response from Play Services, as
   // CBOR-encoded linking information, or `nullopt` if the call was
   // unsuccessful. This field is only meaningful if

@@ -71,6 +71,11 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
     support_callback_ = std::move(callback);
   }
 
+  void AmInWorkProfile(base::OnceCallback<void(bool)> callback) override {
+    CHECK(!work_profile_callback_);
+    work_profile_callback_ = std::move(callback);
+  }
+
   void CalculateIdentityKey(
       const std::array<uint8_t, 32>& secret,
       base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> callback) override {
@@ -101,6 +106,7 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
   bool refresh_local_device_info_called_ = false;
 
   base::OnceCallback<void(bool)> support_callback_;
+  base::OnceCallback<void(bool)> work_profile_callback_;
   base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> identity_key_callback_;
   base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
       prelink_callback_;
@@ -159,9 +165,13 @@ TEST_F(CableRegistrationStateTest, HaveDataForSync) {
   state_->SignalSyncWhenReady();
   EXPECT_FALSE(state_->have_data_for_sync());
   std::move(interface_->prelink_callback_).Run(absl::nullopt);
+  EXPECT_FALSE(interface_->refresh_local_device_info_called_);
+  EXPECT_FALSE(state_->have_data_for_sync());
+  std::move(interface_->work_profile_callback_).Run(true);
   EXPECT_TRUE(interface_->refresh_local_device_info_called_);
   EXPECT_TRUE(state_->have_data_for_sync());
   EXPECT_TRUE(state_->device_supports_cable());
+  EXPECT_TRUE(state_->am_in_work_profile());
   EXPECT_FALSE(state_->link_data_from_play_services().has_value());
 }
 

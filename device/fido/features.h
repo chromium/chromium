@@ -117,6 +117,11 @@ BASE_DECLARE_FEATURE(kWebAuthnJSONSerializeRequests);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCachePaaSK);
 
+// Don't publish prelinking information if Chrome is running in a work profile
+// on Android.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnDontPrelinkInProfiles);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
