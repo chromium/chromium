@@ -29,6 +29,8 @@ const BUILDKITE_ARTIFACT_DIRECTORY = path.join(
 // logic.
 const IS_LOCAL_BUILD = !!process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"];
 
+const buildArm = !!process.env.REPLAY_BUILD_ARM;
+
 function uploadToAllBuckets(localPath, s3Path) {
   const buckets = [S3DevBucket];
   // If we're on a local machine, don't include the prod S3 bucket.
@@ -156,8 +158,8 @@ function prepareWindowsBinaries(buildId) {
 }
 
 function prepareMacOSBinaries(buildId) {
-  const dmgArchive = `${buildId}.dmg`;
-  const outdir = path.join("out", "Release");
+  const dmgArchive = buildArm ? `${buildId}-arm.dmg` : `${buildId}.dmg`;
+  const outdir = buildArm ? "out/Release-ARM" : "out/Release";
   fs.rmSync(path.join(outdir, "Replay-Chromium.app"), {
     recursive: true,
     force: true,
@@ -181,7 +183,7 @@ function prepareMacOSBinaries(buildId) {
     ],
     { cwd: outdir, stdio: "inherit" }
   );
-  const tarArchive = `${buildId}.tar.xz`;
+  const tarArchive = buildArm ? `${buildId}-arm.tar.xz` : `${buildId}.tar.xz`;
 
   spawnChecked(
     "tar",
@@ -233,11 +235,16 @@ async function main(options) {
 
   // Perform all buildkite-specific stuff
   if (process.env["BUILDKITE"]) {
-    buildkiteStuff(downloadUris, platform, buildId);
+    buildkiteStuff(
+      downloadUris,
+      platform,
+      buildId,
+      buildArm ? "arm64" : "x86_64"
+    );
   }
 }
 
-function buildkiteStuff(downloadUris, platform, buildId) {
+function buildkiteStuff(downloadUris, platform, buildId, arch) {
   const markdownDownloadList = downloadUris
     .map((uri) =>
       uri.replace("s3://recordreplay-website", "https://static.replay.io")
@@ -245,7 +252,7 @@ function buildkiteStuff(downloadUris, platform, buildId) {
     .map((uri) => `* [${path.basename(uri)}](${uri})`)
     .join("\n");
 
-  const markdownMessage = `# ${platform} links\n\n${markdownDownloadList}\n`;
+  const markdownMessage = `# ${platform} (${arch}) links\n\n${markdownDownloadList}\n`;
 
   spawnChecked(
     "buildkite-agent",
