@@ -254,6 +254,11 @@
         display: block;
       }
 
+      :host-context([chrome-refresh-2023]):host(.action-button:hover)
+          #hoverBackground {
+        background: var(--cr-hover-on-prominent-background-color);
+      }
+
       :host(.action-button) {
         --ink-color: var(--ink-color-action);
         --paper-ripple-opacity: var(--ripple-opacity-action);

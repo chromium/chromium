@@ -279,11 +279,13 @@ html[chrome-refresh-2023] {
 
   --cr-fallback-color-error: rgb(179, 38, 30);
 
-  --cr-fallback-color-state-on-subtle-rgb: 31, 31, 31;
-  --cr-fallback-color-state-hover-on-subtle: rgba(
-      var(--cr-fallback-color-state-on-subtle-rgb), .06);
-  --cr-fallback-color-state-ripple-neutral-on-subtle: rgba(
-      var(--cr-fallback-color-state-on-subtle-rgb), .08);
+  --cr-fallback-color-state-hover-on-prominent_: rgba(253, 252, 251, .1);
+
+  --cr-fallback-color-state-on-subtle-rgb_: 31, 31, 31;
+  --cr-fallback-color-state-hover-on-subtle_: rgba(
+      var(--cr-fallback-color-state-on-subtle-rgb_), .06);
+  --cr-fallback-color-state-ripple-neutral-on-subtle_: rgba(
+      var(--cr-fallback-color-state-on-subtle-rgb_), .08);
 
   --cr-fallback-color-base-container: rgba(105, 145, 214, .12);
 
@@ -295,8 +297,19 @@ html[chrome-refresh-2023] {
   /* States */
   --cr-hover-background-color: var(--color-sys-state-hover,
       rgba(var(--cr-fallback-color-on-surface-rgb), .08));
+  --cr-hover-on-prominent-background-color: var(
+      --color-sys-state-hover-on-prominent,
+      var(--cr-fallback-color-state-hover-on-prominent_));
+  --cr-hover-on-subtle-background-color: var(
+      --color-sys-state-hover-on-subtle,
+      var(--cr-fallback-color-state-hover-on-subtle_));
+
   --cr-active-background-color: var(--color-sys-state-pressed,
       rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+  --cr-active-neutral-on-subtle-background-color: var(
+      --color-sys-state-ripple-neutral-on-subtle,
+      var(--cr-fallback-color-state-ripple-neutral-on-subtle_));
+
   --cr-focus-outline-color: var(--color-sys-state-focus-ring,
       var(--cr-fallback-color-primary));
 
@@ -333,11 +346,12 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-on-tonal-container: rgb(194, 231, 255);
     --cr-fallback-color-tonal-outline: rgb(0, 99, 155);
     --cr-fallback-color-error: rgb(242, 184, 181);
-    --cr-fallback-color-state-on-subtle-rgb: 253, 252, 251;
-    --cr-fallback-color-state-hover-on-subtle: rgba(
-        var(--cr-fallback-color-state-on-subtle-rgb), .10);
-    --cr-fallback-color-state-ripple-neutral-on-subtle: rgba(
-        var(--cr-fallback-color-state-on-subtle-rgb), .16);
+    --cr-fallback-color-state-hover-on-prominent_: rgba(31, 31, 31, .06);
+    --cr-fallback-color-state-on-subtle-rgb_: 253, 252, 251;
+    --cr-fallback-color-state-hover-on-subtle_: rgba(
+        var(--cr-fallback-color-state-on-subtle-rgb_), .10);
+    --cr-fallback-color-state-ripple-neutral-on-subtle_: rgba(
+        var(--cr-fallback-color-state-on-subtle-rgb_), .16);
     --cr-fallback-color-base-container: rgba(40, 40, 40, 1);
   }
 }
