@@ -9,11 +9,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
@@ -28,6 +30,7 @@
 #include "components/user_manager/known_user.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -38,6 +41,17 @@ const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
 const ColorScheme kLocalColorScheme = ColorScheme::kVibrant;
 const ColorScheme kDefaultColorScheme = ColorScheme::kTonalSpot;
 const SkColor kCelebiColor = gfx::kGoogleBlue400;
+
+// Returns a wallpaper info that captures the time of day wallpaper.
+WallpaperInfo CreateTimeOfDayWallpaperInfo() {
+  WallpaperInfo info =
+      WallpaperInfo(std::string(), WALLPAPER_LAYOUT_STRETCH,
+                    WallpaperType::kDefault, base::Time::Now().LocalMidnight());
+  info.collection_id = wallpaper_constants::kTimeOfDayWallpaperCollectionId;
+  info.asset_id = 1;
+  info.unit_id = 1;
+  return info;
+}
 
 // A nice magenta that is in the acceptable lightness range for dark and light.
 // Hue: 281, Saturation: 100, Lightness: 50%.
@@ -143,13 +157,17 @@ TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
             color_palette_controller()->GetStaticColor(kAccountId));
 }
 
-// Verifies that when the TimeOfDayWallpaper feature is active, the default
-// color scheme is Neutral instead of TonalSpot.
-TEST_F(ColorPaletteControllerTest, ExpectedColorScheme_TimeOfDay) {
+// Verifies that when the TimeOfDayWallpaper feature is active but the wallpaper
+// isn't a Time Of day wallpaper, the default color scheme is TonalSpot.
+TEST_F(ColorPaletteControllerTest,
+       ExpectedColorScheme_TimeOfDay_UsesDefaultScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kTimeOfDayWallpaper, chromeos::features::kJelly}, {});
-  EXPECT_EQ(ColorScheme::kNeutral,
+      {ash::features::kTimeOfDayWallpaper,
+       ash::features::kFeatureManagementTimeOfDayWallpaper,
+       chromeos::features::kJelly},
+      {});
+  EXPECT_EQ(kDefaultColorScheme,
             color_palette_controller()->GetColorScheme(kAccountId));
 }
 
@@ -656,7 +674,7 @@ TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
   // Update wallpaper.
   wallpaper_controller()->SetDecodedCustomWallpaper(
       kAccountId, "bluey", ash::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /* previewMode= */ false, base::DoNothing(), /* file_path= */ "", image);
+      /*preview_mode=*/false, base::DoNothing(), /*file_path=*/"", image);
 
   ASSERT_EQ(celebi_color,
             color_palette_controller()->GetCurrentSeed()->seed_color);
@@ -900,12 +918,21 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// Verifies that when the TimeOfDayWallpaper feature is active, the default
+// Verifies that when the TimeOfDayWallpaper wallpaper is active, the default
 // color scheme is Neutral instead of TonalSpot in local_state.
 TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccount_TimeOfDayScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kTimeOfDayWallpaper, chromeos::features::kJelly}, {});
+      {ash::features::kTimeOfDayWallpaper,
+       ash::features::kFeatureManagementTimeOfDayWallpaper,
+       chromeos::features::kJelly},
+      {});
+  // Sets the current wallpaper to be ToD.
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.ShowWallpaperImage(CreateTimeOfDayWallpaperInfo(),
+                               /*preview_mode=*/false, /*is_override=*/false);
+  base::RunLoop().RunUntilIdle();
+
   // Since `kAccountId` is not logged in, this triggers default local_state
   // behavior.
   EXPECT_EQ(ColorScheme::kNeutral,

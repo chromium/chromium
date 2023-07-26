@@ -304,8 +304,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
                 "Returning default color scheme.";
     // The preferred default color scheme for the time of day wallpaper instead
     // of tonal spot.
-    return features::IsTimeOfDayWallpaperEnabled() ? ColorScheme::kNeutral
-                                                   : ColorScheme::kTonalSpot;
+    return features::IsTimeOfDayWallpaperEnabled() &&
+                   wallpaper_controller_->IsTimeOfDayWallpaper()
+               ? ColorScheme::kNeutral
+               : ColorScheme::kTonalSpot;
   }
 
   absl::optional<SkColor> GetStaticColor(

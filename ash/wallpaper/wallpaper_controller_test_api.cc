@@ -87,4 +87,12 @@ void WallpaperControllerTestApi::SetDefaultWallpaper(
   controller_->SetDefaultWallpaperInfo(account_id, time);
 }
 
+void WallpaperControllerTestApi::ShowWallpaperImage(
+    const WallpaperInfo& wallpaper_info,
+    bool preview_mode,
+    bool is_override) {
+  controller_->ShowWallpaperImage(CreateImageWithColor(SK_ColorBLUE),
+                                  wallpaper_info, preview_mode, is_override);
+}
+
 }  // namespace ash

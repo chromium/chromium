@@ -282,6 +282,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void SetTimeOfDayWallpaper(const AccountId& account_id,
                              SetWallpaperCallback callback) override;
+  bool IsTimeOfDayWallpaper() const;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;

@@ -971,6 +971,12 @@ void WallpaperControllerImpl::SetTimeOfDayWallpaper(
       std::move(on_fetch));
 }
 
+bool WallpaperControllerImpl::IsTimeOfDayWallpaper() const {
+  return current_wallpaper_ &&
+         current_wallpaper_->wallpaper_info().collection_id ==
+             wallpaper_constants::kTimeOfDayWallpaperCollectionId;
+}
+
 void WallpaperControllerImpl::SetDefaultWallpaper(
     const AccountId& account_id,
     bool show_wallpaper,
