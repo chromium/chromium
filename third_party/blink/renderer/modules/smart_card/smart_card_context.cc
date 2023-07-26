@@ -165,8 +165,8 @@ ScriptPromise SmartCardContext::getStatusChange(
 
   if (options->hasSignal()) {
     if (options->signal()->aborted()) {
-      return ScriptPromise::Reject(
-          script_state, get_status_change_abort_signal_->reason(script_state));
+      return ScriptPromise::Reject(script_state,
+                                   options->signal()->reason(script_state));
     }
     CHECK(!get_status_change_abort_signal_);
     CHECK(!get_status_change_abort_handle_);

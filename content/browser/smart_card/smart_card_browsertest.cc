@@ -804,6 +804,26 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChangeAborted) {
      })())"));
 }
 
+// Tests passing an AbortSignal to getStatusChange() that is already aborted.
+IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChangeAlreadyAborted) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  EXPECT_EQ("Exception: Error, Something", EvalJs(shell(), R"((async () => {
+       let context = await navigator.smartCard.establishContext();
+
+       let getStatusPromise = context.getStatusChange(
+           [{readerName: "Fake Reader", currentState: {empty: true}}],
+           {signal: AbortSignal.abort(Error("Something"))});
+
+       try {
+         let result = await getStatusPromise;
+         return "Success";
+       } catch (e) {
+         return `Exception: ${e.name}, ${e.message}`;
+       }
+     })())"));
+}
+
 IN_PROC_BROWSER_TEST_F(SmartCardTest, Connect) {
   MockSmartCardContextFactory& mock_context_factory =
       GetFakeSmartCardDelegate().mock_context_factory;
