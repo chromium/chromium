@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package ios.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents an arbitrary binary blob.
+//
+// All fields are required.
+message BlobStorage {
+  bytes data = 1;
+}
