@@ -98,7 +98,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     // library, not the framework.
     @VisibleForTesting
     public static final String CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR =
-            "androidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_DOM_EXCEPTIONandroidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_INVALID_STATE_ERROR";
+            "androidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_DOM_EXCEPTION/androidx.credentials.TYPE_INVALID_STATE_ERROR";
     static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_USER_CANCEL =
             "android.credentials.GetCredentialException.TYPE_USER_CANCELED";
     static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL =
