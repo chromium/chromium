@@ -30,7 +30,6 @@ consoles.list_view(
 
 try_.builder(
     name = "dawn-android-arm-deps-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
@@ -57,7 +56,6 @@ try_.builder(
 
 try_.builder(
     name = "dawn-android-arm64-deps-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Dawn Android arm64 DEPS Release (Pixel 6)",
     ],
