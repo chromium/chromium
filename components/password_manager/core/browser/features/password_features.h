@@ -26,7 +26,6 @@ BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 
-BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
 BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
 
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);

@@ -1082,12 +1082,11 @@ class PasswordStoreGroupsTest : public PasswordStoreTest,
     feature_list_.Reset();
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kFillingAcrossGroupedSites,
-                                features::kFillingAcrossAffiliatedWebsites},
+          /*enabled_features=*/{features::kFillingAcrossGroupedSites},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kFillingAcrossAffiliatedWebsites},
+          /*enabled_features=*/{},
           /*disabled_features=*/{features::kFillingAcrossGroupedSites});
     }
     store_ = CreatePasswordStore();

@@ -41,15 +41,16 @@ std::vector<std::string> GetRealmsFromFacets(const FacetURI& original_facet_uri,
     if (affiliated_facet.uri.IsValidAndroidFacetURI()) {
       // Facet URIs have no trailing slash, whereas realms do.
       realms.push_back(affiliated_facet.uri.canonical_spec() + "/");
-    } else if ((base::FeatureList::IsEnabled(
-                    features::kFillingAcrossAffiliatedWebsites) ||
-                base::FeatureList::IsEnabled(
-                    features::kFillingAcrossGroupedSites)) &&
-               affiliated_facet.uri.IsValidWebFacetURI()) {
+    }
+
+#if !BUILDFLAG(IS_ANDROID)
+    // All platforms except Android supports filling across affiliated websites.
+    if (affiliated_facet.uri.IsValidWebFacetURI()) {
       CHECK(!base::EndsWith(affiliated_facet.uri.canonical_spec(), "/"));
       // Facet URIs have no trailing slash, whereas realms do.
       realms.push_back(affiliated_facet.uri.canonical_spec() + "/");
     }
+#endif
   }
   return realms;
 }

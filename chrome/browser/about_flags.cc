@@ -8802,12 +8802,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ContentLanguagesInLanguagePicker")},
 #endif
 
-    {"filling-across-affiliated-websites",
-     flag_descriptions::kFillingAcrossAffiliatedWebsitesName,
-     flag_descriptions::kFillingAcrossAffiliatedWebsitesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kFillingAcrossAffiliatedWebsites)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"filling-across-grouped-sites",
      flag_descriptions::kFillingAcrossGroupedSitesName,

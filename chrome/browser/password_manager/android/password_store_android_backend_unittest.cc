@@ -1461,12 +1461,6 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsWithSchemeMismatch) {
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, GetGroupedMatchingLoginsAsync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFillingAcrossGroupedSites,
-                             features::kFillingAcrossAffiliatedWebsites});
-
   FakeAffiliationService fake_affiliation_service;
   MockAffiliatedMatchHelper mock_affiliated_match_helper(
       &fake_affiliation_service);

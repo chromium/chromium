@@ -923,9 +923,6 @@ extern const char kWebIdentityMDocsDescription[];
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 
-extern const char kFillingAcrossAffiliatedWebsitesName[];
-extern const char kFillingAcrossAffiliatedWebsitesDescription[];
-
 extern const char kFillingAcrossGroupedSitesName[];
 extern const char kFillingAcrossGroupedSitesDescription[];
 

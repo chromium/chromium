@@ -25,14 +25,12 @@ namespace {
 
 constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
 
+// Filling across affiliated sites is implemented differently on Android.
 bool IsFacetValidForAffiliation(const FacetURI& facet) {
-  return facet.IsValidAndroidFacetURI() ||
 #if BUILDFLAG(IS_ANDROID)
-         (facet.IsValidWebFacetURI() &&
-          (base::FeatureList::IsEnabled(
-              features::kFillingAcrossAffiliatedWebsites)));
+  return facet.IsValidAndroidFacetURI();
 #else
-         facet.IsValidWebFacetURI();
+  return facet.IsValidAndroidFacetURI() || facet.IsValidWebFacetURI();
 #endif
 }
 
@@ -85,11 +83,8 @@ void AffiliationsPrefetcher::OnLoginsChanged(
 
     if (!facet_uri.is_valid())
       continue;
-    // Require a valid Android Facet if filling across affiliated websites is
-    // disabled.
-    if (!facet_uri.IsValidAndroidFacetURI() &&
-        !base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
+
+    if (!IsFacetValidForAffiliation(facet_uri)) {
       continue;
     }
 

@@ -15,14 +15,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -85,14 +83,7 @@ PasswordForm GetTestBlocklistedAndroidCredentials(const char* signon_realm) {
 
 // Boolean parameters indicates whether affiliation service should support
 // affiliated websites.
-class AffiliationsPrefetcherTest : public testing::Test,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  AffiliationsPrefetcherTest() {
-    feature_list_.InitWithFeatureState(
-        features::kFillingAcrossAffiliatedWebsites, GetParam());
-  }
-
+class AffiliationsPrefetcherTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
@@ -214,8 +205,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
     ExpectCallToPrefetch(kTestAndroidFacetURIBeta3);
     ExpectCallToPrefetch(kTestAndroidFacetURIGamma);
 
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
+    if (IsFillingAcrossAffiliatedWebsitesAllowed()) {
       ExpectCallToPrefetch(kTestWebFacetURIAlpha1);
       ExpectCallToPrefetch(kTestWebFacetURIAlpha2);
     }
@@ -232,8 +222,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
     expected_facets.push_back(
         FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta3));
 
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
+    if (IsFillingAcrossAffiliatedWebsitesAllowed()) {
       expected_facets.push_back(
           FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));
       expected_facets.push_back(
@@ -249,8 +238,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
     ExpectCallToCancelPrefetch(kTestAndroidFacetURIBeta3);
     ExpectCallToCancelPrefetch(kTestAndroidFacetURIGamma);
 
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
+    if (IsFillingAcrossAffiliatedWebsitesAllowed()) {
       ExpectCallToCancelPrefetch(kTestWebFacetURIAlpha1);
       ExpectCallToCancelPrefetch(kTestWebFacetURIAlpha2);
     }
@@ -262,8 +250,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
     ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIBeta3);
     ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIGamma);
 
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
+    if (IsFillingAcrossAffiliatedWebsitesAllowed()) {
       ExpectCallToTrimCacheForFacetURI(kTestWebFacetURIAlpha1);
       ExpectCallToTrimCacheForFacetURI(kTestWebFacetURIAlpha2);
     }
@@ -282,6 +269,14 @@ class AffiliationsPrefetcherTest : public testing::Test,
 
   AffiliationsPrefetcher* prefetcher() { return prefetcher_.get(); }
 
+  constexpr bool IsFillingAcrossAffiliatedWebsitesAllowed() {
+#if BUILDFLAG(IS_ANDROID)
+    return false;
+#else
+    return true;
+#endif
+  }
+
  private:
   void OnAffiliatedRealmsCallback(
       const std::vector<std::string>& affiliated_realms) {
@@ -290,7 +285,6 @@ class AffiliationsPrefetcherTest : public testing::Test,
     last_result_realms_ = affiliated_realms;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -306,7 +300,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
 
 // Verifies that affiliations for Android applications with pre-existing
 // credentials on start-up are prefetched.
-TEST_P(
+TEST_F(
     AffiliationsPrefetcherTest,
     PrefetchAffiliationsAndBrandingForPreexistingAndroidCredentialsOnStartup) {
   RunUntilIdle();
@@ -321,7 +315,7 @@ TEST_P(
 // Stores credentials for Android applications between Initialize() and
 // DoDeferredInitialization(). Verifies that corresponding affiliation
 // information gets prefetched.
-TEST_P(AffiliationsPrefetcherTest,
+TEST_F(AffiliationsPrefetcherTest,
        PrefetchAffiliationsForAndroidCredentialsAddedInInitializationDelay) {
   // Wait until PasswordStore initialisation is complete and
   // AffiliationsPrefetcher::Initialize is called.
@@ -335,7 +329,7 @@ TEST_P(AffiliationsPrefetcherTest,
 
 // Stores credentials for Android applications after DoDeferredInitialization().
 // Verifies that corresponding affiliation information gets prefetched.
-TEST_P(AffiliationsPrefetcherTest,
+TEST_F(AffiliationsPrefetcherTest,
        PrefetchAffiliationsForAndroidCredentialsAddedAfterInitialization) {
   ExpectKeepPrefetchForFacets({});
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
@@ -344,7 +338,7 @@ TEST_P(AffiliationsPrefetcherTest,
   AddAndroidAndNonAndroidTestLogins();
 }
 
-TEST_P(AffiliationsPrefetcherTest,
+TEST_F(AffiliationsPrefetcherTest,
        CancelPrefetchingAffiliationsAndBrandingForRemovedAndroidCredentials) {
   AddAndroidAndNonAndroidTestLogins();
 
@@ -362,7 +356,7 @@ TEST_P(AffiliationsPrefetcherTest,
 // is called in response to the addition before the call to
 // TrimCacheForFacetURI() in response to the removal, so that cached data is not
 // deleted and then immediately re-fetched.
-TEST_P(AffiliationsPrefetcherTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
+TEST_F(AffiliationsPrefetcherTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
   AddAndroidAndNonAndroidTestLogins();
 
   ExpectKeepPrefetchForTestLogins();
@@ -384,7 +378,7 @@ TEST_P(AffiliationsPrefetcherTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
 
 // Stores and removes four credentials for the same an Android application, and
 // expects that Prefetch() and CancelPrefetch() will each be called four times.
-TEST_P(AffiliationsPrefetcherTest,
+TEST_F(AffiliationsPrefetcherTest,
        DuplicateCredentialsArePrefetchWithMultiplicity) {
   ExpectKeepPrefetchForFacets(
       {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
@@ -431,7 +425,7 @@ TEST_P(AffiliationsPrefetcherTest,
   RemoveLogin(android_form4);
 }
 
-TEST_P(AffiliationsPrefetcherTest, OnLoginsRetained) {
+TEST_F(AffiliationsPrefetcherTest, OnLoginsRetained) {
   ExpectKeepPrefetchForFacets({});
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
@@ -440,8 +434,7 @@ TEST_P(AffiliationsPrefetcherTest, OnLoginsRetained) {
       GetTestAndroidCredentials(kTestAndroidFacetURIBeta2)};
   std::vector<FacetURI> expected_facets;
 
-  if (base::FeatureList::IsEnabled(
-          features::kFillingAcrossAffiliatedWebsites)) {
+  if (IsFillingAcrossAffiliatedWebsitesAllowed()) {
     expected_facets = {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1),
                        FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
   } else {
@@ -453,16 +446,6 @@ TEST_P(AffiliationsPrefetcherTest, OnLoginsRetained) {
   (static_cast<PasswordStoreInterface::Observer*>(prefetcher()))
       ->OnLoginsRetained(nullptr, forms);
 }
-
-// Test both true and false (kFillingAcrossAffiliatedWebsites on/off) on Android
-// only. On other platforms, this is already enabled by default.
-INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,
-                         AffiliationsPrefetcherTest,
-#if BUILDFLAG(IS_ANDROID)
-                         ::testing::Bool());
-#else
-                         ::testing::Values(true));
-#endif
 
 class AffiliationsPrefetcherWithTwoStoresTest
     : public AffiliationsPrefetcherTest {
@@ -495,11 +478,7 @@ class AffiliationsPrefetcherWithTwoStoresTest
       base::MakeRefCounted<TestPasswordStore>();
 };
 
-INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,
-                         AffiliationsPrefetcherWithTwoStoresTest,
-                         ::testing::Bool());
-
-TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestInitialPrefetch) {
+TEST_F(AffiliationsPrefetcherWithTwoStoresTest, TestInitialPrefetch) {
   AddLoginAndWait(password_store(),
                   GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
   AddLoginAndWait(account_password_store(),
@@ -517,7 +496,7 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestInitialPrefetch) {
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
 
-TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestDuplicatesPrefetch) {
+TEST_F(AffiliationsPrefetcherWithTwoStoresTest, TestDuplicatesPrefetch) {
   AddLoginAndWait(password_store(),
                   GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
   AddLoginAndWait(account_password_store(),
@@ -535,7 +514,7 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestDuplicatesPrefetch) {
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
 
-TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestLoginsChanged) {
+TEST_F(AffiliationsPrefetcherWithTwoStoresTest, TestLoginsChanged) {
   AddLoginAndWait(password_store(),
                   GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
 
@@ -558,7 +537,7 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestLoginsChanged) {
   RunUntilIdle();
 }
 
-TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestStoreRegisteredLater) {
+TEST_F(AffiliationsPrefetcherWithTwoStoresTest, TestStoreRegisteredLater) {
   AddLoginAndWait(password_store(),
                   GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
   AddLoginAndWait(account_password_store(),
@@ -583,7 +562,7 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestStoreRegisteredLater) {
   RunUntilIdle();
 }
 
-TEST_P(AffiliationsPrefetcherWithTwoStoresTest,
+TEST_F(AffiliationsPrefetcherWithTwoStoresTest,
        TestStoresRegisteredAfterDelay) {
   AddLoginAndWait(password_store(),
                   GetTestAndroidCredentials(kTestAndroidRealmAlpha3));

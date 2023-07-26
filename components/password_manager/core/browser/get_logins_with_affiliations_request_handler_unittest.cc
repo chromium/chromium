@@ -35,7 +35,9 @@ constexpr const char kAffiliatedAndroidApp[] =
     "android://"
     "5Z0D_o6B8BqileZyWhXmqO_wkO8uO0etCEXvMn5tUzEqkWUgfTSjMcTM7eMMTY_"
     "FGJC9RlpRNt_8Qp5tgDocXw==@com.bambuna.podcastaddict/";
+#if !BUILDFLAG(IS_ANDROID)
 constexpr const char kGroupWebURL[] = "https://noneexample2.com/";
+#endif
 
 PasswordFormDigest CreateFormDigest(const std::string& url_string) {
   return {PasswordForm::Scheme::kHtml, url_string, GURL(url_string)};
@@ -58,11 +60,6 @@ std::unique_ptr<PasswordForm> CreateForm(const std::string& url_string,
 
 class GetLoginsWithAffiliationsRequestHandlerTest : public testing::Test {
  public:
-  GetLoginsWithAffiliationsRequestHandlerTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kFillingAcrossAffiliatedWebsites);
-  }
-
   PasswordStoreBackend* backend() { return &backend_; }
 
   MockAffiliationService& affiliation_service() {
@@ -147,9 +144,11 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
       observed_form, backend(), &match_helper(), result_callback.Get());
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+#if !BUILDFLAG(IS_ANDROID)
   expected_forms.push_back(
       CreateForm(kAffiliatedWebURL, u"username1", u"password"));
   expected_forms.back()->match_type = PasswordForm::MatchType::kAffiliated;
+#endif
   expected_forms.push_back(
       CreateForm(kAffiliatedAndroidApp, u"username2", u"password"));
   expected_forms.back()->affiliated_web_realm = kAffiliatedWebURL;
@@ -159,6 +158,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
   RunUntilIdle();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
        AffiliatedAndPSLMatchesTest) {
   backend()->AddLoginAsync(*CreateForm(kTestWebURL, u"username1", u"password"),
@@ -313,6 +313,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
   backend()->AddLoginAsync(*CreateForm(kTestWebURL, u"username1", u"password"),

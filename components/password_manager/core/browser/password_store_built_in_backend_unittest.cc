@@ -748,12 +748,6 @@ TEST_F(PasswordStoreBuiltInBackendTest,
 }
 
 TEST_F(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFillingAcrossGroupedSites,
-                            features::kFillingAcrossAffiliatedWebsites},
-      /*disabled_features=*/{});
-
   FakeAffiliationService fake_affiliation_service;
   MockAffiliatedMatchHelper mock_affiliated_match_helper(
       &fake_affiliation_service);
