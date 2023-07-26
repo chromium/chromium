@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/waffle/waffle_tab_helper.h"
+#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,15 +18,16 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
-WaffleTabHelper::~WaffleTabHelper() = default;
+SearchEngineChoiceTabHelper::~SearchEngineChoiceTabHelper() = default;
 
-WaffleTabHelper::WaffleTabHelper(content::WebContents* web_contents)
+SearchEngineChoiceTabHelper::SearchEngineChoiceTabHelper(
+    content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      content::WebContentsUserData<WaffleTabHelper>(*web_contents) {
+      content::WebContentsUserData<SearchEngineChoiceTabHelper>(*web_contents) {
   CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
 }
 
-void WaffleTabHelper::DidFinishNavigation(
+void SearchEngineChoiceTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle) {
     return;
@@ -39,7 +40,7 @@ void WaffleTabHelper::DidFinishNavigation(
     return;
   }
 
-  // Don't show the Waffle dialog on top of any sub page of the settings page.
+  // Don't show the dialog on top of any sub page of the settings page.
   if (navigation_handle->GetURL().host() == chrome::kChromeUISettingsHost) {
     return;
   }
@@ -66,8 +67,8 @@ void WaffleTabHelper::DidFinishNavigation(
 
   if (auto* browser = chrome::FindBrowserWithWebContents(
           navigation_handle->GetWebContents())) {
-    ShowWaffleDialog(*browser);
+    ShowSearchEngineChoiceDialog(*browser);
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WaffleTabHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineChoiceTabHelper);

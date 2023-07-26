@@ -96,13 +96,13 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
+#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
-#include "chrome/browser/ui/waffle/waffle_tab_helper.h"
 #include "chrome/browser/user_notes/user_notes_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -535,7 +535,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
   if (base::FeatureList::IsEnabled(switches::kWaffle)) {
-    WaffleTabHelper::CreateForWebContents(web_contents);
+    SearchEngineChoiceTabHelper::CreateForWebContents(web_contents);
   }
 #endif
 

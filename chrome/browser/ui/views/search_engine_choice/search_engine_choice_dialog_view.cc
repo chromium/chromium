@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/waffle/waffle_dialog_view.h"
+#include "chrome/browser/ui/views/search_engine_choice/search_engine_choice_dialog_view.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/waffle/waffle_tab_helper.h"
 #include "chrome/browser/ui/webui/waffle/waffle_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -26,29 +26,30 @@ constexpr int kDialogHeight = 600;
 constexpr int kMinHeight = 25;
 }  // namespace
 
-void ShowWaffleDialog(Browser& browser) {
+void ShowSearchEngineChoiceDialog(Browser& browser) {
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   delegate->SetShowCloseButton(true);
   delegate->SetOwnedByWidget(true);
 
-  auto waffleDialogView = std::make_unique<WaffleDialogView>(&browser);
-  waffleDialogView->Initialize();
-  delegate->SetContentsView(std::move(waffleDialogView));
+  auto dialogView = std::make_unique<SearchEngineChoiceDialogView>(&browser);
+  dialogView->Initialize();
+  delegate->SetContentsView(std::move(dialogView));
 
   constrained_window::CreateBrowserModalDialogViews(
       std::move(delegate), browser.window()->GetNativeWindow());
 }
 
-WaffleDialogView::WaffleDialogView(Browser* browser) : browser_(browser) {
+SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(Browser* browser)
+    : browser_(browser) {
   CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
   // Create the web view in the native dialog.
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
 }
 
-void WaffleDialogView::Initialize() {
+void SearchEngineChoiceDialogView::Initialize() {
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIWaffleURL));
 
   const int max_width = browser_->window()
@@ -66,13 +67,13 @@ void WaffleDialogView::Initialize() {
                      ->GetAs<WaffleUI>();
   CHECK(web_ui);
   // Unretained is fine because this outlives the inner web UI.
-  web_ui->Initialize(base::BindOnce(&WaffleDialogView::ShowNativeView,
-                                    base::Unretained(this)));
+  web_ui->Initialize(base::BindOnce(
+      &SearchEngineChoiceDialogView::ShowNativeView, base::Unretained(this)));
 
   SetUseDefaultFillLayout(true);
 }
 
-void WaffleDialogView::ShowNativeView(int content_height) {
+void SearchEngineChoiceDialogView::ShowNativeView(int content_height) {
   auto* widget = GetWidget();
   if (!widget) {
     return;
@@ -93,5 +94,5 @@ void WaffleDialogView::ShowNativeView(int content_height) {
   web_view_->RequestFocus();
 }
 
-BEGIN_METADATA(WaffleDialogView, views::View)
+BEGIN_METADATA(SearchEngineChoiceDialogView, views::View)
 END_METADATA
