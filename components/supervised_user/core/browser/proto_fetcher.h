@@ -149,7 +149,7 @@ class DeferredProtoFetcher : public ProtoFetcher<Response> {
 // also happen when this manager is destroyed. In the latter case, callbacks
 // won't be executed (the pending requests will be canceled).
 template <typename Request, typename Response>
-class RepeatableFetchManager {
+class ParallelFetchManager {
  private:
   // Deferred fetcher is required because it should be started after it is
   // stored internally.
@@ -160,11 +160,11 @@ class RepeatableFetchManager {
   using FetcherFactory =
       base::RepeatingCallback<std::unique_ptr<Fetcher>(const Request&)>;
 
-  RepeatableFetchManager() = delete;
-  explicit RepeatableFetchManager(FetcherFactory fetcher_factory);
-  RepeatableFetchManager(const RepeatableFetchManager&) = delete;
-  RepeatableFetchManager& operator=(const RepeatableFetchManager&) = delete;
-  ~RepeatableFetchManager() = default;
+  ParallelFetchManager() = delete;
+  explicit ParallelFetchManager(FetcherFactory fetcher_factory);
+  ParallelFetchManager(const ParallelFetchManager&) = delete;
+  ParallelFetchManager& operator=(const ParallelFetchManager&) = delete;
+  ~ParallelFetchManager() = default;
 
   // Starts the fetch. Underlying fetcher is stored internally, and will be
   // cleaned up after finish or when this manager is destroyed.
@@ -180,7 +180,7 @@ class RepeatableFetchManager {
 
   base::IDMap<std::unique_ptr<Fetcher>, KeyType> requests_in_flight_;
   FetcherFactory fetcher_factory_;
-  base::WeakPtrFactory<RepeatableFetchManager<Request, Response>> weak_factory_{
+  base::WeakPtrFactory<ParallelFetchManager<Request, Response>> weak_factory_{
       this};
 };
 

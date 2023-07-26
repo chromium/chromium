@@ -450,7 +450,7 @@ class FetchManagerTest : public testing::Test {
 TEST_F(FetchManagerTest, HandlesMultipleRequests) {
   EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(2);
 
-  RepeatableFetchManager<ClassifyUrlRequest, ClassifyUrlResponse> under_test(
+  ParallelFetchManager<ClassifyUrlRequest, ClassifyUrlResponse> under_test(
       factory_);
 
   under_test.Fetch(request_, base::BindOnce(&FetchManagerTest::Done,
@@ -472,7 +472,7 @@ TEST_F(FetchManagerTest, CancelsRequestsUponDestruction) {
   EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(0);
 
   {
-    RepeatableFetchManager<ClassifyUrlRequest, ClassifyUrlResponse> under_test(
+    ParallelFetchManager<ClassifyUrlRequest, ClassifyUrlResponse> under_test(
         factory_);
     under_test.Fetch(request_, base::BindOnce(&FetchManagerTest::Done,
                                               base::Unretained(this)));

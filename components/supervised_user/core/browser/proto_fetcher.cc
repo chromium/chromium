@@ -440,38 +440,38 @@ const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
 }
 
 template <typename Request, typename Response>
-RepeatableFetchManager<Request, Response>::RepeatableFetchManager(
+ParallelFetchManager<Request, Response>::ParallelFetchManager(
     FetcherFactory fetcher_factory)
     : fetcher_factory_(fetcher_factory) {}
 
 template <typename Request, typename Response>
-void RepeatableFetchManager<Request, Response>::Fetch(
+void ParallelFetchManager<Request, Response>::Fetch(
     const Request& request,
     Fetcher::Callback callback) {
   CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
   KeyType key = requests_in_flight_.Add(MakeFetcher(request));
   requests_in_flight_.Lookup(key)->Start(
       std::move(callback).Then(base::BindOnce(
-          &RepeatableFetchManager::Remove, weak_factory_.GetWeakPtr(), key)));
+          &ParallelFetchManager::Remove, weak_factory_.GetWeakPtr(), key)));
 }
 
 template <typename Request, typename Response>
-void RepeatableFetchManager<Request, Response>::Remove(KeyType key) {
+void ParallelFetchManager<Request, Response>::Remove(KeyType key) {
   requests_in_flight_.Remove(key);
 }
 
 template <typename Request, typename Response>
 std::unique_ptr<DeferredProtoFetcher<Response>>
-RepeatableFetchManager<Request, Response>::MakeFetcher(
+ParallelFetchManager<Request, Response>::MakeFetcher(
     const Request& request) const {
   return fetcher_factory_.Run(request);
 }
 
-// Required, because users of RepeatableFetchManager are externally linked.
-template class RepeatableFetchManager<
+// Required, because users of ParallelFetchManager are externally linked.
+template class ParallelFetchManager<
     kids_chrome_management::ClassifyUrlRequest,
     kids_chrome_management::ClassifyUrlResponse>;
-template class RepeatableFetchManager<
+template class ParallelFetchManager<
     kids_chrome_management::PermissionRequest,
     kids_chrome_management::CreatePermissionRequestResponse>;
 

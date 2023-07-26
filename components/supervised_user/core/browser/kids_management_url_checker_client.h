@@ -56,7 +56,7 @@ class KidsManagementURLCheckerClient
   raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
   const std::string country_;
 
-  supervised_user::RepeatableFetchManager<
+  supervised_user::ParallelFetchManager<
       kids_chrome_management::ClassifyUrlRequest,
       kids_chrome_management::ClassifyUrlResponse>
       fetch_manager_;

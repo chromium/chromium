@@ -37,9 +37,8 @@ class PermissionRequestCreatorImpl : public PermissionRequestCreator {
 
  private:
   // Manages the lifetime of every issued fetch.
-  RepeatableFetchManager<
-      kids_chrome_management::PermissionRequest,
-      kids_chrome_management::CreatePermissionRequestResponse>
+  ParallelFetchManager<kids_chrome_management::PermissionRequest,
+                       kids_chrome_management::CreatePermissionRequestResponse>
       fetch_manager_;
 };
 
