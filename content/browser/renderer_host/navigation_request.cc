@@ -236,6 +236,7 @@ const char kIsolatedAppCSP[] =
     "img-src 'self' https: blob: data:;"
     "media-src 'self' https: blob: data:;"
     "font-src 'self' blob: data:;"
+    "style-src 'self' 'unsafe-inline';"
     "require-trusted-types-for 'script';";
 
 // Denotes the type of user agent string value sent in the User-Agent request
