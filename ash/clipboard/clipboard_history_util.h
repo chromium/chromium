@@ -61,6 +61,7 @@ enum MenuViewID {
   kContentsViewID = 1,
   kCtrlVLabelID,
   kDeleteButtonViewID,
+  kSecondaryDisplayTextLabelID,
 };
 
 // Modes for specifying a clipboard history pause's semantics.

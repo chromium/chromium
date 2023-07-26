@@ -6,15 +6,20 @@
 
 #include <string>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_label.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/style/typography.h"
+#include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -26,14 +31,37 @@ class ClipboardHistoryTextItemView::TextContentsView
     : public ClipboardHistoryTextItemView::ContentsView {
  public:
   METADATA_HEADER(TextContentsView);
-  explicit TextContentsView(const std::u16string& text) {
+  explicit TextContentsView(const ClipboardHistoryTextItemView* container) {
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    auto* label = AddChildView(std::make_unique<ClipboardHistoryLabel>(text));
-    layout->SetFlexForView(label, /*flex=*/1);
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+            .SetProperty(views::kFlexBehaviorKey,
+                         views::FlexSpecification().WithWeight(1))
+            .AddChild(views::Builder<views::Label>(
+                std::make_unique<ClipboardHistoryLabel>(container->text_)))
+            .AfterBuild(base::BindOnce(
+                [](const ClipboardHistoryItem* item,
+                   views::BoxLayoutView* labels_container) {
+                  if (item && item->secondary_display_text()) {
+                    views::Builder<views::View>(labels_container)
+                        .AddChild(views::Builder<views::Label>(
+                            bubble_utils::CreateLabel(
+                                TypographyToken::kCrosAnnotation2,
+                                *item->secondary_display_text(),
+                                cros_tokens::kCrosSysSecondary)))
+                        .SetID(clipboard_history_util::
+                                   kSecondaryDisplayTextLabelID)
+                        .BuildChildren();
+                  }
+                },
+                container->GetClipboardHistoryItem()))
+            .Build());
   }
   TextContentsView(const TextContentsView& rhs) = delete;
   TextContentsView& operator=(const TextContentsView& rhs) = delete;
@@ -96,7 +124,7 @@ ClipboardHistoryTextItemView::~ClipboardHistoryTextItemView() = default;
 
 std::unique_ptr<ClipboardHistoryTextItemView::ContentsView>
 ClipboardHistoryTextItemView::CreateContentsView() {
-  return std::make_unique<TextContentsView>(text_);
+  return std::make_unique<TextContentsView>(this);
 }
 
 BEGIN_METADATA(ClipboardHistoryTextItemView, ClipboardHistoryItemView)

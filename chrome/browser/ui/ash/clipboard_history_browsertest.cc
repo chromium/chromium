@@ -32,12 +32,16 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/ash/clipboard_history_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
@@ -55,6 +59,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
@@ -235,6 +240,13 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
     LoginUser(account_id1_);
     GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
         operation_confirmed_future_.GetCallback());
+  }
+
+  // Returns the logged-in user's profile.
+  Profile* GetProfile() {
+    return Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id1_));
   }
 
   // Click at the delete button of the clipboard history item at the specified
@@ -709,8 +721,7 @@ class ClipboardHistoryPasteTypeBrowserTest
         base::Milliseconds(500));
 
     // Create a browser and cache its active web contents.
-    auto* browser = CreateBrowser(
-        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
+    auto* browser = CreateBrowser(GetProfile());
     web_contents_ = browser->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents_);
 
@@ -1491,8 +1502,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
   context_menu_params.is_editable = true;
 
   // Create a browser.
-  auto* browser = CreateBrowser(
-      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
+  auto* browser = CreateBrowser(GetProfile());
 
   const bool is_refresh_enabled =
       chromeos::features::IsClipboardHistoryRefreshEnabled();
@@ -1567,8 +1577,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
   SetClipboardText("B");
 
   // Create a browser and cache its active web contents.
-  auto* browser = CreateBrowser(
-      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
+  auto* browser = CreateBrowser(GetProfile());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
@@ -1808,6 +1817,94 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
   EXPECT_TRUE(second_item_delete_button->GetVisible());
   EXPECT_NE(second_item_contents_view->clip_path().isEmpty(),
             chromeos::features::IsClipboardHistoryRefreshEnabled());
+}
+
+// Base class for tests exercising the `ClipboardHistoryUrlTitleFetcher`'s
+// end-to-end functionality, parameterized by whether the clipboard history URL
+// titles feature is enabled.
+class ClipboardHistoryUrlTitleFetcherBrowserTest
+    : public ClipboardHistoryBrowserTest,
+      public testing::WithParamInterface</*enable_url_titles=*/bool> {
+ public:
+  ClipboardHistoryUrlTitleFetcherBrowserTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryUrlTitlesEnabled()},
+         {ash::features::kClipboardHistoryUrlTitles,
+          IsClipboardHistoryUrlTitlesEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryUrlTitlesEnabled()}});
+  }
+
+ protected:
+  GURL GetTestUrl(base::StringPiece base_name) {
+    return ui_test_utils::GetTestUrl(
+        base::FilePath(base::FilePath::kCurrentDirectory),
+        base::FilePath(base_name));
+  }
+
+  std::vector<GURL> GetHistoryContents() {
+    ui_test_utils::HistoryEnumerator enumerator(GetProfile());
+    return enumerator.urls();
+  }
+
+  bool IsClipboardHistoryUrlTitlesEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryUrlTitleFetcherBrowserTest,
+                         /*enable_url_titles=*/testing::Bool());
+
+// Verifies that if the clipboard history URL titles feature is enabled and the
+// user copies a URL they have visited before, then the clipboard history item
+// will show that page's title.
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryUrlTitleFetcherBrowserTest, UrlTitles) {
+  const auto unvisited_url = GetTestUrl("title1.html");
+  const auto visited_url = GetTestUrl("title2.html");
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+
+  // Populate the primary user's browsing history with a URL.
+  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
+      GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
+  EXPECT_TRUE(GetHistoryContents().empty());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(CreateBrowser(GetProfile()), visited_url));
+  WaitForHistoryBackendToRun(GetProfile());
+
+  std::vector<GURL> urls(GetHistoryContents());
+  ASSERT_EQ(urls.size(), 1u);
+  EXPECT_EQ(visited_url.spec(), urls[0].spec());
+
+  // Verify that copying the unvisited URL produces a clipboard history item
+  // with no URL title.
+  SetClipboardText(unvisited_url.spec());
+  ASSERT_EQ(GetClipboardItems().size(), 1u);
+  EXPECT_FALSE(GetClipboardItems().front().secondary_display_text());
+
+  // Show the clipboard history menu and verify that the unvisited URL's item
+  // has no title label.
+  event_generator.PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetMenuItemViewForClipboardHistoryItemAtIndex(0u)->GetViewByID(
+      ash::clipboard_history_util::kSecondaryDisplayTextLabelID));
+  event_generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  // Verify that copying the visited URL produces a clipboard history item with
+  // a URL title iff the clipboard history URL titles feature is enabled.
+  SetClipboardText(visited_url.spec());
+  ASSERT_EQ(GetClipboardItems().size(), 2u);
+  EXPECT_EQ(!!GetClipboardItems().front().secondary_display_text(),
+            IsClipboardHistoryUrlTitlesEnabled());
+
+  // Show the clipboard history menu and verify that the visited URL's item has
+  // a title label iff the clipboard history URL titles feature is enabled.
+  event_generator.PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(!!GetMenuItemViewForClipboardHistoryItemAtIndex(0u)->GetViewByID(
+                ash::clipboard_history_util::kSecondaryDisplayTextLabelID),
+            IsClipboardHistoryUrlTitlesEnabled());
+  event_generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
 }
 
 // Base class used to test features that only exist when the Ctrl+V longpress
