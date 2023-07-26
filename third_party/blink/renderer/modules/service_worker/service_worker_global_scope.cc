@@ -1586,7 +1586,7 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForSubresource(
               GetThread()->GetTaskRunner(TaskType::kNetworking));
   fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
 
-  if (params->did_start_race_network_request) {
+  if (params->race_network_request_loader_factory) {
     UseCounter::Count(
         this,
         // If the runtime flag is enabled, that means the feature is enabled via

@@ -466,8 +466,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
   auto params = blink::mojom::DispatchFetchEventParams::New();
   params->request = blink::mojom::FetchAPIRequest::From(resource_request_);
   params->client_id = controller_connector_->client_id();
-  params->did_start_race_network_request = did_start_race_network_request_;
-  if (params->did_start_race_network_request) {
+  if (remote_forwarded_race_network_request_url_loader_factory_) {
     params->race_network_request_loader_factory =
         std::move(remote_forwarded_race_network_request_url_loader_factory_);
     params->request->service_worker_race_network_request_token =
