@@ -111,6 +111,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using NeedsDircryptoMigrationCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::NeedsDircryptoMigrationReply>;
 
+  using GetArcDiskFeaturesCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::GetArcDiskFeaturesReply>;
+
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
   UserDataAuthClient& operator=(const UserDataAuthClient&) = delete;
@@ -302,6 +305,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void TerminateAuthFactor(
       const ::user_data_auth::TerminateAuthFactorRequest& request,
       TerminateAuthFactorCallback callback) = 0;
+
+  // Retrieve the ARC-related disk features supported.
+  virtual void GetArcDiskFeatures(
+      const ::user_data_auth::GetArcDiskFeaturesRequest& request,
+      GetArcDiskFeaturesCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

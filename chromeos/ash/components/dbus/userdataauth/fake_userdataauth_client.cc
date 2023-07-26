@@ -1425,6 +1425,14 @@ void FakeUserDataAuthClient::TerminateAuthFactor(
   auth_session->second.is_listening_for_fingerprint_events = false;
 }
 
+void FakeUserDataAuthClient::GetArcDiskFeatures(
+    const ::user_data_auth::GetArcDiskFeaturesRequest& request,
+    GetArcDiskFeaturesCallback callback) {
+  ::user_data_auth::GetArcDiskFeaturesReply reply;
+  reply.set_quota_supported(arc_quota_supported_);
+  std::move(callback).Run(std::move(reply));
+}
+
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (service_is_available_ || service_reported_not_available_) {
