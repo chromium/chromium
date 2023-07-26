@@ -211,11 +211,9 @@ bool IsLacrosAllowedInternal(const User* user,
 
   switch (lacros_availability) {
     case LacrosAvailability::kLacrosDisallowed:
-      return false;
     case LacrosAvailability::kSideBySide:
     case LacrosAvailability::kLacrosPrimary:
-      return !base::FeatureList::IsEnabled(
-          ash::features::kLacrosSxSPrimaryRemove);
+      return false;
     case LacrosAvailability::kUserChoice:
     case LacrosAvailability::kLacrosOnly:
       return true;
@@ -246,33 +244,6 @@ LacrosMode GetLacrosModeInternal(const User* user,
     }
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kLacrosSxSPrimaryRemove)) {
-    switch (lacros_availability) {
-      case LacrosAvailability::kUserChoice:
-        break;
-      case LacrosAvailability::kLacrosDisallowed:
-        NOTREACHED();  // Guarded by IsLacrosAllowedInternal.
-        return LacrosMode::kDisabled;
-      case LacrosAvailability::kSideBySide:
-      case LacrosAvailability::kLacrosPrimary:
-        return LacrosMode::kDisabled;
-      case LacrosAvailability::kLacrosOnly:
-        return LacrosMode::kOnly;
-    }
-
-    if (base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
-      return LacrosMode::kOnly;
-    }
-
-    return LacrosMode::kDisabled;
-  }
-
-  // Lacros-chrome will always be the primary browser if Lacros is enabled
-  // in Kiosk session.
-  bool in_kiosk = user->GetType() == user_manager::USER_TYPE_KIOSK_APP ||
-                  user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP;
-
-  // Check the
   switch (lacros_availability) {
     case LacrosAvailability::kUserChoice:
       break;
@@ -280,48 +251,17 @@ LacrosMode GetLacrosModeInternal(const User* user,
       NOTREACHED();  // Guarded by IsLacrosAllowedInternal.
       return LacrosMode::kDisabled;
     case LacrosAvailability::kSideBySide:
-      // In Kiosk-mode, even if policy says side-by-side, it is stepped
-      // into at least LacrosPrimary. This is for backward compatibility
-      // for transition period.
-      if (!in_kiosk) {
-        return LacrosMode::kSideBySide;
-      }
-
-      // Note that for this *ForMigration variant, since there might not be a
-      // logged in user yet, the user's email address has to be passed
-      // explicitly. Normally, policy should override Finch. Due to
-      // complications in the Google rollout, in the short term Finch will
-      // override policy if Finch is enabling this feature.
-      if (IsGoogleInternal(user) &&
-          base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
-        return LacrosMode::kOnly;
-      }
-      return LacrosMode::kPrimary;
     case LacrosAvailability::kLacrosPrimary:
-      // Same as Side-By-Side policy. Please find the comment above.
-      if (IsGoogleInternal(user) &&
-          base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
-        return LacrosMode::kOnly;
-      }
-      return LacrosMode::kPrimary;
+      return LacrosMode::kDisabled;
     case LacrosAvailability::kLacrosOnly:
       return LacrosMode::kOnly;
   }
 
-  if (!base::FeatureList::IsEnabled(ash::features::kLacrosSupport)) {
-    return LacrosMode::kDisabled;
+  if (base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
+    return LacrosMode::kOnly;
   }
 
-  if (!base::FeatureList::IsEnabled(ash::features::kLacrosPrimary) &&
-      !in_kiosk) {
-    return LacrosMode::kSideBySide;
-  }
-
-  if (!base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
-    return LacrosMode::kPrimary;
-  }
-
-  return LacrosMode::kOnly;
+  return LacrosMode::kDisabled;
 }
 
 bool IsLacrosEnabledInternal(const User* user,
@@ -570,12 +510,6 @@ bool IsProfileMigrationAvailable() {
   return true;
 }
 
-bool IsLacrosSupportFlagAllowed() {
-  return IsLacrosAllowedToBeEnabled() &&
-         (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice) &&
-         !base::FeatureList::IsEnabled(ash::features::kLacrosSxSPrimaryRemove);
-}
-
 bool IsAshWebBrowserEnabled() {
   return IsAshWebBrowserEnabledInternal(GetPrimaryUser(),
                                         GetCachedLacrosAvailability(),
@@ -616,12 +550,6 @@ bool IsLacrosPrimaryBrowserAllowedForMigration(
     const user_manager::User* user,
     LacrosAvailability lacros_availability) {
   return IsLacrosAllowedInternal(user, lacros_availability);
-}
-
-bool IsLacrosPrimaryFlagAllowed() {
-  return IsLacrosPrimaryBrowserAllowed() &&
-         (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice) &&
-         !base::FeatureList::IsEnabled(ash::features::kLacrosSxSPrimaryRemove);
 }
 
 bool IsLacrosOnlyBrowserAllowed() {

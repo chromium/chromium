@@ -10851,20 +10851,12 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled();
   }
 
-  if (!strcmp(kLacrosSupportInternalName, entry.internal_name)) {
-    return !crosapi::browser_util::IsLacrosSupportFlagAllowed();
-  }
-
   if (!strcmp(kLacrosStabilityInternalName, entry.internal_name)) {
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled();
   }
 
   if (!strcmp(kLacrosOnlyInternalName, entry.internal_name)) {
     return !crosapi::browser_util::IsLacrosOnlyFlagAllowed();
-  }
-
-  if (!strcmp(kLacrosPrimaryInternalName, entry.internal_name)) {
-    return !crosapi::browser_util::IsLacrosPrimaryFlagAllowed();
   }
 
   if (!strcmp(kArcEnableVirtioBlkForDataInternalName, entry.internal_name)) {
