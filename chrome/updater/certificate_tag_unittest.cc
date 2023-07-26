@@ -8,13 +8,13 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "chrome/updater/tools/certificate_tag.h"
+#include "chrome/updater/certificate_tag.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-namespace updater::tools {
+namespace updater::tagging {
 
 TEST(CertificateTag, RoundTrip) {
   std::string exe;
@@ -60,4 +60,4 @@ TEST(CertificateTag, RoundTrip) {
   EXPECT_EQ(updated_exe->size(), updated_again_exe->size());
 }
 
-}  // namespace updater::tools
+}  // namespace updater::tagging

@@ -17,8 +17,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chrome/updater/certificate_tag.h"
 #include "chrome/updater/tag.h"
-#include "chrome/updater/tools/certificate_tag.h"
 
 namespace updater {
 namespace tools {
@@ -133,7 +133,7 @@ int CertificateTagMain(int argc, char** argv) {
     HandleError(logging::GetLastSystemErrorCode());
   }
 
-  absl::optional<tools::Binary> bin = tools::Binary::Parse(contents);
+  absl::optional<tagging::Binary> bin = tagging::Binary::Parse(contents);
   if (!bin) {
     std::cerr << "Failed to parse tag binary." << std::endl;
     std::exit(1);

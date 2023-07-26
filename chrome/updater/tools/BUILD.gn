@@ -60,20 +60,3 @@ executable("dm_policy_dump") {
     "//components/policy/proto",
   ]
 }
-
-source_set("unittest") {
-  testonly = true
-
-  sources = [ "certificate_tag_unittest.cc" ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//chrome/updater:tagging",
-    "//chrome/updater:unit_test_util_sources",
-    "//testing/gtest",
-    "//third_party/zlib/google:compression_utils",
-  ]
-
-  data = [ "../test/data/signed.exe.gz" ]
-}

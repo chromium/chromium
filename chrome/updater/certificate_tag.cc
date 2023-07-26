@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/tools/certificate_tag.h"
+#include "chrome/updater/certificate_tag.h"
 
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 
-namespace updater::tools {
+namespace updater::tagging {
 
 // CBS is a structure from BoringSSL used for parsing binary and ASN.1-based
 // formats. This implementation detail is not exposed in the interface of this
@@ -164,8 +164,9 @@ absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
   ret.content_info_ = SpanFromCBS(&signed_data);
   ret.attr_cert_offset_ = cert_entry_virtual_addr;
 
-  if (!ret.ParseTag())
+  if (!ret.ParseTag()) {
     return absl::nullopt;
+  }
 
   return ret;
 }
@@ -418,8 +419,9 @@ bool Binary::ParseTag() {
     have_last_cast = true;
   }
 
-  if (!have_last_cast)
+  if (!have_last_cast) {
     return false;
+  }
 
   // See https://tools.ietf.org/html/rfc5280#section-4.1 for the X.509 structure
   // being parsed here.
@@ -454,12 +456,14 @@ bool Binary::ParseTag() {
     return false;
   }
 
-  if (!has_extensions)
+  if (!has_extensions) {
     return true;
+  }
 
   CBS extensions;
-  if (!CBS_get_asn1(&outer_extensions, &extensions, CBS_ASN1_SEQUENCE))
+  if (!CBS_get_asn1(&outer_extensions, &extensions, CBS_ASN1_SEQUENCE)) {
     return false;
+  }
 
   while (CBS_len(&extensions) > 0) {
     CBS extension, oid, contents;
@@ -482,4 +486,4 @@ bool Binary::ParseTag() {
   return true;
 }
 
-}  // namespace updater::tools
+}  // namespace updater::tagging

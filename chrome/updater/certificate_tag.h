@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_TOOLS_CERTIFICATE_TAG_H_
-#define CHROME_UPDATER_TOOLS_CERTIFICATE_TAG_H_
+#ifndef CHROME_UPDATER_CERTIFICATE_TAG_H_
+#define CHROME_UPDATER_CERTIFICATE_TAG_H_
 
 #include <cstdint>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-namespace tools {
+namespace tagging {
 
 // Binary represents a Windows PE binary and provides functions to extract and
 // set data outside of the signed area (called a "tag"). This allows a binary to
@@ -60,7 +60,7 @@ class Binary {
   size_t certs_size_offset_ = 0;
 };
 
-}  // namespace tools
+}  // namespace tagging
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_TOOLS_CERTIFICATE_TAG_H_
+#endif  // CHROME_UPDATER_CERTIFICATE_TAG_H_
