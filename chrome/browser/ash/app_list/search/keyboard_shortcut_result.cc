@@ -12,6 +12,7 @@
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/rtl.h"
@@ -402,9 +403,9 @@ KeyboardShortcutResult::KeyboardShortcutResult(
   SetCategory(Category::kHelp);
   UpdateIcon();
 
-  // Set the details to the display name of the Keyboard Shortcut Viewer app.
+  // Set the details to the display name of the Keyboard Shortcuts app.
   std::u16string sanitized_name = base::CollapseWhitespace(
-      l10n_util::GetStringUTF16(IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER),
+      l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE),
       true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);

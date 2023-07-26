@@ -224,7 +224,7 @@ TEST_F(KeyboardShortcutResultTest, StandardAcceleratorToResult) {
   EXPECT_EQ(ash::KEYBOARD_SHORTCUT, result->metrics_type());
   EXPECT_EQ(KeyboardShortcutResult::DisplayType::kList, result->display_type());
   EXPECT_EQ(ash::AppListSearchResultCategory::kHelp, result->category());
-  EXPECT_EQ(u"Shortcuts", result->details());
+  EXPECT_EQ(u"Key Shortcuts", result->details());
 
   // TODO(xiangdongkong): Verify the following checks as they are populated.
   //   - id
