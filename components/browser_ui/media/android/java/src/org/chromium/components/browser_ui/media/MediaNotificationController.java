@@ -626,9 +626,7 @@ public class MediaNotificationController {
         mNotificationBuilder = mDelegate.createNotificationWrapperBuilder();
         setMediaStyleLayoutForNotificationBuilder(mNotificationBuilder);
 
-        // TODO(zqzhang): It's weird that setShowWhen() doesn't work on K. Calling setWhen() to
-        // force removing the time.
-        mNotificationBuilder.setShowWhen(false).setWhen(0);
+        mNotificationBuilder.setShowWhen(false);
         mNotificationBuilder.setSmallIcon(mMediaNotificationInfo.notificationSmallIcon);
         mNotificationBuilder.setAutoCancel(false);
         mNotificationBuilder.setLocalOnly(true);
@@ -927,7 +925,7 @@ public class MediaNotificationController {
     // versions of Android.
     private String getSafeNotificationTitle() {
         String title = mMediaNotificationInfo.metadata.getTitle();
-        if (title != null && title.toString().trim().length() > 0) {
+        if (title != null && title.trim().length() > 0) {
             return title;
         }
         return getContext().getPackageName();
