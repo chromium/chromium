@@ -518,7 +518,15 @@ void MirroringActivity::HandleParseJsonResult(
     const std::string& route_id,
     data_decoder::DataDecoder::ValueOrError result) {
   CastSession* session = GetSession();
-  DCHECK(session);
+  if (!session) {
+    // TODO(crbug.com/1457011): If we're reaching here, determine why.
+    logger_->LogError(media_router::mojom::LogCategory::kMirroring,
+                      kLoggerComponent,
+                      base::StrCat({"Failed to retrieve the session."}),
+                      route().media_sink_id(), route().media_source().id(),
+                      route().presentation_id());
+    return;
+  }
 
   if (!result.has_value() || !result.value().is_dict()) {
     // TODO(crbug.com/905002): Record UMA metric for parse result.
