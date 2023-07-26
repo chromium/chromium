@@ -274,9 +274,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Should we assume that we're outputting to an HDR display?
   bool system_hdr_enabled_ = false;
 
-  // Should we use shared handles for WebGPU interop or if using Graphite.
-  bool use_shared_handle_ = false;
-
   // Should we use multiple single textures for the decoder output (true) or one
   // texture with multiple array slices (false)?
   bool use_single_video_decoder_texture_ = false;
