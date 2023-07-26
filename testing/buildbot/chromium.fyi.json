@@ -8758,6 +8758,7 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",
@@ -8808,6 +8809,7 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",

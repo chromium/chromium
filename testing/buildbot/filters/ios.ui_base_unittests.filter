@@ -1,0 +1,4 @@
+# TODO(crbug.com/1467567): these tests started failing after bots upgraded to
+# xcode 15b4 (crrev.com/c/4705014).
+-ClipboardTest/PlatformClipboardTest.BitmapWriteAndPngRead_N32_Premul
+-ClipboardTest/PlatformClipboardTest.BitmapWriteAndPngRead_N32_Premul_2x7

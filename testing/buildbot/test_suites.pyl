@@ -4071,7 +4071,11 @@
       'skia_unittests': {},
       'sql_unittests': {},
       'storage_unittests': {},
-      'ui_base_unittests': {},
+      'ui_base_unittests': {
+        'args': [
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter',
+        ],
+      },
       'ui_touch_selection_unittests': {},
       'url_unittests': {},
       'viz_unittests': {},
