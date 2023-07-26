@@ -6078,11 +6078,6 @@ const char kFileTransferEnterpriseConnectorName[] =
 const char kFileTransferEnterpriseConnectorDescription[] =
     "Enable the File Transfer Enterprise Connector.";
 
-const char kFileTransferEnterpriseConnectorUIName[] =
-    "Enable UI for Files Transfer Enterprise Connector.";
-const char kFileTransferEnterpriseConnectorUIDescription[] =
-    "Enable the UI for the File Transfer Enterprise Connector.";
-
 const char kFilesAppExperimentalName[] =
     "Experimental UI features for Files app";
 const char kFilesAppExperimentalDescription[] =

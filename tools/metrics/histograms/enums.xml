@@ -33601,7 +33601,6 @@ Called by update_document_policy_enum.py.-->
   <int value="1131" label="GlanceablesEnabled"/>
   <int value="1132" label="DeviceAuthenticationURLBlocklist"/>
   <int value="1133" label="DeviceAuthenticationURLAllowlist"/>
-  <int value="1134" label="OnFileTransferEnterpriseConnectorUI"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -61218,7 +61217,6 @@ from previous Chrome versions.
   <int value="-1355267677"
       label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
   <int value="-1353926640" label="GMSCoreEmoji:disabled"/>
-  <int value="-1353897328" label="FileTransferEnterpriseConnectorUI:disabled"/>
   <int value="-1353865639" label="InteractiveWindowCycleList:disabled"/>
   <int value="-1353714232" label="FilesTransferDetails:enabled"/>
   <int value="-1353195918" label="UseSkiaRenderer:enabled"/>
@@ -66185,7 +66183,6 @@ from previous Chrome versions.
   <int value="1197363734" label="force-companion-pinned-state:disabled"/>
   <int value="1198604672" label="DiscardExceptionsImprovements:disabled"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
-  <int value="1199200896" label="FileTransferEnterpriseConnectorUI:enabled"/>
   <int value="1199276782" label="HighEfficiencyMultistateMode:enabled"/>
   <int value="1199500202" label="PanelSelfRefresh2:enabled"/>
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>

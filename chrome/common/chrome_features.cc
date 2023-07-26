@@ -412,10 +412,6 @@ BASE_FEATURE(kExternalExtensionDefaultButtonControl,
 BASE_FEATURE(kFileTransferEnterpriseConnector,
              "FileTransferEnterpriseConnector",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFileTransferEnterpriseConnectorUI,
-             "FileTransferEnterpriseConnectorUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
