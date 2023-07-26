@@ -19,7 +19,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -378,6 +380,10 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectIcon) {
 
 TEST_F(BluetoothDeviceListItemViewTest,
        HasEnterpriseIconWhenDeviceIsBlockedByPolicy) {
+  // TODO(b/289445902): Fix for Jelly then remove the ScopedFeatureList.
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(chromeos::features::kJelly);
+
   PairedBluetoothDevicePropertiesPtr paired_device_properties =
       CreatePairedDeviceProperties();
 
