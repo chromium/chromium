@@ -416,6 +416,8 @@ public abstract class UrlBar extends AutocompleteEditText {
             // https://cs.android.com/android/platform/superproject/+/5d123b67756dffcfdebdb936ab2de2b29c799321:frameworks/base/core/java/android/widget/TextView.java;l=10618;drc=master;bpv=0
             ApiHelperForO.notifyValueChangedForAutofill(this);
         }
+
+        limitDisplayableLength();
     }
 
     @Override
@@ -1037,7 +1039,6 @@ public abstract class UrlBar extends AutocompleteEditText {
             Log.i(TAG, "onAutocompleteTextStateChanged: DIS[%b]", updateDisplay);
         }
         if (mUrlTextChangeListener == null) return;
-        if (updateDisplay) limitDisplayableLength();
         // crbug.com/764749
         Log.w(TAG, "Text change observed, triggering autocomplete.");
 
