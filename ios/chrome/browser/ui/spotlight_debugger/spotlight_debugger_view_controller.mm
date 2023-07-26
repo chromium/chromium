@@ -65,6 +65,11 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
   return self;
 }
 
+- (void)dealloc {
+  [self.bookmarksManager shutdown];
+  [self.readingListSpotlightManager shutdown];
+}
+
 #pragma mark - Public
 
 - (void)viewDidLoad {

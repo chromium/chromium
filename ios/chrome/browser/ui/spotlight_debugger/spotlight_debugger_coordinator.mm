@@ -54,10 +54,7 @@
 
 - (void)stop {
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
-  [self.viewController.bookmarksManager shutdown];
-  [self.viewController.readingListSpotlightManager shutdown];
   self.viewController = nil;
-
   [super stop];
 }
 
