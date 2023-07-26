@@ -11,6 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_navigation_commands.h"
 
@@ -37,23 +38,29 @@
                                         (id<TabsSettingsConsumer>)consumer {
   self = [super init];
   if (self) {
-    DCHECK(localPrefService);
-    DCHECK(consumer);
+    CHECK(localPrefService);
+    CHECK(consumer);
     _prefs = localPrefService;
     _consumer = consumer;
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
-    // Register to observe any changes on pref backed values displayed by the
-    // screen.
-    _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
+    if (IsInactiveTabsAvailable()) {
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
 
-    // Use InactiveTabsTimeThreshold() instead of reading the pref value
-    // directly as this function also manage flag and default value.
-    int currentThreshold = IsInactiveTabsExplictlyDisabledByUser()
-                               ? kInactiveTabsDisabledByUser
-                               : InactiveTabsTimeThreshold().InDays();
-    [_consumer inactiveTabsTimeThresholdChanged:currentThreshold];
+      // Use InactiveTabsTimeThreshold() instead of reading the pref value
+      // directly as this function also manage flag and default value.
+      int currentThreshold = IsInactiveTabsExplictlyDisabledByUser()
+                                 ? kInactiveTabsDisabledByUser
+                                 : InactiveTabsTimeThreshold().InDays();
+      [_consumer inactiveTabsTimeThresholdChanged:currentThreshold];
+    }
+
+    if (IsTabPickupEnabled()) {
+      _prefObserverBridge->ObserveChangesForPreference(prefs::kTabPickupEnabled,
+                                                       &_prefChangeRegistrar);
+      [_consumer tabPickupStateChanged:!IsTabPickupDisabledByUser()];
+    }
   }
   return self;
 }
@@ -69,8 +76,13 @@
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kInactiveTabsTimeThreshold) {
+    CHECK(IsInactiveTabsAvailable());
     [_consumer inactiveTabsTimeThresholdChanged:
                    _prefs->GetInteger(prefs::kInactiveTabsTimeThreshold)];
+  } else if (preferenceName == prefs::kTabPickupEnabled) {
+    CHECK(IsTabPickupEnabled());
+    [_consumer
+        tabPickupStateChanged:_prefs->GetBoolean(prefs::kTabPickupEnabled)];
   }
 }
 
@@ -80,6 +92,12 @@
     (TabsSettingsTableViewController*)tabsSettingsTableViewController {
   base::RecordAction(base::UserMetricsAction("Settings.Tabs.InactiveTabs"));
   [self.handler showInactiveTabsSettings];
+}
+
+- (void)tabsSettingsTableViewControllerDidSelectTabPickupSettings:
+    (TabsSettingsTableViewController*)tabsSettingsTableViewController {
+  base::RecordAction(base::UserMetricsAction("Settings.Tabs.TabPickup"));
+  [self.handler showTabPickupSettings];
 }
 
 @end

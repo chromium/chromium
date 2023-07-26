@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -62,10 +64,12 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
 
     TestChromeBrowserState::Builder builder;
     chrome_browser_state_ = builder.Build();
-    synced_sessions::DistantSession& session = CreateDistantSession();
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
+    local_state_.Get()->SetBoolean(prefs::kTabPickupEnabled, true);
+
+    synced_sessions::DistantSession& session = CreateDistantSession();
     std::unique_ptr<TabPickupInfobarDelegate> delegate =
         std::make_unique<TabPickupInfobarDelegate>(browser_.get(), &session);
     delegate_ = delegate.get();
@@ -81,6 +85,7 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
+  IOSChromeScopedTestingLocalState local_state_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;

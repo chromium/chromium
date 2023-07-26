@@ -55,5 +55,10 @@ source_set("features") {
     "features.mm",
   ]
   public_deps = [ "//base" ]
-  deps = [ "//ui/base" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ui/base",
+  ]
 }

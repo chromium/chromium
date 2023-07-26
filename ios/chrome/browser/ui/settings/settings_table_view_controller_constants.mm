@@ -67,3 +67,4 @@ NSString* const kSettingsNotificationsId = @"kSettingsNotificationsId";
 NSString* const kSettingsTabsCellId = @"kSettingsTabsCellId";
 NSString* const kSettingsMoveInactiveTabsCellId =
     @"kSettingsMoveInactiveTabsCellId";
+NSString* const kSettingsTabPickupCellId = @"kSettingsTabPickupCellId";

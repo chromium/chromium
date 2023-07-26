@@ -26,6 +26,10 @@ extern const char kTabPickupThresholdTwoHoursParam[];
 // Convenience method for determining if the tab pickup feature is available.
 bool IsTabPickupEnabled();
 
+// Convenience method for determining if the tab pickup feature has been
+// disabled by the user.
+bool IsTabPickupDisabledByUser();
+
 // Convenience method for determining the tab pickup threshold.
 // The default is 10 minutes.
 const base::TimeDelta TabPickupTimeThreshold();

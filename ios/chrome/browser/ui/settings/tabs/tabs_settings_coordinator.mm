@@ -72,4 +72,8 @@
   [_inactiveTabsSettingsCoordinator start];
 }
 
+- (void)showTabPickupSettings {
+  // TODO(crbug.com/1457175): Implement this.
+}
+
 @end

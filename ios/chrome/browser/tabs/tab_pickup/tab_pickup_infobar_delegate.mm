@@ -33,7 +33,8 @@ TabPickupInfobarDelegate::TabPickupInfobarDelegate(
     Browser* browser,
     const synced_sessions::DistantSession* session)
     : browser_(browser) {
-  DCHECK(IsTabPickupEnabled());
+  CHECK(IsTabPickupEnabled());
+  CHECK(!IsTabPickupDisabledByUser());
 
   favicon_loader_ = IOSChromeFaviconLoaderFactory::GetForBrowserState(
       browser_->GetBrowserState());

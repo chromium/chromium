@@ -30591,6 +30591,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.Tabs.TabPickup">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@chromium.org</owner>
+  <description>
+    Reported when user navigates to Tab Pickup Tabs Settings. iOS only.
+  </description>
+</action>
+
 <action name="Settings.VoiceSearch">
   <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

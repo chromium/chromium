@@ -109,7 +109,7 @@ void TabPickupBrowserAgent::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void TabPickupBrowserAgent::ForeignSessionsChanged() {
   RecordTransitionTime();
 
-  if (!IsTabPickupEnabled()) {
+  if (!IsTabPickupEnabled() || IsTabPickupDisabledByUser()) {
     return;
   }
 
@@ -139,7 +139,8 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
 }
 
 void TabPickupBrowserAgent::SetupInfoBarDelegate() {
-  DCHECK(IsTabPickupEnabled());
+  CHECK(IsTabPickupEnabled());
+  CHECK(!IsTabPickupDisabledByUser());
   infobar_in_progress_ = true;
 
   delegate_ = std::make_unique<TabPickupInfobarDelegate>(browser_, session_);

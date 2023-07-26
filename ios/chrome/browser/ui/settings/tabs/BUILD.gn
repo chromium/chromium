@@ -18,6 +18,7 @@ source_set("tabs") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",
   ]
 }
@@ -39,6 +40,7 @@ source_set("tabs_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:inactive_tabs_ui",
