@@ -1278,7 +1278,6 @@ component("net") {
       "proxy_resolution/proxy_resolver_mac.cc",
       "proxy_resolution/proxy_resolver_mac.h",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_ios) {
@@ -3059,7 +3058,6 @@ test("net_unittests") {
 
   if (is_apple) {
     sources += [ "base/mac/url_conversions_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
