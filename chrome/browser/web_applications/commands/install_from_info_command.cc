@@ -206,7 +206,7 @@ void InstallFromInfoCommand::OnInstallCompleted(const AppId& app_id,
   }
 
   uninstall_and_replace_job_.emplace(
-      profile_, lock_->AsWeakPtr(), apps_or_extensions_to_uninstall_, app_id,
+      profile_, *lock_, apps_or_extensions_to_uninstall_, app_id,
       base::BindOnce(&InstallFromInfoCommand::OnUnintallAndReplaceFinished,
                      weak_factory_.GetWeakPtr(), app_id, std::move(code)));
   uninstall_and_replace_job_->Start();

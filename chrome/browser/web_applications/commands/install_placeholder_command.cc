@@ -199,8 +199,7 @@ void InstallPlaceholderCommand::OnInstallFinalized(
 
   DCHECK(lock_);
   uninstall_and_replace_job_.emplace(
-      profile_, lock_->AsWeakPtr(), install_options_.uninstall_and_replace,
-      app_id,
+      profile_, *lock_, install_options_.uninstall_and_replace, app_id,
       base::BindOnce(&InstallPlaceholderCommand::OnUninstallAndReplaced,
                      weak_factory_.GetWeakPtr(), app_id, std::move(code)));
   uninstall_and_replace_job_->Start();

@@ -65,7 +65,7 @@ mojom::UserDisplayMode GetExtensionUserDisplayMode(
 
 WebAppUninstallAndReplaceJob::WebAppUninstallAndReplaceJob(
     Profile* profile,
-    base::WeakPtr<AppLock> to_app_lock,
+    AppLock& to_app_lock,
     const std::vector<AppId>& from_apps_or_extensions,
     const AppId& to_app,
     base::OnceCallback<void(bool uninstall_triggered)> on_complete)
@@ -79,7 +79,6 @@ WebAppUninstallAndReplaceJob::WebAppUninstallAndReplaceJob(
 WebAppUninstallAndReplaceJob::~WebAppUninstallAndReplaceJob() = default;
 
 void WebAppUninstallAndReplaceJob::Start() {
-  DCHECK(to_app_lock_);
   DCHECK(to_app_lock_->registrar().IsInstalled(to_app_));
 
   std::vector<AppId> apps_to_replace;
@@ -108,8 +107,6 @@ void WebAppUninstallAndReplaceJob::Start() {
 void WebAppUninstallAndReplaceJob::MigrateUiAndUninstallApp(
     const AppId& from_app,
     base::OnceClosure on_complete) {
-  DCHECK(to_app_lock_);
-
 #if BUILDFLAG(IS_CHROMEOS)
   to_app_lock_->ui_manager().MigrateLauncherState(
       from_app, to_app_,
@@ -124,11 +121,6 @@ void WebAppUninstallAndReplaceJob::MigrateUiAndUninstallApp(
 void WebAppUninstallAndReplaceJob::OnMigrateLauncherState(
     const AppId& from_app,
     base::OnceClosure on_complete) {
-  if (!to_app_lock_) {
-    std::move(on_complete).Run();
-    return;
-  }
-
   // If migration of user/UI data is required for other app types consider
   // generalising this operation to be part of app service.
   const extensions::Extension* from_extension =
@@ -170,7 +162,7 @@ void WebAppUninstallAndReplaceJob::
         const AppId& from_app,
         base::OnceClosure on_complete,
         std::unique_ptr<ShortcutInfo> shortcut_info) {
-  if (!shortcut_info || !to_app_lock_) {
+  if (!shortcut_info) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     // The shortcut info couldn't be found, simply uninstall.
     proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
@@ -218,10 +210,6 @@ void WebAppUninstallAndReplaceJob::OnShortcutLocationGathered(
 void WebAppUninstallAndReplaceJob::InstallOsHooksForReplacementApp(
     base::OnceClosure on_complete,
     ShortcutLocations locations) {
-  if (!to_app_lock_) {
-    std::move(on_complete).Run();
-    return;
-  }
   // This ensures that the os integration matches the app that we are replacing.
   InstallOsHooksOptions options;
   options.os_hooks[OsHookType::kShortcuts] =

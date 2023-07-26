@@ -29,7 +29,7 @@ class WebAppUninstallAndReplaceJob {
  public:
   WebAppUninstallAndReplaceJob(
       Profile* profile,
-      base::WeakPtr<AppLock> to_app_lock,
+      AppLock& to_app_lock,
       const std::vector<AppId>& from_apps_or_extensions,
       const AppId& to_app,
       base::OnceCallback<void(bool uninstall_triggered)> on_complete);
@@ -57,7 +57,8 @@ class WebAppUninstallAndReplaceJob {
   void OnInstallOsHooksCompleted(base::OnceClosure on_complete, OsHooksErrors);
 
   raw_ptr<Profile> profile_;
-  base::WeakPtr<AppLock> to_app_lock_;
+  // `this` must exist within the scope of a WebAppCommand's AppLock.
+  raw_ref<AppLock> to_app_lock_;
   std::vector<AppId> from_apps_or_extensions_;
   const AppId to_app_;
   base::OnceCallback<void(bool uninstall_triggered)> on_complete_;

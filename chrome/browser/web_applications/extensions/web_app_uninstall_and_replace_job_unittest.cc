@@ -45,7 +45,7 @@ class TestUninstallAndReplaceJobCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override {
     lock_ = std::move(lock);
     uninstall_and_replace_job_.emplace(
-        profile_, lock_->AsWeakPtr(), from_apps_, to_app_,
+        profile_, *lock_, from_apps_, to_app_,
         base::BindOnce(&TestUninstallAndReplaceJobCommand::OnComplete,
                        base::Unretained(this)));
     uninstall_and_replace_job_->Start();

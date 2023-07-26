@@ -324,7 +324,7 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
 
   DCHECK(app_lock_);
   uninstall_and_replace_job_.emplace(
-      profile_, app_lock_->AsWeakPtr(), apps_to_uninstall_, app_id,
+      profile_, *app_lock_, apps_to_uninstall_, app_id,
       base::BindOnce(&ExternallyManagedInstallCommand::OnUninstallAndReplaced,
                      weak_factory_.GetWeakPtr(), app_id, code));
   uninstall_and_replace_job_->Start();
