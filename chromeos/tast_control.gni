@@ -16,8 +16,19 @@
 # build, this is the wrong file to edit. You need to mark those tests as
 # "informational" in their source .go files.
 
-# To disable a specific test in chrome_all_tast_tests, add it the following
-# list and cite a bug.
+# To disable a specific test in chrome_all_tast_tests, add the name of the test
+# to the following list and cite a bug.
+#
+# To disable the test only on a specific board, add an at-mark ( @ ) and the
+# board name at the end of the entry (eg. "login.Chrome@kevin" disables
+# "login.Chrome" test only on "kevin" device). An asterisk is not supported in
+# the board name.
+#
+# As a last resort, you can use an asterisk ( * ) in an entry -- matches every
+# substring (eg. "crostini.*" disables the all tests that names are starting
+# with "crostini.").
+# WARNING: This may cause unexpected disablement and is strongly discouraged.
+# You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
   # crbug.com/1364499
   "documentscanapi.Scan",
