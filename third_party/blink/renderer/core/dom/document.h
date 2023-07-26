@@ -2182,14 +2182,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void RunPostPrerenderingActivationSteps();
 
-  // Resolves/rejects the promise if an existing permission grant can
-  // approve/deny; otherwise rejects if without user gesture, or
-  // resolves/rejects based on the requested status.
-  void OnGotExistingStorageAccessPermissionState(
-      ScriptPromiseResolver* resolver,
-      bool has_user_gesture,
-      mojom::blink::PermissionStatus previous_status);
-
   // Similar to `OnGotExistingStorageAccessPermissionState`, but for the
   // top-level variant. Allows bypassing user activation checks in the event
   // that the permission is already granted.

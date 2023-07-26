@@ -6510,51 +6510,14 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
 
   auto descriptor = mojom::blink::PermissionDescriptor::New();
   descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
-  GetPermissionService(ExecutionContext::From(script_state))
-      ->HasPermission(
-          std::move(descriptor),
-          WTF::BindOnce(&Document::OnGotExistingStorageAccessPermissionState,
-                        WrapPersistent(this), WrapPersistent(resolver),
-                        LocalFrame::HasTransientUserActivation(GetFrame())));
-
-  return promise;
-}
-
-void Document::OnGotExistingStorageAccessPermissionState(
-    ScriptPromiseResolver* resolver,
-    bool has_user_gesture,
-    mojom::blink::PermissionStatus previous_status) {
-  DCHECK(resolver);
-  DCHECK(GetFrame());
-  ScriptState* script_state = resolver->GetScriptState();
-  DCHECK(script_state);
-  ScriptState::Scope scope(script_state);
-
-  // TODO(crbug.com/1433644): We can avoid querying the current permission state
-  // by handling the user gesture requirement in
-  // StorageAccessGrantPermissionContext::DecidePermission
-  if (previous_status == mojom::blink::PermissionStatus::ASK &&
-      !has_user_gesture) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccess: Must be handling a user gesture to use."));
-    FireRequestStorageAccessHistogram(
-        RequestStorageResult::REJECTED_NO_USER_GESTURE);
-
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccess not allowed"));
-    return;
-  }
-
-  auto descriptor = mojom::blink::PermissionDescriptor::New();
-  descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
   GetPermissionService(ExecutionContext::From(resolver->GetScriptState()))
       ->RequestPermission(
-          std::move(descriptor), has_user_gesture,
+          std::move(descriptor),
+          LocalFrame::HasTransientUserActivation(GetFrame()),
           WTF::BindOnce(&Document::OnRequestedStorageAccessPermissionState,
                         WrapPersistent(this), WrapPersistent(resolver)));
+
+  return promise;
 }
 
 void Document::OnGotExistingTopLevelStorageAccessPermissionState(

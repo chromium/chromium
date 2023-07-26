@@ -229,6 +229,11 @@ void StorageAccessGrantPermissionContext::DecidePermission(
 
   if (!user_gesture ||
       !base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+    if (!user_gesture) {
+      rfh->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "requestStorageAccess: Must be handling a user gesture to use.");
+    }
     RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
