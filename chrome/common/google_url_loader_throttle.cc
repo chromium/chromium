@@ -7,7 +7,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -17,6 +18,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_urls.h"
@@ -113,6 +115,8 @@ void GoogleURLLoaderThrottle::WillStartRequest(
       ShouldDeferRequestForBoundSession(request->url)) {
     CHECK(bound_session_request_throttled_listener_);
     *defer = true;
+    CHECK(!bound_session_request_throttled_start_time_.has_value());
+    bound_session_request_throttled_start_time_ = base::TimeTicks::Now();
     bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
         base::BindOnce(
             &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
@@ -164,6 +168,8 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
       ShouldDeferRequestForBoundSession(redirect_info->new_url)) {
     CHECK(bound_session_request_throttled_listener_);
     *defer = true;
+    CHECK(!bound_session_request_throttled_start_time_.has_value());
+    bound_session_request_throttled_start_time_ = base::TimeTicks::Now();
     bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
         base::BindOnce(
             &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
@@ -243,6 +249,13 @@ void GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted(
 
 void GoogleURLLoaderThrottle::ResumeOrCancelRequest(
     BoundSessionRequestThrottledListener::UnblockAction unblock_action) {
+  CHECK(bound_session_request_throttled_start_time_.has_value());
+  base::TimeDelta duration =
+      base::TimeTicks::Now() - *bound_session_request_throttled_start_time_;
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Signin.BoundSessionCredentials.DeferredRequestDelay", duration);
+  bound_session_request_throttled_start_time_ = absl::nullopt;
+
   switch (unblock_action) {
     case BoundSessionRequestThrottledListener::UnblockAction::kResume:
       delegate_->Resume();
