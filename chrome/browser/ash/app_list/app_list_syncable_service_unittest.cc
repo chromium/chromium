@@ -205,8 +205,9 @@ class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
 
   // A hacky way to change an item's name.
   void ChangeItemName(const std::string& id, const std::string& new_name) {
-    app_list_syncable_service()->GetMutableSyncItemForTest(id)->item_name =
-        new_name;
+    const_cast<AppListSyncableService::SyncItem*>(
+        app_list_syncable_service()->GetSyncItem(id))
+        ->item_name = new_name;
     app_list_syncable_service()->GetModelUpdater()->SetItemName(id, new_name);
   }
 

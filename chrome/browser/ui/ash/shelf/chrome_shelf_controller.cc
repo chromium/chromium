@@ -307,9 +307,6 @@ ChromeShelfController::~ChromeShelfController() {
 
   model_->RemoveObserver(this);
 
-  // Release all profile dependent resources.
-  ReleaseProfile();
-
   // Get rid of the multi user window manager instance.
   MultiUserWindowManagerHelper::DeleteInstance();
 
@@ -1568,12 +1565,13 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
       base::BindRepeating(&ChromeShelfController::UpdatePinnedAppsFromSync,
                           base::Unretained(this)));
 
-  app_list::AppListSyncableService* app_list_syncable_service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile());
-  if (app_list_syncable_service)
-    app_list_syncable_service->AddObserverAndStart(this);
+  if (auto* app_list_syncable_service =
+          app_list::AppListSyncableServiceFactory::GetForProfile(profile())) {
+    app_list_syncable_service_observer_.Observe(app_list_syncable_service);
+  }
 
-  PrefServiceSyncableFromProfile(profile())->AddObserver(this);
+  pref_service_syncable_observer_.Observe(
+      PrefServiceSyncableFromProfile(profile()));
   InitLocalShelfPrefsIfOsPrefsAreSyncing();
   shelf_prefs_->AttachProfile(profile_to_attach);
 }
@@ -1581,12 +1579,8 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
 void ChromeShelfController::ReleaseProfile() {
   pref_change_registrar_.RemoveAll();
 
-  app_list::AppListSyncableService* app_list_syncable_service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile());
-  if (app_list_syncable_service)
-    app_list_syncable_service->RemoveObserver(this);
-
-  PrefServiceSyncableFromProfile(profile())->RemoveObserver(this);
+  app_list_syncable_service_observer_.Reset();
+  pref_service_syncable_observer_.Reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

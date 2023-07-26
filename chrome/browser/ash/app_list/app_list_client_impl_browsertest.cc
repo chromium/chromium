@@ -93,13 +93,12 @@ namespace {
 
 class TestObserver : public app_list::AppListSyncableService::Observer {
  public:
-  explicit TestObserver(app_list::AppListSyncableService* syncable_service)
-      : syncable_service_(syncable_service) {
-    syncable_service_->AddObserverAndStart(this);
+  explicit TestObserver(app_list::AppListSyncableService* syncable_service) {
+    observer_.Observe(syncable_service);
   }
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
-  ~TestObserver() override { syncable_service_->RemoveObserver(this); }
+  ~TestObserver() override = default;
 
   size_t add_or_update_count() const { return add_or_update_count_; }
 
@@ -108,8 +107,9 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
   void OnAddOrUpdateFromSyncItemForTest() override { ++add_or_update_count_; }
 
  private:
-  const raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
-      syncable_service_;
+  base::ScopedObservation<app_list::AppListSyncableService,
+                          app_list::AppListSyncableService::Observer>
+      observer_{this};
   size_t add_or_update_count_ = 0;
 };
 

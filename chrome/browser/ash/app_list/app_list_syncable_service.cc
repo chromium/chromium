@@ -386,8 +386,6 @@ void AppListSyncableService::SetAppIsDefaultForTest(Profile* profile,
   app_list::SetAppIsDefaultForTest(profile, id);
 }
 
-AppListSyncableService::AppListSyncableService() = default;
-
 AppListSyncableService::AppListSyncableService(Profile* profile)
     : profile_(profile),
       extension_system_(extensions::ExtensionSystem::Get(profile)),
@@ -564,11 +562,6 @@ void AppListSyncableService::OnFirstSync(
 void AppListSyncableService::NotifyObserversSyncUpdated() {
   for (auto& observer : observer_list_)
     observer.OnSyncModelUpdated();
-}
-
-size_t AppListSyncableService::GetNumSyncItemsForTest() {
-  DCHECK(IsInitialized());
-  return sync_items_.size();
 }
 
 const AppListSyncableService::SyncItem* AppListSyncableService::GetSyncItem(
@@ -1088,11 +1081,6 @@ void AppListSyncableService::PopulateSyncItemsForTest(
   }
 }
 
-AppListSyncableService::SyncItem*
-AppListSyncableService::GetMutableSyncItemForTest(const std::string& id) {
-  return FindSyncItem(id);
-}
-
 const AppListSyncableService::SyncItemMap& AppListSyncableService::sync_items()
     const {
   return sync_items_;
@@ -1229,11 +1217,6 @@ AppListSyncableService::MergeDataAndStartSyncing(
   sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
 
   HandleUpdateFinished(true /* clean_up_after_init_sync */);
-
-  // Check if already signaled since unit tests make multiple calls.
-  if (!on_initialized_.is_signaled()) {
-    on_initialized_.Signal();
-  }
 
   // Signal completion of the first sync in the session once and only once.
   if (!on_first_sync_.is_signaled()) {

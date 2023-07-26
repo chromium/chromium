@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
@@ -71,15 +72,14 @@ class AppListSyncUpdateWaiter
     : public StatusChangeChecker,
       public app_list::AppListSyncableService::Observer {
  public:
-  explicit AppListSyncUpdateWaiter(app_list::AppListSyncableService* service)
-      : service_(service) {
-    service_->AddObserverAndStart(this);
+  explicit AppListSyncUpdateWaiter(app_list::AppListSyncableService* service) {
+    observer_.Observe(service);
   }
 
   AppListSyncUpdateWaiter(const AppListSyncUpdateWaiter&) = delete;
   AppListSyncUpdateWaiter& operator=(const AppListSyncUpdateWaiter&) = delete;
 
-  ~AppListSyncUpdateWaiter() override { service_->RemoveObserver(this); }
+  ~AppListSyncUpdateWaiter() override = default;
 
   // StatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override {
@@ -94,7 +94,9 @@ class AppListSyncUpdateWaiter
   }
 
  private:
-  const raw_ptr<app_list::AppListSyncableService, ExperimentalAsh> service_;
+  base::ScopedObservation<app_list::AppListSyncableService,
+                          app_list::AppListSyncableService::Observer>
+      observer_{this};
   bool service_updated_ = false;
 };
 
@@ -156,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTestWithVerifier,
   const size_t kNumDefaultApps =
       2u + app_list::GetNumberOfInternalAppsShowInLauncherForTest(
                /*apps_name=*/nullptr, GetProfile(0));
-  ASSERT_EQ(kNumApps + kNumDefaultApps, service->GetNumSyncItemsForTest());
+  ASSERT_EQ(kNumApps + kNumDefaultApps, service->sync_items().size());
 
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(AllProfilesHaveSameAppList());

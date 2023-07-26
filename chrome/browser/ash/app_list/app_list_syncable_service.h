@@ -152,9 +152,6 @@ class AppListSyncableService : public syncer::SyncableService,
 
   using SyncItemMap = std::map<std::string, std::unique_ptr<SyncItem>>;
 
-  // No-op constructor for tests.
-  AppListSyncableService();
-
   // Populates the model when |profile|'s extension system is ready.
   explicit AppListSyncableService(Profile* profile);
   AppListSyncableService(const AppListSyncableService&) = delete;
@@ -245,15 +242,8 @@ class AppListSyncableService : public syncer::SyncableService,
   // Virtual for testing.
   virtual bool IsInitialized() const;
 
-  // Signalled when AppListSyncableService is Initialized.
-  const base::OneShotEvent& on_initialized() const { return on_initialized_; }
-
   // Returns true if sync was started.
   bool IsSyncing() const;
-
-  // Registers new observers and makes sure that service is started.
-  void AddObserverAndStart(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Registers a `callback` to be run from a posted task on completion of the
   // first sync in the session. The `callback` is notified of whether the first
@@ -265,14 +255,11 @@ class AppListSyncableService : public syncer::SyncableService,
 
   const Profile* profile() const { return profile_; }
   Profile* profile() { return profile_; }
-  size_t GetNumSyncItemsForTest();
   const std::string& GetOemFolderNameForTest() const {
     return oem_folder_name_;
   }
 
   void PopulateSyncItemsForTest(std::vector<std::unique_ptr<SyncItem>>&& items);
-
-  SyncItem* GetMutableSyncItemForTest(const std::string& id);
 
   virtual const SyncItemMap& sync_items() const;
 
@@ -301,7 +288,13 @@ class AppListSyncableService : public syncer::SyncableService,
 
  private:
   friend class AppListSyncModelSanitizer;
+  friend struct base::ScopedObservationTraits<AppListSyncableService,
+                                              AppListSyncableService::Observer>;
   class ModelUpdaterObserver;
+
+  // Registers new observers and makes sure that service is started.
+  void AddObserverAndStart(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Builds the model once ExtensionService is ready.
   void BuildModel();
@@ -373,11 +366,6 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // Deletes a SyncItem matching |specifics|.
   void DeleteSyncItemSpecifics(const sync_pb::AppListSpecifics& specifics);
-
-  // Gets the preferred location for the OEM folder. It may return an invalid
-  // position and the final OEM folder position will be determined in the
-  // AppListModel.
-  syncer::StringOrdinal GetPreferredOemFolderPos();
 
   // Returns true if an extension matching |id| exists and was installed by
   // an OEM (extension->was_installed_by_oem() is true).
@@ -472,7 +460,6 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
-  base::OneShotEvent on_initialized_;
   base::OneShotEvent on_first_sync_;
 
   base::WeakPtrFactory<AppListSyncableService> weak_ptr_factory_{this};

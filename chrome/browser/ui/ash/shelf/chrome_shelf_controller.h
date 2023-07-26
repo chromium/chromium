@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
@@ -55,6 +56,10 @@ class Image;
 
 namespace ui {
 class BaseWindow;
+}
+
+namespace sync_preferences {
+class PrefServiceSyncable;
 }
 
 class BrowserAppShelfController;
@@ -515,6 +520,14 @@ class ChromeShelfController
   using RunningAppListIds = std::vector<std::string>;
   using RunningAppListIdMap = std::map<std::string, RunningAppListIds>;
   RunningAppListIdMap last_used_running_application_order_;
+
+  base::ScopedObservation<app_list::AppListSyncableService,
+                          app_list::AppListSyncableService::Observer>
+      app_list_syncable_service_observer_{this};
+
+  base::ScopedObservation<sync_preferences::PrefServiceSyncable,
+                          sync_preferences::PrefServiceSyncableObserver>
+      pref_service_syncable_observer_{this};
 
   // A sequenced task runner to create standard icons and not spamming the
   // thread pool.
