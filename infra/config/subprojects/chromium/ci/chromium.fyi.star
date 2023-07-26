@@ -2091,10 +2091,6 @@ fyi_ios_builder(
         short_name = "ios-blk",
     ),
     execution_timeout = 3 * time.hour,
-
-    # TODO(crbug/1466746): Xcode 15 is broken due a bug in the SDK.
-    # Remove below once the issue is fixed.
-    xcode = xcode.x14main,
 )
 
 fyi_ios_builder(

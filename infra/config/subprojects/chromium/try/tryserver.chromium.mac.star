@@ -376,10 +376,6 @@ ios_builder(
     ],
     cpu = cpu.ARM64,
     execution_timeout = 4 * time.hour,
-
-    # TODO(crbug/1466746): Xcode 15 is broken due a bug in the SDK.
-    # Remove below once the issue is fixed.
-    xcode = xcode.x14main,
 )
 
 ios_builder(
