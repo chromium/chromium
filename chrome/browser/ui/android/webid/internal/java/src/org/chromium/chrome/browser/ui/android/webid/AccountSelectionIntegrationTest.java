@@ -48,7 +48,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -264,7 +263,7 @@ public class AccountSelectionIntegrationTest {
 
     @Test
     @MediumTest
-    public void testShowModalDialog() {
+    public void testShowAndCloseModalDialog() {
         CustomTabActivity activity =
                 ApplicationTestUtils.waitForActivityWithClass(CustomTabActivity.class,
                         Stage.RESUMED, () -> mAccountSelection.showModalDialog(TEST_URL));
@@ -275,13 +274,38 @@ public class AccountSelectionIntegrationTest {
             Criteria.checkThat(activity.getIntent().getIntExtra(IntentHandler.EXTRA_FEDCM_ID, -1),
                     Matchers.not(-1));
         });
+
+        ApplicationTestUtils.waitForActivityWithClass(
+                CustomTabActivity.class, Stage.DESTROYED, () -> {
+                    BottomSheetController customTabController =
+                            BottomSheetControllerProvider.from(activity.getWindowAndroid());
+                    AccountSelectionComponent customTabComponent =
+                            new AccountSelectionCoordinator(activity.getActivityTab(),
+                                    activity.getWindowAndroid(), customTabController, mMockBridge);
+                    customTabComponent.closeModalDialog();
+                });
     }
 
     @Test
     @MediumTest
-    public void testCloseModalDialog() {
-        ApplicationTestUtils.waitForActivityWithClass(
-                ChromeActivity.class, Stage.DESTROYED, () -> mAccountSelection.closeModalDialog());
+    public void testShowModalDialogAndFinish() {
+        CustomTabActivity activity =
+                ApplicationTestUtils.waitForActivityWithClass(CustomTabActivity.class,
+                        Stage.RESUMED, () -> mAccountSelection.showModalDialog(TEST_URL));
+        runOnUiThreadBlocking(() -> { activity.finish(); });
+        CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testIncorrectCloseModalDialog() {
+        // closeModalDialog() on the mAccountSelection should do nothing.
+        runOnUiThreadBlocking(() -> { mAccountSelection.closeModalDialog(); });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityTestRule.getActivity().isDestroyed(), Matchers.is(false));
+        });
     }
 
     public static <T> T waitForEvent(T mock) {

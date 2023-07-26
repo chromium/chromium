@@ -39,6 +39,11 @@ public interface AccountSelectionComponent {
          * Called when the user clicks on the button to sign in to the IDP.
          */
         void onSignInToIdp();
+
+        /**
+         * Called on the opener when a modal dialog that it opened has been closed.
+         */
+        void onModalDialogClosed();
     }
 
     /**
@@ -97,4 +102,9 @@ public interface AccountSelectionComponent {
      * Closes a modal dialog, if one is opened.
      */
     void closeModalDialog();
+
+    /**
+     * Gets notified about the modal dialog that it opened being closed.
+     */
+    void onModalDialogClosed();
 }

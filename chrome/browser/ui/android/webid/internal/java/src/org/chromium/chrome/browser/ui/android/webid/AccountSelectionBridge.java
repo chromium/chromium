@@ -165,6 +165,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         }
     }
 
+    @Override
+    public void onModalDialogClosed() {
+        mAccountSelectionComponent.onModalDialogClosed();
+    }
+
     @NativeMethods
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, GURL idpConfigUrl,

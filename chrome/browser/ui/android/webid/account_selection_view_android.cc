@@ -144,7 +144,7 @@ void AccountSelectionViewAndroid::Show(
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox) {
-  if (!RecreateJavaObject()) {
+  if (!MaybeCreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
@@ -183,7 +183,7 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata) {
-  if (!RecreateJavaObject()) {
+  if (!MaybeCreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
@@ -229,6 +229,11 @@ content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
 }
 
 void AccountSelectionViewAndroid::CloseModalDialog() {
+  // The Java object needs to be recreated, as this is invoked for the
+  // CCT that was closed.
+  if (!MaybeCreateJavaObject()) {
+    return;
+  }
   JNIEnv* env = AttachCurrentThread();
   Java_AccountSelectionBridge_closeModalDialog(env, java_object_internal_);
 }
@@ -258,14 +263,13 @@ void AccountSelectionViewAndroid::OnSignInToIdp(JNIEnv* env) {
   delegate_->OnSigninToIdP();
 }
 
-bool AccountSelectionViewAndroid::RecreateJavaObject() {
+bool AccountSelectionViewAndroid::MaybeCreateJavaObject() {
   if (delegate_->GetNativeView() == nullptr ||
       delegate_->GetNativeView()->GetWindowAndroid() == nullptr) {
     return false;  // No window attached (yet or anymore).
   }
   if (java_object_internal_) {
-    Java_AccountSelectionBridge_destroy(AttachCurrentThread(),
-                                        java_object_internal_);
+    return true;
   }
   java_object_internal_ = Java_AccountSelectionBridge_create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this),

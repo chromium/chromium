@@ -2427,9 +2427,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // status code.
   virtual bool HasErrorPage(int http_status_code);
 
-  // Creates a modal window that intermediates the exchange of ID tokens.
+  // Creates a controller that intermediates the exchange of ID tokens for the
+  // given |web_contents|.
   virtual std::unique_ptr<IdentityRequestDialogController>
-  CreateIdentityRequestDialogController();
+  CreateIdentityRequestDialogController(WebContents* web_contents);
 
   // Creates an mdoc provider to fetch mdocs from native apps.
   virtual std::unique_ptr<MDocProvider> CreateMDocProvider();

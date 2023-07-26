@@ -38,8 +38,10 @@ import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -53,10 +55,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Creates the AccountSelection component. AccountSelection uses a bottom sheet to let the
- * user select an account.
+ * Creates the AccountSelection component. AccountSelection uses a bottom sheet
+ * to let the user select an account.
  */
-public class AccountSelectionCoordinator implements AccountSelectionComponent {
+public class AccountSelectionCoordinator
+        implements AccountSelectionComponent, ActivityStateObserver {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
     private static Map<Integer, WeakReference<AccountSelectionComponent.Delegate>>
@@ -205,13 +208,17 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         intent.putExtra(IntentHandler.EXTRA_FEDCM_ID, fedcmId);
         IntentUtils.addTrustedIntentExtras(intent);
 
+        mWindowAndroid.addActivityStateObserver(this);
         context.startActivity(intent);
+        mMediator.onModalDialogOpened();
         // CCT is opened asynchronously, and we do not have the WebContents for it yet.
         return null;
     }
 
     @Override
     public void closeModalDialog() {
+        // Note that this method is invoked on the object corresponding to the CCT. It
+        // will notify the opener that it is being closed and close itself.
         Activity activity = mWindowAndroid.getActivity().get();
         if (!(activity instanceof ChromeActivity)) {
             return;
@@ -219,11 +226,39 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         ChromeActivity chromeActivity = (ChromeActivity) activity;
         int fedcmId = IntentUtils.safeGetIntExtra(
                 chromeActivity.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1);
-        // Close the current tab by finishing the activity.
+        // Close the current tab by finishing the activity, if we know it was initiated
+        // by the FedCM API.
+        if (fedcmId == -1) return;
         activity.finish();
         WeakReference<AccountSelectionComponent.Delegate> delegate = sFedCMDelegateMap.get(fedcmId);
         if (delegate != null && delegate.get() != null) {
-            // TODO(crbug.com/1456368): notify the opener using the fedcmId.
+            delegate.get().onModalDialogClosed();
         }
     }
+
+    @Override
+    public void onModalDialogClosed() {
+        // When the opener is notified that the CCT is about to be closed, we call
+        // removeActivityStateObserver() so that we do not invoke onDismissed() once the
+        // activity is resumed.
+        mWindowAndroid.removeActivityStateObserver(this);
+        mMediator.onModalDialogClosed();
+    }
+
+    // ActivityStateObserver
+    @Override
+    public void onActivityPaused() {}
+
+    @Override
+    public void onActivityResumed() {
+        // This method would only be invoked after showModalDialog() is invoked and a
+        // CCT is opened (which register this as an observer), and then the CCT is
+        // closed such that this is resumed. This method would then be invoked on the CCT opener's
+        // object.
+        mWindowAndroid.removeActivityStateObserver(this);
+        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+    }
+
+    @Override
+    public void onActivityDestroyed() {}
 }

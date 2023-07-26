@@ -559,7 +559,20 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
         }) ()
     )";
 
-  // Check that modal dialog is not closed.
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, IdentityProvider.close() should invoke CloseModalDialog() on
+  // the dialog controller.
+  auto controller = std::make_unique<MockIdentityRequestDialogController>();
+  EXPECT_CALL(*controller, CloseModalDialog);
+  test_browser_client_->SetIdentityRequestDialogController(
+      std::move(controller));
+
+  // Run the script.
+  EXPECT_EQ(true, EvalJs(shell(), script));
+#else
+  // On desktop, IdentityProvider.close() should invoke NotifyClose() on the
+  // delegate set on the identity registry. Check that modal dialog is not
+  // closed.
   EXPECT_FALSE(test_modal_dialog_view_delegate_->closed_);
 
   // Run the script.
@@ -572,6 +585,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
 
   // Check that modal dialog is closed.
   EXPECT_TRUE(test_modal_dialog_view_delegate_->closed_);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 class WebIdMDocsBrowserTest : public WebIdBrowserTest {
@@ -796,8 +810,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   auto config_url = GURL(BaseIdpUrl());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _, _))
-      .WillOnce(::testing::WithArg<6>([&config_url](auto on_selected) {
+  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _))
+      .WillOnce(::testing::WithArg<5>([&config_url](auto on_selected) {
         std::move(on_selected)
             .Run(config_url,
                  /* account_id=*/"not_real_account",
