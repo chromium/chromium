@@ -51,9 +51,7 @@ constexpr int kLabelFontSize = 12;
 BEGIN_METADATA(AshNotificationExpandButton, views::Button)
 END_METADATA
 
-AshNotificationExpandButton::AshNotificationExpandButton(
-    PressedCallback callback)
-    : Button(std::move(callback)) {
+AshNotificationExpandButton::AshNotificationExpandButton() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 

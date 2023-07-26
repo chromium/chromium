@@ -265,7 +265,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   virtual bool IsExpandable() const = 0;
 
-  virtual void SetExpandButtonEnabled(bool enabled);
+  virtual void SetExpandButtonVisibility(bool visible);
 
   // Returns the size of `icon_view_`.
   virtual gfx::Size GetIconViewSize() const = 0;

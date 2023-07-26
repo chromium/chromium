@@ -667,6 +667,9 @@ AshNotificationView::AshNotificationView(
                     gfx::Font::Weight::NORMAL),
       gfx::Insets(), true);
 
+  // This view should not be focusable since it does not act as a button.
+  header_row()->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+
   // Corner radius for popups is handled below. We do not set corner radius if
   // the view is  in the message center here. Rounded corners for message_views
   // in the message center view are handled in `UnifiedMessageListView`.
@@ -834,6 +837,10 @@ void AshNotificationView::AnimateSingleToGroup(
 }
 
 void AshNotificationView::ToggleExpand() {
+  if (disable_expand_collapse_) {
+    return;
+  }
+
   const bool target_expanded_state = !IsExpanded();
 
   SetManuallyExpandedOrCollapsed(
@@ -1390,8 +1397,8 @@ bool AshNotificationView::IsIconViewShown() const {
   return NotificationViewBase::IsIconViewShown() && !is_grouped_child_view_;
 }
 
-void AshNotificationView::SetExpandButtonEnabled(bool enabled) {
-  expand_button_->SetVisible(enabled);
+void AshNotificationView::SetExpandButtonVisibility(bool visible) {
+  expand_button_->SetVisible(visible);
 }
 
 bool AshNotificationView::IsExpandable() const {
@@ -1559,6 +1566,10 @@ void AshNotificationView::OnInlineReplyUpdated() {
       inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
       kInlineReplyFadeInAnimationDurationMs, gfx::Tween::LINEAR,
       "Ash.NotificationView.InlineReply.FadeIn.AnimationSmoothness");
+}
+
+void AshNotificationView::SetExpandCollapseEnabled(bool enabled) {
+  disable_expand_collapse_ = !enabled;
 }
 
 views::View* AshNotificationView::FindGroupNotificationView(

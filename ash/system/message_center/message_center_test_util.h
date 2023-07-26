@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "url/gurl.h"
+
 namespace message_center {
 class Notification;
 }  // namespace message_center
@@ -18,7 +20,8 @@ namespace ash {
 // notification will contain a test image.
 std::unique_ptr<message_center::Notification> CreateSimpleNotification(
     const std::string& id,
-    bool has_image = false);
+    bool has_image = false,
+    const GURL& origin_url = GURL());
 
 }  // namespace ash
 

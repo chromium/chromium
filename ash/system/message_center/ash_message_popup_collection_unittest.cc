@@ -51,8 +51,16 @@
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
+#include "url/gurl.h"
+
 namespace ash {
+
 namespace {
+
+AshNotificationView* GetNotificationViewFromPopup(
+    message_center::MessagePopupView* popup) {
+  return static_cast<AshNotificationView*>(popup->message_view());
+}
 
 class TestMessagePopupCollection : public AshMessagePopupCollection {
  public:
@@ -171,10 +179,11 @@ class AshMessagePopupCollectionTest : public AshTestBase,
 
   gfx::Rect GetWorkArea() { return GetPrimaryPopupCollection()->work_area_; }
 
-  std::string AddNotification(bool has_image = false) {
+  std::string AddNotification(bool has_image = false,
+                              const GURL& origin_url = GURL()) {
     std::string id = base::NumberToString(notification_id_++);
     message_center::MessageCenter::Get()->AddNotification(
-        CreateSimpleNotification(id, has_image));
+        CreateSimpleNotification(id, has_image, origin_url));
     return id;
   }
 
@@ -1007,7 +1016,7 @@ TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenNotificationUpdated) {
             popup1->GetBoundsInScreen().y());
 }
 
-TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenExpandNotification) {
+TEST_P(AshMessagePopupCollectionTest, DisableExpandCollapseNotification) {
   if (!IsQsRevampEnabled()) {
     return;
   }
@@ -1034,26 +1043,69 @@ TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenExpandNotification) {
                 message_center::kMarginBetweenPopups,
             popup1->GetBoundsInScreen().y());
 
-  // Clicking the expand button so that it is expanded and the notification's
-  // image shows up, which increases the height of the notification and make it
-  // not fit above the tray bubble anymore. In this case, all the notifications
-  // should move down to make room for the change. Note that this only works
-  // with screen height of 700 (set above), and the test might fail if we change
-  // the height of bubble width or notification width in the future.
-  auto* message_view = popup1->message_view();
-  ASSERT_FALSE(message_view->IsExpanded());
-  LeftClickOn(static_cast<AshNotificationView*>(message_view)
-                  ->expand_button_for_test());
-  AnimateUntilIdle();
+  // Since the space left on the screen above the popups is less than the
+  // threshold, expand/collapse behavior should be disabled on all the popups.
+  // Note that this only works with screen height of 700 (set above), and the
+  // test might fail if we change the height of bubble width or notification
+  // width in the future.
+  EXPECT_TRUE(
+      GetNotificationViewFromPopup(popup1)->disable_expand_collapse_for_test());
+  EXPECT_TRUE(
+      GetNotificationViewFromPopup(popup2)->disable_expand_collapse_for_test());
 
-  EXPECT_EQ(0, GetPrimaryUnifiedSystemTray()
-                   ->GetMessagePopupCollection()
-                   ->baseline_offset_for_test());
-  EXPECT_EQ(popup1->GetBoundsInScreen().bottom(),
-            popup_collection->GetBaseline());
-  EXPECT_EQ(popup2->GetBoundsInScreen().bottom() +
-                message_center::kMarginBetweenPopups,
-            popup1->GetBoundsInScreen().y());
+  // Close the bubble. The popup should be able to expand/collapse again.
+  unified_system_tray->bubble()->GetBubbleWidget()->CloseNow();
+
+  EXPECT_FALSE(
+      GetNotificationViewFromPopup(popup1)->disable_expand_collapse_for_test());
+  EXPECT_FALSE(
+      GetNotificationViewFromPopup(popup2)->disable_expand_collapse_for_test());
+}
+
+TEST_P(AshMessagePopupCollectionTest, DisableExpandCollapseGroupNotification) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  UpdateDisplay("1001x1000");
+
+  const GURL url(u"http://test-url.com");
+
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
+  // Create a group notification popup by adding notifications with the same
+  // notifier url, along with a single popup.
+  AddNotification(/*has_image=*/false, /*origin_url=*/url);
+  AddNotification(/*has_image=*/false, /*origin_url=*/url);
+  AddNotification(/*has_image=*/false, /*origin_url=*/url);
+  auto* group_popup = GetLastPopUpAdded();
+  ASSERT_TRUE(group_popup);
+
+  auto id2 = AddNotification();
+  AnimateUntilIdle();
+  auto* popup_collection = GetPrimaryPopupCollection();
+
+  auto* single_popup = popup_collection->GetPopupViewForNotificationID(id2);
+  ASSERT_TRUE(single_popup);
+
+  // Even when the space left on the screen above the popups is above the
+  // threshold, expand/collapse behavior should still be disabled for the group
+  // popup and enabled for the single popup. Note that this only works with
+  // screen height of 700 (set above), and the test might fail if we change the
+  // height of bubble width or notification width in the future.
+  EXPECT_TRUE(GetNotificationViewFromPopup(group_popup)
+                  ->disable_expand_collapse_for_test());
+  EXPECT_FALSE(GetNotificationViewFromPopup(single_popup)
+                   ->disable_expand_collapse_for_test());
+
+  // Close the bubble. The popup should be able to expand/collapse again.
+  unified_system_tray->bubble()->GetBubbleWidget()->CloseNow();
+
+  EXPECT_FALSE(GetNotificationViewFromPopup(group_popup)
+                   ->disable_expand_collapse_for_test());
+  EXPECT_FALSE(GetNotificationViewFromPopup(single_popup)
+                   ->disable_expand_collapse_for_test());
 }
 
 TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenBubbleHeightChanged) {

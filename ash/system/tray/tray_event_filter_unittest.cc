@@ -188,6 +188,10 @@ TEST_P(TrayEventFilterTest, ClickingOnMenuContainerDoesNotCloseBubble) {
 }
 
 TEST_P(TrayEventFilterTest, ClickingOnPopupWhenBubbleOpen) {
+  // Update display so that the screen is height enough and expand/collapse
+  // notification is allowed on top of the tray bubble.
+  UpdateDisplay("901x900");
+
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 

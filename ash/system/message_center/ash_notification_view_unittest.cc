@@ -737,6 +737,38 @@ TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {
   EXPECT_TRUE(GetExpandButton(notification_view())->GetVisible());
 }
 
+TEST_F(AshNotificationViewTest, DisableExpandCollapse) {
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+
+  bool old_expanded_state = notification_view()->IsExpanded();
+
+  auto* expand_button = GetExpandButton(notification_view());
+  ASSERT_TRUE(expand_button->GetVisible());
+  ASSERT_FALSE(notification_view()->disable_expand_collapse_for_test());
+
+  // Test the disable expand collapse behavior.
+  notification_view()->SetExpandCollapseEnabled(/*enabled=*/false);
+
+  EXPECT_TRUE(notification_view()->disable_expand_collapse_for_test());
+
+  // Clicking the expand button should not change the expand state.
+  views::test::ButtonTestApi test_api(expand_button);
+  test_api.NotifyClick(ui::test::TestEvent());
+  EXPECT_EQ(old_expanded_state, notification_view()->IsExpanded());
+
+  // Test the enable expand button behavior.
+  notification_view()->SetExpandCollapseEnabled(/*enabled=*/true);
+
+  EXPECT_FALSE(notification_view()->disable_expand_collapse_for_test());
+
+  // Clicking the expand button should not change the expand state.
+  views::test::ButtonTestApi test_api2(expand_button);
+  test_api2.NotifyClick(ui::test::TestEvent());
+
+  EXPECT_NE(old_expanded_state, notification_view()->IsExpanded());
+}
+
 TEST_F(AshNotificationViewTest, WarningLevelInSummaryText) {
   auto notification = CreateTestNotification();
   notification_view()->UpdateWithNotification(*notification);

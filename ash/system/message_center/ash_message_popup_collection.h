@@ -162,6 +162,13 @@ class ASH_EXPORT AshMessagePopupCollection
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
+  // Update the state of enabling expand/collapse behavior for each popup. We
+  // use `available_space_above_popups`, which is the space left on the screen
+  // above the popups, to make this decision. `available_space_above_popups`
+  // will only be meaningful if `shelf_bubble_open` is true.
+  void UpdateExpandCollapseEnabledForPopups(bool shelf_bubble_open,
+                                            int available_space_above_popups);
+
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   raw_ptr<display::Screen, ExperimentalAsh> screen_;

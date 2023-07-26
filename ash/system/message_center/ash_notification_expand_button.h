@@ -22,8 +22,7 @@ namespace ash {
 class AshNotificationExpandButton : public views::Button {
  public:
   METADATA_HEADER(AshNotificationExpandButton);
-  explicit AshNotificationExpandButton(
-      PressedCallback callback = PressedCallback());
+  AshNotificationExpandButton();
   AshNotificationExpandButton(const AshNotificationExpandButton&) = delete;
   AshNotificationExpandButton& operator=(const AshNotificationExpandButton&) =
       delete;

@@ -190,6 +190,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
 
   gfx::LinearAnimation* animation() { return animation_.get(); }
 
+  const std::vector<PopupItem>& popup_items() { return popup_items_; }
+
  private:
   // MessagePopupCollection always runs single animation at one time.
   // State is an enum of which animation is running right now.
