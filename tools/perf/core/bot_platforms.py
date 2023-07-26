@@ -530,28 +530,6 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop'),
     _GetBenchmarkConfig('system_health.common_desktop')
 ])
-_FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.memory_desktop'),
-    _GetBenchmarkConfig('rendering.mobile'),
-    _GetBenchmarkConfig('jetstream2'),
-])
-_FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.memory_desktop'),
-    _GetBenchmarkConfig('rendering.mobile'),
-    _GetBenchmarkConfig('jetstream2'),
-])
-_FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.common_desktop'),
-    _GetBenchmarkConfig('speedometer'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('jetstream2'),
-])
-_FUCHSIA_NUC_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.common_desktop'),
-    _GetBenchmarkConfig('speedometer'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('jetstream2'),
-])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('blink_perf.shadow_dom'),
@@ -842,34 +820,6 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               1,
                               'linux',
                               is_fyi=True)
-# TODO(crbug.com/1268204): Rename to platform-specific name.
-FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
-                                '',
-                                _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
-                                10,
-                                'fuchsia',
-                                is_fyi=True)
-FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform(
-    'fuchsia-perf-sherlock-fyi',
-    '',
-    _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS,
-    6,
-    'fuchsia',
-    is_fyi=True)
-FUCHSIA_PERF_ATLAS_FYI = PerfPlatform('fuchsia-perf-atlas-fyi',
-                                      '',
-                                      _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS,
-                                      4,
-                                      'fuchsia',
-                                      is_fyi=True,
-                                      executables=FUCHSIA_EXEC_CONFIGS['atlas'])
-FUCHSIA_PERF_NUC_FYI = PerfPlatform('fuchsia-perf-nuc-fyi',
-                                    '',
-                                    _FUCHSIA_NUC_PERF_FYI_BENCHMARK_CONFIGS,
-                                    4,
-                                    'fuchsia',
-                                    is_fyi=True,
-                                    executables=FUCHSIA_EXEC_CONFIGS['nuc'])
 
 # Calibration bots
 LINUX_PERF_CALIBRATION = PerfPlatform(

@@ -225,98 +225,6 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests.perf-fyi',
         },
     },
-    'fuchsia-perf-fyi': {
-        'tests': [{
-            'isolate':
-            'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms', '--experimental-tbmv3-metrics',
-                '--extra-path=/b/s/w/ir/bin/'
-            ] + bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
-            'type':
-            TEST_TYPES.TELEMETRY,
-        }],
-        'platform':
-        'fuchsia-wes',
-        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
-        # or codify as long-term solution.
-        'cipd': {
-            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
-            "location": ".",
-            "revision": "build_id:8787350426829126785"
-        },
-        'dimension': {
-            'cpu': None,
-            'device_type': 'Astro',
-            'os': 'Fuchsia',
-            'pool': 'chrome.tests',
-        },
-    },
-    'fuchsia-perf-atlas-fyi': {
-        'tests': [{
-            'isolate':
-            'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['atlas'],
-            'type':
-            TEST_TYPES.TELEMETRY,
-        }],
-        'platform':
-        'fuchsia-chrome',
-        'dimension': {
-            'cpu': None,
-            'device_type': 'Atlas',
-            'os': 'Fuchsia',
-            'pool': 'chrome.tests',
-        },
-    },
-    'fuchsia-perf-nuc-fyi': {
-        'tests': [{
-            'isolate':
-            'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['nuc'],
-            'type':
-            TEST_TYPES.TELEMETRY,
-        }],
-        'platform':
-        'fuchsia-chrome',
-        'dimension': {
-            'cpu': None,
-            'device_type': 'Intel NUC Kit NUC7i5DNHE',
-            'os': 'Fuchsia',
-            'pool': 'chrome.tests',
-        },
-    },
-    'fuchsia-perf-sherlock-fyi': {
-        'tests': [{
-            'isolate':
-            'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms', '--experimental-tbmv3-metrics',
-                '--extra-path=/b/s/w/ir/bin/'
-            ] + bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
-            'type':
-            TEST_TYPES.TELEMETRY,
-        }],
-        'platform':
-        'fuchsia-wes',
-        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
-        # or codify as long-term solution.
-        'cipd': {
-            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
-            "location": ".",
-            "revision": "build_id:8787350426829126785"
-        },
-        'dimension': {
-            'cpu': None,
-            'device_type': 'Sherlock',
-            'os': 'Fuchsia',
-            'pool': 'chrome.tests',
-        },
-    },
     'fuchsia-perf-nsn': {
         'tests': [{
             'isolate':
@@ -427,10 +335,6 @@ FYI_BUILDERS = {
             'web_engine_shell_pkg', 'cast_runner_pkg', 'chromium_builder_perf',
             'base_perftests'
         ],
-    },
-    'fuchsia-builder-perf-x64': {
-        'additional_compile_targets':
-        ['chrome_pkg', 'base_perftests', 'sync_performance_tests'],
     },
 }
 
@@ -1520,11 +1424,6 @@ GTEST_BENCHMARKS = {
         'skyostil@chromium.org, gab@chromium.org', 'Internals>SequenceManager',
         ('https://chromium.googlesource.com/chromium/src/+/HEAD/base/' +
          'README.md#performance-testing')),
-    'sync_performance_tests':
-    BenchmarkMetadata(
-        'mastiz@chromium.org', 'Services>Sync',
-        'https://chromium.googlesource.com/chromium/src/+/HEAD/components/sync/README.md'
-    ),
     'tracing_perftests':
     BenchmarkMetadata(
         'eseckler@chromium.org, khokhlov@chromium.org, kraskevich@chromium.org',
