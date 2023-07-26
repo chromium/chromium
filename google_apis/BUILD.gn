@@ -194,7 +194,6 @@ component("google_apis") {
     ]
 
     frameworks = [ "Foundation.framework" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   defines = [ "IS_GOOGLE_APIS_IMPL" ]
@@ -301,7 +300,6 @@ test("google_apis_unittests") {
     sources += [ "google_api_keys_mac_unittest.mm" ]
 
     deps += [ "//third_party/ocmock" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_chromeos) {
