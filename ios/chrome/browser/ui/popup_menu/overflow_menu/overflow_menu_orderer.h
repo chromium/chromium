@@ -117,6 +117,14 @@ class PrefService;
 // current data in `destinationCustomizationModel`.
 - (void)commitDestinationsUpdate;
 
+// Tells the orderer that actions customization was cancelled and should not be
+// saved.
+- (void)cancelActionsUpdate;
+
+// Tells the orderer that destinations customization was cancelled and should
+// not be saved.
+- (void)cancelDestinationsUpdate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_ORDERER_H_

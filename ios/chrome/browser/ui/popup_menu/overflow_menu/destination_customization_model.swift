@@ -10,14 +10,30 @@ import Combine
   @Published public var shownDestinations: [OverflowMenuDestination]
   @Published public var hiddenDestinations: [OverflowMenuDestination]
 
-  @Published public var destinationUsageEnabled: Bool = true
+  @Published public var destinationUsageEnabled: Bool
+
+  private let initialData:
+    (shown: [OverflowMenuDestination], hidden: [OverflowMenuDestination], usageEnabled: Bool)
+
+  public var hasChanged: Bool {
+    return destinationUsageEnabled != initialData.usageEnabled
+      || shownDestinations != initialData.shown || hiddenDestinations != initialData.hidden
+  }
 
   /// Holds sinks for all the destination observation.
   var cancellables: Set<AnyCancellable> = []
 
-  public init(destinations: [OverflowMenuDestination]) {
-    shownDestinations = destinations.filter(\.shown)
-    hiddenDestinations = destinations.filter { !$0.shown }
+  public init(destinations: [OverflowMenuDestination], destinationUsageEnabled: Bool) {
+    let shownDestinations = destinations.filter(\.shown)
+    let hiddenDestinations = destinations.filter { !$0.shown }
+
+    self.shownDestinations = shownDestinations
+    self.hiddenDestinations = hiddenDestinations
+    self.destinationUsageEnabled = destinationUsageEnabled
+
+    initialData = (
+      shown: shownDestinations, hidden: hiddenDestinations, usageEnabled: destinationUsageEnabled
+    )
 
     super.init()
 

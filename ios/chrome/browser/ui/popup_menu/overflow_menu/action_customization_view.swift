@@ -4,6 +4,11 @@
 
 import SwiftUI
 
+@objc public protocol ActionCustomizationEventHandler: AnyObject {
+  func cancelWasTapped()
+  func doneWasTapped()
+}
+
 /// View for showing the customization screen for overflow actions
 struct ActionCustomizationView: View {
   @ObservedObject var actionCustomizationModel: ActionCustomizationModel
@@ -14,52 +19,82 @@ struct ActionCustomizationView: View {
 
   @StateObject var dragHandler: DestinationDragHandler
 
+  weak var eventHandler: ActionCustomizationEventHandler?
+
   init(
     actionCustomizationModel: ActionCustomizationModel,
     destinationCustomizationModel: DestinationCustomizationModel,
-    uiConfiguration: OverflowMenuUIConfiguration
+    uiConfiguration: OverflowMenuUIConfiguration,
+    eventHandler: ActionCustomizationEventHandler
   ) {
     self.actionCustomizationModel = actionCustomizationModel
     self.destinationCustomizationModel = destinationCustomizationModel
     self.uiConfiguration = uiConfiguration
+    self.eventHandler = eventHandler
 
     _dragHandler = StateObject(
       wrappedValue: DestinationDragHandler(destinationModel: destinationCustomizationModel))
   }
 
   var body: some View {
-    VStack {
-      OverflowMenuDestinationList(
-        destinations: $destinationCustomizationModel.shownDestinations, metricsHandler: nil,
-        uiConfiguration: uiConfiguration, dragHandler: dragHandler
-      ).frame(height: OverflowMenuListStyle.destinationListHeight)
-      Divider()
-      List {
-        createDefaultSection {
-          HStack {
-            VStack(alignment: .leading) {
-              Text("")
-              Text("")
-                .font(.caption)
+    NavigationView {
+      VStack {
+        OverflowMenuDestinationList(
+          destinations: $destinationCustomizationModel.shownDestinations, metricsHandler: nil,
+          uiConfiguration: uiConfiguration, dragHandler: dragHandler
+        ).frame(height: OverflowMenuListStyle.destinationListHeight)
+        Divider()
+        List {
+          createDefaultSection {
+            HStack {
+              VStack(alignment: .leading) {
+                Text("")
+                Text("")
+                  .font(.caption)
+              }
+              Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {}
+                .labelsHidden()
+                .tint(.chromeBlue)
             }
-            Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {}
-              .labelsHidden()
-              .tint(.chromeBlue)
+          }
+          createDefaultSection {
+            hiddenDestinationsContent
+          }
+          ForEach([actionCustomizationModel.shownActions, actionCustomizationModel.hiddenActions]) {
+            group in
+            OverflowMenuActionSection(actionGroup: group, metricsHandler: nil)
           }
         }
-        createDefaultSection {
-          hiddenDestinationsContent
+      }
+      .onDrop(of: [.text], delegate: dragHandler.newDestinationListDropDelegate())
+      .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+      .overflowMenuListStyle()
+      .environment(\.editMode, .constant(.active))
+      .navigationTitle(
+        L10nUtils.stringWithFixup(
+          messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_TITLE)
+      )
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+          Button(
+            L10nUtils.stringWithFixup(
+              messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL)
+          ) {
+            eventHandler?.cancelWasTapped()
+          }
         }
-        ForEach([actionCustomizationModel.shownActions, actionCustomizationModel.hiddenActions]) {
-          group in
-          OverflowMenuActionSection(actionGroup: group, metricsHandler: nil)
+        ToolbarItem(placement: .confirmationAction) {
+          Button(
+            L10nUtils.stringWithFixup(
+              messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_DONE)
+          ) {
+            eventHandler?.doneWasTapped()
+          }.disabled(
+            !destinationCustomizationModel.hasChanged && !actionCustomizationModel.hasChanged)
         }
       }
     }
-    .onDrop(of: [.text], delegate: dragHandler.newDestinationListDropDelegate())
-    .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
-    .overflowMenuListStyle()
-    .environment(\.editMode, .constant(.active))
   }
 
   /// Content of the section for hidden destinations. This is a drop target if

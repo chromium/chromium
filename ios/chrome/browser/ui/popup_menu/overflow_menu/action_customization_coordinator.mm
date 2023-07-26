@@ -15,7 +15,8 @@
 #endif
 
 @interface ActionCustomizationCoordinator () <
-    UISheetPresentationControllerDelegate>
+    UISheetPresentationControllerDelegate,
+    ActionCustomizationEventHandler>
 
 @end
 
@@ -41,7 +42,8 @@
                                           destinationModel:
                                               self.menuOrderer
                                                   .destinationCustomizationModel
-                                           uiConfiguration:_UIConfiguration];
+                                           uiConfiguration:_UIConfiguration
+                                              eventHandler:self];
 
   UISheetPresentationController* sheetPresentationController =
       _viewController.sheetPresentationController;
@@ -51,19 +53,8 @@
     sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
     sheetPresentationController
         .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-
-    NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
-      [UISheetPresentationControllerDetent largeDetent]
-    ];
-
-    NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
-        @[ [UISheetPresentationControllerDetent largeDetent] ];
-
-    BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
-        _viewController.traitCollection.preferredContentSizeCategory);
     sheetPresentationController.detents =
-        hasLargeText ? largeTextDetents : regularDetents;
+        @[ [UISheetPresentationControllerDetent largeDetent] ];
   }
 
   [self.baseViewController.presentedViewController
@@ -73,12 +64,51 @@
                  }];
 }
 
+- (void)stop {
+  UIViewController* presentingViewController =
+      self.baseViewController.presentedViewController;
+  if (presentingViewController.presentedViewController == _viewController) {
+    [presentingViewController dismissViewControllerAnimated:YES
+                                                 completion:^{
+                                                 }];
+  }
+  _UIConfiguration = nil;
+  _viewController = nil;
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.menuOrderer commitActionsUpdate];
   [self.menuOrderer commitDestinationsUpdate];
+
+  id<OverflowMenuCustomizationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), OverflowMenuCustomizationCommands);
+  [handler hideActionCustomization];
+}
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  // Prevent the user from dismissing the view via gesture. They can only
+  // dismiss via the cancel and done buttons.
+  return NO;
+}
+
+#pragma mark - ActionCustomizationEventHandler
+
+- (void)doneWasTapped {
+  [self.menuOrderer commitActionsUpdate];
+  [self.menuOrderer commitDestinationsUpdate];
+
+  id<OverflowMenuCustomizationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), OverflowMenuCustomizationCommands);
+  [handler hideActionCustomization];
+}
+
+- (void)cancelWasTapped {
+  [self.menuOrderer cancelActionsUpdate];
+  [self.menuOrderer cancelDestinationsUpdate];
 
   id<OverflowMenuCustomizationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), OverflowMenuCustomizationCommands);

@@ -218,10 +218,9 @@ using DestinationLookup =
     }
   }
 
-  _destinationCustomizationModel =
-      [[DestinationCustomizationModel alloc] initWithDestinations:destinations];
-  _destinationCustomizationModel.destinationUsageEnabled =
-      _destinationUsageHistoryEnabled.value;
+  _destinationCustomizationModel = [[DestinationCustomizationModel alloc]
+         initWithDestinations:destinations
+      destinationUsageEnabled:_destinationUsageHistoryEnabled.value];
   return _destinationCustomizationModel;
 }
 
@@ -298,6 +297,14 @@ using DestinationLookup =
   self.model.destinations = [self destinationsFromCurrentRanking];
 
   // Reset customization model so next customization can start fresh.
+  _destinationCustomizationModel = nil;
+}
+
+- (void)cancelActionsUpdate {
+  _actionCustomizationModel = nil;
+}
+
+- (void)cancelDestinationsUpdate {
   _destinationCustomizationModel = nil;
 }
 

@@ -4481,6 +4481,15 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TOOLS_MENU_RECENT_TABS" desc="The iOS menu item for opening the panel showing the recently closed tabs and the tabs from other devices." meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Recent Tabs
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL" desc="The title of the button on the overflow menu customization screen for users to cancel customization." meaning="[In Title case] [iOS only]">
+        Cancel
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_DONE" desc="The title of the button on the overflow menu customization screen for users to finish and save customization." meaning="[In Title case] [iOS only]">
+        Done
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_TITLE" desc="The title of the screen on the overflow menu where users can customize the items in the menu." meaning="[In Title case] [iOS only]">
+        Customize Menu
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME" desc="The iOS menu item for opening a share sheet with the URL to the Chrome app in the iOS app store" meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Share Chrome
       </message>
