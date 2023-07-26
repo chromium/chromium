@@ -338,7 +338,7 @@ struct UpdateRequest {
   // Data to be processed.  update() must consume all input data.
   array<uint8> input;
   // Authentication token. It is optional.
-  HardwareAuthToken? auto_token;
+  HardwareAuthToken? auth_token;
   // |timestamp_token| certifies the freshness of an auth token in case the
   // security domain of this KeyMint instance has a different clock than the
   // authenticator issuing the auth token.
@@ -355,7 +355,7 @@ struct FinishRequest {
   // was KeyPurpose.VERIFY.
   array<uint8>? signature;
   // Optional authentication token.
-  HardwareAuthToken? auto_token;
+  HardwareAuthToken? auth_token;
   // |timestamp_token| certifies the freshness of an auth token in case the
   // security domain of this KeyMint instance has a different clock than the
   // authenticator issuing the auth token.
