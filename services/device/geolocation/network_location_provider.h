@@ -77,12 +77,14 @@ class NetworkLocationProvider : public LocationProvider
                           bool server_error,
                           const WifiData& wifi_data);
 
-  mojom::GeolocationDiagnostics::ProviderState state_ =
-      mojom::GeolocationDiagnostics::ProviderState::kStopped;
-
   // The wifi data provider, acquired via global factories. Valid between
   // StartProvider() and StopProvider(), and checked via IsStarted().
   std::unique_ptr<WifiDataProviderHandle> wifi_data_provider_handle_;
+
+  // True if the provider was started with high accuracy enabled.
+  // `high_accuracy_` does not modify the behavior of this provider, it is only
+  // stored for diagnostics.
+  bool high_accuracy_ = false;
 
   WifiDataProviderHandle::WifiDataUpdateCallback wifi_data_update_callback_;
 

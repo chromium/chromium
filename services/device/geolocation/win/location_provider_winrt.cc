@@ -151,7 +151,19 @@ LocationProviderWinrt::~LocationProviderWinrt() {
 
 void LocationProviderWinrt::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
-  diagnostics.provider_state = state_;
+  if (!is_started_) {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  } else if (!permission_granted_) {
+    diagnostics.provider_state = mojom::GeolocationDiagnostics::ProviderState::
+        kBlockedBySystemPermission;
+  } else if (enable_high_accuracy_) {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy;
+  } else {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
+  }
 }
 
 void LocationProviderWinrt::SetUpdateCallback(
@@ -163,15 +175,8 @@ void LocationProviderWinrt::SetUpdateCallback(
 void LocationProviderWinrt::StartProvider(bool high_accuracy) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  is_started_ = true;
   enable_high_accuracy_ = high_accuracy;
-  if (permission_granted_) {
-    state_ = enable_high_accuracy_
-                 ? mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy
-                 : mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
-  } else {
-    state_ = mojom::GeolocationDiagnostics::ProviderState::
-        kBlockedBySystemPermission;
-  }
 
   HRESULT hr = S_OK;
 
@@ -207,7 +212,7 @@ void LocationProviderWinrt::StartProvider(bool high_accuracy) {
 void LocationProviderWinrt::StopProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  state_ = mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  is_started_ = false;
 
   // Reset the reference location state (provider+position)
   // so that future starts use fresh locations from
@@ -232,9 +237,6 @@ void LocationProviderWinrt::OnPermissionGranted() {
   const bool was_permission_granted = permission_granted_;
   permission_granted_ = true;
   if (!was_permission_granted) {
-    state_ = enable_high_accuracy_
-                 ? mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy
-                 : mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
     RegisterCallbacks();
   }
 }

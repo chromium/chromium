@@ -35,7 +35,19 @@ CoreLocationProvider::~CoreLocationProvider() {
 
 void CoreLocationProvider::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
-  diagnostics.provider_state = state_;
+  if (!is_started_) {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  } else if (!has_permission_) {
+    diagnostics.provider_state = mojom::GeolocationDiagnostics::ProviderState::
+        kBlockedBySystemPermission;
+  } else if (high_accuracy_) {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy;
+  } else {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
+  }
 }
 
 void CoreLocationProvider::SetUpdateCallback(
@@ -44,6 +56,7 @@ void CoreLocationProvider::SetUpdateCallback(
 }
 
 void CoreLocationProvider::StartProvider(bool high_accuracy) {
+  is_started_ = true;
   high_accuracy_ = high_accuracy;
   // macOS guarantees that didChangeAuthorization will be called at least once
   // with the initial authorization status. Therefore this variable will be
@@ -52,22 +65,17 @@ void CoreLocationProvider::StartProvider(bool high_accuracy) {
   if (has_permission_) {
     StartWatching();
   } else {
-    state_ = mojom::GeolocationDiagnostics::ProviderState::
-        kBlockedBySystemPermission;
     provider_start_attemped_ = true;
   }
 }
 
 void CoreLocationProvider::StartWatching() {
-  state_ = high_accuracy_
-               ? mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy
-               : mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
   position_observers_->AddObserver(this);
   geolocation_manager_->StartWatchingPosition(high_accuracy_);
 }
 
 void CoreLocationProvider::StopProvider() {
-  state_ = mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  is_started_ = false;
   position_observers_->RemoveObserver(this);
   geolocation_manager_->StopWatchingPosition();
 }

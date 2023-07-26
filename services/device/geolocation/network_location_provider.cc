@@ -84,7 +84,24 @@ NetworkLocationProvider::~NetworkLocationProvider() {
 
 void NetworkLocationProvider::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
-  diagnostics.provider_state = state_;
+  if (IsStarted()) {
+    if (high_accuracy_) {
+      diagnostics.provider_state =
+          mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy;
+    } else {
+      diagnostics.provider_state =
+          mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
+    }
+#if BUILDFLAG(IS_MAC)
+    if (!is_system_permission_granted_) {
+      diagnostics.provider_state = mojom::GeolocationDiagnostics::
+          ProviderState::kBlockedBySystemPermission;
+    }
+#endif  // BUILDFLAG(IS_MAC)
+  } else {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  }
   diagnostics.network_location_diagnostics =
       mojom::NetworkLocationDiagnostics::New();
   base::ranges::transform(
@@ -194,15 +211,7 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
   GEOLOCATION_LOG(DEBUG) << "Start provider: high_accuracy=" << high_accuracy;
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  state_ = high_accuracy
-               ? mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy
-               : mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
-#if BUILDFLAG(IS_MAC)
-  if (!is_system_permission_granted_) {
-    state_ = mojom::GeolocationDiagnostics::ProviderState::
-        kBlockedBySystemPermission;
-  }
-#endif  // BUILDFLAG(IS_MAC)
+  high_accuracy_ = high_accuracy;
 
   if (IsStarted())
     return;
@@ -225,7 +234,6 @@ void NetworkLocationProvider::StopProvider() {
   GEOLOCATION_LOG(DEBUG) << "Stop provider";
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
-  state_ = mojom::GeolocationDiagnostics::ProviderState::kStopped;
   wifi_data_provider_handle_ = nullptr;
   weak_factory_.InvalidateWeakPtrs();
 }

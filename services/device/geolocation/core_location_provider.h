@@ -46,8 +46,6 @@ class CoreLocationProvider : public LocationProvider,
   void OnSystemPermissionUpdated(
       LocationSystemPermissionStatus new_status) override;
 
-  mojom::GeolocationDiagnostics::ProviderState state_ =
-      mojom::GeolocationDiagnostics::ProviderState::kStopped;
   raw_ptr<GeolocationManager> geolocation_manager_;
   // References to the observer lists are kept to ensure their lifetime as the
   // BrowserProcess may destroy its reference on the UI Thread before we
@@ -57,6 +55,7 @@ class CoreLocationProvider : public LocationProvider,
   scoped_refptr<GeolocationManager::PositionObserverList> position_observers_;
   mojom::GeopositionResultPtr last_result_;
   LocationProviderUpdateCallback callback_;
+  bool is_started_ = false;
   bool has_permission_ = false;
   bool provider_start_attemped_ = false;
   bool high_accuracy_ = false;

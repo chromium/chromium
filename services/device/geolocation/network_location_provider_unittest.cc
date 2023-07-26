@@ -639,8 +639,22 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
 
   std::unique_ptr<LocationProvider> provider(
       CreateProvider(/*set_permission_granted=*/false));
+
+  // Diagnostics should indicate the provider is stopped.
+  auto get_provider_state = [&provider]() {
+    mojom::GeolocationDiagnostics diagnostics;
+    provider->FillDiagnostics(diagnostics);
+    return diagnostics.provider_state;
+  };
+  EXPECT_EQ(get_provider_state(),
+            mojom::GeolocationDiagnostics::ProviderState::kStopped);
+
   provider->StartProvider(/*high_accuracy=*/false);
   provider->SetUpdateCallback(listener.callback);
+  // The provider fails to start because it is blocked by a system permission.
+  EXPECT_EQ(
+      get_provider_state(),
+      mojom::GeolocationDiagnostics::ProviderState::kBlockedBySystemPermission);
 
   // Under normal circumstances, when there is no initial wifi data
   // RequestPosition is not called until a few seconds after the provider is
@@ -649,6 +663,12 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // be called immediately.
   provider->OnPermissionGranted();
 
+  // Granting a site-level geolocation permission does not affect the system
+  // permission.
+  EXPECT_EQ(
+      get_provider_state(),
+      mojom::GeolocationDiagnostics::ProviderState::kBlockedBySystemPermission);
+
   // Ensure there was an error callback.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, listener.error_count);
@@ -656,7 +676,13 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // Now try to make a request for new wifi data.
   wifi_data_provider_->set_got_data(true);
   provider->StopProvider();
-  provider->StartProvider(false);
+  EXPECT_EQ(get_provider_state(),
+            mojom::GeolocationDiagnostics::ProviderState::kStopped);
+
+  provider->StartProvider(/*high_accuracy=*/false);
+  EXPECT_EQ(
+      get_provider_state(),
+      mojom::GeolocationDiagnostics::ProviderState::kBlockedBySystemPermission);
 
   // Normally when starting the provider a network request should be sent
   // out. This is tested in other tests. However, when we do not have system
@@ -673,6 +699,8 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // location when permission is granted.
   static_cast<NetworkLocationProvider*>(provider.get())
       ->OnSystemPermissionUpdated(LocationSystemPermissionStatus::kAllowed);
+  EXPECT_EQ(get_provider_state(),
+            mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy);
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
   // Clear pending requests for later testing.
@@ -694,7 +722,14 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // again.
   static_cast<NetworkLocationProvider*>(provider.get())
       ->OnSystemPermissionUpdated(LocationSystemPermissionStatus::kDenied);
-  provider->StartProvider(false);
+  EXPECT_EQ(
+      get_provider_state(),
+      mojom::GeolocationDiagnostics::ProviderState::kBlockedBySystemPermission);
+
+  provider->StartProvider(/*high_accuracy=*/false);
+  EXPECT_EQ(
+      get_provider_state(),
+      mojom::GeolocationDiagnostics::ProviderState::kBlockedBySystemPermission);
   wifi_data_provider_->SetData(CreateReferenceWifiScanData(4));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
