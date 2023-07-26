@@ -14,7 +14,7 @@ export interface CheckMarkWrapperElement {
 
 export class CheckMarkWrapperElement extends PolymerElement {
   static get is() {
-    return 'cr-theme-color-check-mark-wrapper';
+    return 'customize-colors-check-mark-wrapper';
   }
 
   static get template() {
@@ -35,7 +35,7 @@ export class CheckMarkWrapperElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-theme-color-check-mark-wrapper': CheckMarkWrapperElement;
+    'customize-colors-check-mark-wrapper': CheckMarkWrapperElement;
   }
 }
 

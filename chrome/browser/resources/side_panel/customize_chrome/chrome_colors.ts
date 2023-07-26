@@ -4,30 +4,30 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
-import 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './color.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
-import {ThemeColorPickerBrowserProxy} from 'chrome://resources/cr_components/theme_color_picker/browser_proxy.js';
-import {Color, ColorType, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from 'chrome://resources/cr_components/theme_color_picker/color_utils.js';
-import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
-import {BrowserColorVariant, ChromeColor, Theme, ThemeColorPickerHandlerInterface} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './chrome_colors.html.js';
+import {ColorElement} from './color.js';
+import {Color, ColorType, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
+import {BrowserColorVariant, ChromeColor, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface ChromeColorsElement {
   $: {
     colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
-    defaultColor: ThemeColorElement,
-    customColor: ThemeColorElement,
+    defaultColor: ColorElement,
+    customColor: ColorElement,
     customColorContainer: HTMLElement,
     heading: SpHeading,
   };
@@ -85,24 +85,20 @@ export class ChromeColorsElement extends PolymerElement {
   private customColor_: Color;
   private selectedColor_: SelectedColor;
 
-  private pageHandler_: ThemeColorPickerHandlerInterface;
+  private pageHandler_: CustomizeChromePageHandlerInterface;
 
   constructor() {
     super();
-    this.pageHandler_ = ThemeColorPickerBrowserProxy.getInstance().handler;
-    this.pageHandler_
-        .getChromeColors(
-            /* isDarkMode (unimportant for this component) */ false,
-            /* extendedList */ true)
-        .then(({colors}) => {
-          this.colors_ = colors;
-        });
+    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+    this.pageHandler_.getChromeColors().then(({colors}) => {
+      this.colors_ = colors;
+    });
   }
 
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        ThemeColorPickerBrowserProxy.getInstance()
+        CustomizeChromeApiProxy.getInstance()
             .callbackRouter.setTheme.addListener((theme: Theme) => {
               this.theme_ = theme;
             });
@@ -112,7 +108,7 @@ export class ChromeColorsElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    ThemeColorPickerBrowserProxy.getInstance().callbackRouter.removeListener(
+    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.setThemeListenerId_!);
   }
 
@@ -130,8 +126,8 @@ export class ChromeColorsElement extends PolymerElement {
 
   private computeSelectedColor_(): SelectedColor {
     // None will be considered selected if it isn't classic chrome.
-    if (!this.colors_ || !this.theme_ || this.theme_.hasBackgroundImage ||
-        this.theme_.hasThirdPartyTheme) {
+    if (!this.colors_ || !this.theme_ || this.theme_.backgroundImage ||
+        this.theme_.thirdPartyThemeInfo) {
       return {type: ColorType.NONE};
     }
     if (!this.theme_.foregroundColor) {

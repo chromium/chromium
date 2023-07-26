@@ -29,6 +29,10 @@ suite('AppearanceTest', () => {
                 mock, new CustomizeChromePageCallbackRouter()));
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    // Set result for getOverviewChromeColors for the mock handler. Otherwise,
+    // it crashes since colors is a child of appearance and needs a Promise from
+    // getOverviewChromeColors.
+    handler.setResultFor('getOverviewChromeColors', Promise.resolve({}));
     appearanceElement = document.createElement('customize-chrome-appearance');
     document.body.appendChild(appearanceElement);
   });

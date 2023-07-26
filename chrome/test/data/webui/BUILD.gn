@@ -95,6 +95,7 @@ source_set("interactive_ui_tests") {
     "new_tab_page/new_tab_page_focus_test.cc",
     "password_manager/password_manager_focus_test.cc",
     "side_panel/bookmarks/sp_bookmarks_focus_test.cc",
+    "side_panel/customize_chrome/customize_chrome_focus_test.cc",
     "tab_search/tab_search_focus_test.cc",
   ]
 

@@ -1,59 +1,46 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
-
+import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
+import {Color, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://customize-chrome-side-panel.top-chrome/color_utils.js';
+import {ColorsElement} from 'chrome://customize-chrome-side-panel.top-chrome/colors.js';
+import {BrowserColorVariant, ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, Theme} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
-import {ThemeColorPickerBrowserProxy} from 'chrome://resources/cr_components/theme_color_picker/browser_proxy.js';
-import {Color, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://resources/cr_components/theme_color_picker/color_utils.js';
-import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
-import {ThemeColorPickerElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
-import {BrowserColorVariant, ChromeColor, Theme, ThemeColorPickerClientCallbackRouter, ThemeColorPickerClientRemote, ThemeColorPickerHandlerRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-import {$$, assertStyle, capture, installMock} from './test_support.js';
+import {$$, assertStyle, capture, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
-function createTheme(isDarkMode = false): Theme {
-  return {
-    hasBackgroundImage: false,
-    hasThirdPartyTheme: false,
-    backgroundImageMainColor: undefined,
-    isDarkMode,
-    seedColor: {value: 0xff0000ff},
-    backgroundColor: {value: 0xffff0000},
-    foregroundColor: undefined,
-    colorPickerIconColor: {value: 0xffff0000},
-    colorsManagedByPolicy: false,
-    isGreyBaseline: false,
-    browserColorVariant: BrowserColorVariant.kTonalSpot,
-  };
-}
-
-suite('CrComponentsThemeColorPickerTest', () => {
-  let colorsElement: ThemeColorPickerElement;
-  let handler: TestMock<ThemeColorPickerHandlerRemote>;
-  let callbackRouter: ThemeColorPickerClientRemote;
+suite('ColorsTest', () => {
+  let colorsElement: ColorsElement;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
+  let callbackRouter: CustomizeChromePageRemote;
   let chromeColorsResolver: PromiseResolver<{colors: ChromeColor[]}>;
 
   setup(() => {
+    loadTimeData.overrideValues({
+      chromeRefresh2023Attribute: '',
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
-        ThemeColorPickerHandlerRemote,
-        (mock: ThemeColorPickerHandlerRemote) =>
-            ThemeColorPickerBrowserProxy.setInstance(
-                mock, new ThemeColorPickerClientCallbackRouter()));
-    callbackRouter = ThemeColorPickerBrowserProxy.getInstance()
+        CustomizeChromePageHandlerRemote,
+        (mock: CustomizeChromePageHandlerRemote) =>
+            CustomizeChromeApiProxy.setInstance(
+                mock, new CustomizeChromePageCallbackRouter()));
+    callbackRouter = CustomizeChromeApiProxy.getInstance()
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     chromeColorsResolver = new PromiseResolver();
   });
 
   function initializeElement() {
-    handler.setResultFor('getChromeColors', chromeColorsResolver.promise);
-    colorsElement = new ThemeColorPickerElement();
+    handler.setResultFor(
+        'getOverviewChromeColors', chromeColorsResolver.promise);
+    colorsElement = new ColorsElement();
     document.body.appendChild(colorsElement);
   }
 
@@ -67,8 +54,11 @@ suite('CrComponentsThemeColorPickerTest', () => {
         test(
             `render GM3 ${refreshFlagOn} DarkMode ${isDarkMode} default color`,
             async () => {
-              document.documentElement.toggleAttribute(
-                  'chrome-refresh-2023', refreshFlagOn);
+              if (refreshFlagOn) {
+                loadTimeData.overrideValues({
+                  chromeRefresh2023Attribute: 'chrome-refresh-2023',
+                });
+              }
 
               initializeElement();
               const theme: Theme = createTheme(isDarkMode);
@@ -78,7 +68,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
               await waitAfterNextRender(colorsElement);
 
               const defaultColorElement =
-                  $$<ThemeColorElement>(colorsElement, '#defaultColor')!;
+                  $$<ColorElement>(colorsElement, '#defaultColor')!;
               assertDeepEquals(
                   defaultColor.foreground, defaultColorElement.foregroundColor);
               assertDeepEquals(
@@ -89,8 +79,6 @@ suite('CrComponentsThemeColorPickerTest', () => {
       });
 
   test('do not render grey default with ChromeRefresh disabled', async () => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
-
     initializeElement();
     const theme: Theme = createTheme(false);
 
@@ -99,7 +87,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     await waitAfterNextRender(colorsElement);
 
     const greyDefaultColorElement =
-        $$<ThemeColorElement>(colorsElement, '#greyDefaultColor')!;
+        $$<ColorElement>(colorsElement, '#greyDefaultColor')!;
     assertTrue(!greyDefaultColorElement);
   });
 
@@ -109,7 +97,9 @@ suite('CrComponentsThemeColorPickerTest', () => {
   ] as Array<[boolean, Color]>)
       .forEach(([isDarkMode, greyDefaultColor]) => {
         test(`render DarkMode ${isDarkMode} grey default color`, async () => {
-          document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+          loadTimeData.overrideValues({
+            chromeRefresh2023Attribute: 'chrome-refresh-2023',
+          });
 
           initializeElement();
           const theme: Theme = createTheme(isDarkMode);
@@ -119,7 +109,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
           await waitAfterNextRender(colorsElement);
 
           const greyDefaultColorElement =
-              $$<ThemeColorElement>(colorsElement, '#greyDefaultColor')!;
+              $$<ColorElement>(colorsElement, '#greyDefaultColor')!;
           assertDeepEquals(
               greyDefaultColor.foreground,
               greyDefaultColorElement.foregroundColor);
@@ -145,7 +135,9 @@ suite('CrComponentsThemeColorPickerTest', () => {
   });
 
   test('sets grey default color', async () => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    loadTimeData.overrideValues({
+      chromeRefresh2023Attribute: 'chrome-refresh-2023',
+    });
     initializeElement();
     const theme = createTheme();
     theme.foregroundColor = undefined;
@@ -162,8 +154,8 @@ suite('CrComponentsThemeColorPickerTest', () => {
     initializeElement();
     const theme: Theme = createTheme();
     theme.foregroundColor = {value: 7};
-    theme.hasBackgroundImage = true;
-    theme.backgroundImageMainColor = {value: 7};
+    theme.backgroundImage = createBackgroundImage('https://foo.com');
+    theme.backgroundImage.mainColor = {value: 7};
 
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
@@ -171,16 +163,15 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     assertEquals(
         7,
-        $$<ThemeColorElement>(
-            colorsElement, '#mainColor')!.foregroundColor.value);
+        $$<ColorElement>(colorsElement, '#mainColor')!.foregroundColor.value);
   });
 
   test('sets main color', async () => {
     initializeElement();
     const theme = createTheme();
     theme.foregroundColor = {value: 7};
-    theme.hasBackgroundImage = true;
-    theme.backgroundImageMainColor = {value: 7};
+    theme.backgroundImage = createBackgroundImage('https://foo.com');
+    theme.backgroundImage.mainColor = {value: 7};
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
     await waitAfterNextRender(colorsElement);
@@ -224,7 +215,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     await waitAfterNextRender(colorsElement);
 
     const colorElements =
-        colorsElement.shadowRoot!.querySelectorAll<ThemeColorElement>(
+        colorsElement.shadowRoot!.querySelectorAll<ColorElement>(
             '.chrome-color');
     assertEquals(2, colorElements.length);
     assertDeepEquals({value: 1}, colorElements[0]!.backgroundColor);
@@ -257,7 +248,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     chromeColorsResolver.resolve(colors);
     await waitAfterNextRender(colorsElement);
-    colorsElement.shadowRoot!.querySelector<ThemeColorElement>(
+    colorsElement.shadowRoot!.querySelector<ColorElement>(
                                  '.chrome-color')!.click();
 
     const args = handler.getArgs('setSeedColor')[0];
@@ -358,7 +349,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     // Check default color selected.
     const defaultColorElement =
-        $$<ThemeColorElement>(colorsElement, '#defaultColor')!;
+        $$<ColorElement>(colorsElement, '#defaultColor')!;
     let checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(defaultColorElement, checkedColors[0]);
@@ -371,15 +362,14 @@ suite('CrComponentsThemeColorPickerTest', () => {
     // Set main color.
     theme.seedColor = {value: 7};
     theme.foregroundColor = {value: 5};
-    theme.hasBackgroundImage = true;
-    theme.backgroundImageMainColor = {value: 7};
+    theme.backgroundImage = createBackgroundImage('https://foo.com');
+    theme.backgroundImage.mainColor = {value: 7};
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
     await waitAfterNextRender(colorsElement);
 
     // Check main color selected.
-    const mainColorElement =
-        $$<ThemeColorElement>(colorsElement, '#mainColor')!;
+    const mainColorElement = $$<ColorElement>(colorsElement, '#mainColor')!;
     checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(mainColorElement, checkedColors[0]);
@@ -400,9 +390,8 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(1, checkedColors.length);
     assertEquals('chrome-color', checkedColors[0]!.className);
     assertEquals(checkedColors[0]!.getAttribute('aria-checked'), 'true');
-    assertEquals(
-        2, (checkedColors[0]! as ThemeColorElement).foregroundColor.value);
-    assertEquals(3, (checkedColors[0]! as ThemeColorElement).baseColor.value);
+    assertEquals(2, (checkedColors[0]! as ColorElement).foregroundColor.value);
+    assertEquals(3, (checkedColors[0]! as ColorElement).baseColor.value);
     indexedColors =
         colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
@@ -438,16 +427,24 @@ suite('CrComponentsThemeColorPickerTest', () => {
             `background color visible if theme has image ${
                 hasBackgroundImage} GM3 ${isChromeRefresh2023}`,
             async () => {
-              document.documentElement.toggleAttribute(
-                  'chrome-refresh-2023', isChromeRefresh2023);
+              if (isChromeRefresh2023) {
+                loadTimeData.overrideValues({
+                  chromeRefresh2023Attribute: 'chrome-refresh-2023',
+                });
+              }
               initializeElement();
               const theme = createTheme();
-              theme.hasBackgroundImage = hasBackgroundImage;
+              if (hasBackgroundImage) {
+                theme.backgroundImage =
+                    createBackgroundImage('https://foo.com');
+              } else {
+                theme.backgroundImage = undefined;
+              }
               callbackRouter.setTheme(theme);
               await callbackRouter.$.flushForTesting();
 
-              const colors =
-                  colorsElement.shadowRoot!.querySelectorAll('cr-theme-color');
+              const colors = colorsElement.shadowRoot!.querySelectorAll(
+                  'customize-chrome-color');
               for (const color of colors) {
                 if (color.id === 'customColor') {
                   assertEquals(
@@ -489,9 +486,9 @@ suite('CrComponentsThemeColorPickerTest', () => {
           if (foregroundColor) {
             theme.foregroundColor = {value: foregroundColor};
           }
-          theme.hasBackgroundImage = true;
+          theme.backgroundImage = createBackgroundImage('https://foo.com');
           if (mainColor) {
-            theme.backgroundImageMainColor = {value: mainColor};
+            theme.backgroundImage.mainColor = {value: mainColor};
           }
           theme.colorsManagedByPolicy = true;
           callbackRouter.setTheme(theme);

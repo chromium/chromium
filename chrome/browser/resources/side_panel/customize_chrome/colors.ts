@@ -1,37 +1,36 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './theme_color.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
+import './color.js';
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import './strings.m.js'; // Required by <managed-dialog>.
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ThemeColorPickerBrowserProxy} from './browser_proxy.js';
+import {ColorElement} from './color.js';
 import {Color, ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
-import {ThemeColorElement} from './theme_color.js';
-import {getTemplate} from './theme_color_picker.html.js';
-import {BrowserColorVariant, ChromeColor, Theme} from './theme_color_picker.mojom-webui.js';
+import {getTemplate} from './colors.html.js';
+import {BrowserColorVariant, ChromeColor, Theme} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
-const ThemeColorPickerElementBase = I18nMixin(PolymerElement);
-
-export interface ThemeColorPickerElement {
+export interface ColorsElement {
   $: {
     chromeColors: DomRepeat,
     customColorContainer: HTMLElement,
-    customColor: ThemeColorElement,
+    customColor: ColorElement,
     colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
   };
 }
 
-export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
+export class ColorsElement extends PolymerElement {
   static get is() {
-    return 'cr-theme-color-picker';
+    return 'customize-chrome-colors';
   }
 
   static get template() {
@@ -59,19 +58,19 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         computed: 'computeSelectedColor_(theme_, colors_)',
       },
       isDefaultColorSelected_: {
-        type: Boolean,
+        type: Object,
         computed: 'computeIsDefaultColorSelected_(selectedColor_)',
       },
       isGreyDefaultColorSelected_: {
-        type: Boolean,
+        type: Object,
         computed: 'computeIsGreyDefaultColorSelected_(selectedColor_)',
       },
       isMainColorSelected_: {
-        type: Boolean,
+        type: Object,
         computed: 'computeIsMainColorSelected_(selectedColor_)',
       },
       isCustomColorSelected_: {
-        type: Boolean,
+        type: Object,
         computed: 'computeIsCustomColorSelected_(selectedColor_)',
       },
       customColor_: {
@@ -90,11 +89,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         type: Boolean,
         computed: 'computeShowCustomColorBackgroundColor_(theme_)',
       },
-      isChromeRefresh2023_: {
-        type: Boolean,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023'),
-      },
+      isChromeRefresh2023_: Boolean,
     };
   }
 
@@ -114,19 +109,26 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   private showManagedDialog_: boolean;
   private isChromeRefresh2023_: boolean;
 
+  constructor() {
+    super();
+    this.isChromeRefresh2023_ =
+        loadTimeData.getString('chromeRefresh2023Attribute') ===
+        'chrome-refresh-2023';
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        ThemeColorPickerBrowserProxy.getInstance()
+        CustomizeChromeApiProxy.getInstance()
             .callbackRouter.setTheme.addListener((theme: Theme) => {
               this.theme_ = theme;
             });
-    ThemeColorPickerBrowserProxy.getInstance().handler.updateTheme();
+    CustomizeChromeApiProxy.getInstance().handler.updateTheme();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    ThemeColorPickerBrowserProxy.getInstance().callbackRouter.removeListener(
+    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.setThemeListenerId_!);
   }
 
@@ -144,7 +146,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private computeMainColor_(): SkColor|undefined {
-    return this.theme_ && this.theme_.backgroundImageMainColor;
+    return this.theme_ && this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.mainColor;
   }
 
   private computeSelectedColor_(): SelectedColor {
@@ -157,8 +160,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (!this.theme_.foregroundColor) {
       return {type: ColorType.DEFAULT};
     }
-    if (this.theme_.backgroundImageMainColor &&
-        this.theme_.backgroundImageMainColor!.value ===
+    if (this.theme_.backgroundImage && this.theme_.backgroundImage.mainColor &&
+        this.theme_.backgroundImage.mainColor!.value ===
             this.theme_.seedColor.value) {
       return {type: ColorType.MAIN};
     }
@@ -207,6 +210,10 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     return this.boolToString_(this.isChromeColorSelected_(color, variant));
   }
 
+  private tabIndex_(selected: boolean): string {
+    return selected ? '0' : '-1';
+  }
+
   private chromeColorTabIndex_(color: SkColor, variant: BrowserColorVariant):
       string {
     return this.selectedColor_.type === ColorType.CHROME &&
@@ -216,16 +223,13 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         '-1';
   }
 
-  private tabIndex_(selected: boolean): string {
-    return selected ? '0' : '-1';
-  }
-
   private themeHasBackgroundImage_(): boolean {
-    return !!this.theme_ && !!this.theme_.hasBackgroundImage;
+    return !!this.theme_ && !!this.theme_.backgroundImage;
   }
 
   private themeHasMainColor_(): boolean {
-    return !!this.theme_ && !!this.theme_.backgroundImageMainColor;
+    return !!this.theme_ && !!this.theme_.backgroundImage &&
+        !!this.theme_.backgroundImage.mainColor;
   }
 
   private computeShowBackgroundColor_(): boolean {
@@ -240,22 +244,23 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    ThemeColorPickerBrowserProxy.getInstance().handler.setDefaultColor();
+    CustomizeChromeApiProxy.getInstance().handler.setDefaultColor();
   }
 
   private onGreyDefaultColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    ThemeColorPickerBrowserProxy.getInstance().handler.setGreyDefaultColor();
+    CustomizeChromeApiProxy.getInstance().handler.setGreyDefaultColor();
   }
 
   private onMainColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
-        this.theme_!.backgroundImageMainColor!, BrowserColorVariant.kTonalSpot);
+    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
+        this.theme_!.backgroundImage!.mainColor!,
+        BrowserColorVariant.kTonalSpot);
   }
 
   private onChromeColorClick_(e: Event) {
@@ -263,7 +268,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       return;
     }
     const color = this.$.chromeColors.itemForElement(e.target as HTMLElement);
-    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
+    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
         color.seed, color.variant);
   }
 
@@ -276,7 +281,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private onCustomColorChange_(e: Event) {
-    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
+    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
         hexColorToSkColor((e.target as HTMLInputElement).value),
         BrowserColorVariant.kTonalSpot);
   }
@@ -296,8 +301,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private updateColors_() {
-    ThemeColorPickerBrowserProxy.getInstance()
-        .handler.getChromeColors(this.theme_.isDarkMode, false)
+    CustomizeChromeApiProxy.getInstance()
+        .handler.getOverviewChromeColors(this.theme_.isDarkMode)
         .then(({colors}) => {
           this.colors_ = colors;
         });
@@ -318,8 +323,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-theme-color-picker': ThemeColorPickerElement;
+    'customize-chrome-colors': ColorsElement;
   }
 }
 
-customElements.define(ThemeColorPickerElement.is, ThemeColorPickerElement);
+customElements.define(ColorsElement.is, ColorsElement);

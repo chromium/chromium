@@ -1,18 +1,18 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
+import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertNotStyle, assertStyle} from './test_support.js';
 
-suite('CrComponentsThemeColorTest', () => {
-  let colorElement: ThemeColorElement;
+suite('ColorTest', () => {
+  let colorElement: ColorElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    colorElement = new ThemeColorElement();
+    colorElement = new ColorElement();
     document.body.appendChild(colorElement);
   });
 
@@ -30,7 +30,7 @@ suite('CrComponentsThemeColorTest', () => {
     colorElement.style.height = '66px';
 
     const wrapper = colorElement.shadowRoot!.querySelector(
-        'cr-theme-color-check-mark-wrapper')!;
+        'customize-chrome-check-mark-wrapper')!;
     assertTrue(wrapper.checked);
     const svg = colorElement.shadowRoot!.querySelector('svg')!;
     assertStyle(svg, 'width', '50px');
@@ -44,7 +44,7 @@ suite('CrComponentsThemeColorTest', () => {
     colorElement.style.height = '66px';
 
     const wrapper = colorElement.shadowRoot!.querySelector(
-        'cr-theme-color-check-mark-wrapper')!;
+        'customize-chrome-check-mark-wrapper')!;
     assertFalse(wrapper.checked);
     const svg = colorElement.shadowRoot!.querySelector('svg')!;
     assertStyle(svg, 'width', '50px');

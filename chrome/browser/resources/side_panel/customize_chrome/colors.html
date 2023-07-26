@@ -10,7 +10,7 @@
 
   @media (prefers-color-scheme: dark) {
     #defaultColor {
-      --cr-theme-color-border-color: #323639;
+      --customize-chrome-color-border-color: #323639;
     }
   }
 
@@ -60,7 +60,7 @@
     --cr-dialog-width: min(calc(100% - 32px), 512px);
   }
 
-  :host-context([chrome-refresh-2023]) cr-theme-color {
+  :host-context([chrome-refresh-2023]) customize-chrome-color {
     background-color: var(
         --color-side-panel-customize-chrome-color-picker-option-background);
     border-radius: 12px;
@@ -68,16 +68,16 @@
 </style>
 <!-- TODO(crbug.com/1395210): Make grid adaptive. -->
 <cr-grid columns="4" role="radiogroup"
-    aria-label="[[i18n('colorsContainerLabel')]]">
+    aria-label="$i18n{colorsContainerLabel}">
   <template is="dom-if" if="[[!themeHasMainColor_(theme_)]]" restamp>
-    <cr-theme-color
+    <customize-chrome-color
         id="defaultColor"
         background-color="[[defaultColor_.background]]"
         base-color="[[defaultColor_.base]]"
         foreground-color="[[defaultColor_.foreground]]"
         background-color-hidden="[[!showBackgroundColor_]]"
-        title="[[i18n('defaultColorName')]]"
-        aria-label="[[i18n('defaultColorName')]]"
+        title="$i18n{defaultColorName}"
+        aria-label="$i18n{defaultColorName}"
         role="radio"
         checked="[[isDefaultColorSelected_]]"
         checkmark-border-hidden="[[isChromeRefresh2023_]]"
@@ -85,16 +85,16 @@
         tabindex$="[[tabIndex_(isDefaultColorSelected_)]]"
         on-click="onDefaultColorClick_"
         basic-color>
-    </cr-theme-color>
+    </customize-chrome-color>
   </template>
   <template is="dom-if" if="[[isChromeRefresh2023_]]" restamp>
-    <cr-theme-color
+    <customize-chrome-color
         id="greyDefaultColor"
         background-color="[[greyDefaultColor_.background]]"
         base-color="[[greyDefaultColor_.base]]"
         foreground-color="[[greyDefaultColor_.foreground]]"
-        title="[[i18n('greyDefaultColorName')]]"
-        aria-label="[[i18n('greyDefaultColorName')]]"
+        title="$i18n{greyDefaultColorName}"
+        aria-label="$i18n{greyDefaultColorName}"
         role="radio"
         checked="[[isGreyDefaultColorSelected_]]"
         checkmark-border-hidden="[[isChromeRefresh2023_]]"
@@ -102,15 +102,15 @@
         tabindex$="[[tabIndex_(isGreyDefaultColorSelected_)]]"
         on-click="onGreyDefaultColorClick_"
         basic-color>
-    </cr-theme-color>
+    </customize-chrome-color>
   </template>
   <template is="dom-if" if="[[themeHasMainColor_(theme_)]]" restamp>
-    <cr-theme-color
+    <customize-chrome-color
         id="mainColor"
         foreground-color="[[mainColor_]]"
         background-color-hidden
-        title="[[i18n('mainColorName')]]"
-        aria-label="[[i18n('mainColorName')]]"
+        title="$i18n{mainColorName}"
+        aria-label="$i18n{mainColorName}"
         role="radio"
         checked="[[isMainColorSelected_]]"
         checkmark-border-hidden="[[isChromeRefresh2023_]]"
@@ -118,10 +118,10 @@
         tabindex$="[[tabIndex_(isMainColorSelected_)]]"
         on-click="onMainColorClick_"
         basic-color>
-    </cr-theme-color>
+    </customize-chrome-color>
   </template>
   <template id="chromeColors" is="dom-repeat" items="[[colors_]]">
-    <cr-theme-color
+    <customize-chrome-color
         class="chrome-color"
         background-color="[[item.background]]"
         base-color="[[item.base]]"
@@ -137,16 +137,16 @@
         tabindex$="[[chromeColorTabIndex_(item.seed, item.variant, selectedColor_)]]"
         on-click="onChromeColorClick_"
         basic-color>
-    </cr-theme-color>
+    </customize-chrome-color>
   </template>
   <div id="customColorContainer"
-      title="[[i18n('colorPickerLabel')]]"
-      aria-label="[[i18n('colorPickerLabel')]]"
+      title="$i18n{colorPickerLabel}"
+      aria-label="$i18n{colorPickerLabel}"
       role="radio"
       aria-checked$="[[boolToString_(isCustomColorSelected_)]]"
       tabindex$="[[tabIndex_(isCustomColorSelected_)]]"
       on-click="onCustomColorClick_">
-    <cr-theme-color
+    <customize-chrome-color
         id="customColor"
         background-color="[[customColor_.background]]"
         foreground-color="[[customColor_.foreground]]"
@@ -154,7 +154,7 @@
         checked="[[isCustomColorSelected_]]"
         checkmark-border-hidden="[[isChromeRefresh2023_]]"
         basic-color>
-    </cr-theme-color>
+    </customize-chrome-color>
     <div id="colorPickerIcon"></div>
     <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
         on-change="onCustomColorChange_">
@@ -162,7 +162,7 @@
 </cr-grid>
 <template is="dom-if" if="[[showManagedDialog_]]" restamp>
   <managed-dialog on-close="onManagedDialogClosed_"
-      title="[[i18n('managedColorsTitle')]]"
-      body="[[i18n('managedColorsBody')]]">
+      title="$i18n{managedColorsTitle}"
+      body="$i18n{managedColorsBody}">
   </managed-dialog>
 </template>

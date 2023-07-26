@@ -21,7 +21,6 @@
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
-#include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 
 namespace content {
 class WebContents;
@@ -32,7 +31,6 @@ class CartHandler;
 class Profile;
 class HelpBubbleHandler;
 class CustomizeColorSchemeModeHandler;
-class ThemeColorPickerHandler;
 
 namespace ui {
 class ColorChangeHandler;
@@ -44,7 +42,6 @@ class CustomizeChromeUI
       public help_bubble::mojom::HelpBubbleHandlerFactory,
       public customize_color_scheme_mode::mojom::
           CustomizeColorSchemeModeHandlerFactory,
-      public theme_color_picker::mojom::ThemeColorPickerHandlerFactory,
       public side_panel::mojom::CustomizeChromePageHandlerFactory {
  public:
   explicit CustomizeChromeUI(content::WebUI* web_ui);
@@ -89,10 +86,6 @@ class CustomizeChromeUI
                                 CustomizeColorSchemeModeHandlerFactory>
           pending_receiver);
 
-  void BindInterface(mojo::PendingReceiver<
-                     theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
-                         pending_receiver);
-
  private:
   // side_panel::mojom::CustomizeChromePageHandlerFactory
   void CreatePageHandler(
@@ -115,13 +108,6 @@ class CustomizeChromeUI
           customize_color_scheme_mode::mojom::CustomizeColorSchemeModeHandler>
           handler) override;
 
-  // theme_color_picker::mojom::ThemeColorPickerHandlerFactory:
-  void CreateThemeColorPickerHandler(
-      mojo::PendingReceiver<theme_color_picker::mojom::ThemeColorPickerHandler>
-          handler,
-      mojo::PendingRemote<theme_color_picker::mojom::ThemeColorPickerClient>
-          client) override;
-
   std::unique_ptr<CustomizeChromePageHandler> customize_chrome_page_handler_;
   std::unique_ptr<CartHandler> cart_handler_;
   raw_ptr<Profile> profile_;
@@ -142,9 +128,6 @@ class CustomizeChromeUI
   mojo::Receiver<customize_color_scheme_mode::mojom::
                      CustomizeColorSchemeModeHandlerFactory>
       customize_color_scheme_mode_handler_factory_receiver_{this};
-  std::unique_ptr<ThemeColorPickerHandler> theme_color_picker_handler_;
-  mojo::Receiver<theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
-      theme_color_picker_handler_factory_receiver_{this};
 
   base::WeakPtrFactory<CustomizeChromeUI> weak_ptr_factory_{this};
 
