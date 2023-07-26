@@ -84,6 +84,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         computed: 'computeIsCameraListEmpty_(camerasConnected_)',
       },
 
+      isHatsSurveyEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('isPrivacyHubHatsEnabled');
+        },
+      },
+
       /**
        * The list of connected microphones.
        */
@@ -140,6 +148,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private useCameraToggleFallbackSubtext_: boolean;
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
+  private isHatsSurveyEnabled_: boolean;
   private microphonesConnected_: string[];
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
@@ -177,7 +186,13 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.PRIVACY_HUB) {
+      if (this.isHatsSurveyEnabled_) {
+        this.browserProxy_.sendLeftOsPrivacyPage();
+      }
       return;
+    }
+    if (this.isHatsSurveyEnabled_) {
+      this.browserProxy_.sendOpenedOsPrivacyPage();
     }
     this.attemptDeepLink();
   }

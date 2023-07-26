@@ -426,7 +426,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isPrivacyHubHatsEnabled",
       base::FeatureList::IsEnabled(
-          ::features::kHappinessTrackingPrivacyHubBaseline));
+          ::features::kHappinessTrackingPrivacyHubPostLaunch));
   html_source->AddBoolean("showPrivacyHubPage",
                           ash::features::IsCrosPrivacyHubEnabled());
   html_source->AddBoolean("showPrivacyHubMVPPage",

@@ -410,48 +410,6 @@ suite('<os-settings-privacy-page>', () => {
         fakeMetricsPrivate.countMetricValue('ChromeOS.PrivacyHub.Opened', 0));
   });
 
-  test('Send HaTS messages', async () => {
-    loadTimeData.overrideValues({
-      isPrivacyHubHatsEnabled: true,
-    });
-
-    const privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
-    PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
-
-    privacyPage = document.createElement('os-settings-privacy-page');
-    document.body.appendChild(privacyPage);
-
-    await waitAfterNextRender(privacyPage);
-
-    assertEquals(
-        0, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
-    assertEquals(
-        1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
-
-    const params = new URLSearchParams();
-    params.append('settingId', settingMojom.Setting.kVerifiedAccess.toString());
-    Router.getInstance().navigateTo(routes.OS_PRIVACY, params);
-
-    flush();
-
-    assertEquals(
-        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
-    assertEquals(
-        1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
-
-    params.set(
-        'settingId',
-        settingMojom.Setting.kShowUsernamesAndPhotosAtSignInV2.toString());
-    Router.getInstance().navigateTo(routes.ACCOUNTS, params);
-
-    flush();
-
-    assertEquals(
-        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
-    assertEquals(
-        2, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
-  });
-
   // TODO(crbug.com/1262869): add a test for deep linking to snopping setting
   //                          once it has been added.
 });

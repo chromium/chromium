@@ -566,6 +566,50 @@ async function parametrizedPrivacyHubSubpageTestsuite(
             'ChromeOS.PrivacyHub.Microphone.Settings.Enabled', true),
         1);
   });
+
+  test('Send HaTS messages', async () => {
+    privacyHubSubpage.remove();
+
+    loadTimeData.overrideValues({
+      isPrivacyHubHatsEnabled: true,
+    });
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
+
+    document.body.appendChild(privacyHubSubpage);
+    await waitAfterNextRender(privacyHubSubpage);
+    flush();
+
+    // Reset the callcounts here as the appendChild etc trigger one left page
+    // call which makes the numbers on the asserts not very intuitive.
+    privacyHubBrowserProxy.reset();
+    assertEquals(
+        0, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        0, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
+
+    const params = new URLSearchParams();
+    params.append('settingId', settingMojom.Setting.kCameraOnOff.toString());
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
+
+    flush();
+
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        0, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
+
+    params.set(
+        'settingId',
+        settingMojom.Setting.kShowUsernamesAndPhotosAtSignInV2.toString());
+    Router.getInstance().navigateTo(routes.ACCOUNTS, params);
+
+    flush();
+
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
+  });
 }
 
 suite(

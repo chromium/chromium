@@ -864,14 +864,14 @@ inline constexpr char kHatsGeneralCameraIsSelected[] =
     "hats_general_camera_is_selected";
 
 // A boolean pref. Indicated if the device is selected for the Privacy Hub
-// baseline survey.
-inline constexpr char kHatsPrivacyHubBaselineIsSelected[] =
-    "hats_privacy_hub_baseline_is_selected";
+// post launch survey.
+inline constexpr char kHatsPrivacyHubPostLaunchIsSelected[] =
+    "hats_privacy_hub_postlaunch_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicated the end of the most recent Privacy Hub baseline cycle.
-inline constexpr char kHatsPrivacyHubBaselineCycleEndTs[] =
-    "hats_privacy_hub_baseline_end_timestamp";
+// indicated the end of the most recent Privacy Hub post launch cycle.
+inline constexpr char kHatsPrivacyHubPostLaunchCycleEndTs[] =
+    "hats_privacy_hub_postlaunch_end_timestamp";
 
 // A boolean pref. Indicated if the device is selected for the Borealis games
 // survey.

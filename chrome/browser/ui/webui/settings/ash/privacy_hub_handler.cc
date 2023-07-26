@@ -38,7 +38,7 @@ void PrivacyHubHandler::RegisterMessages() {
   }
 
   if (base::FeatureList::IsEnabled(
-          ::features::kHappinessTrackingPrivacyHubBaseline)) {
+          ::features::kHappinessTrackingPrivacyHubPostLaunch)) {
     web_ui()->RegisterMessageCallback(
         "osPrivacyPageWasOpened",
         base::BindRepeating(&PrivacyHubHandler::HandlePrivacyPageOpened,
@@ -65,20 +65,27 @@ void PrivacyHubHandler::MicrophoneHardwareToggleChanged(bool muted) {
   NotifyJS("microphone-hardware-toggle-changed", base::Value(muted));
 }
 
+void PrivacyHubHandler::SetPrivacyPageOpenedTimeStampForTesting(
+    base::TimeTicks time_stamp) {
+  privacy_page_opened_timestamp_ = time_stamp;
+}
+
 void PrivacyHubHandler::HandlePrivacyPageOpened(const base::Value::List& args) {
   DCHECK(args.empty());
   DCHECK(base::FeatureList::IsEnabled(
-      ::features::kHappinessTrackingPrivacyHubBaseline));
+      ::features::kHappinessTrackingPrivacyHubPostLaunch));
+
   // TODO(b/290646585): Replace with a CHECK().
   AllowJavascript();
 
-  privacy_page_was_opened_ = true;
+  privacy_page_opened_timestamp_ = base::TimeTicks::Now();
 }
 
 void PrivacyHubHandler::HandlePrivacyPageClosed(const base::Value::List& args) {
   DCHECK(args.empty());
   DCHECK(base::FeatureList::IsEnabled(
-      ::features::kHappinessTrackingPrivacyHubBaseline));
+      ::features::kHappinessTrackingPrivacyHubPostLaunch));
+
   // TODO(b/290646585): Replace with a CHECK().
   AllowJavascript();
 
@@ -112,7 +119,10 @@ const base::ValueView PrivacyHubHandler::ValidateArgs(
 }
 
 void PrivacyHubHandler::TriggerHatsIfPageWasOpened() {
-  if (privacy_page_was_opened_) {
+  if (const base::TimeTicks now = base::TimeTicks::Now();
+      (now - privacy_page_opened_timestamp_.value_or(now)) >=
+      base::Seconds(5)) {
+    privacy_page_opened_timestamp_.reset();
     PrivacyHubHatsTrigger::Get().ShowSurveyAfterDelayElapsed();
   }
 }

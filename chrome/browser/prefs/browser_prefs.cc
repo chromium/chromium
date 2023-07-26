@@ -938,6 +938,14 @@ const char kPowerMetricsLidClosedSuspendCount[] =
     "power.metrics.lid_closed_suspend_count";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kHatsPrivacyHubBaselineIsSelected[] =
+    "hats_privacy_hub_baseline_is_selected";
+const char kHatsPrivacyHubBaselineCycleEndTs[] =
+    "hats_privacy_hub_baseline_end_timestamp";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1355,6 +1363,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kPowerMetricsIdleScreenOffCount, 0);
   registry->RegisterIntegerPref(kPowerMetricsIdleSuspendCount, 0);
   registry->RegisterIntegerPref(kPowerMetricsLidClosedSuspendCount, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kHatsPrivacyHubBaselineIsSelected, false);
+  registry->RegisterIntegerPref(kHatsPrivacyHubBaselineCycleEndTs, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 }  // namespace
@@ -2516,6 +2530,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kPowerMetricsLidClosedSuspendCount);
 #endif
   syncer::SyncPrefs::MigrateAutofillWalletImportEnabledPref(profile_prefs);
+
+// Added 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kHatsPrivacyHubBaselineIsSelected);
+  profile_prefs->ClearPref(kHatsPrivacyHubBaselineCycleEndTs);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

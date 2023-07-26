@@ -37,7 +37,6 @@ import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './os_privacy_page.html.js';
 import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
-import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {PrivacyHubNavigationOrigin} from './privacy_hub_subpage.js';
 
 export interface OsSettingsPrivacyPageElement {
@@ -201,7 +200,6 @@ export class OsSettingsPrivacyPageElement extends
 
   private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private browserProxy_: PeripheralDataAccessBrowserProxy;
-  private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
 
   /**
    * The timeout ID to pass to clearTimeout() to cancel auth token
@@ -212,7 +210,6 @@ export class OsSettingsPrivacyPageElement extends
   private dataAccessShiftTabPressed_: boolean;
   private fingerprintUnlockEnabled_: boolean;
   private isGuestMode_: boolean;
-  private isHatsSurveyEnabled_: boolean;
   private isRevenBranding_: boolean;
   private isSmartPrivacyEnabled_: boolean;
   private isThunderboltSupported_: boolean;
@@ -237,8 +234,6 @@ export class OsSettingsPrivacyPageElement extends
         this.supportedSettingIds.add(Setting.kPeripheralDataAccessProtection);
       }
     });
-
-    this.privacyHubBrowserProxy_ = PrivacyHubBrowserProxyImpl.getInstance();
   }
 
   override ready(): void {
@@ -256,13 +251,7 @@ export class OsSettingsPrivacyPageElement extends
 
     // Does not apply to this page.
     if (newRoute !== this.route) {
-      if (this.isHatsSurveyEnabled_) {
-        this.privacyHubBrowserProxy_.sendLeftOsPrivacyPage();
-      }
       return;
-    }
-    if (this.isHatsSurveyEnabled_) {
-      this.privacyHubBrowserProxy_.sendOpenedOsPrivacyPage();
     }
     this.attemptDeepLink();
   }
