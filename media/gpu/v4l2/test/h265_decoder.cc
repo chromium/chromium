@@ -496,7 +496,7 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
                                                   gfx::Size& size) {
   if (!parser_) {
     parser_ = std::make_unique<H265Parser>();
-    parser_->SetStream(data_stream_.data(), data_stream_.length());
+    parser_->SetStream(data_stream_->data(), data_stream_->length());
   }
 
   // TODO(b/261127809): add a condition to check frames are ready for processing

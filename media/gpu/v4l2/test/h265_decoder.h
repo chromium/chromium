@@ -8,6 +8,7 @@
 
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+#include "base/memory/raw_ref.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/test/h265_dpb.h"
 #include "media/video/h265_parser.h"
@@ -146,7 +147,7 @@ class H265Decoder : public VideoDecoder {
   // or first picture that follows an EOS NALU.
   bool first_picture_ = true;
 
-  const base::MemoryMappedFile& data_stream_;
+  const raw_ref<const base::MemoryMappedFile> data_stream_;
 
   // Global state values needed for decoding. See spec.
   scoped_refptr<H265Picture> prev_tid0_pic_;

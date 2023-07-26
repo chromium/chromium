@@ -15,6 +15,7 @@
 #include <queue>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/raw_ref.h"
 #include "media/gpu/v4l2/test/h264_dpb.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
@@ -126,7 +127,7 @@ class H264Decoder : public VideoDecoder {
 
   bool stream_finished_;
 
-  const base::MemoryMappedFile& data_stream_;
+  const raw_ref<const base::MemoryMappedFile> data_stream_;
 
   int prev_frame_num_ = -1;
   int prev_frame_num_offset_ = -1;
