@@ -11,6 +11,8 @@ jobs:
   post-message:
     name: Post Chromium roll reminder
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     if: contains(github.event.label.name, 'autorelease') && contains(github.event.label.name, 'tagged')
     steps:
       - name: Find Comment Id
