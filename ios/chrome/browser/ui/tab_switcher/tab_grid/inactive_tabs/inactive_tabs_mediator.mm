@@ -301,14 +301,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly: {
-      CHECK(!status.pinned_state_change);
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated for didChangeActiveWebState:.
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when the status in WebStateList is updated.
       break;
-    }
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
       break;
@@ -332,14 +327,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       break;
     }
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  // No-op.
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
