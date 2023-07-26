@@ -1242,6 +1242,11 @@ inline constexpr char kHasResetFirst7DaysSettingsUsedCount[] =
 // "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.{Time}".
 const char kHasEverRevokedMetricsConsent[] =
     "settings.has_ever_revoked_metrics_consent";
+
+// A boolean to store that an admin user accessed the host device remotely when
+// no user was present at the device. This boolean enables the device to display
+// a notification to the local user when the session was terminated.
+inline constexpr char kRemoteAdminWasPresent[] = "remote_admin_was_present";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

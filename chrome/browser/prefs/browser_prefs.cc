@@ -206,6 +206,7 @@
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
@@ -1549,6 +1550,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // TODO(b/265923216): Replace with EnrollmentStateFetcher::RegisterPrefs.
   policy::AutoEnrollmentClientImpl::RegisterPrefs(registry);
   policy::BrowserPolicyConnectorAsh::RegisterPrefs(registry);
+  policy::CrdAdminSessionController::RegisterLocalStatePrefs(registry);
   policy::DeviceCloudPolicyManagerAsh::RegisterPrefs(registry);
   policy::DeviceStatusCollector::RegisterPrefs(registry);
   policy::DeviceWallpaperImageExternalDataHandler::RegisterPrefs(registry);

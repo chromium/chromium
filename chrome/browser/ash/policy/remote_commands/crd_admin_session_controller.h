@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/session_id.h"
@@ -59,6 +60,8 @@ class CrdAdminSessionController
   CrdAdminSessionController& operator=(const CrdAdminSessionController&) =
       delete;
   ~CrdAdminSessionController() override;
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // DeviceCommandStartCrdSessionJob::Delegate implementation:
   bool HasActiveSession() const override;
