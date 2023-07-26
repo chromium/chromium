@@ -726,6 +726,10 @@ extern const char kDownloadRangeDescription[];
 extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[];
 extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[];
 
+extern const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[];
+extern const char
+    kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription[];
+
 extern const char kEnableFriendlierSafeBrowsingSettingsName[];
 extern const char kEnableFriendlierSafeBrowsingSettingsDescription[];
 

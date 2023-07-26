@@ -62721,6 +62721,8 @@ from previous Chrome versions.
   <int value="-599932554" label="DoodlesOnLocalNtp:disabled"/>
   <int value="-599878733" label="ContextualTriggersSelectionHandles:disabled"/>
   <int value="-599005750" label="ScanningUI:disabled"/>
+  <int value="-598811644"
+      label="FriendlierSafeBrowsingSettingsEnhancedProtection:enabled"/>
   <int value="-598191408" label="OmniboxKeywordSpaceTriggeringSetting:enabled"/>
   <int value="-598050737" label="disable-es3-apis"/>
   <int value="-596822155" label="AppManagementIntentSettings:enabled"/>
@@ -67927,6 +67929,8 @@ from previous Chrome versions.
   <int value="2069999572"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:disabled"/>
   <int value="2070207131" label="OpenscreenCastStreamingSession:disabled"/>
+  <int value="2071144112"
+      label="FriendlierSafeBrowsingSettingsEnhancedProtection:disabled"/>
   <int value="2071148245" label="ForceMajorVersion100InUserAgent:enabled"/>
   <int value="2071229145" label="BloatedRendererDetection:enabled"/>
   <int value="2071340353" label="progress-bar-completion"/>

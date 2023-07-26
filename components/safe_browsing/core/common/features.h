@@ -169,6 +169,11 @@ BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 // `kFileTypePoliciesTag`.
 const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
 
+// Enables the new text, layout, links, and icons on both the privacy guide
+// and on the security settings page for the enhanced protection security
+// option.
+BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsEnhancedProtection);
+
 // Enables the new text, layout, and icons on both the privacy guide and on the
 // security settings page. Also, this will only affect the safe browsing level
 // settings.
