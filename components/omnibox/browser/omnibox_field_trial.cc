@@ -1040,15 +1040,6 @@ const base::FeatureParam<bool> kMlBatchUrlScoring(&omnibox::kMlUrlScoring,
                                                   "MlBatchUrlScoring",
                                                   true);
 
-// Without ML Scoring enabled, the History URL Provider queries the history
-// database for `MaxMatches` * 2 matches and sorts and limits to `MaxMatches`.
-// When ML Scoring is enabled, this max is ignored.  This parameter sets how
-// the max number of results to query the database for.
-const base::FeatureParam<int> kMlUrlScoringHUPMaxResults(
-    &omnibox::kMlUrlScoring,
-    "MlUrlScoringHUPMaxResults",
-    50);
-
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
@@ -1063,11 +1054,8 @@ MLConfig::MLConfig() {
   ml_url_scoring_preserve_default = kMlUrlScoringPreserveDefault.Get();
   ml_url_scoring_rerank_final_matches_only =
       kMlUrlscoringRerankFinalMatchesOnly.Get();
-  ml_url_scoring_hup_max_results = kMlUrlScoringHUPMaxResults.Get();
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
 }
-
-MLConfig::MLConfig(const MLConfig&) = default;
 
 ScopedMLConfigForTesting::ScopedMLConfigForTesting()
     : original_config_(std::make_unique<MLConfig>(GetMLConfig())) {
