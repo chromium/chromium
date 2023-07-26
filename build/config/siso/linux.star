@@ -72,6 +72,7 @@ def __disable_remote_b289968566(ctx, step_config):
             "./obj/chrome/test/browser_tests/file_manager_browsertest_base.o",
             "./obj/chrome/test/browser_tests/remote_apps_manager_browsertest.o",
             "./obj/v8/torque_generated_initializers/js-to-wasm-tq-csa.o",
+            "./obj/v8/torque_generated_initializers/wasm-to-js-tq-csa.o",
         ],
         "remote": False,
     }
