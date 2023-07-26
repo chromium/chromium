@@ -11,5 +11,6 @@ buildflag_header("buildflags") {
   flags = [
     "ENTERPRISE_CLOUD_CONTENT_ANALYSIS=$enterprise_cloud_content_analysis",
     "ENTERPRISE_LOCAL_CONTENT_ANALYSIS=$enterprise_local_content_analysis",
+    "ENTERPRISE_CONTENT_ANALYSIS=$enterprise_content_analysis",
   ]
 }

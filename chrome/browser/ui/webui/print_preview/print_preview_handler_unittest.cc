@@ -35,6 +35,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
@@ -56,9 +57,9 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -90,10 +91,10 @@ const char16_t kDummyInitiatorName16[] = u"TestInitiator";
 const char kEmptyPrinterName[] = "EmptyPrinter";
 const char kTestData[] = "abc";
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
 constexpr char kCallbackId[] = "test-callback-id-1";
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 // Array of all mojom::PrinterTypes.
 constexpr mojom::PrinterType kAllTypes[] = {mojom::PrinterType::kExtension,
@@ -1604,7 +1605,7 @@ TEST_F(PrintPreviewHandlerFailingTest, GetPrinterCapabilities) {
   }
 }
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 class ContentAnalysisPrintPreviewHandlerTest
     : public PrintPreviewHandlerTest,
       public testing::WithParamInterface<bool> {
@@ -1674,12 +1675,11 @@ class ContentAnalysisPrintPreviewHandlerTest
  private:
   base::test::ScopedFeatureList feature_list_;
   base::RunLoop run_loop_;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   // This installs a fake SDK manager that creates fake SDK clients when
   // its GetClient() method is called. This is needed so that calls to
   // ContentAnalysisSdkManager::Get()->GetClient() do not fail.
   enterprise_connectors::FakeContentAnalysisSdkManager sdk_manager_;
-#endif
 };
 
 TEST_P(ContentAnalysisPrintPreviewHandlerTest, LocalScanBeforePrinting) {
@@ -1715,6 +1715,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ContentAnalysisPrintPreviewHandlerTest,
                          /*scanning_allows_print=*/testing::Bool());
 
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 }  // namespace printing

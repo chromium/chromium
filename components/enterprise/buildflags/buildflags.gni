@@ -6,6 +6,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
   # Enable support for content analysis against a cloud agent for Enterprise
@@ -17,3 +18,17 @@ declare_args() {
   # Connector policies.
   enterprise_local_content_analysis = is_win || is_mac || is_linux
 }
+
+declare_args() {
+  # Indicates if any content analysis support is present, whether local or
+  # cloud. This is used to improve readability of code and avoid relying on
+  # the fact that `enterprise_cloud_content_analysis` is a superset of
+  # `enterprise_local_content_analysis`.
+  enterprise_content_analysis =
+      enterprise_cloud_content_analysis || enterprise_local_content_analysis
+}
+
+# These two flags are equivalent, but `enable_print_content_analysis` still
+# needs to exist separately as it lives under //printing which cannot depend
+# on //components.
+assert(enterprise_content_analysis == enable_print_content_analysis)

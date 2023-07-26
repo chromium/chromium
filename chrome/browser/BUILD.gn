@@ -4492,6 +4492,7 @@ static_library("browser") {
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/constrained_window",
       "//components/endpoint_fetcher:endpoint_fetcher",
+      "//components/enterprise/buildflags",
       "//components/feedback",
       "//components/feedback/content:factory",
       "//components/feedback/redaction_tool",
