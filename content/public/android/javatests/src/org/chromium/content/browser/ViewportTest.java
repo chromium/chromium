@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Test suite for viewport-related properties.
@@ -75,12 +76,18 @@ public class ViewportTest {
         // Check that the viewport width is vaguely sensible.
         int viewportWidth = evaluateIntegerValue("document.documentElement.clientWidth");
         Assert.assertTrue(Math.abs(evaluateIntegerValue("window.innerWidth") - viewportWidth) <= 1);
-        if (isDefaultViewportDeviceWidth) {
+        if (isDefaultViewportDeviceWidth && isTablet()) {
+            // On tablets, when the DefaultViewportIsDeviceWidth flag is enabled, viewport width
+            // will default to device width without viewport tag.
             Assert.assertTrue(viewportWidth >= metrics.widthPixels / metrics.density - 1);
+            Assert.assertTrue(viewportWidth <= metrics.widthPixels / metrics.density + 1);
         } else {
             Assert.assertTrue(viewportWidth >= 979);
+            Assert.assertTrue(viewportWidth <= 981);
         }
-        Assert.assertTrue(
-                viewportWidth <= Math.max(981, metrics.widthPixels / metrics.density + 1));
+    }
+
+    private boolean isTablet() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity());
     }
 }
