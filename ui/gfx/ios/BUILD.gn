@@ -8,5 +8,4 @@ source_set("uikit_util") {
     "uikit_util.mm",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

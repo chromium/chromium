@@ -34,10 +34,6 @@ component("snapshot") {
 
   defines = [ "SNAPSHOT_IMPLEMENTATION" ]
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   deps = [
     ":snapshot_export",
     "//base",
@@ -113,10 +109,6 @@ test("snapshot_unittests") {
   ]
 
   data_deps = [ "//testing/buildbot/filters:snapshot_unittests_filters" ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   if (use_aura) {
     sources += [ "snapshot_aura_unittest.cc" ]

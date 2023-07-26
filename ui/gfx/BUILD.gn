@@ -282,10 +282,6 @@ component("gfx") {
     "//build/config/compiler:wexit_time_destructors",
   ]
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   # This is part of the gfx component in the component build.
   defines = [ "GFX_IMPLEMENTATION" ]
 
@@ -483,7 +479,6 @@ component("color_space") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     if (is_mac) {
       sources += [
         "mac/display_icc_profiles.cc",
@@ -528,7 +523,6 @@ source_set("native_widget_types_sources") {
   if (is_mac) {
     sources = [ "native_widget_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 
@@ -715,7 +709,6 @@ static_library("test_support") {
   ]
   if (is_apple) {
     sources += [ "image/image_unittest_util_apple.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (use_fuzzing_engine) {
     sources += [
@@ -774,7 +767,6 @@ test("gfx_unittests") {
     sources += [ "font_fallback_linux_unittest.cc" ]
   }
   if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "IOSurface.framework" ]
   }
   if (is_mac) {

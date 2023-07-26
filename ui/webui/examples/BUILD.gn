@@ -76,7 +76,6 @@ static_library("webui_examples_lib") {
       "browser/ui/cocoa/content_ns_window.h",
       "browser/ui/cocoa/content_ns_window.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "AppKit.framework",
       "Cocoa.framework",

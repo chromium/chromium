@@ -40,10 +40,6 @@ component("init") {
     deps += [ "//third_party/angle:libEGL_static" ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_android) {
     sources += [
       "gl_factory_android.cc",

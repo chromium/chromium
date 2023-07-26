@@ -473,10 +473,6 @@ component("base") {
     "//build/config/compiler:wexit_time_destructors",
   ]
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   defines = [ "IS_UI_BASE_IMPL" ]
 
   if (enable_pseudolocales) {
@@ -661,7 +657,6 @@ component("base") {
 
 if (is_ios) {
   source_set("l10n_util_ios") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "l10n/l10n_util_ios.h",
       "l10n/l10n_util_ios.mm",
@@ -784,10 +779,6 @@ static_library("test_support") {
     "test/idle_test_utils.cc",
     "test/idle_test_utils.h",
   ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   if (is_mac) {
     sources += [
@@ -1077,10 +1068,6 @@ test("ui_base_unittests") {
 
   if (!is_android && !is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
-  }
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {

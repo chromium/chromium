@@ -79,7 +79,6 @@ component("color") {
       "mac/system_color_utils.h",
       "mac/system_color_utils.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "AppKit.framework" ]
   }
 }
@@ -179,7 +178,6 @@ component("mixers") {
     sources += [ "chromeos/native_color_mixers_chromeos.cc" ]
   } else if (is_mac) {
     sources += [ "mac/native_color_mixers_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "AppKit.framework" ]
   } else if (is_win) {
     sources += [ "win/native_color_mixers_win.cc" ]

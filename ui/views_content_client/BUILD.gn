@@ -25,7 +25,6 @@ component("views_content_client") {
 
   if (is_mac) {
     sources += [ "views_content_client_main_parts_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   defines = [ "VIEWS_CONTENT_CLIENT_IMPLEMENTATION" ]

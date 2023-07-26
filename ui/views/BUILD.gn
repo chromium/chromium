@@ -671,7 +671,6 @@ component("views") {
       "windows_stationarity_monitor_mac.mm",
     ]
     public_deps += [ "//components/remote_cocoa/common:mojo" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [
       "//components/crash/core/common",
       "//components/remote_cocoa/app_shim",
@@ -1134,8 +1133,6 @@ source_set("test_support") {
       "test/widget_test_mac.mm",
     ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
-
     deps += [
       "//components/remote_cocoa/app_shim",
       "//ui/display:test_support",
@@ -1424,8 +1421,6 @@ test("views_unittests") {
     # views_unittests not yet compiling on Mac. http://crbug.com/378134
     sources -= [ "controls/native/native_view_host_unittest.cc" ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
-
     public_deps = [
       "//components/remote_cocoa/app_shim",
       "//ui/accelerated_widget_mac",
@@ -1563,7 +1558,6 @@ source_set("views_interactive_ui_tests") {
       "widget/native_widget_mac_interactive_uitest.mm",
     ]
     deps += [ "//components/remote_cocoa/app_shim" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (use_aura) {

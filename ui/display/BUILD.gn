@@ -100,10 +100,6 @@ component("display") {
 
   defines = [ "DISPLAY_IMPLEMENTATION" ]
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   public_deps = [
     ":display_features",
     "//ui/display/types",
@@ -207,7 +203,6 @@ static_library("test_support") {
       "mac/test/virtual_display_mac_util.h",
       "mac/test/virtual_display_mac_util.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_chromeos_ash) {
@@ -325,8 +320,6 @@ source_set("display_interactive_ui_tests") {
   testonly = true
   if (is_mac) {
     sources = [ "mac/test/virtual_display_mac_util_interactive_uitest.mm" ]
-
-    configs += [ "//build/config/compiler:enable_arc" ]
 
     deps = [
       ":display",

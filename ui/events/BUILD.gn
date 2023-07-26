@@ -73,10 +73,6 @@ static_library("dom_keyboard_layout") {
     deps += [ "//ui/events/ozone/layout" ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (!is_ios) {
     deps += [ "//ipc:param_traits" ]
   }
@@ -164,10 +160,6 @@ component("events_base") {
       "keycodes/keyboard_code_conversion_mac.mm",
     ]
     deps += [ "//base:i18n" ]
-  }
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_fuchsia) {
@@ -258,10 +250,6 @@ component("events") {
       "win/events_win_utils.cc",
       "win/system_event_state_lookup.cc",
     ]
-  }
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
@@ -442,10 +430,6 @@ component("keyboard_hook") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [ "mac/keyboard_hook_mac.mm" ]
   }
@@ -561,10 +545,6 @@ static_library("test_support") {
     "test/test_event_targeter.h",
   ]
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "test/cocoa_test_event_utils.h",
@@ -669,10 +649,6 @@ if (use_blink) {
       "scoped_target_handler_unittest.cc",
       "test/scoped_event_waiter_unittest.cc",
     ]
-
-    if (is_apple) {
-      configs += [ "//build/config/compiler:enable_arc" ]
-    }
 
     if (is_mac) {
       sources += [ "cocoa/events_mac_unittest.mm" ]

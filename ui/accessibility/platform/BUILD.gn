@@ -244,8 +244,6 @@ component("platform") {
         "inspect/ax_tree_indexer_mac.h",
       ]
 
-      configs += [ "//build/config/compiler:enable_arc" ]
-
       frameworks = [
         "AppKit.framework",
         "Foundation.framework",

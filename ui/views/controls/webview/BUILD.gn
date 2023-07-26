@@ -19,7 +19,6 @@ component("webview") {
 
   if (is_mac) {
     sources += [ "unhandled_keyboard_event_handler_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {

@@ -39,7 +39,6 @@ component("animation") {
 
   if (is_mac) {
     sources += [ "animation_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
