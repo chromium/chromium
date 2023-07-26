@@ -913,7 +913,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                        bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
         browser_autofill_manager_->client()
-            ->GetCvcAuthenticator()
+            .GetCvcAuthenticator()
             ->full_card_request_.get();
     DCHECK(full_card_request);
 
@@ -935,7 +935,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   CardUnmaskDelegate* full_card_unmask_delegate() {
     payments::FullCardRequest* full_card_request =
         browser_autofill_manager_->client()
-            ->GetCvcAuthenticator()
+            .GetCvcAuthenticator()
             ->full_card_request_.get();
     DCHECK(full_card_request);
     return static_cast<CardUnmaskDelegate*>(full_card_request);

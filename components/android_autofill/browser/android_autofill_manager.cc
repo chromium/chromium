@@ -206,7 +206,7 @@ void AndroidAutofillManager::OnContextMenuShownInField(
 
 AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
   if (auto* rfh =
-          static_cast<ContentAutofillDriver*>(driver())->render_frame_host()) {
+          static_cast<ContentAutofillDriver&>(driver()).render_frame_host()) {
     if (rfh->IsActive()) {
       if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh)) {
         return AutofillProvider::FromWebContents(web_contents);
@@ -232,7 +232,7 @@ void AndroidAutofillManager::FillOrPreviewForm(
     FieldTypeGroup field_type_group,
     const url::Origin& triggered_origin) {
   DCHECK_EQ(action, mojom::RendererFormDataAction::kFill);
-  driver()->FillOrPreviewForm(action, form, triggered_origin, {});
+  driver().FillOrPreviewForm(action, form, triggered_origin, {});
 
   if (auto* logger = GetEventFormLogger(field_type_group)) {
     logger->OnDidFillSuggestion();

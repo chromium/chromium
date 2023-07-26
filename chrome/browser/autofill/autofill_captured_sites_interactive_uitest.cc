@@ -183,7 +183,7 @@ class AutofillCapturedSitesInteractiveTest
       translate::test_utils::CloseCurrentBubble(browser());
       TryToCloseAllPrompts(web_contents);
 
-      autofill_manager->client()->HideAutofillPopup(
+      autofill_manager->client().HideAutofillPopup(
           autofill::PopupHidingReason::kViewDestroyed);
 
       testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
@@ -247,7 +247,7 @@ class AutofillCapturedSitesInteractiveTest
       return true;
     }
 
-    autofill_manager->client()->HideAutofillPopup(
+    autofill_manager->client().HideAutofillPopup(
         autofill::PopupHidingReason::kViewDestroyed);
     ADD_FAILURE() << "Failed to autofill the form!";
     return false;

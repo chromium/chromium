@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -142,17 +143,17 @@ class AutofillManager
   ~AutofillManager() override;
 
   // The following will fail a DCHECK if called for a prerendered main frame.
-  AutofillClient* client() {
-    DCHECK(!driver()->IsPrerendering());
-    return client_;
+  AutofillClient& client() {
+    DCHECK(!driver().IsPrerendering());
+    return *client_;
   }
 
-  const AutofillClient* client() const {
-    DCHECK(!driver()->IsPrerendering());
-    return client_;
+  const AutofillClient& client() const {
+    DCHECK(!driver().IsPrerendering());
+    return *client_;
   }
 
-  AutofillClient* unsafe_client(
+  AutofillClient& unsafe_client(
       base::PassKey<TouchToFillDelegateAndroidImpl> pass_key) {
     return AutofillManager::unsafe_client();
   }
@@ -332,11 +333,11 @@ class AutofillManager
     return form_structures_;
   }
 
-  AutofillDriver* driver() { return driver_; }
-  const AutofillDriver* driver() const { return driver_; }
+  AutofillDriver& driver() { return *driver_; }
+  const AutofillDriver& driver() const { return *driver_; }
 
   AutofillDownloadManager* download_manager() {
-    return client()->GetDownloadManager();
+    return client().GetDownloadManager();
   }
 
   // The return value shouldn't be cached, retrieve it as needed.
@@ -358,8 +359,8 @@ class AutofillManager
   // while prerendering, these will be unnecessary (they're used during Reset
   // which can be called during prerendering, but we could skip Reset for
   // prerendering if we never have state to clear).
-  AutofillClient* unsafe_client() { return client_; }
-  const AutofillClient* unsafe_client() const { return client_; }
+  AutofillClient& unsafe_client() { return *client_; }
+  const AutofillClient& unsafe_client() const { return *client_; }
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
@@ -504,14 +505,14 @@ class AutofillManager
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
-  // Provides driver-level context to the shared code of the component. Must
-  // outlive this object.
-  const raw_ptr<AutofillDriver> driver_;
+  // Provides driver-level context to the shared code of the component.
+  // `*driver_` owns this object.
+  const raw_ref<AutofillDriver> driver_;
 
   // Do not access this directly. Instead, please use client() or
   // unsafe_client(). These functions check (or explicitly don't check) that the
   // client isn't accessed incorrectly.
-  const raw_ptr<AutofillClient> client_;
+  const raw_ref<AutofillClient> client_;
 
   const raw_ptr<LogManager> log_manager_;
 

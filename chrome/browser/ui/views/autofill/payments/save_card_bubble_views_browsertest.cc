@@ -210,7 +210,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
             &test_url_loader_factory_);
     autofill_manager()
         ->client()
-        ->GetPaymentsClient()
+        .GetPaymentsClient()
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
 
     // Wait for Personal Data Manager to be fully loaded to prevent that
@@ -235,7 +235,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   CreditCardSaveManager* credit_card_save_manager() {
     return autofill_manager()
         ->client()
-        ->GetFormDataImporter()
+        .GetFormDataImporter()
         ->credit_card_save_manager_.get();
   }
 

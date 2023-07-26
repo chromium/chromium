@@ -435,7 +435,7 @@ CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
 
   return personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
       autofill_manager->client()
-          ->GetLastCommittedPrimaryMainFrameURL()
+          .GetLastCommittedPrimaryMainFrameURL()
           .DeprecatedGetOriginAsURL());
 }
 

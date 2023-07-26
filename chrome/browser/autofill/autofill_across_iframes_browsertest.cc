@@ -246,7 +246,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     ContentAutofillDriver::GetForRenderFrameHost(main_frame())
         ->autofill_manager()
         ->client()
-        ->HideAutofillPopup(PopupHidingReason::kTabGone);
+        .HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
     InProcessBrowserTest::TearDownOnMainThread();
   }

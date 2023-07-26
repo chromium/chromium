@@ -153,7 +153,7 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
     bool is_virtual_card) {
   payments::FullCardRequest* full_card_request = autofill_manager()
                                                      .client()
-                                                     ->GetCvcAuthenticator()
+                                                     .GetCvcAuthenticator()
                                                      ->full_card_request_.get();
   DCHECK(full_card_request);
 
@@ -172,7 +172,7 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
 void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
   payments::FullCardRequest* full_card_request = autofill_manager()
                                                      .client()
-                                                     ->GetCvcAuthenticator()
+                                                     .GetCvcAuthenticator()
                                                      ->full_card_request_.get();
   DCHECK(full_card_request);
 

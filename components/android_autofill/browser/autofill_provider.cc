@@ -43,7 +43,7 @@ void AutofillProvider::RendererShouldAcceptDataListSuggestion(
     AndroidAutofillManager* manager,
     const FieldGlobalId& field_id,
     const std::u16string& value) {
-  manager->driver()->RendererShouldAcceptDataListSuggestion(field_id, value);
+  manager->driver().RendererShouldAcceptDataListSuggestion(field_id, value);
 }
 
 }  // namespace autofill

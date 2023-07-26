@@ -116,7 +116,7 @@ class IbanBubbleViewFullFormBrowserTest
     // Set up this class as the ObserverForTest implementation.
     iban_save_manager_ = autofill_manager()
                              ->client()
-                             ->GetFormDataImporter()
+                             .GetFormDataImporter()
                              ->iban_save_manager_for_testing();
     iban_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();

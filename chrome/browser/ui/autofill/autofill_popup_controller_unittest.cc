@@ -121,9 +121,6 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
                         Suggestion::BackendId backend_id) override {
     return true;
   }
-  base::WeakPtr<AutofillExternalDelegate> GetWeakPtr() {
-    return AutofillExternalDelegate::GetWeakPtr();
-  }
 
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(void, OnPopupSuppressed, (), (override));
@@ -223,7 +220,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
 #if BUILDFLAG(IS_ANDROID)
     autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
-        external_delegate_->GetWeakPtr(), web_contents(), gfx::RectF(),
+        external_delegate_->GetWeakPtrForTest(), web_contents(), gfx::RectF(),
         show_pwd_migration_warning_callback_.Get());
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
@@ -231,7 +228,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<NiceMock<MockManualFillingView>>());
 #else
     autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
-        external_delegate_->GetWeakPtr(), web_contents(), gfx::RectF(),
+        external_delegate_->GetWeakPtrForTest(), web_contents(), gfx::RectF(),
         base::DoNothing());
 #endif
     autofill_popup_controller_->SetViewForTesting(
@@ -460,25 +457,25 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreateAndroid) {
 
   WeakPtr<AutofillPopupControllerImpl> controller =
       AutofillPopupControllerImpl::GetOrCreate(
-          WeakPtr<AutofillPopupControllerImpl>(), delegate.GetWeakPtr(),
+          WeakPtr<AutofillPopupControllerImpl>(), delegate.GetWeakPtrForTest(),
           web_contents(), nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
   EXPECT_TRUE(controller.get());
 
   controller->Hide(PopupHidingReason::kViewDestroyed);
 
   controller = AutofillPopupControllerImpl::GetOrCreate(
-      WeakPtr<AutofillPopupControllerImpl>(), delegate.GetWeakPtr(),
+      WeakPtr<AutofillPopupControllerImpl>(), delegate.GetWeakPtrForTest(),
       web_contents(), nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
   EXPECT_TRUE(controller.get());
 
   WeakPtr<AutofillPopupControllerImpl> controller2 =
       AutofillPopupControllerImpl::GetOrCreate(
-          controller, delegate.GetWeakPtr(), web_contents(), nullptr,
+          controller, delegate.GetWeakPtrForTest(), web_contents(), nullptr,
           gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
   EXPECT_EQ(controller.get(), controller2.get());
   controller->Hide(PopupHidingReason::kViewDestroyed);
   NiceMock<TestAutofillPopupController>* test_controller =
-      new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
+      new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtrForTest(),
                                                 web_contents(), gfx::RectF(),
                                                 base::DoNothing());
   EXPECT_CALL(*test_controller, Hide(PopupHidingReason::kViewDestroyed));
@@ -486,8 +483,8 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreateAndroid) {
   gfx::RectF bounds(0.f, 0.f, 1.f, 2.f);
   base::WeakPtr<AutofillPopupControllerImpl> controller3 =
       AutofillPopupControllerImpl::GetOrCreate(
-          test_controller->GetWeakPtr(), delegate.GetWeakPtr(), web_contents(),
-          nullptr, bounds, base::i18n::UNKNOWN_DIRECTION);
+          test_controller->GetWeakPtr(), delegate.GetWeakPtrForTest(),
+          web_contents(), nullptr, bounds, base::i18n::UNKNOWN_DIRECTION);
   EXPECT_EQ(bounds, static_cast<AutofillPopupController*>(controller3.get())
                         ->element_bounds());
   controller3->Hide(PopupHidingReason::kViewDestroyed);
@@ -496,13 +493,14 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreateAndroid) {
   test_controller->DoHide();
 
   test_controller = new NiceMock<TestAutofillPopupController>(
-      delegate.GetWeakPtr(), web_contents(), gfx::RectF(), base::DoNothing());
+      delegate.GetWeakPtrForTest(), web_contents(), gfx::RectF(),
+      base::DoNothing());
   EXPECT_CALL(*test_controller, Hide).Times(0);
 
   const base::WeakPtr<AutofillPopupControllerImpl> controller4 =
       AutofillPopupControllerImpl::GetOrCreate(
-          test_controller->GetWeakPtr(), delegate.GetWeakPtr(), web_contents(),
-          nullptr, bounds, base::i18n::UNKNOWN_DIRECTION);
+          test_controller->GetWeakPtr(), delegate.GetWeakPtrForTest(),
+          web_contents(), nullptr, bounds, base::i18n::UNKNOWN_DIRECTION);
   EXPECT_EQ(bounds,
             static_cast<const AutofillPopupController*>(controller4.get())
                 ->element_bounds());
@@ -516,8 +514,8 @@ TEST_F(AutofillPopupControllerUnitTest, ProperlyResetController) {
   // Now show a new popup with the same controller, but with fewer items.
   WeakPtr<AutofillPopupControllerImpl> controller =
       AutofillPopupControllerImpl::GetOrCreate(
-          popup_controller().GetWeakPtr(), delegate()->GetWeakPtr(), nullptr,
-          nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
+          popup_controller().GetWeakPtr(), delegate()->GetWeakPtrForTest(),
+          nullptr, nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
   EXPECT_EQ(0, controller->GetLineCount());
 }
 
@@ -526,7 +524,7 @@ TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
   // twice.
   StrictMock<MockAutofillExternalDelegate> delegate(autofill_manager());
   StrictMock<TestAutofillPopupController>* test_controller =
-      new StrictMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
+      new StrictMock<TestAutofillPopupController>(delegate.GetWeakPtrForTest(),
                                                   web_contents(), gfx::RectF(),
                                                   base::DoNothing());
   EXPECT_CALL(delegate, ClearPreviewedForm());
@@ -552,7 +550,7 @@ TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
   // twice (since we already hide it in the destructor).
   NiceMock<MockAutofillExternalDelegate> delegate(autofill_manager());
   NiceMock<TestAutofillPopupController>* test_controller =
-      new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
+      new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtrForTest(),
                                                 web_contents(), gfx::RectF(),
                                                 base::DoNothing());
   base::HistogramTester histogram_tester;

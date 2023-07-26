@@ -396,7 +396,7 @@ class SaveCardOfferObserver
                    web_contents->GetPrimaryMainFrame())
                    ->autofill_manager()
                    ->client()
-                   ->GetFormDataImporter()
+                   .GetFormDataImporter()
                    ->credit_card_save_manager_.get();
     manager_->SetEventObserverForTesting(this);
   }

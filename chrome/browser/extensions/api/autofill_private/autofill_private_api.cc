@@ -494,13 +494,14 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   // FormDataImporter.
   autofill::AutofillManager* autofill_manager =
       GetAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client())
+  if (!autofill_manager) {
     return RespondNow(Error(kErrorDataUnavailable));
+  }
 
   // Get the FormDataImporter from AutofillClient. FormDataImporter owns
   // LocalCardMigrationManager.
   autofill::FormDataImporter* form_data_importer =
-      autofill_manager->client()->GetFormDataImporter();
+      autofill_manager->client().GetFormDataImporter();
   if (!form_data_importer)
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -683,17 +684,16 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
 
   autofill::AutofillManager* autofill_manager =
       GetAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client() ||
-      !autofill_manager->client()->GetFormDataImporter() ||
+  if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
-           ->GetFormDataImporter()
+           .GetFormDataImporter()
            ->GetVirtualCardEnrollmentManager()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
   autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
       autofill_manager->client()
-          ->GetFormDataImporter()
+          .GetFormDataImporter()
           ->GetVirtualCardEnrollmentManager();
 
   virtual_card_enrollment_manager->InitVirtualCardEnroll(
@@ -724,17 +724,16 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
 
   autofill::AutofillManager* autofill_manager =
       GetAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client() ||
-      !autofill_manager->client()->GetFormDataImporter() ||
+  if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
-           ->GetFormDataImporter()
+           .GetFormDataImporter()
            ->GetVirtualCardEnrollmentManager()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
   autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
       autofill_manager->client()
-          ->GetFormDataImporter()
+          .GetFormDataImporter()
           ->GetVirtualCardEnrollmentManager();
 
   virtual_card_enrollment_manager->Unenroll(

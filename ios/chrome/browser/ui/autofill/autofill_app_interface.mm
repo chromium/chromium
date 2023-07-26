@@ -204,7 +204,7 @@ class SaveCardInfobarEGTestHelper
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()
         ->client()
-        ->GetFormDataImporter()
+        .GetFormDataImporter()
         ->credit_card_save_manager_.get();
   }
 
@@ -219,7 +219,7 @@ class SaveCardInfobarEGTestHelper
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()
         ->client()
-        ->GetPaymentsClient();
+        .GetPaymentsClient();
   }
 
   // Delete all failed attempds registered on every cards.

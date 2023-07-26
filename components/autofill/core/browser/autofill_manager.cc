@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_manager.h"
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -150,15 +151,13 @@ void AutofillManager::LogAutofillTypePredictionsAvailable(
 }
 
 AutofillManager::AutofillManager(AutofillDriver* driver, AutofillClient* client)
-    : driver_(driver),
-      client_(client),
-      log_manager_(client ? client->GetLogManager() : nullptr),
+    : driver_(CHECK_DEREF(driver)),
+      client_(CHECK_DEREF(client)),
+      log_manager_(client->GetLogManager()),
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
-  if (client) {
-    translate::TranslateDriver* translate_driver = client->GetTranslateDriver();
-    if (translate_driver) {
-      translate_observation_.Observe(translate_driver);
-    }
+  translate::TranslateDriver* translate_driver = client->GetTranslateDriver();
+  if (translate_driver) {
+    translate_observation_.Observe(translate_driver);
   }
 }
 
@@ -247,8 +246,7 @@ void AutofillManager::OnTranslateDriverDestroyed(
 }
 
 LanguageCode AutofillManager::GetCurrentPageLanguage() {
-  DCHECK(client());
-  const translate::LanguageState* language_state = client()->GetLanguageState();
+  const translate::LanguageState* language_state = client().GetLanguageState();
   if (!language_state)
     return LanguageCode();
   return LanguageCode(language_state->current_language());
@@ -385,7 +383,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   DCHECK(!forms.empty());
   OnBeforeProcessParsedForms();
 
-  driver()->HandleParsedForms(forms);
+  driver().HandleParsedForms(forms);
 
   std::vector<FormStructure*> non_queryable_forms;
   std::vector<FormStructure*> queryable_forms;
@@ -417,14 +415,14 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   // Send the current type predictions to the renderer. For non-queryable forms
   // this is all the information about them that will ever be available. The
   // queryable forms will be updated once the field type query is complete.
-  driver()->SendAutofillTypePredictionsToRenderer(non_queryable_forms);
-  driver()->SendAutofillTypePredictionsToRenderer(queryable_forms);
+  driver().SendAutofillTypePredictionsToRenderer(non_queryable_forms);
+  driver().SendAutofillTypePredictionsToRenderer(queryable_forms);
   // Send the fields that are eligible for manual filling to the renderer. If
   // server predictions are not yet available for these forms, the eligible
   // fields would be updated again once they are available.
-  driver()->SendFieldsEligibleForManualFillingToRenderer(
+  driver().SendFieldsEligibleForManualFillingToRenderer(
       FormStructure::FindFieldsEligibleForManualFilling(non_queryable_forms));
-  driver()->SendFieldsEligibleForManualFillingToRenderer(
+  driver().SendFieldsEligibleForManualFillingToRenderer(
       FormStructure::FindFieldsEligibleForManualFilling(queryable_forms));
   LogAutofillTypePredictionsAvailable(log_manager_, non_queryable_forms);
   LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
@@ -433,7 +431,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   if (!queryable_forms.empty() && download_manager()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
     if (!download_manager()->StartQueryRequest(
-            queryable_forms, driver()->IsolationInfo(), GetWeakPtr())) {
+            queryable_forms, driver().IsolationInfo(), GetWeakPtr())) {
       NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
     }
   }
@@ -622,10 +620,10 @@ bool AutofillManager::GetCachedFormAndField(const FormData& form,
     return false;
 
   // Annotate the updated form with its predicted types.
-  driver()->SendAutofillTypePredictionsToRenderer({*form_structure});
+  driver().SendAutofillTypePredictionsToRenderer({*form_structure});
   // Update the renderer with the latest set of fields eligible for manual
   // filling.
-  driver()->SendFieldsEligibleForManualFillingToRenderer(
+  driver().SendFieldsEligibleForManualFillingToRenderer(
       FormStructure::FindFieldsEligibleForManualFilling({*form_structure}));
   // There is no data to return if there are no auto-fillable fields.
   if (!(*form_structure)->autofill_count())
@@ -638,11 +636,8 @@ bool AutofillManager::GetCachedFormAndField(const FormData& form,
 
 std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
 AutofillManager::CreateFormInteractionsUkmLogger() {
-  if (!unsafe_client())
-    return nullptr;
-
   return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
-      unsafe_client()->GetUkmRecorder(), unsafe_client()->GetUkmSourceId());
+      unsafe_client().GetUkmRecorder(), unsafe_client().GetUkmSourceId());
 }
 
 size_t AutofillManager::FindCachedFormsBySignature(
@@ -974,9 +969,9 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Send field type predictions to the renderer so that it can possibly
   // annotate forms with the predicted types or add console warnings.
-  driver()->SendAutofillTypePredictionsToRenderer(queried_forms);
+  driver().SendAutofillTypePredictionsToRenderer(queried_forms);
 
-  driver()->SendFieldsEligibleForManualFillingToRenderer(
+  driver().SendFieldsEligibleForManualFillingToRenderer(
       FormStructure::FindFieldsEligibleForManualFilling(queried_forms));
 
   LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
