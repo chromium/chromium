@@ -13,9 +13,11 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -94,6 +96,35 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     default:
       return absl::nullopt;
   }
+}
+
+absl::optional<ash::SearchResultTextItem::IconCode>
+KeyboardShortcutResult::GetIconCodeByKeyString(base::StringPiece16 key_string) {
+  static constexpr auto kIconCodes =
+      base::MakeFixedFlatMap<base::StringPiece16, IconCode>(
+          {{u"BrowserBack", IconCode::kKeyboardShortcutBrowserBack},
+           {u"BrowserForward", IconCode::kKeyboardShortcutBrowserForward},
+           {u"BrowserRefresh", IconCode::kKeyboardShortcutBrowserRefresh},
+           {u"ZoomToggle", IconCode::kKeyboardShortcutZoom},
+           {u"LaunchApplication1", IconCode::kKeyboardShortcutMediaLaunchApp1},
+           {u"BrightnessDown", IconCode::kKeyboardShortcutBrightnessDown},
+           {u"BrightnessUp", IconCode::kKeyboardShortcutBrightnessUp},
+           {u"AudioVolumeMute", IconCode::kKeyboardShortcutVolumeMute},
+           {u"AudioVolumeDown", IconCode::kKeyboardShortcutVolumeDown},
+           {u"AudioVolumeUp", IconCode::kKeyboardShortcutVolumeUp},
+           {u"ArrowUp", IconCode::kKeyboardShortcutUp},
+           {u"ArrowDown", IconCode::kKeyboardShortcutDown},
+           {u"ArrowLeft", IconCode::kKeyboardShortcutLeft},
+           {u"ArrowRight", IconCode::kKeyboardShortcutRight},
+           {u"PrivacyScreenToggle",
+            IconCode::kKeyboardShortcutPrivacyScreenToggle},
+           {u"PrintScreen", IconCode::kKeyboardShortcutSnapshot}});
+
+  auto* it = kIconCodes.find(key_string);
+  if (it == kIconCodes.end()) {
+    return absl::nullopt;
+  }
+  return it->second;
 }
 
 TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
@@ -222,8 +253,12 @@ void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
         break;
       case ash::mojom::TextAcceleratorPartType::kKey:
       case ash::mojom::TextAcceleratorPartType::kModifier:
-        // TODO(xiangdongkong): Handle keys with Icon code.
-        text_vector->push_back(CreateIconifiedTextTextItem(part->text));
+        const auto icon_code = GetIconCodeByKeyString(part->text);
+        if (icon_code) {
+          text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+        } else {
+          text_vector->push_back(CreateIconifiedTextTextItem(part->text));
+        }
         break;
     }
   }

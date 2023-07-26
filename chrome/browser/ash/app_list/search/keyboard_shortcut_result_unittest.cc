@@ -64,7 +64,17 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
   void VerifyTextItem(const ash::SearchResultTextItem& item,
                       const std::u16string& expected_text,
                       TextType expected_type) {
-    EXPECT_EQ(item.GetText(), expected_text);
+    switch (expected_type) {
+      case ash::SearchResultTextItemType::kString:
+      case ash::SearchResultTextItemType::kIconifiedText:
+        EXPECT_EQ(item.GetText(), expected_text);
+        break;
+      case ash::SearchResultTextItemType::kIconCode:
+        EXPECT_NE(item.GetIconFromCode(), nullptr);
+        break;
+      case ash::SearchResultTextItemType::kCustomImage:
+        break;
+    }
     // Cast to int to see actual values when not matched.
     EXPECT_EQ(static_cast<int>(item.GetType()),
               static_cast<int>(expected_type));
@@ -291,13 +301,21 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVectorWithText) {
   text_parts.push_back(ash::mojom::TextAcceleratorPart::New(
       u"A", ash::mojom::TextAcceleratorPartType::kKey));
 
+  text_parts.push_back(ash::mojom::TextAcceleratorPart::New(
+      u"Or ", ash::mojom::TextAcceleratorPartType::kPlainText));
+  // Add a key with icon code.
+  text_parts.push_back(ash::mojom::TextAcceleratorPart::New(
+      u"ArrowLeft", ash::mojom::TextAcceleratorPartType::kKey));
+
   TextVector text_vector;
   PopulateTextVectorWithText(&text_vector, text_parts);
 
-  ASSERT_EQ(text_vector.size(), 3u);
+  ASSERT_EQ(text_vector.size(), 5u);
   VerifyTextItem(text_vector[0], u"Press ", TextType::kString);
   VerifyTextItem(text_vector[1], u"Ctrl", TextType::kIconifiedText);
   VerifyTextItem(text_vector[2], u"A", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[3], u"Or ", TextType::kString);
+  VerifyTextItem(text_vector[4], u"", TextType::kIconCode);
 }
 
 }  // namespace app_list::test
