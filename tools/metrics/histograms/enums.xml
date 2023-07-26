@@ -80693,6 +80693,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="FencedFrames Page"/>
 </enum>
 
+<enum name="PageMeasurementBackgroundState">
+  <summary>
+    Whether a page is in the foreground or background during a measurement
+    period.
+  </summary>
+  <int value="0" label="Foreground"/>
+  <int value="1" label="Background"/>
+  <int value="2" label="Audible in background"/>
+  <int value="3" label="Background, mixed audible/inaudible"/>
+  <int value="4" label="Mixed foreground/background"/>
+</enum>
+
 <enum name="PageScaleFactorRange">
   <int value="0" label="&lt;25%"/>
   <int value="1" label="25-49%"/>

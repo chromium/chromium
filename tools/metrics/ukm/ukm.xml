@@ -19128,6 +19128,12 @@ be describing additional metrics about the same event.
     algorithm in performance_manager::ProcessMetricsDecorator. An event is
     collected for each open page every 5 minutes.
   </summary>
+  <metric name="BackgroundState" enum="PageMeasurementBackgroundState">
+    <summary>
+      Whether the page was in the foreground, background, or mixed during the
+      last 5 minutes.
+    </summary>
+  </metric>
   <metric name="PrivateFootprintEstimate">
     <summary>
       The estimated private footprint of the page, in kilobytes.

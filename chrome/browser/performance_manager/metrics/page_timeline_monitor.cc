@@ -33,6 +33,9 @@ namespace performance_manager::metrics {
 
 namespace {
 
+using PageMeasurementBackgroundState =
+    PageTimelineMonitor::PageMeasurementBackgroundState;
+
 // CPU usage metrics are provided as a double in the [0.0, number of cores *
 // 100.0] range. The CPU usage is usually below 1%, so the UKM is
 // reported out of 10,000 instead of out of 100 to make analyzing the data
@@ -40,6 +43,27 @@ namespace {
 // PerformanceMonitor.AverageCPU8 histograms recorded in
 // chrome/browser/metrics/power/process_metrics_recorder_util.cc.
 constexpr int kCPUUsageFactor = 100 * 100;
+
+PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
+    const PageNode* page_node,
+    base::TimeDelta time_since_last_measurement) {
+  if (page_node->GetTimeSinceLastVisibilityChange() <
+      time_since_last_measurement) {
+    return PageMeasurementBackgroundState::kMixedForegroundBackground;
+  }
+  if (page_node->IsVisible()) {
+    return PageMeasurementBackgroundState::kForeground;
+  }
+  // Check if the page was audible for the entire measurement period.
+  if (page_node->GetTimeSinceLastAudibleChange().value_or(
+          base::TimeDelta::Max()) < time_since_last_measurement) {
+    return PageMeasurementBackgroundState::kBackgroundMixedAudible;
+  }
+  if (page_node->IsAudible()) {
+    return PageMeasurementBackgroundState::kAudibleInBackground;
+  }
+  return PageMeasurementBackgroundState::kBackground;
+}
 
 }  // namespace
 
@@ -90,6 +114,7 @@ void PageTimelineMonitor::CollectPageResourceUsage() {
     total_cpu_usage += cpu_usage;
   }
 
+  const auto now = base::TimeTicks::Now();
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
     CHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
     const ukm::SourceId source_id = page_node->GetUkmSourceID();
@@ -99,8 +124,12 @@ void PageTimelineMonitor::CollectPageResourceUsage() {
         .SetPrivateFootprintEstimate(page_node->EstimatePrivateFootprintSize())
         .SetRecentCPUUsage(kCPUUsageFactor * cpu_usage)
         .SetTotalRecentCPUUsageAllPages(kCPUUsageFactor * total_cpu_usage)
+        .SetBackgroundState(
+            static_cast<int64_t>(GetBackgroundStateForMeasurementPeriod(
+                page_node, now - time_of_last_resource_usage_)))
         .Record(ukm::UkmRecorder::Get());
   }
+  time_of_last_resource_usage_ = now;
 }
 
 void PageTimelineMonitor::CollectSlice() {

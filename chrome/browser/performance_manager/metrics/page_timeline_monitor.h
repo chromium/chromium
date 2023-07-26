@@ -25,7 +25,9 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
                             public GraphOwned,
                             public GraphRegisteredImpl<PageTimelineMonitor> {
  public:
-  // Keep in sync with PageState in enums.xml
+  // These values are logged to UKM. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with PageState
+  // in enums.xml.
   enum class PageState {
     kFocused = 0,
     kVisible = 1,
@@ -34,6 +36,18 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     kFrozen = 4,
     kDiscarded = 5,
     kMaxValue = kDiscarded,
+  };
+
+  // These values are logged to UKM. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
+  // PageMeasurementBackgroundState in enums.xml.
+  enum class PageMeasurementBackgroundState {
+    kForeground = 0,
+    kBackground = 1,
+    kAudibleInBackground = 2,
+    kBackgroundMixedAudible = 3,
+    kMixedForegroundBackground = 4,
+    kMaxValue = kMixedForegroundBackground,
   };
 
   PageTimelineMonitor();
@@ -120,6 +134,9 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   // Time when last slice was run.
   base::TimeTicks time_of_last_slice_{base::TimeTicks::Now()};
+
+  // Time of last PageResourceUsage collection.
+  base::TimeTicks time_of_last_resource_usage_{base::TimeTicks::Now()};
 
   // Function which is called to determine whether a PageTimelineState slice
   // should be collected. Overridden in tests.

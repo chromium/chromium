@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 
+#include <map>
 #include <memory>
 
 #include "base/containers/fixed_flat_map.h"
@@ -33,6 +34,9 @@
 namespace performance_manager::metrics {
 
 namespace {
+
+using PageMeasurementBackgroundState =
+    PageTimelineMonitor::PageMeasurementBackgroundState;
 
 // A class that returns constant 50% CPU used since it was created.
 class FixedCPUMeasurementDelegate final
@@ -77,7 +81,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     monitor_->cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
         base::BindRepeating(&FixedCPUMeasurementDelegate::Create));
     graph()->PassToGraph(std::move(monitor));
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    ResetUkmRecorder();
   }
 
   void TearDown() override {
@@ -94,9 +98,34 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
 
   void TriggerCollectSlice() { monitor_->CollectSlice(); }
 
+  void ResetUkmRecorder() {
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  // Triggers a metrics collection and tests whether the BackgroundState logged
+  // for each ukm::SourceId matches the given expectation, then clears the
+  // collected UKM's for the next slice.
+  void TestBackgroundStates(
+      std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states);
+
  private:
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 };
+
+void PageTimelineMonitorUnitTest::TestBackgroundStates(
+    std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states) {
+  TriggerCollectSlice();
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+  // Expect 1 entry per page.
+  EXPECT_EQ(entries.size(), expected_states.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder()->ExpectEntryMetric(
+        entry, "BackgroundState",
+        static_cast<int64_t>(expected_states.at(entry->source_id)));
+  }
+  ResetUkmRecorder();
+}
 
 TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
@@ -531,6 +560,55 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
     test_ukm_recorder()->ExpectEntryMetric(entry, "TotalRecentCPUUsageAllPages",
                                            kExpectedAllCPUUsage);
   }
+}
+
+TEST_F(PageTimelineMonitorUnitTest, TestResourceUsageBackgroundState) {
+  MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
+  const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+
+  const ukm::SourceId mock_source_id2 = ukm::AssignNewSourceId();
+  mock_graph.other_page->SetType(performance_manager::PageType::kTab);
+  mock_graph.other_page->SetUkmSourceId(mock_source_id2);
+
+  // Start with page 1 in foreground.
+  mock_graph.page->SetIsVisible(true);
+  mock_graph.other_page->SetIsVisible(false);
+  task_env().FastForwardBy(base::Minutes(1));
+  TestBackgroundStates(
+      {{mock_source_id, PageMeasurementBackgroundState::kForeground},
+       {mock_source_id2, PageMeasurementBackgroundState::kBackground}});
+
+  // Pages become audible for all of next measurement period.
+  mock_graph.page->SetIsAudible(true);
+  mock_graph.other_page->SetIsAudible(true);
+  task_env().FastForwardBy(base::Minutes(1));
+  TestBackgroundStates(
+      {{mock_source_id, PageMeasurementBackgroundState::kForeground},
+       {mock_source_id2,
+        PageMeasurementBackgroundState::kAudibleInBackground}});
+
+  // Partway through next measurement period:
+  // - Page 1 moves to background (still audible).
+  // - Page 2 stops playing audio.
+  task_env().FastForwardBy(base::Minutes(1));
+  mock_graph.page->SetIsVisible(false);
+  mock_graph.other_page->SetIsAudible(false);
+  TestBackgroundStates(
+      {{mock_source_id,
+        PageMeasurementBackgroundState::kMixedForegroundBackground},
+       {mock_source_id2,
+        PageMeasurementBackgroundState::kBackgroundMixedAudible}});
+
+  // Partway through next measurement period, page 2 moves to foreground (still
+  // inaudible).
+  task_env().FastForwardBy(base::Minutes(1));
+  mock_graph.other_page->SetIsVisible(true);
+  TestBackgroundStates(
+      {{mock_source_id, PageMeasurementBackgroundState::kAudibleInBackground},
+       {mock_source_id2,
+        PageMeasurementBackgroundState::kMixedForegroundBackground}});
 }
 
 }  // namespace performance_manager::metrics
