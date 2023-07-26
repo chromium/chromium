@@ -48,6 +48,14 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   // Download bubble colors.
   mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorDownloadToolbarButtonActive] =
+      ui::PickGoogleColor(ui::kColorSysPrimary, kColorDownloadShelfBackground,
+                          color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorDownloadToolbarButtonAnimationForeground] =
+      AdjustHighlightColorForContrast(ui::kColorSysPrimary,
+                                      kColorDownloadShelfBackground);
 
   // Permission Prompt colors.
   mixer[kColorPermissionPromptRequestText] = {ui::kColorSysOnSurfaceSubtle};
@@ -74,6 +82,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorTabSearchScrollbarThumb] = {ui::kColorSysPrimary};
 
+  // Side Panel colors.
   mixer[kColorSidePanelBackground] = {ui::kColorSysBaseContainer};
 
   if (!ShouldApplyChromeMaterialOverrides(key)) {
@@ -133,12 +142,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadShelfContentAreaSeparator] = {
       kColorToolbarSeparatorDefault};
   mixer[kColorDownloadShelfForeground] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorDownloadToolbarButtonActive] =
-      ui::PickGoogleColor(ui::kColorSysPrimary, kColorDownloadShelfBackground,
-                          color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorDownloadToolbarButtonAnimationForeground] =
-      AdjustHighlightColorForContrast(ui::kColorSysPrimary,
-                                      kColorDownloadShelfBackground);
   mixer[kColorExtensionIconBadgeBackgroundDefault] = {
       ui::kColorSysNeutralContainer};
   mixer[kColorFeaturePromoBubbleBackground] = {ui::kColorSysPrimary};

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -64,7 +65,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
                 features::IsChromeRefresh2023()
                     ? vector_icons::kLaunchChromeRefreshIcon
                     : vector_icons::kLaunchIcon,
-                ui::kColorIconSecondary,
+                kColorDownloadBubbleShowAllDownloadsIcon,
                 GetLayoutConstant(DOWNLOAD_ICON_SIZE))) {
     // Override the table layout from RichHoverButton, in order to control the
     // spacing/padding. Code below is copied from rich_hover_button.cc but with
@@ -90,9 +91,12 @@ class ShowAllDownloadsButton : public RichHoverButton {
         .AddColumn(views::LayoutAlignment::kCenter,
                    views::LayoutAlignment::kCenter,
                    views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kFixed, 16, 0)
+                   views::TableLayout::ColumnSize::kFixed,
+                   GetLayoutConstant(DOWNLOAD_ICON_SIZE), 0)
         .AddPaddingColumn(views::TableLayout::kFixedSize,
-                          GetLayoutInsets(DOWNLOAD_ICON).right())
+                          features::IsChromeRefresh2023()
+                              ? 0
+                              : GetLayoutInsets(DOWNLOAD_ICON).right())
         .AddRows(
             1, views::TableLayout::kFixedSize,
             // Force row to have sufficient height for full line-height of
@@ -154,6 +158,11 @@ void DownloadDialogView::AddHeader() {
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SetProperty(views::kCrossAxisAlignmentKey,
                             views::LayoutAlignment::kStart);
+  if (features::IsChromeRefresh2023()) {
+    // Remove the extra padding of ImageButton that causes the right padding of
+    // the title row to appear larger than the left padding.
+    close_button->SetBorder(nullptr);
+  }
 }
 
 void DownloadDialogView::AddFooter() {
