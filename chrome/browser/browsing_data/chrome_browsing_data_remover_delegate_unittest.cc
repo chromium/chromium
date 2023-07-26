@@ -3156,6 +3156,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
                 host_content_settings_map->GetContentSetting(
                     rp_url, rp_embedder_url,
                     ContentSettingsType::FEDERATED_IDENTITY_API));
+      federated_context.Shutdown();
     }
 
     BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
@@ -3177,6 +3178,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
                 host_content_settings_map->GetContentSetting(
                     rp_url, rp_embedder_url,
                     ContentSettingsType::FEDERATED_IDENTITY_API));
+      federated_context.Shutdown();
     }
   }
 }

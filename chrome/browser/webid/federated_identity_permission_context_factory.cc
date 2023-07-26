@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 
 // static
@@ -43,6 +44,7 @@ FederatedIdentityPermissionContextFactory::
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 FederatedIdentityPermissionContextFactory::
@@ -60,4 +62,11 @@ void FederatedIdentityPermissionContextFactory::BrowserContextShutdown(
       GetForProfileIfExists(Profile::FromBrowserContext(context));
   if (federated_identity_permission_context)
     federated_identity_permission_context->FlushScheduledSaveSettingsCalls();
+  ProfileKeyedServiceFactory::BrowserContextShutdown(context);
+}
+
+bool FederatedIdentityPermissionContextFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  // So that we can observe the identity manager.
+  return true;
 }

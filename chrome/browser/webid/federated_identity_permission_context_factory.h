@@ -31,6 +31,7 @@ class FederatedIdentityPermissionContextFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_PERMISSION_CONTEXT_FACTORY_H_
