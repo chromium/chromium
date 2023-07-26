@@ -119,6 +119,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
          discoverFeedService:(DiscoverFeedService*)discoverFeedService {
   self = [super init];
   if (self) {
+    CHECK(accountManagerService);
     _webState = webState;
     _templateURLService = templateURLService;
     _URLLoader = URLLoader;
@@ -142,6 +143,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)dealloc {
   CHECK(!_webStateObserver);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.accountManagerService);
 }
 
 - (void)setUp {
