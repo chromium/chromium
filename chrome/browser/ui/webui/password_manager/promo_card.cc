@@ -178,6 +178,12 @@ std::string PasswordCheckupPromo::GetPromoID() const {
 }
 
 bool PasswordCheckupPromo::ShouldShowPromo() const {
+  // Don't show promo if checkup is disabled by policy.
+  if (!prefs_->GetBoolean(
+          password_manager::prefs::kPasswordLeakDetectionEnabled)) {
+    return false;
+  }
+  // Don't show promo if there are no saved passwords.
   if (delegate_->GetCredentialGroups().empty()) {
     return false;
   }

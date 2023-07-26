@@ -67,8 +67,6 @@ class PromoCardInterface {
   int number_of_times_shown_ = 0;
   base::Time last_time_shown_;
   bool was_dismissed_ = false;
-
- private:
   raw_ptr<PrefService> prefs_;
 };
 

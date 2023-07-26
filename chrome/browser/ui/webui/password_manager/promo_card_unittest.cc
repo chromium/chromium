@@ -261,6 +261,23 @@ TEST_F(PromoCardCheckupTest, NoPromoIfNoPasswords) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
+TEST_F(PromoCardCheckupTest, NoPromoIfLeakCheckDisabledByPolicy) {
+  pref_service()->SetBoolean(
+      password_manager::prefs::kPasswordLeakDetectionEnabled, false);
+  SavePassword();
+
+  ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
+              IsEmpty());
+  std::unique_ptr<PromoCardInterface> promo =
+      std::make_unique<PasswordCheckupPromo>(pref_service(), delegate());
+
+  EXPECT_THAT(
+      pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
+      testing::ElementsAre(PromoCardPrefInfo(PrefInfo{promo->GetPromoID()})));
+
+  EXPECT_FALSE(promo->ShouldShowPromo());
+}
+
 TEST_F(PromoCardCheckupTest, PromoShownWithSavedPasswords) {
   SavePassword();
 
