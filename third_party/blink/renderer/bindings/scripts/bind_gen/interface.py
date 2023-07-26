@@ -1793,9 +1793,10 @@ def make_v8_set_return_value(cg_context):
 
     if return_type_body.is_interface:
         args = ["${info}", "${return_value}"]
-        if return_type_body.identifier == "Window":
+        if (return_type_body.identifier == "Window"
+                or return_type_body.identifier == "Location"):
             args.append("${blink_receiver}")
-            args.append("bindings::V8ReturnValue::kMaybeCrossOriginWindow")
+            args.append("bindings::V8ReturnValue::kMaybeCrossOrigin")
         elif cg_context.constructor or cg_context.member_like.is_static:
             args.append("${creation_context}")
         elif cg_context.for_world == cg_context.MAIN_WORLD:

@@ -35,17 +35,43 @@
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/remote_dom_window.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
+#include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 Location::Location(DOMWindow* dom_window) : dom_window_(dom_window) {}
+
+v8::MaybeLocal<v8::Value> Location::Wrap(ScriptState* script_state) {
+  // Note that this check is gated on whether or not |dom_window_| is remote,
+  // not whether or not |dom_window_| is cross-origin. If |dom_window_| is
+  // local, the |location| property must always return the same wrapper, even if
+  // the cross-origin status changes by changing properties like
+  // |document.domain|.
+  if (IsA<RemoteDOMWindow>(dom_window_.Get())) {
+    DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+
+    DOMWrapperWorld& world = script_state->World();
+    v8::Isolate* isolate = script_state->GetIsolate();
+    const auto* location_wrapper_type = GetWrapperTypeInfo();
+    v8::Local<v8::Object> new_wrapper =
+        location_wrapper_type->GetV8ClassTemplate(isolate, world)
+            .As<v8::FunctionTemplate>()
+            ->NewRemoteInstance()
+            .ToLocalChecked();
+    return V8DOMWrapper::AssociateObjectWithWrapper(
+        isolate, this, location_wrapper_type, new_wrapper);
+  }
+
+  return ScriptWrappable::Wrap(script_state);
+}
 
 void Location::Trace(Visitor* visitor) const {
   visitor->Trace(dom_window_);

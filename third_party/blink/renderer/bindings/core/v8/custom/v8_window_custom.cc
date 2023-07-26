@@ -62,54 +62,6 @@
 
 namespace blink {
 
-template <typename CallbackInfo>
-static void LocationAttributeGet(const CallbackInfo& info) {
-  v8::Local<v8::Object> holder = info.Holder();
-  DOMWindow* window = V8Window::ToWrappableUnsafe(holder);
-  window->ReportCoopAccess("location");
-  Location* location = window->location();
-  DCHECK(location);
-
-  // If we have already created a wrapper object in this world, returns it.
-  if (DOMDataStore::SetReturnValue(info.GetReturnValue(), location))
-    return;
-
-  v8::Isolate* isolate = info.GetIsolate();
-  v8::Local<v8::Value> wrapper;
-
-  // Note that this check is gated on whether or not |window| is remote, not
-  // whether or not |window| is cross-origin. If |window| is local, the
-  // |location| property must always return the same wrapper, even if the
-  // cross-origin status changes by changing properties like |document.domain|.
-  if (IsA<RemoteDOMWindow>(window)) {
-    DOMWrapperWorld& world = DOMWrapperWorld::Current(isolate);
-    const auto* location_wrapper_type = location->GetWrapperTypeInfo();
-    v8::Local<v8::Object> new_wrapper =
-        location_wrapper_type->GetV8ClassTemplate(isolate, world)
-            .As<v8::FunctionTemplate>()
-            ->NewRemoteInstance()
-            .ToLocalChecked();
-
-    DCHECK(!DOMDataStore::ContainsWrapper(location, isolate));
-    wrapper = V8DOMWrapper::AssociateObjectWithWrapper(
-        isolate, location, location_wrapper_type, new_wrapper);
-  } else {
-    wrapper = ToV8(location, holder, isolate);
-  }
-
-  V8SetReturnValue(info, wrapper);
-}
-
-void V8Window::LocationAttributeGetterCustom(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  LocationAttributeGet(info);
-}
-
-void V8Window::LocationAttributeGetterCustom(
-    const v8::PropertyCallbackInfo<v8::Value>& info) {
-  LocationAttributeGet(info);
-}
-
 void V8Window::FrameElementAttributeGetterCustom(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   LocalDOMWindow* impl =
@@ -245,9 +197,8 @@ void V8Window::NamedPropertyGetterCustom(
     if (frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
             child->GetSecurityContext()->GetSecurityOrigin()) ||
         name == child->Owner()->BrowsingContextContainerName()) {
-      bindings::V8SetReturnValue(
-          info, child->DomWindow(), window,
-          bindings::V8ReturnValue::kMaybeCrossOriginWindow);
+      bindings::V8SetReturnValue(info, child->DomWindow(), window,
+                                 bindings::V8ReturnValue::kMaybeCrossOrigin);
       return;
     }
 
@@ -295,9 +246,8 @@ void V8Window::NamedPropertyGetterCustom(
   if (!has_named_item && has_id_item &&
       !doc->ContainsMultipleElementsWithId(name)) {
     UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
-    bindings::V8SetReturnValue(
-        info, doc->getElementById(name), window,
-        bindings::V8ReturnValue::kMaybeCrossOriginWindow);
+    bindings::V8SetReturnValue(info, doc->getElementById(name), window,
+                               bindings::V8ReturnValue::kMaybeCrossOrigin);
     return;
   }
 
@@ -309,13 +259,12 @@ void V8Window::NamedPropertyGetterCustom(
     // multiple with the same name, but Chrome and Safari does. What's the
     // right behavior?
     if (items->HasExactlyOneItem()) {
-      bindings::V8SetReturnValue(
-          info, items->item(0), window,
-          bindings::V8ReturnValue::kMaybeCrossOriginWindow);
+      bindings::V8SetReturnValue(info, items->item(0), window,
+                                 bindings::V8ReturnValue::kMaybeCrossOrigin);
       return;
     }
-    bindings::V8SetReturnValue(
-        info, items, window, bindings::V8ReturnValue::kMaybeCrossOriginWindow);
+    bindings::V8SetReturnValue(info, items, window,
+                               bindings::V8ReturnValue::kMaybeCrossOrigin);
     return;
   }
 }
