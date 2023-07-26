@@ -17,12 +17,10 @@
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert} from '//resources/js/assert_ts.js';
-import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
-import {FocusConfig} from '../focus_config.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -41,7 +39,7 @@ const OsSettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement);
 class OsSettingsAnimatedPagesElement extends
     OsSettingsAnimatedPagesElementBase {
   static get is() {
-    return 'os-settings-animated-pages';
+    return 'os-settings-animated-pages' as const;
   }
 
   static get template() {
@@ -62,19 +60,10 @@ class OsSettingsAnimatedPagesElement extends
         type: Number,
         reflectToAttribute: true,
       },
-
-      /**
-       * A Map specifying which element should be focused when exiting a
-       * subpage. The key of the map holds a Route path, and the value holds
-       * either a query selector that identifies the desired element, an element
-       * or a function to be run when a neon-animation-finish event is handled.
-       */
-      focusConfig: Object,
     };
   }
 
   section: Section;
-  focusConfig: FocusConfig|null = null;
   private previousRoute_: Route|null;
   private lightDomReady_: boolean = false;
   private queuedRouteChange_: {oldRoute?: Route, newRoute: Route}|null = null;
@@ -125,44 +114,6 @@ class OsSettingsAnimatedPagesElement extends
         subpage.focusBackButton();
         return;
       }
-    }
-
-    // Don't attempt to focus any anchor element, unless last navigation was a
-    // 'pop' (backwards) navigation.
-    if (!Router.getInstance().lastRouteChangeWasPopstate()) {
-      return;
-    }
-
-    if (!this.focusConfig || !this.previousRoute_) {
-      return;
-    }
-
-    // Ensure focus-config was correctly specified as a Polymer property.
-    assert(this.focusConfig instanceof Map);
-
-
-    const currentRoute = Router.getInstance().currentRoute;
-    const fromToKey = `${this.previousRoute_.path}_${currentRoute.path}`;
-
-    // Look for a key that captures both previous and current route first. If
-    // not found, then look for a key that only captures the previous route.
-    let pathConfig = this.focusConfig.get(fromToKey) ||
-        this.focusConfig.get(this.previousRoute_.path);
-    if (pathConfig) {
-      let handler;
-      if (typeof pathConfig === 'function') {
-        handler = pathConfig;
-      } else {
-        handler = () => {
-          if (typeof pathConfig === 'string') {
-            const element = this.querySelector<HTMLElement>(pathConfig);
-            assert(element);
-            pathConfig = element;
-          }
-          focusWithoutInk(pathConfig as HTMLElement);
-        };
-      }
-      handler();
     }
   }
 
@@ -271,7 +222,7 @@ class OsSettingsAnimatedPagesElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-animated-pages': OsSettingsAnimatedPagesElement;
+    [OsSettingsAnimatedPagesElement.is]: OsSettingsAnimatedPagesElement;
   }
 }
 
