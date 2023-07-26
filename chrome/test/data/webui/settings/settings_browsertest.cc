@@ -137,6 +137,16 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Languages) {
 }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SettingsTest, LiveCaptionSection) {
+  RunTest("settings/live_caption_section_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, LiveTranslateSection) {
+  RunTest("settings/live_translate_section_test.js", "mocha.run()");
+}
+#endif
+
 // Copied from Polymer 2 version of tests:
 // Times out on Windows Tests (dbg). See https://crbug.com/651296.
 // Times out / crashes on chromium.linux/Linux Tests (dbg) crbug.com/667882
@@ -430,6 +440,10 @@ IN_PROC_BROWSER_TEST_F(SettingsLanguagePageTest, LanguageMenu) {
   RunTest("settings/languages_page_test.js",
           "runMochaSuite('LanguagesPage LanguageMenu')");
 }
+
+IN_PROC_BROWSER_TEST_F(SettingsLanguagePageTest, MetricsBrowser) {
+  RunTest("settings/languages_page_metrics_test_browser.js", "mocha.run()");
+}
 #endif
 
 using SettingsPrivacyGuideTest = SettingsBrowserTest;
@@ -528,10 +542,48 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, AllBuilds) {
           "runMochaSuite('SpellCheck AllBuilds')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, Metrics) {
+  RunTest("settings/spell_check_page_metrics_test_browser.js",
+          "runMochaSuite('SpellCheckPageMetricsBrowser Metrics')");
+}
+
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, MetricsNotMacOS) {
+  RunTest("settings/spell_check_page_metrics_test_browser.js",
+          "runMochaSuite('SpellCheckPageMetricsBrowser MetricsNotMacOS')");
+}
+#endif
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, MetricsOfficialBuild) {
+  RunTest("settings/spell_check_page_metrics_test_browser.js",
+          "runMochaSuite('SpellCheckPageMetricsBrowser MetricsOfficialBuild')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
   RunTest("settings/spell_check_page_test.js",
           "runMochaSuite('SpellCheck OfficialBuild')");
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+using SettingsTranslatePageTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, TranslateSettings) {
+  RunTest("settings/translate_page_test.js",
+          "runMochaSuite('TranslatePage TranslateSettings')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, AlwaysTranslateDialog) {
+  RunTest("settings/translate_page_test.js",
+          "runMochaSuite('TranslatePage AlwaysTranslateDialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, NeverTranslateDialog) {
+  RunTest("settings/translate_page_test.js",
+          "runMochaSuite('TranslatePage NeverTranslateDialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, MetricsBrowser) {
+  RunTest("settings/translate_page_metrics_test_browser.js", "mocha.run()");
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
