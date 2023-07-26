@@ -204,6 +204,11 @@ message PhoneAsASecurityKeySpecificFields {
   // A P-256, X9.62-encoded public key for this device. Specific to the Chrome
   // instance.
   optional bytes peer_public_key_x962 = 5;
+
+  // The credential ID for use when signing into accounts.google.com. This
+  // credential ID isn't published as a WebauthnCredentialSpecifics, unlike
+  // other passkeys, because it's auto-generated.
+  optional bytes google_credential_id = 6;
 }
 
 message ChromeVersionInfo {

@@ -536,6 +536,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PhoneAsASecurityKeySpecificFields& proto) {
   VISIT_BYTES(contact_id);
   VISIT(id);
   VISIT_BYTES(peer_public_key_x962);
+  VISIT_BYTES(google_credential_id);
   // |secret| is deliberately omitted to avoid including sensitive information
   // in debugging output, which might be included in bug reports etc.
 }
