@@ -23,6 +23,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_client.h"
@@ -212,6 +213,8 @@ class SynchronousLayerTreeFrameSink
   gfx::Size child_size_;
   gfx::Size display_size_;
   float device_scale_factor_ = 0;
+  float root_device_scale_factor_ = 0;
+  viz::FrameTokenGenerator root_next_frame_token_;
   std::unique_ptr<viz::mojom::CompositorFrameSinkClient>
       software_frame_sink_client_;
   // Uses frame_sink_manager_.
