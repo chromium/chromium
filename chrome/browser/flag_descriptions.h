@@ -615,9 +615,6 @@ extern const char kDeviceForceScheduledRebootDescription[];
 extern const char kDevicePostureName[];
 extern const char kDevicePostureDescription[];
 
-extern const char kEnablePreinstalledWebAppDuplicationFixerName[];
-extern const char kEnablePreinstalledWebAppDuplicationFixerDescription[];
-
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 

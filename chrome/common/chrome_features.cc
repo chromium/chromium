@@ -213,11 +213,6 @@ BASE_FEATURE(kDMServerOAuthForChildUser,
 BASE_FEATURE(kPreinstalledWebAppInstallation,
              "DefaultWebAppInstallation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Whether to run the PreinstalledWebAppDuplicationFixer code during start up.
-BASE_FEATURE(kPreinstalledWebAppDuplicationFixer,
-             "PreinstalledWebAppDuplicationFixer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

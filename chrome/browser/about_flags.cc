@@ -4935,12 +4935,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDialMediaRouteProviderDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kDialMediaRouteProvider)},
 
-    {"enable-preinstalled-web-app-duplication-fixer",
-     flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerName,
-     flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPreinstalledWebAppDuplicationFixer)},
-
     {"cast-streaming-hardware-h264",
      flag_descriptions::kCastStreamingHardwareH264Name,
      flag_descriptions::kCastStreamingHardwareH264Description, kOsDesktop,

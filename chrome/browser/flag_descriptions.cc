@@ -1063,14 +1063,6 @@ const char kDesktopPWAsWebBundlesDescription[] =
     "Adds support for web bundles, making web apps able to be launched "
     "offline.";
 
-const char kEnablePreinstalledWebAppDuplicationFixerName[] =
-    "Enable the app deduplication fix for migrated preinstalled web apps";
-const char kEnablePreinstalledWebAppDuplicationFixerDescription[] =
-    "The preinstalled web app migration encountered app duplication issues "
-    "when it rolled out. This code path will attempt to re-migrate instances "
-    "of app duplication where the old app failed to stay removed. See "
-    "https://crbug.com/1290716.";
-
 const char kEnableTLS13EarlyDataName[] = "TLS 1.3 Early Data";
 const char kEnableTLS13EarlyDataDescription[] =
     "This option enables TLS 1.3 Early Data, allowing GET requests to be sent "
