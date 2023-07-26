@@ -942,6 +942,45 @@ TEST_P(PredictionManagerTest,
       false, 1);
 }
 
+// Tests the opt target observer valid re-registrations, i.e., adding, removing
+// and then re-adding an observer for the same opt target.
+TEST_P(PredictionManagerTest, OptimizationTargetModelObserverReRegistrations) {
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+  CreatePredictionModelDownloadManager();
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  SetStoreInitialized();
+
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  model.mutable_model()->set_download_url(FilePathToString(
+      temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
+  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  RunUntilIdle();
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  prediction_model_fetcher()->Reset();
+  observer.Reset();
+
+  // Re-registering should also deliver the model.
+  prediction_manager()->RemoveObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  // Model is delivered from store. No fetch happens.
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+}
+
 TEST_P(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
   base::HistogramTester histogram_tester;
 

@@ -329,8 +329,10 @@ void PredictionManager::RemoveObserverForOptimizationTargetModel(
       registered_observers_for_optimization_targets_.find(optimization_target);
   if (observers_it == registered_observers_for_optimization_targets_.end())
     return;
-
   observers_it->second.RemoveObserver(observer);
+  if (observers_it->second.empty()) {
+    registered_observers_for_optimization_targets_.erase(observers_it);
+  }
 }
 
 base::flat_set<proto::OptimizationTarget>
