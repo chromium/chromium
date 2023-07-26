@@ -212,6 +212,7 @@ public class PendingTabClosureManager {
      * Thread checks to root cause crbug.com/1465745.
      */
     private final ThreadChecker mThreadChecker = new ThreadChecker();
+    private boolean mIsCommittingAllTabClosures;
 
     /**
      * The {@link TabList} that this {@link PendingTabClosureManager} operates on.
@@ -248,6 +249,8 @@ public class PendingTabClosureManager {
 
     public void destroy() {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
 
         mRewoundList.destroy();
         mTabClosureEvents.clear();
@@ -255,6 +258,8 @@ public class PendingTabClosureManager {
 
     public void destroyWhileReparentingInProgress() {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
 
         mTabClosureEvents.clear();
     }
@@ -264,6 +269,8 @@ public class PendingTabClosureManager {
      */
     public void resetState() {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
 
         assert mTabClosureEvents.isEmpty();
         mRewoundList.resetRewoundState();
@@ -275,6 +282,8 @@ public class PendingTabClosureManager {
      */
     public void addTabClosureEvent(List<Tab> tabs) {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
 
         mTabClosureEvents.add(new TabClosureEvent(tabs));
     }
@@ -301,6 +310,8 @@ public class PendingTabClosureManager {
      */
     public void commitTabClosure(int tabId) {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
 
         Tab tab = mRewoundList.getPendingRewindTab(tabId);
         if (tab == null) return;
@@ -324,6 +335,8 @@ public class PendingTabClosureManager {
      */
     public void cancelTabClosure(int tabId) {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
 
         Tab tab = mRewoundList.getPendingRewindTab(tabId);
         if (tab == null) return;
@@ -357,6 +370,10 @@ public class PendingTabClosureManager {
      */
     public void commitAllTabClosures() {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
+
+        mIsCommittingAllTabClosures = true;
 
         ListIterator<TabClosureEvent> events = mTabClosureEvents.listIterator();
         while (events.hasNext()) {
@@ -366,6 +383,9 @@ public class PendingTabClosureManager {
             // intended so that tabs closed as distinct events are recorded as such.
             commitClosuresInternal(event.getList());
         }
+
+        mIsCommittingAllTabClosures = false;
+
         assert mTabClosureEvents.isEmpty();
         assert !mRewoundList.hasPendingClosures();
     }
@@ -382,6 +402,8 @@ public class PendingTabClosureManager {
      */
     boolean openMostRecentlyClosedEntry() {
         mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+            : "Modifying mTabClosureEvents while committing all tab closures.";
 
         if (mTabClosureEvents.isEmpty()) return false;
 
