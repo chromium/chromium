@@ -17,11 +17,11 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
     const cbor::Value::ArrayValue& signature_stack) {
   cbor::Value::ArrayValue integrity_block;
   // magic bytes
-  integrity_block.push_back(cbor::Value(cbor::Value::BinaryValue(
-      {0xF0, 0x9F, 0x96, 0x8B, 0xF0, 0x9F, 0x93, 0xA6})));
+  integrity_block.emplace_back(cbor::Value::BinaryValue(
+      {0xF0, 0x9F, 0x96, 0x8B, 0xF0, 0x9F, 0x93, 0xA6}));
   // version
-  integrity_block.push_back(
-      cbor::Value(cbor::Value::BinaryValue({'1', 'b', '\0', '\0'})));
+  integrity_block.emplace_back(
+      cbor::Value::BinaryValue({'1', 'b', '\0', '\0'}));
   // signature stack
   integrity_block.emplace_back(signature_stack);
 
@@ -31,20 +31,20 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
 cbor::Value WebBundleSigner::CreateSignatureStackEntry(
     const Ed25519PublicKey& public_key,
     std::vector<uint8_t> signature,
-    ErrorForTesting error_for_testing) {
-  if (error_for_testing == ErrorForTesting::kInvalidSignatureLength) {
+    ErrorsForTesting errors_for_testing) {
+  if (errors_for_testing.Has(ErrorForTesting::kInvalidSignatureLength)) {
     signature.push_back(42);
   }
 
   cbor::Value::ArrayValue entry;
-  entry.push_back(cbor::Value(CreateSignatureStackEntryAttributes(
+  entry.emplace_back(CreateSignatureStackEntryAttributes(
       std::vector(public_key.bytes().begin(), public_key.bytes().end()),
-      error_for_testing)));
-  entry.push_back(cbor::Value(signature));
+      errors_for_testing));
+  entry.emplace_back(signature);
 
-  if (error_for_testing ==
-      ErrorForTesting::kAdditionalSignatureStackEntryElement) {
-    entry.push_back(cbor::Value("foo"));
+  if (errors_for_testing.Has(
+          ErrorForTesting::kAdditionalSignatureStackEntryElement)) {
+    entry.emplace_back("foo");
   }
 
   return cbor::Value(entry);
@@ -52,17 +52,17 @@ cbor::Value WebBundleSigner::CreateSignatureStackEntry(
 
 cbor::Value WebBundleSigner::CreateSignatureStackEntryAttributes(
     std::vector<uint8_t> public_key,
-    ErrorForTesting error_for_testing) {
-  if (error_for_testing == ErrorForTesting::kInvalidPublicKeyLength) {
+    ErrorsForTesting errors_for_testing) {
+  if (errors_for_testing.Has(ErrorForTesting::kInvalidPublicKeyLength)) {
     public_key.push_back(42);
   }
 
   cbor::Value::MapValue attributes;
 
-  if (error_for_testing !=
-      ErrorForTesting::kNoPublicKeySignatureStackEntryAttribute) {
-    if (error_for_testing ==
-        ErrorForTesting::kWrongSignatureStackEntryAttributeName) {
+  if (!errors_for_testing.Has(
+          ErrorForTesting::kNoPublicKeySignatureStackEntryAttribute)) {
+    if (errors_for_testing.Has(
+            ErrorForTesting::kWrongSignatureStackEntryAttributeName)) {
       // Add a typo: "ee" instead of "ed".
       attributes[cbor::Value("ee25519PublicKey")] = cbor::Value(public_key);
     } else {
@@ -70,8 +70,8 @@ cbor::Value WebBundleSigner::CreateSignatureStackEntryAttributes(
     }
   }
 
-  if (error_for_testing ==
-      ErrorForTesting::kAdditionalSignatureStackEntryAttribute) {
+  if (errors_for_testing.Has(
+          ErrorForTesting::kAdditionalSignatureStackEntryAttribute)) {
     attributes[cbor::Value("foo")] = cbor::Value(42);
   }
 
@@ -81,7 +81,7 @@ cbor::Value WebBundleSigner::CreateSignatureStackEntryAttributes(
 cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
-    ErrorForTesting error_for_testing) {
+    ErrorsForTesting errors_for_testing) {
   // Calculate the SHA512 hash of the bundle.
   auto secure_hash = crypto::SecureHash::Create(crypto::SecureHash::SHA512);
   secure_hash->Update(unsigned_bundle.data(), unsigned_bundle.size());
@@ -117,7 +117,7 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
     }
 
     signature_stack.push_back(CreateSignatureStackEntry(
-        key_pair.public_key, signature, error_for_testing));
+        key_pair.public_key, signature, errors_for_testing));
   }
 
   return CreateIntegrityBlock(signature_stack);
@@ -126,10 +126,10 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
 std::vector<uint8_t> WebBundleSigner::SignBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
-    ErrorForTesting error_for_testing) {
+    ErrorsForTesting errors_for_testing) {
   absl::optional<std::vector<uint8_t>> integrity_block =
       cbor::Writer::Write(CreateIntegrityBlockForBundle(
-          unsigned_bundle, key_pairs, error_for_testing));
+          unsigned_bundle, key_pairs, errors_for_testing));
 
   std::vector<uint8_t> signed_web_bundle;
   signed_web_bundle.insert(signed_web_bundle.end(), integrity_block->begin(),
