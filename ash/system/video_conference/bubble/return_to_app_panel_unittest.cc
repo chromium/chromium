@@ -641,13 +641,8 @@ TEST_F(ReturnToAppPanelTest, ReturnToAppButtonAccessibleName) {
                 l10n_util::GetStringFUTF16Int(
                     IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT, 2),
             summary_row->GetAccessibleName());
-  EXPECT_EQ(expected_camera_text +
-                l10n_util::GetStringFUTF16(
-                    VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, u"Meet"),
-            first_app_row->GetAccessibleName());
-  EXPECT_EQ(expected_microphone_text + expected_screen_share_text +
-                l10n_util::GetStringFUTF16(
-                    VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, u"Zoom"),
+  EXPECT_EQ(expected_camera_text + u"Meet", first_app_row->GetAccessibleName());
+  EXPECT_EQ(expected_microphone_text + expected_screen_share_text + u"Zoom",
             second_app_row->GetAccessibleName());
 }
 

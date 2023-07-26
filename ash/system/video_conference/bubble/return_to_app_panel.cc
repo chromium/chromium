@@ -253,17 +253,7 @@ ReturnToAppButton::ReturnToAppButton(
     icons_container()->layer()->SetFillsBoundsOpaquely(false);
   }
 
-  // An empty `id` means that this view is not associated with any particular
-  // app and it is the summary row, so we will just use the `display_text` as
-  // accessible name in this case rather than the full string.
-  std::u16string return_to_app_accessible_name =
-      id.is_empty()
-          ? display_text
-          : l10n_util::GetStringFUTF16(
-                VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, display_text);
-
-  SetAccessibleName(GetPeripheralsAccessibleName() +
-                    return_to_app_accessible_name);
+  SetAccessibleName(GetPeripheralsAccessibleName() + display_text);
 
   // When we show the bubble for the first time, only the top row is visible.
   SetVisible(is_top_row);
