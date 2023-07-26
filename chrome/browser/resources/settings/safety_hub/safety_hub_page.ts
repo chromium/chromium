@@ -9,16 +9,17 @@
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-// TODO(crbug.com/1443466): Clean this dummy import after SafetyHubModuleElement
-// is used.
-import './safety_hub_module.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SafetyHubBrowserProxyImpl, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
 
 import {getTemplate} from './safety_hub_page.html.js';
 
-const SettingsSafetyHubPageElementBase = I18nMixin(PolymerElement);
+const SettingsSafetyHubPageElementBase =
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class SettingsSafetyHubPageElement extends
     SettingsSafetyHubPageElementBase {
@@ -49,6 +50,12 @@ export class SettingsSafetyHubPageElement extends
 
       // The string for the subheader of Safe Browsing card.
       safeBrowsingSubheader_: String,
+
+      // Whether Unused Site Permissions module should be visible.
+      showUnusedSitePermissions_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -58,6 +65,7 @@ export class SettingsSafetyHubPageElement extends
   private versionStateSubheader_: string;
   private safeBrowsingHeader_: string;
   private safeBrowsingSubheader_: string;
+  private showUnusedSitePermissions_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -69,6 +77,25 @@ export class SettingsSafetyHubPageElement extends
     this.versionStateSubheader_ = this.i18n('privacyPageTitle');
     this.safeBrowsingHeader_ = this.i18n('privacyPageTitle');
     this.safeBrowsingSubheader_ = this.i18n('privacyPageTitle');
+
+    this.addWebUiListener(
+        'unused-permission-review-list-maybe-changed',
+        (sites: UnusedSitePermissions[]) =>
+            this.onUnusedSitePermissionListChanged_(sites));
+
+    SafetyHubBrowserProxyImpl.getInstance()
+        .getRevokedUnusedSitePermissionsList()
+        .then(
+            (sites: UnusedSitePermissions[]) =>
+                this.onUnusedSitePermissionListChanged_(sites));
+  }
+
+  private onUnusedSitePermissionListChanged_(permissions:
+                                                 UnusedSitePermissions[]) {
+    // The module should be visible if there is any item on the list, or if
+    // there is no item on the list but the list was shown before.
+    this.showUnusedSitePermissions_ =
+        permissions.length > 0 || this.showUnusedSitePermissions_;
   }
 }
 

@@ -624,6 +624,27 @@ TEST_F('CrSettingsUnusedSitePermissionsTest', 'All', function() {
   mocha.run();
 });
 
+var CrSettingsSafetyHubUnusedSitePermissionsTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/safety_hub_unused_site_permissions_module_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kSafetyHub',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsSafetyHubUnusedSitePermissionsTest', 'All', function() {
+  mocha.run();
+});
+
 var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

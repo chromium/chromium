@@ -192,6 +192,7 @@ export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dial
 export {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
 export {SettingsSafetyHubModuleElement, SiteInfo} from './safety_hub/safety_hub_module.js';
 export {SettingsSafetyHubPageElement} from './safety_hub/safety_hub_page.js';
+export {SettingsSafetyHubUnusedSitePermissionsModuleElement} from './safety_hub/unused_site_permissions_module.js';
 export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
 export {SettingsSearchEngineEditDialogElement} from './search_engines_page/search_engine_edit_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';

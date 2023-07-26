@@ -1,0 +1,29 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    display: block;
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+<settings-safety-hub-module
+    id="module"
+    on-sh-module-item-button-click="onAllowAgainClick_"
+    header="[[headerString_]]"
+    subheader="[[subheaderString_]]"
+    button-icon="settings20:undo"
+    sites="[[sites_]]">
+  <div slot="button-container">
+    <cr-button id="gotItButton" on-click="onGotItClick_"
+        hidden$="[[shouldShowCompletionInfo_]]">
+      $i18n{safetyCheckUnusedSitePermissionsGotItLabel}
+    </cr-button>
+    <cr-icon-button id="bulkUndoButton" iron-icon="settings20:undo"
+        on-click="onUndoClick_" hidden$="[[!shouldShowCompletionInfo_]]">
+    </cr-icon-button>
+  </div>
+</settings-safety-hub-module>
+<cr-toast id="undoToast" duration="5000">
+  <div>[[toastText_]]</div>
+  <cr-button id="toastUndoButton" on-click="onUndoClick_">
+    $i18n{safetyCheckUnusedSitePermissionsUndoLabel}
+  </cr-button>
+</cr-toast>

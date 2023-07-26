@@ -14,6 +14,15 @@
   }
 
   .tile {
+    flex: 1;
+  }
+
+  .module {
+    height: fit-content;
+    margin-bottom: 24px;
+  }
+
+  .box {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
@@ -84,6 +93,10 @@
 <div class="section-header cr-secondary-text">
   $i18n{safetyHubPageModuleSectionHeader}
 </div>
+<template is="dom-if" if="[[showUnusedSitePermissions_]]">
+  <settings-safety-hub-unused-site-permissions class="module box">
+  </settings-safety-hub-unused-site-permissions>
+</template>
 
 <div class="section-header cr-secondary-text">
   $i18n{safetyHubPageUserEduSectionHeader}

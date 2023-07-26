@@ -5,17 +5,29 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {SettingsSafetyHubPageElement, SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {ContentSettingsTypes, SettingsSafetyHubPageElement, SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse,assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 // clang-format on
 
 suite('SafetyHubTests', function() {
   let testElement: SettingsSafetyHubPageElement;
+  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
+
+  const unusedSitePermissionMockData = [{
+    origin: 'www.example.com',
+    permissions: [ContentSettingsTypes.CAMERA],
+    expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
+  }];
 
   setup(function() {
+    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-page');
     document.body.appendChild(testElement);
@@ -25,6 +37,38 @@ suite('SafetyHubTests', function() {
   test('DummyTest', function() {
     const container = testElement.shadowRoot!.querySelector('.tile-container');
     assertTrue(!!container);
+  });
+
+  test('Unused Site Permissions Module Visibility', async function() {
+    // The element is not visible when there is nothing to review.
+    safetyHubBrowserProxy.setUnusedSitePermissions([]);
+    testElement = document.createElement('settings-safety-hub-page');
+    document.body.appendChild(testElement);
+    await flushTasks();
+    assertFalse(
+        isChildVisible(testElement, 'settings-unused-site-permissions'));
+
+    // The element becomes visible if the list of permissions is no longer
+    // empty.
+    webUIListenerCallback(
+        'unused-permission-review-list-maybe-changed',
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(
+        testElement, 'settings-safety-hub-unused-site-permissions'));
+
+    // Once visible, it remains visible regardless of list length.
+    webUIListenerCallback('unused-permission-review-list-maybe-changed', []);
+    await flushTasks();
+    assertTrue(isChildVisible(
+        testElement, 'settings-safety-hub-unused-site-permissions'));
+
+    webUIListenerCallback(
+        'unused-permission-review-list-maybe-changed',
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(
+        testElement, 'settings-safety-hub-unused-site-permissions'));
   });
 });
 
