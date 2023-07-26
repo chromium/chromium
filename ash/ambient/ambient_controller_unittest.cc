@@ -324,11 +324,6 @@ TEST_P(AmbientControllerTestForAnyUiSettings, CloseAmbientScreenUponUnlock) {
 
 TEST_P(AmbientControllerTestForAnyUiSettings,
        CloseAmbientScreenUponUnlockSecondaryUser) {
-  // Simulate the login screen.
-  ClearLogin();
-  SimulateUserLogin(kUser1);
-  SetAmbientModeEnabled(true);
-
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
