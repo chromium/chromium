@@ -12,6 +12,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 
+#define PA_STRINGIFY_IMPL(s) #s
+#define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
+
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
 //
 // CHECK dies with a fatal error if its condition is not true. It is not

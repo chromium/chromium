@@ -16,9 +16,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
-#define PA_STRINGIFY_IMPL(s) #s
-#define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
-
 // When PartitionAlloc is used as the default allocator, we cannot use the
 // regular (D)CHECK() macros, as they allocate internally. When an assertion is
 // triggered, they format strings, leading to reentrancy in the code, which none

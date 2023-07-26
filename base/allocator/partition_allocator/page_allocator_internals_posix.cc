@@ -4,7 +4,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/notreached.h"
 
 #include <sys/mman.h>
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_NOTREACHED_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_NOTREACHED_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_NOTREACHED_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_NOTREACHED_H_
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
 // PA_NOTREACHED() annotates paths that are supposed to be unreachable. They
 // crash if they are ever hit.
@@ -20,4 +20,4 @@
 #define PA_NOTREACHED() PA_IMMEDIATE_CRASH()
 #endif  // CHECK_WILL_STREAM()
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_NOTREACHED_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_NOTREACHED_H_
