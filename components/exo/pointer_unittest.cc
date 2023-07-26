@@ -114,7 +114,7 @@ class MockPointerDelegate : public PointerDelegate {
   MOCK_METHOD3(OnPointerButton, void(base::TimeTicks, int, bool));
   MOCK_METHOD3(OnPointerScroll,
                void(base::TimeTicks, const gfx::Vector2dF&, bool));
-  MOCK_METHOD1(OnPointerScrollStop, void(base::TimeTicks));
+  MOCK_METHOD1(OnFingerScrollStop, void(base::TimeTicks));
   MOCK_METHOD0(OnPointerFrame, void());
 };
 
@@ -744,7 +744,7 @@ TEST_P(PointerTest, OnPointerScroll) {
 
     EXPECT_CALL(delegate,
                 OnPointerScroll(testing::_, gfx::Vector2dF(1.2, 1.2), false));
-    EXPECT_CALL(delegate, OnPointerScrollStop(testing::_));
+    EXPECT_CALL(delegate, OnFingerScrollStop(testing::_));
   }
   generator.ScrollSequence(location, base::TimeDelta(), 1, 1, 1, 1);
 
@@ -772,7 +772,7 @@ TEST_P(PointerTest, OnPointerScrollWithThreeFinger) {
   {
     // Expect no scroll.
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnPointerScrollStop(testing::_));
+    EXPECT_CALL(delegate, OnFingerScrollStop(testing::_));
   }
 
   // Three fingers scroll.
@@ -848,7 +848,7 @@ TEST_P(PointerTest, RegisterPointerEventsOnModal) {
 
     EXPECT_CALL(delegate,
                 OnPointerScroll(testing::_, gfx::Vector2dF(1.2, 1.2), false));
-    EXPECT_CALL(delegate, OnPointerScrollStop(testing::_));
+    EXPECT_CALL(delegate, OnFingerScrollStop(testing::_));
     generator.ScrollSequence(origin, base::TimeDelta(), 1, 1, 1, 1);
   }
 
@@ -907,7 +907,7 @@ TEST_P(PointerTest, IgnorePointerEventsOnNonModalWhenModalIsOpen) {
     EXPECT_CALL(delegate,
                 OnPointerScroll(testing::_, gfx::Vector2dF(1.2, 1.2), false))
         .Times(0);
-    EXPECT_CALL(delegate, OnPointerScrollStop(testing::_)).Times(0);
+    EXPECT_CALL(delegate, OnFingerScrollStop(testing::_)).Times(0);
     generator.ScrollSequence(nonModalOrigin, base::TimeDelta(), 1, 1, 1, 1);
 
     EXPECT_CALL(delegate, OnPointerLeave(surface)).Times(0);
@@ -1009,7 +1009,7 @@ TEST_P(PointerTest, RegisterPointerEventsOnNonModal) {
 
     EXPECT_CALL(delegate,
                 OnPointerScroll(testing::_, gfx::Vector2dF(1.2, 1.2), false));
-    EXPECT_CALL(delegate, OnPointerScrollStop(testing::_));
+    EXPECT_CALL(delegate, OnFingerScrollStop(testing::_));
     generator.ScrollSequence(firstWindowOrigin, base::TimeDelta(), 1, 1, 1, 1);
 
     EXPECT_CALL(delegate, OnPointerLeave(surface));

@@ -609,7 +609,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     case ui::ET_SCROLL_FLING_START: {
       // Fling start in chrome signals the lifting of fingers after scrolling.
       // In wayland terms this signals the end of a scroll sequence.
-      delegate_->OnPointerScrollStop(event->time_stamp());
+      delegate_->OnFingerScrollStop(event->time_stamp());
       needs_frame |= true;
       break;
     }
@@ -618,7 +618,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       // scrolls by 0 pixels, effectively stopping any kinetic scroll motion.
       delegate_->OnPointerScroll(event->time_stamp(), gfx::Vector2dF(), false);
       delegate_->OnPointerFrame();
-      delegate_->OnPointerScrollStop(event->time_stamp());
+      delegate_->OnFingerScrollStop(event->time_stamp());
       delegate_->OnPointerFrame();
       break;
     }
