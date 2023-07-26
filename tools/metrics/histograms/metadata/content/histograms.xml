@@ -730,7 +730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.BrokenNTPHierarchy"
-    enum="NTPBrokenViewHierarchyRelationship" expires_after="M115">
+    enum="NTPBrokenViewHierarchyRelationship" expires_after="M120">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1658,7 +1658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.SortType" enum="FeedSortType"
-    expires_after="2023-07-23">
+    expires_after="2023-12-23">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
