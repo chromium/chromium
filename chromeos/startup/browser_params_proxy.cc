@@ -16,6 +16,11 @@ BrowserParamsProxy* BrowserParamsProxy::Get() {
   return browser_params_proxy.get();
 }
 
+// static
+void BrowserParamsProxy::WaitForLogin() {
+  BrowserPostLoginParams::WaitForLogin();
+}
+
 bool BrowserParamsProxy::DisableCrosapiForTesting() const {
   return BrowserInitParams::disable_crosapi_for_testing();
 }

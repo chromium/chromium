@@ -775,24 +775,24 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::IsLaunchedWithPostLoginParams()) {
+    // NOTE: When prelaunching Lacros, this is as far as Lacros's initialization
+    // will go at the login screen. The browser process will block here.
+    //
+    // IMPORTANT NOTE: If your code requires access to post-login parameters
+    // (which are only known after login), please place them *after* this call.
+    chromeos::BrowserParamsProxy::WaitForLogin();
+
+    // NOTE: When launching Lacros at login screen, after this point,
+    // the user should have logged in. The cryptohome is now accessible.
+
+    // Redirect logs from system directory to cryptohome.
+    RedirectLacrosLogging();
+  }
+
   // Set Lacros's default paths.
-  //
-  // NOTE: When launching Lacros at login screen, this is the first access
-  // to post-login parameters. In other words, this is as far as Lacros
-  // initialization will go at login screen. The browser process will block
-  // here.
-  //
-  // IMPORTANT NOTE: If your code requires access to post-login parameters
-  // (which are only known after login), please place them *after* this call.
   const auto& init_params = *chromeos::BrowserParamsProxy::Get();
   chrome::SetLacrosDefaultPathsFromInitParams(init_params.DefaultPaths().get());
-
-  // NOTE: When launching Lacros at login screen, after this point,
-  // the user should have logged in. The cryptohome is now accessible.
-
-  // Redirect logs from system directory to cryptohome.
-  if (chromeos::IsLaunchedWithPostLoginParams())
-    RedirectLacrosLogging();
 
   // Must be added before feature list is created otherwise the added flag won't
   // be picked up.

@@ -16,6 +16,12 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
  public:
   static BrowserParamsProxy* Get();
 
+  // Wait for the user to login and post-login parameters to be available.
+  // NOTE: This needs to be called before post-login parameters are accessed.
+  // Please note that this method is not thread-safe and should be called
+  // before any threads are created in the browser process.
+  static void WaitForLogin();
+
   // Init and post-login parameters' accessors are listed starting from here.
   bool DisableCrosapiForTesting() const;
 
