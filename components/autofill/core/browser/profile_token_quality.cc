@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -114,12 +113,11 @@ void ProfileTokenQuality::AddObservation(ServerFieldType type,
   observations.push_back(std::move(observation));
 }
 
-ProfileTokenQuality::FormAndFieldSignatureHash
-ProfileTokenQuality::GetFormAndFieldSignatureHash(
-    FormSignature form_signature,
-    FieldSignature field_signature) const {
-  NOTIMPLEMENTED();
-  return {};
+ProfileTokenQuality::FormSignatureHash
+ProfileTokenQuality::GetFormSignatureHash(FormSignature form_signature) const {
+  // Just take the lowest 8 bits of the `form_signature`.
+  static_assert(sizeof(FormSignatureHash) == 1);
+  return FormSignatureHash(form_signature.value());
 }
 
 }  // namespace autofill

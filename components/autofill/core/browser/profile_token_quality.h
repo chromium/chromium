@@ -120,26 +120,29 @@ class ProfileTokenQuality {
       ServerFieldType type) const;
 
  private:
-  // For every form-field and stored type, at most a single observation is
-  // stored (among the `kMaxObservationsPerToken` observations stored in total).
-  // To track for which fields an observation was already collected,
-  // `Observation`s stored a low entropy hash of the form- and field-signature
-  // of the submitted form-field.
+  // For every form and stored type, at most a single observation is stored
+  // (among the `kMaxObservationsPerToken` observations stored in total).
+  // To track for which forms an observation was already collected,
+  // `Observation`s store a low entropy hash of the form-signature of the
+  // submitted form-field.
+  // The field-signature is not part of the hash for two reasons:
+  // - The observations are associated with a type, which in most cases already
+  //   identifies the field in the form.
+  // - By including the field-signature, the hashes from different observations
+  //   can be combined to identify the form.
   // Since `kMaxObservationsPerToken` is small, a low number of bits suffice.
-  using FormAndFieldSignatureHash =
-      base::StrongAlias<struct FormAndFieldSignatureHashTag, uint16_t>;
+  using FormSignatureHash =
+      base::StrongAlias<struct FormSignatureHashTag, uint8_t>;
 
   // An observation, describing the type of observed observation and the form-
   // field it was collected from.
   struct Observation {
     ObservationType type = ObservationType::kNone;
-    FormAndFieldSignatureHash form_field_hash = FormAndFieldSignatureHash(0);
+    FormSignatureHash form_hash = FormSignatureHash(0);
   };
 
-  // Returns a low-entry hash of the `form_signature` and `field_signature`.
-  FormAndFieldSignatureHash GetFormAndFieldSignatureHash(
-      FormSignature form_signature,
-      FieldSignature field_signature) const;
+  // Returns a low-entry hash of the `form_signature`.
+  FormSignatureHash GetFormSignatureHash(FormSignature form_signature) const;
 
   // Adds the `observation` to the `observations_` for the stored type of
   // `type`. The oldest existing observation for that type is discarded, if
