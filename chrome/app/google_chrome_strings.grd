@@ -783,7 +783,7 @@ Permissions you've already given to websites and apps may apply to this account.
         This extension was unpublished by its developer, and might be unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
       </message>
       <message name="IDS_EXTENSIONS_SAFETY_CHECK_PRIMARY_LABEL" desc="Alerts the user that the extension should be reviewed.">
-        Chrome recommends you review this extension.
+        Chrome recommends you review this extension
       </message>
 
       <!-- chrome://settings/extensions page -->

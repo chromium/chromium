@@ -63,7 +63,8 @@
 
   @media (prefers-color-scheme: dark) {
     .safety-check-warning-container {
-      background-color: unset;
+      /* Google Grey 911 according to Extensions Safety Check mock. */
+      background-color: rgb(53, 54, 58);
     }
 
     .safety-check-icon {
@@ -198,7 +199,7 @@
           class="safety-check-icon">
       </iron-icon>
       <div class="safety-check-wrapper">
-        <span class="section-title">
+        <span class="section-title" aria-level="2">
           $i18n{safetyCheckExtensionsDetailPagePrimaryLabel}
         </span>
         <div class="section-content">
