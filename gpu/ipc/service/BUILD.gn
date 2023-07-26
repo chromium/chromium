@@ -112,7 +112,6 @@ component("service") {
       "image_transport_surface_overlay_mac.h",
       "image_transport_surface_overlay_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_mac) {
     sources += [

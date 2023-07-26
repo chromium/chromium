@@ -234,9 +234,6 @@ source_set("config_sources") {
       ]
     }
   }
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
   if (is_mac) {
     sources += [ "gpu_info_collector_mac.mm" ]
     frameworks = [ "OpenGL.framework" ]
