@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -148,15 +149,20 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   pdm_.AddProfile(profile);
   ProfileTokenQuality quality(&profile);
 
-  FormData form = GetFormWithTypes({NAME_FIRST, NAME_LAST, ADDRESS_HOME_CITY});
+  FormData form = GetFormWithTypes(
+      {NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY});
   FillForm(form, profile);
 
   // Clear the value of field 0.
   EditFieldValue(form, 0, u"");
   // Edit field 1 to a different token of the same `profile`.
   EditFieldValue(form, 1, profile.GetInfo(NAME_MIDDLE, pdm_.app_locale()));
-  // Edit field 2 to a completely different token.
-  EditFieldValue(form, 2, u"different value");
+  // Edit field 2 to a value similar to the originally filled one.
+  ASSERT_EQ(profile.GetInfo(ADDRESS_HOME_LINE1, pdm_.app_locale()),
+            u"666 Erebus St.");
+  EditFieldValue(form, 2, u"666 Erbus Str");
+  // Edit field 3 to a completely different token.
+  EditFieldValue(form, 3, u"different value");
 
   FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
   EXPECT_TRUE(
@@ -167,6 +173,8 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_LAST),
               UnorderedElementsAre(
                   ObservationType::kEditedToDifferentTokenOfSameProfile));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(ADDRESS_HOME_LINE1),
+              UnorderedElementsAre(ObservationType::kEditedToSimilarValue));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(ADDRESS_HOME_CITY),
               UnorderedElementsAre(ObservationType::kEditedFallback));
 }
@@ -221,6 +229,29 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
       quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
+}
+
+TEST_F(ProfileTokenQualityTest, IsWithinLevenshteinDistance) {
+  // Checks if the Levenshtein distance between `a` and `b` is exactly `k`, by
+  // checking that it is <= `k` but not <= `k-1`.
+  auto has_levenshtein_distance = [](base::StringPiece16 a,
+                                     base::StringPiece16 b, size_t k) {
+    return ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(a, b,
+                                                                      k) &&
+           (k == 0 ||
+            !ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(a, b,
+                                                                        k - 1));
+  };
+
+  EXPECT_TRUE(has_levenshtein_distance(u"aa", u"aa", 0));
+  EXPECT_TRUE(has_levenshtein_distance(u"a", u"aa", 1));
+  EXPECT_TRUE(has_levenshtein_distance(u"ab", u"aa", 1));
+  EXPECT_TRUE(has_levenshtein_distance(u"aba", u"aa", 1));
+  EXPECT_TRUE(has_levenshtein_distance(u"", u"12", 2));
+  EXPECT_TRUE(has_levenshtein_distance(u"street", u"str.", 3));
+  EXPECT_TRUE(has_levenshtein_distance(u"asdf", u"fdsa", 4));
+  EXPECT_TRUE(has_levenshtein_distance(std::u16string(100, 'a'),
+                                       std::u16string(200, 'a'), 100));
 }
 
 }  // namespace autofill

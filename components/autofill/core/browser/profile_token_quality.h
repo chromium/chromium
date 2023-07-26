@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -64,9 +65,9 @@ class ProfileTokenQuality {
     // example, if a phone city code field is accepted, it counts as a partial
     // accept for the corresponding whole number (the stored type).
     kPartiallyAccepted = 2,
-    // The autofilled value was edited to a value with small edit distance to
-    // the original value. Comparisons are case-insensitive.
-    // TODO(crbug.com/1453650): Decide what a "small" edit distance is.
+    // The autofilled value was edited to a value with Levenshtein distance at
+    // most `kMaximumLevenshteinDistance` of the original value. Comparisons are
+    // case-insensitive.
     kEditedToSimilarValue = 3,
     // The autofilled value was edited to equal (case-insensitively) a different
     // supported type of the same profile.
@@ -89,6 +90,10 @@ class ProfileTokenQuality {
   // are stored. When additional observations are observed, the oldest existing
   // observations are dropped (FIFO).
   static constexpr size_t kMaxObservationsPerToken = 10;
+
+  // The maximum Levenshtein distance to consider for `kEditedToSimilarValue`
+  // observations.
+  static constexpr size_t kMaximumLevenshteinDistance = 2;
 
   // Initializes the `ProfileTokenQuality` for the `profile`. `profile` must
   // be non-null and outlive the `ProfileTokenQuality` instance.
@@ -121,6 +126,11 @@ class ProfileTokenQuality {
   // the observations of the corresponding stored type are returned.
   std::vector<ObservationType> GetObservationTypesForFieldType(
       ServerFieldType type) const;
+
+  // Returns true if `a` and `b` are within Levenshtein distance `k`.
+  static bool IsWithinLevenshteinDistanceForTesting(base::StringPiece16 a,
+                                                    base::StringPiece16 b,
+                                                    size_t k);
 
  private:
   // For every form and stored type, at most a single observation is stored
