@@ -1,0 +1,57 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+declare_args() {
+  # The target API level for this repository. Embedders should override this
+  # value to specify the API level the packages produced from this repository
+  # should be targeting, e.g. in their top-level //.gn file. A value of -1
+  # means that no API level will be passed to the tools that consumes it.
+  fuchsia_target_api_level = 11
+
+  # Path to the fuchsia SDK. This is intended for use in other templates &
+  # rules to reference the contents of the fuchsia SDK.
+  fuchsia_sdk = "//third_party/fuchsia_sdk/sdk"
+
+  # ID uniquely identifying the Fuchsia IDK build. This is exposed as a
+  # property so it can be used to locate images and packages on GCS and
+  # as a marker to indicate the "version" of the IDK.
+  # Defaults to the id found in the manifest.json file of the SDK.
+  fuchsia_sdk_id = ""
+}
+
+declare_args() {
+  # The SDK manifest file. This is useful to include as a dependency
+  # for some targets in order to cause a rebuild when the version of the
+  # SDK is changed.
+  fuchsia_sdk_manifest_file = "$fuchsia_sdk/meta/manifest.json"
+
+  # fuchsia_tool_dir is used to specify the directory in the SDK to locate
+  # tools for the host cpu architecture. If the host_cpu is not recognized,
+  # then tool dir defaults to x64.
+  fuchsia_tool_dir = "${fuchsia_sdk}/tools/x64"
+  if (host_cpu == "arm64") {
+    fuchsia_tool_dir = "${fuchsia_sdk}/tools/arm64"
+  }
+}
+
+if (fuchsia_sdk_id == "") {
+  # Note: If we need to expose more than just the id in the future,
+  # we should consider exposing the entire json object for the metadata vs.
+  # adding a bunch of variables.
+  _meta = read_file(fuchsia_sdk_manifest_file, "json")
+  fuchsia_sdk_id = _meta.id
+}
+
+declare_args() {
+  # Specify a readelf_exec path to use. If not specified, the host's system
+  # executable will be used. Passed to populate_build_id_dir.py and
+  # prepare_package_inputs.py via the --readelf-exec flag.
+  # Must be a GN path (not an absolute path) since it is adjusted with
+  # rebase_path().
+  if (!defined(fuchsia_sdk_readelf_exec)) {
+    fuchsia_sdk_readelf_exec = ""
+  }
+}
