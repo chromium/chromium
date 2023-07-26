@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class CommandDispatcher;
-@class DownloadManagerCoordinator;
+@protocol DownloadManagerTabHelperDelegate;
 @class NewTabPageCoordinator;
 @protocol FollowIPHPresenter;
 @protocol PasswordControllerDelegate;
@@ -32,8 +32,8 @@ class WebStateList;
 // lifetime. The mediator keeps only weak references to injected dependencies.
 @interface TabLifecycleMediator : NSObject
 
-@property(nonatomic, weak)
-    DownloadManagerCoordinator* downloadManagerCoordinator;
+@property(nonatomic, weak) id<DownloadManagerTabHelperDelegate>
+    downloadManagerTabHelperDelegate;
 @property(nonatomic, assign) PrerenderService* prerenderService;
 @property(nonatomic, weak) UIViewController* baseViewController;
 @property(nonatomic, weak) CommandDispatcher* commandDispatcher;

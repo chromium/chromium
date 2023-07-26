@@ -841,7 +841,7 @@ enum class ToolbarKind {
                          browser:self.browser];
   self.downloadManagerCoordinator.presenter =
       [[VerticalAnimationContainer alloc] init];
-  self.tabLifecycleMediator.downloadManagerCoordinator =
+  self.tabLifecycleMediator.downloadManagerTabHelperDelegate =
       self.downloadManagerCoordinator;
 
   self.qrScannerCoordinator =

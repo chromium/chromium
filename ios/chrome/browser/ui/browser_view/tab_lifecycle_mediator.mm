@@ -97,9 +97,9 @@
       _overscrollActionsDelegate);
 
   // DownloadManagerTabHelper cannot function without its delegate.
-  DCHECK(_downloadManagerCoordinator);
+  DCHECK(_downloadManagerTabHelperDelegate);
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(
-      _downloadManagerCoordinator);
+      _downloadManagerTabHelperDelegate);
 
   DCHECK(_tabHelperDelegate);
   NetExportTabHelper::FromWebState(webState)->SetDelegate(_tabHelperDelegate);
