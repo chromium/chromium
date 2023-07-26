@@ -9,3 +9,7 @@ per-file inline_login_handler.*=file://chrome/credential_provider/OWNERS
 # For ChromeOS changes
 per-file inline_login_*_chromeos*=file://chromeos/ash/components/account_manager/OWNERS
 per-file signin_helper_chromeos.*=file://chromeos/ash/components/account_manager/OWNERS
+
+per-file dice_web_signin_intercept_*=gabolvr@google.com
+per-file profile_customization_*=gabolvr@google.com
+per-file sync_confirmation_*=gabolvr@google.com
