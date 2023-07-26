@@ -11,13 +11,7 @@ import sys
 import tempfile
 from typing import Any
 import unittest
-
-import six
-
-if six.PY2:
-  import mock
-else:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 from pyfakefs import fake_filesystem_unittest
 
@@ -88,10 +82,7 @@ class GpuSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
                                                      self._json_keys, '', '')
     _, _ = session.Diff('name', '', None)
     self.assertEqual(cmd_mock.call_count, 1)
-    if six.PY3:
-      call_args = cmd_mock.call_args.args[0]
-    else:
-      call_args = cmd_mock.call_args[0][0]
+    call_args = cmd_mock.call_args.args[0]
     self.assertIn('--out-dir', call_args)
     output_dir = call_args[call_args.index('--out-dir') + 1]
     # Directory should be a subdirectory of the directory we gave and be made

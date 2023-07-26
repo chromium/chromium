@@ -8,7 +8,6 @@ import logging
 import os
 import unittest
 
-import six
 import pylib.constants as constants
 import pylib.constants.host_paths as host_paths
 
@@ -41,7 +40,7 @@ class HostPathsTest(unittest.TestCase):
     self.assertEqual(host_paths.GetAaptPath(), _EXPECTED_AAPT_PATH)
 
   def test_ToolPath(self):
-    for cpu_arch, binprefix in six.iteritems(_EXPECTED_NDK_TOOL_SUBDIR_MAP):
+    for cpu_arch, binprefix in _EXPECTED_NDK_TOOL_SUBDIR_MAP.items():
       expected_binprefix = os.path.join(constants.ANDROID_NDK_ROOT, binprefix)
       expected_path = expected_binprefix + 'foo'
       self.assertEqual(host_paths.ToolPath('foo', cpu_arch), expected_path)

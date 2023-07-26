@@ -11,7 +11,6 @@ import unittest
 # The following non-std imports are fetched via vpython. See the list at
 # //.vpython3
 import mock  # pylint: disable=import-error
-import six
 
 _BUILD_UTIL_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -39,11 +38,7 @@ class InitClientTest(unittest.TestCase):
     luci_context_json = {
         'result_sink': _FAKE_CONTEXT,
     }
-    if six.PY2:
-      open_builtin_path = '__builtin__.open'
-    else:
-      open_builtin_path = 'builtins.open'
-    with mock.patch(open_builtin_path,
+    with mock.patch('builtins.open',
                     mock.mock_open(read_data=json.dumps(luci_context_json))):
       client = result_sink.TryInitClient()
     self.assertEqual(

@@ -28,8 +28,6 @@ import argparse
 import logging
 import sys
 
-# import raw_input when converted to python3
-from six.moves import input  # pylint: disable=redefined-builtin
 import devil_chromium
 
 from devil.android import apk_helper

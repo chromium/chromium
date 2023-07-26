@@ -15,7 +15,6 @@ import subprocess
 import shutil
 import time
 
-from six.moves import range  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors

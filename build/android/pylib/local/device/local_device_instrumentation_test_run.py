@@ -17,8 +17,6 @@ import sys
 import tempfile
 import time
 
-from six.moves import range  # pylint: disable=redefined-builtin
-from six.moves import zip  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import apk_helper
 from devil.android import crash_handler

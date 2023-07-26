@@ -18,7 +18,6 @@ import zipfile
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
-from six.moves import range  # pylint: disable=redefined-builtin
 from devil.utils import cmd_helper
 from py_utils import tempfile_ext
 from pylib import constants

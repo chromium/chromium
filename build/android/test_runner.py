@@ -935,7 +935,7 @@ def _SinkTestResult(test_result, test_file_name, result_sink_client):
   result_sink_client.Post(test_result.GetNameForResultSink(),
                           test_result.GetType(),
                           test_result.GetDuration(),
-                          log_decoded.encode('utf-8'),
+                          log_decoded,
                           test_file_name,
                           variant=test_result.GetVariantForResultSink(),
                           failure_reason=test_result.GetFailureReason(),

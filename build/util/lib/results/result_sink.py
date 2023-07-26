@@ -7,8 +7,6 @@ import json
 import logging
 import os
 
-import six
-
 import requests  # pylint: disable=import-error
 from lib.results import result_types
 
@@ -148,14 +146,13 @@ class ResultSinkClient(object):
     if (test_log
         and len(tr['summaryHtml']) + len(_TEST_LOG_ARTIFACT) > HTML_SUMMARY_MAX
         or len(tr['summaryHtml']) > HTML_SUMMARY_MAX):
-      b64_summary = six.ensure_str(
-          base64.b64encode(six.ensure_binary(tr['summaryHtml'])))
+      b64_summary = base64.b64encode(tr['summaryHtml'].encode()).decode()
       artifacts.update({'HTML Summary': {'contents': b64_summary}})
       tr['summaryHtml'] = _HTML_SUMMARY_ARTIFACT
 
     if test_log:
       # Upload the original log without any modifications.
-      b64_log = six.ensure_str(base64.b64encode(six.ensure_binary(test_log)))
+      b64_log = base64.b64encode(test_log.encode()).decode()
       artifacts.update({'Test Log': {'contents': b64_log}})
       tr['summaryHtml'] += _TEST_LOG_ARTIFACT
 

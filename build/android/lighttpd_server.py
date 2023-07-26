@@ -13,6 +13,7 @@ Usage:
 
 import codecs
 import contextlib
+import http.client
 import os
 import random
 import shutil
@@ -21,9 +22,6 @@ import subprocess
 import sys
 import tempfile
 import time
-
-from six.moves import http_client
-from six.moves import input  # pylint: disable=redefined-builtin
 
 from pylib import constants
 from pylib import pexpect
@@ -128,11 +126,11 @@ class LighttpdServer:
       client_error = None
       try:
         with contextlib.closing(
-            http_client.HTTPConnection('127.0.0.1', self.port,
-                                       timeout=timeout)) as http:
-          http.set_debuglevel(timeout > 3)
-          http.request('HEAD', '/')
-          r = http.getresponse()
+            http.client.HTTPConnection('127.0.0.1', self.port,
+                                       timeout=timeout)) as http_client:
+          http_client.set_debuglevel(timeout > 3)
+          http_client.request('HEAD', '/')
+          r = http_client.getresponse()
           r.read()
           if (r.status == 200 and r.reason == 'OK' and
               r.getheader('Server') == self.server_tag):
@@ -140,7 +138,7 @@ class LighttpdServer:
           client_error = ('Bad response: %s %s version %s\n  ' %
                           (r.status, r.reason, r.version) +
                           '\n  '.join([': '.join(h) for h in r.getheaders()]))
-      except (http_client.HTTPException, socket.error) as client_error:
+      except (http.client.HTTPException, socket.error) as client_error:
         pass  # Probably too quick connecting: try again
       # Check for server startup error messages
       # pylint: disable=no-member

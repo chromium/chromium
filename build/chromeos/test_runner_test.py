@@ -10,10 +10,9 @@ import sys
 import tempfile
 from textwrap import dedent
 import unittest
-import six
 
 # The following non-std imports are fetched via vpython. See the list at
-# //.vpython
+# //.vpython3
 import mock  # pylint: disable=import-error
 from parameterized import parameterized  # pylint: disable=import-error
 
@@ -45,10 +44,7 @@ class TestRunnerTest(unittest.TestCase):
 
     See https://bugs.python.org/issue17866.
     """
-    if six.PY3:
-      self.assertSetEqual(set(list1), set(list2))
-    else:
-      self.assertCountEqual(list1, list2)
+    self.assertSetEqual(set(list1), set(list2))
 
 
 class TastTests(TestRunnerTest):
