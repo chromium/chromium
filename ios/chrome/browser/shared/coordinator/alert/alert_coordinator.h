@@ -27,8 +27,6 @@
 // Whether the alert is visible. This will be true after `-start` is called
 // until a subsequent `-stop`.
 @property(nonatomic, readonly, getter=isVisible) BOOL visible;
-// Block called when the alert is about to be displayed.
-@property(nonatomic, copy) ProceduralBlock startAction;
 // Block called when the alert is stopped with `stop` or during dealloc. It is
 // called only if no interaction with the alert has occurred.
 @property(nonatomic, copy) ProceduralBlock noInteractionAction;

@@ -114,11 +114,6 @@
                      style:UIAlertActionStyleDefault];
   }
 
-  // Call the start action before presenting the alert.
-  if (self.startAction) {
-    self.startAction();
-  }
-
   [self.baseViewController presentViewController:self.alertController
                                         animated:YES
                                       completion:nil];
