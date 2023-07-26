@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_promise_app_context_menu.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 
 namespace {
@@ -39,7 +40,8 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
     Profile* profile,
     AppListModelUpdater* model_updater,
     const apps::PromiseAppUpdate& update)
-    : ChromeAppListItem(profile, update.PackageId().ToString()) {
+    : ChromeAppListItem(profile, update.PackageId().ToString()),
+      package_id_(update.PackageId()) {
   status_ = update.Status();
   InitializeItem(update);
 
@@ -53,8 +55,12 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
   set_model_updater(model_updater);
 }
 
+void AppServicePromiseAppItem::ExecuteLaunchCommand(int event_flags) {
+  // Promise app items should not be launched.
+}
+
 void AppServicePromiseAppItem::Activate(int event_flags) {
-  base::DoNothing();
+  // Promise app items should not be activated.
 }
 
 const char* AppServicePromiseAppItem::GetItemType() const {
@@ -80,7 +86,7 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
 
 void AppServicePromiseAppItem::LoadIcon() {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LoadPromiseIcon(
-      apps::PackageId::FromString(id()).value(),
+      package_id_,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       GetIconEffectsForPromiseStatus(status_),
       base::BindOnce(&AppServicePromiseAppItem::OnLoadIcon,
@@ -112,9 +118,11 @@ void AppServicePromiseAppItem::InitializeItem(
 void AppServicePromiseAppItem::GetContextMenuModel(
     ash::AppListItemContext item_context,
     GetMenuModelCallback callback) {
-  // TODO(b/261907495): Create Promise App Context Menu.
+  context_menu_ = std::make_unique<AppServicePromiseAppContextMenu>(
+      this, profile(), package_id_, GetController(), item_context);
+  context_menu_->GetMenuModel(std::move(callback));
 }
 
 app_list::AppContextMenu* AppServicePromiseAppItem::GetAppContextMenu() {
-  return nullptr;
+  return context_menu_.get();
 }
