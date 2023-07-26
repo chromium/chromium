@@ -86,6 +86,10 @@ class DownloadBubbleSecurityView : public views::View,
                           bool is_secondary_button);
   void RecordWarningActionTime(bool is_secondary_button);
 
+  int GetMinimumBubbleWidth() const;
+  // Minimum width for the filename in the title.
+  int GetMinimumTitleWidth() const;
+  // Minimum width for the subpage summary.
   int GetMinimumLabelWidth() const;
 
   raw_ptr<DownloadBubbleRowView> download_row_view_;

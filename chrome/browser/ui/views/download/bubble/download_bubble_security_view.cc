@@ -237,12 +237,14 @@ void DownloadBubbleSecurityView::AddHeader() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width=*/false));
+                               /*adjust_height_for_width=*/true));
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   title_->SetProperty(views::kMarginsKey,
                       gfx::Insets::VH(0, icon_label_spacing));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetMultiLine(true);
+  title_->SetAllowCharacterBreak(true);
   if (features::IsChromeRefresh2023()) {
     title_->SetTextStyle(views::style::STYLE_HEADLINE_4);
   }
@@ -274,6 +276,7 @@ void DownloadBubbleSecurityView::BackButtonPressed() {
 
 void DownloadBubbleSecurityView::UpdateHeader() {
   title_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
+  title_->SizeToFit(GetMinimumTitleWidth());
 }
 
 void DownloadBubbleSecurityView::CloseBubble() {
@@ -607,6 +610,10 @@ void DownloadBubbleSecurityView::UpdateButtons() {
     UpdateButton(ui_info.subpage_buttons[1], /*is_secondary_button=*/true,
                  ui_info.HasCheckbox());
   }
+  // After we have updated the buttons, set the minimum width to avoid the rest
+  // of the contents stretching out the dialog unnecessarily.
+  bubble_delegate_->set_fixed_width(GetMinimumBubbleWidth());
+  PreferredSizeChanged();
 }
 
 void DownloadBubbleSecurityView::UpdateProgressBar() {
@@ -751,13 +758,26 @@ DownloadBubbleSecurityView::~DownloadBubbleSecurityView() {
   }
 }
 
+int DownloadBubbleSecurityView::GetMinimumBubbleWidth() const {
+  return ChromeLayoutProvider::Get()->GetSnappedDialogWidth(
+      bubble_delegate_->GetDialogClientView()->GetMinimumSize().width());
+}
+
+int DownloadBubbleSecurityView::GetMinimumTitleWidth() const {
+  // The title's width is similar to the subpage summary's width except it is
+  // narrower to accommodate the close button.
+  const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  return GetMinimumLabelWidth() - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+         icon_label_spacing;
+}
+
 int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
   const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  const int bubble_width = ChromeLayoutProvider::Get()->GetSnappedDialogWidth(
-      bubble_delegate_->GetDialogClientView()->GetMinimumSize().width());
-  return bubble_width - side_margin - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+  return GetMinimumBubbleWidth() - side_margin -
+         GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
          GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
 }
 
