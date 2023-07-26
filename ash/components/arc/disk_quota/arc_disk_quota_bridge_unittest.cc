@@ -9,6 +9,8 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,9 +28,15 @@ class ArcDiskQuotaBridgeTest : public testing::Test {
 
   ArcDiskQuotaBridge* bridge() { return bridge_; }
 
-  void SetUp() override { ash::SpacedClient::InitializeFake(); }
+  void SetUp() override {
+    ash::SpacedClient::InitializeFake();
+    ash::UserDataAuthClient::InitializeFake();
+  }
 
-  void TearDown() override { ash::SpacedClient::Shutdown(); }
+  void TearDown() override {
+    ash::UserDataAuthClient::Shutdown();
+    ash::SpacedClient::Shutdown();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -36,6 +44,33 @@ class ArcDiskQuotaBridgeTest : public testing::Test {
   TestBrowserContext context_;
   const raw_ptr<ArcDiskQuotaBridge, ExperimentalAsh> bridge_;
 };
+
+TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_Supported) {
+  ash::FakeSpacedClient::Get()->set_quota_supported(true);
+  ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(true);
+
+  base::test::TestFuture<bool> future;
+  bridge()->IsQuotaSupported(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_NotSupportedInSpaced) {
+  ash::FakeSpacedClient::Get()->set_quota_supported(false);
+  ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(true);
+
+  base::test::TestFuture<bool> future;
+  bridge()->IsQuotaSupported(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_NotSupportedInCryptohome) {
+  ash::FakeSpacedClient::Get()->set_quota_supported(true);
+  ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(false);
+
+  base::test::TestFuture<bool> future;
+  bridge()->IsQuotaSupported(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
 
 TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForUid_Success) {
   const std::vector<std::pair<uint32_t, int64_t>>
