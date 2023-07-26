@@ -72,6 +72,7 @@
 /chromeos_text_input
 /chromevox/third_party/sre/src
 /chromite
+/chromium-variations
 /crossbench
 /clang-format/script
 /cld_2/src
