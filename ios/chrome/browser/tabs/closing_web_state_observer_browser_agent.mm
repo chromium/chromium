@@ -17,6 +17,10 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -42,24 +46,6 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
   if (!restore_service_)
     return;
 
-  // It is possible to call this method with "unrealized" WebState. Check if
-  // the WebState is in that state before accessing the NavigationManager as
-  // that would force the realization of the WebState. The serialized state
-  // can be retrieved in the same way as for a WebState whoe restoration is
-  // in progress.
-  const web::NavigationManager* navigation_manager = nullptr;
-  if (web_state->IsRealized()) {
-    navigation_manager = web_state->GetNavigationManager();
-    DCHECK(navigation_manager);
-  }
-
-  if (!navigation_manager || navigation_manager->IsRestoreSessionInProgress()) {
-    CRWSessionStorage* storage = web_state->BuildSessionStorage();
-    auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(storage);
-    restore_service_->CreateHistoricalTab(live_tab.get(), index);
-    return;
-  }
-
   // No need to record history if the tab has no navigation or has only
   // presented the NTP or the bookmark UI.
   if (web_state->GetNavigationItemCount() <= 1) {
@@ -68,6 +54,26 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
         (last_committed_url.host_piece() == kChromeUINewTabHost)) {
       return;
     }
+  }
+
+  // It is possible to call this method with "unrealized" WebState. Check if
+  // the WebState is in that state before accessing the NavigationManager as
+  // that would force the realization of the WebState. The serialized state
+  // can be retrieved in the same way as for a WebState whose restoration is
+  // in progress.
+  const web::NavigationManager* navigation_manager = nullptr;
+  if (web_state->IsRealized()) {
+    navigation_manager = web_state->GetNavigationManager();
+    DCHECK(navigation_manager);
+  }
+
+  if (!navigation_manager || navigation_manager->IsRestoreSessionInProgress()) {
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      CRWSessionStorage* storage = web_state->BuildSessionStorage();
+      auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(storage);
+      restore_service_->CreateHistoricalTab(live_tab.get(), index);
+    }
+    return;
   }
 
   restore_service_->CreateHistoricalTab(
