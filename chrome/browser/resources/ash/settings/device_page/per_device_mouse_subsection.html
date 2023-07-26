@@ -34,19 +34,19 @@
     <settings-toggle-button id="mouseAcceleration"
         class="hr"
         pref="{{accelerationPref}}"
-        label="$i18n{mouseAccelerationLabel}"
+        label="[[getCursorAccelerationString()]]"
         aria-describedby="mouseName"
         deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
     </settings-toggle-button>
     <div class="settings-box">
       <div class="start" id="mouseSpeedLabel" aria-hidden="true">
-        $i18n{mouseSpeed}
+        [[getCursorSpeedString()]]
       </div>
       <settings-slider id="mouseSpeedSlider"
           pref="{{sensitivityPref}}"
           ticks="[[sensitivityValues_]]"
           aria-describedby="mouseName"
-          label-aria="$i18n{mouseSpeed}"
+          label-aria="[[getCursorSpeedString()]]"
           label-min="$i18n{pointerSlow}"
           label-max="$i18n{pointerFast}"
           deep-link-focus-id$="[[Setting.kMouseSpeed]]">

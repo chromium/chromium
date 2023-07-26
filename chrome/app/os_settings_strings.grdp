@@ -3029,8 +3029,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POINTING_STICK_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the pointing stick (normally referred to as a TrackPoint).">
     TrackPoint speed
   </message>
-  <message name="IDS_SETTINGS_MOUSE_SCROLL_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of mouse scrolling.">
-    Mouse scroll speed
+  <!-- TODO(zhangwenyu): Remove translateable="false" once the string is finalized. -->
+  <message name="IDS_SETTINGS_MOUSE_SCROLL_SPEED_LABEL" translateable="false" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of mouse scrolling.">
+    Scrolling speed
   </message>
   <!-- TODO(zhangwenyu): Remove translateable="false" once the string is finalized. -->
   <message name="IDS_SETTINGS_MOUSE_CURSOR_LABEL" translateable="false" desc="In Device Settings, the text of mouse cursor subsection title.">
@@ -3057,8 +3058,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MOUSE_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable mouse acceleration.">
     Enable mouse acceleration
   </message>
-  <message name="IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL" desc="In Device Settings, the text next to the toggle for mouse scroll acceleration.">
-    Enable mouse scroll acceleration
+  <!-- TODO(zhangwenyu): Remove translateable="false" once the string is finalized. -->
+  <message name="IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL" translateable="false" desc="In Device Settings, the text next to the toggle for mouse scroll acceleration.">
+    Enable scroll acceleration
+  </message>
+  <message name="IDS_SETTINGS_CURSOR_SPEED_LABEL" translateable="false" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the mouse cursor.">
+    Cursor speed
+  </message>
+  <message name="IDS_SETTINGS_CURSOR_ACCELERATION_LABEL" translateable="false" desc="In Device Settings, the text next to the checkbox to disable mouse cursor acceleration.">
+    Enable cursor acceleration
   </message>
   <message name="IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable pointing stick (a.k.a. TrackPoint) acceleration. (TrackPoint is a trademark that's not translated.)">
     Enable TrackPoint acceleration

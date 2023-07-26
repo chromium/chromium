@@ -313,6 +313,19 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     return tempEl.innerHTML;
   }
 
+  private getCursorSpeedString(): TrustedHTML {
+    return this.i18nAdvanced(
+        loadTimeData.getBoolean('allowScrollSettings') ? 'cursorSpeed' :
+                                                         'mouseSpeed');
+  }
+
+  private getCursorAccelerationString(): TrustedHTML {
+    return this.i18nAdvanced(
+        loadTimeData.getBoolean('allowScrollSettings') ?
+            'cursorAccelerationLabel' :
+            'mouseAccelerationLabel');
+  }
+
   private onCustomizeButtonsClick(): void {
     const url =
         new URLSearchParams(`mouseId=${encodeURIComponent(this.mouse.id)}`);
