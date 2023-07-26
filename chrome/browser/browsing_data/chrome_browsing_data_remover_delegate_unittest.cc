@@ -1621,6 +1621,8 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
   }
 
  protected:
+  content::BrowsingDataRemover::DataType DATA_TYPE_COOKIES =
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES;
   content::BrowsingDataRemover::DataType DATA_TYPE_INDEXED_DB =
       content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB;
   content::BrowsingDataRemover::DataType DATA_TYPE_ON_STORAGE_PARTITION =
@@ -1757,16 +1759,37 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
   auto filter_builder = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder->AddOrigin(iwa_url_info1.origin());
-  std::vector<RemovalInfo> removal_tasks =
-      ClearDataAndWait(base::Time(), base::Time::Max(), DATA_TYPE_INDEXED_DB,
-                       std::move(filter_builder));
+  std::vector<RemovalInfo> removal_tasks = ClearDataAndWait(
+      base::Time(), base::Time::Max(), DATA_TYPE_SITE_DATA & ~DATA_TYPE_COOKIES,
+      std::move(filter_builder));
 
   EXPECT_THAT(
       removal_tasks,
       UnorderedElementsAre(
-          RemovalInfo{DATA_TYPE_INDEXED_DB},
-          RemovalInfo{DATA_TYPE_INDEXED_DB,
+          RemovalInfo{DATA_TYPE_SITE_DATA & ~DATA_TYPE_COOKIES},
+          RemovalInfo{DATA_TYPE_SITE_DATA & DATA_TYPE_ON_STORAGE_PARTITION,
                       iwa_url_info1.storage_partition_config(GetProfile())}));
+}
+
+TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, AppCookiesDeleted) {
+  const GURL iwa_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddOrigin(iwa_url_info.origin());
+  std::vector<RemovalInfo> removal_tasks = ClearDataAndWait(
+      base::Time(), base::Time::Max(),
+      constants::DATA_TYPE_ISOLATED_WEB_APP_COOKIES, std::move(filter_builder));
+
+  EXPECT_THAT(
+      removal_tasks,
+      UnorderedElementsAre(
+          RemovalInfo{constants::DATA_TYPE_ISOLATED_WEB_APP_COOKIES},
+          RemovalInfo{DATA_TYPE_COOKIES,
+                      iwa_url_info.storage_partition_config(GetProfile())}));
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,

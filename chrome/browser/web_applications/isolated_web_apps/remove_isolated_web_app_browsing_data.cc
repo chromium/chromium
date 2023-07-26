@@ -51,15 +51,30 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
       content::BrowsingDataFilterBuilder::Mode::kDelete);
   filter->AddOrigin(iwa_origin);
 
-  // TODO(crbug.com/1449362): BrowsingDataRemover doesn't support clearing
-  // cookies if origins are present in the filter, so we remove
-  // DATA_TYPE_COOKIES here even though we do want them cleared.
+  // BrowsingDataRemover doesn't support clearing cookies if origins are
+  // present in the filter because cookies aren't origin-scoped. This is dealt
+  // with in ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData by making a
+  // second BrowsingDataRemover::RemoveWithFilter call with a mask of only
+  // DATA_TYPE_COOKIES and the filter's origins relaxed to domains. This won't
+  // work for IWAs because they're not representable as domains.
+  //
+  // The desired IWA cookie deletion behavior is for all cookies in the IWA's
+  // primary StoragePartition to be deleted, even those cross-origin to the
+  // IWA. This can't be represented with BrowsingDataFilterBuilder and
+  // BrowsingDataRemover::DATA_TYPE_COOKIES. Instead, we clear the
+  // DATA_TYPE_COOKIES flag here and set DATA_TYPE_ISOLATED_WEB_APP_COOKIES,
+  // and ChromeBrowsingDataRemoverDelegate will translate the
+  // DATA_TYPE_ISOLATED_WEB_APP_COOKIES flag to DATA_TYPE_COOKIES when clearing
+  // data in IWA-owned StoragePartitions.
+  chrome_browsing_data_remover::DataType removal_mask =
+      (chrome_browsing_data_remover::DATA_TYPE_SITE_DATA &
+       ~content::BrowsingDataRemover::DATA_TYPE_COOKIES) |
+      chrome_browsing_data_remover::DATA_TYPE_ISOLATED_WEB_APP_COOKIES;
+
   profile->GetBrowsingDataRemover()->RemoveWithFilterAndReply(
       /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
-      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA &
-          ~content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-      chrome_browsing_data_remover::ALL_ORIGIN_TYPES, std::move(filter),
-      new RemovalObserver(profile, std::move(callback)));
+      removal_mask, chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
+      std::move(filter), new RemovalObserver(profile, std::move(callback)));
 }
 
 }  // namespace web_app

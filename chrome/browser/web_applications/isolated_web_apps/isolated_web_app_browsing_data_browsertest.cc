@@ -290,8 +290,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
 
   EXPECT_EQ(GetAllCookies(url_info).size(), 2UL);
 
-  // TODO(crbug.com/1453520): Clear cookies.
-  // EXPECT_GT(GetAllCookies(url_info).size(), 0UL);
+  ClearData(url_info);
+
+  EXPECT_EQ(GetAllCookies(url_info).size(), 0UL);
 }
 
 }  // namespace web_app

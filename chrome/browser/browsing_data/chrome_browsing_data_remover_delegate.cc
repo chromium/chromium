@@ -1318,6 +1318,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           // |iwa_remove_mask| should stay DATA_TYPE_ON_STORAGE_PARTITION.
         }
 
+        // COOKIES are a domain-scoped datatype. ISOLATED_WEB_APP_COOKIES are
+        // attributed to the Isolated Web App's origin, so we're tracking them
+        // as a separate origin-scoped datatype. A deletion request for an
+        // app's ISOLATED_WEB_APP_COOKIES is implemented as a deletion request
+        // for COOKIES for all domains on the app's StoragePartition.
+        if (remove_mask & constants::DATA_TYPE_ISOLATED_WEB_APP_COOKIES) {
+          iwa_remove_mask |= content::BrowsingDataRemover::DATA_TYPE_COOKIES;
+        }
+
         // We can't wait for the `RemoveWithFilter` call to finish because
         // BrowsingDataRemover doesn't support nested Remove calls.
         auto iwa_filter_builder = content::BrowsingDataFilterBuilder::Create(
