@@ -122,7 +122,7 @@
 <translation id="1592864538817356322">標準保護機能:</translation>
 <translation id="1594635596540195766">下のリストに <ph name="SUGGESTIONS_COUNT" /> 件の候補があります。</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
-<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するために、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。ブラウジングを続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1633659023549081553">Chrome のホームページで新しいコンテンツにアクセスできます</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
@@ -660,7 +660,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> を起動</translation>
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
-<translation id="4637420359569396807">広告測定では、広告効果を測定するため、広告が表示された日時など、限られた種類のデータがサイトやアプリ間で共有される場合があります。</translation>
+<translation id="4637420359569396807">広告測定では、広告効果を測定するため、広告が表示された日時など、限られた種類のデータがウェブサイトやアプリ間で共有される場合があります。</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: # 件}}</translation>
 <translation id="4650364565596261010">システムのデフォルト</translation>
 <translation id="465657074423018424">セーフ ブラウジングでは不正なウェブサイトからデバイスを保護します。オフにする場合は、パスワード入力時など、ブラウジングの際は十分に気を付けてください。</translation>
@@ -862,7 +862,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> で予定を作成</translation>
 <translation id="5683547024293500885">Chrome がアップデートを確認できません</translation>
 <translation id="5686790454216892815">ファイル名が長すぎます</translation>
-<translation id="5687606994963670306">Chrome では、30 日以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようサイトをブロックすることもできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="5687606994963670306">Chrome では、30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようウェブサイトをブロックすることもできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="569435661099256888">アクセスしたページを確認したり履歴から消去したりできます</translation>
 <translation id="569536719314091526">[その他のオプション] から、このページを任意の言語に翻訳できます</translation>
 <translation id="5696597120588531049">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します</translation>
@@ -1176,7 +1176,7 @@
 <translation id="7260367682327802201">お使いの Android デバイスにも、同様の設定が含まれていることがあります。Chrome と Android デバイスで広告測定が有効になっている場合、ユーザーが利用するウェブサイトやアプリ間で広告の効果が測定される可能性があります。</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> を <ph name="ORIGIN" /> に送信しますか？</translation>
 <translation id="7274013316676448362">ブロック中のサイト</translation>
-<translation id="7276100255011548441">Chrome では、4 週間以上経過したトピックは自動削除されます。ブラウジングを続けていると、トピックがリストに再度表示される場合もあります。サイトと共有したくないトピックはブロックできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="7276100255011548441">Chrome では、4 週間以上経過したトピックは自動削除されます。閲覧を続けていると、トピックがリストに再度表示される場合もあります。ウェブサイトと共有したくないトピックはブロックできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="7286703216224610554">リアクションのみ共有</translation>
 <translation id="7290209999329137901">名前の変更はできません</translation>
 <translation id="7291910923717764901">このページの画像の説明が追加されました</translation>
@@ -1503,7 +1503,7 @@
 <translation id="8856607253650333758">説明文を取得</translation>
 <translation id="8856931513242997049">通知権限フローは閉じています</translation>
 <translation id="8881973373982641723">検索ボックスなどの履歴を削除します。</translation>
-<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するために、4 週間以上経過したサイトはリストから自動削除されます。再度アクセスしたサイトが、またリストに表示される場合があります。ユーザーの興味 / 関心を定義させたくないサイトを完全に削除することもできます。</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するため、4 週間以上経過したウェブサイトはリストから自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。ユーザーの興味 / 関心を定義させたくないウェブサイトを完全に削除することもできます。</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
 <translation id="8909135823018751308">共有...</translation>
 <translation id="8912362522468806198">Google アカウントを使用</translation>
@@ -1521,7 +1521,7 @@
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
 <translation id="8987736167266086032">同じところから再開</translation>
-<translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
+<translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するため、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>

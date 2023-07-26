@@ -635,7 +635,7 @@
 <translation id="4487967297491345095">Chromeର ସମସ୍ତ ଆପ୍ ଡାଟା ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ୍ ହୋଇଯିବ। ଏଥିରେ ସମସ୍ତ ଫାଇଲ୍, ସେଟିଂସ୍, ଡାଟାବେସ୍, ଇତ୍ୟାଦି ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।</translation>
 <translation id="449126573531210296">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ସିଙ୍କ୍ ହୋଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4508528996305412043">ଫିଡ୍ କାର୍ଡ ମେନୁ ଖୋଲା ଅଛି</translation>
-<translation id="4509501256689523862">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ, ଆପଣ ଦେଖୁଥିବା ଏକ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଏହି ସେଟିଂ, <ph name="BEGIN_LINK_1" />ବିଜ୍ଞାପନ ବିଷୟ<ph name="END_LINK_1" />, ଆପଣଙ୍କ <ph name="BEGIN_LINK_2" />କୁକୀ ସେଟିଂସ<ph name="END_LINK_2" /> ଉପରେ ନିର୍ଭର କରେ ଏବଂ ଆପଣ ଦେଖୁଥିବା ସାଇଟ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରେ ନା ନାହିଁ</translation>
+<translation id="4509501256689523862">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ, ଆପଣ ଦେଖୁଥିବା ଏକ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଏହି ସେଟିଂ, <ph name="BEGIN_LINK_1" />ବିଜ୍ଞାପନ ବିଷୟ<ph name="END_LINK_1" />, ଆପଣଙ୍କ <ph name="BEGIN_LINK_2" />କୁକୀ ସେଟିଂସ<ph name="END_LINK_2" />ଏବଂ ଆପଣ ଦେଖୁଥିବା ସାଇଟ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରେ ନା ନାହିଁ, ତାହା ଉପରେ ନିର୍ଭର କରେ</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ଦିନ ପୂର୍ବେ}other{# ଦିନ ପୂର୍ବେ}}</translation>
 <translation id="451872707440238414">ଆପଣଙ୍କର ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ଖୋଜନ୍ତୁ</translation>
 <translation id="4521489764227272523">ଚୟନିତ ଡାଟାକୁ Chrome ଓ ସିଙ୍କ୍ ହୋଇଥିବା ଆପଣଙ୍କ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରୁ କାଢ଼ିଦିଆଯାଇଛି।
@@ -654,7 +654,7 @@
 <translation id="4577115723294378384">Aରୁ Z ଅନୁସାରେ ସର୍ଟ କର</translation>
 <translation id="4578289292431526768">ଚାଲନ୍ତୁ ଆରମ୍ଭ କରିବା</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ମିନିଟ୍‌ ପୂର୍ବେ}other{#ମିନିଟ୍ ପୂର୍ବେ}}</translation>
-<translation id="4587589328781138893">Sites</translation>
+<translation id="4587589328781138893">ସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="4594952190837476234">ଏହି ପୃଷ୍ଠା <ph name="CREATION_TIME" />ର ଅଟେ ଏବଂ ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="4619564267100705184">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>

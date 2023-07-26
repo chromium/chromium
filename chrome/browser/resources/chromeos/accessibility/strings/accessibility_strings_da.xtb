@@ -7,7 +7,7 @@
 <translation id="1012173283529841972">Punkt på listen</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Stryg til højre med to fingre</translation>
-<translation id="1022586497894531524">Er det første gang, du bruger talefeedback i ChromeVox? Dette hurtige selvstudie giver dig de grundlæggende oplysninger, du skal bruge for at komme godt i gang med ChromeVox.</translation>
+<translation id="1022586497894531524">Er det første gang, du bruger talefeedback i ChromeVox? Dette hurtige vejledning giver dig de grundlæggende oplysninger, du skal bruge for at komme godt i gang med ChromeVox.</translation>
 <translation id="1025074108959230262">Træg tilstand er deaktiveret</translation>
 <translation id="1031961866430398710">og derefter</translation>
 <translation id="1038643060055067718">Linjer:</translation>
@@ -224,7 +224,7 @@
 <translation id="2490721194269245365">Rosabrun</translation>
 <translation id="249330843868392562">Åbn indstillinger for oplæsning</translation>
 <translation id="2497706219848005458">Grøngul</translation>
-<translation id="2523609930580546572">ChromeVox-selvstudie</translation>
+<translation id="2523609930580546572">ChromeVox-vejledning</translation>
 <translation id="2525706221823668172">Tastaturgenveje på Chromebook</translation>
 <translation id="2553108862507765288">grammatisk fejl</translation>
 <translation id="2556326187583116255">Tryk med to fingre for at stoppe igangværende oplæsning</translation>
@@ -249,7 +249,7 @@
 <translation id="2673280813984708147">redigerer</translation>
 <translation id="267442004702508783">opdater</translation>
 <translation id="2675533876313964202">Chartreuse</translation>
-<translation id="2684412629217766642">Luk ChromeVox-selvstudie</translation>
+<translation id="2684412629217766642">Luk ChromeVox-vejledning</translation>
 <translation id="2692503699962701720">Brug et andet toneleje, når der oplæses elementtyper og formateret tekst.</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Forslag til tekstkonvertering</translation>
@@ -288,7 +288,7 @@
 <translation id="2894654529758326923">Oplysninger</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{venstre klammeparentes}one{# venstre klammeparenteser}other{# venstre klammeparenteser}}</translation>
 <translation id="2909584066358367921">Der er ikke flere knapper</translation>
-<translation id="2911433807131383493">Åbn ChromeVox-selvstudie</translation>
+<translation id="2911433807131383493">Åbn ChromeVox-vejledning</translation>
 <translation id="2912405967290226587">Stryg til højre med tre fingre</translation>
 <translation id="2919107550468490321">Avanceret træg tilstand er aktiveret</translation>
 <translation id="2937799153569150791">Der er ikke flere niveau 3-overskrifter</translation>
@@ -345,7 +345,7 @@
 <translation id="3172700825913348768">{COUNT,plural, =1{mellemrum}one{# mellemrum}other{# mellemrum}}</translation>
 <translation id="3179119189286472195">Ikke et link</translation>
 <translation id="320041337977930740">Skift til visning med sammenfletning</translation>
-<translation id="3206698050650195442">Afslut selvstudie</translation>
+<translation id="3206698050650195442">Afslut vejledning</translation>
 <translation id="3208346789712025453">Der er ikke flere styringselementer</translation>
 <translation id="321072937702597574">Orkidé</translation>
 <translation id="3218691001991391708">indsæt <ph name="TEXT" />.</translation>
@@ -1159,7 +1159,7 @@
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8989104346085848538">Tryk på Ctrl-tasten for at stoppe oplæsning i ChromeVox.</translation>
 <translation id="8993737615451556423">Giver mulighed for at sænke eller øge hastigheden på oplæsningsstemmen eller sætte den på pause</translation>
-<translation id="9014206344398081366">ChromeVox-selvstudie</translation>
+<translation id="9014206344398081366">ChromeVox-vejledning</translation>
 <translation id="9040132695316389094">Overskrift 1</translation>
 <translation id="9061884144798498064">Vælg en 8-punkts brailletabel:</translation>
 <translation id="9063946545000394379">gå til forrige tegn</translation>
