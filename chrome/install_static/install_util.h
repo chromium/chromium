@@ -134,10 +134,17 @@ const wchar_t* GetBaseAppId();
 // We define |suffix| as a fixed-length 26-character alphanumeric identifier,
 // therefore the return value of this function must have a maximum length of
 // 39 - 1(null-term) - 26(|suffix|) - 1(dot separator) = 11 characters.
-const wchar_t* GetProgIdPrefix();
+const wchar_t* GetBrowserProgIdPrefix();
 
 // Returns the browser's ProgId description.
-const wchar_t* GetProgIdDescription();
+const wchar_t* GetBrowserProgIdDescription();
+
+// Returns the browser's PDF viewer ProgID prefix (e.g., ChromePDF or
+// ChromiumPDF). See GetBrowserProgIdPrefix() comments for ProgID constraints.
+const wchar_t* GetPDFProgIdPrefix();
+
+// Returns the PDF document ProgId description.
+const wchar_t* GetPDFProgIdDescription();
 
 // Returns the path to the Active Setup registry entries
 // (e.g., Software\Microsoft\Active Setup\Installed Components\[guid]).

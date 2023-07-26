@@ -82,7 +82,8 @@ class FakeInstallDetails : public install_static::PrimaryInstallDetails {
 
     // This is needed for shell_integration::GetDefaultBrowser which runs on
     // startup.
-    constants_.prog_id_prefix = L"TestHTM";
+    constants_.browser_prog_id_prefix = L"TestHTM";
+    constants_.pdf_prog_id_prefix = L"TestPDF";
 
     set_mode(&constants_);
     set_system_level(true);

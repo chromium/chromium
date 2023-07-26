@@ -372,12 +372,20 @@ const wchar_t* GetBaseAppId() {
   return InstallDetails::Get().base_app_id();
 }
 
-const wchar_t* GetProgIdPrefix() {
-  return InstallDetails::Get().mode().prog_id_prefix;
+const wchar_t* GetBrowserProgIdPrefix() {
+  return InstallDetails::Get().mode().browser_prog_id_prefix;
 }
 
-const wchar_t* GetProgIdDescription() {
-  return InstallDetails::Get().mode().prog_id_description;
+const wchar_t* GetBrowserProgIdDescription() {
+  return InstallDetails::Get().mode().browser_prog_id_description;
+}
+
+const wchar_t* GetPDFProgIdPrefix() {
+  return InstallDetails::Get().mode().pdf_prog_id_prefix;
+}
+
+const wchar_t* GetPDFProgIdDescription() {
+  return InstallDetails::Get().mode().pdf_prog_id_description;
 }
 
 std::wstring GetActiveSetupPath() {

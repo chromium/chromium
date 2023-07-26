@@ -106,25 +106,31 @@ const wchar_t kFileHandlerProgIds[] = L"FileHandlerProgIds";
 
 const wchar_t kFileExtensions[] = L"FileExtensions";
 
-// Returns the current (or installed) browser's ProgId (e.g.
-// "ChromeHTML|suffix|").
-// |suffix| can be the empty string.
-std::wstring GetBrowserProgId(const std::wstring& suffix) {
-  std::wstring chrome_html =
-      base::StrCat({install_static::GetProgIdPrefix(), suffix});
-
-  // ProgIds cannot be longer than 39 characters.
-  // Ref: http://msdn.microsoft.com/en-us/library/aa911706.aspx.
-  // Make all new registrations comply with this requirement (existing
-  // registrations must be preserved).
+// ProgIds cannot be longer than 39 characters.
+// Ref: http://msdn.microsoft.com/en-us/library/aa911706.aspx.
+// Make all new registrations comply with this requirement (existing
+// registrations must be preserved).
+std::wstring LegalizeNewProgId(std::wstring prog_id,
+                               const std::wstring suffix) {
   std::wstring new_style_suffix;
   if (ShellUtil::GetUserSpecificRegistrySuffix(&new_style_suffix) &&
-      suffix == new_style_suffix && chrome_html.length() > 39) {
+      suffix == new_style_suffix && prog_id.length() > 39) {
     NOTREACHED();
-    chrome_html.erase(39);
+    prog_id.erase(39);
   }
-  return chrome_html;
+  return prog_id;
 }
+
+// Returns the current (or installed) browser's ProgId (e.g.
+// "ChromeHTML|suffix|").
+// suffix| can be the empty string.
+std::wstring GetBrowserProgId(const std::wstring& suffix) {
+  return LegalizeNewProgId(
+      base::StrCat({install_static::GetBrowserProgIdPrefix(), suffix}), suffix);
+}
+
+// TODO(https://crbug.com/414141): Add method to get the PDF viewer's ProgId,
+// which will also require LegalizeNewProgId.
 
 // Returns the browser's application name. This application name will be
 // suffixed as is appropriate for the current install. This is the name that is
@@ -344,7 +350,7 @@ void GetChromeProgIdEntries(
 
   ShellUtil::ApplicationInfo app_info;
   app_info.prog_id = GetBrowserProgId(suffix);
-  app_info.file_type_name = install_static::GetProgIdDescription();
+  app_info.file_type_name = install_static::GetBrowserProgIdDescription();
   // File types associated with Chrome are just given the Chrome icon.
   app_info.file_type_icon_path = chrome_exe;
   app_info.file_type_icon_index = chrome_html_icon_index;
@@ -732,7 +738,7 @@ bool QuickIsChromeRegisteredForMode(
     case CONFIRM_PROGID_REGISTRATION:
       // Software\Classes\ChromeHTML|suffix|
       reg_key = base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator,
-                              mode.prog_id_prefix, suffix});
+                              mode.browser_prog_id_prefix, suffix});
       break;
     case CONFIRM_SHELL_REGISTRATION:
     case CONFIRM_SHELL_REGISTRATION_IN_HKLM:
@@ -979,7 +985,7 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
 
   // Get the ProgID for the current install mode.
   std::wstring prog_id =
-      base::StrCat({install_static::GetProgIdPrefix(),
+      base::StrCat({install_static::GetBrowserProgIdPrefix(),
                     ShellUtil::GetCurrentInstallationSuffix(chrome_exe)});
 
   const int current_install_mode_index =
@@ -1003,7 +1009,7 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
          current_app_len](const install_static::InstallConstants& mode) {
           if (mode.index == current_install_mode_index)
             return false;
-          const std::wstring mode_prog_id_prefix(mode.prog_id_prefix);
+          const std::wstring mode_prog_id_prefix(mode.browser_prog_id_prefix);
           // Does the current app either match this mode's ProgID or contain
           // this mode's ProgID as a prefix followed by the '.' separator for a
           // per-user install's suffix?
