@@ -244,6 +244,7 @@
 <translation id="2394602618534698961">Датотеке које преузимате се појављују овде</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
 <translation id="2414886740292270097">Тамнa</translation>
+<translation id="2421705177906985956">Тренутно нема сајтова за приказ</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
 <translation id="2433507940547922241">Изглед</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
@@ -507,6 +508,7 @@
 <translation id="3771694256347217732">Google услови коришћења услуге</translation>
 <translation id="3773856050682458546">Основни подаци плус информације о веб-сајтовима које посећујете и апликацијама које користите</translation>
 <translation id="3775705724665058594">Пошаљите на своје уређаје</translation>
+<translation id="3777796259512476958">Одјавиће вас са већине сајтова</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 картица}one{# картица}few{# картице}other{# картица}}</translation>
 <translation id="3795154175078851242">Копирај слику са линком</translation>
 <translation id="3810838688059735925">Видео</translation>

@@ -1161,6 +1161,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1929186283613845153">Este archivo se está analizando.</translation>
 <translation id="1929343511231420085">Cualquier puerto serie</translation>
 <translation id="1929546189971853037">Leer tu historial de navegación en todos los dispositivos en los que hayas iniciado sesión</translation>
+<translation id="1929774028758671973">Tus contactos pueden compartir contenido contigo cuando estén cerca de ti. Se te pedirá que apruebes esas solicitudes. No tendrás que aprobar las solicitudes para compartir contenido entre los dispositivos con sesión iniciada en <ph name="USER_EMAIL" />.</translation>
 <translation id="1930879306590754738">Contraseña eliminada de este dispositivo y de tu cuenta de Google</translation>
 <translation id="1931152874660185993">No hay componentes instalados.</translation>
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
@@ -1427,6 +1428,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2151576029659734873">Índice de tabulación no válido introducido</translation>
 <translation id="2152281589789213846">Añadir impresoras a tu perfil</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
+<translation id="2155473371917268529">El ajuste de visibilidad actual es tus dispositivos</translation>
 <translation id="2155772377859296191">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Volver a ejecutar la comprobación de seguridad</translation>
@@ -1759,6 +1761,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2418307627282545839">Diseño luminoso y ligero</translation>
 <translation id="2419131370336513030">Ver aplicaciones instaladas</translation>
 <translation id="2419706071571366386">Por motivos de seguridad, cierra la sesión cuando termines de utilizar tu ordenador.</translation>
+<translation id="2421705177906985956">No hay sitios que mostrar en este momento</translation>
 <translation id="2422125132043002186">Restauración de Linux cancelada</translation>
 <translation id="2423578206845792524">Guar&amp;dar imagen como...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Invitado}other{Invitado (#)}}</translation>
@@ -2368,7 +2371,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2907619724991574506">URLs de inicio</translation>
 <translation id="2907798539022650680">No se ha podido establecer conexión con <ph name="NAME" />: <ph name="DETAILS" />
     Mensaje del servidor: <ph name="SERVER_MSG" /></translation>
-<translation id="2908005622251445419">Compartir señales</translation>
 <translation id="2908162660801918428">Añadir galería de archivos por directorio</translation>
 <translation id="2908358077082926882">Pulsa <ph name="CURRENTKEY" /> otra vez para quitar la asignación y <ph name="RESPONSE" />.</translation>
 <translation id="2909506265808101667">No se ha podido conectar con los servicios de Google. Revisa tu conexión de red e inténtalo de nuevo. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -2438,6 +2440,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2966705348606485669">Más opciones de la carpeta de marcadores <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gestionar preferencias de Android</translation>
 <translation id="2967926928600500959">Las URLs que se correspondan con estas reglas serán forzadas a abrirse en un navegador concreto.</translation>
+<translation id="2970766364519518369">Los contactos seleccionados pueden compartir contenido contigo cuando estén cerca de ti. Se te pedirá que apruebes esas solicitudes. No tendrás que aprobar las solicitudes para compartir contenido entre los dispositivos con sesión iniciada en <ph name="USER_EMAIL" />.</translation>
 <translation id="2972581237482394796">&amp;Rehacer</translation>
 <translation id="2973324205039581528">Silenciar sitio</translation>
 <translation id="2975761176769946178">Debes introducir una URL</translation>
@@ -3829,7 +3832,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4150569944729499860">Contexto de la pantalla</translation>
 <translation id="4151449637210235443">Cuéntanos qué te ha parecido tu reciente experiencia de juego</translation>
-<translation id="4151843924968445052">¿Compartir señales del dispositivo?</translation>
 <translation id="4152011295694446843">Aquí verás tus marcadores</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
@@ -4318,9 +4320,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4568213207643490790">Las cuentas de Google no están permitidas en este dispositivo.</translation>
 <translation id="4569747168316751899">Cuando esté inactivo</translation>
 <translation id="4570201855944865395">Justificación para solicitar este permiso:</translation>
-<translation id="4572463055282177066"><ph name="DOMAIN" /> gestiona este perfil. Para seguir usando este perfil gestionado, tu organización requiere que compartas las señales de tu dispositivo.
-
-Las señales del dispositivo pueden incluir información sobre el navegador, el SO, el dispositivo, el software instalado y los archivos.</translation>
 <translation id="4572779512957829735">Introduce el PIN de la llave de seguridad</translation>
 <translation id="457386861538956877">Más...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
@@ -7975,7 +7974,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="769824636077131955">Este documento es demasiado grande para una comprobación de seguridad. Puedes imprimir documentos de hasta 50 MB.</translation>
 <translation id="7698507637739331665">Algunos elementos están bloqueados</translation>
 <translation id="7701040980221191251">No hay</translation>
-<translation id="7701265686005869308">Cerrar perfil</translation>
 <translation id="7701869757853594372">EL USUARIO administra</translation>
 <translation id="7702463352133825032">Detener envío a <ph name="DEVICE_NAME" /></translation>
 <translation id="7702574632857388784">Eliminar <ph name="FILE_NAME" /> de la lista</translation>
@@ -8111,6 +8109,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7797571222998226653">Desactivado</translation>
 <translation id="7798504574384119986">Ver permisos web</translation>
 <translation id="7798844538707273832">bloqueado automáticamente: <ph name="PERMISSION" /></translation>
+<translation id="7799650166313181433">Solo los dispositivos con sesión iniciada en <ph name="USER_EMAIL" /> pueden compartir contenido con este dispositivo. No tendrás que aprobar las solicitudes para compartir contenido entre tus dispositivos.</translation>
 <translation id="7800485561443537737">Usa los datos móviles de tu <ph name="DEVICE_TYPE" />. Puede que tu operador te cobre cargos adicionales. También puede aumentar el uso de batería. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Girar a la &amp;izquierda</translation>
 <translation id="7801679634091975683">Los cambios que hagas aquí solo se aplicarán al navegador Lacros. Para hacer cambios en tu configuración del navegador Chrome, abre el navegador Chrome y ve a los ajustes.</translation>
@@ -8272,9 +8271,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7933518760693751884">Si quieres guardar una página para más adelante, haz clic en el icono de marcadores</translation>
 <translation id="7933634003144813719">Gestionar las carpetas compartidas</translation>
 <translation id="793474285422359265">Si haces clic en Cancelar, puede que los datos del navegador se vean afectados y es posible que tengas que restablecer el estado de fábrica.</translation>
-<translation id="7934988177580964533">Tu organización gestiona este perfil. Para seguir usando este perfil gestionado, tu organización requiere que compartas las señales de tu dispositivo.
-
-Las señales del dispositivo pueden incluir información sobre el navegador, el SO, el dispositivo, el software instalado y los archivos.</translation>
 <translation id="793531125873261495">No se ha podido descargar la máquina virtual Inténtalo de nuevo.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % completado</translation>
 <translation id="7939062555109487992">Opciones avanzadas</translation>

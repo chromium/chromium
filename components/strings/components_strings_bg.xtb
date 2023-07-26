@@ -101,6 +101,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1201895884277373915">Още от този сайт</translation>
 <translation id="1202892408424955784">Проследявани продукти</translation>
+<translation id="1204184165594298176">{0,plural, =1{Копирането на файла е блокирано}other{Копирането на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="1204602502194308272">Риби и аквариуми</translation>
 <translation id="1206967143813997005">Невалиден първоначален подпис</translation>
 <translation id="1209206284964581585">Скриване засега</translation>
@@ -889,6 +890,7 @@
 <translation id="2916038427272391327">Затворете другите програми.</translation>
 <translation id="2918922650248459053">Гмуркане и подводни дейности</translation>
 <translation id="2922350208395188000">Сертификатът на сървъра не може да бъде проверен.</translation>
+<translation id="2922792708490674">{0,plural, =1{Изтеглянето на файла е блокирано}other{Изтеглянето на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="2923275635648511531">Продукти за защита от слънцето и добиване на тен</translation>
 <translation id="292371311537977079">Настройки на Chrome</translation>
 <translation id="2925454999967523701">Бутон за създаване на документ. Активирайте, за да създадете бързо документ в Google Документи</translation>
@@ -1269,6 +1271,7 @@
 <translation id="3713662424819367124">Парфюми и аромати</translation>
 <translation id="3714633008798122362">уеб календар</translation>
 <translation id="3714780639079136834">Включете мобилните данни или Wi-Fi.</translation>
+<translation id="3715016660240337709">{0,plural, =1{Качването на файла е блокирано}other{Качването на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="3715545959749027023">При откриване на събития, свързани със сигурността, от Chrome данните за тях се изпращат до администратора ви. Те могат да включват URL адресите на посещаваните от вас страници в Chrome, имената на файловете или метаданните, сривовете на браузъра или разделите, както и потребителското име, с което влизате в уеб базирани приложения, в профила си на устройството си и в браузъра.</translation>
 <translation id="3715597595485130451">Свързване с Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверете конфигурацията на прокси сървъра, защитната стена и DNS<ph name="END_LINK" />.</translation>
@@ -1349,6 +1352,7 @@
 <translation id="3890664840433101773">Добавяне на имейл адрес</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Картата е с изтекла валидност</translation>
+<translation id="3905894480064208252">{0,plural, =1{Прехвърлянето на файла е блокирано}other{Прехвърлянето на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="3906095212874392000">Край на преобразувания текст</translation>
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
@@ -1757,6 +1761,7 @@
 <translation id="4757993714154412917">Току-що въведохте паролата си в измамнически сайт. За да защитите профилите си, Chromium препоръчва да проверите запазените си пароли.</translation>
 <translation id="4758311279753947758">Добавяне на информация за връзка</translation>
 <translation id="4761104368405085019">Използване на микрофона ви</translation>
+<translation id="4761326898079498987">Преглед на допълнителни подробности</translation>
 <translation id="4761869838909035636">Стартиране на проверка на безопасността в Chrome</translation>
 <translation id="4764680219299728632">Кухненски печки, плотове и фурни</translation>
 <translation id="4764776831041365478">До уеб страницата на адрес <ph name="URL" /> може временно да няма достъп или да е преместена за постоянно на нов уеб адрес.</translation>
@@ -2441,6 +2446,7 @@
 <translation id="6240447795304464094">Лого на Google Pay</translation>
 <translation id="6241121617266208201">Скриване на предложенията</translation>
 <translation id="624499991300733384">Услуга за създаване на PDF файлове</translation>
+<translation id="6251906504834538140">{0,plural, =1{Преместването на файла е блокирано}other{Преместването на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="6254436959401408446">Няма достатъчно памет за отваряне на тази страница</translation>
 <translation id="6259156558325130047">&amp;Възстановяване на пренареждането</translation>
@@ -2658,6 +2664,7 @@
 <translation id="6691397311652656001">Освободете повече от <ph name="REQUIRED_FREE_DISK_SPACE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да преминете към „Намиране на устройството ми“ в профила ви Google</translation>
 <translation id="6698381487523150993">Създадено:</translation>
+<translation id="67007264085648978">Времеви плъзгач</translation>
 <translation id="6702919718839027939">Представяне</translation>
 <translation id="6704458454638854812">Свойството custom_size е зададено, очакваното име е custom.</translation>
 <translation id="6706005862292023715">Завеси и покрития за прозорци</translation>
@@ -3151,6 +3158,7 @@
 <translation id="7682287625158474539">Адрес за доставка</translation>
 <translation id="7682451652090915298">Ръгби</translation>
 <translation id="7684683146428206649">Метал</translation>
+<translation id="7684928361160505327">{0,plural, =1{Файлът <ph name="FILE_NAME" /> бе блокиран от правило}other{<ph name="FILE_COUNT" /> файла бяха блокирани от правило}}</translation>
 <translation id="7687186412095877299">Попълване на платежни формуляри със запазените от вас начини на плащане</translation>
 <translation id="7687305263118037187">Времето за изчакване за повторен опит изтече</translation>
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
@@ -3366,6 +3374,7 @@
 <translation id="8175796834047840627">Chrome предлага да запази картите ви в профила ви в Google, защото сте влезли в него. Можете да промените това поведение от настройките.</translation>
 <translation id="8176440868214972690">Администраторът на това устройство изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
 <translation id="817820454357658398">Дамски хигиенни продукти</translation>
+<translation id="818254048113802060">{0,plural, =1{Файлът <ph name="FILE_NAME" /> бе блокиран поради деликатно съдържание}other{<ph name="FILE_COUNT" /> файла бяха блокирани поради деликатно съдържание}}</translation>
 <translation id="8183800802493617952">Семейни игри и дейности</translation>
 <translation id="8184538546369750125">Използване на глобалната стандартна стойност (разрешаване)</translation>
 <translation id="8186706823560132848">Софтуер</translation>
@@ -3417,6 +3426,7 @@
 <translation id="8265992338205884890">Видими данни</translation>
 <translation id="8267698848189296333">Влизате като <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Отделни документи/подредени копия</translation>
+<translation id="8269703227894255363">{0,plural, =1{Отварянето на файла е блокирано}other{Отварянето на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="826991611711124547">Круизи и чартъри</translation>
 <translation id="8270242299912238708">PDF документи</translation>
 <translation id="8275952078857499577">Да не се предлага превод на този сайт</translation>

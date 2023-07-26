@@ -93,6 +93,9 @@ Nếu bạn đặt chính sách này thành Tắt, tính năng tự động sử
 <translation id="1063860513136880926">Nếu bạn đặt chính sách này thành Bật thì người dùng sẽ không thể dùng phím tắt hoặc API tiện ích để chụp ảnh màn hình. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt thì người dùng có thể chụp ảnh màn hình.
 
 Xin lưu ý rằng chính sách này không ngăn người dùng chụp ảnh màn hình bằng hệ điều hành hoặc các ứng dụng của bên thứ ba trên <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="LINUX_OS_NAME" />.</translation>
+<translation id="1065175969514496951">Việc đặt chính sách này sẽ cho phép truy cập vào các URL có trong danh sách trong quá trình xác thực (ví dụ như trên màn hình đăng nhập và màn hình khoá), với tư cách là các trường hợp ngoại lệ của <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Hãy xem thông tin mô tả của chính sách đó để biết định dạng của các mục trong danh sách này. Ví dụ: Khi bạn đặt <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> thành <ph name="WILDCARD_VALUE" />, tất cả yêu cầu sẽ bị chặn và bạn có thể dùng chính sách này để cho phép truy cập vào một danh sách hạn chế gồm các URL. Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số phương pháp truy cập, miền con của các miền khác, cổng hoặc đường dẫn cụ thể theo định dạng được nêu tại (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Bộ lọc cụ thể nhất sẽ xác định việc chặn hay cho phép URL. Chính sách <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> sẽ được ưu tiên hơn chính sách <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Chính sách này chỉ áp dụng cho 1.000 mục.
+
+Việc không đặt chính sách này sẽ không cho phép trường hợp ngoại lệ đối với <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1069489575852947981">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì hệ thống sẽ thiết lập phiên tự động đăng nhập có độ trễ bằng 0 cho tài khoản trên thiết bị. <ph name="PRODUCT_OS_NAME" /> dùng phím tắt Ctrl+Alt+S để bỏ qua phiên tự động đăng nhập và hiển thị màn hình đăng nhập.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể bỏ qua phiên tự động đăng nhập có độ trễ bằng 0 (nếu đã định cấu hình).</translation>
@@ -1156,6 +1159,11 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
       Nếu bạn không đặt chính sách này hoặc đặt chính sách thành false, thì thông tin này sẽ không được báo cáo.
       Nếu bạn đặt thành true, thì thông tin về múi giờ hiện đã đặt của thiết bị sẽ được báo cáo.</translation>
 <translation id="1990784382342293892">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />".</translation>
+<translation id="1995744620192427843">Việc đặt chính sách này sẽ khiến những trang web có URL bị cấm không tải được trong quá trình xác thực người dùng (ví dụ như trên màn hình đăng nhập và màn hình khoá). Chính sách này cung cấp danh sách các mẫu URL chỉ định URL bị cấm. Nếu bạn không đặt chính sách này thì sẽ không có URL nào bị cấm trong quá trình xác thực. Hãy định dạng mẫu URL theo định dạng này (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Bạn có thể xác định các trường hợp ngoại lệ đối với các mẫu này trong chính sách liên quan <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />.
+
+Cần có một số URL nhất định để xác thực thành công, bao gồm cả accounts.google.com. Vì vậy, bạn không nên chặn các URL đó nếu bắt buộc phải đăng nhập trực tuyến.
+
+Lưu ý: Chính sách này không áp dụng với URL JavaScript trong trang có dữ liệu được tải tự động. Nếu bạn đã chặn example.com/abc, thì example.com vẫn tải được URL đó qua XMLHTTPRequest.</translation>
 <translation id="199764499252435679">Cho phép cập nhật thành phần trong <ph name="PRODUCT_NAME" /></translation>
 <translation id="1997943707974344423">Cho phép sử dụng Smart Lock</translation>
 <translation id="1998504583649140526">Cài đặt yêu cầu mạng riêng</translation>
@@ -4845,6 +4853,7 @@ Nếu bạn không đặt chính sách này hoặc danh sách không chứa tệ
       Nếu chế độ này đang Bật, trạng thái hoạt động của thiết bị sẽ được báo cáo cho máy chủ, cho phép máy chủ phát hiện xem thiết bị có kết nối mạng hay không, miễn là người dùng vẫn liên kết.</translation>
 <translation id="5238275681097851753">Cho phép chặn một số nội dung <ph name="FLASH_PLUGIN_NAME" /> nhất định</translation>
 <translation id="5238976843489093540">Buộc bật tính năng Ghép nối nhanh (ghép nối Bluetooth nhanh).</translation>
+<translation id="5239277956452384929">Cho phép truy cập vào một danh sách các URL trong quá trình xác thực</translation>
 <translation id="5245647012663146075">Không cho phép bật Trung tâm điều khiển điện thoại</translation>
 <translation id="5245671702326993331">Cho phép thông báo gốc</translation>
 <translation id="524637053580639111">Chúng tôi đã gỡ bỏ chính sách này trong phiên bản M82, vui lòng sử dụng chính sách DeviceMinimumVersion.
@@ -8265,6 +8274,7 @@ Chính sách này được áp dụng cho Chế độ ẩn danh. Nói cách khá
 <translation id="8244171102276095471">Bật bộ mật mã RC4 trong TLS</translation>
 <translation id="8244525275280476362">Độ trễ tìm nạp tối đa sau khi hủy hiệu lực chính sách</translation>
 <translation id="8245574649143980200">Nếu bạn không đặt hoặc đặt chính sách thành Bật, thì hệ thống sẽ cho phép người dùng xem và dùng mục trong trình đơn tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong trình đơn theo bối cảnh. Nếu bạn đặt chính sách thành Tắt, thì người dùng sẽ không nhìn thấy mục trong trình đơn tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong trình đơn theo bối cảnh khi tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" /> được hỗ trợ.</translation>
+<translation id="8247143534027746614">Chặn hành vi truy cập vào một danh sách các mẫu URL trong quá trình xác thực</translation>
 <translation id="824818544897669723">Bật tính năng xóa nhật ký trình duyệt và nhật ký tải xuống</translation>
 <translation id="8250048892729838843">Chính sách này không được dùng nữa. Nếu bạn đặt chính sách này thành bật hoặc không đặt, thì hệ thống sẽ cho phép thiết bị nhận các biện pháp kiểm soát báo cáo chi tiết.
       Nếu bạn đặt chính sách này thành Tắt thì các thiết bị đã đăng ký sẽ không nhận được các biện pháp kiểm soát báo cáo chi tiết.</translation>

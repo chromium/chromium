@@ -259,6 +259,7 @@
 <translation id="1197935538609051549">停用</translation>
 <translation id="1198066799963193307">低視力語音工具</translation>
 <translation id="119944043368869598">全部清除</translation>
+<translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199814941632954229">正在為這些憑證設定檔佈建憑證</translation>
 <translation id="120069043972472860">無法觀看</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -510,6 +511,7 @@
 <translation id="1418954524306642206">選擇打印機嘅 PPD 檔案</translation>
 <translation id="1420834118113404499">媒體授權</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允許配對</translation>
+<translation id="1421514190500081936">請提供下載這些資料的原因：</translation>
 <translation id="1422159345171879700">載入不安全的指令碼</translation>
 <translation id="1425040197660226913">無法上載。請使用小於 20 MB 的圖片。</translation>
 <translation id="1426410128494586442">是</translation>
@@ -1173,7 +1175,7 @@
 <translation id="1929186283613845153">系統正在掃瞄此檔案。</translation>
 <translation id="1929343511231420085">任何序列連接埠</translation>
 <translation id="1929546189971853037">讀取您已登入的所有裝置上的瀏覽記錄</translation>
-<translation id="1929774028758671973">附近的聯絡人可與你分享內容，系統會詢問你是否同意接收。不過，如果分享及接收內容的裝置都登入 <ph name="USER_EMAIL" />，系統就不會詢問。</translation>
+<translation id="1929774028758671973">此裝置附近的聯絡人可與你分享內容。系統會詢問你是否允許要求。只要裝置已登入 <ph name="USER_EMAIL" />，你就無需另外核准在裝置之間的分享要求。</translation>
 <translation id="1930879306590754738">密碼已從此裝置及您的 Google 帳戶中刪除</translation>
 <translation id="1931152874660185993">未安裝任何組件。</translation>
 <translation id="1931410639376954712">正在安裝 <ph name="DEVICE_OS" /></translation>
@@ -1440,7 +1442,7 @@
 <translation id="2151576029659734873">輸入的分頁索引無效。</translation>
 <translation id="2152281589789213846">在您的設定檔中新增打印機</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
-<translation id="2155473371917268529">目前的瀏覽權限設定為「你的裝置」</translation>
+<translation id="2155473371917268529">目前嘅分享設定係「你嘅裝置」</translation>
 <translation id="2155772377859296191">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">再次執行安全檢查</translation>
@@ -2385,7 +2387,6 @@
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
-<translation id="2908005622251445419">分享訊號</translation>
 <translation id="2908162660801918428">依目錄新增媒體庫</translation>
 <translation id="2908358077082926882">再次按下「<ph name="CURRENTKEY" />」鍵即可移除指派設定並<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">無法連線至 Google 服務。請檢查您的網絡連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -2455,7 +2456,7 @@
 <translation id="2966705348606485669">「<ph name="FOLDER_TITLE" />」書籤資料夾嘅其他選項</translation>
 <translation id="2966937470348689686">管理 Android 偏好設定</translation>
 <translation id="2967926928600500959">符合這些規則的網址會在強制以特定瀏覽器開啟。</translation>
-<translation id="2970766364519518369">附近的指定聯絡人可與你分享內容，系統會詢問你是否同意接收。不過，如果分享及接收內容的裝置都登入 <ph name="USER_EMAIL" />，系統就不會詢問。</translation>
+<translation id="2970766364519518369">此裝置附近的指定聯絡人可與你分享內容。系統會詢問你是否允許要求。只要裝置已登入 <ph name="USER_EMAIL" />，你就無需另外核准在裝置之間的分享要求。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">將單一網站靜音</translation>
 <translation id="2975761176769946178">必須輸入網址</translation>
@@ -3280,6 +3281,7 @@
 <translation id="3699920817649120894">要停用同步處理和個人化功能嗎？</translation>
 <translation id="3700888195348409686">正在顯示 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允許網站追蹤攝錄機位置</translation>
+<translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
 <translation id="3702500414347826004">您的起始網頁已變更，包含 <ph name="URL" />。</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />輸入此示範裝置要設定的零售商名稱和商店編號*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如不知道商店編號，輸入「0000」即可繼續進行「示範模式」安裝。<ph name="END_PARAGRAPH2" />
@@ -3849,7 +3851,6 @@
 <translation id="4150201353443180367">顯示屏</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">與我們分享您最近的遊戲體驗</translation>
-<translation id="4151843924968445052">要分享裝置訊號嗎？</translation>
 <translation id="4152011295694446843">您可在此查看書籤</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="4154664944169082762">指紋</translation>
@@ -4204,6 +4205,7 @@
 <translation id="4460014764210899310">未分組</translation>
 <translation id="4461483878391246134">加一律唔翻譯嘅語言</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
+<translation id="4463530025936541315">選擇繼續，即表示你允許第三方可在這個網路上驗證這部裝置的識別資訊</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
 <translation id="4466839823729730432">在此查看回憶</translation>
 <translation id="4469324811108161144">筆記可以儲存最多 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
@@ -4339,9 +4341,6 @@
 <translation id="4568213207643490790">抱歉，系統不允許在此裝置上使用 Google 帳戶。</translation>
 <translation id="4569747168316751899">閒置時</translation>
 <translation id="4570201855944865395">要求取得此擴充程式的原因：</translation>
-<translation id="4572463055282177066">此設定檔由 <ph name="DOMAIN" /> 管理。您的機構要求您分享裝置訊號，才能繼續使用此受管理的設定檔。
-
-裝置訊號可能包括瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料。</translation>
 <translation id="4572779512957829735">輸入安全密鑰的 PIN</translation>
 <translation id="457386861538956877">更多語言…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
@@ -7993,7 +7992,6 @@
 <translation id="769824636077131955">此文件太大，無法進行安全檢查。可列印文件大小上限為 50 MB。</translation>
 <translation id="7698507637739331665">已封鎖部分項目</translation>
 <translation id="7701040980221191251">沒有</translation>
-<translation id="7701265686005869308">關閉個人檔案</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
 <translation id="7702463352133825032">停止投放去 <ph name="DEVICE_NAME" /></translation>
 <translation id="7702574632857388784">從清單中移除 <ph name="FILE_NAME" /></translation>
@@ -8129,7 +8127,7 @@
 <translation id="7797571222998226653">關閉</translation>
 <translation id="7798504574384119986">查看網絡權限</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
-<translation id="7799650166313181433">只有已登入 <ph name="USER_EMAIL" /> 的裝置能與這部裝置分享內容。不過，如果你使用自己的裝置分享及接收內容，系統就不會詢問是否同意接收。</translation>
+<translation id="7799650166313181433">只有已登入 <ph name="USER_EMAIL" /> 的裝置可與此裝置分享內容。你無需核准在裝置之間的分享要求。</translation>
 <translation id="7800485561443537737">使用 <ph name="DEVICE_TYPE" /> 的流動數據，且流動網絡供應商可能會收取額外費用。這樣做可能會增加電池用量。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="7801679634091975683">您在這裡作出的變更只會套用到 Lacros Chrome 瀏覽器。如要變更 Chrome 瀏覽器設定，請開啟 Chrome 瀏覽器並前往設定。</translation>
@@ -8291,9 +8289,6 @@
 <translation id="7933518760693751884">如要儲存頁面以便稍後閱讀，請按一下「書籤」圖示</translation>
 <translation id="7933634003144813719">管理共用資料夾</translation>
 <translation id="793474285422359265">如果按一下 [取消]，可能會影響瀏覽器資料，且你可能需要回復原廠設定。</translation>
-<translation id="7934988177580964533">此設定檔由您的機構管理。您的機構要求您分享裝置訊號，才能繼續使用此受管理的設定檔。
-
-裝置訊號可能包括瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料。</translation>
 <translation id="793531125873261495">下載虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">進階選項</translation>
@@ -9555,6 +9550,7 @@
 <translation id="8999560016882908256">部分語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">請輕觸 <ph name="DEVICE_TYPE" /> 右側的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="9003185744423389627">連線至「裝置管理工具伺服器」失敗，系統在<ph name="FAILURE_TIME" />報告了以下狀態：「<ph name="STATUS_TEXT" />」</translation>
+<translation id="90033698482696970">要自動掃描可用的 eSIM 卡設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>
 <translation id="9003677638446136377">再次檢查</translation>
 <translation id="9004754973617721124">要清除 <ph name="SITE_NAME" />、當中所有網站，以及網站已安裝的應用程式的網站資料和權限嗎？</translation>
@@ -9569,6 +9565,7 @@
 <translation id="9011262023858991985">正在投放此分頁</translation>
 <translation id="9011393886518328654">版本說明</translation>
 <translation id="9012122671773859802">在滑鼠移動時連續移動螢幕</translation>
+<translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
 <translation id="9013037634206938463">安裝 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空間。如要增加可用空間，請刪除裝置內的檔案。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
 <translation id="901668144954885282">備份至「Google 雲端硬碟」</translation>

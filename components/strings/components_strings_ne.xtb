@@ -101,6 +101,7 @@
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1201895884277373915">यस साइटबाट थप</translation>
 <translation id="1202892408424955784">ट्र्याक गरिएका उत्पादनहरू</translation>
+<translation id="1204184165594298176">{0,plural, =1{फाइल कपी गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल कपी गर्न रोक लगाइएको छ}}</translation>
 <translation id="1204602502194308272">माछा तथा एक्वारियम</translation>
 <translation id="1206967143813997005">प्रारम्भिक हस्ताक्षर त्रुटिपूर्ण छ</translation>
 <translation id="1209206284964581585">अहिलेका लागि लुकाउनुहोस्</translation>
@@ -889,6 +890,7 @@
 <translation id="2916038427272391327">अन्य प्रोग्रामहरू बन्द गर्नुहोस्</translation>
 <translation id="2918922650248459053">डाइभिङ तथा पानीमुनि गरिने क्रियाकलापहरू</translation>
 <translation id="2922350208395188000">सर्भरको प्रमाणपत्र जाँच गर्न सकिँदैन।</translation>
+<translation id="2922792708490674">{0,plural, =1{फाइल डाउनलोड गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल डाउनलोड गर्न रोक लगाइएको छ}}</translation>
 <translation id="2923275635648511531">सन केयर तथा ट्यानिङसम्बन्धी उत्पादनहरू</translation>
 <translation id="292371311537977079">Chrome का सेटिङ</translation>
 <translation id="2925454999967523701">डकुमेन्ट बनाउने बटन, Google डकुमेन्ट प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन यो बटन थिच्नुहोस्</translation>
@@ -1266,6 +1268,7 @@
 <translation id="3713662424819367124">अत्तर तथा सुगन्ध</translation>
 <translation id="3714633008798122362">वेब पात्रो</translation>
 <translation id="3714780639079136834">मोबाइल डेटा वा Wi-Fi लाई अन गर्नुहोस्</translation>
+<translation id="3715016660240337709">{0,plural, =1{फाइल अपलोड गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल अपलोड गर्न रोक लगाइएको छ}}</translation>
 <translation id="3715545959749027023">Chrome ले सुरक्षासँग जोडिएका घटनाहरूका बारेमा रिपोर्ट गर्दा ती घटनासँग सम्बन्धित डेटा तपाईंका एड्मिनलाई पठाइन्छ। यो डेटाअन्तर्गत तपाईंले Chrome मा खोल्नुभएका पेजका URL, फाइलका नाम वा मेटाडेटा तथा तपाईंले आफ्नो डिभाइस, Chrome र वेबमा आधारित एपहरूमा साइन इन गर्न प्रयोग गर्ने युजरनेम समावेश हुन सक्छन्।</translation>
 <translation id="3715597595485130451">Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
@@ -1346,6 +1349,7 @@
 <translation id="3890664840433101773">इमेल थप्नुहोस्</translation>
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3901925938762663762">कार्डको म्याद सकिएको छ</translation>
+<translation id="3905894480064208252">{0,plural, =1{फाइल ट्रान्सफर गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल ट्रान्सफर गर्न रोक लगाइएको छ}}</translation>
 <translation id="3906095212874392000">रूपान्तरण गरिएको टेक्स्टको अन्त्य</translation>
 <translation id="3906954721959377182">ट्याब्लेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1755,6 +1759,7 @@
 <translation id="4757993714154412917">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chromium तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
+<translation id="4761326898079498987">थप विवरणका लागी समीक्षा गर्नुहोस्</translation>
 <translation id="4761869838909035636">Chrome को सुरक्षा जाँच गर्नुहोस्</translation>
 <translation id="4764680219299728632">रेन्ज, कुकटप तथा ओभनहरू</translation>
 <translation id="4764776831041365478"><ph name="URL" /> को वेबपेज अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
@@ -2439,6 +2444,7 @@
 <translation id="6240447795304464094">Google Pay को लोगो</translation>
 <translation id="6241121617266208201">सुझावहरू लुकाउनुहोस्</translation>
 <translation id="624499991300733384">छाप्नका लागि अक्षर मिलाइदिने सेवा</translation>
+<translation id="6251906504834538140">{0,plural, =1{फाइल सार्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल सार्न रोक लगाइएको छ}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="6254436959401408446">यो पृष्ठ खोल्नका लागि पर्याप्त मेमोरी छैन</translation>
 <translation id="6259156558325130047">क्रम परिवर्तन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -3150,6 +3156,7 @@
 <translation id="7682287625158474539">सिपिङ</translation>
 <translation id="7682451652090915298">रग्बी</translation>
 <translation id="7684683146428206649">मेटल</translation>
+<translation id="7684928361160505327">{0,plural, =1{नीतिका कारण <ph name="FILE_NAME" /> लाई रोक लगाइएको छ}other{नीतिका कारण <ph name="FILE_COUNT" /> वटा फाइललाई रोक लगाइएको छ}}</translation>
 <translation id="7687186412095877299">आफ्ना सुरक्षित गरिएका भुक्तानी विधिहरूका सहयोगले भुक्तानी फारमहरू भर्नुहोस्</translation>
 <translation id="7687305263118037187">पुन: प्रयास गर्ने समय समाप्त भयो</translation>
 <translation id="7690647519407127574">Oufuku Hagaki पोस्टकार्ड</translation>
@@ -3365,6 +3372,7 @@
 <translation id="8175796834047840627">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8176440868214972690">यो डिभाइसका एड्मिनले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाउनुभएको छ।</translation>
 <translation id="817820454357658398">महिलालाई सफा रहन सघाउने उत्पादनहरू</translation>
+<translation id="818254048113802060">{0,plural, =1{सामग्रीका कारण <ph name="FILE_NAME" /> लाई रोक गरिएको छ}other{सामग्रीका कारण <ph name="FILE_COUNT" /> वटा फाइललाई रोक लगाइएको छ}}</translation>
 <translation id="8183800802493617952">पारिवारिक खेल तथा गतिविधि</translation>
 <translation id="8184538546369750125">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (अनुमति दिनुहोस्)</translation>
 <translation id="8186706823560132848">सफ्टवेयर</translation>
@@ -3416,6 +3424,7 @@
 <translation id="8265992338205884890">देखिने डेटा</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> रूपमा साइन इन गर्दै</translation>
 <translation id="8269242089528251720">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध गरिएका प्रतिहरू</translation>
+<translation id="8269703227894255363">{0,plural, =1{फाइल खोल्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल खोल्न रोक लगाइएको छ}}</translation>
 <translation id="826991611711124547">क्रुज तथा चार्टर गरिएका जलयातायातका साधन</translation>
 <translation id="8270242299912238708">PDF कागजातहरू</translation>
 <translation id="8275952078857499577">यो साइट अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>

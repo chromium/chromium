@@ -39,6 +39,7 @@
 <translation id="2767464022270041271">Няма запазени пароли. Google Мениджър на пароли може да проверява паролите ви, когато ги запазите.</translation>
 <translation id="2840432500933227975">Отворете настройките на Chrome на устройство с iOS, докоснете „Стандартно приложение за браузър“ и изберете Chrome.</translation>
 <translation id="2869959624320573933">Влизане в Chrome</translation>
+<translation id="2876628302275096482">Научете повече за това <ph name="BEGIN_LINK" />как Chrome се грижи за поверителността на данните ви<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Тъй като излизате от профил, управляван от <ph name="SIGNOUT_MANAGED_DOMAIN" />, данните ви в Chrome ще бъдат изтрити от това устройство, но ще останат в профила ви в Google.</translation>
 <translation id="3167189358072330585">Профилът ви не е съвместим с Google Chrome. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
@@ -79,6 +80,7 @@
 <translation id="5162467219239570114">Chrome не е актуален. Ако не виждате налични актуализации в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, е възможно устройството ви да не поддържа новите версии на Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome не може да използва камерата ви, защото е заета от друго приложение</translation>
 <translation id="5395376160638294582">Уверете се, че винаги можете да използвате данните в Chrome в профила си в Google</translation>
+<translation id="5439191312780166229">Предупреждава ви за опасни сайтове, включително такива, които не са били известни на Google, като анализира повече данни от сайтовете в сравнение със стандартната защита. Можете да пропуснете предупрежденията от Chrome.</translation>
 <translation id="5460571915754665838">4. Изберете Chrome.</translation>
 <translation id="5492504007368565877">Google Мениджър на пароли не може да провери паролите ви.</translation>
 <translation id="5527026824954593399">Докоснете „Преглед в Google Карти в Chrome“.</translation>

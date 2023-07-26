@@ -39,6 +39,7 @@
 <translation id="2767464022270041271">Хадгалсан ямар ч нууц үг алга. Google Password Manager таныг нууц үгнүүдээ хадгалсан үед тэдгээрийг шалгах боломжтой.</translation>
 <translation id="2840432500933227975">iOS-т Chrome-н тохиргоог нээгээд дараа нь "Хөтчийн өгөгдмөл АПП"-ыг товшоод Chrome-г сонгоно уу.</translation>
 <translation id="2869959624320573933">Chrome-д нэвтэрнэ үү</translation>
+<translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome таны өгөгдлийг хэрхэн хувийн байлгадаг<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авах</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />-г сонгоно уу</translation>
 <translation id="3030414234702425231">Та <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chrome-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
 <translation id="3167189358072330585">Таны бүртгэл Google Chrome-д ажиллахгүй байна. Нэвтрэхийн тулд та домайн админтайгаа холбогдох, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглаарай.</translation>
@@ -79,6 +80,7 @@
 <translation id="5162467219239570114">Chrome хуучирсан байна. <ph name="BEGIN_LINK" />Апп дэлгүүр<ph name="END_LINK" />-т шинэчлэлт байхгүй бол төхөөрөмж тань Chrome-н шинэ хувилбарыг цаашид дэмжихгүй байж болзошгүй.</translation>
 <translation id="5389212809648216794">Таны камерыг өөр апп ашиглаж байгаа тул үүнийг Google Chrome ашиглах боломжгүй</translation>
 <translation id="5395376160638294582">Та Google Бүртгэлдээ Chrome-н өгөгдлийг үргэлж ашиглах боломжтой болохоо баталгаажуулна уу</translation>
+<translation id="5439191312780166229">Стандарт хамгаалалтаас илүүтэйгээр сайтуудын бусад өгөгдлийг задлан шинжилснээр танд аюултай сайтуудын талаар сануулах бөгөөд эдгээрт Google-н өмнө нь мэдээгүй сайт ч багтана. Та Chrome-н сануулгыг алгасахаар сонгох боломжтой.</translation>
 <translation id="5460571915754665838">4. Chrome-г сонгоно уу</translation>
 <translation id="5492504007368565877">Google Password Manager таны нууц үгнүүдийг шалгах боломжгүй.</translation>
 <translation id="5527026824954593399">“Chrome-н Google Газрын зургаар харах”-ыг товшино уу.</translation>

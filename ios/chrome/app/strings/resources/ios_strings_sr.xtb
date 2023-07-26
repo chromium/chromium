@@ -425,6 +425,7 @@
 <translation id="3533436815740441613">Нова картица</translation>
 <translation id="3540141921715814660">Додај у обележиваче</translation>
 <translation id="3551320343578183772">Затвори картицу</translation>
+<translation id="3554280880535219766">Прикажи траку за адресу у дну</translation>
 <translation id="3565207542107370586">Обриши податке прегледања…</translation>
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
 <translation id="3577555362230509265">Користите Chrome у другим апликацијама.</translation>
@@ -593,6 +594,7 @@
 <translation id="469300482518076788">Затвори картицу</translation>
 <translation id="4697071790493980729">Није пронађен ниједан резултат</translation>
 <translation id="470966556546083668">Не укључуј синхронизацију</translation>
+<translation id="4711809265250406889">Када је укључено</translation>
 <translation id="4737560986434232178">Претражите недавне картице</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4746926359847517643">Увек можете да их вратите из историје.</translation>
@@ -620,6 +622,7 @@
 <translation id="4844899002472726590">Прегледајте и мењајте теме које вас интересују</translation>
 <translation id="4848999860252535517">Желите да избришете лозинку за <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Подесите шифру</translation>
+<translation id="4856498338299082007">На Google налогу</translation>
 <translation id="4858786880085262208">Надоградите на HTTPS када је то могуће. Безбедни сајтови могу да уграде садржај који није безбедан.</translation>
 <translation id="4860895144060829044">Позовите</translation>
 <translation id="4872323082491632254">Проверите лозинке</translation>
@@ -647,6 +650,7 @@
 <translation id="5017828934289857214">Подсети ме касније</translation>
 <translation id="5037676449506322593">Изабери све</translation>
 <translation id="5039804452771397117">Дозволи</translation>
+<translation id="5050294464480863218">Шта треба имати у виду</translation>
 <translation id="5056446788882570708">Проблеми су пронађени <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Потврди</translation>
 <translation id="5062321486222145940">Инсталирај Google диск</translation>
@@ -741,6 +745,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5684761169742812828">Ова лозинка је откривена при повреди података на интернету. Ако тренутно немате времена да је промените, Google препоручује да задржите ово упозорење да бисте се касније подсетили.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Сада се приказује 1 Chrome прозор}one{Сада се приказује {count} Chrome прозор}few{Сада се приказују {count} Chrome прозора}other{Сада се приказује {count} Chrome прозора}}</translation>
 <translation id="5701270923492462699">Приступ камери је дозвољен</translation>
+<translation id="5702108177581350218">Кад делите копију корисничког имена и лозинке, члан породице може да их унесе помоћу Google менаџера лозинки.</translation>
 <translation id="5704908597376970822">Пријављивање није успело.</translation>
 <translation id="5706552126692816153">Последња активност: пре 1 дан</translation>
 <translation id="5711039611392265845">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељку <ph name="BEGIN_LINK" />Синхронизација и Google услуге<ph name="END_LINK" />.</translation>
@@ -755,6 +760,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="574762237186762643">Догађаји</translation>
 <translation id="5755162682436943950">Одјављени сте. Отвара дијалог за пријављивање и укључивање синхронизације.</translation>
 <translation id="5758631781033351321">Овде ћете пронаћи листу за читање</translation>
+<translation id="5760258696409739442">Прикажи траку за адресу у врху</translation>
 <translation id="5762370665605786758">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а.
 
 Само неко ко има приступну фразу може да чита шифроване податке. Приступна фраза се не шаље Google-у нити се чува на Google-у. Ако заборавите приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />обришите Chrome податке на налогу<ph name="END_LINK" />.</translation>
@@ -771,6 +777,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Сачувајте лозинке, начине плаћања и адресе за Chrome да бисте их аутоматски попунили касније.</translation>
 <translation id="5834415013958049700">Слика Објектива коју сте копирали</translation>
+<translation id="5844284118433003733">Кад сте пријављени, ови подаци су повезани са вашим Google налогом да бисмо вас заштитили у свим Google услугама, на пример, повећањем заштите у Gmail-у после безбедносног инцидента.</translation>
 <translation id="5846482154967366008">Претраживач</translation>
 <translation id="5854790677617711513">Старије од 30 дана</translation>
 <translation id="5857090052475505287">Нови фолдер</translation>
@@ -804,6 +811,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6011308810877101166">Побољшајте предлоге за претрагу</translation>
 <translation id="6012140227487808125">Шифрује се…</translation>
 <translation id="6021332621416007159">Отвори у...</translation>
+<translation id="6027619584715411062">Пријавите се да бисте приступали обележивачима, лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="6027945736510816438">Да ли сте мислили <ph name="WEBSITE" />?</translation>
 <translation id="6036215966221662377">Обриши податке прегледања</translation>
 <translation id="6036514205982097558">Све картице у једном прегледачу</translation>
@@ -855,6 +863,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
+<translation id="629730747756840877">налог</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
 <translation id="6324669097367352121">Подешавања пријављивања</translation>
 <translation id="6331180460633101391">Лозинке које користите за више налога: <ph name="COUNT" /></translation>
@@ -1106,6 +1115,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
 <translation id="777572173400717978">{count,plural, =1{Додат је обележивач}one{Додати су обележивачи}few{Додати су обележивачи}other{Додати су обележивачи}}</translation>
+<translation id="777637629667389858">Кад сте пријављени, штити вас у свим Google услугама.</translation>
 <translation id="7781011649027948662">Желите да преведете страницу?</translation>
 <translation id="7781069478569868053">Страница нове картице</translation>
 <translation id="7781829728241885113">Јуче</translation>
@@ -1282,6 +1292,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8840513115188359703">Нећемо вас одјавити са Google налога.</translation>
 <translation id="8843129975935593190">Ваша организација ограничава садржај који можете да синхронизујете.</translation>
 <translation id="8849001918648564819">Скривено</translation>
+<translation id="8855242995793521265">Не успорава приметно прегледач или уређај.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
 <translation id="8870413625673593573">Недавно затворено</translation>
 <translation id="8876882697946675716">Синхронизујте уређаје</translation>

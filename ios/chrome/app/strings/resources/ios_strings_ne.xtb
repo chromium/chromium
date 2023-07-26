@@ -425,6 +425,7 @@
 <translation id="3533436815740441613">नयाँ ट्याब</translation>
 <translation id="3540141921715814660">"बुकमार्कहरू" मा हाल्नुहोस्</translation>
 <translation id="3551320343578183772">ट्याब बन्द गर्नुहोस्</translation>
+<translation id="3554280880535219766">तलको एड्रेस बार देखाइयोस्</translation>
 <translation id="3565207542107370586">ब्राउजिङ डेटा मेटाउनुहोस्…</translation>
 <translation id="3575234738189584619">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="3577555362230509265">अन्य एपहरूमा Chrome प्रयोग गर्नुहोस्।</translation>
@@ -593,6 +594,7 @@
 <translation id="469300482518076788">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="4697071790493980729">कुनै पनि परिणाम फेला परेन</translation>
 <translation id="470966556546083668">सिंक गर्ने सुविधा अन नगरियोस्</translation>
+<translation id="4711809265250406889">अन भएका बेला</translation>
 <translation id="4737560986434232178">हालसालै खोलिएका ट्याबहरू खोज्नुहोस्</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4746926359847517643">तपाईं जुनसुकै बेला हिस्ट्रीमा गई ती ट्याबहरू फेरि खोल्न सक्नुहुन्छ।</translation>
@@ -620,6 +622,7 @@
 <translation id="4844899002472726590">आफूलाई रुचि भएका विषयहरू हेर्नुहोस् र बदल्नुहोस्</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> को पासवर्ड मेटाउने हो?</translation>
 <translation id="4854345657858711387">कुनै पासकोड सेट गर्नुहोस्‌</translation>
+<translation id="4856498338299082007">तपाईंको Google खातामा सेभ गरिएका</translation>
 <translation id="4858786880085262208">सम्भव हुँदा अपग्रेड गरी HTTPS बनाइयोस्। सुरक्षित साइटहरूले असुरक्षित खालका सामग्री इम्बेड गर्न सक्छन्।</translation>
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
 <translation id="4872323082491632254">पासवर्डहरू जाँच्नुहोस्</translation>
@@ -647,6 +650,7 @@
 <translation id="5017828934289857214">मलाई पछि स्मरण गराइयोस्</translation>
 <translation id="5037676449506322593">सबै चयन गर्नुहोस्</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
+<translation id="5050294464480863218">विचार गर्नु पर्ने कुराहरू</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> वटा समस्या भेटिए।</translation>
 <translation id="5059136629401106827">ठिक छ</translation>
 <translation id="5062321486222145940">Google ड्राइभ स्थापना गर्नुहोस्</translation>
@@ -741,6 +745,7 @@
 <translation id="5684761169742812828">यो पासवर्ड इन्टरनेटमा भएको डेटा चोरीको घटनामा खुलासा गरिएको छ। तपाईंसँग अहिले नै यो पासवर्ड बदल्ने समय छैन भने तपाईं पछि यो पासवर्ड बदल्ने कुरा सम्झनुहोस् भन्नाका लागि Google ले तपाईंलाई यो चेतावनी सेभ गर्न सिफारिस गर्छ।</translation>
 <translation id="5690398455483874150">{count,plural, =1{अहिले Chrome को एउटा विन्डो देखाइँदै छ}other{अहिले Chrome का {count} वटा विन्डो देखाइँदै छन्}}</translation>
 <translation id="5701270923492462699">क्यामेरा प्रयोग गर्ने अनुमति दिइएको छ</translation>
+<translation id="5702108177581350218">तपाईंले आफ्नो युजरनेम र पासवर्डको कपी सेयर गर्नुभयो भने तपाईंका परिवारका सदस्यहरू Google पासवर्ड म्यानेजर प्रयोग गरी ती जानकारी भर्न सक्छन्।</translation>
 <translation id="5704908597376970822">साइन इन गर्न सकिएन।</translation>
 <translation id="5706552126692816153">१ दिनअघि सक्रिय</translation>
 <translation id="5711039611392265845">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />सिंक तथा Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>
@@ -755,6 +760,7 @@
 <translation id="574762237186762643">कार्यक्रमहरू</translation>
 <translation id="5755162682436943950">साइन आउट गरिएको छ। साइन इन गर्न र सिंक गर्ने सुविधा अन गर्न डायलग खोल्छ।</translation>
 <translation id="5758631781033351321">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
+<translation id="5760258696409739442">सिरानको एड्रेस बार देखाइयोस्</translation>
 <translation id="5762370665605786758">पासफ्रेज इन्क्रिप्सनमा Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।
 
 तपाईंको पासफ्रेज भएको व्यक्ति मात्र तपाईंको इन्क्रिप्ट गरिएको जानकारी पढ्न सक्छ। उक्त पासफ्रेज Google मा पठाइँदैन वा Google ले उक्त पासफ्रेज भण्डारण गरेर राख्दैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />आफ्नो खातामा गएर Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
@@ -771,6 +777,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Chrome ले पछि अटोफिल प्रयोग गर्न सकोस् भन्नाका लागि पासवर्ड, भुक्तानी विधि र ठेगानाहरू सेभ गर्नुहोस्।</translation>
 <translation id="5834415013958049700">तपाईंले कपी गरेको लेन्स इमेज</translation>
+<translation id="5844284118433003733">तपाईं साइन इन हुनुभएका बेला तपाईंलाई Google का सेवाहरूमा सुरक्षित राख्न (उदाहरणका लागि सुरक्षासम्बन्धी व्यवस्थापछि Gmail मा सुरक्षा बढाउन) यो डेटा तपाईंको Google खातासँग लिंक गरिन्छ।</translation>
 <translation id="5846482154967366008">सर्च इन्जिन</translation>
 <translation id="5854790677617711513">३० दिनभन्दा पुरानो</translation>
 <translation id="5857090052475505287">नयाँ फोल्डर</translation>
@@ -804,6 +811,7 @@
 <translation id="6011308810877101166">खोजसम्बन्धी सुझावहरूको गुणस्तर सुधार गर्नुहोस्</translation>
 <translation id="6012140227487808125">इन्क्रिप्सन गर्दै ...</translation>
 <translation id="6021332621416007159">यसमा खोल्नुहोस्...</translation>
+<translation id="6027619584715411062">आफ्ना बुकमार्क, पासवर्डलगायतका कुरा आफ्ना सबै डिभाइसहरूमा प्राप्त गर्न साइन इन गर्नुहोस्।</translation>
 <translation id="6027945736510816438">तपाईंले <ph name="WEBSITE" /> लेख्न खोज्नुभएको हो?</translation>
 <translation id="6036215966221662377">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="6036514205982097558">एउटै ब्राउजरमा तपाईंका सबै ट्याबहरू</translation>
@@ -855,6 +863,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> अनफलो गरियो</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
+<translation id="629730747756840877">खाता</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
 <translation id="6324669097367352121">सेटिङहरूमा साइन इन गर्नुहोस्</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> वटा पासवर्ड पहिले नै प्रयोग गरिएका छन्</translation>
@@ -1106,6 +1115,7 @@
 <translation id="7765158879357617694">सार्नुहोस्</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="777572173400717978">{count,plural, =1{बुकमार्क गरियो}other{बुकमार्क गरियो}}</translation>
+<translation id="777637629667389858">तपाईं साइन इन हुनुभएका अवस्थामा Google का सेवाहरूमा तपाईंको जानकारी सुरक्षित राख्छ।</translation>
 <translation id="7781011649027948662">यो पृष्ठ अनुवाद गर्ने हो?</translation>
 <translation id="7781069478569868053">नयाँ ट्याब पृष्ठ</translation>
 <translation id="7781829728241885113">हिजो</translation>
@@ -1282,6 +1292,7 @@
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="8843129975935593190">तपाईंको सङ्गठनले तपाईंले सिंक गर्न पाउने कुराहरूका सम्बन्धमा सीमा तोकेको छ।</translation>
 <translation id="8849001918648564819">लुकाइएको</translation>
+<translation id="8855242995793521265">तपाईंको ब्राउजर वा डिभाइसलाई महसुस हुने गरी सुस्त बनाउँदैन।</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ट्याब}other{{count} वटा ट्याब}}</translation>
 <translation id="8870413625673593573">हालै बन्द गरिएको</translation>
 <translation id="8876882697946675716">आफ्ना डिभाइसहरू सिंक गरिराख्नुहोस्</translation>

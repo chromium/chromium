@@ -257,6 +257,7 @@
 <translation id="1197935538609051549">停用</translation>
 <translation id="1198066799963193307">低視能語音工具</translation>
 <translation id="119944043368869598">全部清除</translation>
+<translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199814941632954229">正在為這些憑證設定檔佈建憑證</translation>
 <translation id="120069043972472860">無法觀看</translation>
 <translation id="1201402288615127009">繼續</translation>
@@ -508,6 +509,7 @@
 <translation id="1418954524306642206">請瀏覽並指定印表機 PPD</translation>
 <translation id="1420834118113404499">媒體授權</translation>
 <translation id="1420920093772172268">如要允許配對，請<ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421514190500081936">請提供下載這項資料的原因：</translation>
 <translation id="1422159345171879700">載入不安全的指令碼</translation>
 <translation id="1425040197660226913">無法上傳，請使用小於 20 MB 的圖片。</translation>
 <translation id="1426410128494586442">是</translation>
@@ -2370,7 +2372,6 @@
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連上「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
-<translation id="2908005622251445419">分享信號</translation>
 <translation id="2908162660801918428">依目錄新增媒體庫</translation>
 <translation id="2908358077082926882">再次按下「<ph name="CURRENTKEY" />」鍵即可移除指派設定並<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">無法連上 Google 服務。請檢查網路連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -3265,6 +3266,7 @@
 <translation id="3699920817649120894">要停用同步處理和個人化功能嗎？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">禁止網站追蹤攝影機位置</translation>
+<translation id="3701515417135397388">在密碼因資料侵害事件而外洩時發出警告</translation>
 <translation id="3702500414347826004">你的起始網頁已變更為包含 <ph name="URL" />。</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />為這部正在設定的展示模式裝置輸入零售商名稱和商店編號*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果不知道商店編號，輸入「0000」即可繼續進行展示模式安裝作業。<ph name="END_PARAGRAPH2" />
@@ -3833,7 +3835,6 @@
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">請與我們分享你近期的遊戲體驗</translation>
-<translation id="4151843924968445052">要分享裝置信號嗎？</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="4154664944169082762">指紋</translation>
@@ -4188,6 +4189,7 @@
 <translation id="4460014764210899310">取消分組</translation>
 <translation id="4461483878391246134">新增一律不翻譯的語言</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
+<translation id="4463530025936541315">選擇繼續，即表示你允許第三方可在這個網路上驗證這部裝置的識別資訊</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
 <translation id="4466839823729730432">在此查看回憶集錦</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
@@ -4322,7 +4324,6 @@
 <translation id="4568213207643490790">很抱歉，你無法使用 Google 帳戶登入這個裝置。</translation>
 <translation id="4569747168316751899">閒置時</translation>
 <translation id="4570201855944865395">要求取得這個擴充功能的理由：</translation>
-<translation id="4572463055282177066">這個設定檔是由 <ph name="DOMAIN" /> 管理。貴機構要求你必須分享裝置信號，才能繼續使用這個受管理的設定檔。裝置信號可能包括瀏覽器、OS、裝置、已安裝軟體和檔案的相關資訊。</translation>
 <translation id="4572779512957829735">輸入安全金鑰的 PIN 碼</translation>
 <translation id="457386861538956877">更多…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
@@ -7973,7 +7974,6 @@
 <translation id="769824636077131955">這份文件的大小過大，無法進行安全性檢查。可列印文件大小上限為 50 MB。</translation>
 <translation id="7698507637739331665">已封鎖部分項目</translation>
 <translation id="7701040980221191251">無</translation>
-<translation id="7701265686005869308">關閉設定檔</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
 <translation id="7702463352133825032">停止投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="7702574632857388784">從清單中移除 <ph name="FILE_NAME" /></translation>
@@ -8271,7 +8271,6 @@
 <translation id="7933518760693751884">如要儲存頁面以便稍後閱讀，請按一下「書籤」圖示</translation>
 <translation id="7933634003144813719">管理共用資料夾</translation>
 <translation id="793474285422359265">如果點選「取消」，可能會影響瀏覽器資料，而且可能需要恢復原廠設定。</translation>
-<translation id="7934988177580964533">這個設定檔是由貴機構管理。貴機構要求你必須分享裝置信號，才能繼續使用這個受管理的設定檔。裝置信號可能包括瀏覽器、OS、裝置、已安裝軟體和檔案的相關資訊。</translation>
 <translation id="793531125873261495">下載虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">進階選項</translation>
@@ -9533,6 +9532,7 @@
 <translation id="8999560016882908256">區段語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">請輕觸「<ph name="DEVICE_TYPE" />」右側的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="9003185744423389627">連線至裝置管理工具伺服器失敗，狀態顯示為「<ph name="STATUS_TEXT" />」在「<ph name="FAILURE_TIME" />」的時候</translation>
+<translation id="90033698482696970">要自動掃描可用的 eSIM 卡設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>
 <translation id="9003677638446136377">重新檢查</translation>
 <translation id="9004754973617721124">針對 <ph name="SITE_NAME" />、其底下所有網站以及已安裝的應用程式，要清除相關網站資料和權限嗎？</translation>
@@ -9547,6 +9547,7 @@
 <translation id="9011262023858991985">正在投放這個分頁</translation>
 <translation id="9011393886518328654">版本資訊</translation>
 <translation id="9012122671773859802">跟著滑鼠游標持續移動畫面</translation>
+<translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
 <translation id="9013037634206938463">安裝 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
 <translation id="901668144954885282">備份到 Google 雲端硬碟</translation>

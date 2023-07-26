@@ -39,6 +39,7 @@
 <translation id="2767464022270041271">Нет сохраненных паролей. Чтобы Google Менеджер паролей мог проверять пароли, сохраните их.</translation>
 <translation id="2840432500933227975">Откройте настройки Chrome в iOS, затем нажмите "Приложение браузера по умолчанию" и выберите Chrome.</translation>
 <translation id="2869959624320573933">Вход в Chrome</translation>
+<translation id="2876628302275096482">Подробнее о том, <ph name="BEGIN_LINK" />как Chrome обеспечивает конфиденциальность ваших данных<ph name="END_LINK" />…</translation>
 <translation id="2957447865124070833">Выберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Вы выходите из аккаунта, которым управляет администратор домена <ph name="SIGNOUT_MANAGED_DOMAIN" />. Обратите внимание, что данные Chrome будут удалены с устройства, но останутся в вашем аккаунте Google.</translation>
 <translation id="3167189358072330585">Ваш аккаунт не поддерживается в Google Chrome. Обратитесь к администратору домена или войдите с помощью обычного аккаунта Google.</translation>
@@ -79,6 +80,7 @@
 <translation id="5162467219239570114">Версия Chrome устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome не может получить доступ к камере, поскольку она используется другим приложением.</translation>
 <translation id="5395376160638294582">Обеспечьте доступ к данным Chrome в аккаунте Google.</translation>
+<translation id="5439191312780166229">Предупреждает об опасных сайтах, даже если раньше они были неизвестны Google. При этом анализируется больше данных по сравнению со стандартной защитой. Вы можете пропускать такие уведомления Chrome.</translation>
 <translation id="5460571915754665838">4. Выберите Chrome.</translation>
 <translation id="5492504007368565877">Google Менеджеру паролей не удается проверить ваши пароли</translation>
 <translation id="5527026824954593399">Нажмите "Посмотреть на Google Картах в Chrome".</translation>
