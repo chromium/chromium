@@ -925,8 +925,17 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
   if (should_attach_template) {
-    // Attach a normal template element.
+    // Attach a normal template element, or the opening tag of a non-streaming
+    // declarative shadow root.
     AttachLater(CurrentNode(), template_element);
+    DocumentFragment* template_content =
+        template_element->GetDeclarativeShadowRootType() ==
+                DeclarativeShadowRootType::kNone
+            ? template_element->content()
+            : template_element->DeclarativeShadowContent();
+    if (pending_dom_parts_ && template_content) {
+      pending_dom_parts_->PushPartRoot(&template_content->getPartRoot());
+    }
   }
   open_elements_.Push(template_stack_item);
 }
@@ -1371,15 +1380,24 @@ void HTMLConstructionSite::FosterParent(Node* node) {
   QueueTask(task, true);
 }
 
+void HTMLConstructionSite::FinishedTemplateElement(
+    DocumentFragment* content_fragment) {
+  if (!pending_dom_parts_) {
+    return;
+  }
+  PartRoot* last_root = pending_dom_parts_->PopPartRoot();
+  CHECK_EQ(&content_fragment->getPartRoot(), last_root);
+}
+
 HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
     ContainerNode* attachment_root) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (Document* document = DynamicTo<Document>(attachment_root)) {
-    document_part_root_ = &document->getPartRoot();
+    part_root_stack_.push_back(&document->getPartRoot());
   } else {
     DocumentFragment* fragment = DynamicTo<DocumentFragment>(attachment_root);
     CHECK(fragment) << "Attachment root should be Document or DocumentFragment";
-    document_part_root_ = &fragment->getPartRoot();
+    part_root_stack_.push_back(&fragment->getPartRoot());
   }
 }
 
@@ -1404,18 +1422,20 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
   // any dependant Parts) valid.
   ChildNodePart* new_part = MakeGarbageCollected<ChildNodePart>(
       *CurrentPartRoot(), previous_sibling, previous_sibling, metadata);
-  child_node_part_stack_.push_back(new_part);
+  part_root_stack_.push_back(new_part);
 }
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
     Node& next_sibling) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (child_node_part_stack_.empty()) {
+  PartRoot* current_part_root = CurrentPartRoot();
+  if (current_part_root->IsDocumentPartRoot()) {
     // Mismatched opening/closing child parts.
     return;
   }
-  ChildNodePart* last_child_node_part = child_node_part_stack_.back();
+  ChildNodePart* last_child_node_part =
+      static_cast<ChildNodePart*>(current_part_root);
   last_child_node_part->setNextSibling(next_sibling);
-  child_node_part_stack_.pop_back();
+  part_root_stack_.pop_back();
 }
 
 void HTMLConstructionSite::PendingDOMParts::MaybeConstructNodePart(
@@ -1433,10 +1453,19 @@ void HTMLConstructionSite::PendingDOMParts::MaybeConstructNodePart(
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
-  if (child_node_part_stack_.empty()) {
-    return document_part_root_;
-  }
-  return child_node_part_stack_.back().Get();
+  CHECK(!part_root_stack_.empty());
+  return part_root_stack_.back().Get();
+}
+
+void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
+  return part_root_stack_.push_back(root);
+}
+
+PartRoot* HTMLConstructionSite::PendingDOMParts::PopPartRoot() {
+  CHECK(!part_root_stack_.empty());
+  PartRoot* popped = part_root_stack_.back();
+  part_root_stack_.pop_back();
+  return popped;
 }
 
 void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {
@@ -1446,8 +1475,7 @@ void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {
 
 void HTMLConstructionSite::PendingDOMParts::Trace(Visitor* visitor) const {
   visitor->Trace(pending_node_part_comment_node_);
-  visitor->Trace(child_node_part_stack_);
-  visitor->Trace(document_part_root_);
+  visitor->Trace(part_root_stack_);
 }
 
 }  // namespace blink

@@ -18,7 +18,7 @@ PASS Cloning ProcessingInstruction (DocumentFragment)
 PASS DOM mutation support (DocumentFragment)
 PASS ChildNodePart children manipulation (DocumentFragment)
 PASS Basic declarative DOM Parts (Main Document)
-FAIL Basic declarative DOM Parts (Template) assert_equals: declarative root should have two parts: lengths differ expected 2 but got 0
+PASS Basic declarative DOM Parts (Template)
 FAIL Basic declarative DOM Parts (Clone) assert_equals: declarative root should have two parts: lengths differ expected 2 but got 0
 Harness: the test ran to completion.
 

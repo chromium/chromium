@@ -1081,10 +1081,7 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
     DCHECK(template_stack_item->IsElementNode());
     HTMLTemplateElement* template_element =
         DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement());
-    // 9. If the start tag for the declarative template element did not have an
-    // attribute with the name "shadowroot" whose value was an ASCII
-    // case-insensitive match for the strings "open" or "closed", then stop this
-    // algorithm.
+    DocumentFragment* template_content = nullptr;
     if (template_element->IsDeclarativeShadowRoot()) {
       if (shadow_host_stack_item->GetNode() ==
           tree_.OpenElements()->RootNode()) {
@@ -1096,6 +1093,7 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
         DCHECK(shadow_host_stack_item);
         DCHECK(shadow_host_stack_item->IsElementNode());
         if (template_element->IsNonStreamingDeclarativeShadowRoot()) {
+          template_content = template_element->DeclarativeShadowContent();
           auto focus_delegation = template_stack_item->GetAttributeItem(
                                       html_names::kShadowrootdelegatesfocusAttr)
                                       ? FocusDelegation::kDelegateFocus
@@ -1113,6 +1111,11 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
                   focus_delegation, slot_assignment_mode);
         }
       }
+    } else {
+      template_content = template_element->content();
+    }
+    if (template_content) {
+      tree_.FinishedTemplateElement(template_content);
     }
   }
   return true;

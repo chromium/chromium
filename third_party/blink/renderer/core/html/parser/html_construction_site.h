@@ -91,7 +91,6 @@ enum class WhitespaceMode {
 };
 
 class AtomicHTMLToken;
-class ChildNodePart;
 class CustomElementDefinition;
 class Document;
 class Element;
@@ -213,6 +212,8 @@ class HTMLConstructionSite final {
   ParserContentPolicy GetParserContentPolicy() {
     return parser_content_policy_;
   }
+
+  void FinishedTemplateElement(DocumentFragment* content_fragment);
 
   class RedirectToFosterParentGuard {
     STACK_ALLOCATED();
@@ -343,14 +344,15 @@ class HTMLConstructionSite final {
     void AddChildNodePartEnd(Node& next_sibling);
     void MaybeConstructNodePart(Node& last_node);
     PartRoot* CurrentPartRoot() const;
+    void PushPartRoot(PartRoot* root);
+    PartRoot* PopPartRoot();
 
     void Trace(Visitor*) const;
 
    private:
     Member<Comment> pending_node_part_comment_node_;
     Vector<String> pending_node_part_metadata_;
-    HeapVector<Member<ChildNodePart>> child_node_part_stack_;
-    Member<DocumentPartRoot> document_part_root_;
+    HeapVector<Member<PartRoot>> part_root_stack_;
   };
 
   // Only non-nullptr if RuntimeEnabledFeatures::DOMPartsAPIEnabled().

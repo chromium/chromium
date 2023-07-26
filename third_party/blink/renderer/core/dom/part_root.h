@@ -35,7 +35,9 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   void AddPart(Part& new_part);
   void RemovePart(Part& part);
   void MarkPartsDirty() { cached_parts_list_dirty_ = true; }
+
   virtual Document& GetDocument() const = 0;
+  bool IsDocumentPartRoot() { return !GetParentPartRoot(); }
 
   // Utilities to convert to/from the IDL union.
   static PartRootUnion* GetUnionFromPartRoot(PartRoot* root);
@@ -51,7 +53,6 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
  protected:
   PartRoot() = default;
   virtual const PartRoot* GetParentPartRoot() const = 0;
-  bool IsDocumentPartRoot() { return !GetParentPartRoot(); }
 
  private:
   const DocumentPartRoot* GetDocumentPartRoot();
