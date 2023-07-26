@@ -755,9 +755,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
     [self configureCell:gridCell withItem:item atIndex:itemIndex];
   }
-  // Set the z index of cells so that lower rows are moving behind the upper
-  // rows during transitions between grid and horizontal layouts.
-  cell.layer.zPosition = self.items.count - itemIndex;
 
   if (![self.pointerInteractionCells containsObject:cell]) {
     [cell addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
@@ -765,6 +762,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     // the number of reusable cells in memory.
     [self.pointerInteractionCells addObject:cell];
   }
+
   return cell;
 }
 
@@ -1647,7 +1645,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
         }];
   }
 
-  [self updateVisibleCellZIndex];
   [self updateVisibleCellIdentifiers];
 }
 
@@ -2000,19 +1997,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-// Updates the ZIndex of the visible cells to have the cells of the upper rows
-// be above the cell of the lower rows.
-- (void)updateVisibleCellZIndex {
-  for (NSIndexPath* indexPath in self.collectionView
-           .indexPathsForVisibleItems) {
-    // Set the z index of cells so that lower rows are moving behind the upper
-    // rows during transitions between grid and horizontal layouts.
-    UICollectionViewCell* cell =
-        [self.collectionView cellForItemAtIndexPath:indexPath];
-    cell.layer.zPosition = self.items.count - indexPath.item;
-  }
-}
-
 // Update visible cells identifier, following a reorg of cells.
 - (void)updateVisibleCellIdentifiers {
   for (NSIndexPath* indexPath in self.collectionView
@@ -2052,7 +2036,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                intoSectionWithIdentifier:kOpenTabsSectionIdentifier];
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 
-    [self updateVisibleCellZIndex];
     [self updateVisibleCellIdentifiers];
   } else {
     NSIndexSet* targetSections =
