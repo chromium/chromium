@@ -986,6 +986,73 @@ class ConsumerUpdateScreenTester extends ScreenElementApi {
   }
 }
 
+class ChoobeScreenTester extends ScreenElementApi {
+  constructor() {
+    super('choobe');
+    this.skipButton = new PolymerElementApi(this, '#skipButton');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.choobeScreensList = new PolymerElementApi(this, '#screensList');
+    this.drivePinningScreenButton = new PolymerElementApi(
+        this.choobeScreensList, '#cr-button-drive-pinning');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible();
+  }
+
+  clickDrivePinningScreen() {
+    this.drivePinningScreenButton.click();
+  }
+
+  isDrivePinningScreenVisible() {
+    return this.drivePinningScreenButton.isVisible();
+  }
+
+  isDrivePinningScreenChecked() {
+    return !!this.drivePinningScreenButton.element().getAttribute('checked');
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+
+  clickSkip() {
+    this.skipButton.click();
+  }
+}
+
+class ChoobeDrivePinningScreenTester extends ScreenElementApi {
+  constructor() {
+    super('drive-pinning');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.drivePinningToggle =
+        new PolymerElementApi(this, '#drivePinningToggle');
+    this.drivePinningSpaceInformation =
+        new PolymerElementApi(this, '#spaceInformation');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible() && this.drivePinningToggle.isVisible() &&
+        this.drivePinningSpaceInformation.isVisible();
+  }
+
+  toggleFileSync() {
+    this.drivePinningToggle.click();
+  }
+
+  isFileSyncEnabled() {
+    return !!this.drivePinningToggle.element().checked;
+  }
+
+  getSpaceInformationString() {
+    return this.drivePinningSpaceInformation.element().innerText;
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+}
+
 export class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -1014,6 +1081,8 @@ export class OobeApiProvider {
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
       GaiaInfoScreen: new GaiaInfoScreenTester(),
       ConsumerUpdateScreen: new ConsumerUpdateScreenTester(),
+      ChoobeScreen: new ChoobeScreenTester(),
+      ChoobeDrivePinningScreen: new ChoobeDrivePinningScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
