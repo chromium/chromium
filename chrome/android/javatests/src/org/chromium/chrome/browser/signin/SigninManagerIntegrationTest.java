@@ -22,6 +22,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -169,6 +170,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1467211")
     public void testUpdateAccountListTwoAccountsThenRemoveOne() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
