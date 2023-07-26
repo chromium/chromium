@@ -2588,6 +2588,10 @@
       base_feature: "none",
     },
     {
+      name: "PaintFlexGridSortedByOrder",
+      status: "stable",
+    },
+    {
       name: "PaintNewReplacedInvalidation",
       status: "stable",
     },
