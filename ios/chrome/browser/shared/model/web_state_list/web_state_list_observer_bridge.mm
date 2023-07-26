@@ -32,36 +32,16 @@ void WebStateListObserverBridge::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly: {
-      if (!status.pinned_state_change) {
-        // TODO(crbug.com/1442546): Move the implementation from
-        // WebStateActivatedAt() to here. Note that here is reachable only when
-        // `reason` == ActiveWebStateChangeReason::Activated.
-        return;
-      }
-      [[fallthrough]];
-    }
-    case WebStateListChange::Type::kDetach:
-      [[fallthrough]];
-    case WebStateListChange::Type::kMove:
-      [[fallthrough]];
-    case WebStateListChange::Type::kReplace:
-      [[fallthrough]];
-    case WebStateListChange::Type::kInsert: {
-      const SEL selector = @selector(didChangeWebStateList:change:status:);
-      if (![observer_ respondsToSelector:selector]) {
-        return;
-      }
-
-      [observer_ didChangeWebStateList:web_state_list
-                                change:change
-                                status:status];
-      break;
-    }
+  const SEL selector = @selector(didChangeWebStateList:change:status:);
+  if (![observer_ respondsToSelector:selector]) {
+    return;
   }
+
+  [observer_ didChangeWebStateList:web_state_list change:change status:status];
 }
 
+// TODO(crbug.com/1442546): Remove WebStateActivatedAt() once all observers
+// handle the activation inside -didChangeWebStateList:change:status:.
 void WebStateListObserverBridge::WebStateActivatedAt(
     WebStateList* web_state_list,
     web::WebState* old_web_state,
