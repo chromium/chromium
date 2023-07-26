@@ -143,6 +143,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: false,
       },
 
+      updateDeepScanningUx_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('updateDeepScanningUX'),
+      },
+
       useFileIcon_: Boolean,
     };
   }
@@ -168,6 +173,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private showProgress_: boolean;
   private useFileIcon_: boolean;
   private restoreFocusAfterCancel_: boolean = false;
+  private updateDeepScanningUx_: boolean;
   override overrideCustomEquivalent: boolean;
 
   constructor() {

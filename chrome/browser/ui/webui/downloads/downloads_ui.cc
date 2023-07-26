@@ -37,6 +37,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -107,7 +108,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"blockedTooLargeDesc", IDS_BLOCKED_TOO_LARGE_DESCRIPTION},
       {"blockedPasswordProtectedDesc",
        IDS_BLOCKED_PASSWORD_PROTECTED_DESCRIPTION},
-      {"promptForScanningDesc", IDS_BLOCK_REASON_PROMPT_FOR_SCANNING},
 
       // Controls.
       {"controlPause", IDS_DOWNLOAD_LINK_PAUSE},
@@ -118,7 +118,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"controlRetry", IDS_DOWNLOAD_LINK_RETRY},
       {"controlledByUrl", IDS_DOWNLOAD_BY_EXTENSION_URL},
       {"controlOpenNow", IDS_OPEN_DOWNLOAD_NOW},
-      {"controlDeepScan", IDS_DOWNLOAD_DEEP_SCAN},
       {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN},
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
@@ -143,6 +142,18 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
   source->AddBoolean("hasShowInFolder",
                      browser_defaults::kDownloadPageHasShowInFolder);
+
+  bool update_deep_scanning_ux =
+      base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);
+  source->AddLocalizedString("promptForScanningDesc",
+                             update_deep_scanning_ux
+                                 ? IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED
+                                 : IDS_BLOCK_REASON_PROMPT_FOR_SCANNING);
+  source->AddLocalizedString("controlDeepScan",
+                             update_deep_scanning_ux
+                                 ? IDS_DOWNLOAD_DEEP_SCAN_UPDATED
+                                 : IDS_DOWNLOAD_DEEP_SCAN);
+  source->AddBoolean("updateDeepScanningUX", update_deep_scanning_ux);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html

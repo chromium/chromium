@@ -112,15 +112,34 @@ suite('item tests', function() {
     assertEquals(item.shadowRoot!.querySelector('#openNow'), null);
   });
 
-  test('deep scan buttons shown on correct state', async () => {
+  test('deep scan buttons shown on correct state', () => {
+    loadTimeData.overrideValues({'updateDeepScanningUX': false});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
                state: States.PROMPT_FOR_SCANNING,
              }));
     flush();
-    assertNotEquals(item.shadowRoot!.querySelector('#deepScan'), null);
-    assertNotEquals(item.shadowRoot!.querySelector('#bypassDeepScan'), null);
+    assertTrue(!!item.shadowRoot!.querySelector('#deepScan'));
+    assertTrue(!!item.shadowRoot!.querySelector('#bypassDeepScan'));
+  });
+
+  test('deep scan buttons shown on correct state for updated ux', () => {
+    loadTimeData.overrideValues({'updateDeepScanningUX': true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               filePath: 'unique1',
+               hideDate: false,
+               state: States.PROMPT_FOR_SCANNING,
+             }));
+    flush();
+    assertTrue(!!item.shadowRoot!.querySelector('#deepScan'));
+    assertFalse(!!item.shadowRoot!.querySelector('#bypassDeepScan'));
   });
 
   test('undo is shown in toast', () => {

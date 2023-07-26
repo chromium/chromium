@@ -2187,6 +2187,10 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is associated with account compromise.">
         This file could let attackers steal your personal information.
       </message>
+      <message name="IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED"
+               desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
+        This file might be a virus or malware. You can send it to Google to check if it's unsafe.
+      </message>
       <message name="IDS_DEEP_SCANNED_SAFE_DESCRIPTION"
         desc="Message shown to the user on chrome://downloads page to explain this this download was deep scanned, and found to be safe.">
         Security checks are done
@@ -2406,6 +2410,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_DEEP_SCAN"
                desc="In the download view, the 'Scan' button when prompt for deep scan">
         Scan
+      </message>
+      <message name="IDS_DOWNLOAD_DEEP_SCAN_UPDATED"
+               desc="In the download view, the 'Scan' button when prompt for deep scan">
+        Scan for malware
       </message>
       <message name="IDS_DOWNLOAD_BYPASS_DEEP_SCAN"
                desc="In the download view, the 'Open' button when prompt for deep scan">
