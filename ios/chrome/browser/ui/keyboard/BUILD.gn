@@ -11,10 +11,7 @@ source_set("keyboard") {
     "menu_builder.h",
     "menu_builder.mm",
   ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/ui/util",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -27,7 +24,6 @@ source_set("unit_tests") {
   deps = [
     ":keyboard",
     "//base",
-    "//base:i18n",
     "//ios/chrome/app/strings",
     "//testing/gtest",
     "//ui/base",

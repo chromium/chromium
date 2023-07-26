@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,14 +20,6 @@ UIKeyModifierFlags ShiftCommand = UIKeyModifierShift | UIKeyModifierCommand;
 UIKeyModifierFlags AltShiftCommand =
     UIKeyModifierAlternate | UIKeyModifierShift | UIKeyModifierCommand;
 UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
-
-// Backport UIKeyInputDelete to iOS 14 and below.
-NSString* Delete(void) {
-  if (@available(iOS 15.0, *))
-    return UIKeyInputDelete;
-  else
-    return @"\b";
-}
 
 }  // namespace
 
@@ -118,9 +109,7 @@ NSString* Delete(void) {
                   modifierFlags:Control
                          action:@selector(keyCommand_showNextTab)
                 titleIDAsString:@"IDS_IOS_KEYBOARD_NEXT_TAB"];
-  if (@available(iOS 15.0, *)) {
-    keyCommand.wantsPriorityOverSystemBehavior = YES;
-  }
+  keyCommand.wantsPriorityOverSystemBehavior = YES;
   return keyCommand;
 }
 
@@ -130,26 +119,14 @@ NSString* Delete(void) {
                   modifierFlags:ControlShift
                          action:@selector(keyCommand_showPreviousTab)
                 titleIDAsString:@"IDS_IOS_KEYBOARD_PREVIOUS_TAB"];
-  if (@available(iOS 15.0, *)) {
-    keyCommand.wantsPriorityOverSystemBehavior = YES;
-  }
+  keyCommand.wantsPriorityOverSystemBehavior = YES;
   return keyCommand;
 }
 
 + (UIKeyCommand*)cr_showNextTab_2 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of braces.
-  NSString* braceNext;
-  if (@available(iOS 15.0, *)) {
-    braceNext = @"}";
-  } else {
-    if (UseRTLLayout()) {
-      braceNext = @"{";
-    } else {
-      braceNext = @"}";
-    }
-  }
-  return [self keyCommandWithInput:braceNext
+  return [self keyCommandWithInput:@"}"
                      modifierFlags:Command
                             action:@selector(keyCommand_showNextTab)];
 }
@@ -157,17 +134,7 @@ NSString* Delete(void) {
 + (UIKeyCommand*)cr_showPreviousTab_2 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of braces.
-  NSString* bracePrevious;
-  if (@available(iOS 15.0, *)) {
-    bracePrevious = @"{";
-  } else {
-    if (UseRTLLayout()) {
-      bracePrevious = @"}";
-    } else {
-      bracePrevious = @"{";
-    }
-  }
-  return [self keyCommandWithInput:bracePrevious
+  return [self keyCommandWithInput:@"{"
                      modifierFlags:Command
                             action:@selector(keyCommand_showPreviousTab)];
 }
@@ -175,17 +142,7 @@ NSString* Delete(void) {
 + (UIKeyCommand*)cr_showNextTab_3 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of arrows.
-  NSString* arrowNext;
-  if (@available(iOS 15.0, *)) {
-    arrowNext = UIKeyInputRightArrow;
-  } else {
-    if (UseRTLLayout()) {
-      arrowNext = UIKeyInputLeftArrow;
-    } else {
-      arrowNext = UIKeyInputRightArrow;
-    }
-  }
-  return [self keyCommandWithInput:arrowNext
+  return [self keyCommandWithInput:UIKeyInputRightArrow
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showNextTab)];
 }
@@ -193,17 +150,7 @@ NSString* Delete(void) {
 + (UIKeyCommand*)cr_showPreviousTab_3 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of arrows.
-  NSString* arrowPrevious;
-  if (@available(iOS 15.0, *)) {
-    arrowPrevious = UIKeyInputLeftArrow;
-  } else {
-    if (UseRTLLayout()) {
-      arrowPrevious = UIKeyInputRightArrow;
-    } else {
-      arrowPrevious = UIKeyInputLeftArrow;
-    }
-  }
-  return [self keyCommandWithInput:arrowPrevious
+  return [self keyCommandWithInput:UIKeyInputLeftArrow
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showPreviousTab)];
 }
@@ -232,17 +179,7 @@ NSString* Delete(void) {
 + (UIKeyCommand*)cr_back {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
-  NSString* bracketBack;
-  if (@available(iOS 15.0, *)) {
-    bracketBack = @"[";
-  } else {
-    if (UseRTLLayout()) {
-      bracketBack = @"]";
-    } else {
-      bracketBack = @"[";
-    }
-  }
-  return [self cr_commandWithInput:bracketBack
+  return [self cr_commandWithInput:@"["
                      modifierFlags:Command
                             action:@selector(keyCommand_back)
                    titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_BACK"];
@@ -251,17 +188,7 @@ NSString* Delete(void) {
 + (UIKeyCommand*)cr_forward {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
-  NSString* bracketForward;
-  if (@available(iOS 15.0, *)) {
-    bracketForward = @"]";
-  } else {
-    if (UseRTLLayout()) {
-      bracketForward = @"[";
-    } else {
-      bracketForward = @"]";
-    }
-  }
-  return [self cr_commandWithInput:bracketForward
+  return [self cr_commandWithInput:@"]"
                      modifierFlags:Command
                             action:@selector(keyCommand_forward)
                    titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_FORWARD"];
@@ -270,17 +197,7 @@ NSString* Delete(void) {
 + (UIKeyCommand*)cr_back_2 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is
   // true by default. It handles flipping the direction of arrows.
-  NSString* arrowBack;
-  if (@available(iOS 15.0, *)) {
-    arrowBack = UIKeyInputLeftArrow;
-  } else {
-    if (UseRTLLayout()) {
-      arrowBack = UIKeyInputRightArrow;
-    } else {
-      arrowBack = UIKeyInputLeftArrow;
-    }
-  }
-  return [self keyCommandWithInput:arrowBack
+  return [self keyCommandWithInput:UIKeyInputLeftArrow
                      modifierFlags:Command
                             action:@selector(keyCommand_back)];
 }
@@ -288,17 +205,7 @@ NSString* Delete(void) {
 + (UIKeyCommand*)cr_forward_2 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is
   // true by default. It handles flipping the direction of arrows.
-  NSString* arrowForward;
-  if (@available(iOS 15.0, *)) {
-    arrowForward = UIKeyInputRightArrow;
-  } else {
-    if (UseRTLLayout()) {
-      arrowForward = UIKeyInputLeftArrow;
-    } else {
-      arrowForward = UIKeyInputRightArrow;
-    }
-  }
-  return [self keyCommandWithInput:arrowForward
+  return [self keyCommandWithInput:UIKeyInputRightArrow
                      modifierFlags:Command
                             action:@selector(keyCommand_forward)];
 }
@@ -447,7 +354,7 @@ NSString* Delete(void) {
 }
 
 + (UIKeyCommand*)cr_clearBrowsingData {
-  return [self cr_commandWithInput:Delete()
+  return [self cr_commandWithInput:UIKeyInputDelete
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_clearBrowsingData)
                    titleIDAsString:@"IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA"];
@@ -465,9 +372,7 @@ NSString* Delete(void) {
       [self keyCommandWithInput:@"z"
                   modifierFlags:Command
                          action:@selector(keyCommand_undo)];
-  if (@available(iOS 15.0, *)) {
-    keyCommand.wantsPriorityOverSystemBehavior = YES;
-  }
+  keyCommand.wantsPriorityOverSystemBehavior = YES;
   return keyCommand;
 }
 
@@ -476,39 +381,46 @@ NSString* Delete(void) {
 - (NSString*)cr_symbolicDescription {
   NSMutableString* description = [NSMutableString string];
 
-  if (self.modifierFlags & UIKeyModifierNumericPad)
+  if (self.modifierFlags & UIKeyModifierNumericPad) {
     [description appendString:@"Num lock "];
-  if (self.modifierFlags & UIKeyModifierControl)
+  }
+  if (self.modifierFlags & UIKeyModifierControl) {
     [description appendString:@"⌃"];
-  if (self.modifierFlags & UIKeyModifierAlternate)
+  }
+  if (self.modifierFlags & UIKeyModifierAlternate) {
     [description appendString:@"⌥"];
-  if (self.modifierFlags & UIKeyModifierShift)
+  }
+  if (self.modifierFlags & UIKeyModifierShift) {
     [description appendString:@"⇧"];
-  if (self.modifierFlags & UIKeyModifierAlphaShift)
+  }
+  if (self.modifierFlags & UIKeyModifierAlphaShift) {
     [description appendString:@"⇪"];
-  if (self.modifierFlags & UIKeyModifierCommand)
+  }
+  if (self.modifierFlags & UIKeyModifierCommand) {
     [description appendString:@"⌘"];
+  }
 
-  if ([self.input isEqualToString:Delete()])
+  if ([self.input isEqualToString:UIKeyInputDelete]) {
     [description appendString:@"⌫"];
-  else if ([self.input isEqualToString:@"\r"])
+  } else if ([self.input isEqualToString:@"\r"]) {
     [description appendString:@"↵"];
-  else if ([self.input isEqualToString:@"\t"])
+  } else if ([self.input isEqualToString:@"\t"]) {
     [description appendString:@"⇥"];
-  else if ([self.input isEqualToString:UIKeyInputUpArrow])
+  } else if ([self.input isEqualToString:UIKeyInputUpArrow]) {
     [description appendString:@"↑"];
-  else if ([self.input isEqualToString:UIKeyInputDownArrow])
+  } else if ([self.input isEqualToString:UIKeyInputDownArrow]) {
     [description appendString:@"↓"];
-  else if ([self.input isEqualToString:UIKeyInputLeftArrow])
+  } else if ([self.input isEqualToString:UIKeyInputLeftArrow]) {
     [description appendString:@"←"];
-  else if ([self.input isEqualToString:UIKeyInputRightArrow])
+  } else if ([self.input isEqualToString:UIKeyInputRightArrow]) {
     [description appendString:@"→"];
-  else if ([self.input isEqualToString:UIKeyInputEscape])
+  } else if ([self.input isEqualToString:UIKeyInputEscape]) {
     [description appendString:@"⎋"];
-  else if ([self.input isEqualToString:@" "])
+  } else if ([self.input isEqualToString:@" "]) {
     [description appendString:@"␣"];
-  else
+  } else {
     [description appendString:[self.input uppercaseString]];
+  }
   return description;
 }
 
