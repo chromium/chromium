@@ -2940,6 +2940,10 @@ if (is_apple) {
   source_set("base_unittests_noarc") {
     testonly = true
     sources = [ "mac/scoped_nsobject_unittest.mm" ]
+
+    # Do not compile with ARC because this target has tests for code that does
+    # not compile with ARC.
+    configs -= [ "//build/config/compiler:enable_arc2" ]
     deps = [
       ":base",
       "//base/test:test_support",

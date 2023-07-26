@@ -495,6 +495,10 @@ target(link_target_type, "gles2_sources") {
       "shared_image/shared_image_format_service_utils_mac.mm",
     ]
 
+    # Do not compile with ARC because Dawn is not (yet) compatible with being
+    # called from code compiled with ARC.
+    configs -= [ "//build/config/compiler:enable_arc2" ]
+
     if (skia_use_metal) {
       deps += [ "//components/viz/common:metal_context_provider" ]
     }

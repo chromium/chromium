@@ -546,6 +546,10 @@ source_set("allocator_shim") {
       "shim/malloc_zone_functions_mac.cc",
       "shim/malloc_zone_functions_mac.h",
     ]
+
+    # Do not compile with ARC because this target has to interface with
+    # low-level Objective-C and having ARC would interfere.
+    configs -= [ "//build/config/compiler:enable_arc2" ]
     deps += [
       ":allocator_core",
       ":buildflags",

@@ -12,9 +12,10 @@ by the developer. That feature is named “automatic reference counting” and i
 abbreviated to “ARC”.
 
 ARC is enabled via a flag passed to the compiler and thus for Chromium is
-enabled at the build target level. ARC is currently enabled for most of Chrome
-on iOS, and is in the [process](https://crbug.com/1280317) of being enabled for
-Chrome on the Mac.
+controlled as a
+[config](https://source.chromium.org/search?q=config\\(%22enable_arc%22\\)&ss=chromium)
+for build targets. ARC is enabled by default for Chromium’s Objective-C code,
+with the exception of a handful of targets that opt-out.
 
 For the rest of this document, the term “Objective-C” will be used to mean both
 pure Objective-C as well as Objective-C++.
@@ -73,22 +74,17 @@ correctly to fix issues with the compiler-generated reference counting.
 
 ### When to use ARC {#conventions-when}
 
-It is the plan to eventually enable ARC for all of Chromium’s Objective-C code.
-However, because ARC is a target-scoped build configuration for Chromium, it
-might be the case that, when adding a new file, you find that the `.gn` target
-containing that file does not have ARC enabled. In that case, you may implement
-that file without ARC support. However, if the target is already being built
-with ARC, your code must use ARC as well.
-
-If you are lucky enough to be adding the first Objective-C file to the target,
-then you must write your code to build with ARC and add the [config to the `.gn`
-target](#examples-gn).
+ARC is enabled by default for Objective-C code in Chromium, and all new
+Objective-C code in Chromium must be written to use ARC. If there is a good
+technical reason to not use ARC, you may disable it for a target, but this is
+expected to be an exceedingly rare situation and you should have a discussion
+with the relevant platform experts before doing so.
 
 ### ARC compile guard {#convention-boilerplate}
 
-Because Chromium currently comprises mixed ARC and non-ARC Objective-C code,
-files that are written to build with ARC have a boilerplate compile guard after
-the include block:
+While Chromium was undergoing a transition from non-ARC to ARC, to prevent
+leaks, files that were written to build with ARC had a boilerplate compile guard
+after the include block:
 
 ```objectivec
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -96,32 +92,26 @@ the include block:
 #endif
 ```
 
+Now that ARC is enabled by default, this boilerplate is not needed, and is
+currently in the [process of being removed](https://crbug.com/733237). Please do
+not add this boilerplate to new files.
+
 ### Header files {#convention-headers}
 
 Header files can be:
 
-1. Shared between C++ and Objective-C. For these headers, avoid having any
+1. _Shared between C++ and Objective-C._ For these headers, avoid having any
    Objective-C object pointers in them. Use the techniques in the [Mixing C++
    and Objective-C](mixing_cpp_and_objc.md) document to accomplish this.
-2. Only included in Objective-C implementation files compiled with ARC. For
-   these headers, qualify the ownership of Objective-C object pointers with
-   `__strong` and `__weak`, and add the [ARC
-   boilerplate](#convention-boilerplate) at the top to ensure that they are only
-   included by files compiled with ARC.
-3. Included in Objective-C implementation files compiled with a mix of ARC and
-   non-ARC. For these headers, continue using `base::scoped_nsobject<>` for
-   owned object pointers, but aim to eventually remove its use and switch to
-   ARC.
-
-Be aware that distinguishing between these cases can be tricky; if a header file
-is included in another header file, you must also consider which files that
-header file is included in. The most expedient way to distinguish case 2 is to
-add the [ARC boilerplate](#convention-boilerplate) to the header file and then
-attempt to compile. If that header file is included in either a C++ file or an
-Objective-C file not compiled with ARC, the compile will fail at that ARC
-boilerplate. As for case 1, if the header file has Objective-C constructs (e.g.
-`#import` or an `@` keyword) unguarded by `__OBJC__`, it would not compile in
-C++ and therefore is not included by C++ code.
+2. _Only included in Objective-C implementation files compiled with ARC._
+   Because ARC is the default compilation mode, this will be common. For these
+   headers, qualify the ownership of Objective-C object pointers with `__strong`
+   and `__weak`, and add the [ARC boilerplate](#convention-boilerplate) at the
+   top to ensure that they are only included by files compiled with ARC.
+3. _Included in Objective-C implementation files compiled with a mix of ARC and
+   non-ARC._ Because ARC is the default compilation mode, this situation should
+   be rare. For this situation, treat the non-ARC compiled files as if they were
+   C++ and use the techniques from point 1.
 
 ## Warning! Dangers! {#dangers}
 
@@ -129,55 +119,14 @@ There are some bits of AppKit that are incompatible with ARC. Apple has not
 updated the documentation to call this out, so a heads-up:
 
 When creating an `NSWindow`, you _must_ set the `.releasedWhenClosed` property
-to `NO`. It's recommended that you do so immediately after creating it with
+to `NO`. It’s recommended that you do so immediately after creating it with
 `alloc`/`init`. If you fail to do so, then closing the window will cause it to
 release itself, and then when the owning pointer releases it, it will be a
 double-release.
 
-## Examples of conversion from non-ARC to ARC {#examples}
+## Examples of ARC code {#examples}
 
 ### Objective-C Classes {#examples-objc-classes}
-
-Before:
-
-```objectivec
-@interface KittyNoARC : NSObject
-@property(nonatomic, assign) id<KittyDelegate> delegate;
-@property(nonatomic, copy) NSArray* childCats;
-@property(nonatomic, retain) NSURL* vetURL;
-- (Meow*)meowForBellyRub:(BellyRub*)rub;
-@end
-
-@implementation KittyNoARC {
-  id<CatFactory> _catFactory;  // weak
-  base::scoped_nsobject<NSURL> _lastVisitedCatURL;
-  base::scoped_nsobject<NSArray> _childCats;
-  base::scoped_nsobject<NSURL> _vetURL;
-}
-
-- (void)setChildCats:(NSArray*)childCats {
-  _childCats.reset([childCats copy]);
-}
-
-- (NSArray*)childCats {
-  return _childCats.get();
-}
-
-- (void)setVetURL:(NSURL*)vetURL {
-  _vetURL.reset([vetURL retain]);
-}
-
-- (NSURL*)vetURL {
-  return _vetURL.get();
-}
-
-- (Meow*)meowForBellyRub:(BellyRub*)rub {
-  return [[[MeowImpl alloc] initWithBellyRub:rub] autorelease];
-}
-@end
-```
-
-After:
 
 ```objectivec
 @interface KittyARC : NSObject
@@ -202,52 +151,11 @@ After:
 @end
 ```
 
-### C++ classes in Objective-C++ implementation files {#examples-cpp-classes-impls}
-
-Before:
-
-```objectivec
-class Banana : public Fruit {
-  base::scoped_nsobject<Animal> pet_;
-  base::WeakNSObject<Phone> nexus_;
-  Vehicle* car_;
-}
-```
-
-After:
+### C++ classes in Objective-C++ files {#examples-cpp-classes}
 
 ```objectivec
 class Banana : public Fruit {
   Animal* __strong pet_;
-  Phone* __weak nexus_;
-  Vehicle* __weak car_;  // Do not use __unsafe_unretained.
-}
-```
-
-### C++ classes in header files {#examples-cpp-classes-headers}
-
-Before:
-
-```objectivec
-class Banana : public Fruit {
-  base::scoped_nsobject<Animal> pet_;
-  base::WeakNSObject<Phone> nexus_;
-  Vehicle* car_;
-}
-```
-
-After:
-
-```objectivec
-class Banana : public Fruit {
-  // If this class is only included in ARC-enabled code, then include an ARC
-  // compile guard and do:
-  Animal* __strong pet_;
-
-  // Otherwise, do this and move to ARC once all including files have moved to
-  // ARC:
-  base::scoped_nsobject<Animal> pet_;
-
   Phone* __weak nexus_;
   Vehicle* __weak car_;  // Do not use __unsafe_unretained.
 }
@@ -259,24 +167,6 @@ Note: Blocks retain all objects referenced in them. This example is of a block
 used in an Objective-C method that uses the “weak `self`” idiom to avoid a
 retain cycle. For blocks used in C++ functions, a retain cycle is not a concern,
 though the use of a `base::WeakPtr<>` might be needed to avoid stale pointers.
-
-Before:
-
-```objectivec
-base::WeakNSObject<AuthenticationFlow> weakSelf(self);
-[performer_ showAuthenticationError:error
-                     withCompletion:^{
-                       base::scoped_nsobject<AuthenticationFlow> strongSelf(
-                           [weakSelf retain]);
-                       if (!strongSelf) {
-                         return;
-                       }
-                       [strongSelf setHandlingError:NO];
-                       [strongSelf continueSignin];
-                     }];
-```
-
-After:
 
 ```objectivec
 typeof(self) __weak weakSelf = self;
@@ -293,61 +183,35 @@ typeof(self) __weak weakSelf = self;
 
 ### GN file changes {#examples-gn}
 
-A `.gn` target will compile as ARC with the config:
+All targets compile with ARC as default. For targets that must not compile with
+ARC, ARC can be disabled as follows:
 
 ```gn
-    configs += [ "//build/config/compiler:enable_arc" ]
+  # Do not compile with ARC because AncientDeps code is not compatible with
+  # being compiled with ARC.
+  configs -= [ "//build/config/compiler:enable_arc2" ]
 ```
 
-Small targets can be converted to ARC all at once. For larger targets, a more
-gradual transition may be needed, for example:
+Again, ARC must be used for all new code unless there is a good technical reason
+that the new code cannot use ARC. Please consult with platform experts if you
+believe that you are in this situation.
 
-```gn
-source_set("fruit_arc") {
-  sources = [
-    "pear.h",
-    "pear.mm",
-  ]
-  deps = [
-    "//base",
-  ]
-  public_deps = [
-      ":fruit_support",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  allow_circular_includes_from = [ ":fruit" ]
-}
+## Things that should not be used from ARC code {#changes}
 
-source_set("fruit") {
-  sources = [
-    "apple.h",
-    "apple.mm",
-    "banana.h",
-    "banana.mm",
-    // "pear.h" and "pear.mm" were here before being converted to ARC.
-  ]
-  deps = [
-    "//base",
-  ]
-  public_deps = [
-      ":fruit_support",
-  ]
-  allow_circular_includes_from = [ ":fruit_arc" ]
-}
-```
+There are utility functions and classes that were introduced when Chromium did
+not compile with ARC, but that are no longer needed with ARC code. Because there
+are still parts of Chromium that cannot be compiled with ARC, these utilities
+remain, however they should not (or sometimes cannot) be used from ARC:
 
-## Things that are going away {#changes}
-
-Chromium’s migration to ARC means not only the opportunity to re-think the code
-and do cleanup, but the removal of utilities whose functionality will no longer
-be needed and will eventually end up being removed. Here are some, in no
-particular order:
-
-- `base::scoped_nsobject<>`: Only continue its use in header files shared
-  between ARC and non-ARC Objective-C code, and only temporarily while those
-  files are included by non-ARC files. Remove all other use.
+- `base::scoped_nsobject<>`: This only exists to handle scoping of Objective-C
+  objects in non-ARC code. It cannot be used in ARC code; use `__strong`
+  instead.
 - `ScopedNSAutoreleasePool`: Use `@autoreleasepool` instead, and remove any use
   of `ScopedNSAutoreleasePool` that you encounter, if possible.
+  `ScopedNSAutoreleasePool` was rewritten to be able to work in ARC code, but
+  the C++ class-based nature of `ScopedNSAutoreleasePool` is fundamentally
+  incompatible with the stack-based nature of autorelease pools, and thus it is
+  in the process of [being removed](https://crbug.com/772489).
 
 ## Further reading {#references}
 

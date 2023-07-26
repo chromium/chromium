@@ -401,6 +401,10 @@ if (is_mac) {
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
 
+      # Do not compile with ARC because Breakpad code is not compatible with
+      # being compiled with ARC.
+      configs -= [ "//build/config/compiler:enable_arc2" ]
+
       deps = [ ":common" ]
     }
 
@@ -1012,8 +1016,6 @@ if (is_ios) {
       "breakpad/src/client/ios/handler/ios_exception_minidump_generator.mm",
       "breakpad/src/client/mac/crash_generation/ConfigFile.h",
       "breakpad/src/client/mac/crash_generation/ConfigFile.mm",
-      "breakpad/src/common/mac/arch_utilities.cc",
-      "breakpad/src/common/mac/arch_utilities.h",
       "breakpad/src/client/mac/handler/breakpad_nlist_64.cc",
       "breakpad/src/client/mac/handler/breakpad_nlist_64.h",
       "breakpad/src/client/mac/handler/dynamic_images.cc",
@@ -1034,6 +1036,8 @@ if (is_ios) {
       "breakpad/src/common/long_string_dictionary.cc",
       "breakpad/src/common/mac/HTTPMultipartUpload.m",
       "breakpad/src/common/mac/HTTPRequest.m",
+      "breakpad/src/common/mac/arch_utilities.cc",
+      "breakpad/src/common/mac/arch_utilities.h",
       "breakpad/src/common/mac/encoding_util.m",
       "breakpad/src/common/mac/file_id.cc",
       "breakpad/src/common/mac/file_id.h",
@@ -1061,6 +1065,10 @@ if (is_ios) {
     ]
 
     public_configs = [ ":client_config" ]
+
+    # Do not compile with ARC because Breakpad code is not compatible with being
+    # compiled with ARC.
+    configs -= [ "//build/config/compiler:enable_arc2" ]
 
     if (is_clang) {
       # See https://crbug.com/google-breakpad/675.

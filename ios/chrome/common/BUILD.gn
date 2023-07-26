@@ -75,7 +75,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":common",
-    ":noarc_unit_tests",
     ":string_util",
     "//base",
     "//base/test:test_support",
@@ -84,22 +83,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-# The block_unittest.mm has been duplicated during the migration of iOS code
-# to ARC (see crbug.com/624363). As this test checks the interaction of C++
-# objects and Objective-C blocks, it is necessary to keep two version of the
-# test compiled with and without ARC. Remove this file when the conversion to
-# ARC is complete.
-source_set("noarc_unit_tests") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [ "noarc_block_unittest.mm" ]
-  deps = [
-    ":common",
-    "//base",
-    "//testing/gtest",
-  ]
 }
 
 buildflag_header("ios_app_bundle_id_prefix_buildflags") {

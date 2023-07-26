@@ -708,6 +708,12 @@ template("skia_source_set") {
     ]
     public_configs = [ ":skia_config" ]
 
+    if (is_apple) {
+      # Do not compile with ARC because Skia code is not compatible with being
+      # compiled with ARC.
+      configs -= [ "//build/config/compiler:enable_arc2" ]
+    }
+
     # Android, the only user of mismatched sample files (for now), gets a small
     # binary size decrease by using AFDO to optimize for size in these
     # source_sets. However, that also comes at a relatively big performance

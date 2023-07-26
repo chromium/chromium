@@ -692,5 +692,11 @@ tflite_static_library("tflite") {
     ":tflite_flags",
   ]
 
+  if (is_apple) {
+    # Do not compile with ARC because TFLite code is not compatible with
+    # being compiled with ARC.
+    configs_to_remove += [ "//build/config/compiler:enable_arc2" ]
+  }
+
   public_configs = [ ":tflite_config" ]
 }
