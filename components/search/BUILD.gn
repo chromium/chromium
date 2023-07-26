@@ -4,6 +4,8 @@
 
 static_library("search") {
   sources = [
+    "ntp_features.cc",
+    "ntp_features.h",
     "search.cc",
     "search.h",
     "search_provider_observer.cc",
@@ -14,8 +16,6 @@ static_library("search") {
     "//base",
     "//components/search_engines",
   ]
-
-  public_deps = [ ":features" ]
 }
 
 static_library("start_suggest") {
@@ -66,12 +66,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-}
-
-source_set("features") {
-  sources = [
-    "ntp_features.cc",
-    "ntp_features.h",
-  ]
-  deps = [ "//base" ]
 }

@@ -147,10 +147,6 @@ BASE_DECLARE_FEATURE(kActionsInSuggest);
 // Adds support for categorical suggestion type.
 BASE_DECLARE_FEATURE(kCategoricalSuggestions);
 
-// Returns true if the Omnibox CR23 `feature`, which depends on customize
-// chrome, should be enabled.
-bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature);
-
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

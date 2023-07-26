@@ -5,7 +5,6 @@ include_rules = [
   "+chromeos/lacros/lacros_service.h",
   "+components/vector_icons",
   "+components/version_info",
-  "+components/search",
   "+media/media_buildflags.h",
   "+net",
   "+skia/ext",

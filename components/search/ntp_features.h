@@ -24,7 +24,6 @@ BASE_DECLARE_FEATURE(kConfirmSuggestionRemovals);
 BASE_DECLARE_FEATURE(kCacheOneGoogleBar);
 BASE_DECLARE_FEATURE(kCustomizeChromeColorExtraction);
 BASE_DECLARE_FEATURE(kCustomizeChromeSidePanel);
-BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelNoChromeRefresh2023);
 BASE_DECLARE_FEATURE(kCwsDarkLogo);
 BASE_DECLARE_FEATURE(kDismissPromos);
 BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
@@ -184,10 +183,6 @@ base::TimeDelta GetModulesLoadTimeout();
 
 // Returns a list of module IDs ordered by how they should appear on the NTP.
 std::vector<std::string> GetModulesOrder();
-
-// Returns true if Customize Chrome is configured such that it supports Chrome
-// Refresh 2023.
-bool CustomizeChromeSupportsChromeRefresh2023();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

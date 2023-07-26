@@ -59,8 +59,9 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
 }
 
 bool IsChromeRefreshIconsEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kOmniboxCR23SteadyStateIcons);
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
 }
 
 }  // namespace location_bar_model

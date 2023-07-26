@@ -51,45 +51,4 @@ TEST(NTPFeaturesTest, ModulesOrder) {
   EXPECT_TRUE(GetModulesOrder().empty());
 }
 
-TEST(NTPFeaturesTest, CustomizeChromeSupportsChromeRefresh2023) {
-  {
-    // Chrome Refresh 2023 should be off when Customize Chrome is on but
-    // Customize Chrome No Refresh is on, too.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {kCustomizeChromeSidePanel,
-         kCustomizeChromeSidePanelNoChromeRefresh2023},
-        {});
-    EXPECT_FALSE(CustomizeChromeSupportsChromeRefresh2023());
-  }
-
-  {
-    // Chrome Refresh 2023 should be on when Customize Chrome is on and
-    // Customize Chrome No Refresh is off.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {kCustomizeChromeSidePanel},
-        {kCustomizeChromeSidePanelNoChromeRefresh2023});
-    EXPECT_TRUE(CustomizeChromeSupportsChromeRefresh2023());
-  }
-
-  {
-    // Chrome Refresh 2023 should be off when Customize Chrome is off.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {}, {kCustomizeChromeSidePanel,
-             kCustomizeChromeSidePanelNoChromeRefresh2023});
-    EXPECT_FALSE(CustomizeChromeSupportsChromeRefresh2023());
-  }
-
-  {
-    // Chrome Refresh 2023 should be off when Customize Chrome is off.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {kCustomizeChromeSidePanelNoChromeRefresh2023},
-        {kCustomizeChromeSidePanel});
-    EXPECT_FALSE(CustomizeChromeSupportsChromeRefresh2023());
-  }
-}
-
 }  // namespace ntp_features

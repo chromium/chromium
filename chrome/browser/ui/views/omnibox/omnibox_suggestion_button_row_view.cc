@@ -51,8 +51,9 @@
 
 namespace {
 bool Cr2023ExpandedStateColorsEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kExpandedStateColors);
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kExpandedStateColors);
 }
 }  // namespace
 
