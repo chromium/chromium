@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/mediapipe/src/mediapipe/tasks/metadata/metadata_schema_generated.h"
-
 #include "components/optimization_guide/core/mediapipe_text_model_executor.h"
 
 #include "components/optimization_guide/core/tflite_op_resolver.h"
