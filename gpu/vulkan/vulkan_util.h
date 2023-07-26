@@ -121,6 +121,17 @@ bool IsVkExternalSemaphoreHandleTypeSupported(
     VulkanDeviceQueue* device_queue,
     VkExternalSemaphoreHandleTypeFlagBits handle_type);
 
+COMPONENT_EXPORT(VULKAN)
+VkResult QueryVkExternalMemoryProperties(
+    VkPhysicalDevice physical_device,
+    VkFormat format,
+    VkImageType type,
+    VkImageTiling tiling,
+    VkImageUsageFlags usage,
+    VkImageCreateFlags flags,
+    VkExternalMemoryHandleTypeFlagBits handle_type,
+    VkExternalMemoryProperties* external_memory_properties);
+
 }  // namespace gpu
 
 #endif  // GPU_VULKAN_VULKAN_UTIL_H_

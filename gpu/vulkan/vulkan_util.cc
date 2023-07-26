@@ -551,4 +551,62 @@ bool IsVkExternalSemaphoreHandleTypeSupported(
           VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT);
 }
 
+VkResult QueryVkExternalMemoryProperties(
+    VkPhysicalDevice physical_device,
+    VkFormat format,
+    VkImageType type,
+    VkImageTiling tiling,
+    VkImageUsageFlags usage,
+    VkImageCreateFlags flags,
+    VkExternalMemoryHandleTypeFlagBits handle_type,
+    VkExternalMemoryProperties* external_memory_properties) {
+  VkPhysicalDeviceImageFormatInfo2 format_info_2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
+      .format = format,
+      .type = type,
+      .tiling = tiling,
+      .usage = usage,
+      .flags = flags,
+  };
+
+  VkPhysicalDeviceExternalImageFormatInfo external_info = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO,
+      .handleType = handle_type,
+  };
+  format_info_2.pNext = &external_info;
+
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifier_info = {
+      .sType =
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+  // If image_tiling is VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT, a modifier_info
+  // struct has to be appended.
+  if (tiling == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT) {
+    external_info.pNext = &modifier_info;
+  }
+#endif
+
+  VkImageFormatProperties2 image_format_properties_2 = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
+  };
+  VkExternalImageFormatProperties external_image_format_properties = {
+      .sType = VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES,
+  };
+  image_format_properties_2.pNext = &external_image_format_properties;
+
+  VkResult result = vkGetPhysicalDeviceImageFormatProperties2(
+      physical_device, &format_info_2, &image_format_properties_2);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+
+  *external_memory_properties =
+      external_image_format_properties.externalMemoryProperties;
+  return VK_SUCCESS;
+}
+
 }  // namespace gpu
