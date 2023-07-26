@@ -35,6 +35,7 @@ class TokenService : public TokenServiceInterface {
   std::string GetDeviceID() const override;
   bool IsEnrollmentMandatory() const override;
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
+  bool DeleteEnrollmentToken() override;
   std::string GetEnrollmentToken() const override;
   bool StoreDmToken(const std::string& dm_token) override;
   bool DeleteDmToken() override;
@@ -72,6 +73,14 @@ bool TokenService::StoreEnrollmentToken(const std::string& token) {
   VLOG(1) << "Update enrollment token to: [" << token
           << "], bool result=" << result;
   return result;
+}
+
+bool TokenService::DeleteEnrollmentToken() {
+  VLOG(1) << __func__;
+  return DeleteRegValue(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
+                        kRegValueEnrollmentToken) &&
+         DeleteRegValue(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyCloudManagement,
+                        kRegValueCloudManagementEnrollmentToken);
 }
 
 std::string TokenService::GetEnrollmentToken() const {

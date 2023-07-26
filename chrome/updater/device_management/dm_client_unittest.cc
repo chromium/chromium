@@ -60,6 +60,8 @@ class TestTokenService : public TokenServiceInterface {
     return true;
   }
 
+  bool DeleteEnrollmentToken() override { return StoreEnrollmentToken(""); }
+
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
 
   bool StoreDmToken(const std::string& dm_token) override {

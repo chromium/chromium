@@ -916,7 +916,7 @@ void DMCleanup(UpdaterScope scope) {
     return;
   }
   scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
-  EXPECT_TRUE(storage->StoreEnrollmentToken(""));
+  EXPECT_TRUE(storage->DeleteEnrollmentToken());
   EXPECT_TRUE(storage->DeleteDMToken());
   EXPECT_TRUE(base::DeletePathRecursively(storage->policy_cache_folder()));
 

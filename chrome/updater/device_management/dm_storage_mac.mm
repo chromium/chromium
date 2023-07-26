@@ -29,11 +29,11 @@
 namespace updater {
 namespace {
 
-bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
-  const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
-  const CFStringRef kBrowserBundleId =
-      CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
+const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
+const CFStringRef kBrowserBundleId =
+    CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
 
+bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
   base::ScopedCFTypeRef<CFPropertyListRef> token_value(
       CFPreferencesCopyAppValue(kEnrollmentTokenKey, kBrowserBundleId));
   if (!token_value || CFGetTypeID(token_value) != CFStringGetTypeID() ||
@@ -47,6 +47,13 @@ bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
 
   *enrollment_token = base::SysCFStringRefToUTF8(value_string);
   return true;
+}
+
+void DeletePolicyEnrollmentToken() {
+  CFPreferencesSetValue(kEnrollmentTokenKey, nil, kBrowserBundleId,
+                        kCFPreferencesAnyUser, kCFPreferencesCurrentHost);
+  CFPreferencesSynchronize(kBrowserBundleId, kCFPreferencesAnyUser,
+                           kCFPreferencesCurrentHost);
 }
 
 // Enrollment token path:
@@ -90,13 +97,15 @@ bool LoadTokenFromFile(const base::FilePath& token_file_path,
 
 class TokenService : public TokenServiceInterface {
  public:
-  TokenService();
+  TokenService(const base::FilePath& enrollment_token_path,
+               const base::FilePath& dm_token_path);
   ~TokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return device_id_; }
   bool IsEnrollmentMandatory() const override { return false; }
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
+  bool DeleteEnrollmentToken() override;
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
   bool StoreDmToken(const std::string& dm_token) override;
   bool DeleteDmToken() override;
@@ -104,30 +113,36 @@ class TokenService : public TokenServiceInterface {
 
  private:
   // Cached values in memory.
-  std::string device_id_;
+  const std::string device_id_ = base::mac::GetPlatformSerialNumber();
+  const base::FilePath enrollment_token_path_;
+  const base::FilePath dm_token_path_;
   std::string enrollment_token_;
   std::string dm_token_;
 };
 
-TokenService::TokenService() {
-  device_id_ = base::mac::GetPlatformSerialNumber();
+TokenService::TokenService(const base::FilePath& enrollment_token_path,
+                           const base::FilePath& dm_token_path)
+    : enrollment_token_path_(enrollment_token_path.empty()
+                                 ? GetEnrollmentTokenFilePath()
+                                 : enrollment_token_path),
+      dm_token_path_(dm_token_path.empty() ? GetDmTokenFilePath()
+                                           : dm_token_path) {
   std::string enrollment_token;
   if (LoadEnrollmentTokenFromPolicy(&enrollment_token) ||
-      LoadTokenFromFile(GetEnrollmentTokenFilePath(), &enrollment_token)) {
+      LoadTokenFromFile(enrollment_token_path_, &enrollment_token)) {
     enrollment_token_ = enrollment_token;
   }
 
   std::string dm_token;
-  if (LoadTokenFromFile(GetDmTokenFilePath(), &dm_token)) {
+  if (LoadTokenFromFile(dm_token_path_, &dm_token)) {
     dm_token_ = dm_token;
   }
 }
 
 bool TokenService::StoreEnrollmentToken(const std::string& enrollment_token) {
-  const base::FilePath enrollment_token_path = GetEnrollmentTokenFilePath();
-  if (enrollment_token_path.empty() ||
-      !base::CreateDirectory(enrollment_token_path.DirName()) ||
-      !base::ImportantFileWriter::WriteFileAtomically(enrollment_token_path,
+  if (enrollment_token_path_.empty() ||
+      !base::CreateDirectory(enrollment_token_path_.DirName()) ||
+      !base::ImportantFileWriter::WriteFileAtomically(enrollment_token_path_,
                                                       enrollment_token)) {
     VLOG(1) << "Failed to update enrollment token.";
     return false;
@@ -138,11 +153,16 @@ bool TokenService::StoreEnrollmentToken(const std::string& enrollment_token) {
   return true;
 }
 
+bool TokenService::DeleteEnrollmentToken() {
+  enrollment_token_ = "";
+  DeletePolicyEnrollmentToken();
+  return base::DeleteFile(base::FilePath(enrollment_token_path_));
+}
+
 bool TokenService::StoreDmToken(const std::string& token) {
-  const base::FilePath dm_token_path = GetDmTokenFilePath();
-  if (dm_token_path.empty() ||
-      !base::CreateDirectory(dm_token_path.DirName()) ||
-      !base::ImportantFileWriter::WriteFileAtomically(dm_token_path, token)) {
+  if (dm_token_path_.empty() ||
+      !base::CreateDirectory(dm_token_path_.DirName()) ||
+      !base::ImportantFileWriter::WriteFileAtomically(dm_token_path_, token)) {
     VLOG(1) << "Failed to update DM token.";
     return false;
   }
@@ -152,8 +172,7 @@ bool TokenService::StoreDmToken(const std::string& token) {
 }
 
 bool TokenService::DeleteDmToken() {
-  const base::FilePath dm_token_path = GetDmTokenFilePath();
-  if (dm_token_path.empty() || !base::DeleteFile(dm_token_path)) {
+  if (dm_token_path_.empty() || !base::DeleteFile(dm_token_path_)) {
     VLOG(1) << "Failed to delete DM token.";
     return false;
   }
@@ -164,8 +183,12 @@ bool TokenService::DeleteDmToken() {
 
 }  // namespace
 
-DMStorage::DMStorage(const base::FilePath& policy_cache_root)
-    : DMStorage(policy_cache_root, std::make_unique<TokenService>()) {}
+DMStorage::DMStorage(const base::FilePath& policy_cache_root,
+                     const base::FilePath& enrollment_token_path,
+                     const base::FilePath& dm_token_path)
+    : DMStorage(policy_cache_root,
+                std::make_unique<TokenService>(enrollment_token_path,
+                                               dm_token_path)) {}
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
   absl::optional<base::FilePath> keystone_path =

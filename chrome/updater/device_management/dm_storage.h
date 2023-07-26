@@ -36,6 +36,9 @@ class TokenServiceInterface {
   // Writes |enrollment_token| to storage.
   virtual bool StoreEnrollmentToken(const std::string& enrollment_token) = 0;
 
+  // Deletes |enrollment_token| from storage.
+  virtual bool DeleteEnrollmentToken() = 0;
+
   // Reads the enrollment token from sources as-needed to find one.
   // Returns an empty string if no enrollment token is found.
   virtual std::string GetEnrollmentToken() const = 0;
@@ -57,7 +60,13 @@ class TokenServiceInterface {
 //   3) DM policies.
 class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
  public:
+#if BUILDFLAG(IS_WIN)
   explicit DMStorage(const base::FilePath& policy_cache_root);
+#else
+  DMStorage(const base::FilePath& policy_cache_root,
+            const base::FilePath& enrollment_token_path = {},
+            const base::FilePath& dm_token_path = {});
+#endif
   DMStorage(const base::FilePath& policy_cache_root,
             std::unique_ptr<TokenServiceInterface> token_service);
   DMStorage(const DMStorage&) = delete;
@@ -74,6 +83,11 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
   // Forwards to token service to save enrollment token.
   bool StoreEnrollmentToken(const std::string& enrollment_token) {
     return token_service_->StoreEnrollmentToken(enrollment_token);
+  }
+
+  // Forwards to token service to delete enrollment token.
+  bool DeleteEnrollmentToken() {
+    return token_service_->DeleteEnrollmentToken();
   }
 
   // Forwards to token service to get enrollment token.
