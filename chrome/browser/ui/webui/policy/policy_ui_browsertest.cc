@@ -379,7 +379,12 @@ void PolicyUITest::VerifyReportButton(bool visible) {
   const std::string kJavaScript = "getReportButtonVisibility();";
   std::string ret =
       content::EvalJs(web_contents(), kJavaScript).ExtractString();
+
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(visible, ret != "none");
+#else
+  EXPECT_FALSE(ret != "none");
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -935,14 +940,33 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButton) {
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
                  policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   provider_.UpdateChromePolicy(policy_map);
-#if !BUILDFLAG(IS_CHROMEOS)
   VerifyReportButton(/*visible=*/true);
-#else
-  // Always hide on Chrome OS.
-  VerifyReportButton(/*visible=*/false);
-#endif
+
   // Hide while policy is off.
   policy_map.Set(policy::key::kCloudReportingEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+  VerifyReportButton(/*visible=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButtonWithProfileReporting) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+
+  // Hide by default.
+  VerifyReportButton(/*visible=*/false);
+
+  // Turn on with the policy
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kCloudProfileReportingEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+  VerifyReportButton(/*visible=*/true);
+
+  // Hide while policy is off.
+  policy_map.Set(policy::key::kCloudProfileReportingEnabled,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
                  policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   provider_.UpdateChromePolicy(policy_map);

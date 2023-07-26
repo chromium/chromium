@@ -178,8 +178,9 @@ export class Page {
 
     // <if expr="not is_chromeos">
     this.updateReportButton(
-        (policyValues['chrome']?.policies['CloudReportingEnabled']?.value) ===
-        true);
+      !!policyValues['chrome']?.policies['CloudReportingEnabled']?.value ||
+      !!policyValues['chrome']?.policies['CloudProfileReportingEnabled']?.value,
+    );
     // </if>
     this.reloadPoliciesDone();
   }
