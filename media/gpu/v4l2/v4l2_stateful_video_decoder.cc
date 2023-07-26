@@ -345,6 +345,8 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
         RearmCAPTUREQueueMonitoring();
       }
+    } else {
+      NOTIMPLEMENTED() << "Midstream resolution change";
     }
   }
 
@@ -452,8 +454,10 @@ V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
 
 bool V4L2StatefulVideoDecoder::PollOnceForResolutionChangeEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  struct pollfd pollfds[1] = {
-      {.fd = device_fd_.get(), .events = POLLIN | POLLOUT | POLLERR | POLLPRI}};
+  // POLLERR, POLLHUP, or POLLNVAL are always return-able and anyway ignored
+  // when set in pollfd.events.
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
+  struct pollfd pollfds[1] = {{.fd = device_fd_.get(), .events = POLLPRI}};
   if (HANDLE_EINTR(poll(pollfds, std::size(pollfds), /*timeout=*/0)) <
       kIoctlOk) {
     PLOG(ERROR) << "Polling for events failed";
