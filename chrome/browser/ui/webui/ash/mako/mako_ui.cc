@@ -42,11 +42,11 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
 MakoUntrustedUI::~MakoUntrustedUI() = default;
 
 void MakoUntrustedUI::Show() {
-  LOG(ERROR) << "Mako UI shown";
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void MakoUntrustedUI::Hide() {
-  LOG(ERROR) << "Mako UI hidden";
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void MakoUntrustedUI::BindInterface(

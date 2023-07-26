@@ -40,7 +40,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   void OnBlur() override;
 
   // EditorInstanceImpl::Delegate overrides
-  void CommitEditorResult(const std::string& text) override;
+  void CommitEditorResult(std::string_view text) override;
 
  private:
   EditorInstanceImpl editor_instance_impl_;
