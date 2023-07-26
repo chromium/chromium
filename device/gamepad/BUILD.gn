@@ -145,7 +145,6 @@ component("gamepad") {
       "GameController.framework",
       "IOKit.framework",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
 
     if (is_mac) {
       sources += [

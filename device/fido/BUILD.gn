@@ -253,8 +253,6 @@ component("fido") {
       "AuthenticationServices.framework",
     ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
-
     deps += [ "//build:branding_buildflags" ]
   }
 
@@ -477,8 +475,6 @@ source_set("test_support") {
       "mac/scoped_touch_id_test_environment.h",
       "mac/scoped_touch_id_test_environment.mm",
     ]
-
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 
@@ -498,7 +494,6 @@ if (is_mac) {
       "//base",
       "//device/fido",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 

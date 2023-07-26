@@ -241,7 +241,6 @@ component("bluetooth") {
       "IOKit.framework",
       "Foundation.framework",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
