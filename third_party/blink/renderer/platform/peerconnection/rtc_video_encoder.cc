@@ -61,11 +61,6 @@
 
 namespace {
 
-// Enabled-by-default: only used as a kill-switch.
-BASE_FEATURE(kForceSoftwareForLowResolutions,
-             "ForceSoftwareForLowResolutions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsNV12GpuMemoryBufferVideoFrame(const webrtc::VideoFrame& input_image) {
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> video_frame_buffer =
       input_image.video_frame_buffer();
@@ -291,7 +286,6 @@ namespace blink {
 namespace features {
 
 // When disabled, SW is forced at <360p. When enabled, SW is forced at <=360p.
-// Only applicable if `kForceSoftwareForLowResolutions` has not been disabled.
 BASE_FEATURE(kForcingSoftwareIncludes360,
              "kForcingSoftwareIncludes360",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1700,8 +1694,7 @@ int32_t RTCVideoEncoder::InitEncode(
   if (base::FeatureList::IsEnabled(features::kForcingSoftwareIncludes360)) {
     force_sw_height = 360;
   }
-  if (base::FeatureList::IsEnabled(kForceSoftwareForLowResolutions) &&
-      codec_settings->height <= force_sw_height) {
+  if (codec_settings->height <= force_sw_height) {
     LOG(WARNING)
         << "Fallback to SW due to low resolution being less than 360p ("
         << codec_settings->width << "x" << codec_settings->height << ")";
