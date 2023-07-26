@@ -469,13 +469,20 @@ void LayoutBoxModelObject::UpdateFromStyle() {
 PhysicalRect LayoutBoxModelObject::PhysicalVisualOverflowRectIncludingFilters()
     const {
   NOT_DESTROYED();
-  PhysicalRect bounds_rect = PhysicalVisualOverflowRect();
-  if (!StyleRef().HasFilter())
-    return bounds_rect;
-  gfx::RectF float_rect(bounds_rect);
+  return ApplyFiltersToRect(PhysicalVisualOverflowRect());
+}
+
+PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
+    const PhysicalRect& rect) const {
+  NOT_DESTROYED();
+  if (!StyleRef().HasFilter()) {
+    return rect;
+  }
+  gfx::RectF float_rect(rect);
   gfx::RectF filter_reference_box = Layer()->FilterReferenceBox();
-  if (!filter_reference_box.size().IsZero())
+  if (!filter_reference_box.size().IsZero()) {
     float_rect.UnionEvenIfEmpty(filter_reference_box);
+  }
   float_rect = Layer()->MapRectForFilter(float_rect);
   return PhysicalRect::EnclosingRect(float_rect);
 }
