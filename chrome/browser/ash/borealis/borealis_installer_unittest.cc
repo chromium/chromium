@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_installer_impl.h"
 
 #include <memory>
@@ -63,7 +64,8 @@ class MockObserver : public BorealisInstaller::Observer {
 class BorealisInstallerTest : public testing::Test,
                               protected guest_os::FakeVmServicesHelper {
  public:
-  BorealisInstallerTest() = default;
+  BorealisInstallerTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~BorealisInstallerTest() override = default;
 
   // Disallow copy and assign.
@@ -87,8 +89,7 @@ class BorealisInstallerTest : public testing::Test,
     scoped_allowance_ =
         std::make_unique<ScopedAllowBorealis>(&profile_, /*also_enable=*/false);
 
-    installer_impl_ = std::make_unique<BorealisInstallerImpl>(&profile_);
-    installer_ = installer_impl_.get();
+    installer_ = std::make_unique<BorealisInstallerImpl>(&profile_);
     observer_ = std::make_unique<NiceMock<MockObserver>>();
     installer_->AddObserver(observer_.get());
 
@@ -100,7 +101,7 @@ class BorealisInstallerTest : public testing::Test,
   void TearDown() override {
     ctx_.reset();
     observer_.reset();
-    installer_impl_.reset();
+    installer_.reset();
   }
 
   void StartAndRunToCompletion() {
@@ -153,8 +154,7 @@ class BorealisInstallerTest : public testing::Test,
   std::unique_ptr<BorealisDiskManagerDispatcher> test_disk_dispatcher_;
   raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_;
   std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
-  std::unique_ptr<BorealisInstallerImpl> installer_impl_;
-  raw_ptr<BorealisInstaller, ExperimentalAsh> installer_;
+  std::unique_ptr<BorealisInstaller> installer_;
   std::unique_ptr<MockObserver> observer_;
 };
 
@@ -345,14 +345,12 @@ TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
                 BorealisContextManager::ContextOrFailure(ctx_.get()));
           }));
 
-  // Set a zero timeout otherwise the in-progress timeout gets cleaned up.
-  installer_impl_->SetMainAppTimeoutForTesting(base::Seconds(0));
+  StartAndRunToCompletion();
 
   EXPECT_CALL(*observer_,
               OnInstallationEnded(BorealisInstallResult::kMainAppNotPresent,
                                   testing::Not("")));
-
-  StartAndRunToCompletion();
+  task_environment_.FastForwardBy(base::Seconds(6));
 }
 
 // Note that we don't check if the DLC has/hasn't been installed, since the
