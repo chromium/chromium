@@ -144,15 +144,16 @@ base::Value::Dict GetFileSystemExceptionForPage(
     bool is_embargoed = false);
 
 // Calculates the number of days between now and `expiration_timestamp`,
-// timestamp of when a setting is going to expire. Only looks at the date
-// between now and `expiration_timestamp` i.e. doesn't take into account time.
+// timestamp of when a setting is going to expire, and returns the appropriate
+// string for display in site settings. Only looks at the date between now and
+// `expiration_timestamp` i.e. doesn't take into account time.
 
 // E.g. current time 03/07 18:00. If expiration is in:
 //   03/07 01:00 then, time diff is 17h, and returns 0.
 //   04/07 19:00 then, time diff is 23h, but returns 1.
 //   05/07 19:00 then, time diff is 47h, and returns 2.
 //   05/07 17:00 then, time diff is 49h, and returns 2.
-int GetDaysToExpiration(base::Time expiration_timestamp);
+std::u16string GetExpirationDescription(const base::Time& expiration_timestamp);
 
 // Helper function to construct a dictionary for a storage access exceptions
 // grouped by origin.
@@ -172,6 +173,7 @@ base::Value::Dict GetExceptionForPage(
     const std::string& display_name,
     const ContentSetting& setting,
     const std::string& provider_name,
+    const base::Time& expiration,
     bool incognito,
     bool is_embargoed = false);
 

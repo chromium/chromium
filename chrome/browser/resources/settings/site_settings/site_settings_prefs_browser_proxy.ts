@@ -83,6 +83,7 @@ export interface RawSiteException {
   origin: string;
   displayName: string;
   type: string;
+  description?: string;
   setting: ContentSetting;
   source: SiteSettingSource;
 }
@@ -99,6 +100,7 @@ export interface SiteException {
   origin: string;
   displayName: string;
   setting: ContentSetting;
+  description?: string;
   enforcement: chrome.settingsPrivate.Enforcement|null;
   controlledBy: chrome.settingsPrivate.ControlledBy;
   // <if expr="chromeos_ash">

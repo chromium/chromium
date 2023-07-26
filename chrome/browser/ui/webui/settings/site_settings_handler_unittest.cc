@@ -2121,12 +2121,13 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
       CONTENT_SETTING_BLOCK,
       site_settings::SiteSettingSourceToString(
           site_settings::SiteSettingSource::kPreference),
-      false);
+      /*expiration=*/base::Time::Now(), /*incognito=*/false);
 
   CHECK(exception.FindString(site_settings::kOrigin));
   CHECK(exception.FindString(site_settings::kDisplayName));
   CHECK(exception.FindString(site_settings::kEmbeddingOrigin));
   CHECK(exception.FindString(site_settings::kSetting));
+  CHECK(exception.FindString(site_settings::kDescription));
   CHECK(exception.FindBool(site_settings::kIncognito).has_value());
 
   base::Value::List args;
@@ -2266,6 +2267,40 @@ TEST_F(SiteSettingsHandlerTest, ZoomLevels) {
   double default_level = host_zoom_map->GetDefaultZoomLevel();
   double level = host_zoom_map->GetZoomLevelForHostAndScheme("http", http_host);
   EXPECT_EQ(default_level, level);
+}
+
+TEST_F(SiteSettingsHandlerTest, TemporaryCookieExceptions) {
+  // Set a temporary exception directly, instead of relying on any helpers that
+  // have duration configurable via feature parameters.
+  constexpr int kExpirationDurationInDays = 100;
+
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Days(kExpirationDurationInDays));
+  constraints.set_session_model(content_settings::SessionModel::Durable);
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  host_content_settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURL(GURL("https://example.com")),
+      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW,
+      constraints);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(kCookies);
+
+  handler()->HandleGetExceptionList(get_exception_list_args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  const base::Value::List& exception_list = data.arg3()->GetList();
+  EXPECT_EQ(1UL, exception_list.size());
+  EXPECT_EQ(
+
+      l10n_util::GetPluralStringFUTF8(IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL,
+                                      kExpirationDurationInDays),
+      CHECK_DEREF(exception_list[0].GetDict().FindString("description")));
 }
 
 class SiteSettingsHandlerIsolatedWebAppTest : public SiteSettingsHandlerTest {

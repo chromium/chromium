@@ -365,7 +365,9 @@ void GetPolicyAllowedUrls(ContentSettingsType type,
     exceptions->push_back(GetExceptionForPage(
         type, profile, pattern, ContentSettingsPattern(), display_name,
         CONTENT_SETTING_ALLOW,
-        SiteSettingSourceToString(SiteSettingSource::kPolicy), incognito));
+        SiteSettingSourceToString(SiteSettingSource::kPolicy),
+        // Pass base::Time() to indicate the exceptions do not expire.
+        base::Time(), incognito));
   }
 }
 
@@ -638,6 +640,26 @@ base::Value::Dict GetFileSystemExceptionForPage(
   return exception;
 }
 
+std::u16string GetExpirationDescription(const base::Time& expiration) {
+  // There is no user facing pathway to creating exceptions that expect an
+  // expiration, without one, but we should handle that pathway gracefully
+  // anyway to support things like extensions & policy.
+  int days = 0;
+  if (!expiration.is_null()) {
+    const base::TimeDelta time_diff =
+        expiration.LocalMidnight() - base::Time::Now().LocalMidnight();
+
+    // Only exceptions that haven't expired should reach this function.
+    // However, there is an edge case where an exception could expire between
+    // being fetched and this calculation. So let's always return a valid
+    // number, zero.
+    days = std::max(time_diff.InDays(), 0);
+  }
+
+  return l10n_util::GetPluralStringFUTF16(IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL,
+                                          days);
+}
+
 // Create a base::Value::Dict that will act as a data source for a single row
 // in a HostContentSettingsMap-controlled exceptions table (e.g., cookies).
 base::Value::Dict GetExceptionForPage(
@@ -648,6 +670,7 @@ base::Value::Dict GetExceptionForPage(
     const std::string& display_name,
     const ContentSetting& setting,
     const std::string& provider_name,
+    const base::Time& expiration,
     bool incognito,
     bool is_embargoed) {
   base::Value::Dict exception;
@@ -663,27 +686,14 @@ base::Value::Dict GetExceptionForPage(
   DCHECK(!setting_string.empty());
   exception.Set(kSetting, setting_string);
 
+  if (!expiration.is_null() && !incognito) {
+    exception.Set(kDescription, GetExpirationDescription(expiration));
+  }
+
   exception.Set(kSource, provider_name);
   exception.Set(kIncognito, incognito);
   exception.Set(kIsEmbargoed, is_embargoed);
   return exception;
-}
-
-int GetDaysToExpiration(base::Time expiration_timestamp) {
-  // All storage exceptions should have an expiration date. But in case they
-  // don't, let's return a valid number.
-  if (expiration_timestamp.is_null()) {
-    return 0;
-  }
-
-  const base::TimeDelta time_diff =
-      expiration_timestamp.LocalMidnight() - base::Time::Now().LocalMidnight();
-
-  // Only exceptions that haven't expired should reach this function.
-  // However, there is an edge case where an exception could expire between
-  // being fetched and this calculation. So let's always return a valid number,
-  // zero.
-  return std::max(time_diff.InDays(), 0);
 }
 
 std::u16string GetStorageAccessEmbeddingDescription(
@@ -692,9 +702,7 @@ std::u16string GetStorageAccessEmbeddingDescription(
     return l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED);
   }
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL,
-      GetDaysToExpiration(embedding_sa_exception.expiration));
+  return GetExpirationDescription(embedding_sa_exception.expiration);
 }
 
 // If the given |pattern| represents an individual origin, Isolated Web App, or
@@ -896,7 +904,8 @@ void GetExceptionsForContentType(ContentSettingsType type,
       this_provider_exceptions.push_back(GetExceptionForPage(
           type, profile, primary_pattern, secondary_pattern,
           std::move(display_name), site_exception_info.content_setting, source,
-          is_incognito, site_exception_info.is_embargoed));
+          site_exception_info.expiration, is_incognito,
+          site_exception_info.is_embargoed));
     }
   }
 

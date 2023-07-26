@@ -1308,6 +1308,7 @@ suite('EditExceptionDialog', function() {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       displayName: 'foo.com',
       origin: 'foo.com',
+      description: '',
     };
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();

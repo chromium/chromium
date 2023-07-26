@@ -236,6 +236,7 @@ class SiteSettingsHandler
       StorageAccessExceptions_NormalAndIncognito_SamePatterns);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            StorageAccessExceptions_Description_IsEmbargoed);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, TemporaryCookieExceptions);
   FRIEND_TEST_ALL_PREFIXES(StorageAccessSiteSettingsHandlerLifetimeTest,
                            StorageAccessExceptions_Description);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel);

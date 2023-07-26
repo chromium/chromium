@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -44,6 +45,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -601,58 +603,64 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
   }
 }
 
-TEST_F(SiteSettingsHelperTest, GetDaysToExpiration) {
+TEST_F(SiteSettingsHelperTest, GetExpirationDescription) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &SiteSettingsHelperTest::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
 
-  int days_to_expiration = 0;
-  int expiration =
-      GetDaysToExpiration(GetReferenceTime() + base::Days(days_to_expiration));
+  auto description =
+      GetExpirationDescription(GetReferenceTime() + base::Days(0));
 
-  EXPECT_EQ(days_to_expiration, expiration);
+  EXPECT_EQ(description, l10n_util::GetPluralStringFUTF16(
+                             IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL, 0));
 }
 
-TEST_F(SiteSettingsHelperTest, GetDaysToExpiration_Tomorrow) {
+TEST_F(SiteSettingsHelperTest, GetExpirationDescription_Tomorrow) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &SiteSettingsHelperTest::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
 
-  int days_to_expiration = 1;
-  int expiration =
-      GetDaysToExpiration(GetReferenceTime() + base::Days(days_to_expiration));
+  auto description =
+      GetExpirationDescription(GetReferenceTime() + base::Days(1));
 
-  EXPECT_EQ(1, expiration);
-}
-
-TEST_F(SiteSettingsHelperTest,
-       GetDaysToExpiration_Tomorrow_LessThan24_AfterMidnight) {
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &SiteSettingsHelperTest::GetReferenceTime,
-      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
-
-  int expiration = GetDaysToExpiration(GetReferenceTime() + base::Hours(14));
-
-  EXPECT_EQ(1, expiration);
+  EXPECT_EQ(description, l10n_util::GetPluralStringFUTF16(
+                             IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL, 1));
 }
 
 TEST_F(SiteSettingsHelperTest,
-       GetDaysToExpiration_Tomorrow_LessThan24_BeforeMidnight) {
+       GetExpirationDescription_Tomorrow_LessThan24_AfterMidnight) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &SiteSettingsHelperTest::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
 
-  int expiration = GetDaysToExpiration(GetReferenceTime() + base::Hours(12));
-  EXPECT_EQ(0, expiration);
+  auto description =
+      GetExpirationDescription(GetReferenceTime() + base::Hours(14));
+
+  EXPECT_EQ(description, l10n_util::GetPluralStringFUTF16(
+                             IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL, 1));
 }
 
-TEST_F(SiteSettingsHelperTest, GetDaysToExpiration_Expired) {
+TEST_F(SiteSettingsHelperTest,
+       GetExpirationDescription_Tomorrow_LessThan24_BeforeMidnight) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &SiteSettingsHelperTest::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
 
-  int expiration = GetDaysToExpiration(GetReferenceTime() - base::Days(4));
-  EXPECT_EQ(0, expiration);
+  auto description =
+      GetExpirationDescription(GetReferenceTime() + base::Hours(12));
+  EXPECT_EQ(description, l10n_util::GetPluralStringFUTF16(
+                             IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL, 0));
+}
+
+TEST_F(SiteSettingsHelperTest, GetExpirationDescription_Expired) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SiteSettingsHelperTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  auto description =
+      GetExpirationDescription(GetReferenceTime() - base::Days(4));
+  EXPECT_EQ(description, l10n_util::GetPluralStringFUTF16(
+                             IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL, 0));
 }
 
 namespace {
