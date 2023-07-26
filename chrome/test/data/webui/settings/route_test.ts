@@ -9,7 +9,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
 
-suite('route', function() {
+suite('Basic', function() {
   /**
    * Returns a new promise that resolves after a window 'popstate' event.
    */
@@ -363,7 +363,7 @@ suite('NonExistentRoute', function() {
   });
 });
 
-suite('SafetyHubReachableTests', function() {
+suite('SafetyHubReachable', function() {
   let routes: SettingsRoutes;
 
   setup(function() {
@@ -388,7 +388,7 @@ suite('SafetyHubReachableTests', function() {
   });
 });
 
-suite('SafetyHubNotReachableTests', function() {
+suite('SafetyHubNotReachable', function() {
   let routes: SettingsRoutes;
 
   setup(function() {

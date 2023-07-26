@@ -92,85 +92,6 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
   mocha.run();
 });
 
-var CrSettingsSafetyCheckPermissionsTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/safety_check_permissions_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'content_settings::features::kSafetyCheckUnusedSitePermissions',
-        'features::kSafetyCheckNotificationPermissions',
-        'features::kSafetyCheckExtensions',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsSafetyCheckPermissionsTest', 'All', function() {
-  mocha.run();
-});
-
-var CrSettingsSiteListTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/site_list_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'privacy_sandbox::kPrivacySandboxSettings4',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsSiteListTest', 'SiteList', function() {
-  runMochaSuite('SiteList');
-});
-
-// TODO(crbug.com/929455, crbug.com/1064002): Flaky test. When it is fixed,
-// merge SiteListDisabled back into SiteList.
-TEST_F('CrSettingsSiteListTest', 'DISABLED_SiteListDisabled', function() {
-  runMochaSuite('DISABLED_SiteList');
-});
-
-// TODO(crbug.com/929455): When the bug is fixed, merge
-// SiteListEmbargoedOrigin into SiteList.
-TEST_F('CrSettingsSiteListTest', 'SiteListEmbargoedOrigin', function() {
-  runMochaSuite('SiteListEmbargoedOrigin');
-});
-
-// TODO(crbug.com/929455): When the bug is fixed, merge
-// SiteListCookiesExceptionTypes into SiteList.
-TEST_F('CrSettingsSiteListTest', 'SiteListCookiesExceptionTypes', function() {
-  runMochaSuite('SiteListCookiesExceptionTypes');
-});
-
-TEST_F('CrSettingsSiteListTest', 'SiteListSearchTests', function() {
-  runMochaSuite('SiteListSearchTests');
-});
-
-TEST_F('CrSettingsSiteListTest', 'EditExceptionDialog', function() {
-  runMochaSuite('EditExceptionDialog');
-});
-
-TEST_F('CrSettingsSiteListTest', 'AddExceptionDialog', function() {
-  runMochaSuite('AddExceptionDialog');
-});
-
-// TODO(crbug.com/1378703): Remove after crbug/1378703 launched.
-TEST_F(
-    'CrSettingsSiteListTest', 'AddExceptionDialog_PrivacySandbox4Disabled',
-    function() {
-      runMochaSuite('AddExceptionDialog_PrivacySandbox4Disabled');
-    });
-
 var CrSettingsSiteDetailsTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -366,50 +287,6 @@ TEST_F(
       runMochaSuite('enableWebBluetoothNewPermissionsBackend');
     });
 
-var CrSettingsPrivacyPagePrivacySandboxRestrictedTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
-  }
-  get featuresWithParameters() {
-    return [{
-      featureName: 'privacy_sandbox::kPrivacySandboxSettings4',
-      parameters: [{name: 'force-restricted-user', value: true}]
-    }];
-  }
-};
-
-TEST_F(
-    'CrSettingsPrivacyPagePrivacySandboxRestrictedTest', 'Restricted',
-    function() {
-      runMochaSuite('PrivacySandbox4EnabledButRestricted');
-    });
-
-var CrSettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
-  }
-
-  get featuresWithParameters() {
-    return [{
-      featureName: 'privacy_sandbox::kPrivacySandboxSettings4',
-      parameters: [
-        {name: 'force-restricted-user', value: true},
-        {name: 'restricted-notice', value: true}
-      ]
-    }];
-  }
-};
-
-TEST_F(
-    'CrSettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest',
-    'RestrictedWithNotice', function() {
-      runMochaSuite('PrivacySandbox4EnabledButRestrictedWithNotice');
-    });
-
 var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -470,41 +347,6 @@ TEST_F(
     function() {
       runMochaSuite('PreloadingDesktopSettingsSubPageDisabled');
     });
-
-var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/route_test.js';
-  }
-};
-
-TEST_F('CrSettingsRouteTest', 'Basic', function() {
-  runMochaSuite('route');
-});
-
-TEST_F('CrSettingsRouteTest', 'DynamicParameters', function() {
-  runMochaSuite('DynamicParameters');
-});
-
-TEST_F('CrSettingsRouteTest', 'SafetyHubReachableTests', function() {
-  runMochaSuite('SafetyHubReachableTests');
-});
-
-TEST_F('CrSettingsRouteTest', 'SafetyHubNotReachableTests', function() {
-  runMochaSuite('SafetyHubNotReachableTests');
-});
-
-// Copied from Polymer 2 test:
-// Failing on ChromiumOS dbg. https://crbug.com/709442
-GEN('#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)) && !defined(NDEBUG)');
-GEN('#define MAYBE_NonExistentRoute DISABLED_NonExistentRoute');
-GEN('#else');
-GEN('#define MAYBE_NonExistentRoute NonExistentRoute');
-GEN('#endif');
-
-TEST_F('CrSettingsRouteTest', 'MAYBE_NonExistentRoute', function() {
-  runMochaSuite('NonExistentRoute');
-});
 
 var CrSettingsAdvancedPageTest = class extends CrSettingsBrowserTest {
   /** @override */

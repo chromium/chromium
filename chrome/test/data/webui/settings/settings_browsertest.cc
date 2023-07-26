@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -520,6 +522,50 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
           "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
 }
 
+class SettingsPrivacyPagePrivacySandboxRestrictedTest
+    : public SettingsBrowserTest {
+ protected:
+  SettingsPrivacyPagePrivacySandboxRestrictedTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {
+            {"force-restricted-user", "true"},
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPagePrivacySandboxRestrictedTest,
+                       Restricted) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('PrivacySandbox4EnabledButRestricted')");
+}
+
+class SettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest
+    : public SettingsBrowserTest {
+ protected:
+  SettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {
+            {"force-restricted-user", "true"},
+            {"restricted-notice", "true"},
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest,
+    RestrictedWithNotice) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('PrivacySandbox4EnabledButRestrictedWithNotice')");
+}
+
 class SettingsPrivacySandboxPageTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -567,6 +613,55 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
           "runMochaSuite('AdMeasurementSubpage')");
 }
 
+using SettingsRouteTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsRouteTest, Basic) {
+  RunTest("settings/route_test.js", "runMochaSuite('Basic')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsRouteTest, DynamicParameters) {
+  RunTest("settings/route_test.js", "runMochaSuite('DynamicParameters')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHubReachable) {
+  RunTest("settings/route_test.js", "runMochaSuite('SafetyHubReachable')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHubNotReachable) {
+  RunTest("settings/route_test.js", "runMochaSuite('SafetyHubNotReachable')");
+}
+
+// Copied from Polymer 2 test:
+// Failing on ChromiumOS dbg. https://crbug.com/709442
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)) && !defined(NDEBUG)
+#define MAYBE_NonExistentRoute DISABLED_NonExistentRoute
+#else
+#define MAYBE_NonExistentRoute NonExistentRoute
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsRouteTest, MAYBE_NonExistentRoute) {
+  RunTest("settings/route_test.js", "runMochaSuite('NonExistentRoute')");
+}
+
+class SettingsSafetyCheckPermissionsTest : public SettingsBrowserTest {
+ protected:
+  SettingsSafetyCheckPermissionsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            content_settings::features::kSafetyCheckUnusedSitePermissions,
+            features::kSafetyCheckNotificationPermissions,
+            features::kSafetyCheckExtensions,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsSafetyCheckPermissionsTest, All) {
+  RunTest("settings/safety_check_permissions_test.js", "mocha.run()");
+}
+
 using SettingsSecurityPageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
@@ -608,6 +703,53 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
           "runMochaSuite('SpellCheck OfficialBuild')");
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+class SettingsSiteListTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      privacy_sandbox::kPrivacySandboxSettings4};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteList) {
+  RunTest("settings/site_list_test.js", "runMochaSuite('SiteList')");
+}
+
+// TODO(crbug.com/929455, crbug.com/1064002): Flaky test. When it is fixed,
+// merge SiteListDisabled back into SiteList.
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, DISABLED_SiteListDisabled) {
+  RunTest("settings/site_list_test.js", "runMochaSuite('DISABLED_SiteList')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListEmbargoedOrigin) {
+  RunTest("settings/site_list_test.js",
+          "runMochaSuite('SiteListEmbargoedOrigin')");
+}
+
+// TODO(crbug.com/929455): When the bug is fixed, merge
+// SiteListCookiesExceptionTypes into SiteList.
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListCookiesExceptionTypes) {
+  RunTest("settings/site_list_test.js",
+          "runMochaSuite('SiteListCookiesExceptionTypes')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListSearchTests) {
+  RunTest("settings/site_list_test.js", "runMochaSuite('SiteListSearchTests')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, EditExceptionDialog) {
+  RunTest("settings/site_list_test.js", "runMochaSuite('EditExceptionDialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, AddExceptionDialog) {
+  RunTest("settings/site_list_test.js", "runMochaSuite('AddExceptionDialog')");
+}
+
+// TODO(crbug.com/1378703): Remove after crbug/1378703 launched.
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest,
+                       AddExceptionDialog_PrivacySandbox4Disabled) {
+  RunTest("settings/site_list_test.js",
+          "runMochaSuite('AddExceptionDialog_PrivacySandbox4Disabled')");
+}
 
 using SettingsTranslatePageTest = SettingsBrowserTest;
 
