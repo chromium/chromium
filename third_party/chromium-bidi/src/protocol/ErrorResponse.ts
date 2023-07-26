@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import type {ErrorResponse} from './webdriver-bidi.js';
 import {ErrorCode} from './webdriver-bidi.js';
 
@@ -42,21 +41,15 @@ export class InvalidArgumentException extends Exception {
   }
 }
 
-export class MoveTargetOutOfBoundsException extends Exception {
-  constructor(message: string, stacktrace?: string) {
-    super(ErrorCode.MoveTargetOutOfBounds, message, stacktrace);
-  }
-}
-
-export class NoSuchHandleException extends Exception {
-  constructor(message: string, stacktrace?: string) {
-    super(ErrorCode.NoSuchHandle, message, stacktrace);
-  }
-}
-
 export class InvalidSessionIdException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.InvalidSessionId, message, stacktrace);
+  }
+}
+
+export class MoveTargetOutOfBoundsException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.MoveTargetOutOfBounds, message, stacktrace);
   }
 }
 
@@ -66,21 +59,27 @@ export class NoSuchAlertException extends Exception {
   }
 }
 
+export class NoSuchElementException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchElement, message, stacktrace);
+  }
+}
+
 export class NoSuchFrameException extends Exception {
-  constructor(message: string) {
-    super(ErrorCode.NoSuchFrame, message);
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchFrame, message, stacktrace);
+  }
+}
+
+export class NoSuchHandleException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchHandle, message, stacktrace);
   }
 }
 
 export class NoSuchNodeException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchNode, message, stacktrace);
-  }
-}
-
-export class NoSuchElementException extends Exception {
-  constructor(message: string, stacktrace?: string) {
-    super(ErrorCode.NoSuchElement, message, stacktrace);
   }
 }
 
@@ -105,6 +104,18 @@ export class UnknownCommandException extends Exception {
 export class UnknownErrorException extends Exception {
   constructor(message: string, stacktrace = new Error().stack) {
     super(ErrorCode.UnknownError, message, stacktrace);
+  }
+}
+
+export class UnableToCaptureScreenException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnableToCaptureScreen, message, stacktrace);
+  }
+}
+
+export class UnableToCloseBrowserException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnableToCloseBrowser, message, stacktrace);
   }
 }
 
