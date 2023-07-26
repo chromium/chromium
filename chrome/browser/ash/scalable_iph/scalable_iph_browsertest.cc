@@ -167,12 +167,6 @@ class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
 
 class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
  protected:
-  void SetUpOnMainThread() override {
-    ScalableIphBrowserTest::SetUpOnMainThread();
-
-    mock_delegate()->FakeShowBubble();
-  }
-
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
     AppendFakeUiParamsBubble(params);
@@ -416,9 +410,37 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIph_Bubble) {
+  EnableTestIphFeature();
+
+  // Tracker::Dismissed must be called when an IPH gets dismissed.
+  EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+
+  scalable_iph::ScalableIphDelegate::BubbleParams expected_params;
+  expected_params.bubble_id = ScalableIphBrowserTestBase::kTestBubbleId;
+  expected_params.text = ScalableIphBrowserTestBase::kTestBubbleText;
+  expected_params.button.text =
+      ScalableIphBrowserTestBase::kTestBubbleButtonText;
+  expected_params.icon =
+      scalable_iph::ScalableIphDelegate::BubbleIcon::kGoogleDocsIcon;
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowBubble(::testing::Eq(expected_params), ::testing::NotNull()))
+      .WillOnce(
+          [](const scalable_iph::ScalableIphDelegate::BubbleParams& params,
+             std::unique_ptr<scalable_iph::IphSession> session) {
+            // Simulate that an IPH gets dismissed.
+            session.reset();
+          });
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+}
+
 // TODO(b/290307529): Fix the test.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, DISABLED_ShowBubble) {
   EnableTestIphFeature();
+  mock_delegate()->FakeShowBubble();
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
@@ -432,6 +454,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, DISABLED_ShowBubble) {
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, RemoveBubble) {
   EnableTestIphFeature();
+  mock_delegate()->FakeShowBubble();
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));

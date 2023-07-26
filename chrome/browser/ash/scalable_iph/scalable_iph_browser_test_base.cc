@@ -187,6 +187,9 @@ void ScalableIphBrowserTestBase::AppendFakeUiParamsBubble(
   params[FullyQualified(kScalableIphTest,
                         scalable_iph::kCustomBubbleButtonTextParamName)] =
       kTestBubbleButtonText;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomBubbleIconParamName)] =
+      kTestBubbleIconString;
 }
 
 // static

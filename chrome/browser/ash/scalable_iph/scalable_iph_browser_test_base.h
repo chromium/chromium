@@ -35,6 +35,7 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static constexpr char kTestBubbleId[] = "test_bubble_id";
   static constexpr char kTestBubbleText[] = "Test Bubble Text";
   static constexpr char kTestBubbleButtonText[] = "Test Bubble Button Text";
+  static constexpr char kTestBubbleIconString[] = "GoogleDocsIcon";
 
   static constexpr char kTestButtonActionType[] = "OpenChrome";
   static constexpr char kTestButtonActionEvent[] =

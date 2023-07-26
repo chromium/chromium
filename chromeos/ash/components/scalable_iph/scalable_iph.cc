@@ -30,6 +30,7 @@ namespace {
 using NotificationParams =
     ::scalable_iph::ScalableIphDelegate::NotificationParams;
 using BubbleParams = ::scalable_iph::ScalableIphDelegate::BubbleParams;
+using BubbleIcon = ::scalable_iph::ScalableIphDelegate::BubbleIcon;
 
 constexpr char kFunctionCallAfterKeyedServiceShutdown[] =
     "Function call after keyed service shutdown.";
@@ -82,6 +83,20 @@ const base::flat_map<std::string, ActionType>& GetActionTypesMap() {
           {kActionTypeOpenFileManager, ActionType::kOpenFileManager},
       });
   return *action_types_map;
+}
+
+const base::flat_map<std::string, BubbleIcon>& GetBubbleIconsMap() {
+  // Key will be set in server side config.
+  static const base::NoDestructor<base::flat_map<std::string, BubbleIcon>>
+      bubble_icons_map({
+          {kBubbleIconChromeIcon, BubbleIcon::kChromeIcon},
+          {kBubbleIconPlayStoreIcon, BubbleIcon::kPlayStoreIcon},
+          {kBubbleIconGoogleDocsIcon, BubbleIcon::kGoogleDocsIcon},
+          {kBubbleIconGooglePhotosIcon, BubbleIcon::kGooglePhotosIcon},
+          {kBubbleIconPrintJobsIcon, BubbleIcon::kPrintJobsIcon},
+          {kBubbleIconYouTubeIcon, BubbleIcon::kYouTubeIcon},
+      });
+  return *bubble_icons_map;
 }
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
@@ -189,6 +204,16 @@ NotificationParams ParseNotificationParams(const base::Feature& feature) {
   return param;
 }
 
+BubbleIcon ParseBubbleIcon(const std::string& icon_string) {
+  auto it = GetBubbleIconsMap().find(icon_string);
+  if (it == GetBubbleIconsMap().end()) {
+    // If the server side config bubble icon cannot be parsed, will return the
+    // kNoIcon as the parsed result.
+    return BubbleIcon::kNoIcon;
+  }
+  return it->second;
+}
+
 BubbleParams ParseBubbleParams(const base::Feature& feature) {
   // TODO(b/288167957): Implement a fallback for an invalid config, e.g. Do not
   // show an IPH for the case instead of CHECK failure. Config is served from
@@ -203,6 +228,8 @@ BubbleParams ParseBubbleParams(const base::Feature& feature) {
   param.button.text = GetParamValue(feature, kCustomBubbleButtonTextParamName);
   CHECK(!param.button.text.empty())
       << kCustomBubbleButtonTextParamName << " is a required field";
+  auto icon_string = GetParamValue(feature, kCustomBubbleIconParamName);
+  param.icon = ParseBubbleIcon(icon_string);
   return param;
 }
 

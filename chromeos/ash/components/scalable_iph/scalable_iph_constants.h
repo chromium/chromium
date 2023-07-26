@@ -114,6 +114,16 @@ constexpr char kCustomNotificationImageTypeValueWallpaper[] = "Wallpaper";
 constexpr char kCustomBubbleIdParamName[] = "x_CustomBubbleId";
 constexpr char kCustomBubbleTextParamName[] = "x_CustomBubbleText";
 constexpr char kCustomBubbleButtonTextParamName[] = "x_CustomBubbleButtonText";
+constexpr char kCustomBubbleIconParamName[] = "x_CustomBubbleIcon";
+
+// Constants for bubble icons, has 1 to 1 mapping with the BubbleIcon.
+// Used in server side config.
+constexpr char kBubbleIconChromeIcon[] = "ChromeIcon";
+constexpr char kBubbleIconPlayStoreIcon[] = "PlayStoreIcon";
+constexpr char kBubbleIconGoogleDocsIcon[] = "GoogleDocsIcon";
+constexpr char kBubbleIconGooglePhotosIcon[] = "GooglePhotosIcon";
+constexpr char kBubbleIconPrintJobsIcon[] = "PrintJobsIcon";
+constexpr char kBubbleIconYouTubeIcon[] = "YouTubeIcon";
 
 // Parameters for action.
 constexpr char kCustomButtonActionTypeParamName[] = "x_CustomButtonActionType";

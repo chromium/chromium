@@ -51,6 +51,13 @@ class ScalableIphDelegate {
 
   enum class BubbleIcon {
     kNoIcon,
+    kChromeIcon,
+    kPlayStoreIcon,
+    kGoogleDocsIcon,
+    kGooglePhotosIcon,
+    kPrintJobsIcon,
+    kYouTubeIcon,
+    kLastIcon = kYouTubeIcon,
   };
 
   struct BubbleParams {

@@ -15,9 +15,10 @@
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/scalable_iph/wallpaper_ash_notification_view.h"
 #include "ash/system/message_center/message_view_factory.h"
+#include "ash/webui/grit/ash_print_management_resources.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -31,14 +32,21 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/scalable_iph/buildflags.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+#include "chrome/grit/preinstalled_web_apps_resources.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
 
 namespace ash {
 
@@ -56,6 +64,7 @@ using NotificationParams =
     ::scalable_iph::ScalableIphDelegate::NotificationParams;
 using NotificationImageType =
     ::scalable_iph::ScalableIphDelegate::NotificationImageType;
+using BubbleIcon = ::scalable_iph::ScalableIphDelegate::BubbleIcon;
 using scalable_iph::ActionType;
 
 constexpr char kNotificationSourceName[] = "ChromeOS";
@@ -149,6 +158,29 @@ void OpenUrlForProfile(Profile* profile, const GURL& url) {
       ash::NewWindowDelegate::Disposition::kNewWindow);
 }
 
+int GetResourceId(BubbleIcon icon) {
+#if BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+  switch (icon) {
+    case BubbleIcon::kChromeIcon:
+      return IDR_PRODUCT_LOGO_128;
+    case BubbleIcon::kGoogleDocsIcon:
+      return IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG;
+    case BubbleIcon::kPrintJobsIcon:
+      return IDR_ASH_PRINT_MANAGEMENT_PRINT_MANAGEMENT_192_PNG;
+    case BubbleIcon::kYouTubeIcon:
+      return IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG;
+    case BubbleIcon::kPlayStoreIcon:
+      return IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_128_PNG;
+    case BubbleIcon::kGooglePhotosIcon:
+      return IDR_SCALABLE_IPH_GOOGLE_PHOTOS_ICON_128_PNG;
+    case BubbleIcon::kNoIcon:
+      NOTREACHED_NORETURN();
+  }
+#else
+  return IDR_PRODUCT_LOGO_128;
+#endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+}
+
 class ScalableIphNotificationDelegate
     : public message_center::NotificationDelegate {
  public:
@@ -224,6 +256,10 @@ void ScalableIphDelegateImpl::ShowBubble(
   nudge_data.dismiss_callback =
       base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeDismissed,
                           weak_ptr_factory_.GetWeakPtr(), params.bubble_id);
+  if (params.icon != BubbleIcon::kNoIcon) {
+    nudge_data.image_model =
+        ui::ImageModel::FromResourceId(GetResourceId(params.icon));
+  }
   ash::AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
