@@ -33,7 +33,6 @@ class TestEngineComponentsFactory : public EngineComponentsFactory {
       const std::vector<SyncEngineEventListener*>& listeners,
       DebugInfoGetter* debug_info_getter,
       ModelTypeRegistry* model_type_registry,
-      const std::string& invalidator_client_id,
       const std::string& cache_guid,
       const std::string& store_birthday,
       const std::string& bag_of_chips,

@@ -164,13 +164,6 @@ void SyncStatusTracker::SetCacheGuid(const std::string& cache_guid) {
   status_changed_callback_.Run(status_);
 }
 
-void SyncStatusTracker::SetInvalidatorClientId(
-    const std::string& invalidator_client_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  status_.invalidator_client_id = invalidator_client_id;
-  status_changed_callback_.Run(status_);
-}
-
 void SyncStatusTracker::SetHasPendingInvalidations(
     ModelType type,
     bool has_pending_invalidations) {

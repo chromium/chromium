@@ -44,7 +44,6 @@ class SyncCycleContext {
                    const std::vector<SyncEngineEventListener*>& listeners,
                    DebugInfoGetter* debug_info_getter,
                    ModelTypeRegistry* model_type_registry,
-                   const std::string& invalidator_client_id,
                    const std::string& cache_guid,
                    const std::string& birthday,
                    const std::string& bag_of_chips,
@@ -98,14 +97,6 @@ class SyncCycleContext {
   }
 
   const sync_pb::ClientStatus& client_status() const { return client_status_; }
-
-  const std::string& invalidator_client_id() const {
-    return invalidator_client_id_;
-  }
-
-  void set_invalidator_client_id(const std::string& id) {
-    invalidator_client_id_ = id;
-  }
 
   ModelTypeRegistry* model_type_registry() { return model_type_registry_; }
 
@@ -164,12 +155,6 @@ class SyncCycleContext {
 
   // Satus information to be sent up to the server.
   sync_pb::ClientStatus client_status_;
-
-  // This is a copy of the identifier the that the invalidations client used to
-  // register itself with the invalidations server during startup.  We need to
-  // provide this to the sync server when we make changes to enable it to
-  // prevent us from receiving notifications of changes we make ourselves.
-  std::string invalidator_client_id_;
 
   // Whether the account(s) present in the content area's cookie jar match the
   // chrome account. If multiple accounts are present in the cookie jar, a

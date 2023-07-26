@@ -21,8 +21,6 @@
 #import "components/dom_distiller/core/dom_distiller_service.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/sync/typed_url_sync_bridge.h"
-#import "components/invalidation/impl/invalidation_switches.h"
-#import "components/invalidation/impl/profile_invalidation_provider.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
@@ -43,7 +41,6 @@
 #import "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
 #import "ios/chrome/browser/metrics/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -181,16 +178,6 @@ IOSChromeSyncClient::CreateDataTypeControllers(
   // The iOS port does not have any platform-specific datatypes.
   return component_factory_->CreateCommonDataTypeControllers(
       /*disabled_types=*/{}, sync_service);
-}
-
-invalidation::InvalidationService*
-IOSChromeSyncClient::GetInvalidationService() {
-  invalidation::ProfileInvalidationProvider* provider =
-      IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
-          browser_state_);
-  if (provider)
-    return provider->GetInvalidationService();
-  return nullptr;
 }
 
 syncer::SyncInvalidationsService*

@@ -84,7 +84,6 @@ class SyncManagerImpl
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()
       override;
   void OnCookieJarChanged(bool account_mismatch) override;
-  void UpdateInvalidationClientId(const std::string& client_id) override;
   void UpdateActiveDevicesInvalidationInfo(
       ActiveDevicesInvalidationInfo active_devices_invalidation_info) override;
 

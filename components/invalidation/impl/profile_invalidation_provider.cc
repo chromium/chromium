@@ -25,6 +25,7 @@ ProfileInvalidationProvider::ProfileInvalidationProvider(
 ProfileInvalidationProvider::~ProfileInvalidationProvider() = default;
 
 InvalidationService* ProfileInvalidationProvider::GetInvalidationService() {
+  // TODO(crbug.com/1404927): do not create default invalidation service.
   return invalidation_service_.get();
 }
 

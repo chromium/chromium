@@ -13,8 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/invalidation/public/invalidation_util.h"
-#include "components/sync/base/invalidation_adapter.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
@@ -135,34 +133,6 @@ void SyncEngineBackend::DoOnInvalidatorStateChange(
                                        invalidation::INVALIDATIONS_ENABLED);
 }
 
-void SyncEngineBackend::DoOnIncomingInvalidation(
-    const invalidation::TopicInvalidationMap& invalidation_map) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (const invalidation::Topic& topic : invalidation_map.GetTopics()) {
-    ModelType type;
-    if (!NotificationTypeToRealModelType(topic, &type)) {
-      DLOG(WARNING) << "Notification has invalid topic: " << topic;
-      RecordIncomingInvalidationStatus(
-          IncomingInvalidationStatus::kUnknownModelType);
-    } else {
-      RecordInvalidationPerModelType(type);
-      invalidation::SingleTopicInvalidationSet invalidation_set =
-          invalidation_map.ForTopic(topic);
-      for (invalidation::Invalidation invalidation : invalidation_set) {
-        // Topic-based invalidations contain only one data type, hence this
-        // metric should be recorded for each incoming invalidation to represent
-        // all incoming messages.
-        RecordIncomingInvalidationStatus(IncomingInvalidationStatus::kSuccess);
-
-        std::unique_ptr<SyncInvalidation> inv_adapter(
-            new InvalidationAdapter(invalidation));
-        sync_manager_->OnIncomingInvalidation(type, std::move(inv_adapter));
-      }
-    }
-  }
-}
-
 void SyncEngineBackend::DoInitialize(
     SyncEngine::InitParams params,
     RestoredLocalTransportData restored_local_transport_data) {
@@ -200,7 +170,6 @@ void SyncEngineBackend::DoInitialize(
   args.post_factory = std::move(params.http_factory_getter).Run();
   args.encryption_observer_proxy = std::move(params.encryption_observer_proxy);
   args.extensions_activity = params.extensions_activity.get();
-  args.invalidator_client_id = params.invalidator_client_id;
   args.engine_components_factory = std::move(params.engine_components_factory);
   args.encryption_handler = sync_encryption_handler_.get();
   args.cancelation_signal = &stop_syncing_signal_;
@@ -432,11 +401,6 @@ void SyncEngineBackend::DoOnCookieJarChanged(bool account_mismatch,
     host_.Call(FROM_HERE, &SyncEngineImpl::OnCookieJarChangedDoneOnFrontendLoop,
                std::move(callback));
   }
-}
-
-void SyncEngineBackend::DoOnInvalidatorClientIdChange(
-    const std::string& client_id) {
-  sync_manager_->UpdateInvalidationClientId(client_id);
 }
 
 void SyncEngineBackend::DoOnStandaloneInvalidationReceived(

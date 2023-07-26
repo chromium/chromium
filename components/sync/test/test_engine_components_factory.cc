@@ -25,7 +25,6 @@ std::unique_ptr<SyncCycleContext> TestEngineComponentsFactory::BuildContext(
     const std::vector<SyncEngineEventListener*>& listeners,
     DebugInfoGetter* debug_info_getter,
     ModelTypeRegistry* model_type_registry,
-    const std::string& invalidator_client_id,
     const std::string& cache_guid,
     const std::string& store_birthday,
     const std::string& bag_of_chips,
@@ -34,8 +33,8 @@ std::unique_ptr<SyncCycleContext> TestEngineComponentsFactory::BuildContext(
   std::vector<SyncEngineEventListener*> empty_listeners;
   return std::make_unique<SyncCycleContext>(
       connection_manager, monitor, empty_listeners, debug_info_getter,
-      model_type_registry, invalidator_client_id, cache_guid, store_birthday,
-      bag_of_chips, poll_interval);
+      model_type_registry, cache_guid, store_birthday, bag_of_chips,
+      poll_interval);
 }
 
 }  // namespace syncer

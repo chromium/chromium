@@ -331,8 +331,6 @@ base::Value::Dict ConstructAboutInformation(
       section_list.AddSection(kIdentityTitle, /*is_sensitive=*/true);
   Stat<std::string>* sync_client_id =
       section_identity->AddStringStat("Sync Client ID");
-  Stat<std::string>* invalidator_id =
-      section_identity->AddStringStat("Invalidator Client ID");
   Stat<std::string>* username = section_identity->AddStringStat("Username");
   Stat<bool>* user_has_consent = section_identity->AddBoolStat("Sync Consent");
 
@@ -477,9 +475,6 @@ base::Value::Dict ConstructAboutInformation(
   // Identity.
   if (is_status_valid && !full_status.cache_guid.empty()) {
     sync_client_id->Set(full_status.cache_guid);
-  }
-  if (is_status_valid && !full_status.invalidator_client_id.empty()) {
-    invalidator_id->Set(full_status.invalidator_client_id);
   }
   if (!is_local_sync_enabled_state) {
     username->Set(service->GetAccountInfo().email);

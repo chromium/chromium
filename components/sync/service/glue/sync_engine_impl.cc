@@ -18,10 +18,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/invalidation/public/invalidation_handler.h"
-#include "components/invalidation/public/invalidation_service.h"
-#include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/nigori/nigori.h"
@@ -106,7 +102,6 @@ SyncTransportDataStartupState ValidateSyncTransportData(
 
 SyncEngineImpl::SyncEngineImpl(
     const std::string& name,
-    invalidation::InvalidationService* invalidator,
     SyncInvalidationsService* sync_invalidations_service,
     std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
     std::unique_ptr<SyncTransportDataPrefs> prefs,
@@ -465,22 +460,12 @@ void SyncEngineImpl::HandleMigrationRequestedOnFrontendLoop(
   host_->OnMigrationNeededForTypes(types);
 }
 
+// TODO(crbugg.com/1404927): replace InvalidatorState with a boolean.
 void SyncEngineImpl::OnInvalidatorStateChange(
     invalidation::InvalidatorState state) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnInvalidatorStateChange,
                                 backend_, state));
-}
-
-void SyncEngineImpl::OnIncomingInvalidation(
-    const invalidation::TopicInvalidationMap& invalidation_map) {
-  sync_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnIncomingInvalidation,
-                                backend_, invalidation_map));
-}
-
-std::string SyncEngineImpl::GetOwnerName() const {
-  return "SyncEngineImpl";
 }
 
 void SyncEngineImpl::HandleConnectionStatusChangeOnFrontendLoop(
@@ -561,14 +546,6 @@ void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::GetNigoriNodeForDebugging, backend_,
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
-}
-
-void SyncEngineImpl::OnInvalidatorClientIdChange(const std::string& client_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SyncEngineBackend::DoOnInvalidatorClientIdChange,
-                     backend_, client_id));
 }
 
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {

@@ -108,7 +108,6 @@ class FakeSyncManager : public SyncManager {
       override;
   void RefreshTypes(ModelTypeSet types) override;
   void OnCookieJarChanged(bool account_mismatch) override;
-  void UpdateInvalidationClientId(const std::string&) override;
   void UpdateActiveDevicesInvalidationInfo(
       ActiveDevicesInvalidationInfo active_devices_invalidation_info) override;
 

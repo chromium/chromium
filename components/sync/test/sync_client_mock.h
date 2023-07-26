@@ -27,10 +27,6 @@ class SyncClientMock : public SyncClient {
               CreateDataTypeControllers,
               (SyncService * sync_service),
               (override));
-  MOCK_METHOD(invalidation::InvalidationService*,
-              GetInvalidationService,
-              (),
-              (override));
   MOCK_METHOD(syncer::SyncInvalidationsService*,
               GetSyncInvalidationsService,
               (),

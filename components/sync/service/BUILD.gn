@@ -89,7 +89,6 @@ static_library("service") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//components/invalidation/impl:feature_list",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/os_crypt/sync",

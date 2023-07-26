@@ -92,9 +92,6 @@ class SyncManager {
     // Must outlive SyncManager.
     raw_ptr<ExtensionsActivity> extensions_activity;
 
-    // Unqiuely identifies this client to the invalidation notification server.
-    std::string invalidator_client_id;
-
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
 
     // Must outlive SyncManager.
@@ -217,9 +214,6 @@ class SyncManager {
   // chrome account. See ClientConfigParams proto message for more info.
   // Note: this does not trigger a sync cycle. It just updates the sync context.
   virtual void OnCookieJarChanged(bool account_mismatch) = 0;
-
-  // Updates invalidation client id.
-  virtual void UpdateInvalidationClientId(const std::string& client_id) = 0;
 
   // Updates the invalidation information from known active devices.
   virtual void UpdateActiveDevicesInvalidationInfo(

@@ -180,7 +180,7 @@ class SyncManagerImplTest : public testing::Test {
     scheduler_ = scheduler.get();
 
     // This should be the only method called by the Init() in the observer.
-    EXPECT_CALL(manager_observer_, OnSyncStatusChanged).Times(3);
+    EXPECT_CALL(manager_observer_, OnSyncStatusChanged).Times(2);
 
     SyncManager::InitArgs args;
     args.service_url = GURL("https://example.com/");
@@ -188,7 +188,6 @@ class SyncManagerImplTest : public testing::Test {
     args.encryption_observer_proxy = std::move(encryption_observer);
     args.extensions_activity = extensions_activity_.get();
     args.cache_guid = "fake_cache_guid";
-    args.invalidator_client_id = "fake_invalidator_client_id";
     args.enable_local_sync_backend = false;
     args.local_sync_backend_folder = temp_dir_.GetPath();
     args.engine_components_factory =

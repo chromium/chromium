@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/invalidation/public/invalidation_handler.h"
+#include "components/invalidation/public/invalidator_state.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -25,10 +25,6 @@
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
-
-namespace invalidation {
-class InvalidationService;
-}  // namespace invalidation
 
 namespace syncer {
 
@@ -43,7 +39,6 @@ class SyncTransportDataPrefs;
 // The only real implementation of the SyncEngine. See that interface's
 // definition for documentation of public methods.
 class SyncEngineImpl : public SyncEngine,
-                       public invalidation::InvalidationHandler,
                        public InvalidationsListener,
                        public FCMRegistrationTokenObserver {
  public:
@@ -52,7 +47,6 @@ class SyncEngineImpl : public SyncEngine,
   // |sync_invalidations_service| must not be null.
   // TODO(crbug.com/1404927): remove old invalidations.
   SyncEngineImpl(const std::string& name,
-                 invalidation::InvalidationService* invalidator,
                  SyncInvalidationsService* sync_invalidations_service,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
                  std::unique_ptr<SyncTransportDataPrefs> prefs,
@@ -104,13 +98,6 @@ class SyncEngineImpl : public SyncEngine,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
-
-  // InvalidationHandler implementation.
-  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
-  void OnIncomingInvalidation(
-      const invalidation::TopicInvalidationMap& invalidation_map) override;
-  std::string GetOwnerName() const override;
-  void OnInvalidatorClientIdChange(const std::string& client_id) override;
 
   // InvalidationsListener implementation.
   void OnInvalidationReceived(const std::string& payload) override;
@@ -178,6 +165,8 @@ class SyncEngineImpl : public SyncEngine,
 
   // Updates the current state of standalone invalidations.
   void UpdateStandaloneInvalidationsState();
+
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state);
 
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;

@@ -30,8 +30,6 @@ static_library("base") {
     "extensions_activity.h",
     "hash_util.cc",
     "hash_util.h",
-    "invalidation_adapter.cc",
-    "invalidation_adapter.h",
     "legacy_directory_deletion.cc",
     "legacy_directory_deletion.h",
     "model_type.cc",
@@ -70,7 +68,6 @@ static_library("base") {
   public_deps = [
     ":features",
     "//base",
-    "//components/invalidation/public",
     "//components/sync/protocol",
     "//url",
   ]

@@ -15,7 +15,6 @@ SyncCycleContext::SyncCycleContext(
     const std::vector<SyncEngineEventListener*>& listeners,
     DebugInfoGetter* debug_info_getter,
     ModelTypeRegistry* model_type_registry,
-    const std::string& invalidator_client_id,
     const std::string& cache_guid,
     const std::string& birthday,
     const std::string& bag_of_chips,
@@ -29,7 +28,6 @@ SyncCycleContext::SyncCycleContext(
       max_commit_batch_size_(kDefaultMaxCommitBatchSize),
       debug_info_getter_(debug_info_getter),
       model_type_registry_(model_type_registry),
-      invalidator_client_id_(invalidator_client_id),
       cookie_jar_mismatch_(false),
       active_devices_invalidation_info_(
           ActiveDevicesInvalidationInfo::CreateUninitialized()),

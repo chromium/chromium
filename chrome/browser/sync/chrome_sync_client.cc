@@ -18,7 +18,6 @@
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
@@ -57,7 +56,6 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
@@ -553,16 +551,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 trusted_vault::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
   return TrustedVaultServiceFactory::GetForProfile(profile_)
       ->GetTrustedVaultClient();
-}
-
-invalidation::InvalidationService* ChromeSyncClient::GetInvalidationService() {
-  invalidation::ProfileInvalidationProvider* provider =
-      invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
-
-  if (provider) {
-    return provider->GetInvalidationService();
-  }
-  return nullptr;
 }
 
 syncer::SyncInvalidationsService*

@@ -25,10 +25,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "components/invalidation/impl/invalidation_logger.h"
-#include "components/invalidation/public/invalidation_service.h"
-#include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/invalidator_state.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -128,42 +124,6 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
   raw_ptr<FakeSyncManager*> fake_manager_;
 };
 
-class MockInvalidationService : public invalidation::InvalidationService {
- public:
-  MockInvalidationService() = default;
-  ~MockInvalidationService() override = default;
-  MOCK_METHOD(void,
-              RegisterInvalidationHandler,
-              (invalidation::InvalidationHandler * handler),
-              (override));
-  MOCK_METHOD(bool,
-              UpdateInterestedTopics,
-              (invalidation::InvalidationHandler * handler,
-               const invalidation::TopicSet& topics),
-              (override));
-  MOCK_METHOD(void,
-              UnsubscribeFromUnregisteredTopics,
-              (invalidation::InvalidationHandler * handler),
-              (override));
-  MOCK_METHOD(void,
-              UnregisterInvalidationHandler,
-              (invalidation::InvalidationHandler * handler),
-              (override));
-  MOCK_METHOD(invalidation::InvalidatorState,
-              GetInvalidatorState,
-              (),
-              (const override));
-  MOCK_METHOD(std::string, GetInvalidatorClientId, (), (const override));
-  MOCK_METHOD(invalidation::InvalidationLogger*,
-              GetInvalidationLogger,
-              (),
-              (override));
-  MOCK_METHOD(void,
-              RequestDetailedStatus,
-              (base::RepeatingCallback<void(base::Value::Dict)> post_caller),
-              (const override));
-};
-
 class MockActiveDevicesProvider : public ActiveDevicesProvider {
  public:
   MockActiveDevicesProvider() = default;
@@ -195,8 +155,6 @@ class SyncEngineImplTest : public testing::Test {
 
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
 
-    ON_CALL(invalidator_, UpdateInterestedTopics)
-        .WillByDefault(testing::Return(true));
     scoped_refptr<base::SequencedTaskRunner> sync_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -207,7 +165,7 @@ class SyncEngineImplTest : public testing::Test {
         .WillByDefault(Return(
             ByMove(ActiveDevicesInvalidationInfo::CreateUninitialized())));
     backend_ = std::make_unique<SyncEngineImpl>(
-        "dummyDebugName", &invalidator_, &mock_sync_invalidations_service_,
+        "dummyDebugName", &mock_sync_invalidations_service_,
         std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(&pref_service_),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
@@ -328,7 +286,6 @@ class SyncEngineImplTest : public testing::Test {
   ModelTypeSet engine_types_;
   ModelTypeSet enabled_types_;
   base::OnceClosure quit_loop_;
-  NiceMock<MockInvalidationService> invalidator_;
   NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 
   base::WeakPtrFactory<SyncEngineImplTest> weak_ptr_factory_{this};
@@ -634,8 +591,6 @@ TEST_F(SyncEngineImplTest, ShouldStartHandlingInvalidations) {
 TEST_F(SyncEngineImplTest, DoNotUseOldInvalidationsAtAll) {
   enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
 
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
-  EXPECT_CALL(invalidator_, UnsubscribeFromUnregisteredTopics).Times(0);
   EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
       .WillRepeatedly(Return(enabled_types_));
   InitializeBackend(/*expect_success=*/true);
