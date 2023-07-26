@@ -207,6 +207,14 @@ class TestFederatedIdentityModalDialogViewDelegate
     std::move(closure_).Run();
     closed_ = true;
   }
+
+  base::WeakPtr<TestFederatedIdentityModalDialogViewDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestFederatedIdentityModalDialogViewDelegate>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -306,7 +314,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     test_modal_dialog_view_delegate_ =
         std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
     test_browser_client_->SetIdentityRegistry(
-        shell()->web_contents(), test_modal_dialog_view_delegate_.get(),
+        shell()->web_contents(), test_modal_dialog_view_delegate_->GetWeakPtr(),
         url::Origin::Create(GURL(BaseIdpUrl())));
   }
 
