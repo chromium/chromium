@@ -95,12 +95,24 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   std::vector<device::mojom::XRInputSourceStatePtr> GetInputSourceState();
 
-  bool CanStartNewAnimatingFrame();
-  void TryStartAnimatingFrame();
+  // Checks if we're in a valid state for starting animation of a new frame.
+  // Invalid states include a previous animating frame that's not complete
+  // yet (including deferred processing not having started yet), or timing
+  // heuristics indicating that it should be retried later.
+  bool WebVrCanAnimateFrame();
+  // Call this after state changes that could result in WebVrCanAnimateFrame
+  // becoming true.
+  void WebXrTryStartAnimatingFrame();
+
+  // Shared logic for SubmitFrame variants, including sanity checks.
+  // Returns true if OK to proceed.
+  bool SubmitFrameCommon(int16_t frame_index, base::TimeDelta time_waited);
   bool IsSubmitFrameExpected(int16_t frame_index);
   bool SubmitFrameInternal(int16_t frame_index);
-  void ProcessFrameFromMailbox(int16_t frame_index,
-                               const gpu::MailboxHolder& mailbox);
+
+  // Transition a frame from animating to processing.
+  void ProcessWebVrFrameFromMailbox(int16_t frame_index,
+                                    const gpu::MailboxHolder& mailbox);
 
   void ClosePresentationBindings();
   void OnSubmitClientMojoConnectionError();

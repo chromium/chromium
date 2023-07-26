@@ -283,6 +283,9 @@ void WvrManager::ConnectPresentingService(
 }
 
 void WvrManager::OnWebXrFrameAvailable() {
+  // This is called each time a frame that was drawn on the WebVR Surface
+  // arrives on the SurfaceTexture.
+
   if (!webxr_frame_timeout_closure_.IsCancelled())
     webxr_frame_timeout_closure_.Cancel();
 
@@ -304,7 +307,7 @@ void WvrManager::OnWebXrFrameAvailable() {
   // Renderer is waiting for the previous frame to render, unblock it now.
   submit_client_->OnSubmitFrameRendered();
 
-  TryStartAnimatingFrame();
+  WebXrTryStartAnimatingFrame();
 }
 
 void WvrManager::OnWebXrTimedOut() {
@@ -406,16 +409,23 @@ WvrManager::GetInputSourceState() {
   return input_sources;
 }
 
-bool WvrManager::CanStartNewAnimatingFrame() {
+bool WvrManager::WebVrCanAnimateFrame() {
+  // If we already have a JS frame that's animating, don't send another one.
+  // This check depends on the Renderer calling either SubmitFrame or
+  // SubmitFrameMissing for each animated frame.
   if (webxr_.HaveAnimatingFrame()) {
+    DVLOG(2) << __func__
+             << ": waiting for current animating frame to start processing";
     return false;
   }
 
   if (webxr_.HaveProcessingFrame()) {
+    DVLOG(2) << __func__ << ": waiting for processing state";
     return false;
   }
 
   if (get_frame_data_callback_.is_null()) {
+    DVLOG(2) << __func__ << ": waiting for get_frame_data_callback_";
     return false;
   }
 
@@ -435,13 +445,13 @@ void WvrManager::GetFrameData(
 
   pending_time_ = base::TimeTicks();
   get_frame_data_callback_ = std::move(callback);
-  TryStartAnimatingFrame();
+  WebXrTryStartAnimatingFrame();
 }
 
-void WvrManager::TryStartAnimatingFrame() {
+void WvrManager::WebXrTryStartAnimatingFrame() {
   DCHECK(IsOnWvrThread());
 
-  if (!CanStartNewAnimatingFrame()) {
+  if (!WebVrCanAnimateFrame()) {
     return;
   }
 
@@ -528,10 +538,17 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
 }
 
 bool WvrManager::IsSubmitFrameExpected(int16_t frame_index) {
+  // submit_client_ could be null when we exit presentation, if there were
+  // pending SubmitFrame messages queued.  XRSessionClient::OnExitPresent
+  // will clean up state in blink, so it doesn't wait for
+  // OnSubmitFrameTransferred or OnSubmitFrameRendered. Similarly,
+  // the animating frame state is cleared when exiting presentation,
+  // and we should ignore a leftover queued SubmitFrame.
   if (!submit_client_.get() || !webxr_.HaveAnimatingFrame())
     return false;
 
   device::WebXrFrame* animating_frame = webxr_.GetAnimatingFrame();
+
   if (animating_frame->index != frame_index) {
     LOG(ERROR) << __func__ << ": wrong frame index, got " << frame_index
                << ", expected " << animating_frame->index;
@@ -550,9 +567,13 @@ void WvrManager::SubmitFrameMissing(int16_t frame_index,
   if (!IsSubmitFrameExpected(frame_index))
     return;
 
+  // Renderer didn't submit a frame. Wait for the sync token to ensure
+  // that any mailbox_bridge_ operations for the next frame happen after
+  // whatever drawing the Renderer may have done before exiting.
   if (webxr_.mailbox_bridge_ready())
     mailbox_bridge_->WaitSyncToken(sync_token);
 
+  DVLOG(2) << __func__ << ": recycle unused animating frame";
   DCHECK(webxr_.HaveAnimatingFrame());
   webxr_.RecycleUnusedAnimatingFrame();
 }
@@ -560,16 +581,29 @@ void WvrManager::SubmitFrameMissing(int16_t frame_index,
 void WvrManager::SubmitFrame(int16_t frame_index,
                              const gpu::MailboxHolder& mailbox,
                              base::TimeDelta time_waited) {
-  if (!IsSubmitFrameExpected(frame_index))
+  if (!SubmitFrameCommon(frame_index, time_waited))
     return;
 
-  webxr_.ProcessOrDefer(base::BindOnce(&WvrManager::ProcessFrameFromMailbox,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        frame_index, mailbox));
+  webxr_.ProcessOrDefer(
+      base::BindOnce(&WvrManager::ProcessWebVrFrameFromMailbox,
+                     weak_ptr_factory_.GetWeakPtr(), frame_index, mailbox));
 }
 
-void WvrManager::ProcessFrameFromMailbox(int16_t frame_index,
-                                         const gpu::MailboxHolder& mailbox) {
+bool WvrManager::SubmitFrameCommon(int16_t frame_index,
+                                   base::TimeDelta time_waited) {
+  DVLOG(2) << __func__ << ": frame=" << frame_index;
+
+  if (!IsSubmitFrameExpected(frame_index))
+    return false;
+
+  // TODO(tiago): we'll be using time_waited next.
+
+  return true;
+}
+
+void WvrManager::ProcessWebVrFrameFromMailbox(
+    int16_t frame_index,
+    const gpu::MailboxHolder& mailbox) {
   DCHECK(webxr_.HaveProcessingFrame());
 
   webxr_.GetProcessingFrame()->state_locked = true;
@@ -577,7 +611,8 @@ void WvrManager::ProcessFrameFromMailbox(int16_t frame_index,
   bool swapped = mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox);
   DCHECK(swapped);
 
-  // Notify the client.
+  // Notify the client that we're done with the mailbox so that the underlying
+  // image is eligible for destruction.
   submit_client_->OnSubmitFrameTransferred(true);
 
   webxr_frame_timeout_closure_.Reset(
