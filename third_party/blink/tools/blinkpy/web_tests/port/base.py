@@ -1020,7 +1020,7 @@ class Port(object):
         # When collecting test cases, skip these directories.
         skipped_directories = set([
             'platform', 'resources', 'support', 'script-tests', 'reference',
-            'reftest', 'SmokeTests'
+            'reftest', 'TestLists'
         ])
         # Also ignore all WPT directories. Note that this is only an
         # optimization; is_non_wpt_test_file should skip WPT regardless.
@@ -1438,7 +1438,7 @@ class Port(object):
 
         # Historically we only have one smoke tests list. That one now becomes
         # the default
-        return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
+        return self._filesystem.join(self.web_tests_dir(), 'TestLists',
                                      'Default.txt')
 
     @memoized
@@ -2577,7 +2577,7 @@ class Port(object):
     @memoized
     def _get_blocked_tests_for_threaded_compositing_testing(self):
         path = self._filesystem.join(self.web_tests_dir(),
-                                     'SmokeTests/SingleThreadedTests')
+                                     'TestLists/SingleThreadedTests')
         return set(self._filesystem.read_text_file(path).split('\n'))
 
     def _is_in_allowlist_for_threaded_compositing(self, test_name):

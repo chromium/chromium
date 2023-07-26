@@ -42,7 +42,7 @@
   {
     "name": "highdpi",
     "args": ["--force-device-scale-factor=1.5"],
-    "smoke_file": "SmokeTests/highdpi"
+    "smoke_file": "TestLists/highdpi"
   },
   {
     "name": "skia-vulkan-swiftshader",
@@ -52,7 +52,7 @@
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
     ],
-    "smoke_file": "SmokeTests/skia-vulkan-swiftshader"
+    "smoke_file": "TestLists/skia-vulkan-swiftshader"
   },
   {
     "name": "webgpu",

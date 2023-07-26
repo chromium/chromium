@@ -1226,6 +1226,7 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/tools/",
       "//third_party/blink/web_tests/external/wpt/config.json",
       "//third_party/blink/web_tests/resources/",
+      "//third_party/blink/web_tests/TestLists/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/test_fonts/test_fonts/",
       "//third_party/wpt_tools/",
@@ -1317,7 +1318,6 @@ if (!is_ios && !is_cronet_build) {
     data_deps = [ ":blink_web_tests_support_data" ]
     data = [
       "//third_party/blink/perf_tests/",
-      "//third_party/blink/web_tests/SmokeTests/Default.txt",
       "//third_party/blink/web_tests/VirtualTestSuites",
 
       # List all test expectations here
@@ -1330,7 +1330,6 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/web_tests/TestExpectations",
       "//third_party/blink/web_tests/WebDriverExpectations",
       "//third_party/blink/web_tests/WebGPUExpectations",
-      "//third_party/blink/web_tests/SmokeTests/SingleThreadedTests",
 
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/accessibility/",
@@ -1436,7 +1435,6 @@ if (!is_ios && !is_cronet_build) {
       }
     } else if (is_mac) {
       data += [
-        "//third_party/blink/web_tests/SmokeTests/Mac.txt",
         "//third_party/blink/web_tests/platform/mac/",
         "//third_party/blink/web_tests/platform/mac-mac10.15/",
         "//third_party/blink/web_tests/platform/mac-mac11/",
@@ -1453,7 +1451,6 @@ if (!is_ios && !is_cronet_build) {
         "//third_party/blink/web_tests/FlagSpecificConfig",
         "//third_party/blink/web_tests/FlagExpectations/",
         "//third_party/blink/web_tests/flag-specific/",
-        "//third_party/blink/web_tests/SmokeTests/",
       ]
     }
   }
@@ -1469,8 +1466,6 @@ if (!is_ios && !is_cronet_build) {
     data_deps = [ ":blink_web_tests_support_data" ]
     data = [
       "//third_party/blink/perf_tests/",
-      "//third_party/blink/web_tests/SmokeTests/Default.txt",
-      "//third_party/blink/web_tests/SmokeTests/rel-ready.blink_wpt_tests.filter",
       "//third_party/blink/web_tests/VirtualTestSuites",
 
       # List all test expectations here
@@ -1483,7 +1478,6 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/web_tests/TestExpectations",
       "//third_party/blink/web_tests/WebDriverExpectations",
       "//third_party/blink/web_tests/WebGPUExpectations",
-      "//third_party/blink/web_tests/SmokeTests/SingleThreadedTests",
 
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/external/",
@@ -1509,7 +1503,6 @@ if (!is_ios && !is_cronet_build) {
       }
     } else if (is_mac) {
       data += [
-        "//third_party/blink/web_tests/SmokeTests/Mac.txt",
         "//third_party/blink/web_tests/platform/mac/",
         "//third_party/blink/web_tests/platform/mac-mac10.15/",
         "//third_party/blink/web_tests/platform/mac-mac11-arm64/",
@@ -1522,7 +1515,6 @@ if (!is_ios && !is_cronet_build) {
         "//third_party/blink/web_tests/FlagSpecificConfig",
         "//third_party/blink/web_tests/FlagExpectations/",
         "//third_party/blink/web_tests/flag-specific/",
-        "//third_party/blink/web_tests/SmokeTests/",
       ]
     }
   }
@@ -1629,7 +1621,6 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/web_tests/TestExpectations",
       "//third_party/blink/web_tests/VirtualTestSuites",
       "//third_party/blink/web_tests/W3CImportExpectations",
-      "//third_party/blink/web_tests/SmokeTests/SingleThreadedTests",
       "//third_party/blink/web_tests/paint/invalidation/repaint-overlay/",
       "//third_party/catapult/common/py_utils/",
       "//third_party/catapult/devil/",

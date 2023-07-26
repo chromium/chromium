@@ -33,7 +33,7 @@ script_test("chrome_ios_wpt") {
     "//third_party/blink/web_tests/resources/testdriver-vendor.js",
     "//third_party/blink/web_tests/wptrunner.blink.ini",
     "//third_party/blink/web_tests/FlagSpecificConfig",
-    "//third_party/blink/web_tests/SmokeTests/",
+    "//third_party/blink/web_tests/TestLists/",
     "//.vpython3",
   ]
   data_deps = [

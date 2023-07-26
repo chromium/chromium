@@ -88,7 +88,7 @@ learn more about TestExpectations and related files.
 
 *** promo
 Currently only the tests listed in
-[Default.txt](../../third_party/blink/web_tests/SmokeTests/Default.txt) are run
+[Default.txt](../../third_party/blink/web_tests/TestLists/Default.txt) are run
 on the Fuchsia bots, since running all web tests takes too long on Fuchshia.
 Most developers focus their Blink testing on Linux. We rely on the fact that the
 Linux and Fuchsia behavior is nearly identical for scenarios outside those
@@ -97,7 +97,7 @@ covered by the smoke tests.
 
 *** promo
 Similar to Fuchsia's case, the tests listed in [Mac.txt]
-(../../third_party/blink/web_tests/SmokeTests/Mac.txt)
+(../../third_party/blink/web_tests/TestLists/Mac.txt)
 are run on older mac version bots. By doing this we reduced the resources needed to run
 the tests. This relies on the fact that the majority of web tests will behavior similarly on
 different mac versions.

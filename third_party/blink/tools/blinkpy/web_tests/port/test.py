@@ -474,7 +474,7 @@ passes/slow.html [ Slow ]
 
     if not filesystem.exists(MOCK_WEB_TESTS + 'SingleThreadedTests'):
         filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'SmokeTests/SingleThreadedTests', """
+            MOCK_WEB_TESTS + 'TestLists/SingleThreadedTests', """
 fast/borders/border-image-outset-split-inline-vertical-lr.html
 non/virtual
 passes/text.html

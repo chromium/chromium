@@ -200,7 +200,7 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_flag_specific(self):
         self.fs.write_text_file(
-            self.finder.path_from_web_tests('SmokeTests', 'fake-flag'),
+            self.finder.path_from_web_tests('TestLists', 'fake-flag'),
             textwrap.dedent("""\
                 # The non-WPT test should be excluded.
                 external/wpt/dir/
@@ -212,7 +212,7 @@ class WPTAdapterTest(unittest.TestCase):
             json.dumps([{
                 'name': 'fake-flag',
                 'args': ['--enable-features=FakeFeature'],
-                'smoke_file': 'SmokeTests/fake-flag',
+                'smoke_file': 'TestLists/fake-flag',
             }]))
         adapter = WPTAdapter.from_args(self.host,
                                        ['--flag-specific=fake-flag'])

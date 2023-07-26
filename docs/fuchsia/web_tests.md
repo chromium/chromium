@@ -11,7 +11,7 @@ Fuchsia layers on top [its own test script] (../../build/fuchsia/test/run_test.p
 which handles preparation such as installing the content_shell binary.
 
 Currently, only
-[a small subset of web tests](../../third_party/blink/web_tests/SmokeTests/Default.txt)
+[a small subset of web tests](../../third_party/blink/web_tests/TestLists/Default.txt)
 can be run on Fuchsia. Build the target `blink_web_tests` first before running any
 of the commands below:
 
