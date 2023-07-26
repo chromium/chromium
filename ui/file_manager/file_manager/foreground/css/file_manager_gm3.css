@@ -1145,6 +1145,16 @@ body.files-ng grid .grid-title {
   width: 100%;
 }
 
+/* Only add margin-top for non-first grid-title, this is mainly because
+   we don't have separator between the action bar and list container, which
+   makes the first group heading in the list container looks higher than
+   others (because of action bar's bottom padding), so in order to make all
+   group headings looks in the same height, we manually add a margin-top for
+   non-first group headings. */
+grid .grid-title ~ .grid-title {
+  margin-top: 16px;
+}
+
 grid .grid-title.group-by-isDirectory {
   /* Folders/Files heading doesn't have border bottom, so having a padding
    * bottom together with grid item's margin-top will make the gap too big.
