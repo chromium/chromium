@@ -167,7 +167,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
                 startActivityForResult(intent, PASSWORD_EXPORT_INTENT_REQUEST_CODE);
             }
         }, EXPORT_METRICS_ID);
-        getActivity().setTitle(R.string.password_settings_title);
+        getActivity().setTitle(R.string.password_manager_settings_title);
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         PasswordManagerHandlerProvider.getInstance().addObserver(this);
 
@@ -363,7 +363,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
         if (mSearchQuery == null) {
             PreferenceCategory profileCategory = new PreferenceCategory(getStyledContext());
             profileCategory.setKey(PREF_KEY_CATEGORY_SAVED_PASSWORDS);
-            profileCategory.setTitle(R.string.password_settings_title);
+            profileCategory.setTitle(R.string.password_list_title);
             profileCategory.setOrder(ORDER_SAVED_PASSWORDS);
             getPreferenceScreen().addPreference(profileCategory);
             passwordParent = profileCategory;

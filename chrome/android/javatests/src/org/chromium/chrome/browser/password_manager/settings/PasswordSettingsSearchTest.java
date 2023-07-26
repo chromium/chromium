@@ -129,7 +129,7 @@ public class PasswordSettingsSearchTest {
     public void testSearchIconVisibleInActionBar() {
         mTestHelper.setPasswordSource(null); // Initialize empty preferences.
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
         PasswordSettings f = mSettingsActivityTestRule.getFragment();
 
         // Force the search option into the action bar.
@@ -152,7 +152,7 @@ public class PasswordSettingsSearchTest {
         mTestHelper.setPasswordSource(
                 null); // Initialize empty preferences.mSettingsActivityTestRule
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
         PasswordSettings f = mSettingsActivityTestRule.getFragment();
 
         // Force the search option into the overflow menu.
@@ -179,7 +179,7 @@ public class PasswordSettingsSearchTest {
     public void testTriggeringSearchRestoresHelpIcon() {
         mTestHelper.setPasswordSource(null);
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
 
         // Retrieve the initial status and ensure that the help option is there at all.
         final AtomicReference<Boolean> helpInOverflowMenu = new AtomicReference<>(false);
@@ -199,7 +199,7 @@ public class PasswordSettingsSearchTest {
         // Trigger the search, close it and wait for UI to be restored.
         onView(withSearchMenuIdOrText()).perform(click());
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
 
         // Check that the help option is exactly where it was to begin with.
         if (helpInOverflowMenu.get()) {
@@ -283,7 +283,7 @@ public class PasswordSettingsSearchTest {
         // the toolbar label which contains the same string, look for the one inside a linear
         // layout.
         onView(allOf(withParent(isAssignableFrom(LinearLayout.class)),
-                       withText(R.string.password_settings_title)))
+                       withText(R.string.password_manager_settings_title)))
                 .check(doesNotExist());
         // Check the message for no result.
         onView(withText(R.string.password_no_result)).check(matches(isDisplayed()));

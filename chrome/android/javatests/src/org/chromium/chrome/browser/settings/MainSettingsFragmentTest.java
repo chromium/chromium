@@ -93,7 +93,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
@@ -109,8 +108,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -123,7 +120,7 @@ import java.util.HashSet;
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
-    private static final int RENDER_TEST_REVISION = 9;
+    private static final int RENDER_TEST_REVISION = 10;
 
     private final HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
@@ -180,12 +177,7 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING,
-    })
-    public void
-    testRenderDifferentSignedInStates() throws IOException {
+    public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
         waitForOptionsMenu();
         View view = mSettingsActivityTestRule.getActivity()
@@ -510,7 +502,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
     @Policies.Add({
@@ -520,102 +511,32 @@ public class MainSettingsFragmentTest {
     public void
     testPasswordsItemClickableWhenManaged() {
         launchSettingsActivity();
-        String prefTitleWithoutNewLabel =
-                SpanApplier
-                        .removeSpanText(
-                                mMainSettings.getString(R.string.password_settings_title_gpm),
-                                new SpanInfo("<new>", "</new>"))
-                        .trim();
         onData(withKey(MainSettings.PREF_PASSWORDS))
-                .inAdapterView(
-                        allOf(isDisplayed(), hasDescendant(withText(prefTitleWithoutNewLabel)),
-                                hasDescendant(allOf(withText(R.string.managed_by_your_organization),
-                                        isDisplayed()))));
+                .inAdapterView(allOf(isDisplayed(),
+                        hasDescendant(withText(R.string.password_manager_settings_title)),
+                        hasDescendant(allOf(
+                                withText(R.string.managed_by_your_organization), isDisplayed()))));
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
+        Assert.assertNotNull(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS)
+                                     .getOnPreferenceClickListener());
     }
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     @Policies.Remove({ @Policies.Item(key = "PasswordManagerEnabled", string = "false") })
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testPasswordsItemEnabledWhenNotManaged() throws InterruptedException {
         launchSettingsActivity();
-        String prefTitleWithoutNewLabel =
-                SpanApplier
-                        .removeSpanText(
-                                mMainSettings.getString(R.string.password_settings_title_gpm),
-                                new SpanInfo("<new>", "</new>"))
-                        .trim();
-        onData(withKey(MainSettings.PREF_PASSWORDS))
-                .inAdapterView(
-                        allOf(isDisplayed(), hasDescendant(withText(prefTitleWithoutNewLabel)),
-                                hasDescendant(allOf(withText(R.string.managed_by_your_organization),
-                                        not(isDisplayed())))));
-        Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
-    // Setting BrowserSignin suppresses the sync promo so the password settings preference
-    // is visible without scrolling.
-    @Policies.Add({
-        @Policies.Item(key = "PasswordManagerEnabled", string = "false")
-        , @Policies.Item(key = "BrowserSignin", string = "0")
-    })
-    public void
-    testPasswordsItemEnabledWhenManagedWithoutUPM() {
-        launchSettingsActivity();
         onData(withKey(MainSettings.PREF_PASSWORDS))
                 .inAdapterView(allOf(isDisplayed(),
-                        hasDescendant(withText(R.string.password_settings_title)),
+                        hasDescendant(withText(R.string.password_manager_settings_title)),
                         hasDescendant(allOf(withText(R.string.managed_by_your_organization),
                                 not(isDisplayed())))));
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testPasswordsItemTitleUpdatedWithUPM() throws InterruptedException {
-        launchSettingsActivity();
-        // TODO(crbug.com/1217070): Remove the New label checks once the feature is stable.
-        String prefTitleWithoutNewLabel =
-                SpanApplier
-                        .removeSpanText(
-                                mMainSettings.getString(R.string.password_settings_title_gpm),
-                                new SpanInfo("<new>", "</new>"))
-                        .toString()
-                        .trim();
-        Assert.assertEquals(prefTitleWithoutNewLabel,
-                mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());
-
-        // Turn on sync to check if the "New" label is shown for sync users.
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
-
-        String prefTitleWithNewLabel =
-                SpanApplier
-                        .applySpans(mMainSettings.getString(R.string.password_settings_title_gpm),
-                                new SpanInfo("<new>", "</new>"))
-                        .toString();
-        Assert.assertEquals(prefTitleWithNewLabel,
-                mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
-    public void
-    testPasswordsItemTitleNotUpdatedWithoutUPM() throws InterruptedException {
-        launchSettingsActivity();
-        Assert.assertEquals(mMainSettings.getString(R.string.password_settings_title),
-                mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());
+        Assert.assertNotNull(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS)
+                                     .getOnPreferenceClickListener());
     }
 
     private void launchSettingsActivity() {

@@ -25,13 +25,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -60,8 +58,6 @@ public class SettingsActivityTest {
         @Policies.Item(key = "PasswordManagerEnabled", string = "false")
         , @Policies.Item(key = "BrowserSignin", string = "0")
     })
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
     public void
     testPasswordSettings_ManagedAndDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -74,7 +70,7 @@ public class SettingsActivityTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withText(R.string.password_settings_title)).perform(click());
+        onView(withText(R.string.password_manager_settings_title)).perform(click());
         onView(withText(R.string.password_settings_save_passwords)).check(matches(isDisplayed()));
     }
 
