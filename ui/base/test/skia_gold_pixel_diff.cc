@@ -4,12 +4,17 @@
 
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
+#include <memory>
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
+#include "base/auto_reset.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -22,6 +27,9 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
 #include "base/threading/thread_restrictions.h"
@@ -197,18 +205,20 @@ const char* GetDiffGoldInstance() {
   return kSkiaGoldPublicInstance;
 }
 
-}  // namespace
+// Non-empty test corpus and environment map.
+using SessionCacheKey = std::pair<std::string, TestEnvironmentMap>;
+using SessionCache =
+    base::LRUCache<SessionCacheKey, std::unique_ptr<SkiaGoldPixelDiff>>;
+SessionCache g_sessions(SessionCache::NO_AUTO_EVICT);
 
-SkiaGoldPixelDiff::SkiaGoldPixelDiff() = default;
+// If present, overrides |LaunchProcess|.
+SkiaGoldPixelDiff::LaunchProcessCallback g_custom_launch_process;
 
-SkiaGoldPixelDiff::~SkiaGoldPixelDiff() = default;
+int LaunchProcess(const base::CommandLine& cmdline) {
+  if (g_custom_launch_process) {
+    return g_custom_launch_process.Run(cmdline);
+  }
 
-// static
-std::string SkiaGoldPixelDiff::GetPlatform() {
-  return GetPlatformName();
-}
-
-int SkiaGoldPixelDiff::LaunchProcess(const base::CommandLine& cmdline) const {
   std::string output;
   int exit_code = 0;
   CHECK(base::GetAppOutputWithExitCode(cmdline, &output, &exit_code));
@@ -227,6 +237,57 @@ int SkiaGoldPixelDiff::LaunchProcess(const base::CommandLine& cmdline) const {
                             strlen(kGoldOutputTriageFormat));
   }
   return exit_code;
+}
+
+}  // namespace
+
+SkiaGoldPixelDiff::SkiaGoldPixelDiff() = default;
+
+SkiaGoldPixelDiff::~SkiaGoldPixelDiff() = default;
+
+SkiaGoldPixelDiff::ScopedSessionCacheForTesting::
+    ScopedSessionCacheForTesting() {
+  g_sessions.Clear();
+}
+
+SkiaGoldPixelDiff::ScopedSessionCacheForTesting::
+    ~ScopedSessionCacheForTesting() {
+  g_sessions.Clear();
+}
+
+// static
+SkiaGoldPixelDiff* SkiaGoldPixelDiff::GetSession(
+    const absl::optional<std::string>& corpus,
+    TestEnvironmentMap test_environment) {
+  FillInSystemEnvironment(test_environment);
+  const std::string corpus_name = corpus.value_or("gtest-pixeltests");
+  CHECK(!corpus_name.empty());
+
+  SessionCacheKey key(corpus_name, std::move(test_environment));
+  auto it = g_sessions.Get(key);
+  if (it == g_sessions.end()) {
+    std::unique_ptr<SkiaGoldPixelDiff> pixel_diff =
+        std::unique_ptr<SkiaGoldPixelDiff>(new SkiaGoldPixelDiff());
+    pixel_diff->Init(corpus_name, key.second);
+    it = g_sessions.Put(std::move(key), std::move(pixel_diff));
+  }
+
+  CHECK(it != g_sessions.end());
+  return it->second.get();
+}
+
+// static
+base::AutoReset<SkiaGoldPixelDiff::LaunchProcessCallback>
+SkiaGoldPixelDiff::OverrideLaunchProcessForTesting(
+    SkiaGoldPixelDiff::LaunchProcessCallback custom_launch_process) {
+  base::AutoReset auto_reset(&g_custom_launch_process,
+                             std::move(custom_launch_process));
+  return auto_reset;
+}
+
+// static
+std::string SkiaGoldPixelDiff::GetPlatform() {
+  return GetPlatformName();
 }
 
 void SkiaGoldPixelDiff::InitSkiaGold() const {
@@ -277,20 +338,18 @@ void SkiaGoldPixelDiff::InitSkiaGold() const {
   ASSERT_EQ(exit_code, 0);
 }
 
-void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
-                             const std::string& corpus,
+void SkiaGoldPixelDiff::Init(const std::string& corpus,
                              TestEnvironmentMap test_environment) {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
-    cmd_line->AppendSwitch(kDryRun);
+    is_dry_run_ = true;
   }
 
-  ASSERT_TRUE(cmd_line->HasSwitch(kBuildRevisionKey) ||
-              cmd_line->HasSwitch(kDryRun))
+  ASSERT_TRUE(cmd_line->HasSwitch(kBuildRevisionKey) || is_dry_run_)
       << "Missing switch " << kBuildRevisionKey;
 
   // Use the dummy revision code for dry run.
-  build_revision_ = cmd_line->HasSwitch(kDryRun)
+  build_revision_ = is_dry_run_
                         ? kDummyBuildRevision
                         : cmd_line->GetSwitchValueASCII(kBuildRevisionKey);
 
@@ -311,18 +370,15 @@ void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
       code_review_system_ = "gerrit";
     }
   }
-  if (cmd_line->HasSwitch(kNoLuciAuth) || !BotModeEnabled(cmd_line)) {
+  if (cmd_line->HasSwitch(kNoLuciAuth) || is_dry_run_) {
     luci_auth_ = false;
   }
   initialized_ = true;
-  prefix_ = screenshot_prefix;
-  corpus_ = corpus.length() ? corpus : "gtest-pixeltests";
+  corpus_ = corpus;
+  test_environment_ = std::move(test_environment);
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::CreateNewTempDirectory(FILE_PATH_LITERAL("SkiaGoldTemp"),
                                &working_dir_);
-
-  FillInSystemEnvironment(test_environment);
-  test_environment_ = std::move(test_environment);
 
   InitSkiaGold();
 }
@@ -364,7 +420,7 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
   cmd.AppendSwitchASCII("corpus", corpus_);
   cmd.AppendSwitchPath("png-file", local_file_path);
   cmd.AppendSwitchPath("work-dir", working_dir_);
-  if (process_command_line->HasSwitch(kDryRun)) {
+  if (is_dry_run_) {
     cmd.AppendSwitch(kDryRun);
   }
 
@@ -379,38 +435,66 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
   return exit_code == 0;
 }
 
+// static
+std::string SkiaGoldPixelDiff::GetGoldenImageName(
+    const std::string& test_suite_name,
+    const std::string& test_name,
+    const absl::optional<std::string>& suffix) {
+  std::vector<base::StringPiece> parts;
+
+  // Test suites can have "/" in their names from a parameterization
+  // instantiation, which isn't allowed in file names.
+  auto test_suite_parts = base::SplitStringPiece(
+      test_suite_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& test_suite_part : test_suite_parts) {
+    parts.push_back(test_suite_part);
+  }
+
+  // Tests can have "/" in their names from a parameterization value, which
+  // isn't allowed in file names.
+  auto test_name_parts = base::SplitStringPiece(
+      test_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& test_name_part : test_name_parts) {
+    parts.push_back(test_name_part);
+  }
+
+  if (suffix.has_value()) {
+    parts.push_back(suffix.value());
+  }
+
+  const char* separator =
+      GetPlatform() == std::string("ash") ? kAshSeparator : kNonAshSeparator;
+  return base::JoinString(parts, separator);
+}
+
+// static
+std::string SkiaGoldPixelDiff::GetGoldenImageName(
+    const ::testing::TestInfo* test_info,
+    const absl::optional<std::string>& suffix) {
+  return GetGoldenImageName(test_info->test_suite_name(), test_info->name(),
+                            suffix);
+}
+
 bool SkiaGoldPixelDiff::CompareScreenshot(
-    const std::string& screenshot_name,
+    const std::string& golden_image_name,
     const SkBitmap& bitmap,
     const SkiaGoldMatchingAlgorithm* algorithm) const {
-  DCHECK(Initialized()) << "Initialize the class before using this method.";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(initialized_) << "Initialize the class before using this method.";
   std::vector<unsigned char> output;
   bool ret = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &output);
   if (!ret) {
     LOG(ERROR) << "Encoding SkBitmap to PNG format failed.";
     return false;
   }
-  // The golden image name should be unique on GCS per platform. And also the
-  // name should be valid across all systems.
-  std::string suffix = GetPlatform();
-  std::string normalized_prefix;
-  std::string normalized_screenshot_name;
 
-  // Parameterized tests have "/" in their names which isn't allowed in file
-  // names. Replace with `separator`.
-  const std::string separator =
-      suffix == std::string("ash") ? kAshSeparator : kNonAshSeparator;
-  base::ReplaceChars(prefix_, "/", separator, &normalized_prefix);
-  base::ReplaceChars(screenshot_name, "/", separator,
-                     &normalized_screenshot_name);
-  std::string name = normalized_prefix + separator +
-                     normalized_screenshot_name + separator + suffix;
-  CHECK_EQ(name.find_first_of(" /"), std::string::npos)
-      << " a golden image name should not contain any space or back slash";
+  CHECK_EQ(golden_image_name.find_first_of(" /"), std::string::npos)
+      << " a golden image name should not contain any space or back slash: "
+      << golden_image_name;
 
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath temporary_path =
-      working_dir_.Append(base::FilePath::FromUTF8Unsafe(name + ".png"));
+  base::FilePath temporary_path = working_dir_.Append(
+      base::FilePath::FromUTF8Unsafe(golden_image_name + ".png"));
   base::File file(temporary_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                       base::File::Flags::FLAG_WRITE);
   int ret_code = file.Write(0, (char*)output.data(), output.size());
@@ -421,16 +505,17 @@ bool SkiaGoldPixelDiff::CompareScreenshot(
                << ". Return code: " << ret_code;
     return false;
   }
-  bool success = UploadToSkiaGoldServer(temporary_path, name, algorithm);
-  if (!success && !BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
-    GenerateLocalDiff(name, temporary_path);
+  bool success =
+      UploadToSkiaGoldServer(temporary_path, golden_image_name, algorithm);
+  if (!success && is_dry_run_) {
+    GenerateLocalDiff(golden_image_name, temporary_path);
   }
 
   return success;
 }
 
 void SkiaGoldPixelDiff::GenerateLocalDiff(
-    const std::string& test_name,
+    const std::string& remote_golden_image_name,
     const base::FilePath& test_output_path) const {
   base::CommandLine* process_command_line =
       base::CommandLine::ForCurrentProcess();
@@ -446,7 +531,7 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
     base::CreateDirectory(path);
   }
 
-  auto output_dir = path.AppendASCII(test_name);
+  auto output_dir = path.AppendASCII(remote_golden_image_name);
   if (!base::PathExists(output_dir)) {
     base::CreateDirectory(output_dir);
   }
@@ -475,7 +560,7 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
   base::CommandLine cmd(GetAbsoluteSrcRelativePath(kSkiaGoldCtl));
   cmd.AppendSwitchASCII("corpus", corpus_);
   cmd.AppendSwitchASCII("instance", GetDiffGoldInstance());
-  cmd.AppendSwitchASCII("test", test_name);
+  cmd.AppendSwitchASCII("test", remote_golden_image_name);
   cmd.AppendSwitchPath("input", test_output_path);
   cmd.AppendSwitchPath("work-dir", temp_work_dir);
   cmd.AppendSwitchPath("out-dir", output_dir);

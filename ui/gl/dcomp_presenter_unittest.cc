@@ -190,7 +190,8 @@ class DCompPresenterTest : public testing::Test {
  public:
   DCompPresenterTest() : parent_window_(ui::GetHiddenWindow()) {}
 
-  static void SetUpTestSuite() {
+ protected:
+  void SetUp() override {
     // Without this, the following check always fails.
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
@@ -202,17 +203,7 @@ class DCompPresenterTest : public testing::Test {
         nullptr, gl_surface_.get(), GLContextAttribs());
     EXPECT_TRUE(context->MakeCurrent(gl_surface_.get()));
     context_ = std::move(context);
-  }
 
-  static void TearDownTestSuite() {
-    context_.reset();
-    gl_surface_.reset();
-    gl::init::ShutdownGL(display_, false);
-    display_ = nullptr;
-  }
-
- protected:
-  void SetUp() override {
     // These tests are assumed to run on battery.
     fake_power_monitor_source_.SetOnBatteryPower(true);
 
@@ -229,6 +220,11 @@ class DCompPresenterTest : public testing::Test {
     if (presenter_) {
       DestroyPresenter(std::move(presenter_));
     }
+
+    context_.reset();
+    gl_surface_.reset();
+    gl::init::ShutdownGL(display_, false);
+    display_ = nullptr;
   }
 
   scoped_refptr<DCompPresenter> CreateDCompPresenter() {
@@ -265,18 +261,14 @@ class DCompPresenterTest : public testing::Test {
     wait_for_present.Run();
   }
 
-  static raw_ptr<GLDisplay> display_;
-  static scoped_refptr<GLSurface> gl_surface_;
-  static scoped_refptr<GLContext> context_;
+  raw_ptr<GLDisplay> display_ = nullptr;
+  scoped_refptr<GLSurface> gl_surface_;
+  scoped_refptr<GLContext> context_;
 
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
   HWND parent_window_;
   scoped_refptr<DCompPresenter> presenter_;
 };
-
-raw_ptr<GLDisplay> DCompPresenterTest::display_ = nullptr;
-scoped_refptr<GLSurface> DCompPresenterTest::gl_surface_;
-scoped_refptr<GLContext> DCompPresenterTest::context_;
 
 // Ensure that the overlay image isn't presented again unless it changes.
 TEST_F(DCompPresenterTest, NoPresentTwice) {
@@ -1462,10 +1454,9 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
 }
 
 class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
- public:
-  static void SetUpTestSuite() {
-    DCompPresenterPixelTest::SetUpTestSuite();
-
+ protected:
+  void SetUp() override {
+    DCompPresenterPixelTest::SetUp();
     ASSERT_TRUE(context_);
     const ui::test::TestEnvironmentMap test_environment = {
         {ui::test::TestEnvironmentKey::kSystemVersion,
@@ -1478,16 +1469,10 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
 
     };
 
-    pixel_diff_.Init(
-        ::testing::UnitTest::GetInstance()->current_test_suite()->name(),
+    pixel_diff_ = ui::test::SkiaGoldPixelDiff::GetSession(
         kSkiaGoldPixelDiffCorpus, test_environment);
   }
 
-  static void TearDownTestSuite() {
-    DCompPresenterPixelTest::TearDownTestSuite();
-  }
-
- protected:
   void TearDown() override {
     DCompPresenterPixelTest::TearDown();
     test_initialized_ = false;
@@ -1534,17 +1519,15 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
-    std::string screenshot_name =
-        ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    if (!capture_name.empty()) {
-      screenshot_name = base::StringPrintf("%s/%s", screenshot_name.c_str(),
-                                           capture_name.c_str());
-    }
-
     SkBitmap window_readback =
         GLTestHelper::ReadBackWindow(window_.hwnd(), window_size_);
-    if (!pixel_diff_.CompareScreenshot(screenshot_name, window_readback,
-                                       matching_algorithm_.get())) {
+    CHECK(pixel_diff_);
+    if (!pixel_diff_->CompareScreenshot(
+            ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
+                ::testing::UnitTest::GetInstance()->current_test_info(),
+                capture_name.empty() ? absl::nullopt
+                                     : absl::make_optional(capture_name)),
+            window_readback, matching_algorithm_.get())) {
       ADD_FAILURE_AT(caller_location.file_name(), caller_location.line_number())
           << "Screenshot mismatch for "
           << (capture_name.empty() ? "(unnamed capture)" : capture_name);
@@ -1573,7 +1556,7 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
   }
 
  private:
-  static ui::test::SkiaGoldPixelDiff pixel_diff_;
+  base::raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
 
   // The matching algorithm for goldctl to use.
   std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> matching_algorithm_;
@@ -1588,8 +1571,6 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
   // seen in the test so far.
   base::flat_set<std::string> capture_names_in_test_;
 };
-
-ui::test::SkiaGoldPixelDiff DCompPresenterSkiaGoldTest::pixel_diff_;
 
 // Check that a translation transform works.
 TEST_F(DCompPresenterSkiaGoldTest, TransformTranslate) {

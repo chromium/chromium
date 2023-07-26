@@ -317,8 +317,8 @@ class PersonalizationAppIntegrationPixelBrowserTest
   void SetUp() override {
     if (IsExperimentalBrowserPixelTestEnabled()) {
       view_skia_gold_pixel_diff_ =
-          std::make_unique<views::ViewSkiaGoldPixelDiff>();
-      view_skia_gold_pixel_diff_->Init(GetScreenshotPrefixForCurrentTestInfo());
+          std::make_unique<views::ViewSkiaGoldPixelDiff>(
+              GetScreenshotPrefixForCurrentTestInfo());
     }
     PersonalizationAppIntegrationBrowserTest::SetUp();
   }

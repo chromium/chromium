@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -29,14 +30,16 @@ class View;
 // NOTE: this class has to be initialized before using. A screenshot prefix and
 // a corpus string are required for initialization. Check
 // `SkiaGoldPixelDiff::Init()` for more details.
-class ViewSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
+class ViewSkiaGoldPixelDiff {
  public:
-  ViewSkiaGoldPixelDiff();
+  explicit ViewSkiaGoldPixelDiff(
+      const std::string& screenshot_prefix,
+      const absl::optional<std::string>& corpus = {});
 
   ViewSkiaGoldPixelDiff(const ViewSkiaGoldPixelDiff&) = delete;
   ViewSkiaGoldPixelDiff& operator=(const ViewSkiaGoldPixelDiff&) = delete;
 
-  ~ViewSkiaGoldPixelDiff() override;
+  virtual ~ViewSkiaGoldPixelDiff();
 
   // Takes a screenshot then uploads to Skia Gold and compares it with the
   // remote golden image. Returns true if the screenshot is the same as the
@@ -92,6 +95,9 @@ class ViewSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
   // Updates `image` so that only the pixels within `rects` are kept.
   void KeepPixelsInRects(const std::vector<gfx::Rect>& rects,
                          gfx::Image* image) const;
+
+  const std::string screenshot_prefix_;
+  base::raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
 };
 
 }  // namespace views

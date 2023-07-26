@@ -79,8 +79,7 @@ void VerifyBrowserContents(Browser const* browser,
 
   AwaitContentsLoaded(contents_view->web_contents());
 
-  views::ViewSkiaGoldPixelDiff pixel_diff;
-  pixel_diff.Init(
+  views::ViewSkiaGoldPixelDiff pixel_diff(
       ::testing::UnitTest::GetInstance()->current_test_suite()->name());
   EXPECT_TRUE(pixel_diff.CompareViewScreenshot(screenshot_name, contents_view));
 }

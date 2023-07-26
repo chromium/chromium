@@ -25,9 +25,10 @@ class AshPixelDiffer {
  public:
   // `screenshot_prefix` is the prefix of the screenshot names; `corpus`
   // specifies the result group that will be used to store screenshots in Skia
-  // Gold. Read the comment of `SKiaGoldPixelDiff::Init()` for more details.
-  AshPixelDiffer(const std::string& screenshot_prefix,
-                 const std::string& corpus);
+  // Gold. Read the comment of `SKiaGoldPixelDiff::GetSession()` for more
+  // details.
+  explicit AshPixelDiffer(const std::string& screenshot_prefix,
+                          const absl::optional<std::string>& corpus = {});
   AshPixelDiffer(const AshPixelDiffer&) = delete;
   AshPixelDiffer& operator=(const AshPixelDiffer&) = delete;
   ~AshPixelDiffer();
@@ -150,8 +151,6 @@ class AshPixelDiffer {
 
   // Used to take screenshots and upload images to the Skia Gold server to
   // perform pixel comparison.
-  // NOTE: the user of `ViewSkiaGoldPixelDiff` has the duty to initialize
-  // `pixel_diff` before performing any pixel comparison.
   views::ViewSkiaGoldPixelDiff pixel_diff_;
 };
 

@@ -24,15 +24,15 @@ class SkiaGoldDemoPixelTest : public InProcessBrowserTest {
 
     // Initialize the class here. Follow the best practice to use
     // the class name as the screenshot prefix.
-    ASSERT_NO_FATAL_FAILURE(pixel_diff_.Init("SkiaGoldDemoPixelTest"));
+    ASSERT_NO_FATAL_FAILURE(pixel_diff_.emplace("SkiaGoldDemoPixelTest"));
   }
 
   const views::ViewSkiaGoldPixelDiff& GetPixelDiff() const {
-    return pixel_diff_;
+    return pixel_diff_.value();
   }
 
  private:
-  views::ViewSkiaGoldPixelDiff pixel_diff_;
+  absl::optional<views::ViewSkiaGoldPixelDiff> pixel_diff_;
 };
 
 // This is a demo test to ensure the omnibox looks as expected.

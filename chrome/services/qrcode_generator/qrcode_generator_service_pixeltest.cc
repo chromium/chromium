@@ -69,10 +69,13 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
             switches::kVerifyPixels)) {
       const ::testing::TestInfo* test_info =
           ::testing::UnitTest::GetInstance()->current_test_info();
-      ui::test::SkiaGoldPixelDiff pixel_diff;
-      pixel_diff.Init(test_info->test_suite_name());
-      ASSERT_TRUE(
-          pixel_diff.CompareScreenshot(test_info->name(), response->bitmap));
+      ui::test::SkiaGoldPixelDiff* pixel_diff =
+          ui::test::SkiaGoldPixelDiff::GetSession();
+      ASSERT_TRUE(pixel_diff);
+      ASSERT_TRUE(pixel_diff->CompareScreenshot(
+          ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
+              test_info, ui::test::SkiaGoldPixelDiff::GetPlatform()),
+          response->bitmap));
     }
 #endif
   }

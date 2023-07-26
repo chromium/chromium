@@ -666,8 +666,7 @@ void AshTestBase::PrepareForPixelDiffTest() {
 
   DCHECK(!pixel_differ_);
   pixel_differ_ =
-      std::make_unique<AshPixelDiffer>(GetScreenshotPrefixForCurrentTestInfo(),
-                                       /*corpus=*/std::string());
+      std::make_unique<AshPixelDiffer>(GetScreenshotPrefixForCurrentTestInfo());
 }
 
 // ============================================================================
