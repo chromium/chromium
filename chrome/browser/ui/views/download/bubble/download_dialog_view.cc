@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -57,9 +58,16 @@ class ShowAllDownloadsButton : public RichHoverButton {
       : RichHoverButton(
             std::move(show_all_downloads_callback),
             /*main_image_icon=*/ui::ImageModel(),
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LINK),
+            base::FeatureList::IsEnabled(
+                safe_browsing::kImprovedDownloadBubbleWarnings)
+                ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL)
+                : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LINK),
             /*secondary_text=*/std::u16string(),
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP),
+            base::FeatureList::IsEnabled(
+                safe_browsing::kImprovedDownloadBubbleWarnings)
+                ? l10n_util::GetStringUTF16(
+                      IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP_LABEL)
+                : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP),
             /*subtitle_text=*/std::u16string(),
             ui::ImageModel::FromVectorIcon(
                 features::IsChromeRefresh2023()
@@ -134,7 +142,10 @@ void DownloadDialogView::AddHeader() {
   header->SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 
   auto* title = header->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT),
+      base::FeatureList::IsEnabled(
+          safe_browsing::kImprovedDownloadBubbleWarnings)
+          ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL)
+          : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT),
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
   title->SetProperty(
       views::kFlexBehaviorKey,

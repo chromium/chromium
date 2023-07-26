@@ -2735,6 +2735,30 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- Download Bubble -->
+      <if expr="use_titlecase">
+        <message name="IDS_DOWNLOAD_BUBBLE_HEADER_LABEL"
+                 desc="In Title Case: Header text in the Download Bubble.">
+          Recent Download History
+        </message>
+        <message name="IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL"
+                 desc="In Title Case: Label in the Download Bubble for the button that opens a full list of download history">
+          Full Download History
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_DOWNLOAD_BUBBLE_HEADER_LABEL"
+                 desc="Header text in the Download Bubble.">
+          Recent download history
+        </message>
+        <message name="IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL"
+                 desc="Label in the Download Bubble for the button that opens a full list of download history">
+          Full download history
+        </message>
+      </if>
+      <message name="IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP_LABEL"
+               desc="Tooltip label for the button to open full download history">
+        Show full download history in a new tab
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_HEADER_TEXT"
                desc="Header text in the Download Bubble">
         Recent Downloads

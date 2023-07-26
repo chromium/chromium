@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -513,7 +514,10 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       this, views::BubbleBorder::TOP_RIGHT);
   bubble_delegate->SetTitle(
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT));
+      base::FeatureList::IsEnabled(
+          safe_browsing::kImprovedDownloadBubbleWarnings)
+          ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL)
+          : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT));
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
