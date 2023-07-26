@@ -216,6 +216,7 @@ TEST_F(KeyboardShortcutResultTest, StandardAcceleratorToResult) {
   EXPECT_TRUE(search_result0->accelerator_infos.at(0)
                   ->layout_properties->is_standard_accelerator());
 
+  EXPECT_EQ("keyboard_shortcut://1", result->id());
   EXPECT_EQ(0.5, result->relevance());
   EXPECT_EQ(u"first result", result->title());
   EXPECT_EQ(KeyboardShortcutResult::ResultType::kKeyboardShortcut,

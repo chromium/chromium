@@ -389,7 +389,11 @@ KeyboardShortcutResult::KeyboardShortcutResult(
     Profile* profile,
     const ash::shortcut_customization::mojom::SearchResultPtr& search_result)
     : profile_(profile) {
-  // TODO(xiangdongkong): implement set_id.
+  // The ID needs to be unique among all results. The action is an ID uniquely
+  // mapped to an accelerator action.
+  set_id(base::StrCat(
+      {kKeyboardShortcutScheme,
+       base::NumberToString(search_result->accelerator_layout_info->action)}));
   set_relevance(search_result->relevance_score);
   SetTitle(search_result->accelerator_layout_info->description);
   SetResultType(ResultType::kKeyboardShortcut);
