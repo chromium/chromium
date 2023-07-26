@@ -844,7 +844,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
 
         // Assert: finalX value before orientation change.
-        int initialFinalX = -660;
+        int initialFinalX = 0;
         assertEquals(initialFinalX, mStripLayoutHelper.getScrollerForTesting().getFinalX());
 
         // Act: change orientation.
@@ -869,7 +869,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
 
         // Assert: finalX value before orientation change.
-        int initialFinalX = -660;
+        int initialFinalX = 0;
         assertEquals(initialFinalX, mStripLayoutHelper.getScrollerForTesting().getFinalX());
 
         // Act: change orientation.
@@ -932,8 +932,9 @@ public class StripLayoutHelperTest {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-        // Set initial scroller position to -100.
-        mStripLayoutHelper.getScrollerForTesting().setFinalX(-100);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // Set initial scroller position to 1200.
+        mStripLayoutHelper.getScrollerForTesting().setFinalX((int) SCREEN_WIDTH_LANDSCAPE);
 
         // Act: Tab was restored after undoing a tab closure.
         boolean closureCancelled = true;
@@ -941,7 +942,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, false, closureCancelled, false);
 
         // Assert: scroller position is not modified.
-        assertEquals(-100, mStripLayoutHelper.getScrollerForTesting().getFinalX());
+        assertEquals(1200, mStripLayoutHelper.getScrollerForTesting().getFinalX());
     }
 
     @Test
@@ -949,8 +950,9 @@ public class StripLayoutHelperTest {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-        // Set initial scroller position to -100.
-        mStripLayoutHelper.getScrollerForTesting().setFinalX(-100);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // Set initial scroller position to 1200.
+        mStripLayoutHelper.getScrollerForTesting().setFinalX((int) SCREEN_WIDTH_LANDSCAPE);
 
         // Act: Tab was restored after undoing a tab closure.
         boolean closureCancelled = false;
@@ -958,7 +960,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, false, closureCancelled, false);
 
         // Assert: scroller position is modified.
-        assertNotEquals(-100, mStripLayoutHelper.getScrollerForTesting().getFinalX());
+        assertNotEquals(1200, mStripLayoutHelper.getScrollerForTesting().getFinalX());
     }
 
     @Test
@@ -2131,6 +2133,25 @@ public class StripLayoutHelperTest {
                 "Tab at position 3 should not be a placeholder.", stripTabs[3].getIsPlaceholder());
         assertFalse(
                 "Tab at position 4 should not be a placeholder.", stripTabs[4].getIsPlaceholder());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_ScrollOnStartup() {
+        // Create StripLayoutHelper and mark that after tabs finish restoring, there will be 20
+        // tabs, where the last tab will be the active tab.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(20, 19);
+
+        // Mock a tab model and set it in the StripLayoutHelper.
+        MockTabModel tabModel = new MockTabModel(false, null);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        assertEquals("Offset should be 0.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
+
+        // Set size.
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        assertNotEquals(
+                "Offset should have changed.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
     }
 
     private void setupForAnimations() {
