@@ -383,6 +383,14 @@ void PillButton::Init() {
             gfx::Insets(-kFocusRingPadding), height / 2.f + kFocusRingPadding));
   }
 
+  // TODO(b/290639214): We no longer need this after deprecating
+  // SetPillButtonType since the whether using background should be settled on
+  // initialization. For now, we should remove the background if the client
+  // changes from non-floating type button to floating type button.
+  if (IsFloatingPillButton(type_)) {
+    SetBackground(nullptr);
+  }
+
   UpdateBackgroundColor();
   UpdateTextColor();
   UpdateIconColor();
