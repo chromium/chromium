@@ -177,7 +177,7 @@ struct MEDIA_EXPORT H265SPS {
   int log2_max_pic_order_cnt_lsb_minus4;
   int sps_max_dec_pic_buffering_minus1[kMaxSubLayers];
   int sps_max_num_reorder_pics[kMaxSubLayers];
-  int sps_max_latency_increase_plus1[kMaxSubLayers];
+  uint32_t sps_max_latency_increase_plus1[kMaxSubLayers];
   int log2_min_luma_coding_block_size_minus3;
   int log2_diff_max_min_luma_coding_block_size;
   int log2_min_luma_transform_block_size_minus2;
@@ -235,6 +235,7 @@ struct MEDIA_EXPORT H265SPS {
   int pic_size_in_ctbs_y;
   int wp_offset_half_range_y;
   int wp_offset_half_range_c;
+  uint32_t sps_max_latency_pictures[kMaxSubLayers];
 
   // Helpers to compute frequently-used values. They do not verify that the
   // results are in-spec for the given profile or level.

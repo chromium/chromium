@@ -337,9 +337,9 @@ TEST_F(H265DecoderTest, DenyDecodeNonYUV420) {
 
 TEST_F(H265DecoderTest, OutputPictureFailureCausesDecodeToFail) {
   // Provide enough data that Decode() will try to output a frame.
-  SetInputFrameFiles({kSpsPps, kFrame0, kFrame1, kFrame2, kFrame3});
+  SetInputFrameFiles({kSpsPps, kFrame0, kFrame1, kFrame2});
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
-  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(4);
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(3);
   EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
       .Times(3);
   EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))

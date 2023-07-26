@@ -68,6 +68,7 @@ class MEDIA_GPU_EXPORT H265Picture : public CodecPicture {
   bool no_output_of_prior_pics_flag_{false};
   bool pic_output_flag_{false};
   bool valid_for_prev_tid0_pic_{false};
+  uint32_t pic_latency_count_{0};
   int slice_pic_order_cnt_lsb_{0};
   int pic_order_cnt_msb_{0};
   int pic_order_cnt_val_{0};

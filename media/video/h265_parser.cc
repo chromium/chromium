@@ -407,8 +407,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
       TRUE_OR_RETURN(sps->sps_max_num_reorder_pics[i] >=
                      sps->sps_max_num_reorder_pics[i - 1]);
     }
-    int sps_max_latency_increase_plus1;
-    READ_UE_OR_RETURN(&sps_max_latency_increase_plus1);
+    READ_UE_OR_RETURN(&sps->sps_max_latency_increase_plus1[i]);
+    IN_RANGE_OR_RETURN(sps->sps_max_latency_increase_plus1[i], 0, 0xFFFFFFFE);
   }
   if (!sps_sub_layer_ordering_info_present_flag) {
     // Fill in the default values for the other sublayers.
@@ -421,6 +421,18 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
           sps->sps_max_latency_increase_plus1[sps->sps_max_sub_layers_minus1];
     }
   }
+
+  // Equation 7-9: Calculate SpsMaxLatencyPictures.
+  for (int i = 0; i <= sps->sps_max_sub_layers_minus1; ++i) {
+    if (sps->sps_max_latency_increase_plus1[i] != 0) {
+      sps->sps_max_latency_pictures[i] =
+          static_cast<uint32_t>(sps->sps_max_num_reorder_pics[i]) +
+          sps->sps_max_latency_increase_plus1[i] - 1;
+    } else {
+      sps->sps_max_latency_pictures[i] = 0;
+    }
+  }
+
   READ_UE_OR_RETURN(&sps->log2_min_luma_coding_block_size_minus3);
   // This enforces that min_cb_log2_size_y below will be <= 30 and prevents
   // integer overflow math there.
