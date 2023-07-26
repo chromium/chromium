@@ -13,8 +13,7 @@ WebIdTestContentBrowserClient::WebIdTestContentBrowserClient() = default;
 WebIdTestContentBrowserClient::~WebIdTestContentBrowserClient() = default;
 
 std::unique_ptr<IdentityRequestDialogController>
-WebIdTestContentBrowserClient::CreateIdentityRequestDialogController(
-    WebContents* rp_web_contents) {
+WebIdTestContentBrowserClient::CreateIdentityRequestDialogController() {
   DCHECK(test_dialog_controller_);
   return std::move(test_dialog_controller_);
 }

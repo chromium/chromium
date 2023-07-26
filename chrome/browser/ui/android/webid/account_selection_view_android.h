@@ -49,8 +49,9 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized
-  // successfully or false if the creation failed.
-  bool MaybeCreateJavaObject();
+  // successfully or false if the creation failed. This method will recreate the
+  // java object whenever Show() is called.
+  bool RecreateJavaObject();
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };

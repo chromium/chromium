@@ -114,10 +114,6 @@ class AccountSelectionMediator {
     // to the user.
     private long mComponentShowTime;
 
-    // Whether there is an open modal dialog. When a modal dialog is opened, this
-    // mediator should not display any accounts until such dialog is closed.
-    private boolean mIsModalDialogOpen;
-
     private KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
                 @Override
@@ -481,7 +477,6 @@ class AccountSelectionMediator {
      */
     private void showContent() {
         if (mWasDismissed) return;
-        if (mIsModalDialogOpen) return;
         if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)) {
             if (mRegisteredObservers) return;
 
@@ -620,13 +615,5 @@ class AccountSelectionMediator {
         return new PropertyModel.Builder(IdpSignInProperties.ALL_KEYS)
                 .with(IdpSignInProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .build();
-    }
-
-    void onModalDialogOpened() {
-        mIsModalDialogOpen = true;
-    }
-
-    void onModalDialogClosed() {
-        mIsModalDialogOpen = false;
     }
 }

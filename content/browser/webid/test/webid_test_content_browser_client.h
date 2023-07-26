@@ -29,7 +29,7 @@ class WebIdTestContentBrowserClient
       const WebIdTestContentBrowserClient&) = delete;
 
   std::unique_ptr<IdentityRequestDialogController>
-  CreateIdentityRequestDialogController(WebContents* web_contents) override;
+  CreateIdentityRequestDialogController() override;
 
   std::unique_ptr<MDocProvider> CreateMDocProvider() override;
 

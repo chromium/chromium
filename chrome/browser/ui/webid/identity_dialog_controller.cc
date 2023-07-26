@@ -10,9 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 
-IdentityDialogController::IdentityDialogController(
-    content::WebContents* rp_web_contents)
-    : rp_web_contents_(rp_web_contents) {}
+IdentityDialogController::IdentityDialogController() = default;
 
 IdentityDialogController::~IdentityDialogController() = default;
 
@@ -25,6 +23,7 @@ int IdentityDialogController::GetBrandIconIdealSize() {
 }
 
 void IdentityDialogController::ShowAccountsDialog(
+    content::WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
     const absl::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -32,6 +31,7 @@ void IdentityDialogController::ShowAccountsDialog(
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {
+  rp_web_contents_ = rp_web_contents;
   on_account_selection_ = std::move(on_selected);
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
@@ -42,6 +42,7 @@ void IdentityDialogController::ShowAccountsDialog(
 }
 
 void IdentityDialogController::ShowFailureDialog(
+    content::WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
     const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
@@ -49,7 +50,8 @@ void IdentityDialogController::ShowFailureDialog(
     const content::IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
     SigninToIdPCallback signin_callback) {
-  const GURL rp_url = rp_web_contents_->GetLastCommittedURL();
+  const GURL rp_url = rp_web_contents->GetLastCommittedURL();
+  rp_web_contents_ = rp_web_contents;
   on_dismiss_ = std::move(dismiss_callback);
   on_signin_ = std::move(signin_callback);
   if (!account_view_)
@@ -114,13 +116,5 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
 }
 
 void IdentityDialogController::CloseModalDialog() {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, this method is invoked on the modal dialog controller,
-  // which means we may need to initialize the |account_view|.
-  if (!account_view_) {
-    account_view_ = AccountSelectionView::Create(this);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  CHECK(account_view_);
   account_view_->CloseModalDialog();
 }

@@ -844,8 +844,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   StartupData* startup_data() { return &startup_data_; }
 
   std::unique_ptr<content::IdentityRequestDialogController>
-  CreateIdentityRequestDialogController(
-      content::WebContents* web_contents) override;
+  CreateIdentityRequestDialogController() override;
 
 #if !BUILDFLAG(IS_ANDROID)
   base::TimeDelta GetKeepaliveTimerTimeout(content::BrowserContext* context);
