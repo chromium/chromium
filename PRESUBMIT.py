@@ -425,6 +425,14 @@ _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
     ),
+    BanRule(
+      'This file requires ARC support.',
+      (
+        'ARC compilation is default in Chromium; do not add boilerplate to ',
+        'files that require ARC.',
+      ),
+      True,
+    ),
 )
 
 _BANNED_IOS_OBJC_FUNCTIONS = (
