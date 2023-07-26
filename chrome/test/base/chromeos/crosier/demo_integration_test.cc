@@ -6,7 +6,7 @@
 #include "base/test/test_switches.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/test/base/chromeos/crosier/crosier_mixin.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -102,7 +102,7 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
-  CrosierMixin crosier_mixin_{&mixin_host_};
+  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {

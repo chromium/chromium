@@ -11,10 +11,12 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
@@ -22,10 +24,17 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
+#endif
+
 namespace ash {
 namespace {
 
-class QuickSettingsIntegrationTest : public InteractiveBrowserTest {
+using InteractiveMixinBasedBrowserTest =
+    InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+
+class QuickSettingsIntegrationTest : public InteractiveMixinBasedBrowserTest {
  public:
   QuickSettingsIntegrationTest() {
     feature_list_.InitAndEnableFeature(features::kQsRevamp);
@@ -40,9 +49,9 @@ class QuickSettingsIntegrationTest : public InteractiveBrowserTest {
         }));
   }
 
-  // InteractiveBrowserTest:
+  // InteractiveMixinBasedBrowserTest:
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveMixinBasedBrowserTest::SetUpOnMainThread();
 
     // Ensure the OS Settings system web app (SWA) is installed.
     Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -57,10 +66,15 @@ class QuickSettingsIntegrationTest : public InteractiveBrowserTest {
     for (Browser* browser : *BrowserList::GetInstance()) {
       CloseBrowserSynchronously(browser);
     }
-    InteractiveBrowserTest::TearDownOnMainThread();
+    InteractiveMixinBasedBrowserTest::TearDownOnMainThread();
   }
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
+  // chromeos_integration_tests.
+  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
+#endif
   base::test::ScopedFeatureList feature_list_;
 };
 

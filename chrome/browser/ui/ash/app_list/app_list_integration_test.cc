@@ -8,6 +8,8 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -16,10 +18,17 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
+#endif
+
 namespace ash {
 namespace {
 
-class AppListIntegrationTest : public InteractiveBrowserTest {
+using InteractiveMixinBasedBrowserTest =
+    InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+
+class AppListIntegrationTest : public InteractiveMixinBasedBrowserTest {
  public:
   AppListIntegrationTest() {
     // This test suite does not require a browser window.
@@ -35,6 +44,13 @@ class AppListIntegrationTest : public InteractiveBrowserTest {
           return ui::ElementContext(Shell::GetPrimaryRootWindow());
         }));
   }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
+  // chromeos_integration_tests.
+  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(AppListIntegrationTest, OpenAndClose) {
