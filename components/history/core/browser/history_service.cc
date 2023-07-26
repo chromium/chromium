@@ -29,6 +29,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1395,10 +1396,13 @@ bool HistoryService::Init(
                           base::Unretained(this)));
 
   if (visit_delegate_ && !visit_delegate_->Init(this)) {
-    // This is rare enough that it's worth logging.
-    LOG(WARNING) << "HistoryService::Init() failed by way of "
-                    "VisitDelegate::Init failing";
-    return false;
+    // This is a low-level service that many other services in chromium depend
+    // on. If it fails to initialize (which can happen when there's insufficient
+    // shared memory) we will end up with nullptr dereferences in higher-level
+    // services that are harder to diagnose. Explicitly terminate here instead.
+    LOG(ERROR) << "HistoryService::Init() failed by way of "
+                  "VisitDelegate::Init failing";
+    base::Process::TerminateCurrentProcessImmediately(0);
   }
 
   if (history_client_)
