@@ -16,9 +16,11 @@ GLTexturePassthroughD3DImageRepresentation::
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
+        Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
         std::vector<scoped_refptr<D3DImageBacking::GLTextureHolder>>
             gl_texture_holders)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
+      d3d11_device_(std::move(d3d11_device)),
       gl_texture_holders_(std::move(gl_texture_holders)) {}
 
 GLTexturePassthroughD3DImageRepresentation::
@@ -42,13 +44,14 @@ void* GLTexturePassthroughD3DImageRepresentation::GetEGLImage() {
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  bool write_access = mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  return d3d_image_backing->BeginAccessD3D11(write_access);
+  const bool write_access =
+      mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
+  return d3d_image_backing->BeginAccessD3D11(d3d11_device_, write_access);
 }
 
 void GLTexturePassthroughD3DImageRepresentation::EndAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D11();
+  d3d_image_backing->EndAccessD3D11(d3d11_device_);
 }
 
 #if BUILDFLAG(USE_DAWN)
@@ -93,21 +96,23 @@ void DawnD3DImageRepresentation::EndAccess() {
 OverlayD3DImageRepresentation::OverlayD3DImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
-    MemoryTypeTracker* tracker)
-    : OverlayImageRepresentation(manager, backing, tracker) {}
+    MemoryTypeTracker* tracker,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
+    : OverlayImageRepresentation(manager, backing, tracker),
+      d3d11_device_(std::move(d3d11_device)) {}
 
 OverlayD3DImageRepresentation::~OverlayD3DImageRepresentation() = default;
 
 bool OverlayD3DImageRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
   return static_cast<D3DImageBacking*>(backing())->BeginAccessD3D11(
-      /*write_access=*/false);
+      d3d11_device_, /*write_access=*/false);
 }
 
 void OverlayD3DImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
-  static_cast<D3DImageBacking*>(backing())->EndAccessD3D11();
+  static_cast<D3DImageBacking*>(backing())->EndAccessD3D11(d3d11_device_);
 }
 
 absl::optional<gl::DCLayerOverlayImage>
@@ -119,29 +124,32 @@ D3D11VideoDecodeImageRepresentation::D3D11VideoDecodeImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture)
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture)
     : VideoDecodeImageRepresentation(manager, backing, tracker),
-      texture_(std::move(texture)) {}
+      d3d11_device_(std::move(d3d11_device)),
+      d3d11_texture_(std::move(d3d11_texture)) {}
 
 D3D11VideoDecodeImageRepresentation::~D3D11VideoDecodeImageRepresentation() =
     default;
 
 bool D3D11VideoDecodeImageRepresentation::BeginWriteAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  if (!d3d_image_backing->BeginAccessD3D11(/*write_access=*/true))
+  if (!d3d_image_backing->BeginAccessD3D11(d3d11_device_,
+                                           /*write_access=*/true)) {
     return false;
-
+  }
   return true;
 }
 
 void D3D11VideoDecodeImageRepresentation::EndWriteAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D11();
+  d3d_image_backing->EndAccessD3D11(d3d11_device_);
 }
 
 Microsoft::WRL::ComPtr<ID3D11Texture2D>
 D3D11VideoDecodeImageRepresentation::GetD3D11Texture() const {
-  return texture_;
+  return d3d11_texture_;
 }
 
 }  // namespace gpu

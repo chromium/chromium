@@ -30,6 +30,7 @@ class GLTexturePassthroughD3DImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       std::vector<scoped_refptr<D3DImageBacking::GLTextureHolder>>
           texture_holders);
   ~GLTexturePassthroughD3DImageRepresentation() override;
@@ -44,6 +45,8 @@ class GLTexturePassthroughD3DImageRepresentation
  private:
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   std::vector<scoped_refptr<D3DImageBacking::GLTextureHolder>>
@@ -76,9 +79,11 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
 // Representation of a D3DImageBacking as an overlay.
 class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
  public:
-  OverlayD3DImageRepresentation(SharedImageManager* manager,
-                                SharedImageBacking* backing,
-                                MemoryTypeTracker* tracker);
+  OverlayD3DImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
   ~OverlayD3DImageRepresentation() override;
 
  private:
@@ -86,6 +91,8 @@ class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
 
   absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 };
 
 class D3D11VideoDecodeImageRepresentation
@@ -95,7 +102,8 @@ class D3D11VideoDecodeImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> texture);
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
   ~D3D11VideoDecodeImageRepresentation() override;
 
  private:
@@ -103,7 +111,8 @@ class D3D11VideoDecodeImageRepresentation
   void EndWriteAccess() override;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const override;
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_;
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 };
 
 }  // namespace gpu

@@ -108,8 +108,9 @@ class GPU_GLES2_EXPORT D3DImageBacking
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats) override;
 
-  bool BeginAccessD3D11(bool write_access);
-  void EndAccessD3D11();
+  bool BeginAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+                        bool write_access);
+  void EndAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
 #if BUILDFLAG(USE_DAWN)
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
@@ -238,14 +239,18 @@ class GPU_GLES2_EXPORT D3DImageBacking
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
       bool is_back_buffer = false);
 
+  // Returns allowed Dawn texture usages based on format, device features, etc.
   wgpu::TextureUsage GetAllowedDawnUsages(
       const wgpu::Device& device,
       const wgpu::TextureFormat wgpu_format) const;
 
+  // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
 
+  // Returns a staging texture for CPU uploads/readback, creating one if needed.
   ID3D11Texture2D* GetOrCreateStagingTexture();
 
+  // Common state tracking for both D3D11 and Dawn access.
   bool ValidateBeginAccess(bool write_access) const;
 
   void EndAccessCommon(scoped_refptr<D3DSharedFence> fence);
@@ -281,8 +286,12 @@ class GPU_GLES2_EXPORT D3DImageBacking
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
 
   // D3D11 device corresponding to the |d3d11_texture_| provided on creation.
-  // TODO(sunnyps): Support multiple D3D11 devices.
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  // Can be different from the ANGLE D3D11 device when using Graphite.
+  Microsoft::WRL::ComPtr<ID3D11Device> texture_d3d11_device_;
+
+  // D3D11 device used by ANGLE. Can be different from |d3d11_device_| when
+  // using Graphite.
+  Microsoft::WRL::ComPtr<ID3D11Device> angle_d3d11_device_;
 
   // D3D11 texture descriptor for |d3d11_texture_|.
   D3D11_TEXTURE2D_DESC d3d11_texture_desc_;
