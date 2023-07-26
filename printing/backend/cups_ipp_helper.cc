@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -250,57 +251,58 @@ absl::optional<PrinterSemanticCapsAndDefaults::Paper>
 PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
   DCHECK(db_entry);
 
-  ipp_t* media_size = ippGetCollection(
-      ippFindAttribute(db_entry, kIppMediaSize, IPP_TAG_BEGIN_COLLECTION), 0);
-  ipp_attribute_t* width_attr =
-      ippFindAttribute(media_size, kIppXDimension, IPP_TAG_INTEGER);
-  ipp_attribute_t* height_attr =
-      ippFindAttribute(media_size, kIppYDimension, IPP_TAG_INTEGER);
-
-  if (!width_attr || !height_attr) {
-    // If x-dimension and y-dimension don't have IPP_TAG_INTEGER, they are
-    // custom size ranges, so we want to skip this "size".
+  absl::optional<MediaColData> size = ExtractMediaColData(db_entry);
+  if (!size) {
+    LOG(WARNING) << "Unable to create Paper from media-col-database";
     return absl::nullopt;
   }
 
-  int width = ippGetInteger(width_attr, 0);
-  int height = ippGetInteger(height_attr, 0);
-
-  ipp_attribute_t* bottom_attr =
-      ippFindAttribute(db_entry, kIppMediaBottomMargin, IPP_TAG_INTEGER);
-  ipp_attribute_t* left_attr =
-      ippFindAttribute(db_entry, kIppMediaLeftMargin, IPP_TAG_INTEGER);
-  ipp_attribute_t* right_attr =
-      ippFindAttribute(db_entry, kIppMediaRightMargin, IPP_TAG_INTEGER);
-  ipp_attribute_t* top_attr =
-      ippFindAttribute(db_entry, kIppMediaTopMargin, IPP_TAG_INTEGER);
-  DCHECK(bottom_attr);
-  DCHECK(left_attr);
-  DCHECK(right_attr);
-  DCHECK(top_attr);
-  int bottom_margin = ippGetInteger(bottom_attr, 0);
-  int left_margin = ippGetInteger(left_attr, 0);
-  int right_margin = ippGetInteger(right_attr, 0);
-  int top_margin = ippGetInteger(top_attr, 0);
-
-  if (width <= 0 || height <= 0 || bottom_margin < 0 || top_margin < 0 ||
-      left_margin < 0 || right_margin < 0 ||
-      width <= base::ClampedNumeric<int>(left_margin) + right_margin ||
-      height <= base::ClampedNumeric<int>(bottom_margin) + top_margin) {
+  if (size->HasVariableWidth()) {
     LOG(WARNING) << "Invalid media-col-database entry:"
-                 << " x-dimension=" << width << " y-dimension=" << height
-                 << " media-bottom-margin=" << bottom_margin
-                 << " media-left-margin=" << left_margin
-                 << " media-right-margin=" << right_margin
-                 << " media-top-margin=" << top_margin;
+                 << " variable widths are not supported.";
     return absl::nullopt;
   }
 
-  gfx::Size size_um(width * kMicronsPerPwgUnit, height * kMicronsPerPwgUnit);
+  // Some PPDs (only ones with a custom height range) have a min height of 0,
+  // which doesn't work with the printing stack.  If there is a min height of 0
+  // (or equal to the margins) change it to some small value.  For entries that
+  // have a fixed height, the height will not get modified; if this fixed height
+  // is invalid, it will just get rejected below.
+  if (size->HasVariableHeight()) {
+    size->min_height = base::ClampMax(
+        size->min_height,
+        base::ClampedNumeric<int>(size->top_margin) + size->bottom_margin + 1);
+  }
+
+  if (size->min_width <= 0 || size->min_height <= 0 ||
+      size->bottom_margin < 0 || size->top_margin < 0 ||
+      size->left_margin < 0 || size->right_margin < 0 ||
+      size->min_width <=
+          base::ClampedNumeric<int>(size->left_margin) + size->right_margin ||
+      size->min_height <=
+          base::ClampedNumeric<int>(size->bottom_margin) + size->top_margin ||
+      (size->HasVariableHeight() && size->max_height < size->min_height)) {
+    LOG(WARNING) << "Invalid media-col-database entry:"
+                 << " width=" << size->min_width << "-" << size->max_width
+                 << " height=" << size->min_height << "-" << size->max_height
+                 << " media-bottom-margin=" << size->bottom_margin
+                 << " media-left-margin=" << size->left_margin
+                 << " media-right-margin=" << size->right_margin
+                 << " media-top-margin=" << size->top_margin;
+    return absl::nullopt;
+  }
+
+  gfx::Size size_um(size->min_width * kMicronsPerPwgUnit,
+                    size->min_height * kMicronsPerPwgUnit);
   gfx::Rect printable_area_um = PrintableAreaFromSizeAndPwgMargins(
-      size_um, bottom_margin, left_margin, right_margin, top_margin);
+      size_um, size->bottom_margin, size->left_margin, size->right_margin,
+      size->top_margin);
+  int max_height_um =
+      size->HasVariableHeight() ? size->max_height * kMicronsPerPwgUnit : 0;
+
   return PrinterSemanticCapsAndDefaults::Paper(
-      /*display_name=*/"", /*vendor_id=*/"", size_um, printable_area_um);
+      /*display_name=*/"", /*vendor_id=*/"", size_um, printable_area_um,
+      max_height_um);
 }
 
 bool PaperIsBorderless(const PrinterSemanticCapsAndDefaults::Paper& paper) {
@@ -513,7 +515,229 @@ gfx::Rect GetPrintableAreaForSize(const CupsPrinter& printer,
 }
 
 ScopedIppPtr WrapIpp(ipp_t* ipp) {
-  return ScopedIppPtr(ipp, &ippDelete);
+  return ScopedIppPtr(ipp, IppDeleter());
+}
+
+void IppDeleter::operator()(ipp_t* ipp) const {
+  ippDelete(ipp);
+}
+
+absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
+  if (!db_entry) {
+    LOG(WARNING) << "Invalid media-col-database entry: empty entry.";
+    return absl::nullopt;
+  }
+  ipp_t* media_size = ippGetCollection(
+      ippFindAttribute(db_entry, kIppMediaSize, IPP_TAG_BEGIN_COLLECTION), 0);
+  if (!media_size) {
+    LOG(WARNING) << "Invalid media-col-database entry: empty media_size.";
+    return absl::nullopt;
+  }
+
+  ipp_attribute_t* bottom_attr =
+      ippFindAttribute(db_entry, kIppMediaBottomMargin, IPP_TAG_INTEGER);
+  ipp_attribute_t* left_attr =
+      ippFindAttribute(db_entry, kIppMediaLeftMargin, IPP_TAG_INTEGER);
+  ipp_attribute_t* right_attr =
+      ippFindAttribute(db_entry, kIppMediaRightMargin, IPP_TAG_INTEGER);
+  ipp_attribute_t* top_attr =
+      ippFindAttribute(db_entry, kIppMediaTopMargin, IPP_TAG_INTEGER);
+  if (!bottom_attr || !left_attr || !right_attr || !top_attr) {
+    LOG(WARNING) << "Invalid media-col-database entry:"
+                 << " margins are not present.";
+    return absl::nullopt;
+  }
+  int bottom_margin = ippGetInteger(bottom_attr, 0);
+  int left_margin = ippGetInteger(left_attr, 0);
+  int right_margin = ippGetInteger(right_attr, 0);
+  int top_margin = ippGetInteger(top_attr, 0);
+
+  ipp_attribute_t* width_attr =
+      ippFindAttribute(media_size, kIppXDimension, IPP_TAG_INTEGER);
+  ipp_attribute_t* height_attr =
+      ippFindAttribute(media_size, kIppYDimension, IPP_TAG_INTEGER);
+  ipp_attribute_t* width_range_attr =
+      ippFindAttribute(media_size, kIppXDimension, IPP_TAG_RANGE);
+  ipp_attribute_t* height_range_attr =
+      ippFindAttribute(media_size, kIppYDimension, IPP_TAG_RANGE);
+
+  // Ensure there is a width and height (or ranges).
+  if ((!width_attr && !width_range_attr) ||
+      (!height_attr && !height_range_attr)) {
+    LOG(WARNING) << "Invalid media-col-database entry:"
+                 << " media-size needs x and y (or x and y range).";
+    return absl::nullopt;
+  }
+
+  int min_width = 0;
+  int min_height = 0;
+  int max_width = 0;
+  int max_height = 0;
+  if (width_attr) {
+    min_width = ippGetInteger(width_attr, 0);
+    max_width = min_width;
+  } else {
+    min_width = ippGetRange(width_range_attr, 0, &max_width);
+  }
+  if (height_attr) {
+    min_height = ippGetInteger(height_attr, 0);
+    max_height = min_height;
+  } else {
+    min_height = ippGetRange(height_range_attr, 0, &max_height);
+  }
+
+  if (min_width > max_width) {
+    LOG(WARNING) << "Invalid media-col-database entry:"
+                 << " min_width (" << min_width << ") > max_width ("
+                 << max_width << ").";
+    return absl::nullopt;
+  }
+  if (min_height > max_height) {
+    LOG(WARNING) << "Invalid media-col-database entry:"
+                 << " min_height (" << min_height << ") > max_height ("
+                 << max_height << ").";
+    return absl::nullopt;
+  }
+
+  return MediaColData{min_width,     min_height,  max_width,    max_height,
+                      bottom_margin, left_margin, right_margin, top_margin};
+}
+
+ScopedIppPtr NewMediaCollection(const MediaColData& data) {
+  // Don't create any entries with a variable width.
+  if (data.HasVariableWidth()) {
+    return nullptr;
+  }
+
+  ScopedIppPtr media_col = WrapIpp(ippNew());
+  ScopedIppPtr media_size = WrapIpp(ippNew());
+
+  ippAddInteger(media_size.get(), IPP_TAG_PRINTER, IPP_TAG_INTEGER,
+                kIppXDimension, data.min_width);
+  if (data.HasVariableHeight()) {
+    ippAddRange(media_size.get(), IPP_TAG_PRINTER, kIppYDimension,
+                data.min_height, data.max_height);
+  } else {
+    ippAddInteger(media_size.get(), IPP_TAG_PRINTER, IPP_TAG_INTEGER,
+                  kIppYDimension, data.min_height);
+  }
+  ippAddCollection(media_col.get(), IPP_TAG_PRINTER, kIppMediaSize,
+                   media_size.get());
+
+  ippAddInteger(media_col.get(), IPP_TAG_PRINTER, IPP_TAG_INTEGER,
+                kIppMediaBottomMargin, data.bottom_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_PRINTER, IPP_TAG_INTEGER,
+                kIppMediaLeftMargin, data.left_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_PRINTER, IPP_TAG_INTEGER,
+                kIppMediaRightMargin, data.right_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_PRINTER, IPP_TAG_INTEGER,
+                kIppMediaTopMargin, data.top_margin);
+
+  return media_col;
+}
+
+void FilterMediaColSizes(ScopedIppPtr& attributes) {
+  if (!attributes) {
+    return;
+  }
+
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      attributes.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  if (!media_col_db) {
+    return;
+  }
+
+  // `fixed_widths` is the width for any media-col-database entry that is
+  // non-variable.  For instance, if the media-col-database has 4 fixed
+  // widthxheight entries and one variable widthxheight entry like so:
+  //
+  // 58mmx200mm
+  // 58mmx2000mm
+  // 80mmx200mm
+  // 80mmx2000mm
+  // 10-80mmx20-2000mm
+  //
+  // then `fixed_widths` will contain 58 and 80.  After filtering, the following
+  // sizes will exist:
+  //
+  // 58mmx200mm
+  // 58mmx2000mm
+  // 80mmx200mm
+  // 80mmx2000mm
+  // 58mmx20-2000mm
+  // 80mmx20-2000mm
+  std::set<int> fixed_widths;
+  std::vector<ScopedIppPtr> new_entries;
+  std::vector<MediaColData> variable_height_entries;
+
+  // Loop over all the `media_col_db` entries and either add them to
+  // `new_entries`, skip them, or save them in `variable_height_entries` so
+  // they can be added later (once all the fixed widths have been discovered).
+  for (int i = 0; i < ippGetCount(media_col_db); i++) {
+    ipp_t* db_entry = ippGetCollection(media_col_db, i);
+    absl::optional<MediaColData> size = ExtractMediaColData(db_entry);
+    if (!size.has_value()) {
+      return;
+    }
+
+    // TODO(nmuggli): Consider adding the boundaries of a variable-width entry
+    // to `fixed_widths`.
+    if (!size->HasVariableWidth()) {
+      fixed_widths.insert(size->min_width);
+    }
+
+    // Handle four different cases:
+    // 1.  Variable width and fixed height.  Skip this - variable widths are not
+    // supported.
+    // 2.  Fixed width and fixed height.  Add to the new array.
+    // 3.  Fixed width and variable height.  Add to the new array.
+    // 4.  Variable width and variable height.  Save this entry until after
+    // all of the entries are processed.  For each fixed width that fits
+    // within this variable width, a new entry will get added with the
+    // variable height.
+
+    // Case 1:  skip over this.
+    if (size->HasVariableWidth() && !size->HasVariableHeight()) {
+      continue;
+    }
+
+    // Case 2 and case 3 - add to `new_entries`.
+    if (!size->HasVariableWidth()) {
+      ScopedIppPtr new_entry = NewMediaCollection(size.value());
+      if (new_entry) {
+        new_entries.push_back(std::move(new_entry));
+      }
+      continue;
+    }
+
+    // Case 4: Save entry for later processing.
+    variable_height_entries.push_back(size.value());
+  }
+
+  for (const MediaColData& variable_height_entry : variable_height_entries) {
+    // For each fixed width, create a new media size entry for that width and a
+    // variable height.
+    for (int width : fixed_widths) {
+      MediaColData size = variable_height_entry;
+      // Ensure `width` fits within the variable width.
+      if (width < size.min_width || width > size.max_width) {
+        continue;
+      }
+      size.min_width = width;
+      size.max_width = width;
+      ScopedIppPtr new_entry = NewMediaCollection(size);
+      if (new_entry) {
+        new_entries.push_back(std::move(new_entry));
+      }
+    }
+  }
+
+  // Finally, update the attribute that was passed in with the new entries.
+  ippDeleteAttribute(attributes.get(), media_col_db);
+  std::vector<const ipp_t*> raw_entries(new_entries.size());
+  base::ranges::transform(new_entries, raw_entries.begin(), &ScopedIppPtr::get);
+  ippAddCollections(attributes.get(), IPP_TAG_PRINTER, kIppMediaColDatabase,
+                    raw_entries.size(), raw_entries.data());
 }
 
 }  //  namespace printing

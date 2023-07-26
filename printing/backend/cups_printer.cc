@@ -313,6 +313,10 @@ class CupsPrinterImpl : public CupsPrinter {
       return false;
     }
 
+    // Go through all of our media-col-database entries and consolidate any that
+    // have custom size ranges.
+    FilterMediaColSizes(printer_attributes_);
+
     return true;
   }
 
