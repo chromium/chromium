@@ -1641,6 +1641,14 @@ const char kFileHandlingIconsDescription[] =
     "icons. See https://github.com/WICG/file-handling/blob/main/explainer.md "
     "for more information.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kFillingAcrossAffiliatedWebsitesName[] =
+    "Fill passwords across affiliated websites.";
+const char kFillingAcrossAffiliatedWebsitesDescription[] =
+    "Enables filling password on a website when there is saved "
+    "password on affiliated website.";
+#endif
+
 const char kFillingAcrossGroupedSitesName[] =
     "Password filling across grouped websites";
 const char kFillingAcrossGroupedSitesDescription[] =

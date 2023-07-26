@@ -923,6 +923,11 @@ extern const char kWebIdentityMDocsDescription[];
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kFillingAcrossAffiliatedWebsitesName[];
+extern const char kFillingAcrossAffiliatedWebsitesDescription[];
+#endif
+
 extern const char kFillingAcrossGroupedSitesName[];
 extern const char kFillingAcrossGroupedSitesDescription[];
 

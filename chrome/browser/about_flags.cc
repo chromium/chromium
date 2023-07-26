@@ -10678,6 +10678,14 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kGridTabSwitcherLandscapeAspectRatioPhones)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"filling-across-affiliated-websites-android",
+     flag_descriptions::kFillingAcrossAffiliatedWebsitesName,
+     flag_descriptions::kFillingAcrossAffiliatedWebsitesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kFillingAcrossAffiliatedWebsitesAndroid)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

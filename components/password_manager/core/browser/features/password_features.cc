@@ -41,6 +41,14 @@ BASE_FEATURE(kEnablePasswordsAccountStorage,
 #endif
 );
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables filling password on a website when there is saved password on
+// affiliated website.
+BASE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid,
+             "FillingAcrossAffiliatedWebsitesAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // This flag enables password filling across grouped websites. Information about
 // website groups is provided by the affiliation service.
 BASE_FEATURE(kFillingAcrossGroupedSites,
