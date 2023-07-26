@@ -76,6 +76,14 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAutozoomNudgeSessionReset);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAvatarsCloudMigration);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBatterySaver);
+enum BatterySaverNotificationBehavior {
+  kFullyAutoEnable,
+  kOptInThenAutoEnable,
+  kFullyOptIn
+};
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<BatterySaverNotificationBehavior>
+    kBatterySaverNotificationBehavior;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBatterySaverAlwaysOn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBluetoothFixA2dpPacketSize);

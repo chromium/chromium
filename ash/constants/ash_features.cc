@@ -258,6 +258,22 @@ BASE_FEATURE(kBatterySaver,
              "CrosBatterySaver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Determines the behavior of the battery saver controller auto enable threshold
+// and notification timing.
+const base::FeatureParam<BatterySaverNotificationBehavior>::Option
+    battery_saver_notification_options[] = {
+        {BatterySaverNotificationBehavior::kFullyAutoEnable,
+         "kFullyAutoEnable"},
+        {BatterySaverNotificationBehavior::kOptInThenAutoEnable,
+         "kOptInThenAutoEnable"},
+        {BatterySaverNotificationBehavior::kFullyOptIn, "kFullyOptIn"},
+};
+const base::FeatureParam<BatterySaverNotificationBehavior>
+    kBatterySaverNotificationBehavior{
+        &kBatterySaver, "BatterSaverNotificationBehavior",
+        BatterySaverNotificationBehavior::kFullyAutoEnable,
+        &battery_saver_notification_options};
+
 // Make Battery Saver on all the time, even when charged or charging.
 BASE_FEATURE(kBatterySaverAlwaysOn,
              "CrosBatterySaverAlwaysOn",

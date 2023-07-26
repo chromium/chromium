@@ -2526,8 +2526,11 @@ Connect your device to power.
         About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
 Turning on battery saver to increase your battery life.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON" translateable="false" desc="The button text on the low power notification to disable battery saver.">
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON_OPT_OUT" translateable="false" desc="The button text on the low power notification to disable battery saver.">
         Turn off Battery Saver
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON_OPT_IN" translateable="false" desc="The button text on the low power notification to enable battery saver.">
+        Turn on Battery Saver
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_TITLE" desc="The title displayed in a battery status notification.">Battery status</message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT" desc="The label in the tray dialog to show the remaining battery power as a percent.">

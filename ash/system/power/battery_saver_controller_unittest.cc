@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/power/battery_notification.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/toast/toast_overlay.h"
@@ -18,6 +19,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -47,16 +49,37 @@ class BatterySaverControllerTest : public AshTestBase {
     return Shell::Get()->battery_saver_controller();
   }
 
-  void UpdatePowerStatus(double battery_percent, bool charging) {
+  void UpdatePowerStatus(double battery_percent,
+                         base::TimeDelta time_to_empty,
+                         bool charging) {
     power_manager::PowerSupplyProperties props;
+
+    // Set battery percentage
     props.set_battery_percent(battery_percent);
+
+    // Determine battery state
     auto external_power =
         power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+    auto battery_state =
+        power_manager::PowerSupplyProperties_BatteryState_DISCHARGING;
+
     if (charging) {
       external_power = power_manager::PowerSupplyProperties_ExternalPower_AC;
+      battery_state =
+          battery_percent == 100
+              ? power_manager::PowerSupplyProperties_BatteryState_FULL
+              : power_manager::PowerSupplyProperties_BatteryState_CHARGING;
     }
-    props.set_external_power(external_power);
 
+    // Set battery state
+    props.set_external_power(external_power);
+    props.set_battery_state(battery_state);
+
+    // Set time
+    props.set_is_calculating_battery_time(false);
+    props.set_battery_time_to_empty_sec(time_to_empty.InSecondsF());
+
+    // Flush
     base::RunLoop run_loop;
     chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
     run_loop.RunUntilIdle();
@@ -66,44 +89,80 @@ class BatterySaverControllerTest : public AshTestBase {
     return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
   }
 
- private:
+  bool IsBatterSaverActive() {
+    return PowerStatus::Get()->IsBatterySaverActive();
+  }
+
+  constexpr static base::TimeDelta eight_hours_ = base::Hours(8);
+
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_ = nullptr;
+};
+
+class BatterySaverControllerNotificationTest
+    : public BatterySaverControllerTest,
+      public testing::WithParamInterface<
+          features::BatterySaverNotificationBehavior> {
+ protected:
+  message_center::Notification* GetCurrentNotification() {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        BatteryNotification::kNotificationId);
+  }
+
+  void DismissNotification() {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        BatteryNotification::kNotificationId, false);
+    EXPECT_EQ(GetCurrentNotification(), nullptr);
+  }
+
+  void NotificationNotPresent() {
+    EXPECT_EQ(GetCurrentNotification(), nullptr);
+  }
+
+  void NotificationPresent() { EXPECT_NE(GetCurrentNotification(), nullptr); }
+
+  void SetExperimentArm(features::BatterySaverNotificationBehavior arm) {
+    scoped_feature_list_.reset();
+    base::FieldTrialParams parameters;
+    parameters[features::kBatterySaverNotificationBehavior.name] =
+        features::kBatterySaverNotificationBehavior.options[arm].name;
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndEnableFeatureWithParameters(
+        features::kBatterySaver, parameters);
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
 };
 
 // Test that the automatic logic to turn battery saver on and off without
 // direct user action works.
 TEST_F(BatterySaverControllerTest, AutoEnableDisable) {
   // Battery near full and charging, no battery saver.
-  UpdatePowerStatus(80.0, true);
-  EXPECT_FALSE(PowerStatus::Get()->IsBatterySaverActive());
+  UpdatePowerStatus(80.0, eight_hours_, true);
+  EXPECT_FALSE(IsBatterSaverActive());
 
   // Battery near full and discharging, still no battery saver.
-  UpdatePowerStatus(80.0, false);
-  EXPECT_FALSE(PowerStatus::Get()->IsBatterySaverActive());
+  UpdatePowerStatus(80.0, eight_hours_, false);
+  EXPECT_FALSE(IsBatterSaverActive());
 
   // Battery discharging but just above the activation %, still no battery
   // saver.
   UpdatePowerStatus(BatterySaverController::kActivationChargePercent + 0.1,
-                    false);
-  EXPECT_FALSE(PowerStatus::Get()->IsBatterySaverActive());
+                    eight_hours_, false);
+  EXPECT_FALSE(IsBatterSaverActive());
 
-  // Battery dicharging and at activation %, battery saver turns on.
-  UpdatePowerStatus(BatterySaverController::kActivationChargePercent, false);
-  EXPECT_TRUE(PowerStatus::Get()->IsBatterySaverActive());
+  // Battery discharging and at activation %, battery saver turns on.
+  UpdatePowerStatus(BatterySaverController::kActivationChargePercent,
+                    eight_hours_, false);
+  EXPECT_TRUE(IsBatterSaverActive());
 
   // Discharge more, battery saver remains on.
-  UpdatePowerStatus(5.0, false);
-  EXPECT_TRUE(PowerStatus::Get()->IsBatterySaverActive());
+  UpdatePowerStatus(5.0, eight_hours_, false);
+  EXPECT_TRUE(IsBatterSaverActive());
 
   // Start charging, even with a low battery %, battery saver disables.
-  UpdatePowerStatus(5.0, true);
-  EXPECT_FALSE(PowerStatus::Get()->IsBatterySaverActive());
+  UpdatePowerStatus(5.0, eight_hours_, true);
+  EXPECT_FALSE(IsBatterSaverActive());
 }
-
-// TODO(mwoj): Test that notifications are sent and dismissed.
-// And that opting out via the notification turns off battery saver.
-// And that notifications don't appear after they have been declined until
-// charge goes back above activation %.
 
 TEST_F(BatterySaverControllerTest, ShowDisableToast) {
   // Ensure there is no `ToastOverlay` being displayed at the start of the test.
@@ -127,5 +186,141 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
       current_toast->GetText(),
       l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT));
 }
+
+TEST_P(BatterySaverControllerNotificationTest,
+       TestNotificationThresholdsForExperimentArms) {
+  SetExperimentArm(GetParam());
+
+  auto NotificationNotPresent = [&]() {
+    EXPECT_EQ(GetCurrentNotification(), nullptr);
+  };
+  auto NotificationPresent = [&]() {
+    EXPECT_NE(GetCurrentNotification(), nullptr);
+  };
+
+  // Start test with 100% battery, eight hours time remaining, not charging.
+  UpdatePowerStatus(100, eight_hours_, true);
+  DismissNotification();
+
+  // Battery discharging but just above the activation %, battery saver should
+  // be disabled.
+  UpdatePowerStatus(BatterySaverController::kActivationChargePercent + 1,
+                    eight_hours_, false);
+  EXPECT_FALSE(IsBatterSaverActive());
+  NotificationNotPresent();
+
+  // Battery read jumps (not smoothly) from above threshold to below threshold.
+  UpdatePowerStatus(BatterySaverController::kActivationChargePercent - 1,
+                    eight_hours_, false);
+  switch (features::kBatterySaverNotificationBehavior.Get()) {
+    case features::kFullyAutoEnable:
+      EXPECT_TRUE(IsBatterSaverActive());
+      break;
+    case features::kOptInThenAutoEnable:
+    case features::kFullyOptIn:
+      EXPECT_FALSE(IsBatterSaverActive());
+      break;
+    default:
+      FAIL();
+  }
+
+  // Notification should appear regardless of battery saver state (so user can
+  // opt-in/out).
+  NotificationPresent();
+  DismissNotification();
+
+  // Check to make sure that the notification doesn't reappear after it's been
+  // dismissed.
+  UpdatePowerStatus(BatterySaverController::kActivationChargePercent - 2,
+                    eight_hours_, false);
+  NotificationNotPresent();
+
+  // Fast forward to the low minutes threshold, and check the low_power
+  // notification appears.
+  UpdatePowerStatus(
+      BatterySaverController::kActivationChargePercent - 2,
+      base::Minutes(PowerNotificationController::kLowPowerMinutes), false);
+  switch (features::kBatterySaverNotificationBehavior.Get()) {
+    case features::kFullyAutoEnable:
+    case features::kOptInThenAutoEnable:
+      EXPECT_TRUE(IsBatterSaverActive());
+      break;
+    case features::kFullyOptIn:
+      EXPECT_FALSE(IsBatterSaverActive());
+      break;
+    default:
+      FAIL();
+  }
+  NotificationPresent();
+  DismissNotification();
+
+  // Check to make sure the notification doesn't appear again at 14 minutes.
+  UpdatePowerStatus(
+      BatterySaverController::kActivationChargePercent - 2,
+      base::Minutes(PowerNotificationController::kLowPowerMinutes - 1), false);
+  NotificationNotPresent();
+}
+
+TEST_P(BatterySaverControllerNotificationTest,
+       NotificationReappearsAfterChargeThenDischarge) {
+  SetExperimentArm(GetParam());
+
+  // Start test with 100% battery, eight hours time remaining, not charging.
+  UpdatePowerStatus(100, eight_hours_, true);
+  DismissNotification();
+
+  // Battery read jumps (not smoothly) from above threshold to below threshold.
+  UpdatePowerStatus(BatterySaverController::kActivationChargePercent - 1,
+                    eight_hours_, false);
+
+  // Notification for threshold should appear.
+  NotificationPresent();
+  DismissNotification();
+
+  // Battery same percent, battery hits low power.
+  UpdatePowerStatus(
+      BatterySaverController::kActivationChargePercent - 2,
+      base::Minutes(PowerNotificationController::kLowPowerMinutes), false);
+
+  // Notification for low power should appear.
+  NotificationPresent();
+  DismissNotification();
+
+  // Charging, battery goes above low power.
+  UpdatePowerStatus(
+      BatterySaverController::kActivationChargePercent - 2,
+      base::Minutes(PowerNotificationController::kLowPowerMinutes + 1), true);
+  NotificationNotPresent();
+
+  // Discharging, battery goes back below low power.
+  UpdatePowerStatus(
+      BatterySaverController::kActivationChargePercent - 2,
+      base::Minutes(PowerNotificationController::kLowPowerMinutes), false);
+
+  // Notification should reappear.
+  NotificationPresent();
+  DismissNotification();
+
+  // Charging, battery goes above threshold.
+  UpdatePowerStatus(BatterySaverController::kActivationChargePercent + 1,
+                    eight_hours_, true);
+  NotificationNotPresent();
+
+  // Discharging, battery goes below threshold.
+  UpdatePowerStatus(BatterySaverController::kActivationChargePercent - 1,
+                    eight_hours_, false);
+
+  // Notification should reappear.
+  NotificationPresent();
+  DismissNotification();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BatterySaverControllerNotificationTest,
+    testing::Values(
+        features::BatterySaverNotificationBehavior::kFullyAutoEnable,
+        features::BatterySaverNotificationBehavior::kOptInThenAutoEnable,
+        features::BatterySaverNotificationBehavior::kFullyOptIn));
 
 }  // namespace ash
