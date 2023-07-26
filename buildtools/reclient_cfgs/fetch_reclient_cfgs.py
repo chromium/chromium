@@ -83,9 +83,7 @@ def GenerateReproxyCfg(reproxy_cfg_template, rbe_instance, rbe_project):
                                                    'reclient',
                                                    'scandeps_server')
     if sys.platform.startswith('win'):
-       # TODO(b/278871789) re-enable when reproxy version is > 105
-       # depsscanner_address += ".exe"
-       depsscanner_address = ""
+       depsscanner_address += ".exe"
     reproxy_cfg = reproxy_cfg_tmpl.substitute({
       'rbe_instance': rbe_instance,
       'rbe_project': rbe_project,
