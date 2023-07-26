@@ -2922,6 +2922,29 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
+  if (urlLoadParams.disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
+    // Check if it's already the displayed tab and no switch is necessary
+    if (currentWebState &&
+        currentWebState->GetVisibleURL() == urlLoadParams.web_params.url) {
+      if (tabOpenedCompletion) {
+        tabOpenedCompletion();
+      }
+      return;
+    }
+
+    // Check if this tab exists in this web state list.
+    // If not, fall back to opening a new tab instead.
+    if (targetInterface.browser->GetWebStateList()->GetIndexOfWebStateWithURL(
+            urlLoadParams.web_params.url) != WebStateList::kInvalidIndex) {
+      UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
+          ->Load(urlLoadParams);
+      if (tabOpenedCompletion) {
+        tabOpenedCompletion();
+      }
+      return;
+    }
+  }
+
   // If the current tab isn't an NTP, open a new tab.  Be sure to use
   // -GetLastCommittedURL incase the NTP is still loading.
   if (alwaysInsertNewTab ||
@@ -2934,6 +2957,7 @@ void InjectNTP(Browser* browser) {
         ->Load(newTabParams);
     return;
   }
+
   // Otherwise, load `urlLoadParams` in the current tab.
   UrlLoadParams sameTabParams = urlLoadParams;
   sameTabParams.disposition = WindowOpenDisposition::CURRENT_TAB;

@@ -173,13 +173,16 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
           // calls.
           BOOL isActive = [[UIApplication sharedApplication]
                               applicationState] == UIApplicationStateActive;
-          [self continueUserActivityURL:contentURL
-                    applicationIsActive:isActive
-                              tabOpener:tabOpener
-                  connectionInformation:connectionInformation
-                     startupInformation:startupInformation
-                           browserState:browserState
-                              initStage:initStage];
+
+          [self
+              continueUserActivityURL:contentURL
+                  applicationIsActive:isActive
+                            tabOpener:tabOpener
+                connectionInformation:connectionInformation
+                   startupInformation:startupInformation
+                         browserState:browserState
+                            initStage:initStage
+                      openExistingTab:(domain == spotlight::DOMAIN_OPEN_TABS)];
         });
       });
       return YES;
@@ -299,7 +302,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                  connectionInformation:connectionInformation
                     startupInformation:startupInformation
                           browserState:browserState
-                             initStage:initStage];
+                             initStage:initStage
+                       openExistingTab:NO];
 }
 
 + (BOOL)continueUserActivityURL:(NSURL*)webpageURL
@@ -308,7 +312,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
           connectionInformation:(id<ConnectionInformation>)connectionInformation
              startupInformation:(id<StartupInformation>)startupInformation
                    browserState:(ChromeBrowserState*)browserState
-                      initStage:(InitStage)initStage {
+                      initStage:(InitStage)initStage
+                openExistingTab:(BOOL)openExistingTab {
   if (!webpageURL)
     return NO;
 
@@ -355,6 +360,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
         initWithExternalURL:webpageGURL
                 completeURL:webpageGURL
             applicationMode:ApplicationModeForTabOpening::NORMAL];
+    startupParams.openExistingTab = openExistingTab;
     [connectionInformation setStartupParameters:startupParams];
   }
   return YES;
@@ -537,7 +543,14 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   } else {
     URL = externalURL;
   }
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL, virtualURL);
+  UrlLoadParams params;
+  if (connectionInformation.startupParameters.openExistingTab) {
+    web::NavigationManager::WebLoadParams webLoadParams =
+        web::NavigationManager::WebLoadParams(URL);
+    params = UrlLoadParams::SwitchToTab(webLoadParams);
+  } else {
+    params = UrlLoadParams::InNewTab(URL, virtualURL);
+  }
 
   if (connectionInformation.startupParameters.imageSearchData) {
     TemplateURLService* templateURLService =
