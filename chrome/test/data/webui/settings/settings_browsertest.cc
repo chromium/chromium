@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
 
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
@@ -516,6 +518,53 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
                        CompletionFragmentPrivacySandboxRestricted) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
+}
+
+class SettingsPrivacySandboxPageTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      privacy_sandbox::kPrivacySandboxSettings4};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, PrivacySandboxPage) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('PrivacySandboxPage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, RestrictedEnabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('RestrictedEnabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpage) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpageEmpty) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageEmpty')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpage) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('FledgeSubpage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpageEmpty) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('FledgeSubpageEmpty')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       FledgeSubpageSeeAllSites) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('FledgeSubpageSeeAllSites')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('AdMeasurementSubpage')");
 }
 
 using SettingsSecurityPageTest = SettingsBrowserTest;

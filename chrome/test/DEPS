@@ -62,6 +62,7 @@ include_rules = [
   "+components/policy",
   "+components/power_bookmarks/core",
   "+components/prefs",
+  "+components/privacy_sandbox",
   "+components/profile_metrics",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser/db",

@@ -15,7 +15,7 @@ import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacySandboxBrowserProxy} from './test_privacy_sandbox_browser_proxy.js';
 
-suite('PrivacySandboxPageTests', function() {
+suite('PrivacySandboxPage', function() {
   let page: SettingsPrivacySandboxPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let hatsBrowserProxy: TestHatsBrowserProxy;
@@ -150,7 +150,7 @@ suite('PrivacySandboxPageTests', function() {
   });
 });
 
-suite('PrivacySandboxRestrictedEnabledTests', function() {
+suite('RestrictedEnabled', function() {
   let page: SettingsPrivacySandboxPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -183,7 +183,7 @@ suite('PrivacySandboxRestrictedEnabledTests', function() {
   });
 });
 
-suite('PrivacySandboxTopicsSubpageTests', function() {
+suite('TopicsSubpage', function() {
   let page: SettingsPrivacySandboxTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
@@ -510,7 +510,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
   });
 });
 
-suite('PrivacySandboxTopicsSubpageEmptyTests', function() {
+suite('TopicsSubpageEmpty', function() {
   let page: SettingsPrivacySandboxTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -600,7 +600,7 @@ suite('PrivacySandboxTopicsSubpageEmptyTests', function() {
   });
 });
 
-suite('PrivacySandboxFledgeSubpageTests', function() {
+suite('FledgeSubpage', function() {
   let page: SettingsPrivacySandboxFledgeSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
@@ -909,7 +909,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
   });
 });
 
-suite('PrivacySandboxFledgeSubpageEmptyTests', function() {
+suite('FledgeSubpageEmpty', function() {
   let page: SettingsPrivacySandboxFledgeSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -999,7 +999,7 @@ suite('PrivacySandboxFledgeSubpageEmptyTests', function() {
   });
 });
 
-suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
+suite('FledgeSubpageSeeAllSites', function() {
   let page: SettingsPrivacySandboxFledgeSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
@@ -1181,7 +1181,7 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
   });
 });
 
-suite('PrivacySandboxAdMeasurementSubpageTests', function() {
+suite('AdMeasurementSubpage', function() {
   let page: SettingsPrivacySandboxAdMeasurementSubpageElement;
   let settingsPrefs: SettingsPrefsElement;
   let hatsBrowserProxy: TestHatsBrowserProxy;

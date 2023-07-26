@@ -410,63 +410,6 @@ TEST_F(
       runMochaSuite('PrivacySandbox4EnabledButRestrictedWithNotice');
     });
 
-var CrSettingsPrivacySandboxPageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_sandbox_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'privacy_sandbox::kPrivacySandboxSettings4',
-      ],
-    };
-  }
-};
-
-TEST_F(
-    'CrSettingsPrivacySandboxPageTest', 'PrivacySandboxPageTests', function() {
-      runMochaSuite('PrivacySandboxPageTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacySandboxPageTest', 'PrivacySandboxRestrictedEnabledTests',
-    function() {
-      runMochaSuite('PrivacySandboxRestrictedEnabledTests');
-    });
-
-TEST_F('CrSettingsPrivacySandboxPageTest', 'TopicsSubpageTests', function() {
-  runMochaSuite('PrivacySandboxTopicsSubpageTests');
-});
-
-TEST_F(
-    'CrSettingsPrivacySandboxPageTest', 'TopicsSubpageEmptyTests', function() {
-      runMochaSuite('PrivacySandboxTopicsSubpageEmptyTests');
-    });
-
-TEST_F('CrSettingsPrivacySandboxPageTest', 'FledgeSubpageTests', function() {
-  runMochaSuite('PrivacySandboxFledgeSubpageTests');
-});
-
-TEST_F(
-    'CrSettingsPrivacySandboxPageTest', 'FledgeSubpageEmptyTests', function() {
-      runMochaSuite('PrivacySandboxFledgeSubpageEmptyTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacySandboxPageTest', 'FledgeSubpageSeeAllSitesTests',
-    function() {
-      runMochaSuite('PrivacySandboxFledgeSubpageSeeAllSitesTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacySandboxPageTest', 'AdMeasurementSubpageTests',
-    function() {
-      runMochaSuite('PrivacySandboxAdMeasurementSubpageTests');
-    });
-
 var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

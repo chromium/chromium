@@ -75,6 +75,7 @@ source_set("browser_tests") {
     "//components/history_clusters/core:core",
     "//components/password_manager/content/common:common",
     "//components/power_bookmarks/core:features",
+    "//components/privacy_sandbox:features",
     "//components/search:search",
     "//components/user_notes:features",
   ]
