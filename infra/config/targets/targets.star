@@ -1419,6 +1419,11 @@ targets.script(
     ],
 )
 
+targets.console_test_launcher(
+    name = "minidump_uploader_test",
+    label = "//components/minidump_uploader:minidump_uploader_test",
+)
+
 targets.generated_script(
     name = "module_installer_junit_tests",
     label = "//components/module_installer/android:module_installer_junit_tests",
