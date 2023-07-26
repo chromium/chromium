@@ -599,7 +599,7 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
       value_wrapper.TakeFileSystemAccessTransferTokens());
 
   request->transit_blob_handles() = value_wrapper.TakeBlobDataHandles();
-  transaction_->transaction_backend()->Put(
+  transaction_->Put(
       Id(), std::move(idb_value), IDBKey::Clone(key), put_mode,
       std::move(index_keys),
       WTF::BindOnce(&IDBRequest::OnPut, WrapWeakPersistent(request)));

@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -276,8 +275,8 @@ IDBObjectStore* IDBDatabase::createObjectStore(
 
   int64_t object_store_id = metadata_.max_object_store_id + 1;
   DCHECK_NE(object_store_id, IDBObjectStoreMetadata::kInvalidId);
-  version_change_transaction_->transaction_backend()->CreateObjectStore(
-      object_store_id, name, key_path, auto_increment);
+  version_change_transaction_->CreateObjectStore(object_store_id, name,
+                                                 key_path, auto_increment);
 
   scoped_refptr<IDBObjectStoreMetadata> store_metadata =
       base::AdoptRef(new IDBObjectStoreMetadata(
@@ -322,8 +321,7 @@ void IDBDatabase::deleteObjectStore(const String& name,
     return;
   }
 
-  version_change_transaction_->transaction_backend()->DeleteObjectStore(
-      object_store_id);
+  version_change_transaction_->DeleteObjectStore(object_store_id);
   version_change_transaction_->ObjectStoreDeleted(object_store_id, name);
   metadata_.object_stores.erase(object_store_id);
 }
@@ -394,13 +392,6 @@ IDBTransaction* IDBDatabase::transaction(
     return nullptr;
   }
 
-  // TODO(cmp): Delete |transaction_id| once all users are removed.
-  int64_t transaction_id = NextTransactionId();
-  auto transaction_backend = std::make_unique<WebIDBTransaction>(
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kDatabaseAccess),
-      transaction_id);
-
   mojom::blink::IDBTransactionDurability durability =
       mojom::blink::IDBTransactionDurability::Default;
   DCHECK(options);
@@ -410,12 +401,18 @@ IDBTransaction* IDBDatabase::transaction(
     durability = mojom::blink::IDBTransactionDurability::Strict;
   }
 
-  backend_->CreateTransaction(transaction_backend->CreateReceiver(),
-                              transaction_id, object_store_ids, mode,
-                              durability);
+  // TODO(cmp): Delete |transaction_id| once all users are removed.
+  int64_t transaction_id = NextTransactionId();
+  auto* execution_context = ExecutionContext::From(script_state);
+  IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+  mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =
+      transaction_remote.BindNewEndpointAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kDatabaseAccess));
+  backend_->CreateTransaction(std::move(receiver), transaction_id,
+                              object_store_ids, mode, durability);
 
   return IDBTransaction::CreateNonVersionChange(
-      script_state, std::move(transaction_backend), transaction_id, scope, mode,
+      script_state, std::move(transaction_remote), transaction_id, scope, mode,
       durability, this);
 }
 

@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -289,15 +288,18 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
 
   auto& factory = GetFactory(context);
 
-  auto transaction_backend = std::make_unique<WebIDBTransaction>(
-      context->GetTaskRunner(TaskType::kDatabaseAccess), transaction_id);
+  auto* execution_context = ExecutionContext::From(script_state);
+  IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
   mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
-      transaction_receiver = transaction_backend->CreateReceiver();
+      transaction_receiver = transaction_remote.BindNewEndpointAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kDatabaseAccess));
+
   mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
       callbacks_remote;
+
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
       script_state, callbacks_remote.InitWithNewEndpointAndPassReceiver(),
-      std::move(transaction_backend), transaction_id, version,
+      std::move(transaction_remote), transaction_id, version,
       std::move(metrics), GetObservedFeature());
 
   AllowIndexedDB(
@@ -380,7 +382,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
       script_state,
       /*callbacks_receiver=*/mojo::NullAssociatedReceiver(),
-      /*IDBTransactionAssociatedPtr=*/nullptr, 0,
+      IDBTransaction::TransactionMojoRemote(context), 0,
       IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
       GetObservedFeature());
 

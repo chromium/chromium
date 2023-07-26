@@ -62,8 +62,6 @@ blink_modules_sources("indexeddb") {
     "web_idb_cursor.h",
     "web_idb_database.cc",
     "web_idb_database.h",
-    "web_idb_transaction.cc",
-    "web_idb_transaction.h",
   ]
 
   public_deps = [
@@ -87,7 +85,6 @@ source_set("unit_tests") {
     "mock_idb_transaction.cc",
     "mock_idb_transaction.h",
     "web_idb_cursor_unittest.cc",
-    "web_idb_transaction_unittest.cc",
   ]
 
   configs += [

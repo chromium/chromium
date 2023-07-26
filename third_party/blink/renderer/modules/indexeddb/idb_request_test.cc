@@ -38,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -58,7 +59,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -179,23 +179,25 @@ class IDBRequestTest : public testing::Test {
 
   void BuildTransaction(V8TestingScope& scope,
                         MockIDBDatabase& mock_database,
-                        MockIDBTransaction& mock_transaction) {
+                        MockIDBTransaction& mock_transaction_remote) {
     auto database_backend = std::make_unique<WebIDBDatabase>(
         mock_database.BindNewEndpointAndPassDedicatedRemote(),
-        /*task_runner=*/nullptr);
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     db_ = MakeGarbageCollected<IDBDatabase>(
         scope.GetExecutionContext(), std::move(database_backend),
         mojo::NullAssociatedReceiver(), mojo::NullRemote());
 
-    auto transaction_backend = std::make_unique<WebIDBTransaction>(
-        /*task_runner=*/nullptr, kTransactionId);
-    auto transaction_receiver = transaction_backend->CreateReceiver();
-    transaction_receiver.EnableUnassociatedUsage();
-    mock_transaction.Bind(std::move(transaction_receiver));
+    auto* execution_context = scope.GetExecutionContext();
+    IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =
+        transaction_remote.BindNewEndpointAndPassReceiver(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+    receiver.EnableUnassociatedUsage();
+    mock_transaction_remote.Bind(std::move(receiver));
 
     HashSet<String> transaction_scope = {"store"};
     transaction_ = IDBTransaction::CreateNonVersionChange(
-        scope.GetScriptState(), std::move(transaction_backend), kTransactionId,
+        scope.GetScriptState(), std::move(transaction_remote), kTransactionId,
         transaction_scope, mojom::IDBTransactionMode::ReadOnly,
         mojom::IDBTransactionDurability::Relaxed, db_.Get());
 
@@ -258,7 +260,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
   EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
@@ -282,7 +284,7 @@ TEST_F(IDBRequestTest, EventsAfterDoneStop) {
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
   EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
@@ -309,7 +311,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   url_loader_mock_factory_->ServeAsynchronousRequests();
   EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
@@ -354,7 +356,7 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   url_loader_mock_factory_->ServeAsynchronousRequests();
   EnsureRequestResponsesDontThrow(request1, scope.GetExceptionState());
   EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
@@ -402,14 +404,17 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
     EXPECT_CALL(mock_database, Close()).Times(1);
 
-    auto transaction_backend = std::make_unique<WebIDBTransaction>(
-        /*task_runner=*/nullptr, kTransactionId);
-    auto transaction_receiver = transaction_backend->CreateReceiver();
+    auto* execution_context = scope.GetExecutionContext();
+    IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+        transaction_receiver =
+            transaction_remote.BindNewEndpointAndPassReceiver(
+                blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     transaction_receiver.EnableUnassociatedUsage();
 
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
-        std::move(transaction_backend), kTransactionId, kVersion,
+        std::move(transaction_remote), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
     std::unique_ptr<IDBFactoryClient> factory_client =
@@ -427,14 +432,17 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
     EXPECT_CALL(mock_database, Close()).Times(1);
 
-    auto transaction_backend = std::make_unique<WebIDBTransaction>(
-        /*task_runner=*/nullptr, kTransactionId);
-    auto transaction_receiver = transaction_backend->CreateReceiver();
+    auto* execution_context = scope.GetExecutionContext();
+    IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+        transaction_receiver =
+            transaction_remote.BindNewEndpointAndPassReceiver(
+                blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     transaction_receiver.EnableUnassociatedUsage();
 
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
-        std::move(transaction_backend), kTransactionId, kVersion,
+        std::move(transaction_remote), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
     std::unique_ptr<IDBFactoryClient> factory_client =

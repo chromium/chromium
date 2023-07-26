@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -46,7 +47,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
       ScriptState*,
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
           callbacks_receiver,
-      std::unique_ptr<WebIDBTransaction> transaction_backend,
+      IDBTransaction::TransactionMojoRemote transaction_remote,
       int64_t transaction_id,
       int64_t version,
       IDBRequest::AsyncTraceState metrics,
@@ -84,7 +85,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
  private:
   mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
       callbacks_receiver_;
-  std::unique_ptr<WebIDBTransaction> transaction_backend_;
+  IDBTransaction::TransactionMojoRemote transaction_remote_;
   const int64_t transaction_id_;
   int64_t version_;
 
