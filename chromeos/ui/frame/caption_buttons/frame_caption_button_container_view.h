@@ -162,7 +162,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   void ClearOnSizeButtonPressedCallback();
 
   // views::View:
-  void AddedToWidget() override;
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
   void ChildVisibilityChanged(View* child) override;
