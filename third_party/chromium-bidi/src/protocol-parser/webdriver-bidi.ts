@@ -1692,6 +1692,7 @@ export namespace Script {
       resultOwnership: Script.ResultOwnershipSchema.optional(),
       serializationOptions: Script.SerializationOptionsSchema.optional(),
       this: Script.LocalValueSchema.optional(),
+      userActivation: z.boolean().default(false).optional(),
     })
   );
 }
@@ -1711,6 +1712,7 @@ export namespace Script {
       awaitPromise: z.boolean(),
       resultOwnership: Script.ResultOwnershipSchema.optional(),
       serializationOptions: Script.SerializationOptionsSchema.optional(),
+      userActivation: z.boolean().default(false).optional(),
     })
   );
 }
