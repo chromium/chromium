@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -92,7 +93,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const override;
     size_t GetNumEnabledInputMethods() const override;
-    void SetEnabledExtensionImes(std::vector<std::string>* ids) override;
+    void SetEnabledExtensionImes(base::span<const std::string> ids) override;
     void SetInputMethodLoginDefault() override;
     void SetInputMethodLoginDefaultFromVPD(const std::string& locale,
                                            const std::string& layout) override;

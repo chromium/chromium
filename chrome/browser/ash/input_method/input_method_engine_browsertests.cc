@@ -102,7 +102,7 @@ class InputMethodEngineBrowserTest
     extension_ime_ids.push_back(kToUpperIMEID);
     extension_ime_ids.push_back(kAPIArgumentIMEID);
     InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
-        &extension_ime_ids);
+        extension_ime_ids);
 
     InputMethodDescriptors extension_imes;
     InputMethodManager::Get()->GetActiveIMEState()->GetInputMethodExtensions(

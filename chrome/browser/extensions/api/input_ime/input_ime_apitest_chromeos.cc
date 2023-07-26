@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(InputImeApiTest, Basic) {
       "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest"};
   ash::input_method::InputMethodManager::Get()
       ->GetActiveIMEState()
-      ->SetEnabledExtensionImes(&extension_ime_ids);
+      ->SetEnabledExtensionImes(extension_ime_ids);
   ASSERT_TRUE(RunExtensionTest("input_ime")) << message_;
 }
 

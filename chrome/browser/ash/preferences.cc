@@ -1116,7 +1116,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       split_values = base::SplitString(value, ",", base::TRIM_WHITESPACE,
                                        base::SPLIT_WANT_ALL);
     }
-    ime_state_->SetEnabledExtensionImes(&split_values);
+    ime_state_->SetEnabledExtensionImes(split_values);
   }
 
   if (pref_name == ::prefs::kLanguageImeMenuActivated &&

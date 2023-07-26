@@ -634,10 +634,10 @@ void InputMethodManagerImpl::StateImpl::GetInputMethodExtensions(
 }
 
 void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
-    std::vector<std::string>* ids) {
+    base::span<const std::string> ids) {
   enabled_extension_imes_.clear();
-  enabled_extension_imes_.insert(enabled_extension_imes_.end(), ids->begin(),
-                                 ids->end());
+  enabled_extension_imes_.insert(enabled_extension_imes_.end(), ids.begin(),
+                                 ids.end());
   bool enabled_imes_changed = false;
   bool switch_to_pending = false;
 
