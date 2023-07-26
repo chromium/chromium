@@ -171,7 +171,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       [self.NTPDelegate isGoogleDefaultSearchEngine];
 
   self.contentSuggestionsMetricsRecorder =
-      [[ContentSuggestionsMetricsRecorder alloc] init];
+      [[ContentSuggestionsMetricsRecorder alloc]
+          initWithLocalState:GetApplicationContext()->GetLocalState()];
 
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
@@ -232,6 +233,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   }
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
+  [self.contentSuggestionsMetricsRecorder disconnect];
+  self.contentSuggestionsMetricsRecorder = nil;
   self.contentSuggestionsViewController = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
