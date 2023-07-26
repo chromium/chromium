@@ -85,9 +85,9 @@ class CookieSettingsBase {
     kUnpartitionedOnly,
   };
 
-  class CookieSettingWithMetadataBase {
+  class CookieSettingWithMetadata {
    public:
-    CookieSettingWithMetadataBase(
+    CookieSettingWithMetadata(
         ContentSetting cookie_setting,
         absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
         bool is_explicit_setting);
@@ -96,11 +96,13 @@ class CookieSettingsBase {
     // third-party-cookie-blocking setting.
     bool BlockedByThirdPartyCookieBlocking() const;
 
+    bool IsPartitionedStateAllowed() const;
+
     ContentSetting cookie_setting() const { return cookie_setting_; }
 
     bool is_explicit_setting() const { return is_explicit_setting_; }
 
-   protected:
+   private:
     // The setting itself.
     ContentSetting cookie_setting_;
 
@@ -245,13 +247,14 @@ class CookieSettingsBase {
   static GURL GetFirstPartyURL(const net::SiteForCookies& site_for_cookies,
                                const url::Origin* top_frame_origin);
 
- private:
-  ContentSetting GetCookieSettingInternal(const GURL& url,
-                                          const GURL& first_party_url,
-                                          bool is_third_party_request,
-                                          net::CookieSettingOverrides overrides,
-                                          SettingInfo* info) const;
+  CookieSettingWithMetadata GetCookieSettingInternal(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool is_third_party_request,
+      net::CookieSettingOverrides overrides,
+      SettingInfo* info) const;
 
+ private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
   // ContentSettingsTypes. Currently only COOKIES, STORAGE_ACCESS and

@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
@@ -177,30 +178,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // third-party-cookie-blocking setting applies, in a given context.
   using ThirdPartyBlockingScope = CookieSettingsBase::ThirdPartyBlockingScope;
 
-  class CookieSettingWithMetadata : public CookieSettingWithMetadataBase {
-   public:
-    CookieSettingWithMetadata(
-        ContentSetting cookie_setting,
-        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
-        bool is_explicit_setting)
-        : CookieSettingWithMetadataBase(cookie_setting,
-                                        third_party_blocking_scope,
-                                        is_explicit_setting) {}
+  // Returns whether the given cookie should be allowed to be sent, according
+  // to the user's settings. Assumes that the `cookie.access_result` has been
+  // correctly filled in by the cookie store. Note that the cookie may be
+  // "excluded" for other reasons, even if this method returns true.
+  static bool IsCookieAllowed(const net::CanonicalCookie& cookie,
+                              const CookieSettingWithMetadata& setting);
 
-    // Returns whether the given cookie should be allowed to be sent, according
-    // to the user's settings. Assumes that the `cookie.access_result` has been
-    // correctly filled in by the cookie store. Note that the cookie may be
-    // "excluded" for other reasons, even if this method returns true.
-    bool IsCookieAllowed(const net::CanonicalCookie& cookie) const;
-
-    // Computes the PrivacySetting that should be used in this context.
-    net::NetworkDelegate::PrivacySetting PrivacySetting() const;
-
-   private:
-    // Returns true iff a Partitioned cookie could be allowed to be sent in this
-    // context.
-    bool IsPartitionedStateAllowed() const;
-  };
+  // Computes the PrivacySetting that should be used in this context.
+  static net::NetworkDelegate::PrivacySetting PrivacySetting(
+      const CookieSettingWithMetadata& setting);
 
   // Determines the scope of third-party-cookie-blocking, i.e. whether it
   // applies to all cookies or just unpartitioned cookies. Assumes that
@@ -213,30 +200,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // third-party cookie blocking settings or not.
   CookieSettingWithMetadata GetCookieSettingWithMetadata(
       const GURL& url,
-      const GURL& first_party_url,
-      bool is_third_party_request,
-      net::CookieSettingOverrides overrides) const;
-
-  // An overload of the above, which determines `first_party_url` and
-  // `is_third_party_request` appropriately.
-  CookieSettingWithMetadata GetCookieSettingWithMetadata(
-      const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
-
-  // Returns true if there's a matching Storage Access grant that allows access
-  // in this context.
-  bool IsAllowedByStorageAccessGrant(const GURL& url,
-                                     const GURL& first_party_url) const;
-
-  // Returns true if there's a matching top-level Storage Access grant that
-  // allows access in this context.
-  bool IsAllowedByTopLevelStorageAccessGrant(const GURL& url,
-                                             const GURL& first_party_url) const;
 
   // Content settings for ContentSettingsType::COOKIES.
   ContentSettingsForOneType content_settings_;

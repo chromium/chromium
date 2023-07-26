@@ -45,11 +45,10 @@ CookieSettingsBase::CookieSettingsBase()
       ) {
 }
 
-CookieSettingsBase::CookieSettingWithMetadataBase::
-    CookieSettingWithMetadataBase(
-        ContentSetting cookie_setting,
-        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
-        bool is_explicit_setting)
+CookieSettingsBase::CookieSettingWithMetadata::CookieSettingWithMetadata(
+    ContentSetting cookie_setting,
+    absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
+    bool is_explicit_setting)
     : cookie_setting_(cookie_setting),
       third_party_blocking_scope_(third_party_blocking_scope),
       is_explicit_setting_(is_explicit_setting) {
@@ -57,9 +56,16 @@ CookieSettingsBase::CookieSettingWithMetadataBase::
          !IsAllowed(cookie_setting_));
 }
 
-bool CookieSettingsBase::CookieSettingWithMetadataBase::
+bool CookieSettingsBase::CookieSettingWithMetadata::
     BlockedByThirdPartyCookieBlocking() const {
   return !IsAllowed(cookie_setting_) && third_party_blocking_scope_.has_value();
+}
+
+bool CookieSettingsBase::CookieSettingWithMetadata::IsPartitionedStateAllowed()
+    const {
+  return IsAllowed(cookie_setting_) ||
+         third_party_blocking_scope_ ==
+             ThirdPartyBlockingScope::kUnpartitionedOnly;
 }
 
 // static
@@ -87,17 +93,22 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.
   // No overrides are given since existing ones only pertain to 3P checks.
-  ContentSetting setting = GetCookieSettingInternal(
-      origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
-      /*is_third_party_request=*/false, net::CookieSettingOverrides(), nullptr);
+  ContentSetting setting =
+      GetCookieSettingInternal(origin,
+                               is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
+                               /*is_third_party_request=*/false,
+                               net::CookieSettingOverrides(), nullptr)
+          .cookie_setting();
   DCHECK(IsValidSetting(setting));
-  if (setting == CONTENT_SETTING_ALLOW)
+  if (setting == CONTENT_SETTING_ALLOW) {
     return false;
+  }
   // Non-secure cookies are readable by secure sites. We need to check for
   // https pattern if http is not allowed. The section below is independent
   // of the scheme so we can just retry from here.
-  if (!is_https)
+  if (!is_https) {
     return ShouldDeleteCookieOnExit(cookie_settings, domain, true);
+  }
   // Check if there is a more precise rule that "domain matches" this cookie.
   bool matches_session_only_rule = false;
   for (const auto& entry : cookie_settings) {
@@ -124,9 +135,11 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
     net::CookieSettingOverrides overrides,
     content_settings::SettingInfo* info) const {
   return GetCookieSettingInternal(
-      url, first_party_url,
-      IsThirdPartyRequest(url, net::SiteForCookies::FromUrl(first_party_url)),
-      overrides, info);
+             url, first_party_url,
+             IsThirdPartyRequest(url,
+                                 net::SiteForCookies::FromUrl(first_party_url)),
+             overrides, info)
+      .cookie_setting();
 }
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
@@ -134,10 +147,13 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     net::CookieSettingOverrides overrides) const {
-  ContentSetting setting = GetCookieSettingInternal(
-      url,
-      GetFirstPartyURL(site_for_cookies, base::OptionalToPtr(top_frame_origin)),
-      IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr);
+  ContentSetting setting =
+      GetCookieSettingInternal(
+          url,
+          GetFirstPartyURL(site_for_cookies,
+                           base::OptionalToPtr(top_frame_origin)),
+          IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr)
+          .cookie_setting();
   return IsAllowed(setting);
 }
 
@@ -145,9 +161,12 @@ bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.
   // No overrides are given since existing ones only pertain to 3P checks.
-  ContentSetting setting = GetCookieSettingInternal(
-      origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
-      /*is_third_party_request=*/false, net::CookieSettingOverrides(), nullptr);
+  ContentSetting setting =
+      GetCookieSettingInternal(origin,
+                               is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
+                               /*is_third_party_request=*/false,
+                               net::CookieSettingOverrides(), nullptr)
+          .cookie_setting();
   DCHECK(IsValidSetting(setting));
   return setting == CONTENT_SETTING_SESSION_ONLY;
 }
@@ -193,7 +212,8 @@ bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
       net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
 }
 
-ContentSetting CookieSettingsBase::GetCookieSettingInternal(
+CookieSettingsBase::CookieSettingWithMetadata
+CookieSettingsBase::GetCookieSettingInternal(
     const GURL& url,
     const GURL& first_party_url,
     bool is_third_party_request,
@@ -201,7 +221,9 @@ ContentSetting CookieSettingsBase::GetCookieSettingInternal(
     SettingInfo* info) const {
   // Auto-allow in extensions or for WebUI embedding a secure origin.
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
-    return CONTENT_SETTING_ALLOW;
+    return {/*cookie_setting=*/CONTENT_SETTING_ALLOW,
+            /*third_party_blocking_scope=*/absl::nullopt,
+            /*is_explicit_setting=*/false};
   }
 
   // First get any host-specific settings.
@@ -212,12 +234,13 @@ ContentSetting CookieSettingsBase::GetCookieSettingInternal(
     *info = setting_info;
   }
 
+  bool is_explicit_setting = !setting_info.primary_pattern.MatchesAllHosts() ||
+                             !setting_info.secondary_pattern.MatchesAllHosts();
+
   // If no explicit exception has been made and third-party cookies are blocked
   // by default, apply CONTENT_SETTING_BLOCKED.
   bool block_third =
-      IsAllowed(setting) && is_third_party_request &&
-      setting_info.primary_pattern.MatchesAllHosts() &&
-      setting_info.secondary_pattern.MatchesAllHosts() &&
+      IsAllowed(setting) && !is_explicit_setting && is_third_party_request &&
       ShouldBlockThirdPartyCookies() &&
       !IsThirdPartyCookiesAllowedScheme(first_party_url.scheme());
 
@@ -265,7 +288,15 @@ ContentSetting CookieSettingsBase::GetCookieSettingInternal(
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
   }
-  return block_third ? CONTENT_SETTING_BLOCK : setting;
+
+  absl::optional<ThirdPartyBlockingScope> scope;
+  if (block_third) {
+    scope = IsAllowed(setting)
+                ? ThirdPartyBlockingScope::kUnpartitionedOnly
+                : ThirdPartyBlockingScope::kUnpartitionedAndPartitioned;
+  }
+  return {block_third ? CONTENT_SETTING_BLOCK : setting, scope,
+          is_explicit_setting};
 }
 
 bool CookieSettingsBase::IsAllowedByStorageAccessGrant(

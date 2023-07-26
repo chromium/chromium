@@ -759,16 +759,11 @@ TEST_P(CookieSettingsTest, IsPrivacyModeEnabled) {
                 GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
                 url::Origin::Create(GURL(kURL)), GetCookieSettingOverrides()));
 
-  const net::NetworkDelegate::PrivacySetting blocked_or_all_allowed =
-      IsForceAllowThirdPartyCookies()
-          ? net::NetworkDelegate::PrivacySetting::kStateAllowed
-          : net::NetworkDelegate::PrivacySetting::kStateDisallowed;
-
   // Setting a site-specific rule for the top-level frame origin that blocks
   // access should cause partitioned state to be disallowed.
   settings.set_content_settings(
-      {CreateSetting(kOtherURL, "*", CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(blocked_or_all_allowed,
+      {CreateSetting("*", kOtherURL, CONTENT_SETTING_BLOCK)});
+  EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateDisallowed,
             settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
                                           url::Origin::Create(GURL(kOtherURL)),
                                           GetCookieSettingOverrides()));
@@ -899,23 +894,21 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
       &status));
 
   // If third-party cookie blocking is enabled and there is a site-specific
-  // content setting blocking the top-frame origin's own cookies, then the
-  // partitioned cookie should be allowed only if the user has force-allowed
-  // cookies.
+  // content setting blocking the top-frame origin's cookies, then the
+  // partitioned cookie should be blocked as well.
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
-      {CreateSetting(kOtherURL, "*", CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(settings.IsCookieAccessible(*partitioned_cookie, GURL(kURL),
-                                        net::SiteForCookies(),
-                                        url::Origin::Create(GURL(kOtherURL)),
-                                        GetCookieSettingOverrides(), &status),
-            IsForceAllowThirdPartyCookies());
+      {CreateSetting("*", kOtherURL, CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL)), GetCookieSettingOverrides(),
+      &status));
 
   // If third-party cookie blocking is enabled and there is a site-specific
   // setting for the top-frame origin that only applies on an unrelated site,
   // then the partitioned cookie should still be allowed.
   settings.set_content_settings(
-      {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
+      {CreateSetting(kUnrelatedURL, kOtherURL, CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL)), GetCookieSettingOverrides(),
@@ -1380,28 +1373,19 @@ TEST_P(CookieSettingsTest,
                       _, _, _))));
 
   // If there is a site-specific content setting blocking cookies on the
-  // current top-level origin, then partitioned cookies should not be allowed.
+  // current origin, then partitioned cookies should not be allowed.
   maybe_included_cookies = MakePartitionedCookie();
   excluded_cookies = {};
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
-      {CreateSetting(kOtherURL, "*", CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
-                GURL(kURL), net::SiteForCookies(), &top_level_origin,
-                net::FirstPartySetMetadata(
-                    /*frame_entry=*/nullptr,
-                    /*top_frame_entry=*/nullptr),
-                GetCookieSettingOverrides(), maybe_included_cookies,
-                excluded_cookies),
-            IsForceAllowThirdPartyCookies());
+      {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kURL), net::SiteForCookies(), &top_level_origin,
+      net::FirstPartySetMetadata(/*frame_entry=*/nullptr,
+                                 /*top_frame_entry=*/nullptr),
+      GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
-  if (IsForceAllowThirdPartyCookies()) {
-    EXPECT_THAT(maybe_included_cookies,
-                ElementsAre(MatchesCookieWithAccessResult(
-                    net::MatchesCookieWithName("__Host-partitioned"),
-                    MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
-    EXPECT_THAT(excluded_cookies, IsEmpty());
-  } else {
+  {
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
     EXPECT_THAT(
         excluded_cookies,
