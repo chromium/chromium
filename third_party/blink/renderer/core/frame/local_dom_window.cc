@@ -2493,12 +2493,29 @@ void LocalDOMWindow::SetHasStorageAccess() {
   has_storage_access_ = true;
 }
 
-void LocalDOMWindow::maximize(ExceptionState& exception_state) {
+bool LocalDOMWindow::CanUseWindowingControls(ExceptionState& exception_state) {
   if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
       GetFrame()->GetPage()->IsPrerendering()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "API is only supported in primary top-level browsing contexts.");
+    return false;
+  }
+
+#if !defined(USE_AURA)
+  // TODO(crbug.com/1466851): Make the APIs also work on Mac.
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kNotSupportedError,
+      "API is only supported on Aura platforms (Win/Lin/CrOS/Fuchsia). This "
+      "excludes Mac and mobile platforms.");
+  return false;
+#else
+  return true;
+#endif
+}
+
+void LocalDOMWindow::maximize(ExceptionState& exception_state) {
+  if (!CanUseWindowingControls(exception_state)) {
     return;
   }
 
@@ -2511,21 +2528,11 @@ void LocalDOMWindow::maximize(ExceptionState& exception_state) {
 
 #if defined(USE_AURA)
   GetFrame()->GetLocalFrameHostRemote().Maximize();
-#else
-  // TODO(crbug.com/1466851): Make this API also work on Mac.
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kNotSupportedError,
-      "API is only supported on Aura platforms (Win/Lin/CrOS/Fuchsia). This "
-      "excludes Mac and mobile platforms.");
 #endif
 }
 
 void LocalDOMWindow::minimize(ExceptionState& exception_state) {
-  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
-      GetFrame()->GetPage()->IsPrerendering()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "API is only supported in primary top-level browsing contexts.");
+  if (!CanUseWindowingControls(exception_state)) {
     return;
   }
 
@@ -2538,21 +2545,11 @@ void LocalDOMWindow::minimize(ExceptionState& exception_state) {
 
 #if defined(USE_AURA)
   GetFrame()->GetLocalFrameHostRemote().Minimize();
-#else
-  // TODO(crbug.com/1466851): Make this API also work on Mac.
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kNotSupportedError,
-      "API is only supported on Aura platforms (Win/Lin/CrOS/Fuchsia). This "
-      "excludes Mac and mobile platforms.");
 #endif
 }
 
 void LocalDOMWindow::restore(ExceptionState& exception_state) {
-  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
-      GetFrame()->GetPage()->IsPrerendering()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "API is only supported in primary top-level browsing contexts.");
+  if (!CanUseWindowingControls(exception_state)) {
     return;
   }
 
@@ -2562,12 +2559,6 @@ void LocalDOMWindow::restore(ExceptionState& exception_state) {
 
 #if defined(USE_AURA)
   GetFrame()->GetLocalFrameHostRemote().Restore();
-#else
-  // TODO(crbug.com/1466851): Make this API also work on Mac.
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kNotSupportedError,
-      "API is only supported on Aura platforms (Win/Lin/CrOS/Fuchsia). This "
-      "excludes Mac and mobile platforms.");
 #endif
 }
 

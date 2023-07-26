@@ -566,6 +566,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void SetIsPictureInPictureWindow();
 
+  bool CanUseWindowingControls(ExceptionState& exception_state);
+
   // Return the viewport size including scrollbars.
   gfx::Size GetViewportSize() const;
 
