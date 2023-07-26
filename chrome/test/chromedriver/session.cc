@@ -107,6 +107,9 @@ BidiConnection& BidiConnection::operator=(BidiConnection&& other) = default;
 const base::TimeDelta Session::kDefaultImplicitWaitTimeout = base::Seconds(0);
 const base::TimeDelta Session::kDefaultPageLoadTimeout = base::Seconds(300);
 const base::TimeDelta Session::kDefaultScriptTimeout = base::Seconds(30);
+// The extra timeout values.
+const base::TimeDelta Session::kDefaultBrowserStartupTimeout =
+    base::Seconds(60);
 const char Session::kChannelSuffix[] = "/chan";
 const char Session::kNoChannelSuffix[] = "/nochan";
 const char Session::kBlockingChannelSuffix[] = "/blocking";

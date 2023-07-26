@@ -364,7 +364,7 @@ Status WaitForDevToolsAndCheckVersion(
     const DevToolsEndpoint& endpoint,
     network::mojom::URLLoaderFactory* factory,
     const Capabilities& capabilities,
-    int wait_time,
+    const Timeout& timeout,
     ChromeType ct,
     std::unique_ptr<DevToolsHttpClient>& user_client,
     bool& retry,
@@ -381,7 +381,6 @@ Status WaitForDevToolsAndCheckVersion(
     client = std::make_unique<DevToolsHttpClient>(endpoint, factory);
   }
 
-  Timeout timeout(base::Seconds(wait_time));
   Status status = client->Init(timeout.GetRemainingTime());
   if (status.IsError())
     return status;
@@ -464,7 +463,8 @@ Status LaunchRemoteChromeSession(
   bool retry = true;
   status = WaitForDevToolsAndCheckVersion(
       DevToolsEndpoint(capabilities.debugger_address), factory, capabilities,
-      60, ChromeType::Remote, devtools_http_client, retry);
+      Timeout(capabilities.browser_startup_timeout), ChromeType::Remote,
+      devtools_http_client, retry);
   if (status.IsError()) {
     return Status(
         kUnknownError,
@@ -506,7 +506,6 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
   Status status = Status(kOk);
   std::vector<std::string> extension_bg_pages;
   int devtools_port = 0;
-  bool retry = true;
 
   if (capabilities.switches.HasSwitch("remote-debugging-port")) {
     std::string port_switch =
@@ -633,12 +632,23 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
   int exit_code;
   base::TerminationStatus chrome_status =
-      base::GetTerminationStatus(process.Handle(), &exit_code);
-  Timeout timeout(base::Seconds(60));
+      base::TERMINATION_STATUS_STILL_RUNNING;
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
   std::unique_ptr<SyncWebSocket> socket;
   BrowserInfo browser_info;
   if (command.HasSwitch("remote-debugging-port")) {
+    // Though the invariant ready_to_connect == status.IsOk() always holds
+    // this variable is used for better readability.
+    bool ready_to_connect = false;
+    Timeout timeout(capabilities.browser_startup_timeout);
+    bool retry = true;
+    // Timeout expiration before the first iteration is treated as an error.
+    // If it expires on the following iteration the status code will contain the
+    // last error. It will never be kOk in such situations.
+    status =
+        Status(kSessionNotCreated,
+               base::StringPrintf("Timed out while waiting for %s process.",
+                                  kBrowserShortName));
     while (chrome_status == base::TERMINATION_STATUS_STILL_RUNNING &&
            !timeout.IsExpired()) {
       status = Status(kOk);
@@ -652,13 +662,15 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
         std::ostringstream oss;
         oss << command.GetProgram();
         status = WaitForDevToolsAndCheckVersion(
-            DevToolsEndpoint(devtools_port), factory, capabilities, 1,
-            ChromeType::Desktop, devtools_http_client, retry, oss.str());
+            DevToolsEndpoint(devtools_port), factory, capabilities,
+            Timeout(base::Seconds(1), &timeout), ChromeType::Desktop,
+            devtools_http_client, retry, oss.str());
         if (!retry) {
           break;
         }
       }
       if (status.IsOk()) {
+        ready_to_connect = true;
         break;
       }
       base::PlatformThread::Sleep(base::Milliseconds(50));
@@ -666,7 +678,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       // Check to see if Chrome has crashed.
       chrome_status = base::GetTerminationStatus(process.Handle(), &exit_code);
     }
-    if (status.IsOk()) {
+    if (ready_to_connect) {
       socket = socket_factory.Run();
       browser_info = *(devtools_http_client->browser_info());
       if (browser_info.web_socket_url.empty()) {
@@ -678,6 +690,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
           browser_info.web_socket_url, devtools_websocket_client);
     }
   } else {
+    Timeout timeout(capabilities.browser_startup_timeout);
     // PrepareDesktopCommandLine guarantees that
     // either command.HasSwitch("remote-debugging-port") or
     // command.HasSwitch("remote-debugging-pipe") holds.
@@ -727,7 +740,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     std::string termination_reason =
         internal::GetTerminationReason(chrome_status);
     Status failure_status =
-        Status(kUnknownError,
+        Status(kSessionNotCreated,
                base::StringPrintf("%s failed to start: %s.", kBrowserShortName,
                                   termination_reason.c_str()));
     failure_status.AddDetails(status.message());
@@ -835,8 +848,9 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
   bool retry = true;
   status = WaitForDevToolsAndCheckVersion(
-      DevToolsEndpoint(devtools_port), factory, capabilities, 60,
-      ChromeType::Android, devtools_http_client, retry);
+      DevToolsEndpoint(devtools_port), factory, capabilities,
+      Timeout(capabilities.browser_startup_timeout), ChromeType::Android,
+      devtools_http_client, retry);
   if (status.IsError()) {
     device->TearDown();
     return status;
@@ -890,9 +904,9 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
 
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
   bool retry = true;
-  status = WaitForDevToolsAndCheckVersion(DevToolsEndpoint(0), factory,
-                                          capabilities, 1, ChromeType::Replay,
-                                          devtools_http_client, retry);
+  status = WaitForDevToolsAndCheckVersion(
+      DevToolsEndpoint(0), factory, capabilities, Timeout(base::Seconds(1)),
+      ChromeType::Replay, devtools_http_client, retry);
   if (status.IsError())
     return status;
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
@@ -1253,22 +1267,22 @@ Status ParseDevToolsActivePortFile(const base::FilePath& user_data_dir,
                                    int& port) {
   base::FilePath port_filepath = user_data_dir.Append(kDevToolsActivePort);
   if (!base::PathExists(port_filepath)) {
-    return Status(kUnknownError, "DevToolsActivePort file doesn't exist");
+    return Status(kSessionNotCreated, "DevToolsActivePort file doesn't exist");
   }
   std::string buffer;
   bool result = base::ReadFileToString(port_filepath, &buffer);
   if (!result) {
-    return Status(kUnknownError, "Could not read in devtools port number");
+    return Status(kSessionNotCreated, "Could not read in devtools port number");
   }
   std::vector<std::string> split_port_strings = base::SplitString(
       buffer, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (split_port_strings.size() < 2) {
-    return Status(kUnknownError,
+    return Status(kSessionNotCreated,
                   std::string("Devtools port number file contents <") + buffer +
                       std::string("> were in an unexpected format"));
   }
   if (!base::StringToInt(split_port_strings.front(), &port)) {
-    return Status(kUnknownError,
+    return Status(kSessionNotCreated,
                   "Could not convert devtools port number to int");
   }
   return Status(kOk);

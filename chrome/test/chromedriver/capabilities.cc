@@ -893,6 +893,8 @@ Status ParseChromeOptions(
     parser_map["prefs"] = base::BindRepeating(&ParseDict, &capabilities->prefs);
     parser_map["useAutomationExtension"] =
         base::BindRepeating(&IgnoreDeprecatedOption, "useAutomationExtension");
+    parser_map["browserStartupTimeout"] = base::BindRepeating(
+        &ParseTimeDelta, &capabilities->browser_startup_timeout);
   }
 
   for (const auto item : *chrome_options) {

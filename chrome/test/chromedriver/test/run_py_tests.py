@@ -5789,33 +5789,63 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
       # any arguments. Linux and Mac should be good enough coverage.
       return
 
-    file_descriptor, path = tempfile.mkstemp()
-    try:
-      os.write(file_descriptor, b'#!/bin/bash\nexit 0')
-      os.close(file_descriptor)
-      os.chmod(path, 0o777)
-      exception_raised = False
+    exception = None
+    with tempfile.NamedTemporaryFile() as f:
+      f.file.write(b'#!/bin/bash\nexit 0')
+      f.file.close()
+      os.chmod(f.name, 0o777)
       switches = ['--remote-debugging-port=0']
       try:
         driver = chromedriver.ChromeDriver(_CHROMEDRIVER_SERVER_URL,
                                            _CHROMEDRIVER_SERVER_PID,
-                                           chrome_binary=path,
+                                           chrome_binary=f.name,
                                            chrome_switches=switches,
                                            test_name=self.id())
-      except Exception as e:
-        self.assertIn('Chrome failed to start', str(e))
-        self.assertIn('exited normally', str(e))
-        self.assertIn('ChromeDriver is assuming that Chrome has crashed',
-                      str(e))
-        exception_raised = True
-      self.assertTrue(exception_raised)
-      try:
+        # The constructor above must throw an exception.
+        # Therefore normally this code should be unreachable.
         driver.Quit()
-      except:
-        pass
-    finally:
-      pass
-      os.remove(path)
+      except Exception as e:
+        exception = e
+    self.assertIsInstance(exception, chromedriver.SessionNotCreated)
+    # This test can flake rarely on a heavily loaded system.
+    # Scenario: the browser process starts, it looses its slice
+    # and does not resume until the ChromeDriver command times out.
+    # Setting "browserStartupTimeout" to some huge value will not help because
+    # the http client in the CommandExecutor has a relatively small timeout for
+    # HTTP requests.
+    # S/A: //chrome/teest/chromedriver/client/command_executor.py
+    self.assertIn('Chrome failed to start', str(exception))
+    self.assertIn('exited normally', str(exception))
+    self.assertIn('ChromeDriver is assuming that Chrome has crashed',
+                  str(exception))
+
+  def testHelpfulErrorMessage_NormalExitIfTimedOut(self):
+    """If Chrome times out to start, we should provide a useful error message.
+    This is a regression test for https://crbug.com/1467496
+    """
+    if util.IsWindows():
+      # Not implemented on Windows due to the same reasons as explained in
+      # testHelpfulErrorMessage_NormalExit
+      return
+
+    with tempfile.NamedTemporaryFile() as f:
+      f.file.write(b'#!/bin/bash\nsleep 1\nexit 0')
+      f.file.close()
+      os.chmod(f.name, 0o777)
+      switches = ['--remote-debugging-port=0']
+      experimental_options = {'browserStartupTimeout': 0}
+      driver = None
+      with self.assertRaises(chromedriver.SessionNotCreated):
+        driver = chromedriver.ChromeDriver(_CHROMEDRIVER_SERVER_URL,
+                                           _CHROMEDRIVER_SERVER_PID,
+                                           chrome_binary = f.name,
+                                           chrome_switches = switches,
+                                           experimental_options =
+                                              experimental_options,
+                                           test_name=self.id())
+        # The constructor above must throw an exception.
+        # Therefore normally this code should be unreachable.
+        driver.Quit()
 
   def testNoBinaryErrorMessage(self):
     temp_dir = tempfile.mkdtemp()
@@ -5826,6 +5856,9 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
           _CHROMEDRIVER_SERVER_PID,
           chrome_binary=os.path.join(temp_dir, 'this_file_should_not_exist'),
           test_name=self.id())
+      # The constructor above must throw an exception.
+      # Therefore normally this code should be unreachable.
+      driver.Quit()
     except Exception as e:
       self.assertIn('no chrome binary', str(e))
       exception_raised = True

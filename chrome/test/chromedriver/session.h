@@ -82,6 +82,9 @@ struct Session {
   static const base::TimeDelta kDefaultImplicitWaitTimeout;
   static const base::TimeDelta kDefaultPageLoadTimeout;
   static const base::TimeDelta kDefaultScriptTimeout;
+  // Non-standard timeouts
+  static const base::TimeDelta kDefaultBrowserStartupTimeout;
+  // BiDi channels
   static const char kChannelSuffix[];
   static const char kNoChannelSuffix[];
   static const char kBlockingChannelSuffix[];
