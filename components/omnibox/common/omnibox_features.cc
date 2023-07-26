@@ -312,7 +312,7 @@ BASE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed,
 // the omnibox suggestion popup.
 BASE_FEATURE(kCr2023ActionChips,
              "Cr2023ActionChips",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, uses the Chrome Refresh 2023 design's icons for action chips in
 // the omnibox suggestion popup.
@@ -391,13 +391,13 @@ BASE_FEATURE(kWebUIOmniboxPopup,
 // If enabled, Omnibox "expanded state" height is increased from 42 px to 44 px.
 BASE_FEATURE(kExpandedStateHeight,
              "OmniboxExpandedStateHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox "expanded state" corner radius is increased from 8px to
 // 16px.
 BASE_FEATURE(kExpandedStateShape,
              "OmniboxExpandedStateShape",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox "expanded state" colors are updated to match CR23
 // guidelines.
