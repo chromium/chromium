@@ -85,6 +85,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
       const base::flat_set<OverviewItem*>& ignored_items = {},
       OverviewTransition transition = OverviewTransition::kInOverview);
 
+  // Used when feature ContinuousOverviewScrollAnimation is enabled. Positions
+  // the windows according to the y_offset. Uses the same logic as
+  // `PositionWindows()` to determine the final state of each window. Minimized
+  // windows, and the save desk button, fade in accordingly based on the scroll
+  // offset.
+  void PositionWindowsContinuously(float y_offset);
+
   // Returns the OverviewItem if a window is contained in any of the
   // OverviewItems this grid owns. Returns nullptr if no such a OverviewItem
   // exist.
@@ -652,6 +659,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The number of unsupported windows in this grid. Used by saved desks to
   // identify the unsupported window type to the user.
   int num_unsupported_windows_ = 0;
+
+  // Used when feature ContinuousOverviewScrollAnimation is enabled. When a
+  // continuous scroll starts, store the calculated rects here. For each scroll
+  // update, use this list to prevent unnecessary recalculations. For a scroll
+  // end, clear the list.
+  std::vector<gfx::RectF> cached_rects_;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };

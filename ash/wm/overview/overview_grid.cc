@@ -41,6 +41,7 @@
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -518,6 +519,57 @@ void OverviewGrid::PrepareForOverview() {
   Shell::Get()->wallpaper_controller()->AddObserver(this);
 }
 
+void OverviewGrid::PositionWindowsContinuously(float y_offset) {
+  // If it's the first scroll, the rects will need to be re-calculated.
+  bool first_scroll = false;
+  if (cached_rects_.empty()) {
+    first_scroll = true;
+    cached_rects_ = ShouldUseScrollingLayout(/*ignored_items_size=*/0)
+                        ? GetWindowRectsForScrollingLayout({})
+                        : GetWindowRects({});
+  }
+
+  // Fade in/out the minimized windows and position non-minimized windows.
+  float scroll_ratio = y_offset / WmGestureHandler::kVerticalThresholdDp;
+  for (size_t i = 0; i < window_list_.size(); ++i) {
+    OverviewItem* window_item = window_list_[i].get();
+    gfx::RectF rect = cached_rects_[i];
+    // If this is the first scroll update, position minimized windows
+    // and hide the headers of non-minimized windows.
+    if (first_scroll) {
+      if (WindowState::Get(window_item->GetWindow())->IsMinimized()) {
+        window_item->SetBounds(rect, OVERVIEW_ANIMATION_NONE);
+      } else {
+        window_item->overview_item_view()->layer()->SetOpacity(0.0f);
+      }
+    }
+    // For all scroll updates, set the opacity of minimized windows and
+    // reposition non-minimized windows.
+    if (WindowState::Get(window_item->GetWindow())->IsMinimized()) {
+      float opacity = std::clamp(0.01f, scroll_ratio, 1.f);
+      window_item->overview_item_view()->layer()->SetOpacity(opacity);
+    } else {
+      rect = gfx::Tween::RectFValueBetween(
+          scroll_ratio, gfx::RectF(window_item->GetWindow()->bounds()), rect);
+      window_item->SetBounds(rect, OVERVIEW_ANIMATION_NONE);
+    }
+  }
+
+  // Fade in/out the save desk button.
+  if (auto* save_desk_button = save_desk_button_container_widget()) {
+    save_desk_button->GetLayer()->SetOpacity(scroll_ratio);
+  }
+
+  // Move the desk bar up/down.
+  if (auto* desks_bar = desks_bar_view()) {
+    gfx::Transform transform;
+    transform.Translate(
+        0, -desks_bar->GetBoundsInScreen().height() +
+               (desks_bar->GetBoundsInScreen().height() * scroll_ratio));
+    desks_bar->layer()->SetTransform(transform);
+  }
+}
+
 bool OverviewGrid::ShouldUseScrollingLayout(size_t ignored_items_size) const {
   if (ShouldUseTabletModeGridLayout()) {
     return window_list_.size() - ignored_items_size >=
@@ -631,6 +683,11 @@ void OverviewGrid::PositionWindows(
   }
 
   UpdateSaveDeskButtons();
+
+  // This is a no-op if the feature ContinuousOverviewScrollAnimation is not
+  // enabled. Once windows are placed at their final positions, clear rects so
+  // that they get re-calculated when a continuous downward scroll begins.
+  cached_rects_.clear();
 }
 
 OverviewItem* OverviewGrid::GetOverviewItemContaining(
@@ -1917,6 +1974,18 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {
+  // Return early if a continuous scroll has ended since we have already placed
+  // the desk button to its final position.
+  const bool is_continuous_animation =
+      features::IsContinuousOverviewScrollAnimationEnabled() &&
+      overview_session_->enter_exit_overview_type() ==
+          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate;
+  if (is_continuous_animation && !Shell::Get()
+                                      ->overview_controller()
+                                      ->is_continuous_scroll_in_progress()) {
+    return;
+  }
+
   // TODO(crbug.com/1275282): The button should be updated whenever the
   // overview grid changes, i.e. switches between active desks and/or the
   // saved desk grid. This will be needed when we make it so that switching
@@ -2011,9 +2080,16 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       num_incognito_windows_, num_unsupported_windows_, size());
 
   // Set the widget position above the overview item window and default width
-  // and height.
+  // and height. If the feature ContinuousOverviewScrollAnimation is enabled,
+  // place it above the first cached rect item and set opacity to ~0 as it will
+  // be faded in according to future scroll offsets.
   gfx::RectF first_overview_item_bounds;
-  if (window_list_.front()->animating_to_close()) {
+  if (is_continuous_animation) {
+    if (!cached_rects_.empty()) {
+      first_overview_item_bounds = cached_rects_[0];
+      save_desk_button_container_widget_->GetLayer()->SetOpacity(0.01f);
+    }
+  } else if (window_list_.front()->animating_to_close()) {
     DCHECK_GT(window_list_.size(), 1u);
     first_overview_item_bounds = window_list_[1]->target_bounds();
   } else {
@@ -2027,11 +2103,14 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // with the first overview item.
   // If `ShouldUseScrollingLayout()`, don't animate because it becomes
   // distracting to the user to have the button animate behind moving windows.
+  // If `is_continuous_animation`, don't animate because we will fade it in/out
+  // according to the scroll offset.
+  const bool animate = !visibility_changed && !in_desk_animation &&
+                       !ShouldUseScrollingLayout(/*ignored_items_size=*/0) &&
+                       !is_continuous_animation;
   ScopedOverviewAnimationSettings settings(
-      visibility_changed || in_desk_animation ||
-              ShouldUseScrollingLayout(/*ignored_items_size=*/0)
-          ? OVERVIEW_ANIMATION_NONE
-          : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
+      animate ? OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW
+              : OVERVIEW_ANIMATION_NONE,
       save_desk_button_container_widget_->GetNativeWindow());
   gfx::Point available_origin =
       gfx::ToRoundedPoint(first_overview_item_bounds.origin()) +
@@ -2195,6 +2274,17 @@ void OverviewGrid::MaybeInitDesksWidget() {
   desks_bar_view_ = desks_widget_->SetContentsView(
       std::make_unique<LegacyDeskBarView>(weak_ptr_factory_.GetWeakPtr()));
   desks_bar_view_->Init();
+
+  // If the feature ContinuousOverviewScrollAnimation is enabled and a
+  // continuous scroll is now starting, move the desk bar up so we can slowly
+  // place it downward in relation to the scroll offset.
+  if (overview_session_->enter_exit_overview_type() ==
+      OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) {
+    gfx::Transform transform;
+    transform.Translate(0, -desks_bar_view_->GetBoundsInScreen().height());
+    auto* layer = desks_bar_view_->layer();
+    layer->SetTransform(transform);
+  }
 
   desks_widget_->Show();
 

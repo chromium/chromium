@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -162,9 +163,17 @@ bool OverviewController::InOverviewSession() const {
 
 bool OverviewController::HandleContinuousScroll(float y_offset,
                                                 OverviewEnterExitType type) {
+  // We enter with type `kNormal` if a fast scroll happened and we want to enter
+  // overview mode immediately, using ToggleOverview().
   CHECK((type ==
          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) ||
-        (type == OverviewEnterExitType::kContinuousAnimationEnterOnScrollEnd));
+        (type == OverviewEnterExitType::kContinuousAnimationEnterOnScrollEnd) ||
+        (type == OverviewEnterExitType::kNormal));
+
+  // Determine if this is the last scroll update in this continuous scroll.
+  is_continuous_scroll_in_progress_ =
+      y_offset != WmGestureHandler::kVerticalThresholdDp &&
+      type != OverviewEnterExitType::kContinuousAnimationEnterOnScrollEnd;
 
   if (!overview_session_) {
     ToggleOverview(type);

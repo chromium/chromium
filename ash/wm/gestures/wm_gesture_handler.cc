@@ -163,9 +163,16 @@ bool Handle3FingerContinuousVerticalScroll(float scroll_y,
   const bool in_overview = overview_controller->InOverviewSession();
 
   // Ignore downward scrolls when not in overview mode.
-  // TODO(b/291778355): Add logic to ignore upward scrolls when already in
-  // overview mode.
   if (scroll_y < 0.f && !in_overview) {
+    return false;
+  }
+
+  // Ignore scrolls beyond the upward threshold. Note that we already clamped
+  // `scroll_y` to `kVerticalThresholdDp`. If the threshold has been met but the
+  // scroll is in progress, we will need to do the final placement before we
+  // mark the scroll as finished.
+  if (scroll_y == WmGestureHandler::kVerticalThresholdDp &&
+      !overview_controller->is_continuous_scroll_in_progress()) {
     return false;
   }
 
