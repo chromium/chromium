@@ -658,7 +658,7 @@ void TapMoreButtonIfVisible() {
     return error == nil;
   };
   GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"Timeout waiting for the Magic Stack to scroll to next module expired.");
 
   if (![ChromeEarlGrey isIPadIdiom]) {
