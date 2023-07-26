@@ -21,12 +21,15 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/profile_metrics/browser_profile_type.h"
+#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/supervised_user/core/common/buildflags.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_test_util.h"
@@ -159,6 +162,13 @@ void TestChromeBrowserState::Init() {
 
   BrowserStateDependencyManager::GetInstance()
       ->CreateBrowserStateServicesForTest(this);
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  // `SupervisedUserSettingsService` needs to be initialized for SyncService.
+  SupervisedUserSettingsServiceFactory::GetForBrowserState(this)->Init(
+      GetStatePath(), GetIOTaskRunner().get(),
+      /*load_synchronously=*/true);
+#endif
 }
 
 bool TestChromeBrowserState::IsOffTheRecord() const {

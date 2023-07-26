@@ -102,7 +102,8 @@ WebViewSyncClient::WebViewSyncClient(
           profile_password_store_, account_password_store_,
           /*local_or_syncable_bookmark_sync_service=*/nullptr,
           /*account_bookmark_sync_service=*/nullptr,
-          /*power_bookmark_service=*/nullptr);
+          /*power_bookmark_service=*/nullptr,
+          /*supervised_user_settings_service=*/nullptr);
   // TODO(crbug.com/1434661): introduce ios webview version of
   // TrustedVaultServiceFactory.
   trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();

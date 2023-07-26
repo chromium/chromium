@@ -21,6 +21,7 @@ include_rules = [
   "+ios/chrome/browser/trusted_vault",
   "+ios/chrome/browser/dom_distiller",
   "+ios/chrome/browser/complex_tasks",
+  "+ios/chrome/browser/supervised_user",
 ]
 
 specific_include_rules = {

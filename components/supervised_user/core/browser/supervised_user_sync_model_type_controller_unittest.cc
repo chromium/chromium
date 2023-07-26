@@ -6,6 +6,10 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/service/data_type_controller.h"
@@ -15,45 +19,47 @@
 using syncer::DataTypeController;
 using ::testing::Return;
 
-class SupervisedUserSyncModelTypeControllerTest : public testing::Test {};
+class SupervisedUserSyncModelTypeControllerTest : public testing::Test {
+ public:
+  void SetUp() override {
+    pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,
+                                                 std::string());
+  }
+
+ protected:
+  TestingPrefServiceSimple pref_service_;
+};
 
 TEST_F(SupervisedUserSyncModelTypeControllerTest,
        SupervisedUserMeetsPreconditions) {
-  base::MockRepeatingCallback<bool()> is_supervised_user_callback;
-  EXPECT_CALL(is_supervised_user_callback, Run()).WillOnce(Return(true));
-
+  pref_service_.SetString(prefs::kSupervisedUserId,
+                          supervised_user::kChildAccountSUID);
   SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS, is_supervised_user_callback.Get(),
+      syncer::SUPERVISED_USER_SETTINGS,
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
-      /*syncable_service=*/nullptr);
+      /*syncable_service=*/nullptr, &pref_service_);
   EXPECT_EQ(DataTypeController::PreconditionState::kPreconditionsMet,
             controller.GetPreconditionState());
 }
 
 TEST_F(SupervisedUserSyncModelTypeControllerTest,
        NonSupervisedUserDoesNotMeetPreconditions) {
-  base::MockRepeatingCallback<bool()> is_supervised_user_callback;
-  EXPECT_CALL(is_supervised_user_callback, Run()).WillOnce(Return(false));
-
   SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS, is_supervised_user_callback.Get(),
+      syncer::SUPERVISED_USER_SETTINGS,
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
-      /*syncable_service=*/nullptr);
+      /*syncable_service=*/nullptr, &pref_service_);
   EXPECT_EQ(DataTypeController::PreconditionState::kMustStopAndClearData,
             controller.GetPreconditionState());
 }
 
 TEST_F(SupervisedUserSyncModelTypeControllerTest, HasTransportModeDelegate) {
-  base::MockRepeatingCallback<bool()> is_supervised_user_callback;
-  EXPECT_CALL(is_supervised_user_callback, Run()).Times(0);
-
   SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS, is_supervised_user_callback.Get(),
+      syncer::SUPERVISED_USER_SETTINGS,
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
-      /*syncable_service=*/nullptr);
+      /*syncable_service=*/nullptr, &pref_service_);
   EXPECT_TRUE(
       controller.GetDelegateForTesting(syncer::SyncMode::kTransportOnly));
 }

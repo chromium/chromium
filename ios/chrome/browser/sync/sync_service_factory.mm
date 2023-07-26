@@ -15,6 +15,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/supervised_user/core/common/buildflags.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_service.h"
@@ -57,6 +58,10 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -128,6 +133,11 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 

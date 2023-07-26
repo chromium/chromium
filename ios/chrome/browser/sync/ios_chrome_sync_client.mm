@@ -27,6 +27,7 @@
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/supervised_user/core/common/buildflags.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_api_component_factory.h"
@@ -63,6 +64,11 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -85,6 +91,13 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
           browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
 
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service = nullptr;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  supervised_user_settings_service =
+      SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state);
+#endif
+
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
           this, ::GetChannel(), web::GetUIThreadTaskRunner({}), db_thread_,
@@ -94,7 +107,8 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
               browser_state_),
           ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state_),
-          PowerBookmarkServiceFactory::GetForBrowserState(browser_state_));
+          PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
+          supervised_user_settings_service);
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
