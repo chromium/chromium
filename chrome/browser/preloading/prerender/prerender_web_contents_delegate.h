@@ -26,6 +26,7 @@ class PrerenderWebContentsDelegateImpl
                       bool user_gesture,
                       bool* was_blocked) override;
   void ActivateContents(content::WebContents* contents) override;
+  bool ShouldSuppressDialogs(content::WebContents* source) override;
 
   // TODO(crbug.com/1350676): Investigate if we have to override other
   // functions on WebContentsDelegate.

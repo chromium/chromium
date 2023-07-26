@@ -28,3 +28,10 @@ void PrerenderWebContentsDelegateImpl::ActivateContents(
   // WebContents should not be activated with this delegate.
   NOTREACHED_NORETURN();
 }
+
+bool PrerenderWebContentsDelegateImpl::ShouldSuppressDialogs(
+    content::WebContents* source) {
+  // Dialogs (JS dialogs and BeforeUnload confirm) should not be shown on a
+  // prerendered page.
+  NOTREACHED_NORETURN();
+}
