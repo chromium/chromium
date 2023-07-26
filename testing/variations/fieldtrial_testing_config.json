@@ -3169,7 +3169,7 @@
             ]
         }
     ],
-    "ChromeOSMaterialNextWaveOneCbx": [
+    "ChromeOSMaterialNextWaveOneWithTimeOfDay": [
         {
             "platforms": [
                 "chromeos"
@@ -3178,8 +3178,6 @@
                 {
                     "name": "TimeOfDayEnabled",
                     "enable_features": [
-                        "FeatureManagementTimeOfDayScreenSaver",
-                        "FeatureManagementTimeOfDayWallpaper",
                         "Jelly",
                         "TimeOfDayScreenSaver",
                         "TimeOfDayWallpaper"
