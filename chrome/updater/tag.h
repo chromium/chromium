@@ -247,7 +247,11 @@ std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
 std::string ReadTagUtf16(std::vector<uint8_t>::const_iterator cert_begin,
                          std::vector<uint8_t>::const_iterator cert_end);
 std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
-std::string ExtractTagFromFile(const base::FilePath& file);
+std::string ExeReadTag(const base::FilePath& file);
+bool ExeWriteTag(const base::FilePath& in_file,
+                 const std::string& tag_string,
+                 int padded_length,
+                 const base::FilePath& out_file);
 
 // Utilities for reading and writing tags to MSI files.
 //

@@ -15,6 +15,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -576,6 +577,24 @@ absl::optional<tagging::TagArgs> ParseTagBuffer(
   return tag_args;
 }
 
+std::vector<uint8_t> ReadEntireFile(const base::FilePath& file) {
+  int64_t file_size = 0;
+  if (!base::GetFileSize(file, &file_size)) {
+    LOG(ERROR) << __func__ << ": Could not get file size: " << file << ": "
+               << logging::GetLastSystemErrorCode();
+    return {};
+  }
+
+  std::vector<uint8_t> contents(file_size);
+  if (base::ReadFile(file, reinterpret_cast<char*>(&contents.front()),
+                     contents.size()) == -1) {
+    LOG(ERROR) << __func__ << ": Could not read file: " << file << ": "
+               << logging::GetLastSystemErrorCode();
+    return {};
+  }
+  return contents;
+}
+
 }  // namespace
 
 namespace internal {
@@ -801,30 +820,75 @@ std::string ReadTagUtf16(std::vector<uint8_t>::const_iterator cert_begin,
   return base::WideToUTF8(tag_utf16);
 }
 
-std::string ExtractTagFromFile(const base::FilePath& file) {
-  int64_t file_size = 0;
-  if (!base::GetFileSize(file, &file_size)) {
-    return {};
-  }
-
-  std::vector<uint8_t> contents(file_size);
-  if (base::ReadFile(file, reinterpret_cast<char*>(&contents.front()),
-                     contents.size()) == -1) {
-    return {};
-  }
-
+std::string ExeReadTag(const base::FilePath& file) {
+  const std::vector<uint8_t> contents = ReadEntireFile(file);
   absl::optional<tagging::Binary> bin = Binary::Parse(contents);
   if (!bin) {
+    LOG(ERROR) << __func__ << ": Could not parse binary: " << file;
     return {};
   }
 
   absl::optional<base::span<const uint8_t>> tag = bin->tag();
   if (!tag) {
+    LOG(ERROR) << __func__ << ": No superfluous certificate in file: " << file;
     return {};
   }
 
   const std::vector<const uint8_t> tag_data = {tag->begin(), tag->end()};
-  return ReadTagUtf8(tag_data.begin(), tag_data.end());
+  const std::string tag_string = ReadTagUtf8(tag_data.begin(), tag_data.end());
+  if (tag_string.empty()) {
+    LOG(ERROR) << __func__ << ": file is untagged: " << file;
+  }
+  return tag_string;
+}
+
+bool ExeWriteTag(const base::FilePath& in_file,
+                 const std::string& tag_string,
+                 int padded_length,
+                 const base::FilePath& out_file) {
+  const std::vector<uint8_t> contents = ReadEntireFile(in_file);
+  absl::optional<tagging::Binary> bin = tagging::Binary::Parse(contents);
+  if (!bin) {
+    LOG(ERROR) << __func__ << ": Could not parse binary: " << in_file;
+    return false;
+  }
+
+  // Validate the tag string, if any.
+  if (!tag_string.empty()) {
+    tagging::TagArgs tag_args;
+    const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
+    if (error != tagging::ErrorCode::kSuccess) {
+      LOG(ERROR) << __func__ << ": Invalid tag string: " << tag_string << ": "
+                 << error;
+      return false;
+    }
+  }
+
+  std::vector<uint8_t> tag_contents = tagging::GetTagFromTagString(tag_string);
+
+  if (padded_length > 0) {
+    size_t new_size = 0;
+    if (base::CheckAdd(tag_contents.size(), padded_length)
+            .AssignIfValid(&new_size)) {
+      tag_contents.resize(new_size);
+    } else {
+      LOG(ERROR) << __func__ << "Failed to pad the tag contents.";
+      return false;
+    }
+  }
+
+  auto new_contents = bin->SetTag(tag_contents);
+  if (!new_contents) {
+    LOG(ERROR) << __func__
+               << "Error while setting superfluous certificate tag.";
+    return false;
+  }
+  if (!base::WriteFile(out_file, *new_contents)) {
+    LOG(ERROR) << __func__ << "Error while writing updated file: " << out_file
+               << ": " << logging::GetLastSystemErrorCode();
+    return false;
+  }
+  return true;
 }
 
 absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {

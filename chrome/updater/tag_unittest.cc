@@ -1163,15 +1163,63 @@ TEST(TagExtractorTest, CheckRange) {
   ASSERT_FALSE(tagging::internal::CheckRange(it, 1, binary.end()));
 }
 
-TEST(TagExtractorTest, UntaggedExe) {
-  ASSERT_TRUE(
-      tagging::ExtractTagFromFile(test::GetTestFilePath("signed.exe")).empty());
+TEST(ExeTagTest, UntaggedExe) {
+  ASSERT_TRUE(tagging::ExeReadTag(test::GetTestFilePath("signed.exe")).empty());
 }
 
-TEST(TagExtractorTest, TaggedExeEncodeUtf8) {
-  ASSERT_EQ(tagging::ExtractTagFromFile(
-                test::GetTestFilePath("tagged_encode_utf8.exe")),
-            "TestTag123");
+TEST(ExeTagTest, TaggedExeEncodeUtf8) {
+  ASSERT_EQ(
+      tagging::ExeReadTag(test::GetTestFilePath("tagged_encode_utf8.exe")),
+      "TestTag123");
+}
+
+TEST(ExeTagTest, ExeWriteTag) {
+  const struct {
+    const char* const exe_file_name;
+    const char* const tag_string;
+    const bool expected_success;
+  } test_cases[] = {
+      // single tag parameter.
+      {"signed.exe", "brand=QAQA", true},
+
+      // single tag parameter ending in an ampersand.
+      {"signed.exe", "brand=QAQA&", true},
+
+      // multiple tag parameters.
+      {"signed.exe",
+       "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-4EFC-"
+       "6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&appname=Google%"
+       "20Chrome&needsadmin=prefers&brand=CHMB&installdataindex=defaultbrowser",
+       true},
+
+      // already tagged.
+      {"tagged_encode_utf8.exe", "brand=QAQA", true},
+
+      // empty tag string.
+      {"signed.exe", "", true},
+
+      // unknown tag argument `unknowntagarg`.
+      {"signed.exe",
+       "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-4EFC-"
+       "6D61-AE23E3530EA2}&unknowntagarg=foo",
+       false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    base::FilePath out_file;
+    ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
+
+    ASSERT_EQ(
+        tagging::ExeWriteTag(test::GetTestFilePath(test_case.exe_file_name),
+                             test_case.tag_string, 8206, out_file),
+        test_case.expected_success)
+        << test_case.exe_file_name << ": " << test_case.tag_string;
+    if (test_case.expected_success) {
+      EXPECT_EQ(tagging::ExeReadTag(out_file), test_case.tag_string);
+    }
+  }
 }
 
 class MsiTagTest : public testing::Test {

@@ -118,79 +118,20 @@ CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
 
 int CertificateTagMain(int argc, char** argv) {
   const auto args = ParseCommandLineArgs(argc, argv);
-
-  const base::FilePath in_filename = args.in_filename;
-  const base::FilePath out_filename =
-      args.out_filename.empty() ? args.in_filename : args.out_filename;
-
-  int64_t in_filename_size = 0;
-  if (!base::GetFileSize(in_filename, &in_filename_size))
-    HandleError(logging::GetLastSystemErrorCode());
-
-  std::vector<uint8_t> contents(in_filename_size);
-  if (base::ReadFile(in_filename, reinterpret_cast<char*>(&contents.front()),
-                     contents.size()) == -1) {
-    HandleError(logging::GetLastSystemErrorCode());
-  }
-
-  absl::optional<tagging::Binary> bin = tagging::Binary::Parse(contents);
-  if (!bin) {
-    std::cerr << "Failed to parse tag binary." << std::endl;
-    std::exit(1);
-  }
-
   if (args.get_tag_string) {
-    absl::optional<base::span<const uint8_t>> tag = bin->tag();
-    if (!tag) {
-      std::cerr << "No tag in binary." << std::endl;
-      std::exit(1);
-    }
-
-    const std::vector<const uint8_t> tag_data = {tag->begin(), tag->end()};
-    const std::string tag_string =
-        tagging::ReadTagUtf8(tag_data.begin(), tag_data.end());
+    const std::string tag_string = tagging::ExeReadTag(args.in_filename);
     if (tag_string.empty()) {
-      std::cerr << "No tag string embedded in the binary." << std::endl;
+      std::cout << "Could not get tag string, see log for details" << std::endl;
       std::exit(1);
     }
-
     std::cout << tag_string << std::endl;
   }
 
   if (args.set_superfluous_cert) {
-    // Validate the tag string, if any.
-    if (!args.tag_string.empty()) {
-      tagging::TagArgs tag_args;
-      const tagging::ErrorCode error =
-          tagging::Parse(args.tag_string, {}, &tag_args);
-      if (error != tagging::ErrorCode::kSuccess) {
-        std::cerr << "Tag string is invalid: " << args.tag_string << std::endl;
-        std::exit(1);
-      }
-    }
-
-    std::vector<uint8_t> tag_contents =
-        tagging::GetTagFromTagString(args.tag_string);
-
-    if (args.padded_length > 0) {
-      size_t new_size = 0;
-      if (base::CheckAdd(tag_contents.size(), args.padded_length)
-              .AssignIfValid(&new_size)) {
-        tag_contents.resize(new_size);
-      } else {
-        std::cerr << "Failed to pad the tag contents." << std::endl;
-        std::exit(1);
-      }
-    }
-
-    auto new_contents = bin->SetTag(tag_contents);
-    if (!new_contents) {
-      std::cerr << "Error while setting superfluous certificate tag.";
-      std::exit(1);
-    }
-    if (!base::WriteFile(out_filename, *new_contents)) {
-      std::cerr << "Error while writing updated file "
-                << logging::GetLastSystemErrorCode();
+    if (!tagging::ExeWriteTag(
+            args.in_filename, args.tag_string, args.padded_length,
+            args.out_filename.empty() ? args.in_filename : args.out_filename)) {
+      std::cout << "Could not write tag, see log for details" << std::endl;
       std::exit(1);
     }
   }
