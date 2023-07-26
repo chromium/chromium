@@ -391,6 +391,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
+  updateLetterSpacing(newLetterSpacing: string) {
+    this.updateStyles({
+      '--letter-spacing': newLetterSpacing + 'em',
+    });
+  }
+
   updateTheme() {
     const foregroundColor:
         SkColor = {value: chrome.readingMode.foregroundColor};

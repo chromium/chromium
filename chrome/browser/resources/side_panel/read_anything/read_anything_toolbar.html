@@ -57,7 +57,7 @@
       </iron-icon>
       $i18n{lineSpacingTitle}
     </button>
-    <button class="dropdown-item">
+    <button class="dropdown-item" on-click="onShowLetterSpacingSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:letter-spacing">
       </iron-icon>
       $i18n{letterSpacingTitle}
@@ -108,6 +108,28 @@
       <iron-icon class="button-image"
       icon="read-anything:line-spacing-very-loose"></iron-icon>
       $i18n{lineSpacingVeryLooseTitle}
+      </button>
+    </cr-action-menu>
+  <cr-action-menu id="letterSpacingSubmenu">
+    <button class="dropdown-item back" on-click="onBackClick_">
+      <iron-icon class="button-image" icon="cr:arrow-back"></iron-icon>
+      $i18n{back}
+    </button>
+    <!--TODO(b/1465029): Fix icon that is slightly out of alignment. -->
+    <button class="dropdown-item" on-click="onLetterSpacingStandardClick_">
+      <iron-icon class="button-image"
+      icon="read-anything:letter-spacing-standard"></iron-icon>
+      $i18n{letterSpacingStandardTitle}
+    </button>
+    <button class="dropdown-item" on-click="onLetterSpacingWideClick_">
+      <iron-icon class="button-image"
+      icon="read-anything:letter-spacing-wide"></iron-icon>
+      $i18n{letterSpacingWideTitle}
+    </button>
+    <button class="dropdown-item" on-click="onLetterSpacingVeryWideClick_">
+      <iron-icon class="button-image"
+      icon="read-anything:letter-spacing-very-wide"></iron-icon>
+      $i18n{letterSpacingVeryWideTitle}
     </button>
   </cr-action-menu>
 </div>

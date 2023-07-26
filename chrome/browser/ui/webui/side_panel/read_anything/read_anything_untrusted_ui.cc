@@ -68,6 +68,11 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"lineSpacingLooseTitle", IDS_READING_MODE_SPACING_COMBOBOX_LOOSE},
       {"lineSpacingVeryLooseTitle",
        IDS_READING_MODE_SPACING_COMBOBOX_VERY_LOOSE},
+      {"letterSpacingStandardTitle",
+       IDS_READING_MODE_SPACING_COMBOBOX_STANDARD},
+      {"letterSpacingWideTitle", IDS_READING_MODE_SPACING_COMBOBOX_WIDE},
+      {"letterSpacingVeryWideTitle",
+       IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
