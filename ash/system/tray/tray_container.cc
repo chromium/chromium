@@ -9,6 +9,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -91,9 +92,15 @@ void TrayContainer::SetSpacingBetweenChildren(int space_dip) {
 void TrayContainer::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
-  // We only add highlight border to the system tray when it is in tablet mode
-  // and not in app mode.
-  if (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+
+  // We only add highlight border to the system tray when the shlef background
+  // is transparent: 1)the shelf is in tablet mode but not in app mode OR 2)the
+  // shelf is in the non-logged in page.
+  if ((!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     return;
   }
 
@@ -111,14 +118,19 @@ void TrayContainer::OnPaint(gfx::Canvas* canvas) {
   const gfx::RoundedCornersF rounded_corners =
       tray_background_view_->GetRoundedCorners();
 
+  // The highlight border should only be applied to the out of shelf cases,
+  // which means there is no highlight border when the shelf is on the left or
+  // right. So here only the horizontal padding is handled when calculating the
+  // bounds.
+  const LayoutInputs new_layout_inputs = GetLayoutInputs();
+  const int padding = new_layout_inputs.status_area_hit_region_padding;
   views::HighlightBorder::PaintBorderToCanvas(
       canvas, *this,
-      gfx::Rect(gfx::PointAtOffsetFromOrigin(bounds_origin),
-                background_bounds.size()),
-      rounded_corners,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2);
+      gfx::Rect(gfx::PointAtOffsetFromOrigin(bounds_origin) +
+                    gfx::Vector2d(0, padding / 2),
+                gfx::Size(background_bounds.width(),
+                          background_bounds.height() - padding)),
+      rounded_corners, views::HighlightBorder::Type::kHighlightBorderNoShadow);
 }
 
 void TrayContainer::ChildPreferredSizeChanged(views::View* child) {

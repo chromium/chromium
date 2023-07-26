@@ -1134,9 +1134,18 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
   if (!widget) {
     return;
   }
+
+  // The shelf is not transparent when 1)the shelf is in app mode OR 2) the
+  // shelf is in the regular logged in page (not session blocked).
+  bool is_shelf_opaque =
+      (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked();
+  ui::ColorId non_active_color_id =
+      is_shelf_opaque ? cros_tokens::kCrosSysSystemOnBase
+                      : cros_tokens::kCrosSysSystemBaseElevated;
   layer()->SetColor(widget->GetColorProvider()->GetColor(
       active ? cros_tokens::kCrosSysSystemPrimaryContainer
-             : cros_tokens::kCrosSysSystemOnBase));
+             : non_active_color_id));
 }
 
 void TrayBackgroundView::AddRippleLayer() {
