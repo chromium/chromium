@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -41,6 +42,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -185,6 +187,22 @@ public class BookmarkFolderPickerMediatorTest {
         mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
                 mBookmarkImageFetcher, mUserBookmarkId, mFinishRunnable, mBookmarkUiPrefs, mModel,
                 mModelList, mAddNewFolderCoordinator);
+    }
+
+    @Test
+    public void testMoveFolder() {
+        mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
+                mBookmarkImageFetcher, mUserFolderId, mFinishRunnable, mBookmarkUiPrefs, mModel,
+                mModelList, mAddNewFolderCoordinator);
+        mMediator.populateFoldersForParentId(mMobileFolderId);
+
+        // Check that the UserFolder isn't a row since it should be filtered out because it's the
+        // same as the bookmark being moved.
+        for (ListItem item : mModelList) {
+            assertNotEquals(mUserFolderId,
+                    item.model.get(BookmarkFolderPickerRowProperties.ROW_COORDINATOR)
+                            .getBookmarkIdForTesting());
+        }
     }
 
     @Test

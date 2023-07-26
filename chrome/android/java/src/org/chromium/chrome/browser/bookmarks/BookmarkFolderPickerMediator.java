@@ -104,6 +104,10 @@ class BookmarkFolderPickerMediator {
             if (!childItem.isFolder()) {
                 continue;
             }
+            // Filter out the bookmark being moved.
+            if (childItem.getId().equals(mBookmarkId)) {
+                continue;
+            }
             mModelList.add(createFolderPickerRow(childItem));
         }
     }

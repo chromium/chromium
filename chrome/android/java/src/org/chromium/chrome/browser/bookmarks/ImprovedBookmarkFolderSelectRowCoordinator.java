@@ -81,4 +81,9 @@ public class ImprovedBookmarkFolderSelectRowCoordinator {
     public PropertyModel getModel() {
         return mModel;
     }
+
+    /** Returns the bookmark id currently assigned to the coordinator. */
+    public BookmarkId getBookmarkIdForTesting() {
+        return mBookmarkId;
+    }
 }
