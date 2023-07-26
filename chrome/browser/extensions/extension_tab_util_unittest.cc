@@ -114,6 +114,24 @@ TEST(ExtensionTabUtilTest, PrepareURLForNavigation) {
     ASSERT_FALSE(url.has_value());
     EXPECT_EQ(tabs_constants::kNoCrashBrowserError, url.error());
   }
+  // Hang URLs and other similar debug urls should also return false and set the
+  // error.
+  {
+    const std::string kHangURL("chrome://hang");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kHangURL, extension.get(), /*browser_context=*/nullptr);
+    ASSERT_FALSE(url.has_value());
+    EXPECT_EQ(tabs_constants::kNoCrashBrowserError, url.error());
+  }
+  // JavaScript URLs should return false and set the error.
+  {
+    const std::string kJavaScriptURL("javascript:alert('foo');");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kJavaScriptURL, extension.get(), /*browser_context=*/nullptr);
+    ASSERT_FALSE(url.has_value());
+    EXPECT_EQ(tabs_constants::kJavaScriptUrlsNotAllowedInExtensionNavigations,
+              url.error());
+  }
 }
 
 TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnDevtools) {

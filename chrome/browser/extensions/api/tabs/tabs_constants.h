@@ -110,7 +110,7 @@ extern const char kScreenshotsDisabledByDlp[];
 extern const char kCannotUpdateMuteCaptured[];
 extern const char kCannotDetermineLanguageOfUnloadedTab[];
 extern const char kMissingLockWindowFullscreenPrivatePermission[];
-extern const char kJavaScriptUrlsNotAllowedInTabsUpdate[];
+extern const char kJavaScriptUrlsNotAllowedInExtensionNavigations[];
 extern const char kBrowserWindowNotAllowed[];
 extern const char kLockedFullscreenModeNewTabError[];
 extern const char kGroupParamsError[];

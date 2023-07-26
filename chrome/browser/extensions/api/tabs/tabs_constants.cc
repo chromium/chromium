@@ -124,9 +124,9 @@ const char kCannotDetermineLanguageOfUnloadedTab[] =
 const char kMissingLockWindowFullscreenPrivatePermission[] =
     "Cannot lock window to fullscreen or close a locked fullscreen window "
     "without lockWindowFullscreenPrivate manifest permission";
-const char kJavaScriptUrlsNotAllowedInTabsUpdate[] =
-    "JavaScript URLs are not allowed in chrome.tabs.update. Use "
-    "chrome.tabs.executeScript instead.";
+const char kJavaScriptUrlsNotAllowedInExtensionNavigations[] =
+    "JavaScript URLs are not allowed in API based extension navigations. Use "
+    "chrome.scripting.executeScript instead.";
 const char kBrowserWindowNotAllowed[] = "Browser windows not allowed.";
 const char kLockedFullscreenModeNewTabError[] =
     "You cannot create new tabs while in locked fullscreen mode.";

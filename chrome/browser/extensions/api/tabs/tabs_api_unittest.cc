@@ -537,7 +537,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
       kFormatArgs, tab_id, "javascript:void(document.title = 'Won't work')");
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(tabs_constants::kJavaScriptUrlsNotAllowedInTabsUpdate, error);
+  EXPECT_EQ(tabs_constants::kJavaScriptUrlsNotAllowedInExtensionNavigations,
+            error);
 
   // Clean up.
   browser()->tab_strip_model()->CloseAllTabs();
