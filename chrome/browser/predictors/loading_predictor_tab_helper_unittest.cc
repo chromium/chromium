@@ -166,8 +166,8 @@ void LoadingPredictorTabHelperTest::NavigateAndCommitInFrame(
   auto navigation =
       content::NavigationSimulator::CreateRendererInitiated(GURL(url), rfh);
   // These tests simulate loading events manually.
-  // TODO(ahemery): Consider refactoring to rely on load events dispatched by
-  // NavigationSimulator.
+  // TODO(https://crbug.com/1467792): Consider refactoring to rely on load
+  // events dispatched by NavigationSimulator.
   navigation->SetKeepLoading(true);
   navigation->Start();
   navigation->Commit();
@@ -187,8 +187,8 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
       main_frame_url, main_rfh());
   // The problem here is that mock_collector_ is a strict mock, which expects
   // a particular set of loading events and fails when extra is present.
-  // TOOO(ahemery): Consider refactoring this to rely on loading events
-  // in NavigationSimulator.
+  // TOOO(https://crbug.com/1467792): Consider refactoring this to rely on
+  // loading events in NavigationSimulator.
   navigation->SetKeepLoading(true);
   ukm::SourceId ukm_source_id;
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, main_frame_url, _))
@@ -226,8 +226,8 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
   navigation->SetKeepLoading(true);
   // The problem here is that mock_collector_ is a strict mock, which expects
   // a particular set of loading events and fails when extra is present.
-  // TOOO(ahemery): Consider refactoring this to rely on loading events
-  // in NavigationSimulator.
+  // TOOO(https://crbug.com/1467792): Consider refactoring this to rely on
+  // loading events in NavigationSimulator.
   ukm::SourceId ukm_source_id;
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, url, _))
       .WillOnce(SaveArg<1>(&ukm_source_id));

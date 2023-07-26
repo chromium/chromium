@@ -89,8 +89,6 @@ class NavigationSimulator {
   static RenderFrameHost* GoBackAndFail(WebContents* web_contents,
                                         int net_error_code);
 
-  // TODO(clamy, ahemery): Add GoForwardAndFail() if it becomes needed.
-
   // Simulates a failed offset navigation. Returns the RenderFrameHost that
   // committed the error page for the navigation, or nullptr if the navigation
   // error did not result in an error page.
