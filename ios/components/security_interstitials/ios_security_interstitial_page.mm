@@ -75,6 +75,10 @@ bool IOSSecurityInterstitialPage::ShouldDisplayURL() const {
   return true;
 }
 
+std::string_view IOSSecurityInterstitialPage::GetInterstitialType() const {
+  return "";
+}
+
 std::u16string IOSSecurityInterstitialPage::GetFormattedHostName() const {
   return security_interstitials::common_string_util::GetFormattedHostName(
       request_url_);

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -59,6 +60,8 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     web_state_.SetBrowserState(chrome_browser_state_.get());
     SupervisedUserURLFilterTabHelper::CreateForWebState(&web_state_);
     SupervisedUserErrorContainer::CreateForWebState(&web_state_);
+    security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+        &web_state_);
 
     kids_chrome_management_client_ =
         std::make_unique<kids_management::KidsChromeManagementClientForTesting>(

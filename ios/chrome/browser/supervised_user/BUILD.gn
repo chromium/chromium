@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/test:test_support",
+    "//ios/components/security_interstitials",
     "//ios/web/public/test",
     "//services/network:test_support",
     "//testing/gtest",
