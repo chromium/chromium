@@ -245,14 +245,13 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -260,8 +259,7 @@
               "os": "Mac-10.15"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -771,14 +769,13 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -786,8 +783,7 @@
               "os": "Mac-10.15"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -1311,8 +1307,7 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1941,15 +1936,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -1957,8 +1951,7 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -2499,15 +2492,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -2515,8 +2507,7 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -3072,8 +3063,7 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3748,15 +3738,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -3764,8 +3753,7 @@
               "os": "Mac-12"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -4306,15 +4294,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -4322,8 +4309,7 @@
               "os": "Mac-12"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -4880,8 +4866,7 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5598,15 +5583,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -5614,8 +5598,7 @@
               "os": "Mac-13"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -6139,15 +6122,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -6155,8 +6137,7 @@
               "os": "Mac-13"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -6697,8 +6678,7 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7342,14 +7322,13 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -7357,8 +7336,7 @@
               "os": "Mac-13"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -7869,14 +7847,13 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -7884,8 +7861,7 @@
               "os": "Mac-13"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -8442,8 +8418,7 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -24878,14 +24853,13 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -24893,8 +24867,7 @@
               "os": "Mac-11"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -25388,14 +25361,13 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -25403,8 +25375,7 @@
               "os": "Mac-11"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -25912,8 +25883,7 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
-        "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -26502,14 +26472,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
         "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -26517,8 +26487,7 @@
               "os": "Mac-12"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -27041,14 +27010,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
         "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -27056,8 +27025,7 @@
               "os": "Mac-12"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -27596,7 +27564,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
         "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -28202,14 +28170,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
         "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -28217,8 +28185,7 @@
               "os": "Mac-13"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -28741,14 +28708,14 @@
       {
         "args": [
           "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
         "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -28756,8 +28723,7 @@
               "os": "Mac-13"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -29296,7 +29262,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
         "ci_only": true,
-        "experiment_percentage": 10,
+        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
