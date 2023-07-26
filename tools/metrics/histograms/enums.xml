@@ -60569,6 +60569,7 @@ from previous Chrome versions.
   <int value="-1678325491" label="AvifGainmapHdrImages:disabled"/>
   <int value="-1677715989" label="UnifiedConsent:disabled"/>
   <int value="-1677516670" label="PageInfoAboutThisSiteEn:enabled"/>
+  <int value="-1677087930" label="ClipboardHistoryUrlTitles:disabled"/>
   <int value="-1676256979"
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:enabled"/>
   <int value="-1675747412"
@@ -60951,6 +60952,7 @@ from previous Chrome versions.
   <int value="-1486521264" label="UseMediaHistoryStore:disabled"/>
   <int value="-1486198877" label="VrIconInDaydreamHome:disabled"/>
   <int value="-1485461805" label="EnterpriseReportingInBrowser:enabled"/>
+  <int value="-1484786356" label="ClipboardHistoryUrlTitles:enabled"/>
   <int value="-1484372060" label="BlockMigratedDefaultChromeAppSync:enabled"/>
   <int value="-1483720693" label="ChipLocationIconOverride:enabled"/>
   <int value="-1483451894" label="SystemNudgeV2:enabled"/>

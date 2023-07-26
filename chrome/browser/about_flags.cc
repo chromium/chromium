@@ -3077,6 +3077,8 @@ constexpr char kClipboardHistoryLongpressInternalName[] =
     "clipboard-history-longpress";
 constexpr char kClipboardHistoryRefreshInternalName[] =
     "clipboard-history-refresh";
+constexpr char kClipboardHistoryUrlTitlesInternalName[] =
+    "clipboard-history-url-titles";
 constexpr char kWelcomeScreenInternalName[] = "welcome-screen";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kEnableSuspendToDiskInternalName[] = "enable-suspend-to-disk";
@@ -8141,6 +8143,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClipboardHistoryRefreshName,
      flag_descriptions::kClipboardHistoryRefreshDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistoryRefresh)},
+    {kClipboardHistoryUrlTitlesInternalName,
+     flag_descriptions::kClipboardHistoryUrlTitlesName,
+     flag_descriptions::kClipboardHistoryUrlTitlesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kClipboardHistoryUrlTitles)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)

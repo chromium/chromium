@@ -1194,6 +1194,11 @@
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
     "expiry_milestone": 118
   },
+  {
+    "name": "clipboard-history-url-titles",
+    "owners": ["ckincaid@google.com", "multipaste@google.com"],
+    "expiry_milestone": 118
+  },
     {
     "name": "clipboard-maximum-age",
     "owners": ["pnoland", "chrome-mobile-search@google.com"],

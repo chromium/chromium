@@ -5540,6 +5540,13 @@ const char kClipboardHistoryRefreshDescription[] =
     "educational nudge, refreshed menu UI, and a clipboard history submenu "
     "embedded in context menus.";
 
+const char kClipboardHistoryUrlTitlesName[] =
+    "Show page titles for copied URLs in the clipboard history menu";
+const char kClipboardHistoryUrlTitlesDescription[] =
+    "When clipboard-history-refresh is also enabled, this flag enables an "
+    "annotation for copied URLs in the clipboard history menu: If the URL has "
+    "been visited, its page title will appear as part of the URL's menu item.";
+
 const char kComponentUpdaterTestRequestName[] =
     "Enable the component updater check 'test-request' parameter";
 const char kComponentUpdaterTestRequestDescription[] =

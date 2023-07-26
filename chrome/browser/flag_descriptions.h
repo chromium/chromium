@@ -3194,6 +3194,9 @@ extern const char kClipboardHistoryLongpressDescription[];
 extern const char kClipboardHistoryRefreshName[];
 extern const char kClipboardHistoryRefreshDescription[];
 
+extern const char kClipboardHistoryUrlTitlesName[];
+extern const char kClipboardHistoryUrlTitlesDescription[];
+
 extern const char kComponentUpdaterTestRequestName[];
 extern const char kComponentUpdaterTestRequestDescription[];
 
