@@ -44,7 +44,7 @@ cases = [
   ["/foo%41%7a", "/fooAz"],
   // Funny characters that are unescaped should be escaped
   ["/foo\u0009\u0091%91", "/foo%C2%91%91"],
-  // Invalid characters that are escaped should cause a failure.
+  // Null character that is escaped should not cause a failure.
   ["/foo%00%51", "/foo%00Q"],
   // Some characters should be passed through unchanged regardless of esc.
   ["/(%28:%3A%29)", "/(%28:%3A%29)"],
