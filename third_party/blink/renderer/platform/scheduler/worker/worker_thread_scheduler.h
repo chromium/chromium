@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_base.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_metrics_helper.h"
 
 namespace base {
 class LazyNow;
@@ -145,8 +144,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   scoped_refptr<base::SingleThreadTaskRunner> v8_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   SchedulingLifecycleState lifecycle_state_;
-
-  WorkerMetricsHelper worker_metrics_helper_;
 
   // This controller should be initialized before any TraceableVariables
   // because they require one to initialize themselves.

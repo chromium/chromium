@@ -612,21 +612,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="RendererScheduler.TaskDurationPerFrameOriginType2"
-    enum="RendererSchedulerFrameOriginType" expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Total cpu time (reported in full seconds) of renderer tasks split by per
-    frame origin type (main frame vs same-origin frame vs cross-origin frame).
-    Note that partial seconds are rounded up/down so that they average to the
-    correct value when many reports are added. For more details, check
-    base::ScaledLinearHistogram.
-
-    Note that this metric discards tasks longer than 30 seconds because they are
-    considered to be a result of measurement glitch.
-  </summary>
-</histogram>
-
 <histogram name="RendererSyncIPC.ElapsedTime" units="ms" expires_after="M85">
   <owner>ppi@chromium.org</owner>
   <summary>

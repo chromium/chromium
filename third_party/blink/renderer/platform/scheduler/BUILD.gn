@@ -165,8 +165,6 @@ blink_platform_sources("scheduler") {
     "worker/non_main_thread_task_queue.h",
     "worker/non_main_thread_web_scheduling_task_queue_impl.cc",
     "worker/non_main_thread_web_scheduling_task_queue_impl.h",
-    "worker/worker_metrics_helper.cc",
-    "worker/worker_metrics_helper.h",
     "worker/worker_scheduler_impl.cc",
     "worker/worker_scheduler_impl.h",
     "worker/worker_scheduler_proxy.cc",

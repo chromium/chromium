@@ -22,6 +22,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
@@ -30,7 +31,6 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 
 namespace blink {
 namespace scheduler {
@@ -111,14 +111,9 @@ WorkerThreadScheduler::WorkerThreadScheduler(
                    idle_helper_queue_->GetTaskQueue()),
       lifecycle_state_(proxy ? proxy->lifecycle_state()
                              : SchedulingLifecycleState::kNotThrottled),
-      worker_metrics_helper_(thread_type,
-                             GetHelper().HasCPUTimingForEachTask()),
       initial_frame_status_(proxy ? proxy->initial_frame_status()
                                   : FrameStatus::kNone),
       ukm_source_id_(proxy ? proxy->ukm_source_id() : ukm::kInvalidSourceId) {
-  if (proxy && proxy->parent_frame_type())
-    worker_metrics_helper_.SetParentFrameType(*proxy->parent_frame_type());
-
   if (thread_type == ThreadType::kDedicatedWorkerThread &&
       base::FeatureList::IsEnabled(kDedicatedWorkerThrottling)) {
     CreateBudgetPools();
@@ -209,7 +204,6 @@ void WorkerThreadScheduler::OnTaskCompleted(
 
   task_timing->RecordTaskEnd(lazy_now);
   DispatchOnTaskCompletionCallbacks();
-  worker_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 
   if (task_queue != nullptr)
     task_queue->OnTaskRunTimeReported(task_timing);
