@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -21,6 +22,15 @@ void TelemetryDiagnosticsRoutineServiceAsh::BindReceiver(
     mojo::PendingReceiver<crosapi::mojom::TelemetryDiagnosticRoutinesService>
         receiver) {
   receivers_.Add(this, std::move(receiver));
+}
+
+void TelemetryDiagnosticsRoutineServiceAsh::CreateRoutine(
+    crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
+    mojo::PendingReceiver<crosapi::mojom::TelemetryDiagnosticRoutineControl>
+        routine_receiver,
+    mojo::PendingRemote<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
+        observer) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace ash

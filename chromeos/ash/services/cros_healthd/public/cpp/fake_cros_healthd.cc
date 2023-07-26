@@ -815,4 +815,11 @@ void FakeCrosHealthd::ProbeMultipleProcessInfo(
       callback_delay_);
 }
 
+void FakeCrosHealthd::CreateRoutine(
+    mojom::RoutineArgumentPtr argument,
+    mojo::PendingReceiver<mojom::RoutineControl> pending_receiver,
+    mojo::PendingRemote<mojom::RoutineObserver> observer) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace ash::cros_healthd

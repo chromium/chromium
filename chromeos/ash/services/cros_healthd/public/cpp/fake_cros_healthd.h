@@ -340,6 +340,12 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       bool ignore_single_process_error,
       ProbeMultipleProcessInfoCallback callback) override;
 
+  // CrosHealthdRoutinesService overrides:
+  void CreateRoutine(
+      mojom::RoutineArgumentPtr argument,
+      mojo::PendingReceiver<mojom::RoutineControl> pending_receiver,
+      mojo::PendingRemote<mojom::RoutineObserver> observer) override;
+
   // Used as the response to any GetAvailableRoutines IPCs received.
   std::vector<mojom::DiagnosticRoutineEnum> available_routines_;
   // Used to store last created routine by any Run*Routine method.
