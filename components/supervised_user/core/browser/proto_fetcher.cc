@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -127,6 +128,63 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   return simple_url_loader;
 }
 
+// Encapsulates metric functionalities.
+class Metrics final {
+ public:
+  Metrics() = delete;
+  explicit Metrics(StringPiece basename) : basename_(basename) {}
+
+  void RecordStatus(ProtoFetcherStatus status) const {
+    UmaHistogramEnumeration(GetMetricKey("Status"), status.state());
+  }
+  void RecordLatency() const {
+    UmaHistogramTimes(GetMetricKey("Latency"), TimeTicks::Now() - start_time_);
+  }
+  void RecordStatusLatency(ProtoFetcherStatus status) const {
+    UmaHistogramTimes(GetMetricKey("Latency", ToMetricEnumLabel(status)),
+                      TimeTicks::Now() - start_time_);
+  }
+  void RecordHttpStatusOrNetError(ProtoFetcherStatus status) const {
+    CHECK(status.state() ==
+          ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+    UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
+                       status.http_status_or_net_error().value());
+  }
+
+ private:
+  std::string GetMetricKey(StringPiece id) const {
+    return JoinString({basename_, id}, ".");
+  }
+  std::string GetMetricKey(StringPiece id, StringPiece suffix) const {
+    return JoinString({basename_, id, suffix}, ".");
+  }
+
+  // The returned value must match one of the labels in
+  // chromium/src/tools/metrics/histograms/enums.xml://enum[@name='ProtoFetcherStatus'],
+  // and should be reflected in tokens in histogram defined for this fetcher.
+  // See example at
+  // tools/metrics/histograms/metadata/signin/histograms.xml://histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
+  static std::string ToMetricEnumLabel(ProtoFetcherStatus status) {
+    switch (status.state()) {
+      case ProtoFetcherStatus::OK:
+        return "NoError";
+      case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+        return "AuthError";
+      case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
+        return "HttpStatusOrNetError";
+      case ProtoFetcherStatus::INVALID_RESPONSE:
+        return "ParseError";
+      case ProtoFetcherStatus::DATA_ERROR:
+        return "DataError";
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  StringPiece basename_;
+  const TimeTicks start_time_{TimeTicks::Now()};
+};
+
 // A fetcher with underlying network::SharedURLLoaderFactory.
 // Internally, it's a two-phase process: first the access token is fetched, and
 // if applicable, the remote service is called and the response is processed.
@@ -165,31 +223,15 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   FetcherImpl& operator=(const FetcherImpl&) = delete;
 
  private:
-  void RecordStabilityMetrics(TimeDelta latency, ProtoFetcherStatus status) {
-    UmaHistogramEnumeration(GetMetricKey("Status"), status.state());
-    UmaHistogramTimes(GetMetricKey("Latency"), latency);
-    UmaHistogramTimes(GetMetricKey("Latency", status.ToMetricEnumLabel()),
-                      latency);
-  }
-
   void RecordMetrics(ProtoFetcherStatus status) {
-    TimeDelta latency = TimeTicks::Now() - start_time_;
-    RecordStabilityMetrics(latency, status);
+    metrics_.RecordStatus(status);
+    metrics_.RecordLatency();
+    metrics_.RecordStatusLatency(status);
 
     // Record additional metrics for various failures.
     if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
-      UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
-                         status.http_status_or_net_error().value());
+      metrics_.RecordHttpStatusOrNetError(status);
     }
-  }
-
-  std::string GetMetricKey(StringPiece metric_id) const {
-    return JoinString({config_.histogram_basename, metric_id}, ".");
-  }
-  std::string GetMetricKey(StringPiece metric_id,
-                           StringPiece metric_suffix) const {
-    return JoinString({config_.histogram_basename, metric_id, metric_suffix},
-                      ".");
   }
 
   // Launch of the fetch process.
@@ -275,8 +317,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
 
   const std::string payload_;
   const FetcherConfig config_;
-
-  const TimeTicks start_time_{TimeTicks::Now()};
+  const Metrics metrics_{config_.histogram_basename};
 };
 
 // Wraps FetcherImpl deferring its startup until explicitly invoked.
@@ -403,26 +444,6 @@ std::string ProtoFetcherStatus::ToString() const {
       return "ProtoFetcherStatus::INVALID_RESPONSE";
     case ProtoFetcherStatus::DATA_ERROR:
       return "ProtoFetcherStatus::DATA_ERROR";
-  }
-}
-
-// The returned value must match one of the labels in
-// chromium/src/tools/metrics/histograms/enums.xml://enum[@name='ProtoFetcherStatus'],
-// and should be reflected in tokens in histogram defined for this fetcher.
-// See example at
-// tools/metrics/histograms/metadata/signin/histograms.xml://histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
-std::string ProtoFetcherStatus::ToMetricEnumLabel() const {
-  switch (state_) {
-    case ProtoFetcherStatus::OK:
-      return "NoError";
-    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
-      return "AuthError";
-    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
-      return "HttpStatusOrNetError";
-    case ProtoFetcherStatus::INVALID_RESPONSE:
-      return "ParseError";
-    case ProtoFetcherStatus::DATA_ERROR:
-      return "DataError";
   }
 }
 

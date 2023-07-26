@@ -98,10 +98,6 @@ class ProtoFetcherStatus {
   // Returns a message describing the status.
   std::string ToString() const;
 
-  // Translate the status to metric enum label as defined in
-  // tools/metrics/histograms/enums.xml.
-  std::string ToMetricEnumLabel() const;
-
   State state() const;
   HttpStatusOrNetErrorType http_status_or_net_error() const;
   const class GoogleServiceAuthError& google_service_auth_error() const;
