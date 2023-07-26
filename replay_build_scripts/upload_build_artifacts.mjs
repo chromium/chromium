@@ -489,7 +489,9 @@ async function buildSymbolsArchive(
   fs.unlinkSync(jsonFile);
 }
 
-const buildIdExtension = process.env["BUILDKITE"]
-  ? "-buildkite"
-  : process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
+const buildIdExtension =
+  process.env["BUILDKITE_BRANCH"] !==
+  process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
+    ? "-dev"
+    : process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
 main({ buildIdExtension, driverRevision: process.env.DRIVER_REVISION });
