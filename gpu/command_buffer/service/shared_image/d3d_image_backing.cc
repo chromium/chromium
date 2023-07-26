@@ -860,7 +860,8 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(const wgpu::Device& device,
 
   ExternalImageDXGI* external_image = it->second.external_image.get();
   DCHECK(external_image);
-  WGPUTexture texture = external_image->BeginAccess(&descriptor);
+  wgpu::Texture texture =
+      wgpu::Texture::Acquire(external_image->BeginAccess(&descriptor));
   if (!texture) {
     DLOG(ERROR) << "Failed to begin access and produce WGPUTexture";
     dxgi_shared_handle_state_->EndAccessD3D12();
@@ -876,7 +877,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(const wgpu::Device& device,
     num_readers_++;
   }
 
-  return wgpu::Texture(texture);
+  return texture;
 }
 
 void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
