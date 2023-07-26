@@ -1058,6 +1058,7 @@ testcase.trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot =
     'copy',
     'zip-selection',
     'set-wallpaper',
+    'invoke-sharesheet',
   ];
   for (const action of infeasibleActions) {
     await remoteCall.waitForElement(

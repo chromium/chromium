@@ -2093,6 +2093,9 @@ CommandHandler.COMMANDS_['open-with'] = new (class extends FilesCommand {
 CommandHandler.COMMANDS_['invoke-sharesheet'] =
     new (class extends FilesCommand {
       execute(event, fileManager) {
+        if (CommandUtil.isOnTrashRoot(fileManager)) {
+          return;
+        }
         const entries = fileManager.selectionHandler.selection.entries;
         const launchSource = CommandUtil.getSharesheetLaunchSource(event);
         const dlpSourceUrls =
@@ -2110,6 +2113,11 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] =
 
       /** @override */
       canExecute(event, fileManager) {
+        if (CommandUtil.isOnTrashRoot(fileManager)) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+          return;
+        }
         const entries = fileManager.selectionHandler.selection.entries;
 
         if (!entries || entries.length === 0 ||
