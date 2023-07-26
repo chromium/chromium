@@ -161,6 +161,7 @@ TEST(LayoutLocaleTest, BreakKeyword) {
     const char* expected;
     const char* locale;
     LineBreakStrictness strictness;
+    bool use_phrase = false;
   } tests[] = {
       {nullptr, nullptr, LineBreakStrictness::kDefault},
       {"", "", LineBreakStrictness::kDefault},
@@ -170,13 +171,19 @@ TEST(LayoutLocaleTest, BreakKeyword) {
       {"ja@lb=normal", "ja", LineBreakStrictness::kNormal},
       {"ja@lb=strict", "ja", LineBreakStrictness::kStrict},
       {"ja@lb=loose", "ja", LineBreakStrictness::kLoose},
+      {"ja@lw=phrase", "ja", LineBreakStrictness::kDefault, true},
+      {"ja@lb=normal;lw=phrase", "ja", LineBreakStrictness::kNormal, true},
+      {"ja@lb=strict;lw=phrase", "ja", LineBreakStrictness::kStrict, true},
+      {"ja@lb=loose;lw=phrase", "ja", LineBreakStrictness::kLoose, true},
   };
   for (const auto& test : tests) {
     scoped_refptr<LayoutLocale> locale =
         LayoutLocale::CreateForTesting(AtomicString(test.locale));
-    EXPECT_EQ(test.expected, locale->LocaleWithBreakKeyword(test.strictness))
-        << String::Format("'%s' with line-break %d should be '%s'", test.locale,
-                          static_cast<int>(test.strictness), test.expected);
+    EXPECT_EQ(test.expected,
+              locale->LocaleWithBreakKeyword(test.strictness, test.use_phrase))
+        << String::Format("'%s' with line-break %d, phrase=%d should be '%s'",
+                          test.locale, static_cast<int>(test.strictness),
+                          static_cast<int>(test.use_phrase), test.expected);
   }
 }
 

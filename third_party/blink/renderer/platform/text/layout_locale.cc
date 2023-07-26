@@ -342,7 +342,8 @@ scoped_refptr<QuotesData> LayoutLocale::GetQuotesData() const {
 }
 
 AtomicString LayoutLocale::LocaleWithBreakKeyword(
-    LineBreakStrictness strictness) const {
+    LineBreakStrictness strictness,
+    bool use_phrase) const {
   if (string_.empty())
     return string_;
 
@@ -353,7 +354,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
 
   constexpr wtf_size_t kMaxLbValueLen = 6;
   constexpr wtf_size_t kMaxKeywordsLen =
-      /* strlen("@lb=") */ 4 + kMaxLbValueLen;
+      /* strlen("@lb=") */ 4 + kMaxLbValueLen + /* strlen("@lw=phrase") */ 10;
   class ULocaleKeywordBuilder {
    public:
     explicit ULocaleKeywordBuilder(const std::string& utf8_locale)
@@ -394,7 +395,8 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
     Vector<char> buffer_;
   } builder(string_);
 
-  if (builder.SetStrictness(strictness)) {
+  if (builder.SetStrictness(strictness) &&
+      (!use_phrase || builder.SetKeywordValue("lw", "phrase"))) {
     return builder.ToAtomicString();
   }
   NOTREACHED();

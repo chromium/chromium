@@ -92,6 +92,11 @@ enum class LineBreakType : uint8_t {
   // word-break:keep-all doesn't allow breaks between all kind of
   // letters/numbers except some south east asians'.
   kKeepAll,
+
+  // `lw=phrase`, which prioritize keeping natural phrases (of multiple words)
+  // together when breaking.
+  // https://www.unicode.org/reports/tr35/#UnicodeLineBreakWordIdentifier
+  kPhrase,
 };
 
 // Determines break opportunities around collapsible space characters (space,
@@ -360,10 +365,12 @@ inline const AtomicString& LazyLineBreakIterator::LocaleWithKeyword() const {
   if (!locale_with_keyword_) {
     if (!locale_) {
       locale_with_keyword_ = g_empty_atom;
-    } else if (strictness_ == LineBreakStrictness::kDefault) {
+    } else if (strictness_ == LineBreakStrictness::kDefault &&
+               break_type_ != LineBreakType::kPhrase) {
       locale_with_keyword_ = locale_->LocaleString();
     } else {
-      locale_with_keyword_ = locale_->LocaleWithBreakKeyword(strictness_);
+      locale_with_keyword_ = locale_->LocaleWithBreakKeyword(
+          strictness_, break_type_ == LineBreakType::kPhrase);
     }
     DCHECK(locale_with_keyword_);
   }

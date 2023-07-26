@@ -427,6 +427,7 @@ int LazyLineBreakIterator::NextBreakablePosition(int pos,
                                                  int len) const {
   switch (line_break_type) {
     case LineBreakType::kNormal:
+    case LineBreakType::kPhrase:
       return NextBreakablePosition<LineBreakType::kNormal>(pos, len);
     case LineBreakType::kBreakAll:
       return NextBreakablePosition<LineBreakType::kBreakAll>(pos, len);
@@ -493,6 +494,8 @@ std::ostream& operator<<(std::ostream& ostream, LineBreakType line_break_type) {
       return ostream << "BreakCharacter";
     case LineBreakType::kKeepAll:
       return ostream << "KeepAll";
+    case LineBreakType::kPhrase:
+      return ostream << "Phrase";
   }
   NOTREACHED();
   return ostream << "LineBreakType::" << static_cast<int>(line_break_type);

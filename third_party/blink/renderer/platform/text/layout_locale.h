@@ -74,7 +74,8 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   Hyphenation* GetHyphenation() const;
   scoped_refptr<QuotesData> GetQuotesData() const;
 
-  AtomicString LocaleWithBreakKeyword(LineBreakStrictness) const;
+  AtomicString LocaleWithBreakKeyword(LineBreakStrictness,
+                                      bool use_phrase = false) const;
 
   static scoped_refptr<LayoutLocale> CreateForTesting(const AtomicString&);
   static void SetHyphenationForTesting(const AtomicString&,
