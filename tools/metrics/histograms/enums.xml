@@ -83049,6 +83049,10 @@ Called by update_net_trust_anchors.py.-->
              version that supports passwords notes. Therefore, the metadata
              are cleared to enforce the initial sync flow and download any
              potential passwords notes on the server"/>
+  <int value="6"
+      label="Reading successful, but suspicious bulk deletions were detected.
+             To err on the side of safety, drop all password sync metadata
+             and start again."/>
 </enum>
 
 <enum name="PasswordSyncState">

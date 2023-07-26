@@ -204,6 +204,24 @@ BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
 BASE_DECLARE_FEATURE(kSyncEnableWalletMetadataInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableWalletOfferInTransportMode);
 
+// Flag to enable setting `deleted_by_version` on a `EntityMetadata`.
+BASE_DECLARE_FEATURE(kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion);
+
+// Flag to enable clean up of password deletions that may be unintentional.
+BASE_DECLARE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions);
+// The minimum number of deletions that can be considered a batch deletion.
+inline constexpr base::FeatureParam<int>
+    kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold{
+        &kSyncPasswordCleanUpAccidentalBatchDeletions,
+        "SyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold", 3};
+// The maximum time between earliest and latest deletion to be considered an
+// accidental batch deletion.
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kSyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold{
+        &kSyncPasswordCleanUpAccidentalBatchDeletions,
+        "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
+        base::Milliseconds(100)};
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

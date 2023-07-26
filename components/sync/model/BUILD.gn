@@ -78,5 +78,8 @@ static_library("model") {
     "//third_party/leveldatabase",
   ]
 
-  deps = [ "//components/keyed_service/core" ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/version_info",
+  ]
 }

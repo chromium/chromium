@@ -85,4 +85,8 @@ message EntityMetadata {
   // this proto prior to caching, to avoid the memory and I/O overhead of
   // dealing with an extra copy of the data. Introduced in M101.
   optional EntitySpecifics possibly_trimmed_base_specifics = 13;
+
+  // If the entity is deleted, this field will record the chromium version
+  // (e.g. 117.0.5875.1) that originated the deletion. Introduced in M117.
+  optional string deleted_by_version = 14;
 }

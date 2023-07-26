@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -209,6 +210,21 @@ PasswordForm MakeBlocklistedForm(const std::string& signon_realm,
   form.signon_realm = signon_realm;
   form.blocked_by_user = true;
   return form;
+}
+
+void AddDeletedMetadata(syncer::MetadataBatch* metadata_batch,
+                        int64_t modification_time,
+                        bool include_version) {
+  static int key_counter = 0;
+  std::string key = base::NumberToString(key_counter++);
+  sync_pb::EntityMetadata metadata;
+  metadata.set_is_deleted(true);
+  metadata.set_modification_time(modification_time);
+  if (include_version) {
+    metadata.set_deleted_by_version("117.0.5875.1");
+  }
+  auto metadata_ptr = std::make_unique<sync_pb::EntityMetadata>(metadata);
+  metadata_batch->AddMetadata(key, std::move(metadata_ptr));
 }
 
 // A mini database class the supports Add/Update/Remove functionality. It also
@@ -1797,6 +1813,244 @@ TEST_F(PasswordSyncBridgeTest,
                 ->TrimAllSupportedFieldsFromRemoteSpecifics(specifics)
                 .ByteSizeLong(),
             0u);
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldRemoveSyncMetadataForAccidentalBatchDeletionsIfFound) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncPasswordCleanUpAccidentalBatchDeletions);
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(true));
+
+  // There are `count_threshold` deletions all with the same timestamp.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+        int count_threshold =
+            syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold
+                .Get();
+        const int64_t kDeletionStartTime = 0;
+        for (int i = 0; i < count_threshold; ++i) {
+          AddDeletedMetadata(metadata_batch.get(), kDeletionStartTime, false);
+        }
+
+        return metadata_batch;
+      });
+
+  // The accidental batch deletions should've been cleaned up.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS));
+
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         mock_password_store_sync(), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SyncMetadataReadError2",
+      6,  // kPasswordsCleanupAccidentalBatchDeletions
+      1);
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldRemoveSyncMetadataForAccidentalBatchDeletionsIfMixedWithNonAccidentalDeletions) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncPasswordCleanUpAccidentalBatchDeletions);
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(true));
+
+  // There are accidental deletions between non-accidental deletions.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+
+        int64_t time_threshold =
+            syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold
+                .Get()
+                .InMilliseconds();
+        const int64_t kDeletionStartTime = 0;
+        // Non accidental.
+        AddDeletedMetadata(metadata_batch.get(), kDeletionStartTime, false);
+        // Accidental deletions within `time_threshold`.
+        AddDeletedMetadata(metadata_batch.get(),
+                           kDeletionStartTime + time_threshold / 2, false);
+        AddDeletedMetadata(metadata_batch.get(),
+                           kDeletionStartTime + time_threshold, false);
+        AddDeletedMetadata(metadata_batch.get(),
+                           kDeletionStartTime + time_threshold, false);
+        // Non accidental.
+        AddDeletedMetadata(metadata_batch.get(),
+                           kDeletionStartTime + 2 * time_threshold, false);
+
+        return metadata_batch;
+      });
+
+  // Since there were accidental batch deletions, the metadata should've been
+  // cleaned up even if there were non-accidental deletions too.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS));
+
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         mock_password_store_sync(), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SyncMetadataReadError2",
+      6,  // kPasswordsCleanupAccidentalBatchDeletions
+      1);
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataForAccidentalBatchDeletionsIfTooFewDeletions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncPasswordCleanUpAccidentalBatchDeletions);
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(true));
+
+  // Two batches of deletions where although the deletions are within
+  // `time_threshold`, the count is under `count_threshold`.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+
+        int count_threshold =
+            syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold
+                .Get();
+        int64_t time_threshold =
+            syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold
+                .Get()
+                .InMilliseconds();
+        const int64_t kBatchOneDeletionStartTime = 0;
+        for (int i = 0; i < count_threshold - 1; ++i) {
+          AddDeletedMetadata(metadata_batch.get(), kBatchOneDeletionStartTime,
+                             false);
+        }
+
+        // Ensure the second batch is sufficiently far away fom the first batch
+        // time wise.
+        const int64_t kBatchTwoDeletionStartTime =
+            kBatchOneDeletionStartTime + 2 * time_threshold;
+        for (int i = 0; i < count_threshold - 1; ++i) {
+          AddDeletedMetadata(metadata_batch.get(), kBatchTwoDeletionStartTime,
+                             false);
+        }
+
+        return metadata_batch;
+      });
+
+  // Since the batch deletions contain fewer than `count_threshold` deletions,
+  // no clean up of the metadata should occur.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
+
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      base::DoNothing());
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataForAccidentalBatchDeletionsIfVersionIncluded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncPasswordCleanUpAccidentalBatchDeletions);
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(true));
+
+  // There are `count_threshold` deletions all with the same timestamp, but they
+  // include the version number.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+
+        int count_threshold =
+            syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold
+                .Get();
+        const int64_t kDeletionTime = 0;
+        for (int i = 0; i < count_threshold; ++i) {
+          AddDeletedMetadata(metadata_batch.get(), kDeletionTime,
+                             /*include_version=*/true);
+        }
+
+        return metadata_batch;
+      });
+
+  // Since the batch deletions include the version number, they cannot be
+  // accidental since the bug was fixed since version nuumbers were introduced.
+  // No clean up of the metadata should occur.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
+
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      base::DoNothing());
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataForAccidentalBatchDeletionsIfFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kSyncPasswordCleanUpAccidentalBatchDeletions);
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(true));
+
+  // There are `count_threshold` deletions all with the same timestamp.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+
+        int count_threshold =
+            syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold
+                .Get();
+        for (int i = 0; i < count_threshold; ++i) {
+          AddDeletedMetadata(metadata_batch.get(), 0, false);
+        }
+
+        return metadata_batch;
+      });
+
+  // Feature was disabled, so no clean up of metadata should occur.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
+
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      base::DoNothing());
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataForAccidentalBatchDeletionsIfInNonAccountStore) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncPasswordCleanUpAccidentalBatchDeletions);
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(false));
+
+  // There are `count_threshold` deletions all with the same timestamp.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+        int count_threshold =
+            syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold
+                .Get();
+        for (int i = 0; i < count_threshold; ++i) {
+          AddDeletedMetadata(metadata_batch.get(), 0, false);
+        }
+        return metadata_batch;
+      });
+
+  // Non account stores were unaffected by possible accidental deletions, so no
+  // metadata should be cleaned up.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
+
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      base::DoNothing());
 }
 
 }  // namespace password_manager

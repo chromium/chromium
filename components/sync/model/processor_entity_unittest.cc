@@ -16,6 +16,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -697,6 +698,23 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
   EXPECT_EQ(
       specifics_for_caching.SerializeAsString(),
       entity->metadata().possibly_trimmed_base_specifics().SerializeAsString());
+}
+
+TEST_F(ProcessorEntityTest,
+       LocalDeletionRecordsVersionInfoOnlyIfFeatureIsEnabled) {
+  std::unique_ptr<ProcessorEntity> entity_without_version = CreateNew();
+  entity_without_version->RecordLocalDeletion();
+  EXPECT_FALSE(entity_without_version->metadata().has_deleted_by_version());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion},
+      {/* disabled_features */});
+  std::unique_ptr<ProcessorEntity> entity_with_version = CreateNew();
+  entity_with_version->RecordLocalDeletion();
+  std::string expected_version = std::string(version_info::GetVersionNumber());
+  EXPECT_EQ(expected_version,
+            entity_with_version->metadata().deleted_by_version());
 }
 
 }  // namespace syncer

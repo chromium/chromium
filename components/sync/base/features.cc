@@ -181,4 +181,12 @@ BASE_FEATURE(kSyncEnableWalletOfferInTransportMode,
              "SyncEnableWalletOfferInTransportMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion,
+             "SyncEntityMetadataRecordDeletedByVersionOnLocalDeletion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions,
+             "SyncPasswordCleanUpAccidentalBatchDeletions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

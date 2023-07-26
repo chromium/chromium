@@ -570,6 +570,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(specifics_hash);
   VISIT(base_specifics_hash);
   VISIT(possibly_trimmed_base_specifics);
+  VISIT(deleted_by_version);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {

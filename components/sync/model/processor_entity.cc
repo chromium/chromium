@@ -17,6 +17,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
+#include "components/version_info/version_info.h"
 
 namespace syncer {
 
@@ -218,6 +219,13 @@ bool ProcessorEntity::RecordLocalDeletion() {
   metadata_.set_is_deleted(true);
   metadata_.clear_specifics_hash();
   metadata_.clear_possibly_trimmed_base_specifics();
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion)) {
+    metadata_.set_deleted_by_version(
+        std::string(version_info::GetVersionNumber()));
+  }
+
   // Clear any cached pending commit data.
   commit_data_.reset();
   // Return true if server might know about this entity.
