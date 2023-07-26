@@ -130,10 +130,7 @@ source_set("common_source_set") {
     "//remoting/ios/facade",
   ]
 
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":disable_deprecated_declarations" ]
 }
 
 source_set("app_source_set") {
@@ -157,10 +154,7 @@ source_set("app_source_set") {
 
   # TODO(crbug.com/875022) fix for OpenGLES deprecation.
   defines = [ "GLES_SILENCE_DEPRECATION" ]
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":disable_deprecated_declarations" ]
 }
 
 ios_remoting_app_tmpl("ios_remoting_app") {

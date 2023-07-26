@@ -17,7 +17,6 @@ source_set("file_transfer") {
 
   if (is_mac) {
     sources += [ "file_chooser_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//ui/base" ]
     frameworks = [ "AppKit.framework" ]
   } else if (is_win) {

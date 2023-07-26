@@ -47,8 +47,6 @@ source_set("ios_core") {
     "GLKit.framework",
     "OpenGLES.framework",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("ios_core_unit_tests") {
@@ -65,8 +63,6 @@ source_set("ios_core_unit_tests") {
     ":ios_core",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   data = []
 }

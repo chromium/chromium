@@ -21,8 +21,6 @@ source_set("audio") {
   public_deps = [ "//remoting/proto" ]
 
   frameworks = [ "AudioToolbox.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -37,6 +35,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

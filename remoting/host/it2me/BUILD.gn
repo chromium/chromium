@@ -61,7 +61,6 @@ source_set("common") {
 
   if (is_mac) {
     sources += [ "it2me_confirmation_dialog_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {

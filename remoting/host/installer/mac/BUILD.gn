@@ -124,8 +124,6 @@ mac_app_bundle("remoting_host_uninstaller") {
     "Security.framework",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":remoting_host_uninstaller_resources",
     "//base",
