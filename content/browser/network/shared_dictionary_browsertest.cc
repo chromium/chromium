@@ -631,7 +631,6 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
       Shell* shell) {
     base::test::TestFuture<const std::vector<net::SharedDictionaryUsageInfo>&>
         result;
-    base::RunLoop loop;
     shell->web_contents()
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
