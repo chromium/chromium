@@ -4061,6 +4061,18 @@ class ContinuousOverviewAnimationTest : public OverviewTestBase {
     OverviewTestBase::SetUp();
   }
 
+  // If `complete_scroll` is false, end the scroll with the fingers still on the
+  // trackpad.
+  void ThreeFingerScroll(float x_offset, float y_offset, bool complete_scroll) {
+    GetEventGenerator()->ScrollSequence(
+        gfx::Point(), base::Milliseconds(5), x_offset, y_offset,
+        /*steps=*/100, /*fingers=*/3,
+        /*end_state=*/
+        complete_scroll
+            ? ui::test::EventGenerator::ScrollSequenceType::UpToFling
+            : ui::test::EventGenerator::ScrollSequenceType::ScrollOnly);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };

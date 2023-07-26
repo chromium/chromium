@@ -558,7 +558,8 @@ void EventGenerator::ScrollSequence(const gfx::Point& start,
                                     float x_offset,
                                     float y_offset,
                                     int steps,
-                                    int num_fingers) {
+                                    int num_fingers,
+                                    ScrollSequenceType end_state) {
   UpdateCurrentDispatcher(start);
 
   base::TimeTicks timestamp = ui::EventTimeForNow();
@@ -583,6 +584,12 @@ void EventGenerator::ScrollSequence(const gfx::Point& start,
                          dx, dy,
                          num_fingers);
     Dispatch(&move);
+  }
+
+  // End the scroll sequence early if we want to end with the fingers rested on
+  // the trackpad.
+  if (end_state == ScrollSequenceType::ScrollOnly) {
+    return;
   }
 
   ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START,
