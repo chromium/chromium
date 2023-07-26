@@ -1192,6 +1192,11 @@ BASE_FEATURE(kGlanceablesV2,
              "GlanceablesV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables glanceables on time management surface for trusted testers.
+BASE_FEATURE(kGlanceablesV2TrustedTesters,
+             "GlanceablesV2TrustedTesters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Gaia reauth endpoint.
 BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
@@ -3149,6 +3154,10 @@ bool AreGlanceablesEnabled() {
 
 bool AreGlanceablesV2Enabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2);
+}
+
+bool AreGlanceablesV2TrustedTestersEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesV2TrustedTesters);
 }
 
 bool IsHibernateEnabled() {
