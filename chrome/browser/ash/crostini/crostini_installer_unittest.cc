@@ -99,7 +99,7 @@ class CrostiniInstallerTest : public testing::Test {
   void SetOSRelease() {
     vm_tools::cicerone::OsRelease os_release;
     os_release.set_id("debian");
-    os_release.set_version_id("10");
+    os_release.set_version_id("11");
     ash::FakeCiceroneClient::Get()->set_lxd_container_os_release(os_release);
   }
 

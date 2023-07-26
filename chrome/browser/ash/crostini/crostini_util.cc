@@ -203,8 +203,9 @@ bool IsUninstallable(Profile* profile, const std::string& app_id) {
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
-  if (registration)
+  if (registration) {
     return registration->CanUninstall();
+  }
   return false;
 }
 
@@ -443,11 +444,13 @@ bool IsContainerVersionExpired(Profile* profile,
                                const guest_os::GuestId& container_id) {
   auto* value = GetContainerPrefValue(profile, container_id,
                                       guest_os::prefs::kContainerOsVersionKey);
-  if (!value)
+  if (!value) {
     return false;
+  }
 
   auto version = static_cast<ContainerOsVersion>(value->GetInt());
-  return version == ContainerOsVersion::kDebianStretch;
+  return version == ContainerOsVersion::kDebianStretch ||
+         version == ContainerOsVersion::kDebianBuster;
 }
 
 std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
