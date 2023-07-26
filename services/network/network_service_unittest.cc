@@ -44,6 +44,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/transport_security_state.h"
+#include "net/log/file_net_log_observer.h"
 #include "net/net_buildflags.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1168,7 +1169,8 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   base::File log_file(log_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(
-      std::move(log_file), net::NetLogCaptureMode::kDefault, std::move(dict));
+      std::move(log_file), net::FileNetLogObserver::kNoLimit,
+      net::NetLogCaptureMode::kDefault, std::move(dict));
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -1181,6 +1183,60 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
 
   base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
   ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
+}
+
+// Verifies that a passed net log file is successfully opened and sane data
+// written to it up until the max file size.
+TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath log_dir = temp_dir.GetPath();
+  base::FilePath log_path =
+      log_dir.Append(FILE_PATH_LITERAL("test_log_bounded.json"));
+
+  // For testing, have a max log size of 1 MB. 1024*1024 == 2^20 == left shift
+  // by 20 bits
+  const uint64_t kMaxSizeBytes = 1 << 20;
+
+  base::Value::Dict dict;
+
+  base::File log_file(log_path,
+                      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  network_service_->StartNetLog(std::move(log_file), kMaxSizeBytes,
+                                net::NetLogCaptureMode::kEverything,
+                                std::move(dict));
+  CreateNetworkContext();
+
+  // Through trial and error it was found that this looping navigation results
+  // in a ~2MB unbounded net-log file. Since our bounded net-log is limited to
+  // 1MB this is fine.
+
+  // This string is roughly 8KB;
+  const std::string kManyAs(8192, 'a');
+  for (int i = 0; i < 30; i++) {
+    LoadURL(test_server()->GetURL("/echo?" + kManyAs));
+    EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  }
+
+  // |log_file| is closed on destruction of the NetworkService.
+  Shutdown();
+
+  // |log_file| is closed on another thread, so have to wait for that to happen.
+  task_environment_.RunUntilIdle();
+
+  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+
+  base::File log_file_read(log_path,
+                           base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File::Info file_info;
+  log_file_read.GetInfo(&file_info);
+
+  // The max size is only a rough bound, so let's make sure the final file is
+  // within a reasonable range from our max. Let's say 10%.
+  const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.1;
+  const int64_t kMaxSizeLower = kMaxSizeBytes * 0.9;
+  EXPECT_GT(file_info.size, kMaxSizeLower);
+  EXPECT_LT(file_info.size, kMaxSizeUpper);
 }
 
 // Verifies that raw headers are only reported if requested.

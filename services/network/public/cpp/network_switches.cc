@@ -67,6 +67,10 @@ const char kLogNetLog[] = "log-net-log";
 // description of their meanings.
 const char kNetLogCaptureMode[] = "net-log-capture-mode";
 
+// Sets the maximum size, in megabytes. The log file can grow to before older
+// data is overwritten. Do not use this flag if you want an unlimited file size.
+const char kNetLogMaxSizeMb[] = "net-log-max-size-mb";
+
 // Causes SSL key material to be logged to the specified file for debugging
 // purposes. See
 // https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format

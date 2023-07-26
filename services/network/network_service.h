@@ -144,6 +144,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // mojom::NetworkService implementation:
   void SetParams(mojom::NetworkServiceParamsPtr params) override;
   void StartNetLog(base::File file,
+                   uint64_t max_total_size,
                    net::NetLogCaptureMode capture_mode,
                    base::Value::Dict constants) override;
   void AttachNetLogProxy(
@@ -220,6 +221,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
   void SetFirstPartySets(net::GlobalFirstPartySets sets) override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
+
+  void StartNetLogBounded(base::File file,
+                          uint64_t max_total_size,
+                          net::NetLogCaptureMode capture_mode,
+                          base::Value::Dict client_constants);
+
+  // Called after StartNetLogBounded() finishes creating a scratch dir.
+  void OnStartNetLogBoundedScratchDirectoryCreated(
+      base::File file,
+      uint64_t max_total_size,
+      net::NetLogCaptureMode capture_mode,
+      base::Value::Dict constants,
+      const base::FilePath& inprogress_dir_path);
+
+  void StartNetLogUnbounded(base::File file,
+                            net::NetLogCaptureMode capture_mode,
+                            base::Value::Dict client_constants);
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.
   std::unique_ptr<net::HttpAuthHandlerFactory> CreateHttpAuthHandlerFactory(
