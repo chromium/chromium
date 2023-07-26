@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
@@ -30,6 +31,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
+#include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -365,12 +368,23 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
   auto* report_scheduler = g_browser_process->browser_policy_connector()
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
+
+  auto* profile_report_scheduler =
+      enterprise_reporting::CloudProfileReportingServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui()))
+          ->report_scheduler();
+  CHECK(profile_report_scheduler);
+
   if (report_scheduler) {
-    report_scheduler->UploadFullReport(
+    const auto on_report_uploaded = base::BarrierClosure(
+        2, base::BindOnce(&PolicyUIHandler::OnReportUploaded,
+                          weak_factory_.GetWeakPtr(), callback_id));
+    report_scheduler->UploadFullReport(on_report_uploaded);
+    profile_report_scheduler->UploadFullReport(on_report_uploaded);
+  } else {
+    profile_report_scheduler->UploadFullReport(
         base::BindOnce(&PolicyUIHandler::OnReportUploaded,
                        weak_factory_.GetWeakPtr(), callback_id));
-  } else {
-    OnReportUploaded(callback_id);
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
