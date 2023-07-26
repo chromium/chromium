@@ -5,6 +5,7 @@
 #include "base/path_service.h"
 
 #include <unordered_map>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -274,14 +275,11 @@ bool PathService::OverrideAndCreateIfNeeded(int key,
 
   FilePath file_path = path;
 
-  // For some locations this will fail if called from inside the sandbox there-
-  // fore we protect this call with a flag.
-  if (create) {
-    // Make sure the directory exists. We need to do this before we translate
-    // this to the absolute path because on POSIX, MakeAbsoluteFilePath fails
-    // if called on a non-existent path.
-    if (!PathExists(file_path) && !CreateDirectory(file_path))
-      return false;
+  // Create the directory if requested by the caller. Do this before resolving
+  // `file_path` to an absolute path because on POSIX, MakeAbsoluteFilePath
+  // requires that the path exists.
+  if (create && !CreateDirectory(file_path)) {
+    return false;
   }
 
   // We need to have an absolute path.
@@ -298,7 +296,7 @@ bool PathService::OverrideAndCreateIfNeeded(int key,
   // on the value we are overriding, and are now out of sync with reality.
   path_data->cache.clear();
 
-  path_data->overrides[key] = file_path;
+  path_data->overrides[key] = std::move(file_path);
 
   return true;
 }
