@@ -7,9 +7,7 @@
 #include <cstddef>
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -181,7 +179,8 @@ void UpdateAttemptSucceededUma(
 }
 
 void UpdateFinalStatusUma(
-    const std::vector<RequestAndStatusList>& requests_and_statuses) {
+    const std::vector<RequestAndStatusList>& requests_and_statuses,
+    ConfigureDisplaysTask::Status status) {
   int mst_external_displays = 0;
   size_t total_external_displays = requests_and_statuses.size();
   for (auto& request_and_status : requests_and_statuses) {
@@ -204,6 +203,9 @@ void UpdateFinalStatusUma(
     base::UmaHistogramBoolean(uma_name_prefix + "FinalStatus",
                               request_and_status.second);
   }
+
+  base::UmaHistogramEnumeration("ConfigureDisplays.Modeset.FinalTaskStatus",
+                                status);
 
   base::UmaHistogramExactLinear(
       "ConfigureDisplays.Modeset.TotalExternalDisplaysCount",
@@ -388,7 +390,7 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
     if (last_successful_config_parameters_.empty()) {
       LOG(ERROR) << "Display configuration failed. No modeset was attempted.";
 
-      UpdateFinalStatusUma(final_requests_status_);
+      UpdateFinalStatusUma(final_requests_status_, task_status_);
       std::move(callback_).Run(task_status_);
       return;
     }
@@ -417,7 +419,7 @@ void ConfigureDisplaysTask::OnConfigured(bool config_success) {
     }
   }
 
-  UpdateFinalStatusUma(final_requests_status_);
+  UpdateFinalStatusUma(final_requests_status_, task_status_);
   std::move(callback_).Run(task_status_);
 }
 

@@ -18397,6 +18397,12 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="FAILURE_SNOOZE_PARAMS_PARSE"/>
 </enum>
 
+<enum name="ConfigureDisplaysTaskStatus">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Partial success (resolution downgraded)"/>
+</enum>
+
 <enum name="ConfusionMatrix">
   <int value="0" label="True Negative"/>
   <int value="1" label="False Negative"/>

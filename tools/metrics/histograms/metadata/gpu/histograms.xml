@@ -53,36 +53,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ConfigureDisplays.External.Modeset.RefreshRate" units="Hz"
-    expires_after="2024-04-01">
-  <obsolete>
-    Replaced by ConfigureDisplays.External.Modeset.Success.RefreshRate in M103.
-  </obsolete>
-  <owner>gildekel@chromium.org</owner>
-  <owner>chromeos-gfx-display@chromium.org</owner>
-  <summary>
-    Refresh rate of the mode for the display we're about to modeset. This is
-    recorded every time an external display is connected/disconnected, or when
-    the display mode of the external screen is about to change.
-  </summary>
-</histogram>
-
-<histogram name="ConfigureDisplays.External.Modeset.Resolution"
-    enum="DisplayResolution" expires_after="2024-04-01">
-  <obsolete>
-    Split into ConfigureDisplays.External.Modeset.OriginalRequest.Resolution and
-    ConfigureDisplays.External.Modeset.Success.Resolution in M103.
-  </obsolete>
-  <owner>gildekel@chromium.org</owner>
-  <owner>chromeos-gfx-display@chromium.org</owner>
-  <summary>
-    DisplayResolution of the mode for the external display we're about to
-    modeset. 0 means the display was powered off. This is recorded every time an
-    external display is connected/disconnected, or when the display mode of the
-    external screen is about to change.
-  </summary>
-</histogram>
-
 <histogram name="ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
     enum="BooleanSuccess" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
@@ -109,33 +79,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ConfigureDisplays.Internal.Modeset.RefreshRate" units="Hz"
-    expires_after="2024-04-01">
-  <obsolete>
-    Replaced by ConfigureDisplays.Internal.Modeset.Success.RefreshRate in M103.
-  </obsolete>
+<histogram name="ConfigureDisplays.Modeset.FinalTaskStatus"
+    enum="ConfigureDisplaysTaskStatus" expires_after="2024-07-01">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
-    Refresh rate of the mode for the display we're about to modeset. This is
-    recorded every time the internal display is powered on/off, or when an
-    external monitor is plugged in.
-  </summary>
-</histogram>
+    The final result of a configuration attempt across all displays. This is
+    recorded every time Chrome configures all connected displays, or fails to do
+    so after exhausting all available modes in one (or more) of the displays.
 
-<histogram name="ConfigureDisplays.Internal.Modeset.Resolution"
-    enum="DisplayResolution" expires_after="2024-04-01">
-  <obsolete>
-    Split into ConfigureDisplays.Internal.Modeset.OriginalRequest.Resolution and
-    ConfigureDisplays.Internal.Modeset.Success.Resolution in M103.
-  </obsolete>
-  <owner>gildekel@chromium.org</owner>
-  <owner>chromeos-gfx-display@chromium.org</owner>
-  <summary>
-    DisplayResolution of the mode for the internal display we're about to
-    modeset. 0 means the display was powered off. This is recorded every time
-    the internal display is powered on/off, or when an external monitor is
-    plugged in.
+    Partial success occurs when a configuration is successful, but not with the
+    requested resolution/refresh rate for one (or more) of the connected
+    displays (e.g. a display fails to modeset at 4k@60Hz, but succeeds at
+    1440p@60Hz).
   </summary>
 </histogram>
 
