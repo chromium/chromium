@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,6 +32,14 @@ scoped_refptr<const Extension> CreateReadingListExtension() {
   return ExtensionBuilder("Extension with readingList permission")
       .AddPermission("readingList")
       .Build();
+}
+
+void AddReadingListEntry(ReadingListModel* reading_list_model,
+                         const GURL& url,
+                         const std::string& title) {
+  reading_list_model->AddOrReplaceEntry(
+      url, title, reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
+      base::TimeDelta());
 }
 
 }  // namespace
@@ -156,9 +165,8 @@ TEST_F(ReadingListApiUnitTest, RemoveURL) {
 
   ReadingListLoadObserver(reading_list_model).Wait();
 
-  reading_list_model->AddOrReplaceEntry(
-      GURL("https://www.example.com"), "example of title",
-      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+  AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
+                      "example of title");
 
   // Verify that the entry has been added.
   EXPECT_EQ(reading_list_model->size(), 1u);
@@ -204,9 +212,8 @@ TEST_F(ReadingListApiUnitTest, UpdateEntryFeatures) {
 
   ReadingListLoadObserver(reading_list_model).Wait();
 
-  reading_list_model->AddOrReplaceEntry(
-      GURL("https://www.example.com"), "example of title",
-      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+  AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
+                      "example of title");
 
   // Verify that the entry has been added.
   EXPECT_EQ(reading_list_model->size(), 1u);
@@ -244,9 +251,8 @@ TEST_F(ReadingListApiUnitTest, UpdateEntryOnlyWithTheURL) {
 
   ReadingListLoadObserver(reading_list_model).Wait();
 
-  reading_list_model->AddOrReplaceEntry(
-      GURL("https://www.example.com"), "example of title",
-      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+  AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
+                      "example of title");
 
   // Verify that the entry has been added.
   EXPECT_EQ(reading_list_model->size(), 1u);
@@ -272,6 +278,117 @@ TEST_F(ReadingListApiUnitTest, UpdateEntryOnlyWithTheURL) {
   EXPECT_EQ(entry->URL(), url);
   EXPECT_EQ(entry->Title(), "example of title");
   EXPECT_FALSE(entry->IsRead());
+}
+
+// Test that it is possible to retrieve all the entries.
+TEST_F(ReadingListApiUnitTest, RetrieveAllEntries) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
+                      "example of title");
+  AddReadingListEntry(reading_list_model, GURL("https://www.example2.com"),
+                      "Title #2");
+
+  // Verify that the entries have been added.
+  EXPECT_EQ(reading_list_model->size(), 2u);
+
+  // Retrieve all the entries in the Reading List.
+  auto update_function = base::MakeRefCounted<ReadingListQueryFunction>();
+  update_function->set_extension(extension);
+  static constexpr char kArgs[] = "[{}]";
+
+  auto entries = api_test_utils::RunFunctionAndReturnSingleResult(
+      update_function.get(), kArgs, profile(),
+      api_test_utils::FunctionMode::kNone);
+
+  // Verify that all the entries were retrieved.
+  EXPECT_EQ(entries.value().GetList().size(), 2u);
+
+  // Verify that the size of the reading list model is still the same.
+  EXPECT_EQ(reading_list_model->size(), 2u);
+}
+
+// Test that it is possible to retrieve entries with certain features.
+TEST_F(ReadingListApiUnitTest, RetrieveCertainEntries) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
+                      "example of title");
+  AddReadingListEntry(reading_list_model, GURL("https://www.example2.com"),
+                      "Example");
+  AddReadingListEntry(reading_list_model, GURL("https://www.example3.com"),
+                      "Example");
+
+  // Verify that the entries have been added.
+  EXPECT_EQ(reading_list_model->size(), 3u);
+
+  // Retrieve entries whose title is "Example".
+  auto update_function = base::MakeRefCounted<ReadingListQueryFunction>();
+  update_function->set_extension(extension);
+  static constexpr char kArgs[] =
+      R"([{
+          "title": "Example"
+        }])";
+  auto entries = api_test_utils::RunFunctionAndReturnSingleResult(
+      update_function.get(), kArgs, profile(),
+      api_test_utils::FunctionMode::kNone);
+
+  // Verify that 2 entries were retrieved and that their title is "Example".
+  EXPECT_EQ(entries.value().GetList().size(), 2u);
+  static constexpr char kExpectedJson[] =
+      R"([{
+           "url": "https://www.example2.com/",
+           "title": "Example",
+           "hasBeenRead": false
+         },
+         {
+           "url": "https://www.example3.com/",
+           "title": "Example",
+           "hasBeenRead": false
+         }])";
+  EXPECT_THAT(entries.value().GetList(), base::test::IsJson(kExpectedJson));
+
+  // Verify that the size of the reading list model is still the same.
+  EXPECT_EQ(reading_list_model->size(), 3u);
+}
+
+// Test that it is possible not to retrieve entries.
+TEST_F(ReadingListApiUnitTest, NoEntriesRetrieved) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
+                      "example of title");
+
+  // Query for an entry.
+  auto update_function = base::MakeRefCounted<ReadingListQueryFunction>();
+  update_function->set_extension(extension);
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com",
+          "title": "Title",
+          "hasBeenRead": false
+        }])";
+  auto entries = api_test_utils::RunFunctionAndReturnSingleResult(
+      update_function.get(), kArgs, profile(),
+      api_test_utils::FunctionMode::kNone);
+
+  // Verify that no entries were retrieved.
+  EXPECT_EQ(entries.value().GetList().size(), 0u);
 }
 
 }  // namespace extensions

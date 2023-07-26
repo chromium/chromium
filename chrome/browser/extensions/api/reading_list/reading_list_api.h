@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_API_H_
 
 #include "base/scoped_observation.h"
+#include "chrome/common/extensions/api/reading_list.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "extensions/browser/extension_function.h"
@@ -94,6 +95,38 @@ class ReadingListUpdateEntryFunction : public ExtensionFunction,
       reading_list_observation_{this};
   raw_ptr<ReadingListModel> reading_list_model_;
   GURL url_;
+  absl::optional<std::string> title_;
+  absl::optional<bool> has_been_read_;
+};
+
+class ReadingListQueryFunction : public ExtensionFunction,
+                                 public ReadingListModelObserver {
+ public:
+  DECLARE_EXTENSION_FUNCTION("readingList.query", READINGLIST_QUERY)
+
+  ReadingListQueryFunction();
+  ReadingListQueryFunction(const ReadingListQueryFunction&) = delete;
+  ReadingListQueryFunction& operator=(const ReadingListQueryFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ReadingListQueryFunction() override;
+
+  // Returns the entries that match the provided features.
+  ResponseValue MatchEntries();
+
+  // Converts from ReadingListEntry to api::reading_list::ReadingListEntry.
+  api::reading_list::ReadingListEntry ParseEntry(const ReadingListEntry& entry);
+
+  // ReadingListModelObserver:
+  void ReadingListModelLoaded(const ReadingListModel* model) override;
+
+  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
+      reading_list_observation_{this};
+  raw_ptr<ReadingListModel> reading_list_model_;
+  absl::optional<GURL> url_;
   absl::optional<std::string> title_;
   absl::optional<bool> has_been_read_;
 };

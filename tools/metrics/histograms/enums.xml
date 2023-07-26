@@ -36947,6 +36947,7 @@ Called by update_extension_histograms.py.-->
   <int value="1805" label="READINGLIST_REMOVEENTRY"/>
   <int value="1806" label="PASSWORDSPRIVATE_FETCHFAMILYMEMBERS"/>
   <int value="1807" label="READINGLIST_UPDATEENTRY"/>
+  <int value="1808" label="READINGLIST_QUERY"/>
 </enum>
 
 <enum name="ExtensionIconState">

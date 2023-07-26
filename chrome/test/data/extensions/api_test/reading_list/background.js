@@ -68,7 +68,7 @@ chrome.test.runTests([
   },
 
   async function testUpdateEntryFunction() {
-    var entry = {
+    let entry = {
       url: 'https://www.example.com',
       title: 'Title',
       hasBeenRead: true
@@ -100,6 +100,53 @@ chrome.test.runTests([
     const entry = {url: 'chrome://example', title: 'example of title'};
     await chrome.test.assertPromiseRejects(
         readingList.updateEntry(entry), 'Error: URL is not supported.');
+    chrome.test.succeed();
+  },
+
+  async function testQueryFunction() {
+    let entry = {
+      url: 'https://www.example2.com',
+      title: 'Example',
+      hasBeenRead: false
+    };
+    readingList.addEntry(entry);
+    entry.url = 'https://www.example3.com';
+    readingList.addEntry(entry);
+
+    let query = {title: 'Example'};
+    let entries = await readingList.query(query);
+    chrome.test.assertEq(entries.length, 2);
+    const expectedResult = [
+      {
+        'url': 'https://www.example2.com/',
+        'title': 'Example',
+        'hasBeenRead': false
+      },
+      {
+        'url': 'https://www.example3.com/',
+        'title': 'Example',
+        'hasBeenRead': false
+      }
+    ];
+    chrome.test.assertEq(entries, expectedResult);
+
+    query.title = 'Null';
+    entries = await readingList.query(query);
+    chrome.test.assertEq(entries.length, 0);
+    chrome.test.succeed();
+  },
+
+  async function testQueryInvalidURLError() {
+    const entry = {url: 'Invalid URL', title: 'example of title'};
+    await chrome.test.assertPromiseRejects(
+        readingList.query(entry), 'Error: URL is not valid.');
+    chrome.test.succeed();
+  },
+
+  async function testQueryNotSupportedURLError() {
+    const entry = {url: 'chrome://example', title: 'example of title'};
+    await chrome.test.assertPromiseRejects(
+        readingList.query(entry), 'Error: URL is not supported.');
     chrome.test.succeed();
   },
 

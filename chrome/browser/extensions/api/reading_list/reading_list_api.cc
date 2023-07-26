@@ -4,10 +4,12 @@
 
 #include "chrome/browser/extensions/api/reading_list/reading_list_api.h"
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/common/extensions/api/reading_list.h"
+#include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "extensions/browser/extension_function.h"
@@ -185,6 +187,87 @@ ReadingListUpdateEntryFunction::UpdateEntriesInTheReadingList() {
   }
 
   return NoArguments();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////ReadingListQueryFunction////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+ReadingListQueryFunction::ReadingListQueryFunction() = default;
+ReadingListQueryFunction::~ReadingListQueryFunction() = default;
+
+ExtensionFunction::ResponseAction ReadingListQueryFunction::Run() {
+  auto params = api::reading_list::Query::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (params->info.url.has_value()) {
+    url_ = GURL(params->info.url.value());
+    if (!url_->is_valid()) {
+      return RespondNow(Error(reading_list_api_constants::kInvalidURLError));
+    }
+  }
+
+  title_ = params->info.title;
+  has_been_read_ = params->info.has_been_read;
+
+  reading_list_model_ =
+      ReadingListModelFactory::GetForBrowserContext(browser_context());
+
+  if (!reading_list_model_->loaded()) {
+    reading_list_observation_.Observe(reading_list_model_);
+    AddRef();
+    return RespondLater();
+  }
+
+  auto response = MatchEntries();
+  return RespondNow(std::move(response));
+}
+
+void ReadingListQueryFunction::ReadingListModelLoaded(
+    const ReadingListModel* model) {
+  reading_list_observation_.Reset();
+  auto response = MatchEntries();
+  Respond(std::move(response));
+  Release();  // Balanced in Run().
+}
+
+ExtensionFunction::ResponseValue ReadingListQueryFunction::MatchEntries() {
+  if (url_.has_value() && !reading_list_model_->IsUrlSupported(url_.value())) {
+    return Error(reading_list_api_constants::kNotSupportedURLError);
+  }
+
+  base::flat_set<GURL> urls = reading_list_model_->GetKeys();
+  std::vector<api::reading_list::ReadingListEntry> matching_entries;
+
+  for (const auto& url : urls) {
+    scoped_refptr<const ReadingListEntry> entry =
+        reading_list_model_->GetEntryByURL(url);
+
+    if (url_.has_value() && entry->URL() != url_) {
+      continue;
+    }
+    if (title_.has_value() && entry->Title() != title_) {
+      continue;
+    }
+    if (has_been_read_.has_value() && entry->IsRead() != has_been_read_) {
+      continue;
+    }
+    matching_entries.emplace_back(ParseEntry(*entry));
+  }
+
+  return ArgumentList(
+      api::reading_list::Query::Results::Create(std::move(matching_entries)));
+}
+
+api::reading_list::ReadingListEntry ReadingListQueryFunction::ParseEntry(
+    const ReadingListEntry& entry) {
+  api::reading_list::ReadingListEntry reading_list_entry;
+
+  reading_list_entry.url = entry.URL().spec();
+  reading_list_entry.title = entry.Title();
+  reading_list_entry.has_been_read = entry.IsRead();
+
+  return reading_list_entry;
 }
 
 }  // namespace extensions
