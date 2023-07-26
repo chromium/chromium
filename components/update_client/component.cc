@@ -129,16 +129,17 @@ void InstallOnBlockingTaskRunner(
     scoped_refptr<CrxInstaller> installer,
     CrxInstaller::ProgressCallback progress_callback,
     InstallOnBlockingTaskRunnerCompleteCallback callback) {
-  CHECK(base::DirectoryExists(unpack_path));
+  VLOG_IF(1, !base::DirectoryExists(unpack_path))
+      << unpack_path << " does not exist";
 
-  // Acquire the ownership of the |unpack_path|.
   base::ScopedTempDir unpack_path_owner;
   std::ignore = unpack_path_owner.Set(unpack_path);
 
   if (!base::WriteFile(
           unpack_path.Append(FILE_PATH_LITERAL("manifest.fingerprint")),
           fingerprint)) {
-    const CrxInstaller::Result result(InstallError::FINGERPRINT_WRITE_FAILED);
+    const CrxInstaller::Result result(InstallError::FINGERPRINT_WRITE_FAILED,
+                                      logging::GetLastSystemErrorCode());
     main_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), ErrorCategory::kInstall,
