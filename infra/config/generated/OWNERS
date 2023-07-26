@@ -1,2 +1,21 @@
-# Any OWNER of starlark files should be an owner of generated code
-*
+# For most generated files, any OWNER of starlark files should be an owner of
+# the generated configs. cq-usage and sheriff-rotations are both "set noparent",
+# so setting owners for them here would be moot.
+per-file health-specs/...=*
+per-file luci/...=*
+per-file *.md=*
+per-file *.pyl=*
+
+# These files are synced to //testing/buildbot to be used as inputs to
+# //testing/buildbot/generate_buildbot_json.py, see comment for *.pyl owner in
+# //testing/buildbot/OWNERS for reasoning here.
+per-file testing/*.pyl=*
+
+# For the builders directory, we only want to enable changes for everyone to the
+# properties.json files, which would require an owner review for some .star file
+# that resulted in the change. Once the targets spec .json files are being
+# generated, this will prevent being able to modify files in
+# //infra/config/targets that modifies the generated targets spec .json files
+# without requiring an owner review. Directives will be added to enable those
+# json files to be modified by the appropriate owners.
+per-file builders/*/*/properties.json=*
