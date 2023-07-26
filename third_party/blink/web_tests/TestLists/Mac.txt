@@ -928,8 +928,6 @@ http/tests/devtools/tracing/frame-model-instrumentation.js
 http/tests/devtools/tracing/timeline-js/timeline-gc-event.js
 http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js
 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js
-http/tests/devtools/tracing/timeline-paint/timeline-paint.js
-http/tests/devtools/tracing/timeline-paint/timeline-pre-paint.js
 http/tests/dom/raf-throttling-out-of-view-cross-origin-page.html
 http/tests/html/validation-bubble-oopif-clip.html
 http/tests/images/document-policy-lossy-images-max-bpp.php

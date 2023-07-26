@@ -1160,10 +1160,7 @@ http/tests/devtools/tracing/timeline-misc/timeline-model.js
 http/tests/devtools/tracing/timeline-misc/timeline-scheduler-posttask.js
 http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js
 http/tests/devtools/tracing/timeline-paint/layer-tree.js
-http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js
 http/tests/devtools/tracing/timeline-script-parse.js
-http/tests/devtools/tracing/timeline-style/timeline-recalculate-styles.js
-http/tests/devtools/tracing/timeline-time/timeline-time-stamp.js
 http/tests/devtools/tracing/tracing-record-input-events.js
 http/tests/devtools/tracing/worker-js-frames.js
 http/tests/devtools/unit/datagrid-editable-longtext.js
@@ -1251,7 +1248,6 @@ http/tests/inspector-protocol/tracing/network-requests.js
 http/tests/inspector-protocol/tracing/page-load-metrics.js
 http/tests/inspector-protocol/tracing/prerender.js
 http/tests/inspector-protocol/tracing/rendering.js
-http/tests/inspector-protocol/tracing/timeline-timer-fired-from-eval-call-site.js
 http/tests/inspector-protocol/tracing/user-marks.js
 http/tests/inspector-protocol/webauthn/webauthn-get-credentials.js
 http/tests/intersection-observer/cross-origin-iframe-with-nesting.html

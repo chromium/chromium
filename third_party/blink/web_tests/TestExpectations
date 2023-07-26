@@ -3856,9 +3856,6 @@ crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/frame-model-instru
 crbug.com/922951 [ Release Win ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-record-reload.js [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass Timeout ]
 
-# Flaky devtools test for recalculating styles.
-crbug.com/1018177 http/tests/devtools/tracing/timeline-style/timeline-recalculate-styles.js [ Failure Pass ]
-
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2019-02-01, 2019-02-19
@@ -4215,7 +4212,6 @@ crbug.com/1058073 [ Mac11 Release ] http/tests/devtools/service-workers/sw-navig
 crbug.com/1058073 [ Mac11-arm64 Release ] http/tests/devtools/service-workers/sw-navigate-useragent.js [ Failure Pass ]
 crbug.com/1058073 [ Mac12 ] http/tests/devtools/service-workers/sw-navigate-useragent.js [ Failure Pass ]
 crbug.com/1058073 [ Mac12-arm64 Release ] http/tests/devtools/service-workers/sw-navigate-useragent.js [ Failure Pass ]
-crbug.com/1058137 virtual/threaded/http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Failure Pass ]
 
 # Ecosystem-Infra Sheriff 2020-03-04
 crbug.com/1394256 external/wpt/webaudio/the-audio-api/the-audioworklet-interface/suspended-context-messageport.https.html [ Crash Failure ]
@@ -4355,13 +4351,7 @@ crbug.com/1105271 [ Mac ] scrollbars/custom-scrollbar-adjust-on-inactive-pseudo.
 # This test fails due to the linked bug since input is now routed through the compositor.
 crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
-# Sheriff 2020-07-22
-
-# Failing on Webkit Linux Leak
-crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Failure Pass ]
-
 # Sheriff 2020-07-23
-
 crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Failure Pass ]
 
 # Sheriff 2020-08-03
@@ -5036,9 +5026,6 @@ crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image
 # Sheriff 2021-10-19
 crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Failure Pass ]
 crbug.com/1259277 fast/events/message-port-multi.html [ Crash Failure Pass Timeout ]
-
-# Sheriff 2021-10-26
-crbug.com/1263732 http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js [ Failure Pass ]
 
 # Sheriff 2021-10-29
 crbug.com/1264670 [ Linux ] http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure Pass ]
