@@ -6696,3 +6696,6 @@ crbug.com/1455984 external/wpt/longtask-timing/longtask-attributes.html [ Failur
 
 # This test is unreliable because of delayed update of history.length during cross-document navigation.
 crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
+
+# Gardener 2023-07-11 (Merged to M116 - 2023-07-25)
+crbug.com/1463964 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-about-blank.https.window.html [ Crash Failure Pass Timeout ]
