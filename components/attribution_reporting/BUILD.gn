@@ -18,6 +18,8 @@ mojom("mojom") {
   # Used by Blink, so requires legacy JS bindings.
   generate_legacy_js_bindings = true
   generate_java = true
+
+  disallow_interfaces = true
 }
 
 component("attribution_reporting") {
@@ -174,6 +176,7 @@ mojom("registration_mojom") {
   generate_java = true
   webui_module_path = "/"
   use_typescript_sources = true
+  disallow_interfaces = true
 
   # Used by Blink, so requires legacy JS bindings.
   generate_legacy_js_bindings = true
@@ -321,4 +324,6 @@ mojom("source_type_mojom") {
   sources = [ "source_type.mojom" ]
   webui_module_path = "/"
   use_typescript_sources = true
+  disallow_interfaces = true
+  generate_java = false
 }
