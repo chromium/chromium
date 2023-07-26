@@ -31,13 +31,27 @@ namespace extensions {
 class UserScript {
  public:
   // The file extension for standalone user scripts.
-  static const char kFileExtension[];
+  static constexpr const char kFileExtension[] = "user.js";
 
-  // The prefix for all generated user script IDs (i.e. the ID is not provided
-  // by the extension).
-  static const char kGeneratedIDPrefix;
+  // The first character for all user script IDs. IDs provided by an extension
+  // should never start with this character.
+  static constexpr const char kReservedScriptIDPrefix = '_';
+
+  // The prefix for all manifest content script IDs and IDs generated through
+  // `GenerateUserScriptID`.
+  static constexpr const char kManifestContentScriptPrefix[] = "_mc_";
+
+  // The prefix for all dynamic content scripts registered through the scripting
+  // API.
+  static constexpr const char kDynamicContentScriptPrefix[] = "_dc_";
+
+  // The prefix for all user scripts registered through the userScripts API.
+  static constexpr const char kDynamicUserScriptPrefix[] = "_du_";
 
   static std::string GenerateUserScriptID();
+
+  // Removes any appended prefix from the given `script_id`.
+  static std::string TrimPrefixFromScriptID(const std::string& script_id);
 
   // Check if a URL should be treated as a user script and converted to an
   // extension.
@@ -47,8 +61,20 @@ class UserScript {
   // `can_execute_script_everywhere` is true, this will return ALL_SCHEMES.
   static int ValidUserScriptSchemes(bool can_execute_script_everywhere = false);
 
-  // Returns if a user script's ID is generated.
-  static bool IsIDGenerated(const std::string& id);
+  // Denotes the type/origin of this script.
+  enum class Source {
+    // The script was parsed from an extension's manifest entry.
+    kStaticContentScript,
+
+    // The script was created through the scripting API.
+    kDynamicContentScript,
+
+    // The script was created through the userScripts API.
+    kDynamicUserScript,
+
+    // The script was created for a webUI.
+    kWebUIScript,
+  };
 
   // Holds script file info.
   class File {
@@ -218,6 +244,13 @@ class UserScript {
     execution_world_ = world;
   }
 
+  // Returns the script's ID without the appended prefix.
+  std::string GetIDWithoutPrefix() const;
+
+  // Returns the type of this script, which is derived from examining the
+  // HostID and the prefix of the ID.
+  Source GetSource() const;
+
   // Returns true if the script should be applied to the specified URL, false
   // otherwise.
   bool MatchesURL(const GURL& url) const;
@@ -236,9 +269,6 @@ class UserScript {
   // because presumably we were the one that pickled it, and we did it
   // correctly.
   void Unpickle(const base::Pickle& pickle, base::PickleIterator* iter);
-
-  // Returns if this script's ID is generated.
-  bool IsIDGenerated() const;
 
  private:
   // base::Pickle helper functions used to pickle the individual types of

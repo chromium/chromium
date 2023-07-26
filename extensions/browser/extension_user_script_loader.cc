@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
@@ -50,6 +51,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern_set.h"
+#include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/common/utils/extension_types_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -351,10 +353,16 @@ void LoadUserScripts(
       }
     }
 
-    if (script->IsIDGenerated()) {
-      manifest_script_length += script_files_length;
-    } else {
-      dynamic_script_length += script_files_length;
+    switch (script->GetSource()) {
+      case UserScript::Source::kStaticContentScript:
+        manifest_script_length += script_files_length;
+        break;
+      case UserScript::Source::kDynamicContentScript:
+      case UserScript::Source::kDynamicUserScript:
+        dynamic_script_length += script_files_length;
+        break;
+      case UserScript::Source::kWebUIScript:
+        NOTREACHED();
     }
   }
 
@@ -382,27 +390,40 @@ void LoadScriptsOnFileTaskRunner(
                                 std::move(memory)));
 }
 
+// Converts the list of values in `list` to a UserScriptList.
 UserScriptList ConvertValueToScripts(const Extension& extension,
                                      const base::Value::List& list) {
   const int valid_schemes = UserScript::ValidUserScriptSchemes(
       scripting::kScriptsCanExecuteEverywhere);
 
   UserScriptList scripts;
+  bool script_without_prefix_retrieved = false;
   for (const base::Value& value : list) {
     std::u16string error;
     std::unique_ptr<api::content_scripts::ContentScript> content_script =
         api::content_scripts::ContentScript::FromValueDeprecated(value, &error);
 
-    if (!content_script)
+    if (!content_script) {
       continue;
+    }
 
-    std::unique_ptr<UserScript> script = std::make_unique<UserScript>();
     const auto& dict = value.GetDict();
     auto* id = dict.FindString(scripting::kId);
-    if (!id)
+    if (!id || id->empty()) {
       continue;
+    }
 
-    script->set_id(*id);
+    auto script = std::make_unique<UserScript>();
+
+    // If a UserScript does not have a prefixed ID, then we can assume it's a
+    // dynamic content script. as is the case historically.
+    // TODO(crbug.com/1385165): Remove handling code for un-prefixed IDs once
+    // all UserScript IDs have been migrated to using prefixes.
+    bool is_id_prefixed = (*id)[0] == UserScript::kReservedScriptIDPrefix;
+    script->set_id(is_id_prefixed ? *id
+                                  : scripting::CreateDynamicScriptID(*id));
+    script_without_prefix_retrieved |= is_id_prefixed;
+
     script->set_host_id(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id()));
 
@@ -432,6 +453,9 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
     scripts.push_back(std::move(script));
   }
 
+  base::UmaHistogramBoolean(
+      "Extensions.ContentScripts.ScriptsWithoutPrefixRetrieved",
+      script_without_prefix_retrieved);
   return scripts;
 }
 
@@ -737,6 +761,10 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
   if (value && value->is_list()) {
     UserScriptList dynamic_scripts =
         ConvertValueToScripts(*extension, value->GetList());
+
+    // TODO(crbug.com/1385165): Write back `dynamic_scripts` into the StateStore
+    // if scripts in the StateStore do not have prefixed IDs.
+
     scripts.insert(scripts.end(),
                    std::make_move_iterator(dynamic_scripts.begin()),
                    std::make_move_iterator(dynamic_scripts.end()));

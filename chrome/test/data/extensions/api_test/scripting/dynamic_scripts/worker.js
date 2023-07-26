@@ -187,7 +187,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.registerContentScripts(scripts),
-        `Error: Content script's ID must not be empty`);
+        `Error: Script's ID must not be empty`);
 
     chrome.test.succeed();
   },
@@ -202,7 +202,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.registerContentScripts(scripts),
-        `Error: Content script's ID '${scriptId}' must not start with '_'`);
+        `Error: Script's ID '${scriptId}' must not start with '_'`);
 
     chrome.test.succeed();
   },
@@ -399,7 +399,7 @@ chrome.test.runTests([
     const scriptId = '_manifest_only';
     await chrome.test.assertPromiseRejects(
         chrome.scripting.unregisterContentScripts({ids: [scriptId]}),
-        `Error: Content script's ID '${scriptId}' must not start with '_'`);
+        `Error: Script's ID '${scriptId}' must not start with '_'`);
     chrome.test.succeed();
   },
 
@@ -519,7 +519,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.updateContentScripts(updatedScripts),
-        `Error: Content script with ID '${
+        `Error: Script with ID '${
             nonexistentScriptId}' does not exist or is not fully registered`);
 
     const expectedScripts = [{

@@ -394,6 +394,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ContentScripts.ScriptsWithoutPrefixRetrieved"
+    enum="Boolean" expires_after="2024-07-02">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logged when at least one of an extension's dynamic content scripts is
+    retrieved from the StateStore and the script's id is not prefixed, so a
+    prefix will be added, since content script Objects should have a prefix to
+    their ids to indicate their source. Will be removed if this histogram is not
+    emitted for an extended period of time.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallResult"
     enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>vkovalova@google.com</owner>

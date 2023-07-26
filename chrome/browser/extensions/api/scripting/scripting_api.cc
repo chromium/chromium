@@ -21,6 +21,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
+#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
@@ -60,6 +61,45 @@ constexpr char kFilesExceededSizeLimitError[] =
 // *actually* inject before page load, but it will at least inject "soon".
 constexpr mojom::RunLocation kCSSRunLocation =
     mojom::RunLocation::kDocumentStart;
+
+// Returns if the extension provided `script_id` (without an internal UserScript
+// prefix) is valid and populates `error` if invalid.
+bool IsScriptIDValid(const std::string& script_id, std::string* error) {
+  if (script_id.empty()) {
+    *error = "Script's ID must not be empty";
+    return false;
+  }
+
+  if (script_id[0] == UserScript::kReservedScriptIDPrefix) {
+    *error = base::StringPrintf("Script's ID '%s' must not start with '%c'",
+                                script_id.c_str(),
+                                UserScript::kReservedScriptIDPrefix);
+    return false;
+  }
+
+  return true;
+}
+
+// Iterates over `scripts` and adds a prefix to each script's id to indicate
+// that the script is a dynamic content script. Returns false and populates
+// `error` if any extension provided id in `scripts` is invalid. While this
+// might result in only some of the ids in `scripts` being modified, this should
+// have no effect on API calls as the API method handler will return with
+// `error`.
+bool AddDynamicScriptPrefixToScriptIDs(
+    std::vector<api::scripting::RegisteredContentScript>& scripts,
+    std::string* error) {
+  CHECK(error);
+  for (auto& script : scripts) {
+    if (!IsScriptIDValid(script.id, error)) {
+      return false;
+    }
+
+    script.id = scripting::CreateDynamicScriptID(script.id);
+  }
+
+  return true;
+}
 
 // Converts the given `style_origin` to a CSSOrigin.
 mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
@@ -531,6 +571,7 @@ ValidateContentScriptsResult ValidateParsedScriptsOnFileThread(
 api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
     const UserScript& script) {
   api::scripting::RegisteredContentScript script_info;
+  CHECK_EQ(UserScript::Source::kDynamicContentScript, script.GetSource());
   script_info.id = script.id();
 
   script_info.matches.emplace();
@@ -936,6 +977,12 @@ ScriptingRegisterContentScriptsFunction::Run() {
 
   std::vector<api::scripting::RegisteredContentScript>& scripts =
       params->scripts;
+  std::string error;
+  // Add the prefix for dynamic content scripts onto the IDs of all scripts in
+  // `scripts` before continuing.
+  if (!AddDynamicScriptPrefixToScriptIDs(scripts, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
 
   ExtensionUserScriptLoader* loader =
       ExtensionSystem::Get(browser_context())
@@ -943,20 +990,14 @@ ScriptingRegisterContentScriptsFunction::Run() {
           ->GetUserScriptLoaderForExtension(extension()->id());
   std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
   std::set<std::string> new_script_ids;
+
   for (const auto& script : scripts) {
-    if (script.id.empty())
-      return RespondNow(Error("Content script's ID must not be empty"));
-
-    if (script.id[0] == UserScript::kGeneratedIDPrefix) {
-      return RespondNow(Error(base::StringPrintf(
-          "Content script's ID '%s' must not start with '%c'",
-          script.id.c_str(), UserScript::kGeneratedIDPrefix)));
-    }
-
     if (base::Contains(existing_script_ids, script.id) ||
         base::Contains(new_script_ids, script.id)) {
-      return RespondNow(Error(
-          base::StringPrintf("Duplicate script ID '%s'", script.id.c_str())));
+      std::string error_script_id =
+          UserScript::TrimPrefixFromScriptID(script.id);
+      return RespondNow(Error(base::StringPrintf("Duplicate script ID '%s'",
+                                                 error_script_id.c_str())));
     }
 
     new_script_ids.insert(script.id);
@@ -971,9 +1012,11 @@ ScriptingRegisterContentScriptsFunction::Run() {
   parsed_scripts->reserve(scripts.size());
   for (size_t i = 0; i < scripts.size(); ++i) {
     if (!scripts[i].matches) {
+      std::string error_script_id =
+          UserScript::TrimPrefixFromScriptID(scripts[i].id);
       return RespondNow(
           Error(base::StringPrintf("Script with ID '%s' must specify 'matches'",
-                                   scripts[i].id.c_str())));
+                                   error_script_id.c_str())));
     }
 
     // Parse/Create user script.
@@ -1068,8 +1111,9 @@ ScriptingGetRegisteredContentScriptsFunction::Run() {
       params->filter;
   std::set<std::string> id_filter;
   if (filter && filter->ids) {
-    id_filter.insert(std::make_move_iterator(filter->ids->begin()),
-                     std::make_move_iterator(filter->ids->end()));
+    for (const std::string& id : *(filter->ids)) {
+      id_filter.insert(scripting::CreateDynamicScriptID(id));
+    }
   }
 
   ExtensionUserScriptLoader* loader =
@@ -1086,6 +1130,10 @@ ScriptingGetRegisteredContentScriptsFunction::Run() {
       auto registered_script = CreateRegisteredContentScriptInfo(*script);
       registered_script.persist_across_sessions =
           base::Contains(persistent_script_ids, script->id());
+
+      // Remove the internally used prefix from the `script`'s ID before
+      // returning.
+      registered_script.id = script->GetIDWithoutPrefix();
       script_infos.push_back(std::move(registered_script));
     }
   }
@@ -1115,22 +1163,27 @@ ScriptingUnregisterContentScriptsFunction::Run() {
           ->GetUserScriptLoaderForExtension(extension()->id());
   std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
   if (filter && filter->ids) {
-    for (const auto& id : *filter->ids) {
-      if (UserScript::IsIDGenerated(id)) {
-        return RespondNow(Error(base::StringPrintf(
-            "Content script's ID '%s' must not start with '%c'", id.c_str(),
-            UserScript::kGeneratedIDPrefix)));
+    for (const auto& provided_id : *filter->ids) {
+      std::string error;
+      if (!IsScriptIDValid(provided_id, &error)) {
+        return RespondNow(Error(std::move(error)));
       }
 
-      if (!base::Contains(existing_script_ids, id)) {
-        return RespondNow(Error(
-            base::StringPrintf("Nonexistent script ID '%s'", id.c_str())));
+      // Add the dynamic content script prefix to `provided_id` before checking
+      // against `existing_script_ids`.
+      std::string id_with_prefix =
+          scripting::CreateDynamicScriptID(provided_id);
+      if (!base::Contains(existing_script_ids, id_with_prefix)) {
+        return RespondNow(Error(base::StringPrintf("Nonexistent script ID '%s'",
+                                                   provided_id.c_str())));
       }
 
-      ids_to_remove.insert(id);
+      ids_to_remove.insert(id_with_prefix);
     }
   }
 
+  // TODO(crbug.com/1300657): Only clear all scripts if `filter` did not specify
+  // the list of scripts ids to remove.
   if (ids_to_remove.empty()) {
     loader->ClearDynamicScripts(
         base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
@@ -1167,6 +1220,12 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
 
   std::vector<api::scripting::RegisteredContentScript>& scripts =
       params->scripts;
+  std::string error;
+  // Add the prefix for dynamic content scripts onto the IDs of all scripts in
+  // `scripts` before continuing.
+  if (!AddDynamicScriptPrefixToScriptIDs(scripts, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
 
   ExtensionUserScriptLoader* loader =
       ExtensionSystem::Get(browser_context())
@@ -1183,20 +1242,18 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
 
   std::set<std::string> ids_to_update;
   for (const auto& script : scripts) {
+    std::string error_script_id = UserScript::TrimPrefixFromScriptID(script.id);
     if (loaded_scripts_metadata.find(script.id) ==
         loaded_scripts_metadata.end()) {
       return RespondNow(
-          Error(base::StringPrintf("Content script with ID '%s' does not exist "
+          Error(base::StringPrintf("Script with ID '%s' does not exist "
                                    "or is not fully registered",
-                                   script.id.c_str())));
+                                   error_script_id.c_str())));
     }
 
-    DCHECK(!script.id.empty());
-    DCHECK(!UserScript::IsIDGenerated(script.id));
-
     if (base::Contains(ids_to_update, script.id)) {
-      return RespondNow(Error(
-          base::StringPrintf("Duplicate script ID '%s'", script.id.c_str())));
+      return RespondNow(Error(base::StringPrintf("Duplicate script ID '%s'",
+                                                 error_script_id.c_str())));
     }
 
     ids_to_update.insert(script.id);

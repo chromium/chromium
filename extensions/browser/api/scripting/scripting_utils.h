@@ -7,13 +7,19 @@
 
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern_set.h"
+#include "extensions/common/user_script.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace extensions {
-namespace scripting {
+namespace extensions::scripting {
+
+// Returns a dynamic content script ID by appending the prefix for dynamic
+// scripts to a user provided `script_id`.
+inline std::string CreateDynamicScriptID(const std::string& script_id) {
+  return UserScript::kDynamicContentScriptPrefix + script_id;
+}
 
 // Returns the set of URL patterns from persistent dynamic content scripts.
 // Patterns are stored in prefs so UserScriptListener can access them
@@ -33,7 +39,6 @@ void SetPersistentScriptURLPatterns(content::BrowserContext* browser_context,
 void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
                                       const ExtensionId& extension_id);
 
-}  // namespace scripting
-}  // namespace extensions
+}  // namespace extensions::scripting
 
 #endif  // EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_UTILS_H_

@@ -7,11 +7,9 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/common/user_script.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace extensions {
-namespace scripting {
+namespace extensions::scripting {
 
 URLPatternSet GetPersistentScriptURLPatterns(
     content::BrowserContext* browser_context,
@@ -40,5 +38,4 @@ void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
                             absl::nullopt);
 }
 
-}  // namespace scripting
-}  // namespace extensions
+}  // namespace extensions::scripting
