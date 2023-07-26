@@ -92,6 +92,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
 
 - (void)setUp {
   [super setUp];
+  [ChromeEarlGrey clearBrowsingHistory];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndSync();
 }
@@ -101,7 +102,6 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearSyncServerData];
-  [ChromeEarlGrey clearBrowsingHistory];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [super tearDown];
 }
@@ -209,8 +209,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
 
 // Verifies that the TabPickup banner is displayed after backgrounding and
 // foregrounding the app.
-// TODO(crbug.com/1466869): Flaky on iPhone.
-- (void)DISABLED_testBannerDisplayedAfterBackground {
+- (void)testBannerDisplayedAfterBackground {
   // Create a distant session with 4 tabs.
   [DistantTabsAppInterface
       addSessionToFakeSyncServer:@"Desktop-1"
