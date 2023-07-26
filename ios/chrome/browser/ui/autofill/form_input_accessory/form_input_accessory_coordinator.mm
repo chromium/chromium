@@ -507,6 +507,11 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - Private
 
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+}
+
 - (ChromeBrowserState*)browserState {
   return self.browser ? self.browser->GetBrowserState() : nullptr;
 }
@@ -545,11 +550,14 @@ const CGFloat kIPHVerticalOffset = -5;
                          browser:self.browser
                            title:title
                          message:message];
+  [self.childCoordinators addObject:self.alertCoordinator];
 
   __weak __typeof__(self) weakSelf = self;
 
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf dismissAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleCancel];
 
   NSString* actionTitle =
@@ -557,6 +565,7 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.alertCoordinator addItemWithTitle:actionTitle
                                    action:^{
                                      [weakSelf showAllPasswords];
+                                     [weakSelf dismissAlertCoordinator];
                                    }
                                     style:UIAlertActionStyleDefault];
 
