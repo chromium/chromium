@@ -1236,7 +1236,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)openPrivacySettings {
   base::RecordAction(
       base::UserMetricsAction("HistoryPage_InitClearBrowsingData"));
-  [self.delegate displayPrivacySettings];
+  [self.delegate displayClearHistoryData];
 }
 
 #pragma mark - Accessibility

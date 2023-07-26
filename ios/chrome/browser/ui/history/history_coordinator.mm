@@ -197,7 +197,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
   [self.delegate closeHistoryWithCompletion:completionHandler];
 }
 
-- (void)displayPrivacySettings {
+- (void)displayClearHistoryData {
   self.historyClearBrowsingDataCoordinator =
       [[HistoryClearBrowsingDataCoordinator alloc]
           initWithBaseViewController:self.historyNavigationController

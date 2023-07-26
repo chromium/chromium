@@ -13,7 +13,7 @@
 // Notifies the coordinator that history should be dismissed.
 - (void)dismissHistoryWithCompletion:(ProceduralBlock)completionHandler;
 // Notifies the coordinator that Privacy Settings should be displayed.
-- (void)displayPrivacySettings;
+- (void)displayClearHistoryData;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_UI_DELEGATE_H_
