@@ -96,8 +96,10 @@
 
 #pragma mark - ClearBrowsingDataUIDelegate
 
-- (void)openURL:(const GURL&)URL {
-  DCHECK(self.historyClearBrowsingDataNavigationController);
+- (void)clearBrowsingDataTableViewController:
+            (ClearBrowsingDataTableViewController*)controller
+                              wantsToOpenURL:(const GURL&)URL {
+  CHECK_EQ(controller, self.clearBrowsingDataTableViewController);
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.load_strategy = self.loadStrategy;
   [self stopWithCompletion:^() {

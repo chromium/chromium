@@ -74,7 +74,10 @@
 
 #pragma mark - ClearBrowsingDataUIDelegate
 
-- (void)openURL:(const GURL&)URL {
+- (void)clearBrowsingDataTableViewController:
+            (ClearBrowsingDataTableViewController*)controller
+                              wantsToOpenURL:(const GURL&)URL {
+  CHECK_EQ(self.viewController, controller);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [self.handler closeSettingsUIAndOpenURL:command];
 }

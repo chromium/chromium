@@ -376,7 +376,8 @@
     base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
                                   MyActivityNavigation::kTopLevel);
   }
-  [self.delegate openURL:url.gurl];
+  [self.delegate clearBrowsingDataTableViewController:self
+                                       wantsToOpenURL:url.gurl];
 }
 
 #pragma mark - ClearBrowsingDataConsumer
@@ -487,7 +488,10 @@
           l10n_util::GetNSString(
               IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OPEN_HISTORY_BUTTON)
                 action:^{
-                  [weakSelf.delegate openURL:GURL(kGoogleMyAccountURL)];
+                  [weakSelf.delegate
+                      clearBrowsingDataTableViewController:weakSelf
+                                            wantsToOpenURL:
+                                                GURL(kGoogleMyAccountURL)];
                 }
                  style:UIAlertActionStyleDefault];
 
