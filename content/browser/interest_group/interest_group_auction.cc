@@ -3675,7 +3675,7 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
     // If this is the top-level auction, mark it as a success (and the winning
     // component auction as well, if there is one). Component auction status
     // depend on whether or not they won the top-level auction, so if this is a
-    // component auciton, leave status as-is.
+    // component auction, leave status as-is.
     if (!parent_) {
       final_auction_result_ = AuctionResult::kSuccess;
       // If there's a winning bid, set its auction result as well. If the
