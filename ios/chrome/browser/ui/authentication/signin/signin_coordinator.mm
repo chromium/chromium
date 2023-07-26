@@ -190,8 +190,10 @@ using signin_metrics::PromoAction;
   ChromeBrowserState* browserState = browser->GetBrowserState();
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  if (!IsConsistencyNewAccountInterfaceEnabled() &&
-      !accountManagerService->HasIdentities()) {
+  BOOL canShowWithZeroIdentities =
+      accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
+      IsConsistencyNewAccountInterfaceEnabled();
+  if (!accountManagerService->HasIdentities() && !canShowWithZeroIdentities) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
         accessPoint);
