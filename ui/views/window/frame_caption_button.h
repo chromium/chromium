@@ -51,8 +51,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // Sets the image to use to paint the button. If |animate| is Animate::kYes,
   // the button crossfades to the new visuals. If the image matches the one
   // currently used by the button and |animate| is Animate::kNo, the crossfade
-  // animation is progressed to the end. Note: if the button is not yet in a
-  // widget, this is a no-op.
+  // animation is progressed to the end.
   void SetImage(CaptionButtonIcon icon,
                 Animate animate,
                 const gfx::VectorIcon& icon_image);

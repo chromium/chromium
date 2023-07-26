@@ -22,6 +22,9 @@ TabSearchFrameCaptionButton::TabSearchFrameCaptionButton(Profile* profile)
                          HTCLIENT),
       tab_search_bubble_host_(
           std::make_unique<TabSearchBubbleHost>(this, profile)) {
+  SetImage(views::CAPTION_BUTTON_ICON_CUSTOM,
+           views::FrameCaptionButton::Animate::kNo,
+           vector_icons::kCaretDownIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
 }
@@ -34,14 +37,6 @@ bool TabSearchFrameCaptionButton::IsTabSearchCaptionButtonEnabled(
   return browser->is_type_normal() &&
          base::FeatureList::IsEnabled(
              features::kChromeOSTabSearchCaptionButton);
-}
-
-void TabSearchFrameCaptionButton::AddedToWidget() {
-  // Set the image after `this` gets added to the widget, otherwise the image
-  // won't be painted.
-  SetImage(views::CAPTION_BUTTON_ICON_CUSTOM,
-           views::FrameCaptionButton::Animate::kNo,
-           vector_icons::kCaretDownIcon);
 }
 
 gfx::Rect TabSearchFrameCaptionButton::GetAnchorBoundsInScreen() const {

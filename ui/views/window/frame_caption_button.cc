@@ -132,17 +132,14 @@ float FrameCaptionButton::GetInactiveButtonColorAlphaRatio() {
 void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
                                   Animate animate,
                                   const gfx::VectorIcon& icon_definition) {
-  // Return early since the image won't be painted if the button hasn't been
-  // added to a widget.
-  // TODO (b/292289541): Replace this with CHECK(GetWidget()).
-  if (!GetWidget()) {
-    return;
+  // If the button is not yet in a widget, OnThemeChanged() will call back
+  // here once it is, updating the color as needed.
+  SkColor icon_color = gfx::kPlaceholderColor;
+  if (absl::holds_alternative<SkColor>(color_)) {
+    icon_color = GetButtonColor(absl::get<SkColor>(color_));
+  } else if (const auto* color_provider = GetColorProvider()) {
+    icon_color = color_provider->GetColor(absl::get<ui::ColorId>(color_));
   }
-
-  const SkColor icon_color =
-      absl::holds_alternative<ui::ColorId>(color_)
-          ? GetColorProvider()->GetColor(absl::get<ui::ColorId>(color_))
-          : GetButtonColor(absl::get<SkColor>(color_));
 
   gfx::ImageSkia new_icon_image =
       gfx::CreateVectorIcon(icon_definition, icon_color);
@@ -170,7 +167,9 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
     swap_images_animation_->Reset(1);
   }
 
-  SchedulePaint();
+  if (GetWidget()) {
+    SchedulePaint();
+  }
 }
 
 bool FrameCaptionButton::IsAnimatingImageSwap() const {

@@ -253,6 +253,15 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   AddChildView(close_button_.get());
 
+  SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT,
+                 chromeos::kWindowControlFloatIcon);
+  // TODO(hewer): Resolve this so two float icons are no longer needed.
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MENU, chromeos::kFloatWindowIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
+                 views::kWindowControlMinimizeIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
+                 views::kWindowControlCloseIcon);
+
   // The float button relies on minimum size to know if it can be floated, which
   // can only be checked after the widget has been initialized.
   if (frame->IsNativeWidgetInitialized()) {
@@ -408,13 +417,9 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
 }
 
 void FrameCaptionButtonContainerView::UpdateButtonsImageAndTooltip() {
-  // There're no effects to update the buttons if `this` is not added to the
-  // widget yet.
-  if (GetWidget()) {
-    UpdateSizeButton();
-    UpdateSnapButtons();
-    UpdateFloatButton();
-  }
+  UpdateSizeButton();
+  UpdateSnapButtons();
+  UpdateFloatButton();
 }
 
 void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
@@ -444,19 +449,6 @@ void FrameCaptionButtonContainerView::SetOnSizeButtonPressedCallback(
 
 void FrameCaptionButtonContainerView::ClearOnSizeButtonPressedCallback() {
   on_size_button_pressed_callback_.Reset();
-}
-
-void FrameCaptionButtonContainerView::AddedToWidget() {
-  // Set button images  after `this` gets added to the widget, otherwise the
-  // images won't be painted.
-  SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT,
-                 chromeos::kWindowControlFloatIcon);
-  // TODO(hewer): Resolve this so two float icons are no longer needed.
-  SetButtonImage(views::CAPTION_BUTTON_ICON_MENU, chromeos::kFloatWindowIcon);
-  SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
-                 views::kWindowControlMinimizeIcon);
-  SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
-                 views::kWindowControlCloseIcon);
 }
 
 void FrameCaptionButtonContainerView::Layout() {
