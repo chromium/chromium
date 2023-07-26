@@ -44,6 +44,11 @@ crosapi::mojom::VideoConferenceAppType ToVideoConferenceAppType(
   }
 }
 
+bool IsPermissionAsked(const apps::PermissionPtr& permission) {
+  return absl::holds_alternative<apps::TriState>(permission->value) &&
+         absl::get<apps::TriState>(permission->value) == apps::TriState::kAsk;
+}
+
 }  // namespace
 
 VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
@@ -322,15 +327,23 @@ VideoConferenceAppServiceClient::VideoConferencePermissions
 VideoConferenceAppServiceClient::GetAppPermission(const AppIdString& app_id) {
   VideoConferencePermissions permissions;
 
-  app_registry_->ForOneApp(app_id, [&permissions](
-                                       const apps::AppUpdate& update) {
+  const bool is_arc_app = GetAppType(app_id) == apps::AppType::kArc;
+
+  app_registry_->ForOneApp(app_id, [&permissions,
+                                    is_arc_app](const apps::AppUpdate& update) {
     for (const auto& permission : update.Permissions()) {
+      // For Arc++ Apps, kAsk means "Only for this time".
+      const bool is_temporarily_enabled =
+          is_arc_app && IsPermissionAsked(permission);
+
+      const bool is_currently_enabled =
+          permission->IsPermissionEnabled() || is_temporarily_enabled;
+
       if (permission->permission_type == apps::PermissionType::kCamera) {
-        permissions.has_camera_permission = permission->IsPermissionEnabled();
+        permissions.has_camera_permission = is_currently_enabled;
       }
       if (permission->permission_type == apps::PermissionType::kMicrophone) {
-        permissions.has_microphone_permission =
-            permission->IsPermissionEnabled();
+        permissions.has_microphone_permission = is_currently_enabled;
       }
     }
   });

@@ -71,8 +71,15 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
 
   app->publisher_id = app_id;
 
+  // Set camera_permission_value as apps::TriState (kAsk only for Arc++) for
+  // better coverage.
+  apps::TriState camera_permission_state =
+      !has_camera_permission            ? apps::TriState::kBlock
+      : app_type == apps::AppType::kArc ? apps::TriState::kAsk
+                                        : apps::TriState::kAllow;
+
   app->permissions.push_back(std::make_unique<apps::Permission>(
-      apps::PermissionType::kCamera, has_camera_permission,
+      apps::PermissionType::kCamera, camera_permission_state,
       /*is_managed=*/false));
   app->permissions.push_back(std::make_unique<apps::Permission>(
       apps::PermissionType::kMicrophone, has_microphone_permission,
