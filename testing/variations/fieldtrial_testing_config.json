@@ -3021,6 +3021,27 @@
             ]
         }
     ],
+    "ChromeOSAmbientModeManagedScreensaver": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "ChromeOSAmbientModeManagedScreensaver"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeOSAmbientModeManagedScreensaver"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSBoostUrgentVariables": [
         {
             "platforms": [
