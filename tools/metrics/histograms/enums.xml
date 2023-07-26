@@ -22949,7 +22949,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="9" label="Network"/>
   <int value="10" label="KeyboardDiagnostic"/>
   <int value="11" label="Touchpad"/>
-  <int value="12" label="Hdmi"/>
+  <int value="12" label="ExternalDisplay"/>
   <int value="13" label="Touchscreen"/>
   <int value="14" label="StylusGarage"/>
   <int value="15" label="Stylus"/>
