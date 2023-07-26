@@ -126,6 +126,10 @@
   [self.viewController resetAfterSideSwipeSnapshot];
 }
 
+- (void)showPrerenderingAnimation {
+  [self.viewController showPrerenderingAnimation];
+}
+
 #pragma mark - AdaptiveToolbarViewControllerDelegate
 
 - (void)exitFullscreen {

@@ -71,6 +71,8 @@
 - (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted;
 // Set the IPH highlighted state of the new tab button.
 - (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted;
+// Shows the animation when transitioning to a prerendered page.
+- (void)showPrerenderingAnimation;
 
 @end
 

@@ -28,9 +28,6 @@ class WebState;
 // Positioner for activity services attached to the toolbar
 - (id<SharingPositioner>)SharingPositioner;
 
-// Shows the animation when transitioning to a prerendered page.
-- (void)showPrerenderingAnimation;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_COORDINATOR_H_

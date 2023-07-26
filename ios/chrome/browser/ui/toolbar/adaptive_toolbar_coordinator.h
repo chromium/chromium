@@ -41,6 +41,9 @@ class WebState;
 // Resets the toolbar after a side swipe snapshot.
 - (void)resetToolbarAfterSideSwipeSnapshot;
 
+// Shows the animation when transitioning to a prerendered page.
+- (void)showPrerenderingAnimation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_ADAPTIVE_TOOLBAR_COORDINATOR_H_

@@ -10,9 +10,6 @@
 /// Protected interface of the AdaptiveToolbarViewController.
 @interface AdaptiveToolbarViewController (Subclassing)
 
-/// Sets the progress of the progressBar to 1 then hides it.
-- (void)stopProgressBar;
-
 /// Reacts to user tapping `collapsedToolbarButton`.
 - (void)collapsedToolbarButtonTapped;
 

@@ -203,7 +203,9 @@
       !webState->GetLastCommittedURL().SchemeIs(kChromeUIScheme);
 
   if (self.isLoadingPrerenderer && isToolbarLoading) {
-    [self.primaryToolbarCoordinator showPrerenderingAnimation];
+    for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
+      [coordinator showPrerenderingAnimation];
+    }
   }
 
   id<FindInPageCommands> findInPageCommandsHandler = HandlerForProtocol(

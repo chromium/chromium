@@ -88,10 +88,6 @@
   return self.viewController;
 }
 
-- (void)showPrerenderingAnimation {
-  [self.viewController showPrerenderingAnimation];
-}
-
 #pragma mark - ToolbarCommands
 
 - (void)triggerToolbarSlideInAnimation {

@@ -17,6 +17,8 @@
 
 - (UIViewController*)viewController;
 
+- (void)showPrerenderingAnimation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_COORDINATEE_H_

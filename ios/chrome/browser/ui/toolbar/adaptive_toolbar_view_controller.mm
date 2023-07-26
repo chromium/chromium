@@ -118,6 +118,18 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   self.view.openNewTabButton.iphHighlighted = iphHighlighted;
 }
 
+- (void)showPrerenderingAnimation {
+  __weak __typeof__(self) weakSelf = self;
+  [self.view.progressBar setProgress:0];
+  if (self.hasOmnibox) {
+    [self.view.progressBar setHidden:NO
+                            animated:YES
+                          completion:^(BOOL finished) {
+                            [weakSelf stopProgressBar];
+                          }];
+  }
+}
+
 - (BOOL)hasOmnibox {
   return self.locationBarViewController != nil;
 }

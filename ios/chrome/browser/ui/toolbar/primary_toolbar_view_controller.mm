@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
-#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -47,18 +46,6 @@
 @implementation PrimaryToolbarViewController
 
 @dynamic view;
-
-#pragma mark - Public
-
-- (void)showPrerenderingAnimation {
-  __weak PrimaryToolbarViewController* weakSelf = self;
-  [self.view.progressBar setProgress:0];
-  [self.view.progressBar setHidden:NO
-                          animated:YES
-                        completion:^(BOOL finished) {
-                          [weakSelf stopProgressBar];
-                        }];
-}
 
 #pragma mark - AdaptiveToolbarViewController
 
