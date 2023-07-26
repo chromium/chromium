@@ -93,7 +93,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysInverseOnSurface};
   mixer[kColorSidePanelCustomizeChromeColorPickerOptionBackground] = {
       ui::kColorSysNeutralContainer};
-  mixer[kColorSidePanelCustomizeChromeCornerNtpBackground] = {
+  mixer[kColorSidePanelCustomizeChromeCornerNtpBorder] = {
       ui::kColorSysTonalContainer};
   mixer[kColorSidePanelCustomizeChromeCustomOptionBackground] = {
       ui::kColorSysTertiaryContainer};

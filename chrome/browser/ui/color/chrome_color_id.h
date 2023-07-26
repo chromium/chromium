@@ -397,7 +397,7 @@
   E_CPONLY(kColorSidePanelCustomizeChromeColorPickerCheckmarkBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeColorPickerCheckmarkForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeColorPickerOptionBackground) \
-  E_CPONLY(kColorSidePanelCustomizeChromeCornerNtpBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeCornerNtpBorder) \
   E_CPONLY(kColorSidePanelCustomizeChromeCustomOptionBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeCustomOptionForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpActiveTab) \
