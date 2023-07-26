@@ -5,27 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_ROUTER_TYPE_CONVERTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_ROUTER_TYPE_CONVERTER_H_
 
-#include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 class RouterRule;
 
+// Convert V8 `RouterRule` to blink::ServiceWorkerRouterRule`
+//
+// Returns `absl::nullopt` on error, and `exception_state.HadException()`
+// will be true.
+// This is not a regular Mojo converter because we need `ExceptionState&`
+// to tell errors.
+MODULES_EXPORT absl::optional<ServiceWorkerRouterRule>
+ConvertV8RouterRuleToBlink(const RouterRule* input,
+                           ExceptionState& exception_state);
+
 }  // namespace blink
-
-namespace mojo {
-
-template <>
-struct MODULES_EXPORT
-    TypeConverter<absl::optional<blink::ServiceWorkerRouterRule>,
-                  blink::RouterRule*> {
-  static absl::optional<blink::ServiceWorkerRouterRule> Convert(
-      const blink::RouterRule* input);
-};
-
-}  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_ROUTER_TYPE_CONVERTER_H_

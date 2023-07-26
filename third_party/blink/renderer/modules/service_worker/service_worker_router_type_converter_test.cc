@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_condition.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_source_enum.h"
@@ -40,8 +41,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
+  V8TestingScope scope;
   auto blink_rule =
-      mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(idl_rule);
+      ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
 }
@@ -54,8 +57,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, EmptyUrlPatternShouldBeNullopt) {
   idl_rule->setCondition(idl_condition);
   idl_rule->setSource(blink::V8RouterSourceEnum::Enum::kNetwork);
 
+  V8TestingScope scope;
   auto blink_rule =
-      mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(idl_rule);
+      ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_FALSE(blink_rule.has_value());
 }
 
@@ -67,9 +72,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
     idl_rule->setCondition(idl_condition);
     idl_rule->setSource(blink::V8RouterSourceEnum::Enum::kNetwork);
 
+    V8TestingScope scope;
     auto blink_rule =
-        mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(
-            idl_rule);
+        ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+    EXPECT_TRUE(scope.GetExceptionState().HadException());
     EXPECT_FALSE(blink_rule.has_value());
   };
   verify("/fake/(\\\\d+)");
@@ -102,8 +108,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
   expected_source.race_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
+  V8TestingScope scope;
   auto blink_rule =
-      mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(idl_rule);
+      ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
 }
@@ -134,8 +142,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
   expected_source.fetch_event_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
+  V8TestingScope scope;
   auto blink_rule =
-      mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(idl_rule);
+      ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
 }
@@ -165,8 +175,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, Request) {
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
+  V8TestingScope scope;
   auto blink_rule =
-      mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(idl_rule);
+      ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
 }
@@ -194,9 +206,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
     expected_source.network_source.emplace();
     expected_rule.sources.emplace_back(expected_source);
 
+    V8TestingScope scope;
     auto blink_rule =
-        mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(
-            idl_rule);
+        ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
     EXPECT_TRUE(blink_rule.has_value());
     EXPECT_EQ(expected_rule, *blink_rule);
   };
@@ -234,9 +247,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, RunningStatus) {
         expected_source.network_source.emplace();
         expected_rule.sources.emplace_back(expected_source);
 
+        V8TestingScope scope;
         auto blink_rule =
-            mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(
-                idl_rule);
+            ConvertV8RouterRuleToBlink(idl_rule, scope.GetExceptionState());
+        EXPECT_FALSE(scope.GetExceptionState().HadException());
         EXPECT_TRUE(blink_rule.has_value());
         EXPECT_EQ(expected_rule, *blink_rule);
       };

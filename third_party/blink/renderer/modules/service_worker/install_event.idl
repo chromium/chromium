@@ -10,5 +10,5 @@
     constructor(DOMString type, optional ExtendableEventInit eventInitDict = {});
     // Experimental
     // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
-    [RuntimeEnabled=ServiceWorkerStaticRouter, CallWith=ScriptState, MeasureAs=ServiceWorkerStaticRouter_RegisterRouter] Promise<undefined> registerRouter((RouterRule or sequence<RouterRule>) rules);
+    [RuntimeEnabled=ServiceWorkerStaticRouter, CallWith=ScriptState, RaisesException, MeasureAs=ServiceWorkerStaticRouter_RegisterRouter] Promise<undefined> registerRouter((RouterRule or sequence<RouterRule>) rules);
 };
