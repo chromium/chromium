@@ -1635,6 +1635,7 @@ void PrefetchService::ReturnPrefetchToServe(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();
     prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+    prefetch_container->ResetAllStreamingURLLoaders();
     std::move(on_prefetch_to_serve_ready).Run({});
     return;
   }

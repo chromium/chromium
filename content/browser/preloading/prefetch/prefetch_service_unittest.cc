@@ -5194,18 +5194,14 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   get_prefetch_run_loop.Run();
   EXPECT_FALSE(serveable_reader);
 
-  // Send the body and completion status of the request,
-  SendBodyContentOfResponseAndWait(kHTMLBody);
-  CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
-
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
@@ -5215,7 +5211,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
@@ -5225,9 +5221,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
             static_cast<int>(PrefetchStatus::kPrefetchNotUsedCookiesChanged));
   EXPECT_TRUE(serving_page_metrics->required_private_prefetch_proxy);
   EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
-  EXPECT_TRUE(serving_page_metrics->prefetch_header_latency);
-  EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
-            base::Milliseconds(kHeaderLatency));
+  EXPECT_FALSE(serving_page_metrics->prefetch_header_latency);
 
   ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                         .failure = ToPreloadingFailureReason(
