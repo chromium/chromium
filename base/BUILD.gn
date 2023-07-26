@@ -2537,6 +2537,7 @@ buildflag_header("tracing_buildflags") {
   flags = [
     "ENABLE_BASE_TRACING=$enable_base_tracing",
     "USE_PERFETTO_CLIENT_LIBRARY=$use_perfetto_client_library",
+    "USE_PERFETTO_TRACE_PROCESSOR=$use_perfetto_trace_processor",
     "OPTIONAL_TRACE_EVENTS_ENABLED=$optional_trace_events_enabled",
   ]
 }

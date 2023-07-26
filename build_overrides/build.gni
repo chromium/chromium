@@ -55,6 +55,13 @@ declare_args() {
   msvc_use_cxx17 = false
 }
 
+# Features used by //base/trace_event.
+declare_args() {
+  # Use Perfetto's trace processor for converting protobuf-encoded traces to
+  # the legacy JSON format in base::TraceLog.
+  use_perfetto_trace_processor = use_perfetto_client_library && !is_nacl
+}
+
 # Allows different projects to specify their own suppression/ignore lists for
 # sanitizer tools.
 # asan_suppressions_file = "path/to/asan_suppressions.cc"
