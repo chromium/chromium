@@ -93,6 +93,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [NSIndexPath indexPathForItem:index inSection:0];
 }
 
+// Returns the accessibility identifier to set on a GridCell when positioned at
+// the given index.
+NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
+  return [NSString stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, index];
+}
+
 }  // namespace
 
 @interface BidirectionalCollectionViewTransitionLayout
@@ -746,10 +752,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     cell =
         [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
                                                   forIndexPath:indexPath];
-    cell.accessibilityIdentifier = [NSString
-        stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
     GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
-    [self configureCell:gridCell withItem:item];
+    [self configureCell:gridCell withItem:item atIndex:itemIndex];
   }
   // Set the z index of cells so that lower rows are moving behind the upper
   // rows during transitions between grid and horizontal layouts.
@@ -960,7 +964,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // Stop animation of GridCells when removing them from the collection view.
     // This is important to prevent cells from animating indefinitely. This is
     // safe because the animation state of GridCells is set in
-    // `configureCell:withItem:` whenever a cell is used.
+    // `configureCell:withItem:atIndex:` whenever a cell is used.
     [base::mac::ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
   }
 }
@@ -1408,8 +1412,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
   // `cell` may be nil if it is scrolled offscreen.
-  if (cell)
-    [self configureCell:cell withItem:item];
+  if (cell) {
+    [self configureCell:cell withItem:item atIndex:index];
+  }
 }
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
@@ -1856,7 +1861,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // snapshot asynchronously with information from `item`. Updates the `cell`'s
 // theme to this view controller's theme. This view controller becomes the
 // delegate for the cell.
-- (void)configureCell:(GridCell*)cell withItem:(TabSwitcherItem*)item {
+- (void)configureCell:(GridCell*)cell
+             withItem:(TabSwitcherItem*)item
+              atIndex:(NSUInteger)index {
   DCHECK(cell);
   DCHECK(item);
   cell.delegate = self;
@@ -1864,6 +1871,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   cell.itemIdentifier = item.identifier;
   cell.title = item.title;
   cell.titleHidden = item.hidesTitle;
+  cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
     if ([self isItemWithIDSelectedForEditing:item.identifier]) {
       cell.state = GridCellStateEditingSelected;
@@ -2014,8 +2022,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     if (![cell isKindOfClass:[GridCell class]])
       continue;
     NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-    cell.accessibilityIdentifier = [NSString
-        stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
+    cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(itemIndex);
   }
 }
 
