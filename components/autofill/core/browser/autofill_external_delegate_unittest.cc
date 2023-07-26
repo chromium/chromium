@@ -186,7 +186,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
             autofill_driver_.get(), &autofill_client_);
     external_delegate_ = std::make_unique<AutofillExternalDelegate>(
-        browser_autofill_manager_.get(), autofill_driver_.get());
+        browser_autofill_manager_.get());
   }
 
   void TearDown() override {

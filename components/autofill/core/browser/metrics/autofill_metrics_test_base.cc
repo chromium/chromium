@@ -72,8 +72,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       autofill_driver_.get(), autofill_client_.get());
   autofill_driver_->set_autofill_manager(std::move(browser_autofill_manager));
 
-  auto external_delegate = std::make_unique<AutofillExternalDelegate>(
-      &autofill_manager(), autofill_driver_.get());
+  auto external_delegate =
+      std::make_unique<AutofillExternalDelegate>(&autofill_manager());
   external_delegate_ = external_delegate.get();
   test_api(autofill_manager())
       .SetExternalDelegate(std::move(external_delegate));

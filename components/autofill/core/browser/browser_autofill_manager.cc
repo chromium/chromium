@@ -585,8 +585,7 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
                                                AutofillClient* client,
                                                const std::string& app_locale)
     : AutofillManager(driver, client),
-      external_delegate_(
-          std::make_unique<AutofillExternalDelegate>(this, driver)),
+      external_delegate_(std::make_unique<AutofillExternalDelegate>(this)),
       app_locale_(app_locale),
       field_filler_(app_locale, client->GetAddressNormalizer()),
       single_field_form_fill_router_(client->CreateSingleFieldFormFillRouter()),

@@ -13,9 +13,8 @@ namespace autofill {
 
 TestAutofillExternalDelegate::TestAutofillExternalDelegate(
     BrowserAutofillManager* autofill_manager,
-    AutofillDriver* autofill_driver,
     bool call_parent_methods)
-    : AutofillExternalDelegate(autofill_manager, autofill_driver),
+    : AutofillExternalDelegate(autofill_manager),
       call_parent_methods_(call_parent_methods) {}
 
 TestAutofillExternalDelegate::~TestAutofillExternalDelegate() {}

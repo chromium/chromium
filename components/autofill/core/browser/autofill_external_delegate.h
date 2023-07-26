@@ -37,8 +37,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
  public:
   // Creates an AutofillExternalDelegate for the specified
   // BrowserAutofillManager and AutofillDriver.
-  AutofillExternalDelegate(BrowserAutofillManager* manager,
-                           AutofillDriver* driver);
+  explicit AutofillExternalDelegate(BrowserAutofillManager* manager);
 
   AutofillExternalDelegate(const AutofillExternalDelegate&) = delete;
   AutofillExternalDelegate& operator=(const AutofillExternalDelegate&) = delete;
@@ -165,10 +164,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   std::u16string GetSettingsSuggestionValue() const;
 
   const raw_ptr<BrowserAutofillManager> manager_;  // weak.
-
-  // Provides driver-level context to the shared code of the component. Must
-  // outlive this object.
-  const raw_ptr<AutofillDriver, DanglingUntriaged> driver_;  // weak
 
   // The current form and field selected by Autofill.
   FormData query_form_;

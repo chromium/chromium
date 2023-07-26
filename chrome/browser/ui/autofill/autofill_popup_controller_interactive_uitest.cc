@@ -66,7 +66,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
             ->DriverForFrame(main_rfh());
     auto autofill_external_delegate =
         std::make_unique<TestAutofillExternalDelegate>(
-            &autofill_manager(), autofill_driver_,
+            &autofill_manager(),
             /*call_parent_methods=*/true);
     autofill_external_delegate_ = autofill_external_delegate.get();
     test_api(autofill_manager())

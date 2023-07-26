@@ -623,7 +623,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     autofill_client_.set_download_manager(std::move(download_manager));
 
     auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
-        browser_autofill_manager_.get(), autofill_driver_.get(),
+        browser_autofill_manager_.get(),
         /*call_parent_methods=*/false);
     external_delegate_ = external_delegate.get();
     test_api(*browser_autofill_manager_)
@@ -6618,7 +6618,7 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
                                                           false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
-      browser_autofill_manager_.get(), autofill_driver_.get(),
+      browser_autofill_manager_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
   test_api(*browser_autofill_manager_)
@@ -6693,7 +6693,7 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
                                                           false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
-      browser_autofill_manager_.get(), autofill_driver_.get(),
+      browser_autofill_manager_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
   test_api(*browser_autofill_manager_)
@@ -6728,7 +6728,7 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
                                                           false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
-      browser_autofill_manager_.get(), autofill_driver_.get(),
+      browser_autofill_manager_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
   test_api(*browser_autofill_manager_)
@@ -6788,7 +6788,7 @@ TEST_F(
   browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
                                                           false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
-      browser_autofill_manager_.get(), autofill_driver_.get(),
+      browser_autofill_manager_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
   test_api(*browser_autofill_manager_)

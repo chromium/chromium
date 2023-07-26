@@ -108,9 +108,9 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
 
 class MockAutofillExternalDelegate : public AutofillExternalDelegate {
  public:
-  MockAutofillExternalDelegate(BrowserAutofillManager* autofill_manager,
-                               AutofillDriver* autofill_driver)
-      : AutofillExternalDelegate(autofill_manager, autofill_driver) {}
+  explicit MockAutofillExternalDelegate(
+      BrowserAutofillManager* autofill_manager)
+      : AutofillExternalDelegate(autofill_manager) {}
   ~MockAutofillExternalDelegate() override = default;
 
   void DidSelectSuggestion(
@@ -254,7 +254,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     // Fake that |driver| has queried a form.
     test_api(autofill_router()).set_last_queried_source(autofill_driver());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
-        autofill_manager(), autofill_driver());
+        autofill_manager());
   }
 
   // Shows empty suggestions with the popup_item_id ids passed as
@@ -456,8 +456,7 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
 }
 
 TEST_F(AutofillPopupControllerUnitTest, GetOrCreateAndroid) {
-  NiceMock<MockAutofillExternalDelegate> delegate(autofill_manager(),
-                                                  autofill_driver());
+  NiceMock<MockAutofillExternalDelegate> delegate(autofill_manager());
 
   WeakPtr<AutofillPopupControllerImpl> controller =
       AutofillPopupControllerImpl::GetOrCreate(
@@ -525,8 +524,7 @@ TEST_F(AutofillPopupControllerUnitTest, ProperlyResetController) {
 TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
   // Create a new controller, because hiding destroys it and we can't destroy it
   // twice.
-  StrictMock<MockAutofillExternalDelegate> delegate(autofill_manager(),
-                                                    autofill_driver());
+  StrictMock<MockAutofillExternalDelegate> delegate(autofill_manager());
   StrictMock<TestAutofillPopupController>* test_controller =
       new StrictMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
                                                   web_contents(), gfx::RectF(),
@@ -552,8 +550,7 @@ TEST_F(AutofillPopupControllerUnitTest, DontHideWhenWaitingForData) {
 TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
   // Create a new controller, because hiding destroys it and we can't destroy it
   // twice (since we already hide it in the destructor).
-  NiceMock<MockAutofillExternalDelegate> delegate(autofill_manager(),
-                                                  autofill_driver());
+  NiceMock<MockAutofillExternalDelegate> delegate(autofill_manager());
   NiceMock<TestAutofillPopupController>* test_controller =
       new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
                                                 web_contents(), gfx::RectF(),
