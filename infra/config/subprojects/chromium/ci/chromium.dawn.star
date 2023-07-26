@@ -99,7 +99,6 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "Dawn Android arm DEPS Release (Pixel 4)",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -126,7 +125,6 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "Dawn Android arm64 DEPS Release (Pixel 6)",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
