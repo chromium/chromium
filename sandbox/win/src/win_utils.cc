@@ -474,29 +474,6 @@ absl::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
                       name->Name.Length / sizeof(name->Name.Buffer[0]));
 }
 
-bool WriteProtectedChildMemory(HANDLE child_process,
-                               void* address,
-                               const void* buffer,
-                               size_t length) {
-  // First, remove the protections.
-  DWORD old_protection;
-  if (!::VirtualProtectEx(child_process, address, length, PAGE_WRITECOPY,
-                          &old_protection))
-    return false;
-
-  SIZE_T written;
-  bool ok =
-      ::WriteProcessMemory(child_process, address, buffer, length, &written) &&
-      (length == written);
-
-  // Always attempt to restore the original protection.
-  if (!::VirtualProtectEx(child_process, address, length, old_protection,
-                          &old_protection))
-    return false;
-
-  return ok;
-}
-
 bool CopyToChildMemory(HANDLE child,
                        const void* local_buffer,
                        size_t buffer_bytes,

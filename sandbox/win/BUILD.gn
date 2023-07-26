@@ -5,10 +5,35 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
-# This needs to be a static library rather than a sources set because small
-# portions of this are used in some contexts (like chrome_elf), and it
-# doesn't seem to dead-code strip very well. This saves 12K on chrome_elf.dll,
-# over a source set, for example.
+source_set("service_resolver") {
+  sources = [
+    "src/resolver.cc",
+    "src/resolver.h",
+    "src/service_resolver.cc",
+    "src/service_resolver.h",
+  ]
+
+  if (current_cpu == "x64" || current_cpu == "arm64") {
+    sources += [
+      "src/resolver_64.cc",
+      "src/service_resolver_64.cc",
+    ]
+  } else if (current_cpu == "x86") {
+    sources += [
+      "src/resolver_32.cc",
+      "src/service_resolver_32.cc",
+    ]
+  }
+
+  public_deps = [
+    ":common",
+    "//base",
+    "//sandbox:common",
+  ]
+
+  deps = [ "//base:base_static" ]
+}
+
 static_library("sandbox") {
   sources = [
     "src/acl.cc",
@@ -83,8 +108,6 @@ static_library("sandbox") {
     "src/process_thread_interception.h",
     "src/process_thread_policy.cc",
     "src/process_thread_policy.h",
-    "src/resolver.cc",
-    "src/resolver.h",
     "src/restricted_token.cc",
     "src/restricted_token.h",
     "src/restricted_token_utils.cc",
@@ -101,8 +124,6 @@ static_library("sandbox") {
     "src/sandbox_policy_diagnostic.h",
     "src/security_capabilities.cc",
     "src/security_capabilities.h",
-    "src/service_resolver.cc",
-    "src/service_resolver.h",
     "src/sharedmem_ipc_client.cc",
     "src/sharedmem_ipc_client.h",
     "src/sharedmem_ipc_server.cc",
@@ -135,13 +156,6 @@ static_library("sandbox") {
     sources += [
       "src/interceptors_64.cc",
       "src/interceptors_64.h",
-      "src/resolver_64.cc",
-      "src/service_resolver_64.cc",
-    ]
-  } else if (current_cpu == "x86") {
-    sources += [
-      "src/resolver_32.cc",
-      "src/service_resolver_32.cc",
     ]
   }
 
@@ -158,6 +172,7 @@ static_library("sandbox") {
 
   public_deps = [
     ":common",
+    ":service_resolver",
     "//base",
     "//sandbox:common",
   ]

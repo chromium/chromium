@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/bit_cast.h"
-#include "sandbox/win/src/win_utils.h"
 
 namespace {
 #pragma pack(push, 1)

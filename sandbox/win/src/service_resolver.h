@@ -76,6 +76,14 @@ class [[clang::lto_visibility_public]] ServiceResolverThunk
   // Handle of the child process.
   HANDLE process_;
 
+  // Writes |length| bytes from the provided |buffer| into the address space of
+  // |child_process|, at the specified |address|, preserving the original write
+  // protection attributes. Returns true on success.
+  static bool WriteProtectedChildMemory(HANDLE child_process,
+                                        void* address,
+                                        const void* buffer,
+                                        size_t length);
+
   // Returns true if the code pointer by target_ corresponds to the expected
   // type of function. Saves that code on the first part of the thunk pointed
   // by local_thunk (should be directly accessible from the parent).
