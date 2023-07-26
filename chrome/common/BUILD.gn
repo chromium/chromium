@@ -81,7 +81,6 @@ source_set("channel_info") {
     public_deps += [ "//chrome/install_static:install_static_util" ]
   } else if (is_mac) {
     sources += [ "channel_info_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   } else if (is_android) {
     sources += [ "channel_info_android.cc" ]
     public_deps += [ "//components/version_info/android:channel_getter" ]
@@ -669,7 +668,6 @@ static_library("constants") {
   }
   if (is_mac) {
     sources += [ "chrome_paths_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_win) {
     sources += [ "chrome_paths_win.cc" ]
@@ -724,10 +722,7 @@ if (is_mac) {
       "mac/app_mode_common.mm",
     ]
 
-    configs += [
-      "//build/config/compiler:wexit_time_destructors",
-      "//build/config/compiler:enable_arc",
-    ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":constants",

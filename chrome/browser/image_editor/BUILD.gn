@@ -39,7 +39,6 @@ static_library("image_editor") {
       "event_capture_mac.h",
       "event_capture_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//components/remote_cocoa/app_shim" ]
   }
 

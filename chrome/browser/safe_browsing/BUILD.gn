@@ -68,10 +68,6 @@ static_library("safe_browsing") {
     "//services/preferences/public/cpp",
   ]
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (enable_extensions) {
     sources += [
       "settings_reset_prompt/default_settings_fetcher.cc",

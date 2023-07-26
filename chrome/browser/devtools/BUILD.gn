@@ -239,7 +239,6 @@ static_library("devtools") {
 
   if (is_mac) {
     sources += [ "devtools_dock_tile_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   } else {
     sources += [ "devtools_dock_tile.cc" ]
   }

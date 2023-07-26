@@ -39,8 +39,6 @@ source_set("app_shim") {
     "//ui/accelerated_widget_mac",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 tweak_info_plist("tweak_app_mode_loader_plist") {
@@ -96,8 +94,6 @@ executable("app_mode_loader") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
     "AppKit.framework",

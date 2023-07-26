@@ -8,6 +8,5 @@ source_set("cpp") {
     "mac_notification_metrics.mm",
   ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
 }

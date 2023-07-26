@@ -231,7 +231,6 @@ source_set("automation_client_lib") {
 
   if (is_mac) {
     sources += [ "chrome/chrome_finder_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -326,7 +325,6 @@ source_set("lib") {
 
   if (is_mac) {
     sources += [ "keycode_text_conversion_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {

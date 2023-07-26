@@ -105,8 +105,6 @@ if (!is_ios && !is_android) {
         "//chrome/app_shim",
         "//components/upload_list",
       ]
-
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
 
     if (is_win) {

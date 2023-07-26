@@ -590,7 +590,6 @@ static_library("test_support") {
       "//chrome/app_shim",
       "//components/upload_list",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     public_deps += [ "//components/crash/core/app" ]
   }
 
@@ -2867,10 +2866,6 @@ if (!is_android) {
       if (is_chrome_branded) {
         deps += [ "//chrome/browser/win/conflicts:browser_tests" ]
       }
-    }
-
-    if (is_apple) {
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
 
     if (is_mac) {
@@ -6767,10 +6762,6 @@ test("unit_tests") {
     }
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
@@ -9864,10 +9855,6 @@ if (!is_android) {
       ]
     }
 
-    if (is_apple) {
-      configs += [ "//build/config/compiler:enable_arc" ]
-    }
-
     if (is_mac) {
       sources += [
         "../browser/ui/test/test_browser_dialog_mac.h",
@@ -10637,10 +10624,6 @@ if (!is_android) {
       ]
 
       configs += [ "//build/config/win:delayloads" ]
-    }
-
-    if (is_apple) {
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
 
     if (is_mac) {

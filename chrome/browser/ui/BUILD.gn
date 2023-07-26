@@ -3966,10 +3966,6 @@ static_library("ui") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "autofill/autofill_popup_controller_impl_mac.h",
@@ -6371,7 +6367,6 @@ static_library("test_support") {
 
   if (is_mac) {
     assert(toolkit_views)
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources += [
       "cocoa/test/cocoa_test_helper.h",
       "cocoa/test/cocoa_test_helper.mm",

@@ -111,7 +111,6 @@ static_library("utility") {
         "importer/safari_importer.h",
         "importer/safari_importer.mm",
       ]
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
     if (!is_mac && !is_fuchsia && !is_chromeos) {
       # NSS decryptor is not needed on ChromeOS. Additionally, it depends on

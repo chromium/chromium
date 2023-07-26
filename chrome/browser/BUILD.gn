@@ -5999,10 +5999,6 @@ static_library("browser") {
     }
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "accessibility/caption_settings_dialog.h",

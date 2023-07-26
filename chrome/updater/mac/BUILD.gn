@@ -97,8 +97,6 @@ source_set("privileged_helper_sources") {
     "privileged_helper/service_protocol.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":helper_header",
     "//base",
@@ -150,8 +148,6 @@ executable("privileged_helper") {
     "//base",
     "//chrome/updater:constants_prod",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
     "Foundation.framework",
@@ -335,8 +331,6 @@ source_set("ksadmin_lib") {
     "//chrome/updater:version_header",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   visibility = [
     ":ksadmin",
     ":ksadmin_test",
@@ -402,8 +396,6 @@ executable("ksinstall") {
   ]
 
   frameworks = [ "CoreFoundation.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   if (is_asan) {
     # asan injects a dylib that we package in ../MacOS.

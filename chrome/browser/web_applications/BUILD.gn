@@ -356,7 +356,6 @@ source_set("web_applications") {
       "os_integration/web_app_shortcut_mac.h",
       "os_integration/web_app_shortcut_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -722,7 +721,6 @@ source_set("web_applications_unit_tests") {
       "os_integration/web_app_shortcut_mac_unittest.mm",
       "os_integration/web_app_shortcut_manager_mac_unittest.cc",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_linux) {

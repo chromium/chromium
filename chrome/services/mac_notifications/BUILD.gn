@@ -33,8 +33,6 @@ source_set("mac_notifications") {
     "//mojo/public/mojom/base",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   frameworks = [
     "UserNotifications.framework",
     "Foundation.framework",
@@ -60,8 +58,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
     "UserNotifications.framework",

@@ -226,7 +226,6 @@ static_library("test_support") {
   if (is_mac) {
     sources += [ "chrome_main_mac.mm" ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//chrome:chrome_framework" ]
   }
 

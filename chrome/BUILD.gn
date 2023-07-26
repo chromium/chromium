@@ -1208,7 +1208,6 @@ if (is_win) {
 
     configs += [
       ":chrome_dll_symbol_order",
-      "//build/config/compiler:enable_arc",
       "//build/config/compiler:wexit_time_destructors",
     ]
     if (!is_component_build && !using_sanitizer) {
