@@ -1,0 +1,30 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+
+[
+    ImplementedAs=FetchLaterResult,
+    RuntimeEnabled=FetchLaterAPI,
+    SecureContext
+]
+interface FetchLaterResult {
+  readonly attribute boolean sent;
+};
+
+[
+    ImplementedAs=GlobalFetch,
+    RuntimeEnabled=FetchLaterAPI,
+    SecureContext
+] partial interface Window {
+    [
+        CallWith=ScriptState,
+        NewObject,
+        RaisesException
+    ] FetchLaterResult fetchLater(RequestInfo input, optional DeferredRequestInit init = {});
+};
+
+
+// TODO(crbug.com/1465781): Support WorkerGlobalScope once fetch keepalive
+// supports it.

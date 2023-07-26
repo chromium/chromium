@@ -18,6 +18,7 @@ class ExceptionState;
 class ExecutionContext;
 class FetchRequestData;
 class ScriptState;
+class FetchLaterResult;
 
 class CORE_EXPORT FetchManager final
     : public GarbageCollected<FetchManager>,
@@ -29,6 +30,10 @@ class CORE_EXPORT FetchManager final
                       FetchRequestData*,
                       AbortSignal*,
                       ExceptionState&);
+  FetchLaterResult* FetchLater(ScriptState*,
+                               FetchRequestData*,
+                               AbortSignal*,
+                               ExceptionState&);
   void ContextDestroyed() override;
 
   void Trace(Visitor*) const override;

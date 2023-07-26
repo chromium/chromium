@@ -260,6 +260,8 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/events/wheel_event_init.idl",
           "//third_party/blink/renderer/core/fetch/attribution_reporting.idl",
           "//third_party/blink/renderer/core/fetch/body.idl",
+          "//third_party/blink/renderer/core/fetch/deferred_request_init.idl",
+          "//third_party/blink/renderer/core/fetch/fetch_later.idl",
           "//third_party/blink/renderer/core/fetch/headers.idl",
           "//third_party/blink/renderer/core/fetch/request.idl",
           "//third_party/blink/renderer/core/fetch/request_init.idl",

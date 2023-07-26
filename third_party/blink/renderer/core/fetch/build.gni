@@ -23,6 +23,8 @@ blink_core_sources_fetch = [
   "fetch_data_loader.h",
   "fetch_header_list.cc",
   "fetch_header_list.h",
+  "fetch_later_result.cc",
+  "fetch_later_result.h",
   "fetch_manager.cc",
   "fetch_manager.h",
   "fetch_request_data.cc",

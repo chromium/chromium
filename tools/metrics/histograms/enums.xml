@@ -43276,6 +43276,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4606" label="PriceChangeConfirmation"/>
   <int value="4607" label="PaymentRequestActivationlessShow"/>
   <int value="4608" label="WebAppTabbed"/>
+  <int value="4609" label="FetchLater"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

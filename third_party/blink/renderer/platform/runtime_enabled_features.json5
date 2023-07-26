@@ -1636,6 +1636,11 @@
       public: true,
     },
     {
+      // The Blink runtime-enabled feature name for the API's IDL.
+      name: "FetchLaterAPI",
+      public: true,
+    },
+    {
       name: "FetchUploadStreaming",
       status: "stable",
       base_feature: "none",

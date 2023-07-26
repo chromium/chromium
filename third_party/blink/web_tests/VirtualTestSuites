@@ -2268,5 +2268,17 @@
       "chikamune@chromium.org",
       "kouhei@chromium.org"
     ]
+  },
+  {
+    "prefix": "fetch-later",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/fetch/fetch-later"
+    ],
+    "args": [
+      "--enable-blink-features=FetchLaterAPI"
+    ],
+    "expires": "Jul 24, 2024",
+    "owners": ["mych@chromium.org"]
   }
 ]

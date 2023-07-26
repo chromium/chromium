@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_result.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/place_holder_bytes_consumer.h"
@@ -998,6 +999,29 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
   // TODO(ricea): Reject the Response body with AbortError, not TypeError.
   loader->Start();
   return promise;
+}
+
+FetchLaterResult* FetchManager::FetchLater(ScriptState* script_state,
+                                           FetchRequestData* request,
+                                           AbortSignal* signal,
+                                           ExceptionState& exception_state) {
+  // https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+  CHECK(signal);
+  // Step 2: If request’s signal is aborted, then throw signal’s abort reason.
+  if (signal->aborted()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      "The user aborted a deferred request.");
+    return MakeGarbageCollected<FetchLaterResult>();
+  }
+
+  request->SetDestination(network::mojom::RequestDestination::kEmpty);
+
+  // TODO(crbug.com/1465781): Update `FetchManager::Loader` to not take resolver
+  // and store it into deferred_loaders_ to use when `ContextDestroyed()`.
+
+  // TODO(crbug.com/1465781): Associate the returned FetchLaterResult with the
+  // deferred_loader created here, such that the sent state can be accessed.
+  return MakeGarbageCollected<FetchLaterResult>();
 }
 
 void FetchManager::ContextDestroyed() {
