@@ -110,6 +110,11 @@ class EventGeneratorDelegate {
 // EventGeneratorDelegate.
 class EventGenerator {
  public:
+  // Some test suites (e.g. chromeos_integration_tests) must use ui_controls.h
+  // and cannot use EventGenerator. Calling this function causes
+  // EventGenerator::Init() to CHECK-fail with a helpful message.
+  static void BanEventGenerator();
+
   // Create an EventGenerator with EventGeneratorDelegate,
   // which uses the coordinates conversions and targeting provided by
   // |delegate|.

@@ -5,6 +5,7 @@
 #include "chrome/test/base/chromeos/crosier/chromeos_test_suite.h"
 
 #include "build/chromeos_buildflags.h"
+#include "ui/events/test/event_generator.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ui_controls_ash.h"
@@ -23,6 +24,8 @@ ChromeOSTestSuite::~ChromeOSTestSuite() = default;
 
 void ChromeOSTestSuite::Initialize() {
   content::ContentTestSuiteBase::Initialize();
+  // chromeos_integration_tests must use functions in ui_controls.h.
+  ui::test::EventGenerator::BanEventGenerator();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::test::EnableUIControlsAsh();
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
