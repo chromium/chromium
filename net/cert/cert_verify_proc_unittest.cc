@@ -1480,7 +1480,7 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
   }
 }
 
-TEST_P(CertVerifyProcInternalTest, DISABLED_TestKnownRoot) {
+TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
   base::FilePath certs_dir = GetTestCertsDirectory();
   scoped_refptr<X509Certificate> cert_chain = CreateCertificateChainFromFile(
       certs_dir, "leaf_from_known_root.pem", X509Certificate::FORMAT_AUTO);
@@ -1488,10 +1488,10 @@ TEST_P(CertVerifyProcInternalTest, DISABLED_TestKnownRoot) {
 
   int flags = 0;
   CertVerifyResult verify_result;
-  int error = Verify(cert_chain.get(), "horseweather.com", flags,
+  int error = Verify(cert_chain.get(), "tntpowerwashservices.com", flags,
                      CertificateList(), &verify_result);
   EXPECT_THAT(error, IsOk()) << "This test relies on a real certificate that "
-                             << "expires on May 10 2024. If failing on/after "
+                             << "expires on Aug 24 2024. If failing on/after "
                              << "that date, please disable and file a bug "
                              << "against mattm.";
   EXPECT_TRUE(verify_result.is_issued_by_known_root);
