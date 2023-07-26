@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "components/search/ntp_features.h"
+#include "ui/base/ui_base_features.h"
 
 namespace omnibox {
 
@@ -560,4 +562,17 @@ BASE_FEATURE(kActionsInSuggest,
 BASE_FEATURE(kCategoricalSuggestions,
              "CategoricalSuggestions",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
+  if (!ntp_features::CustomizeChromeSupportsChromeRefresh2023()) {
+    // Bail before checking any other feature flags so that associated studies
+    // don't get activated.
+    return false;
+  }
+
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(feature);
+}
+
 }  // namespace omnibox

@@ -36,6 +36,15 @@ BASE_FEATURE(kCustomizeChromeSidePanel,
              "CustomizeChromeSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If both kCustomizeChromeSidePanelNoChromeRefresh2023 and
+// kCustomizeChromeSidePanel are enabled, Customize Chrome will be an option in
+// the Unified Side Panel when on the New Tab Page but Chrome Refresh 2023 will
+// be disabled. This state is useful in the Customize Chrome holdback
+// experiment.
+BASE_FEATURE(kCustomizeChromeSidePanelNoChromeRefresh2023,
+             "CustomizeChromeSidePanelNoChromeRefresh2023",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Forces a dark Google logo for a specific subset of Chrome Web Store themes
 // (see crbug.com/1329552). This is enabled by default to allow finch to disable
 // this NTP treatment in the case of unexpected regressions.
@@ -396,6 +405,13 @@ std::vector<std::string> GetModulesOrder() {
                                kNtpModulesOrder, kNtpModulesOrderParam),
                            ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
+
+bool CustomizeChromeSupportsChromeRefresh2023() {
+  return base::FeatureList::IsEnabled(
+             ntp_features::kCustomizeChromeSidePanel) &&
+         !base::FeatureList::IsEnabled(
+             ntp_features::kCustomizeChromeSidePanelNoChromeRefresh2023);
 }
 
 }  // namespace ntp_features

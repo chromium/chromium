@@ -632,9 +632,8 @@ void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
   bool gm3_text_color_enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextColor);
+      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kOmniboxSteadyStateTextColor);
 
   set_placeholder_text_color(GetColorProvider()->GetColor(
       gm3_text_color_enabled ? kColorOmniboxText : kColorOmniboxTextDimmed));

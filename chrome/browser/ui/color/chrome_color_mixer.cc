@@ -90,9 +90,8 @@ constexpr SkAlpha kTabGroupChipAlpha = 61;
 void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
                                     const ui::ColorProviderKey& key) {
   const bool gm3_background_color_enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateBackgroundColor);
+      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kOmniboxSteadyStateBackgroundColor);
 
   // Apply omnibox background color updates only to non-themed clients.
   if (gm3_background_color_enabled && !key.custom_theme) {
