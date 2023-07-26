@@ -96,8 +96,6 @@ AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
     return AllowStatus::kHardwareChecksFailed;
   } else if (BoardIn({"draco", "hades"})) {
     return AllowStatus::kAllowed;
-  } else if (BoardIn({"myst"})) {
-    return AllowStatus::kAllowed;
   } else if (IsBoard("nissa")) {
     if (HasSufficientHardware(kIntelCpuRegex) && InTargetSegment()) {
       return AllowStatus::kAllowed;
