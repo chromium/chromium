@@ -2044,6 +2044,8 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     return;
   }
 
+  DCHECK(obj->AXObjectID());
+
   Document* tree_update_document = obj->GetDocument();
 
   if (!CanDeferTreeUpdate(tree_update_document)) {
@@ -3050,6 +3052,8 @@ bool AXObjectCacheImpl::IsTreeUpdateRelevant(Document& document,
   }
 
   if (!tree_update->axid) {
+    // No node and no AXID means that it was a node update, but the
+    // WeakMember<Node> is no longer available.
     return false;
   }
 
@@ -3102,8 +3106,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
         TextOffsetsChangedWithCleanLayout(ax_object);
         break;
       default:
-        // Error if update_reason requires a Node.
-        NOTREACHED();
+        NOTREACHED() << "Update reason not handled: "
+                     << static_cast<int>(tree_update->update_reason);
     }
     return;
   }
@@ -3172,15 +3176,17 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
         kRemoveValidationMessageObjectFromValidationMessageObject:
       RemoveValidationMessageObjectWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kRoleChange:
+    case TreeUpdateReason::kRoleChangeFromAriaHasPopup:
+    case TreeUpdateReason::kRoleChangeFromRoleOrType:
       HandleRoleChangeWithCleanLayout(node);
       break;
     case TreeUpdateReason::kRoleMaybeChanged:
       HandleRoleMaybeChangedWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kSectionOrRegionRoleMaybeChanged:
+    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
+    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
       SectionOrRegionRoleMaybeChangedWithCleanLayout(node);
-      break;
+      return;
     case TreeUpdateReason::kTextChangedFromTextChangedNode:
       TextChangedWithCleanLayout(node);
       break;
@@ -3203,8 +3209,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       HandleValidationMessageVisibilityChangedWithCleanLayout(node);
       break;
     default:
-      // Error if update_reason requires an AXObject or invalid value.
-      NOTREACHED();
+      NOTREACHED() << "Update reason not handled: "
+                   << static_cast<int>(tree_update->update_reason);
   }
 }
 
@@ -3587,8 +3593,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     } else if (attr_name == html_names::kAriaLabelAttr ||
                attr_name == html_names::kAriaLabeledbyAttr ||
                attr_name == html_names::kAriaLabelledbyAttr) {
-      DeferTreeUpdate(TreeUpdateReason::kSectionOrRegionRoleMaybeChanged,
-                      element);
+      DeferTreeUpdate(
+          TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel, element);
     } else if (attr_name == html_names::kAriaDescriptionAttr ||
                attr_name == html_names::kAriaDescribedbyAttr) {
       TextChanged(element);
@@ -3611,7 +3617,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
             obj->RoleValue() == ax::mojom::blink::Role::kPopUpButton) {
           // The aria-haspopup attribute can switch the role between kButton and
           // kPopupButton.
-          DeferTreeUpdate(TreeUpdateReason::kRoleChange, element);
+          DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromAriaHasPopup,
+                          element);
         }
       }
     } else {
@@ -3622,7 +3629,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
 
   if (attr_name == html_names::kRoleAttr ||
       attr_name == html_names::kTypeAttr) {
-    DeferTreeUpdate(TreeUpdateReason::kRoleChange, element);
+    DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromRoleOrType, element);
   } else if (attr_name == html_names::kSizeAttr ||
              attr_name == html_names::kMultipleAttr) {
     if (IsA<HTMLSelectElement>(element)) {
@@ -3636,7 +3643,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kAltAttr) {
     TextChanged(element);
   } else if (attr_name == html_names::kTitleAttr) {
-    DeferTreeUpdate(TreeUpdateReason::kSectionOrRegionRoleMaybeChanged,
+    DeferTreeUpdate(TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle,
                     element);
   } else if (attr_name == html_names::kForAttr &&
              IsA<HTMLLabelElement>(*element)) {
