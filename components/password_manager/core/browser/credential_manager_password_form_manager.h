@@ -58,8 +58,7 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
   // Calls OnProvisionalSaveComplete on |delegate_|.
   void NotifyDelegate();
 
-  raw_ptr<CredentialManagerPasswordFormManagerDelegate, DanglingUntriaged>
-      delegate_;
+  const raw_ptr<CredentialManagerPasswordFormManagerDelegate> delegate_;
 
   base::WeakPtrFactory<CredentialManagerPasswordFormManager> weak_factory_{
       this};
