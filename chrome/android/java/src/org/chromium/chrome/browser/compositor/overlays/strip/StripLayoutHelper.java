@@ -947,6 +947,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             tab.setId(mModel.getTabAt(i).getId());
             tab.setIsPlaceholder(false);
+            tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
         }
 
         // 2. If the active tab could not be copied earlier, copy it over now at the correct index.
@@ -959,6 +960,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             tab.setId(mModel.getTabAt(mModel.getCount() - 1).getId());
             tab.setIsPlaceholder(false);
+            tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
         }
 
         // 3. Request new frame.
@@ -995,6 +997,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         final StripLayoutTab placeholderTab = mStripTabs[replaceIndex];
         placeholderTab.setId(id);
         placeholderTab.setIsPlaceholder(false);
+        placeholderTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
 
         mRenderHost.requestRender();
     }
@@ -1033,7 +1036,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private void setForegroundTabContainerVisible(StripLayoutTab tab, boolean selected) {
         // Don't interrupt tab group background tab visibility.
         if (tab.getContainerOpacity() != TAB_OPACITY_VISIBLE_BACKGROUND) {
-            float containerOpacity = selected ? TAB_OPACITY_VISIBLE_FOREGROUND : TAB_OPACITY_HIDDEN;
+            float containerOpacity = selected || tab.getIsPlaceholder()
+                    ? TAB_OPACITY_VISIBLE_FOREGROUND
+                    : TAB_OPACITY_HIDDEN;
             tab.setContainerOpacity(containerOpacity);
         }
     }
@@ -1063,7 +1068,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 1; i < mStripTabs.length; i++) {
             final StripLayoutTab prevTab = mStripTabs[i - 1];
             final StripLayoutTab currTab = mStripTabs[i];
-            boolean prevTabSelected = selectedIndex == i - 1;
             boolean currTabSelected = selectedIndex == i;
 
             // Set container opacity.
@@ -1071,29 +1075,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             /**
              * Start divider should be visible when:
-             * 1. In reorder mode and currTab container is hidden and
+             * 1. currTab container is hidden and
              * (a) prevTab has trailing margin (ie: currTab is start of group or an individual tab)
              * OR (b) prevTab container is also hidden.
-             * 2. Not in reorder mode and prevTab is not selected and currTab is not selected
              */
-            boolean startDividerVisible =
-                    (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
-                            && (prevTab.getTrailingMargin() > 0
-                                    || prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN))
-                    || (!mInReorderMode && !prevTabSelected && !currTabSelected);
+            boolean startDividerVisible = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
+                    && (prevTab.getTrailingMargin() > 0
+                            || prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN);
             currTab.setStartDividerVisible(startDividerVisible);
 
             /**
              * End divider should be applied when:
-             * 1. In reorder mode and currTab container is hidden and
-             * (a) currTab's trailing margin > 0  (ie last tab in group) OR
-             * (b) currTab is last tab in strip (last tab does not have trailing margin)
-             * 2. Not in reorder mode and currTab is last tab on strip and is not selected
+             * 1. currTab container is hidden and
+             * (a) currTab's trailing margin > 0  (i.e. is last tab in group) OR
+             * (b) currTab is last tab in strip (as the last tab does not have trailing margin)
              */
-            endDividerVisible =
-                    (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
-                            && (currTab.getTrailingMargin() > 0 || i == (mStripTabs.length - 1)))
-                    || (!mInReorderMode && i == (mStripTabs.length - 1) && !currTabSelected);
+            endDividerVisible = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
+                    && (currTab.getTrailingMargin() > 0 || i == (mStripTabs.length - 1));
             currTab.setEndDividerVisible(endDividerVisible);
         }
     }
@@ -1760,6 +1758,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 mContext, Tab.INVALID_TAB_ID, this, mTabLoadTrackerHost, mUpdateHost, mIncognito);
         tab.setHeight(mHeight);
         tab.setIsPlaceholder(true);
+        tab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
         pushStackerPropertiesToTab(tab);
 
         return tab;

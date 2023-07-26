@@ -53,22 +53,26 @@ public class TabUiThemeUtil {
     }
 
     /**
-     * Returns the color for the tab container based on experiment arm, incognito mode, and
-     * foreground status.
+     * Returns the color for the tab container based on experiment arm, incognito mode, foreground,
+     * reordering, and placeholder state.
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param foreground Whether the tab is in the foreground.
+     * @param isReordering Whether the tab is being reordered.
+     * @param isPlaceholder Whether the tab is a placeholder "ghost" tab
      * @return The color for the tab container.
      */
-    public static int getTabStripContainerColor(
-            Context context, boolean isIncognito, boolean foreground, boolean isReordering) {
+    public static @ColorInt int getTabStripContainerColor(Context context, boolean isIncognito,
+            boolean foreground, boolean isReordering, boolean isPlaceholder) {
         if (foreground) {
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 return ChromeColors.getDefaultThemeColor(context, isIncognito);
             } else if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
                 return getTabStripDetachedTabColor(context, isIncognito, isReordering);
             }
+        } else if (isPlaceholder) {
+            return getTabStripStartupContainerColor(context);
         } else {
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 return getSurfaceColorElev0(context, isIncognito);
@@ -79,6 +83,15 @@ public class TabUiThemeUtil {
 
         // Should be unreachable as TSR should never be enabled without the folio or detached arm.
         return Color.TRANSPARENT;
+    }
+
+    /**
+     * Returns the color for the tab strip startup "ghost" containers.
+     */
+    private static @ColorInt int getTabStripStartupContainerColor(Context context) {
+        return context.getColor(TabManagementFieldTrial.isTabStripFolioEnabled()
+                        ? R.color.bg_tabstrip_tab_folio_startup_tint
+                        : R.color.bg_tabstrip_tab_detached_startup_tint);
     }
 
     /**

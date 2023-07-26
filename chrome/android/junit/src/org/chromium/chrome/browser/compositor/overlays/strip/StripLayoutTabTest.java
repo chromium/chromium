@@ -138,6 +138,38 @@ public class StripLayoutTabTest {
     }
 
     @Test
+    @Features.EnableFeatures(
+            {ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING})
+    public void
+    testGetTint_Startup_TabStripRedesign() {
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+        int expectedColor;
+
+        mNormalTab.setIsPlaceholder(true);
+        mIncognitoTab.setIsPlaceholder(true);
+
+        // Normal active tab color.
+        expectedColor = ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_5);
+        assertEquals("Detached normal active should match the regular foreground color.",
+                expectedColor, mNormalTab.getTint(true));
+
+        // Normal inactive tab color.
+        expectedColor = mContext.getColor(R.color.bg_tabstrip_tab_detached_startup_tint);
+        assertEquals("Normal inactive tab should match the placeholder color.", expectedColor,
+                mNormalTab.getTint(false));
+
+        // Incognito active tab color.
+        expectedColor = Color.BLACK;
+        assertEquals("Detached incognito active should match the regular foreground color.",
+                expectedColor, mIncognitoTab.getTint(true));
+
+        // Incognito inactive tab color.
+        expectedColor = mContext.getColor(R.color.bg_tabstrip_tab_detached_startup_tint);
+        assertEquals("Incognito inactive tab should match the placeholder color.", expectedColor,
+                mIncognitoTab.getTint(false));
+    }
+
+    @Test
     @Feature("Tab Strip Redesign")
     public void testGetOutlineTint() {
         int expectedColor;

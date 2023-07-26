@@ -363,13 +363,14 @@ public class StripLayoutTab implements VirtualView {
      * @return The Android resource that represents the tab background.
      */
     public int getResourceId() {
-        if (TabManagementFieldTrial.isTabStripDetachedEnabled() || !mFolioAttached) {
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) return R.drawable.bg_tabstrip_tab;
+
+        if (TabManagementFieldTrial.isTabStripDetachedEnabled() || !mFolioAttached
+                || mIsPlaceholder) {
             return TabUiThemeUtil.getTSRDetachedResource();
-        } else if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
+        } else {
             return TabUiThemeUtil.getTSRFolioResource();
         }
-
-        return R.drawable.bg_tabstrip_tab;
     }
 
     /**
@@ -395,7 +396,7 @@ public class StripLayoutTab implements VirtualView {
         //  color and only re-determine when the color could have changed (i.e. on selection).
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             return TabUiThemeUtil.getTabStripContainerColor(
-                    mContext, mIncognito, foreground, mIsReordering);
+                    mContext, mIncognito, foreground, mIsReordering, mIsPlaceholder);
         }
 
         if (foreground) {
@@ -845,6 +846,7 @@ public class StripLayoutTab implements VirtualView {
      */
     public void setIsPlaceholder(boolean isPlaceholder) {
         mIsPlaceholder = isPlaceholder;
+        checkCloseButtonVisibility(false);
     }
 
     /**
@@ -888,7 +890,7 @@ public class StripLayoutTab implements VirtualView {
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.
     private void checkCloseButtonVisibility(boolean animate) {
-        boolean shouldShow = mCanShowCloseButton;
+        boolean shouldShow = mCanShowCloseButton && !mIsPlaceholder;
 
         if (shouldShow != mShowingCloseButton) {
             float opacity = shouldShow ? 1.f : 0.f;

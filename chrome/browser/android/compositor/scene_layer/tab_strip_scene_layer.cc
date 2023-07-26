@@ -394,7 +394,7 @@ void TabStripSceneLayer::PutStripTabLayer(
   scoped_refptr<TabHandleLayer> layer = GetNextLayer(layer_title_cache);
   ui::NinePatchResource* tab_handle_resource =
       ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
-          handle_resource_id, handle_tint));
+          handle_resource_id, handle_tint, true));
   ui::NinePatchResource* tab_handle_outline_resource =
       ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
           handle_outline_resource_id, handle_outline_tint));
