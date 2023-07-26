@@ -161,12 +161,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // The view controller that holds the view of the suggested saerch actions.
 @property(nonatomic, strong)
     SuggestedActionsViewController* suggestedActionsViewController;
-// Cells for which pointer interactions have been added. Pointer interactions
-// should only be added to displayed cells (not transition cells). This is only
-// expected to get as large as the number of reusable cells in memory.
-@property(nonatomic, strong)
-    NSHashTable<UICollectionViewCell*>* pointerInteractionCells API_AVAILABLE(
-        ios(13.4));
+// Grid cells for which pointer interactions have been added. Pointer
+// interactions should only be added to displayed cells (not transition cells).
+// This is only expected to get as large as the number of reusable grid cells in
+// memory.
+@property(nonatomic, strong) NSHashTable<GridCell*>* pointerInteractionCells;
 // YES while batch updates and the batch update completion are being performed.
 @property(nonatomic) BOOL updating;
 // YES while the grid has the suggested actions section.
@@ -302,8 +301,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   self.collectionView.dragInteractionEnabled =
       [self shouldEnableDrapAndDropInteraction];
 
-  self.pointerInteractionCells =
-      [NSHashTable<UICollectionViewCell*> weakObjectsHashTable];
+  self.pointerInteractionCells = [NSHashTable<GridCell*> weakObjectsHashTable];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -754,13 +752,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                                   forIndexPath:indexPath];
     GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
     [self configureCell:gridCell withItem:item atIndex:itemIndex];
-  }
-
-  if (![self.pointerInteractionCells containsObject:cell]) {
-    [cell addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-    // `self.pointerInteractionCells` is only expected to get as large as
-    // the number of reusable cells in memory.
-    [self.pointerInteractionCells addObject:cell];
   }
 
   return cell;
@@ -1905,6 +1896,12 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     [cell showActivityIndicator];
   } else {
     [cell hideActivityIndicator];
+  }
+  if (![self.pointerInteractionCells containsObject:cell]) {
+    [cell addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+    // `self.pointerInteractionCells` is only expected to get as large as the
+    // number of reusable grid cells in memory.
+    [self.pointerInteractionCells addObject:cell];
   }
 }
 
