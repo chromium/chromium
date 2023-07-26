@@ -17,6 +17,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_commit_deferring_condition.h"
@@ -302,17 +303,10 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_Embedder_DirectURLInput) {
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_PreloadingConfigHoldback) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(features::kPreloadingConfig,
-                                              {{"preloading_config", R"(
-  [{
-    "preloading_type": "Prerender",
-    "preloading_predictor": "SpeculationRules",
-    "holdback": true
-  }]
-  )"}});
-  PreloadingConfig& config = PreloadingConfig::GetInstance();
-  config.ParseConfig();
+  content::test::PreloadingConfigOverride preloading_config_override;
+  preloading_config_override.SetHoldback(
+      PreloadingType::kPrerender,
+      content_preloading_predictor::kSpeculationRules, true);
   const GURL kPrerenderingUrl("https://example.com/next");
   auto* preloading_data = PreloadingData::GetOrCreateForWebContents(contents());
   PreloadingURLMatchCallback same_url_matcher =
@@ -350,17 +344,10 @@ TEST_F(PrerenderHostRegistryTest,
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_HoldbackOverride_Allowed) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(features::kPreloadingConfig,
-                                              {{"preloading_config", R"(
-  [{
-    "preloading_type": "Prerender",
-    "preloading_predictor": "SpeculationRules",
-    "holdback": true
-  }]
-  )"}});
-  PreloadingConfig& config = PreloadingConfig::GetInstance();
-  config.ParseConfig();
+  content::test::PreloadingConfigOverride preloading_config_override;
+  preloading_config_override.SetHoldback(
+      PreloadingType::kPrerender,
+      content_preloading_predictor::kSpeculationRules, true);
   const GURL kPrerenderingUrl("https://example.com/next");
   auto* preloading_data = PreloadingData::GetOrCreateForWebContents(contents());
   PreloadingURLMatchCallback same_url_matcher =
@@ -458,8 +445,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to 1, and new candidates can be processed after the initiator page navigates
 // to a new same-origin page.
-// TODO(crbug.com/1464684): Test is flaky across platforms.
-TEST_F(PrerenderHostRegistryTest, DISABLED_NumberLimit_SameOriginNavigateAway) {
+TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   RenderFrameHostImpl* render_frame_host = contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -497,9 +483,7 @@ TEST_F(PrerenderHostRegistryTest, DISABLED_NumberLimit_SameOriginNavigateAway) {
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to 1, and new candidates can be processed after the initiator page navigates
 // to a new cross-origin page.
-// TODO(crbug.com/1464684): Test is flaky across platforms.
-TEST_F(PrerenderHostRegistryTest,
-       DISABLED_NumberLimit_CrossOriginNavigateAway) {
+TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   RenderFrameHostImpl* render_frame_host = contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
 

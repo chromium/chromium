@@ -10315,19 +10315,14 @@ class PrerenderSpeculationRulesHoldbackBrowserTest
     : public PrerenderBrowserTest {
  public:
   PrerenderSpeculationRulesHoldbackBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPreloadingConfig, {{"preloading_config", R"(
-  [{
-    "preloading_type": "Prerender",
-    "preloading_predictor": "SpeculationRules",
-    "holdback": true
-  }]
-  )"}});
+    preloading_config_override_.SetHoldback(
+        PreloadingType::kPrerender,
+        content_preloading_predictor::kSpeculationRules, true);
   }
   ~PrerenderSpeculationRulesHoldbackBrowserTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderSpeculationRulesHoldbackBrowserTest,

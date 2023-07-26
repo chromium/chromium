@@ -59,8 +59,7 @@ class AnchorElementPreloaderBrowserTest
          {blink::features::kAnchorElementInteraction,
           GetAnchorElementInteractionFieldTrialParams()},
          {blink::features::kSpeculationRulesPointerDownHeuristics, {}}},
-        {blink::features::kSpeculationRulesPointerHoverHeuristics,
-         features::kPreloadingConfig});
+        {blink::features::kSpeculationRulesPointerHoverHeuristics});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data/preload");
@@ -166,6 +165,8 @@ class AnchorElementPreloaderBrowserTest
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       ukm_entry_builder_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {

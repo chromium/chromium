@@ -47,6 +47,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
@@ -259,26 +260,21 @@ class DevToolsProtocolTest_PreloadEnabledStateUpdatedDisabledByHoldback
     : public DevToolsProtocolTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPreloadingConfig, {{"preloading_config", R"(
-      [{
-        "preloading_type": "Prefetch",
-        "preloading_predictor": "SpeculationRules",
-        "sampling_likelihood": 0.0,
-        "holdback": true
-      }, {
-        "preloading_type": "Prerender",
-        "preloading_predictor": "SpeculationRules",
-        "sampling_likelihood": 0.0,
-        "holdback": true
-      }]
-    )"}});
+    // This holds back speculation rules prefetch and prerender. Note that
+    // directly using enums (instead of strings) in the call to SetHoldback is
+    // usually preferred, but this is not possible here because
+    // content::content_preloading_predictor::kSpeculationRules, which is not
+    // exposed outside of content.
+    preloading_config_override_.SetHoldback("Prefetch", "SpeculationRules",
+                                            true);
+    preloading_config_override_.SetHoldback("Prerender", "SpeculationRules",
+                                            true);
 
     DevToolsProtocolTest::SetUp();
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(

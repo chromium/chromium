@@ -70,15 +70,32 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "sampling_likelihood": 0.000345
 }]
 )"};
+
+static PreloadingConfig* g_config_override = nullptr;
+
 }  // namespace
 
 PreloadingConfig& PreloadingConfig::GetInstance() {
   static base::NoDestructor<PreloadingConfig> config;
+  static bool initialized = false;
+  if (!initialized) {
+    config->ParseConfig();
+    initialized = true;
+  }
+
+  if (g_config_override) {
+    return *g_config_override;
+  }
   return *config;
 }
 
-PreloadingConfig::PreloadingConfig() {
-  ParseConfig();
+PreloadingConfig::PreloadingConfig() = default;
+
+PreloadingConfig* PreloadingConfig::OverrideForTesting(
+    PreloadingConfig* config_override) {
+  raw_ptr<PreloadingConfig> old_override = g_config_override;
+  g_config_override = config_override;
+  return old_override;
 }
 
 void PreloadingConfig::ParseConfig() {
@@ -131,6 +148,23 @@ bool PreloadingConfig::ShouldHoldback(PreloadingType preloading_type,
                                       PreloadingPredictor predictor) {
   Entry entry = entries_[Key::FromEnums(preloading_type, predictor)];
   return entry.holdback_;
+}
+
+void PreloadingConfig::SetHoldbackForTesting(PreloadingType preloading_type,
+                                             PreloadingPredictor predictor,
+                                             bool holdback) {
+  Entry entry;
+  entry.holdback_ = holdback;
+  entries_.emplace(
+      Key(PreloadingTypeToString(preloading_type), predictor.name()), entry);
+}
+
+void PreloadingConfig::SetHoldbackForTesting(base::StringPiece preloading_type,
+                                             base::StringPiece predictor,
+                                             bool holdback) {
+  Entry entry;
+  entry.holdback_ = holdback;
+  entries_.emplace(Key(preloading_type, predictor), entry);
 }
 
 double PreloadingConfig::SamplingLikelihood(PreloadingType preloading_type,

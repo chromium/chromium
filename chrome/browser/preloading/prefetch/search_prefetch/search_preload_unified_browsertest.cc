@@ -98,7 +98,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
               {"cache_size", "1"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{features::kPreloadingConfig});
+        /*disabled_features=*/{});
   }
 
   void SetUp() override {
@@ -413,6 +413,8 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
@@ -1186,7 +1188,7 @@ class DSEPrerenderHoldbackSearchPreloadUnifiedBrowserTest
               {"device_memory_threshold_MB", "0"}}},
             {features::kPrerenderDSEHoldback, {{}}},
         },
-        /*disabled_features=*/{features::kPreloadingConfig});
+        /*disabled_features=*/{});
   }
 };
 
@@ -1202,22 +1204,23 @@ class PreloadingConfigHoldbackSearchPreloadUnifiedBrowserTest
  public:
   PreloadingConfigHoldbackSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {{"implementation_type", "use_prefetch"}}},
-         {kSearchPrefetchServicePrefetching,
-          {{"max_attempts_per_caching_duration", "3"},
-           {"cache_size", "4"},
-           {"device_memory_threshold_MB", "0"}}},
-         {features::kPrerenderDSEHoldback, {{}}},
-         {features::kPreloadingConfig, {{"preloading_config", R"(
-  [{
-    "preloading_type": "Prerender",
-    "preloading_predictor": "DefaultSearchEngine",
-    "holdback": true
-  }]
-  )"}}}},
+        {
+            {features::kSupportSearchSuggestionForPrerender2,
+             {{"implementation_type", "use_prefetch"}}},
+            {kSearchPrefetchServicePrefetching,
+             {{"max_attempts_per_caching_duration", "3"},
+              {"cache_size", "4"},
+              {"device_memory_threshold_MB", "0"}}},
+            {features::kPrerenderDSEHoldback, {{}}},
+        },
         {});
+    preloading_config_override_.SetHoldback(
+        content::PreloadingType::kPrerender,
+        chrome_preloading_predictor::kDefaultSearchEngine, true);
   }
+
+ private:
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 // Tests that we log correct metrics for Prerender holdback in case of Search
@@ -1244,8 +1247,7 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
         },
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
-        /*disabled_features=*/{features::kBackForwardCache,
-                               features::kPreloadingConfig});
+        /*disabled_features=*/{features::kBackForwardCache});
   }
 
  private:
@@ -1524,8 +1526,7 @@ class NoCancelSearchPreloadUnifiedBrowserTest
         },
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
-        /*disabled_features=*/{features::kBackForwardCache,
-                               features::kPreloadingConfig});
+        /*disabled_features=*/{features::kBackForwardCache});
   }
 
  private:
@@ -1649,7 +1650,7 @@ class SearchPreloadUnifiedFallbackBrowserTest
              {{"max_attempts_per_caching_duration", "3"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{features::kPreloadingConfig});
+        /*disabled_features=*/{});
   }
   ~SearchPreloadUnifiedFallbackBrowserTest() override = default;
 
@@ -2072,7 +2073,7 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
               {"cache_size", "4"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{features::kPreloadingConfig});
+        /*disabled_features=*/{});
   }
   ~NoCancelSearchPreloadUnifiedFallbackBrowserTest() override = default;
 
