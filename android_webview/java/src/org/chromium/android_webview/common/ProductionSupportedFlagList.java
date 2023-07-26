@@ -477,6 +477,8 @@ public final class ProductionSupportedFlagList {
                             + "See https://chromestatus.com/feature/5796524191121408."),
             Flag.baseFeature(ContentFeatures.PREFETCH_NEW_LIMITS,
                     "Enables new limits policy for SpeculationRules Prefetch."),
+            Flag.baseFeature(BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_SUPPORT,
+                    "Enables support for CSS vertical writing mode on form controls"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
