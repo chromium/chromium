@@ -289,6 +289,7 @@ DrawingBuffer::~DrawingBuffer() {
 bool DrawingBuffer::MarkContentsChanged() {
   if (contents_change_resolved_ || !contents_changed_) {
     contents_change_resolved_ = false;
+    transient_framebuffers_discarded_ = false;
     contents_changed_ = true;
     return true;
   }
@@ -411,7 +412,8 @@ bool DrawingBuffer::PrepareTransferableResource(
 }
 
 DrawingBuffer::CheckForDestructionResult
-DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded() {
+DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
+    DiscardBehavior discardBehavior) {
   DCHECK(state_restorer_);
   if (destruction_in_progress_) {
     // It can be hit in the following sequence.
@@ -438,7 +440,7 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded() {
   TRACE_EVENT0("blink,rail", "DrawingBuffer::prepareMailbox");
 
   // Resolve the multisampled buffer into the texture attached to fbo_.
-  ResolveIfNeeded();
+  ResolveIfNeeded(discardBehavior);
 
   return kContentsResolvedIfNeeded;
 }
@@ -448,9 +450,10 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback,
     bool force_gpu_result) {
-  if (CheckForDestructionAndChangeAndResolveIfNeeded() !=
-      kContentsResolvedIfNeeded)
+  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
+      kContentsResolvedIfNeeded) {
     return false;
+  }
 
   if (!IsUsingGpuCompositing() && !force_gpu_result) {
     return FinishPrepareTransferableResourceSoftware(
@@ -465,8 +468,10 @@ scoped_refptr<StaticBitmapImage>
 DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
   ScopedStateRestorer scoped_state_restorer(this);
 
-  if (CheckForDestructionAndChangeAndResolveIfNeeded() == kDestroyedOrLost)
+  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDontDiscard) ==
+      kDestroyedOrLost) {
     return nullptr;
+  }
 
   SkBitmap bitmap;
   if (!bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
@@ -1005,7 +1010,7 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
   gpu::gles2::GLES2Interface* src_gl = gl_;
 
   if (contents_changed_) {
-    ResolveIfNeeded();
+    ResolveIfNeeded(kDontDiscard);
     src_gl->Flush();
   }
 
@@ -1535,7 +1540,7 @@ void DrawingBuffer::SetColorSpace(PredefinedColorSpace predefined_color_space) {
 bool DrawingBuffer::ResolveAndBindForReadAndDraw() {
   {
     ScopedStateRestorer scoped_state_restorer(this);
-    ResolveIfNeeded();
+    ResolveIfNeeded(kDontDiscard);
     // Note that in rare situations on macOS the drawing buffer can be
     // destroyed during the resolve process, specifically during
     // automatic graphics switching. Guard against this.
@@ -1578,12 +1583,12 @@ void DrawingBuffer::ResolveMultisampleFramebufferInternal() {
   gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
 }
 
-void DrawingBuffer::ResolveIfNeeded() {
+void DrawingBuffer::ResolveIfNeeded(DiscardBehavior discardBehavior) {
   DCHECK(state_restorer_);
-  if (anti_aliasing_mode_ != kAntialiasingModeNone &&
-      !contents_change_resolved_) {
+  if (anti_aliasing_mode_ != kAntialiasingModeNone) {
     if (preserve_drawing_buffer_ == kDiscard &&
-        discard_framebuffer_supported_) {
+        discard_framebuffer_supported_ && discardBehavior == kDiscardAllowed &&
+        !transient_framebuffers_discarded_) {
       // Discard the depth and stencil buffers as early as possible, before
       // making any potentially-unneeded calls to BindFramebuffer (even no-ops),
       // in order to maximize the chances that their storage can be kept in tile
@@ -1593,8 +1598,11 @@ void DrawingBuffer::ResolveIfNeeded() {
       state_restorer_->SetFramebufferBindingDirty();
       gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
       gl_->DiscardFramebufferEXT(GL_FRAMEBUFFER, 2, kAttachments);
+      transient_framebuffers_discarded_ = true;
     }
-    ResolveMultisampleFramebufferInternal();
+    if (!contents_change_resolved_) {
+      ResolveMultisampleFramebufferInternal();
+    }
   }
   contents_change_resolved_ = true;
 
@@ -1834,7 +1842,7 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
     return;
 
   ScopedStateRestorer scoped_state_restorer(this);
-  ResolveIfNeeded();
+  ResolveIfNeeded(kDiscardAllowed);
 
   if (!using_swap_chain_) {
     return;

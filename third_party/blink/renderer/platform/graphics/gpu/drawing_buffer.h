@@ -488,8 +488,19 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // The same as resolveAndBindForReadAndDraw(), but leaves GL state dirty.
   void ResolveMultisampleFramebufferInternal();
 
+  enum DiscardBehavior {
+    // A public entry point is requesting the resolve. Do not discard
+    // framebuffer attachments which would otherwise be considered
+    // transient.
+    kDontDiscard,
+
+    // The compositor is requesting the resolve. Discard framebuffer
+    // attachments which are considered transient.
+    kDiscardAllowed
+  };
+
   // Resolves m_multisampleFBO into m_fbo, if multisampling.
-  void ResolveIfNeeded();
+  void ResolveIfNeeded(DiscardBehavior discardBehavior);
 
   enum CheckForDestructionResult {
     kDestroyedOrLost,
@@ -503,7 +514,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   //  - Checks whether the context has been lost
   // If all of the above checks pass, resolves the multisampled
   // renderbuffer if needed.
-  CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded();
+  CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded(
+      DiscardBehavior discardBehavior);
 
   bool PrepareTransferableResourceInternal(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
@@ -662,6 +674,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // True if resolveIfNeeded() has been called since the last time
   // markContentsChanged() had been called.
   bool contents_change_resolved_ = false;
+  bool transient_framebuffers_discarded_ = false;
   bool buffer_clear_needed_ = false;
 
   // Whether the client wants a depth or stencil buffer.
