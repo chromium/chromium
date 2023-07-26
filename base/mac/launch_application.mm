@@ -43,6 +43,8 @@ NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
     for (const auto& arg : *string_vector) {
       [args_array addObject:base::SysUTF8ToNSString(arg)];
     }
+
+    return args_array;
   }
 
   return @[];
