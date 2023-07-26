@@ -62,9 +62,13 @@
   }
 
   #header-image {
-    background-color: var(--cros-sys-app_base_shaded);
+    background-color: var(--cros-highlight-color);
     height: 236px;
     width: 512px;
+  }
+
+  :host-context([theme='refresh23']) #header-image {
+    background-color: var(--cros-sys-app_base_shaded);
   }
 
   ::slotted([slot=header-image]) {
