@@ -71,9 +71,15 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
                   const std::string& method_name,
                   bool success);
   void OnInitialized(bool success);
+  void RegisterStatusNotifierItem();
 
   // Step 5: register the StatusNotifierItem with the StatusNotifierWatcher.
   void OnRegistered(dbus::Response* response);
+
+  // Called when the name owner of StatusNotifierWatcher has changed, which
+  // can happen when lock/unlock screen.
+  void OnNameOwnerChangedReceived(const std::string& old_owner,
+                                  const std::string& new_owner);
 
   // DBus methods.
   // Action       -> KDE behavior:
