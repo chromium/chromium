@@ -4038,45 +4038,6 @@ MATRIX_COMPOUND_TRAILING_IDENTIFIER = """\
 }
 """
 
-MATRIX_MISMATCHED_SWARMING_LENGTH = """\
-{
-  'basic_suites': {
-    'foo_tests': {
-      'foo_test': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'hello': 'world',
-            }
-          ],
-        },
-      },
-    },
-  },
-  'matrix_compound_suites': {
-    'matrix_tests': {
-      'foo_tests': {
-        'variants': [
-          {
-            'identifier': 'test',
-            'swarming': {
-              'dimension_sets': [
-                {
-                  'foo': 'bar',
-                },
-                {
-                  'bar': 'foo',
-                }
-              ],
-            },
-          },
-        ],
-      },
-    },
-  },
-}
-"""
-
 MATRIX_REF_NONEXISTENT = """\
 {
   'basic_suites': {
@@ -4358,11 +4319,9 @@ MATRIX_COMPOUND_TARGETS_SWARMING = """\
             'identifier': 'swarming',
             'swarming': {
               'a': 'b',
-              'dimension_sets': [
-                {
-                  'hello': 'world',
-                }
-              ]
+              'dimensions': {
+                'hello': 'world',
+              }
             }
           },
           {
@@ -4685,16 +4644,6 @@ class MatrixCompositionTests(TestCase):
         generate_buildbot_json.BBGenErr,
         'Identifier field can not have leading and trailing whitespace in'
         ' matrix compound suite*'):
-      fbb.check_output_file_consistency(verbose=True)
-
-  def test_mismatched_swarming_length(self):
-    """
-    Swarming dimension set length mismatch test. Composition set > basic set
-    """
-    fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
-                    MATRIX_MISMATCHED_SWARMING_LENGTH, LUCI_MILO_CFG)
-    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
-                                'Error merging lists by key *'):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_noexistent_ref(self):

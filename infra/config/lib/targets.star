@@ -328,6 +328,7 @@ def _swarming(
 def _mixin(
         *,
         name = None,
+        description = None,
         args = None,
         precommit_args = None,
         android_args = None,
@@ -352,6 +353,9 @@ def _mixin(
 
     Args:
         name: The name of the mixin.
+        description: A description to attach to the test. If specified,
+            it will be appended to any description already present on
+            the test.
         args: Arguments to be passed to the test binary. Will be
             appended to any existing args for the test.
         precommit_args: Arguments to be passed to the test binary when
@@ -394,6 +398,7 @@ def _mixin(
         timeout_sec: The maximum time the test can take to run.
     """
     mixin_values = dict(
+        description = description,
         args = args,
         precommit_args = precommit_args,
         linux_args = linux_args,
@@ -516,6 +521,9 @@ def _generate_mixins_pyl(ctx):
     for n in graph.children(keys.project(), _TARGET_MIXIN.kind, graph.DEFINITION_ORDER):
         mixin = n.props.mixin_values
         formatter.open_scope("'{}': {{".format(n.key.id))
+
+        if "description" in mixin:
+            formatter.add_line("'description': '{}',".format(mixin["description"]))
 
         for args_attr in (
             "args",

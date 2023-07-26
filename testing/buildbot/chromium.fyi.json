@@ -35060,7 +35060,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
         "cros_img": "octopus-public/R116-15506.0.0",
@@ -35078,7 +35077,6 @@
         "variant_id": "OCTOPUS_PUBLIC_LKGM"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
         "cros_img": "eve-public/R116-15506.0.0",
@@ -35106,7 +35104,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R116-15506.0.0",
@@ -35124,7 +35121,6 @@
         "variant_id": "JACUZZI_PUBLIC_LKGM"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R116-15506.0.0",
@@ -35149,7 +35145,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R116-15506.0.0",
@@ -35167,7 +35162,6 @@
         "variant_id": "JACUZZI_PUBLIC_LKGM"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R116-15506.0.0",
@@ -35187,7 +35181,6 @@
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R116-15506.0.0",
