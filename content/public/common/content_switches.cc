@@ -628,6 +628,12 @@ const char kProcessPerTab[]                 = "process-per-tab";
 // renderer or plugin host.  If it's empty, it's the browser.
 const char kProcessType[]                   = "type";
 
+// Causes Protected Audiences Bidding and Auction API to supply the provided
+// debugging key to the trusted auction server. This tells the server that it
+// okay to log information about this user's auction to help with debugging.
+const char kProtectedAudiencesConsentedDebugToken[] =
+    "protected-audiences-consented-debug-token";
+
 // Uses a specified proxy server, overrides system settings. This switch only
 // affects HTTP and HTTPS requests. ARC-apps use only HTTP proxy server with the
 // highest priority.
