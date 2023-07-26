@@ -129,12 +129,12 @@ TEST_F(BlockingMethodCallerTest, Echo) {
 
   // Call the method.
   BlockingMethodCaller blocking_method_caller(mock_bus_.get(), proxy);
-  std::unique_ptr<dbus::Response> response(
-      blocking_method_caller.CallMethodAndBlock(&method_call));
+  auto result = blocking_method_caller.CallMethodAndBlock(&method_call);
+  ASSERT_TRUE(result.has_value());
 
   // Check the response.
-  ASSERT_TRUE(response.get());
-  dbus::MessageReader reader(response.get());
+  ASSERT_TRUE(result->get());
+  dbus::MessageReader reader(result->get());
   std::string text_message;
   ASSERT_TRUE(reader.PopString(&text_message));
   // The text message should be echo'ed back.
