@@ -59,6 +59,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -1334,7 +1335,10 @@ public class AwSettingsTest {
 
         @Override
         protected void setCurrentValue(Boolean value) {
-            mExpectScaleChange = mAwSettings.getLoadWithOverviewMode() != value;
+            // On tablets, viewport width will default to device width without viewport tag; so the
+            // page will not have any overflowing content to zoom out.
+            mExpectScaleChange = mAwSettings.getLoadWithOverviewMode() != value
+                    && (!isTablet() || mWithViewPortTag);
             if (mExpectScaleChange) {
                 mOnScaleChangedCallCount =
                         mContentViewClient.getOnScaleChangedHelper().getCallCount();
@@ -1351,7 +1355,9 @@ public class AwSettingsTest {
                 mExpectScaleChange = false;
             }
             float currentScale = mActivityTestRule.getScaleOnUiThread(mAwContents);
-            if (value) {
+            // On tablets, viewport width will default to device width without viewport tag; so the
+            // page will not have any overflowing content to zoom out.
+            if (value && (!isTablet() || mWithViewPortTag)) {
                 Assert.assertTrue("Expected: " + currentScale + " < " + DEFAULT_PAGE_SCALE,
                         currentScale < DEFAULT_PAGE_SCALE);
             } else {
@@ -3032,7 +3038,13 @@ public class AwSettingsTest {
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, pageNoViewport, "text/html", false);
         actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
-        Assert.assertTrue("Expected: >= 980 , Actual: " + actualWidth, actualWidth >= 980);
+        if (isTablet()) {
+            // On tablets, viewport width will default to device width without viewport tag.
+            Assert.assertTrue("Expected: " + displayWidth + ", Actual: " + actualWidth,
+                    Math.abs(displayWidth - actualWidth) <= 1);
+        } else {
+            Assert.assertTrue("Expected: >= 980 , Actual: " + actualWidth, actualWidth >= 980);
+        }
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, pageViewportDeviceWidth, "text/html", false);
         actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
@@ -3784,5 +3796,9 @@ public class AwSettingsTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> awContents.getWebContents().getEventForwarder().doubleTapForTest(
                                 SystemClock.uptimeMillis(), x, y));
+    }
+
+    private boolean isTablet() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity());
     }
 }
