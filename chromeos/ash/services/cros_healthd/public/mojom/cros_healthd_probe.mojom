@@ -1030,7 +1030,7 @@ struct DmiInfo {
 struct PsrEvent {
   // PSR event types.
   //
-  // NextMinVersion: 1, NextIndex: 6
+  // NextMinVersion: 2, NextIndex: 11
   [Stable, Extensible]
   enum EventType {
     // An enum value not defined in this version of the enum definition.
@@ -1045,7 +1045,16 @@ struct PsrEvent {
     kPrtcFailure = 4,
     // Secure Version Number increased.
     kSvnIncrease = 5,
-
+    // Missing event file.
+    [MinVersion=1] kMissing = 6,
+    // Invalid event.
+    [MinVersion=1] kInvalid = 7,
+    // Entered into CSME DAM state.
+    [MinVersion=1] kCsmeDamState = 8,
+    // CSME Unlocked state for debugging.
+    [MinVersion=1] kCsmeUnlockState = 9,
+    // FW Version Changed.
+    [MinVersion=1] kFwVersionChanged = 10,
   };
   EventType type@0;
 
