@@ -56,7 +56,7 @@ class TestAutofillManagerInjectorBase {
 //     class MockAutofillManager : BrowserAutofillManager {
 //      public:
 //       MockAutofillManager(ContentAutofillDriver* driver,
-//                           AutofillClient* client)
+//                           ContentAutofillClient* client)
 //           : BrowserAutofillManager(driver, client, "en-US") {}
 //       MOCK_METHOD(...);
 //       ...
@@ -92,7 +92,8 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
 
  private:
   // Creates an AutofillManager using `T(ContentAutofillDriver*,
-  // AutofillClient*)` for every navigated frame in a given `WebContents`.
+  // ContentAutofillClient*)` for every navigated frame in a given
+  // `WebContents`.
   //
   // One challenge is that the ContentAutofillClient may not exist yet at the
   // time the Injector is created. (Because TabHelpers::AttachTabHelpers() is

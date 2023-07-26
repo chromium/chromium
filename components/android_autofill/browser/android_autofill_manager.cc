@@ -205,8 +205,6 @@ void AndroidAutofillManager::OnContextMenuShownInField(
 }
 
 AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
-  if (autofill_provider_for_testing_)
-    return autofill_provider_for_testing_;
   if (auto* rfh =
           static_cast<ContentAutofillDriver*>(driver())->render_frame_host()) {
     if (rfh->IsActive()) {

@@ -141,14 +141,6 @@ class AndroidAutofillManager : public AutofillManager {
                             AutofillDownloadManager::RequestType request_type,
                             int http_error) override;
 
- protected:
-#ifdef UNIT_TEST
-  // For the unit tests where WebContents isn't available.
-  void set_autofill_provider_for_testing(AutofillProvider* autofill_provider) {
-    autofill_provider_for_testing_ = autofill_provider;
-  }
-#endif  // UNIT_TEST
-
  private:
   AutofillProvider* GetAutofillProvider();
 
@@ -168,7 +160,6 @@ class AndroidAutofillManager : public AutofillManager {
   FormEventLoggerWeblayerAndroid* GetEventFormLogger(FormType form_type);
 
   bool has_server_prediction_ = false;
-  raw_ptr<AutofillProvider> autofill_provider_for_testing_ = nullptr;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> address_logger_;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> payments_logger_;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> password_logger_;

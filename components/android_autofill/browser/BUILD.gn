@@ -123,6 +123,7 @@ source_set("unit_tests") {
   sources = [ "autofill_provider_unittest.cc" ]
   deps = [
     ":test_support",
+    "//components/autofill/content/browser:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
