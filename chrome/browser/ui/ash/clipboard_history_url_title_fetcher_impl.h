@@ -5,11 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
 
-#include <string>
+#include "ash/clipboard/clipboard_history_url_title_fetcher.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -18,19 +16,19 @@ struct QueryURLResult;
 }  // namespace history
 
 // Implements the singleton `ClipboardHistoryUrlTitleFetcher`.
-// TODO(http://b/267694762): Add the interface that this class implements.
-class ClipboardHistoryUrlTitleFetcherImpl {
+class ClipboardHistoryUrlTitleFetcherImpl
+    : public ash::ClipboardHistoryUrlTitleFetcher {
  public:
   ClipboardHistoryUrlTitleFetcherImpl();
   ClipboardHistoryUrlTitleFetcherImpl(ClipboardHistoryUrlTitleFetcherImpl&) =
       delete;
   ClipboardHistoryUrlTitleFetcherImpl& operator=(
       ClipboardHistoryUrlTitleFetcherImpl&) = delete;
-  ~ClipboardHistoryUrlTitleFetcherImpl();
+  ~ClipboardHistoryUrlTitleFetcherImpl() override;
 
-  using OnHistoryQueryCompleteCallback =
-      base::OnceCallback<void(absl::optional<std::u16string>)>;
-  void QueryHistory(const GURL& url, OnHistoryQueryCompleteCallback callback);
+  // ash::ClipboardHistoryUrlTitleFetcher
+  void QueryHistory(const GURL& url,
+                    OnHistoryQueryCompleteCallback callback) override;
 
  private:
   // Interprets the `result` from querying the history service and passes the

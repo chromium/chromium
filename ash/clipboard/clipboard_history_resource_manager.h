@@ -19,6 +19,8 @@
 
 namespace ash {
 
+// Helper class that augments certain instances of `ClipboardHistoryItem` with
+// asynchronously retrieved metadata.
 class ASH_EXPORT ClipboardHistoryResourceManager
     : public ClipboardHistory::Observer {
  public:
@@ -53,6 +55,21 @@ class ASH_EXPORT ClipboardHistoryResourceManager
     // IDs of items whose image model will be set to this request's result.
     std::vector<base::UnguessableToken> clipboard_history_item_ids;
   };
+
+  // If `item`'s display text is a URL, queries the primary user profile's
+  // browsing history for an associated page title. Asynchronously sets `item`'s
+  // secondary display text if a title is found.
+  void MaybeQueryUrlTitle(const ClipboardHistoryItem& item);
+
+  // Sets the secondary display text of the `ClipboardHistoryItem` specified by
+  // `item_id` with the page title found in the primary user profile's browsing
+  // history, if any.
+  void OnHistoryQueryComplete(const base::UnguessableToken& item_id,
+                              absl::optional<std::u16string> maybe_title);
+
+  // Sets `item`'s rendered HTML preview if one is cached; otherwise, ensures
+  // that `item` is associated with an asynchronous `ImageModelRequest`.
+  void SetOrRequestHtmlPreview(const ClipboardHistoryItem& item);
 
   // Sets the result `image_model` on each `ClipboardHistoryItem` waiting on the
   // `ImageModelRequest` specified by `id`.

@@ -66,6 +66,13 @@ class ASH_EXPORT ClipboardHistoryItem {
   const std::u16string& display_text() const { return display_text_; }
   size_t file_count() const { return file_count_; }
   const absl::optional<ui::ImageModel>& icon() const { return icon_; }
+  const absl::optional<std::u16string>& secondary_display_text() const {
+    return secondary_display_text_;
+  }
+  void set_secondary_display_text(
+      const absl::optional<std::u16string>& secondary_display_text) {
+    secondary_display_text_ = secondary_display_text;
+  }
 
  private:
   // Unique identifier.
@@ -100,6 +107,10 @@ class ASH_EXPORT ClipboardHistoryItem {
   // Cached image model for the item's icon. Currently, there will be no value
   // for non-file items.
   const absl::optional<ui::ImageModel> icon_;
+
+  // The text, if any, that should be displayed underneath `display_text_` on
+  // this item's menu entry.
+  absl::optional<std::u16string> secondary_display_text_;
 
   // Mutable to allow const access from `AddDisplayImageUpdatedCallback()`.
   mutable base::RepeatingClosureList display_image_updated_callbacks_;
