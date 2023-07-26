@@ -20,6 +20,7 @@ struct MockFoo {
   MOCK_METHOD(void, ByRef, (MoveOnly&), ());
   MOCK_METHOD(void, ByVal, (MoveOnly), ());
   MOCK_METHOD(void, TwiceByRef, (MoveOnly&, MoveOnly&), ());
+  MOCK_METHOD(bool, ByValWithReturnValue, (MoveOnly), ());
 };
 }  // namespace
 
@@ -57,4 +58,15 @@ TEST(GmockMoveSupportTest, MoveArgsTwiceByRef) {
 
   EXPECT_THAT(result1, Pointee(123));
   EXPECT_THAT(result2, Pointee(456));
+}
+
+TEST(GmockMoveSupportTest, MoveArgAndReturn) {
+  MoveOnly result;
+
+  MockFoo foo;
+  EXPECT_CALL(foo, ByValWithReturnValue)
+      .WillOnce(MoveArgAndReturn(&result, true));
+  EXPECT_TRUE(foo.ByValWithReturnValue(std::make_unique<int>(123)));
+
+  EXPECT_THAT(result, Pointee(123));
 }
