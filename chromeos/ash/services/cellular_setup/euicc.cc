@@ -184,8 +184,8 @@ void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
   // Format EID to string that should be encoded in the QRCode.
   std::string qr_code_string =
       base::StrCat({kEidQrCodePrefix, properties_->eid});
-  QRCodeGenerator qr_generator;
-  absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
+  qr_code_generator::QRCodeGenerator qr_generator;
+  absl::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data =
       qr_generator.Generate(base::as_bytes(
           base::make_span(qr_code_string.data(), qr_code_string.size())));
   if (!qr_data || qr_data->data.data() == nullptr ||

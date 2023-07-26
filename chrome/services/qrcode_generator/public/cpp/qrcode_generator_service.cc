@@ -37,7 +37,7 @@ void MeasureDurationAndForwardToOriginalCallback(
 }  // namespace
 
 QRImageGenerator::QRImageGenerator() : weak_ptr_factory_(this) {
-  if (!IsRustyQrCodeGeneratorFeatureEnabled()) {
+  if (!qr_code_generator::IsRustyQrCodeGeneratorFeatureEnabled()) {
     mojo_service_ = LaunchQRCodeGeneratorService();
   }
 }
@@ -58,7 +58,7 @@ void QRImageGenerator::GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
 
   // Execute either a mojo call or an in-process C++ call depending on whether
   // the "RustyQrCodeGenerator" feature has been enabled.
-  if (IsRustyQrCodeGeneratorFeatureEnabled()) {
+  if (qr_code_generator::IsRustyQrCodeGeneratorFeatureEnabled()) {
     QRCodeGeneratorServiceImpl().GenerateQRCode(std::move(request),
                                                 std::move(weak_callback));
   } else {

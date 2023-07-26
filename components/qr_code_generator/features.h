@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "components/qr_code_generator/rust_buildflags.h"
 
+namespace qr_code_generator {
+
 // Exposing the feature so that tests can inspect it and turn it on/off,
 // but product code should instead use `IsRustyQrCodeGeneratorFeatureEnabled`.
 BASE_DECLARE_FEATURE(kRustyQrCodeGeneratorFeature);
@@ -33,5 +35,7 @@ inline bool IsRustyQrCodeGeneratorFeatureEnabled() {
   return false;
 #endif
 }
+
+}  // namespace qr_code_generator
 
 #endif  // COMPONENTS_QR_CODE_GENERATOR_FEATURES_H_

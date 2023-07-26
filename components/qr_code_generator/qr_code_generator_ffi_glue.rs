@@ -11,7 +11,7 @@ use std::pin::Pin;
 //
 // TODO(crbug.com/1422745): patch upstream cxx to generate compatible code.
 #[allow(unsafe_op_in_unsafe_fn)]
-#[cxx::bridge]
+#[cxx::bridge(namespace = "qr_code_generator")]
 mod ffi {
     extern "Rust" {
         fn generate_qr_code_using_rust(

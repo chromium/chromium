@@ -21,6 +21,8 @@
 #include "components/qr_code_generator/qr_code_generator_ffi_glue.rs.h"
 #endif
 
+namespace qr_code_generator {
+
 // kMaxVersionWithSmallLengths is the maximum QR version that uses the smaller
 // length fields, i.e. that is |VersionClass::SMALL|. See table 3.
 static constexpr int kMaxVersionWithSmallLengths = 9;
@@ -1638,3 +1640,5 @@ std::vector<QRCodeGenerator::Segment> QRCodeGenerator::SegmentInput(
 
   return segments;
 }
+
+}  // namespace qr_code_generator

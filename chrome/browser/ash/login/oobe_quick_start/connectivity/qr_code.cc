@@ -34,7 +34,7 @@ QRCode::~QRCode() = default;
 
 void QRCode::GeneratePixelData() {
   std::vector<uint8_t> blob = GetQRCodeData();
-  QRCodeGenerator qr_generator;
+  qr_code_generator::QRCodeGenerator qr_generator;
   auto generated_code = qr_generator.Generate(
       base::as_bytes(base::make_span(blob.data(), blob.size())));
   CHECK(generated_code.has_value());
