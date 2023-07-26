@@ -343,6 +343,11 @@ class SafeBrowsingDatabaseManager
   // SafeBrowsingDatabaseManager on the IO thread during normal operations.
   bool enabled_;
 
+  // Whether the service has been stopped due to browser shutdown. We can be
+  // `!enabled_` if the browser is shutting down or if the Safe Browsing pref
+  // has been turned off.
+  bool is_shutdown_;
+
   // Make callbacks about the completion of database update process. This is
   // currently used by the extension blocklist checker to disable any installed
   // extensions that have been blocklisted since.

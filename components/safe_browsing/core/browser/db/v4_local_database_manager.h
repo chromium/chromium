@@ -351,7 +351,11 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // waiting for a full hash response from the SafeBrowsing service.
   void RespondSafeToQueuedAndPendingChecks();
 
-  // Calls the appopriate method on the |client| object, based on the contents
+  // Called on StopOnSBThread, it drops all the requests, as if they were
+  // complete. This is used to get to a safe state for shutdown.
+  void DropQueuedAndPendingChecks();
+
+  // Calls the appropriate method on the |client| object, based on the contents
   // of |pending_check|.
   void RespondToClient(std::unique_ptr<PendingCheck> pending_check);
 
