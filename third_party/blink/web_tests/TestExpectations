@@ -5607,6 +5607,9 @@ crbug.com/1454956 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-canva
 crbug.com/1454956 [ Mac ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 crbug.com/1345886 [ Linux ] plugins/user-gesture.html [ Failure ]
 crbug.com/1464848 [ Mac10.15 ] http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
+crbug.com/1466578 [ Mac11-arm64 ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure ]
+crbug.com/1466578 [ Mac12-arm64 ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure ]
+crbug.com/1466578 [ Mac13-arm64 ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
