@@ -14,7 +14,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/stack_container.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -56,6 +55,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/quota/padding_key.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -301,12 +301,12 @@ bool FindDuplicateOperations(
   // Note, this will use 512 bytes of stack space on 64-bit devices.  The
   // static size attempts to accommodate most typical Cache.addAll() uses in
   // service worker install events while not blowing up the stack too much.
-  base::StackVector<BatchOperation*, 64> sorted;
-  sorted->reserve(operations.size());
+  absl::InlinedVector<BatchOperation*, 64> sorted;
+  sorted.reserve(operations.size());
   for (const auto& op : operations) {
-    sorted->push_back(op.get());
+    sorted.push_back(op.get());
   }
-  std::sort(sorted->begin(), sorted->end(),
+  std::sort(sorted.begin(), sorted.end(),
             [](BatchOperation* left, BatchOperation* right) {
               return left->request->url < right->request->url;
             });
@@ -316,7 +316,8 @@ bool FindDuplicateOperations(
   // have the same URL.  This results in an average complexity of O(n log n).
   // If the entire list has entries with the same URL and different VARY
   // headers then this devolves into O(n^2).
-  for (auto outer = sorted->cbegin(); outer != sorted->cend(); ++outer) {
+  for (BatchOperation* const* outer = sorted.cbegin(); outer != sorted.cend();
+       ++outer) {
     const BatchOperation* outer_op = *outer;
 
     // Note, the spec checks CacheQueryOptions like ignoreSearch, etc, but
@@ -334,7 +335,8 @@ bool FindDuplicateOperations(
       continue;
     }
 
-    for (auto inner = std::next(outer); inner != sorted->cend(); ++inner) {
+    for (BatchOperation* const* inner = std::next(outer);
+         inner != sorted.cend(); ++inner) {
       const BatchOperation* inner_op = *inner;
       // Since the list is sorted we can stop looking at neighbors after
       // the first different URL.
