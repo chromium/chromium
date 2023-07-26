@@ -62418,6 +62418,7 @@ from previous Chrome versions.
   <int value="-754479863" label="SmartCard:disabled"/>
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
+  <int value="-750784296" label="AllowTouchpadScrollSettings:disabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
   <int value="-749550261" label="SeamlessRefreshRateSwitching:enabled"/>
   <int value="-749306189" label="QsRevamp:enabled"/>
@@ -66895,6 +66896,7 @@ from previous Chrome versions.
       label="CrOSLateBootArcVmAAudioMMAPLowLatency:disabled"/>
   <int value="1557680135" label="PartitionedCookies:disabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
+  <int value="1558599847" label="AllowTouchpadScrollSettings:enabled"/>
   <int value="1558757619"
       label="AccessibilitySelectToSpeakPageMigration:enabled"/>
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>

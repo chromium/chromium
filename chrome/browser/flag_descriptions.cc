@@ -5142,8 +5142,14 @@ const char kAllowRepeatedUpdatesDescription[] =
     "has not rebooted to apply the previous update.";
 
 const char kAllowScrollSettingsName[] =
-    "Allow changes to scroll acceleration/sensitivity for mice/touchpads.";
+    "Allow changes to scroll acceleration/sensitivity for mice.";
 const char kAllowScrollSettingsDescription[] =
+    "Shows settings to enable/disable scroll acceleration and to adjust the "
+    "sensitivity for scrolling.";
+
+const char kAllowTouchpadScrollSettingsName[] =
+    "Allow changes to scroll acceleration/sensitivity for touchpads.";
+const char kAllowTouchpadScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 

@@ -139,7 +139,12 @@
   },
   {
     "name": "allow-scroll-settings",
-    "owners": [ "zentaro", "cros-peripherals@google.com" ],
+    "owners": [ "zhangwenyu", "cros-peripherals@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "allow-touchpad-scroll-settings",
+    "owners": [ "zhangwenyu", "cros-peripherals@google.com" ],
     "expiry_milestone": 130
   },
   {

@@ -77,9 +77,15 @@ BASE_FEATURE(kAlwaysReinstallSystemWebApps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Shows settings for adjusting scroll acceleration/sensitivity for
-// mouse/touchpad.
+// mouse.
 BASE_FEATURE(kAllowScrollSettings,
              "AllowScrollSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Shows settings for adjusting scroll acceleration/sensitivity for
+// touchpad.
+BASE_FEATURE(kAllowTouchpadScrollSettings,
+             "AllowTouchpadScrollSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the support for suppressing text messages is enabled.
