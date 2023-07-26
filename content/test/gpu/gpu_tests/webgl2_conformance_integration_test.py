@@ -62,7 +62,6 @@ class WebGL2ConformanceIntegrationTest(
         'WEBGL_provoking_vertex',
         'WEBGL_shader_pixel_local_storage',
         'WEBGL_video_texture',
-        'WEBGL_webcodecs_video_frame',
     ]
 
   @classmethod

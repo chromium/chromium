@@ -128,9 +128,6 @@ crbug.com/808744 [ fuchsia ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
 
-# Extension only available via passthrough decoder.
-crbug.com/1194209 [ mac no-passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-
 # Extensions not available with SwiftShader
 crbug.com/1099955 [ angle-swiftshader linux ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/1099955 [ angle-swiftshader mac   ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
@@ -273,10 +270,6 @@ crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_WEBGL_draw_buf
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
-# Unclear whether these are permanently unsupported or not.
-crbug.com/1142754 [ linux ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-crbug.com/1142754 [ fuchsia ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-
 # This test needs to be rewritten to measure its expected
 # performance; it's currently too flaky even on release bots.
 crbug.com/735483 conformance/rendering/texture-switch-performance.html [ Skip ]
@@ -348,8 +341,6 @@ crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/more/* [ Sk
 crbug.com/1446435 [ chromeos lacros-chrome passthrough ] deqp/* [ Skip ]
 
 # Extensions not available on Lacros, skip as failures causes re-login which takes ~1 min
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_frag_depth [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
@@ -357,7 +348,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_draw_buffers [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
