@@ -47,6 +47,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -289,7 +290,17 @@ HomeButton::HomeButton(Shelf* shelf)
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  SetHasInkDropActionOnClick(false);
+
+  // When Jelly is disabled, the toggled state is achieved by activating ink
+  // drop from the home button controller. Given that the controller manages ink
+  // drop on gesture events itself, disable the default on-gesture ink drop
+  // behavior.
+  views::InkDrop::Get(this)->SetMode(
+      jelly_enabled_ ? views::InkDropHost::InkDropMode::ON
+                     : views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  if (!jelly_enabled_) {
+    SetHasInkDropActionOnClick(false);
+  }
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   layer()->SetName("shelf/Homebutton");

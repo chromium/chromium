@@ -69,6 +69,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2829,17 +2830,27 @@ TEST_F(ShelfViewInkDropTest, HomeButtonWhenVisibilityChanges) {
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  const bool default_ink_drop_behavior = chromeos::features::IsJellyEnabled();
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTIVATED));
+  }
 
   GetAppListTestHelper()->DismissAndRunLoop();
 
   EXPECT_EQ(views::InkDropState::HIDDEN,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::DEACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::DEACTIVATED));
+  }
 }
 
 // Tests that when the app list is hidden, mouse press on the home button,
@@ -2856,18 +2867,27 @@ TEST_F(ShelfViewInkDropTest, HomeButtonMouseEventsWhenHidden) {
   generator->PressLeftButton();
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  const bool default_ink_drop_behavior = chromeos::features::IsJellyEnabled();
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTION_PENDING,
-                          views::InkDropState::ACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_PENDING,
+                            views::InkDropState::ACTION_TRIGGERED));
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_PENDING,
+                            views::InkDropState::ACTIVATED));
+  }
 
   // Dragging mouse out and back and releasing the button should not change the
   // ink drop state.
   generator->MoveMouseBy(home_button_->width(), 0);
   generator->MoveMouseBy(-home_button_->width(), 0);
   generator->ReleaseLeftButton();
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
   EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
 }
@@ -2879,10 +2899,16 @@ TEST_F(ShelfViewInkDropTest, HomeButtonMouseEventsWhenVisible) {
   InitHomeButtonInkDrop();
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  const bool default_ink_drop_behavior = chromeos::features::IsJellyEnabled();
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTIVATED));
+  }
 
   // Mouse press on the button, which dismisses the app list, should end up in
   // the hidden state.
@@ -2892,9 +2918,16 @@ TEST_F(ShelfViewInkDropTest, HomeButtonMouseEventsWhenVisible) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(views::InkDropState::HIDDEN,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTION_PENDING,
-                          views::InkDropState::DEACTIVATED));
+
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_PENDING,
+                            views::InkDropState::ACTION_TRIGGERED));
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_PENDING,
+                            views::InkDropState::DEACTIVATED));
+  }
 
   // Dragging mouse out and back and releasing the button should not change the
   // ink drop state.
@@ -2916,21 +2949,33 @@ TEST_F(ShelfViewInkDropTest, HomeButtonGestureTapWhenHidden) {
 
   // Touch press on the button should end up in the pending state.
   generator->PressTouch();
-  EXPECT_EQ(views::InkDropState::ACTION_PENDING,
+  const bool default_ink_drop_behavior = chromeos::features::IsJellyEnabled();
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTION_PENDING,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTION_PENDING));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_PENDING));
+  }
 
   // Touch release on the button, which shows the app list, should end up in the
   // activated state.
   generator->ReleaseTouch();
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTION_TRIGGERED,
-                          views::InkDropState::ACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_TRIGGERED));
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_TRIGGERED,
+                            views::InkDropState::ACTIVATED));
+  }
 }
 
 // Tests that when the app list is visible, tapping on the home button
@@ -2940,10 +2985,16 @@ TEST_F(ShelfViewInkDropTest, HomeButtonGestureTapWhenVisible) {
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  const bool default_ink_drop_behavior = chromeos::features::IsJellyEnabled();
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTIVATED));
+  }
 
   // Touch press and release on the button, which dismisses the app list, should
   // end up in the hidden state.
@@ -2954,8 +3005,13 @@ TEST_F(ShelfViewInkDropTest, HomeButtonGestureTapWhenVisible) {
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(views::InkDropState::HIDDEN,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::DEACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_TRIGGERED));
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::DEACTIVATED));
+  }
 }
 
 // Tests that when the app list is hidden, tapping down on the home button
@@ -2969,18 +3025,23 @@ TEST_F(ShelfViewInkDropTest, HomeButtonGestureTapDragWhenHidden) {
 
   // Touch press on the button should end up in the pending state.
   generator->PressTouch();
-  EXPECT_EQ(views::InkDropState::ACTION_PENDING,
+  const bool default_ink_drop_behavior = chromeos::features::IsJellyEnabled();
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTION_PENDING,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTION_PENDING));
 
   // Dragging the touch point should hide the pending ink drop.
   touch_location.Offset(home_button_->width(), 0);
   generator->MoveTouch(touch_location);
   EXPECT_EQ(views::InkDropState::HIDDEN,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTION_TRIGGERED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTION_PENDING,
+                            views::InkDropState::ACTION_TRIGGERED));
+  }
 
   // Touch release should not change the ink drop state.
   generator->ReleaseTouch();
@@ -2996,10 +3057,16 @@ TEST_F(ShelfViewInkDropTest, HomeButtonGestureTapDragWhenVisible) {
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  const bool default_ink_drop_behavior = chromeos::features::IsJellyEnabled();
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
-  EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
-              ElementsAre(views::InkDropState::ACTIVATED));
+  if (default_ink_drop_behavior) {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
+  } else {
+    EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(),
+                ElementsAre(views::InkDropState::ACTIVATED));
+  }
 
   // Touch press on the button, dragging the touch point, and releasing, which
   // will not dismisses the app list, should end up in the |ACTIVATED| state.
@@ -3009,20 +3076,23 @@ TEST_F(ShelfViewInkDropTest, HomeButtonGestureTapDragWhenVisible) {
 
   // Touch press on the button should not change the ink drop state.
   generator->PressTouch();
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
   EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
 
   // Dragging the touch point should not hide the pending ink drop.
   touch_location.Offset(home_button_->width(), 0);
   generator->MoveTouch(touch_location);
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
   EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
 
   // Touch release should not change the ink drop state.
   generator->ReleaseTouch();
-  EXPECT_EQ(views::InkDropState::ACTIVATED,
+  EXPECT_EQ(default_ink_drop_behavior ? views::InkDropState::HIDDEN
+                                      : views::InkDropState::ACTIVATED,
             home_button_ink_drop_->GetTargetInkDropState());
   EXPECT_THAT(home_button_ink_drop_->GetAndResetRequestedStates(), IsEmpty());
 }
