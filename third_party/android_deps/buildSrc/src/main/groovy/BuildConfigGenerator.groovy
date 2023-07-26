@@ -510,8 +510,9 @@ class BuildConfigGenerator extends DefaultTask {
         String libPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
         sb.append(GEN_REMINDER)
         if (dependency.extension == 'jar') {
+            String targetType = targetName.startsWith('androidx') ? 'androidx_java_prebuilt' : 'java_prebuilt'
             sb.append("""\
-                java_prebuilt("${targetName}") {
+                ${targetType}("${targetName}") {
                   jar_path = "${libPath}/${dependency.fileName}"
                   output_name = "${dependency.id}"
                 """.stripIndent(/* forceGroovyBehavior */ true))
@@ -519,8 +520,10 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  supports_android = true\n')
             }
         } else if (dependency.extension == 'aar') {
+            String targetType = (targetName.startsWith('androidx') ?
+                    'androidx_android_aar_prebuilt' : 'android_aar_prebuilt')
             sb.append("""\
-                android_aar_prebuilt("${targetName}") {
+                ${targetType}("${targetName}") {
                   aar_path = "${libPath}/${dependency.fileName}"
                   info_path = "${libPath}/${BuildConfigGenerator.reducedDepencencyId(dependency.id)}.info"
             """.stripIndent(/* forceGroovyBehavior */ true))
@@ -628,14 +631,12 @@ class BuildConfigGenerator extends DefaultTask {
         if (dependencyId.startsWith('org_robolectric')) {
             sb.append('  is_robolectric = true\n')
         }
-        if (dependencyExtension == 'aar' &&
-                (dependencyId.startsWith('androidx') || dependencyId.startsWith('com_android_support'))) {
+        if (dependencyExtension == 'aar' && dependencyId.startsWith('com_android_support')) {
             // The androidx and com_android_support libraries have duplicate resources such as
             // 'primary_text_default_material_dark'.
             sb.append('  resource_overlay = true\n')
         }
         if (dependencyExtension == 'jar' && (
-                dependencyId.startsWith('androidx') ||
                 dependencyId.startsWith('io_grpc_') ||
                 dependencyId == 'com_google_firebase_firebase_encoders')) {
             sb.append('  # https://crbug.com/1412551\n')
@@ -643,107 +644,10 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         switch (dependencyId) {
-            case 'androidx_privacysandbox_ads_ads_adservices':
-                sb.append('  # https://crbug.com/1448095\n')
-                sb.append('  mergeable_android_manifests = [ "0_privacysandbox_AndroidManifest.xml" ]\n')
-                break
-            case 'androidx_annotation_annotation_jvm':
-                sb.append('  # https://crbug.com/989505\n')
-                sb.append('  jar_excluded_patterns = [ "META-INF/proguard/*" ]\n')
-                sb.append('  proguard_configs = [ "androidx_annotations.flags" ]\n')
-                break
-            case 'androidx_benchmark_benchmark_common':
-                sb.append('  ignore_native_libraries = true\n')
-                break
-            case 'androidx_benchmark_benchmark_macro':
-                // Manually add dep onto DISALLOWED_DEP androidx.profileinstaller.
-                sb.append('  deps += [ ":androidx_profileinstaller_profileinstaller_java" ]\n')
-                break
-            case 'androidx_core_core':
-                sb.with {
-                    append('\n')
-                    append('  # Target has AIDL, but we do not support it yet: http://crbug.com/644439\n')
-                    append('  ignore_aidl = true\n')
-                    append('\n')
-                    append('  # Manifest and proguard config have just one entry: Adding (and -keep\'ing\n')
-                    append('  # android:appComponentFactory="androidx.core.app.CoreComponentFactory"\n')
-                    append('  # Chrome does not use this feature and it causes a scary stack trace to be\n')
-                    append('  # shown when incremental_install=true.\n')
-                    append('  ignore_manifest = true\n')
-                    append('  ignore_proguard_configs = true\n')
-                    append('')
-                    append('  # https://crbug.com/1414452\n')
-                    append('  jar_excluded_patterns += [ "androidx/core/os/BuildCompat*" ]\n')
-                    append('  public_deps = [ "//third_party/androidx/local_modifications/buildcompat:buildcompat_java" ]\n')
-                }
-                break
-            case 'androidx_fragment_fragment':
-                sb.append('''\
-                |  deps += [
-                |    "//third_party/android_deps/utils:java",
-                |  ]
-                |
-                |  proguard_configs = ["androidx_fragment.flags"]
-                |
-                |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
-                |'''.stripMargin())
-                break
-            case 'androidx_media_media':
-            case 'androidx_versionedparcelable_versionedparcelable':
-            case 'com_android_support_support_media_compat':
-                sb.append('\n')
-                sb.append('  # Target has AIDL, but we do not support it yet: http://crbug.com/644439\n')
-                sb.append('  ignore_aidl = true\n')
-                break
-            case 'androidx_test_uiautomator_uiautomator':
-                sb.append('  deps += [":androidx_test_runner_java"]\n')
-                break
-            case 'androidx_mediarouter_mediarouter':
-                sb.append('  # https://crbug.com/1000382\n')
-                sb.append('  proguard_configs = ["androidx_mediarouter.flags"]\n')
-                break
-            case 'androidx_privacysandbox_ads_ads_adservices':
-                sb.append('  alternative_android_sdk_dep = "//third_party/android_sdk:android_privacy_sandbox_sdk_java"\n')
-                break
-            case 'androidx_transition_transition':
-                // Not specified in the POM, compileOnly dependency not supposed to be used unless
-                // the library is present: b/70887421
-                sb.append('  deps += [":androidx_fragment_fragment_java"]\n')
-                break
-            case 'androidx_lifecycle_lifecycle_process':
-                sb.append('\n')
-                sb.append('  # Only useful for very old SDKs.\n')
-                sb.append('  ignore_proguard_configs = true\n')
-                break
-            case 'androidx_lifecycle_lifecycle_runtime':
-                sb.append('\n')
-                sb.append('  # https://crbug.com/887942#c1\n')
-                sb.append('  ignore_proguard_configs = true\n')
-                break
             case 'com_android_support_coordinatorlayout':
-            case 'androidx_coordinatorlayout_coordinatorlayout':
                 sb.append('\n')
                 sb.append('  # Reduce binary size. https:crbug.com/954584\n')
                 sb.append('  ignore_proguard_configs = true\n')
-                break
-            case 'com_google_android_material_material':
-                sb.with {
-                    append('\n')
-                    append('  # Reduce binary size. https:crbug.com/954584\n')
-                    append('  ignore_proguard_configs = true\n')
-                    append('  proguard_configs = ["material_design.flags"]\n')
-                    append('\n')
-                    append('  # Ensure ConstraintsLayout is not included by unused layouts:\n')
-                    append('  # https://crbug.com/1292510\n')
-                    // Keep in sync with the copy in fetch_all.py.
-                    append('  resource_exclusion_globs = [\n')
-                    append('      "res/layout*/*calendar*",\n')
-                    append('      "res/layout*/*chip_input*",\n')
-                    append('      "res/layout*/*clock*",\n')
-                    append('      "res/layout*/*picker*",\n')
-                    append('      "res/layout*/*time*",\n')
-                    append('  ]\n')
-                }
                 break
             case 'com_android_support_support_compat':
                 sb.append('\n')
@@ -765,6 +669,11 @@ class BuildConfigGenerator extends DefaultTask {
                 |
                 |'''.stripMargin())
                 break
+            case 'com_android_support_support_media_compat':
+                sb.append('\n')
+                sb.append('  # Target has AIDL, but we do not support it yet: http://crbug.com/644439\n')
+                sb.append('  ignore_aidl = true\n')
+                break
             case 'com_android_support_transition':
                 // Not specified in the POM, compileOnly dependency not supposed to be used unless
                 // the library is present: b/70887421
@@ -784,6 +693,48 @@ class BuildConfigGenerator extends DefaultTask {
                 |  ]
                 |
                 |'''.stripMargin())
+                break
+            case 'com_android_tools_sdk_common':
+            case 'com_android_tools_common':
+            case 'com_android_tools_layoutlib_layoutlib_api':
+                sb.append('\n')
+                sb.append('  # This target does not come with most of its dependencies and is\n')
+                sb.append('  # only meant to be used by the resources shrinker. If you wish to use\n')
+                sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
+                sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
+                break
+            case 'com_google_android_gms_play_services_base':
+                sb.append('  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"\n')
+                break
+            case 'com_google_android_gms_play_services_basement':
+                sb.append('  # https://crbug.com/989505\n')
+                sb.append('  jar_excluded_patterns += ["META-INF/proguard/*"]\n')
+                // Deprecated deps jar but still needed by play services basement.
+                sb.append('  input_jars_paths=["$android_sdk/optional/org.apache.http.legacy.jar"]\n')
+                sb.append('  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"\n')
+                break
+            case 'com_google_android_gms_play_services_maps':
+                sb.append('  # Ignore the dependency to org.apache.http.legacy. See crbug.com/1084879.\n')
+                sb.append('  ignore_manifest = true\n')
+                break
+            case 'com_google_android_material_material':
+                sb.with {
+                    append('\n')
+                    append('  # Reduce binary size. https:crbug.com/954584\n')
+                    append('  ignore_proguard_configs = true\n')
+                    append('  proguard_configs = ["material_design.flags"]\n')
+                    append('\n')
+                    append('  # Ensure ConstraintsLayout is not included by unused layouts:\n')
+                    append('  # https://crbug.com/1292510\n')
+                    // Keep in sync with the copy in fetch_all.py.
+                    append('  resource_exclusion_globs = [\n')
+                    append('      "res/layout*/*calendar*",\n')
+                    append('      "res/layout*/*chip_input*",\n')
+                    append('      "res/layout*/*clock*",\n')
+                    append('      "res/layout*/*picker*",\n')
+                    append('      "res/layout*/*time*",\n')
+                    append('  ]\n')
+                }
                 break
             case 'com_google_ar_core':
                 // Target .aar file contains .so libraries that need to be extracted,
@@ -807,50 +758,10 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  jar_excluded_patterns += ["*/ListenableFuture.class"]\n')
                 }
                 break
-            case 'androidx_test_rules':
-                // Target needs Android SDK deps which exist in third_party/android_sdk.
-                sb.append('''\
-                |  deps += [
-                |    "//third_party/android_sdk:android_test_base_java",
-                |    "//third_party/android_sdk:android_test_mock_java",
-                |    "//third_party/android_sdk:android_test_runner_java",
-                |  ]
-                |
-                |'''.stripMargin())
-                break
             case 'com_google_guava_listenablefuture':
                 sb.append('\n')
                 sb.append('  # This dep should be used when ListenableFuture is needed.\n')
                 sb.append('  preferred_dep = true\n')
-                break
-            case 'net_sf_kxml_kxml2':
-                sb.append('  # Target needs to exclude *xmlpull* files as already included in Android SDK.\n')
-                sb.append('  jar_excluded_patterns = [ "*xmlpull*" ]\n')
-                break
-            case 'androidx_preference_preference':
-                sb.append('''\
-                |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
-                |
-                |  proguard_configs = [ "androidx_preferences.flags" ]
-                |'''.stripMargin())
-                // Replace broad library -keep rules with a more limited set in
-                // chrome/android/java/proguard.flags instead.
-                sb.append('  ignore_proguard_configs = true\n')
-                break
-            case 'androidx_biometric_biometric':
-            case 'com_google_android_gms_play_services_base':
-                sb.append('  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"\n')
-                break
-            case 'com_google_android_gms_play_services_basement':
-                sb.append('  # https://crbug.com/989505\n')
-                sb.append('  jar_excluded_patterns += ["META-INF/proguard/*"]\n')
-                // Deprecated deps jar but still needed by play services basement.
-                sb.append('  input_jars_paths=["$android_sdk/optional/org.apache.http.legacy.jar"]\n')
-                sb.append('  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"\n')
-                break
-            case 'com_google_android_gms_play_services_maps':
-                sb.append('  # Ignore the dependency to org.apache.http.legacy. See crbug.com/1084879.\n')
-                sb.append('  ignore_manifest = true\n')
                 break
             case 'com_google_protobuf_protobuf_javalite':
                 sb.with {
@@ -865,24 +776,9 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  ]')
                 }
                 break
-            case 'androidx_startup_startup_runtime':
-                sb.append('  # Keeps emoji2 code. See http://crbug.com/1205141\n')
-                sb.append('  ignore_proguard_configs = true\n')
-                break
-            case 'androidx_webkit_webkit':
-                sb.append('  visibility = [\n')
-                sb.append('    "//android_webview/tools/system_webview_shell:*",\n')
-                sb.append('    "//third_party/android_deps:*"\n')
-                sb.append('  ]')
-                break
-            case 'com_android_tools_sdk_common':
-            case 'com_android_tools_common':
-            case 'com_android_tools_layoutlib_layoutlib_api':
-                sb.append('\n')
-                sb.append('  # This target does not come with most of its dependencies and is\n')
-                sb.append('  # only meant to be used by the resources shrinker. If you wish to use\n')
-                sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
-                sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
+            case 'net_sf_kxml_kxml2':
+                sb.append('  # Target needs to exclude *xmlpull* files as already included in Android SDK.\n')
+                sb.append('  jar_excluded_patterns = [ "*xmlpull*" ]\n')
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_guava':
@@ -906,7 +802,6 @@ class BuildConfigGenerator extends DefaultTask {
     private static void addPreconditionsOverrideTreatment(StringBuilder sb, String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-          case 'androidx_core_core':
           case 'com_google_guava_guava_android':
           case 'google_play_services_basement':
                 if (targetName == 'com_google_guava_guava_android') {
@@ -934,8 +829,6 @@ class BuildConfigGenerator extends DefaultTask {
     private static String computePreconditionsStubLibraryForDep(String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-            case 'androidx_core_core':
-                return 'androidx_stub_preconditions_java'
             case 'com_google_guava_guava_android':
                 return 'guava_stub_preconditions_java'
             case 'google_play_services_basement':
@@ -947,8 +840,6 @@ class BuildConfigGenerator extends DefaultTask {
     private static String computePreconditionsClassForDep(String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-            case 'androidx_core_core':
-                return 'androidx/core/util/Preconditions.class'
             case 'com_google_guava_guava_android':
                 return 'com/google/common/base/Preconditions.class'
             case 'google_play_services_basement':
