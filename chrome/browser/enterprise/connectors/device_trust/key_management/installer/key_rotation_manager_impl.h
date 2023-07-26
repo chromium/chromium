@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
@@ -38,7 +39,7 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   // The `old_key_pair` is only required in key rotation flows and will be used
   // to restore local storage if upload failed.
   void OnDmServerResponse(
-      std::unique_ptr<SigningKeyPair> old_key_pair,
+      scoped_refptr<SigningKeyPair> old_key_pair,
       base::OnceCallback<void(KeyRotationResult)> result_callback,
       KeyNetworkDelegate::HttpResponseCode response_code);
 

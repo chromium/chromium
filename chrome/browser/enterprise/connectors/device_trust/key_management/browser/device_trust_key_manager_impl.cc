@@ -33,11 +33,11 @@ namespace {
 // was freed up (use-after-free), which is a security issue.
 absl::optional<std::vector<uint8_t>> SignString(
     const std::string& str,
-    crypto::UnexportableSigningKey* key) {
-  if (!key) {
+    scoped_refptr<SigningKeyPair> key_pair) {
+  if (!key_pair || !key_pair->key()) {
     return absl::nullopt;
   }
-  return key->SignSlowly(base::as_bytes(base::make_span(str)));
+  return key_pair->key()->SignSlowly(base::as_bytes(base::make_span(str)));
 }
 
 void OnSignatureGenerated(
@@ -179,7 +179,7 @@ void DeviceTrustKeyManagerImpl::SignStringAsync(const std::string& str,
 
   if (IsFullyInitialized()) {
     background_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&SignString, str, key_pair_->key()),
+        FROM_HERE, base::BindOnce(&SignString, str, key_pair_),
         base::BindOnce(&OnSignatureGenerated, key_pair_->trust_level(),
                        base::TimeTicks::Now(), std::move(callback)));
     return;
@@ -239,7 +239,7 @@ void DeviceTrustKeyManagerImpl::LoadKey(bool create_on_fail) {
 
 void DeviceTrustKeyManagerImpl::OnKeyLoaded(
     bool create_on_fail,
-    std::unique_ptr<SigningKeyPair> loaded_key_pair) {
+    scoped_refptr<SigningKeyPair> loaded_key_pair) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (loaded_key_pair && !loaded_key_pair->is_empty()) {
@@ -247,7 +247,7 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
 
     // Kick off key synchronization in the background as non-blocking.
     key_rotation_launcher_->SynchronizePublicKey(
-        *key_pair_,
+        key_pair_,
         base::BindOnce(&DeviceTrustKeyManagerImpl::OnSynchronizationFinished,
                        weak_factory_.GetWeakPtr()));
   } else {

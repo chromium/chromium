@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_SIGNING_KEY_UTIL_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_SIGNING_KEY_UTIL_H_
 
-#include <memory>
-
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 
 namespace enterprise_connectors {
@@ -17,7 +16,7 @@ namespace enterprise_connectors {
 //
 // This function does IO and heavy cryptographic calculations, do not call
 // on the main thread.
-std::unique_ptr<SigningKeyPair> LoadPersistedKey();
+scoped_refptr<SigningKeyPair> LoadPersistedKey();
 
 }  // namespace enterprise_connectors
 

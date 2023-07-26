@@ -24,11 +24,11 @@ class MockKeyPersistenceDelegate : public KeyPersistenceDelegate {
               StoreKeyPair,
               (KeyPersistenceDelegate::KeyTrustLevel, std::vector<uint8_t>),
               (override));
-  MOCK_METHOD(std::unique_ptr<enterprise_connectors::SigningKeyPair>,
+  MOCK_METHOD(scoped_refptr<enterprise_connectors::SigningKeyPair>,
               LoadKeyPair,
               (),
               (override));
-  MOCK_METHOD(std::unique_ptr<enterprise_connectors::SigningKeyPair>,
+  MOCK_METHOD(scoped_refptr<enterprise_connectors::SigningKeyPair>,
               CreateKeyPair,
               (),
               (override));

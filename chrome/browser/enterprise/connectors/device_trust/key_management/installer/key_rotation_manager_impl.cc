@@ -136,7 +136,7 @@ void KeyRotationManagerImpl::Rotate(
 }
 
 void KeyRotationManagerImpl::OnDmServerResponse(
-    std::unique_ptr<SigningKeyPair> old_key_pair,
+    scoped_refptr<SigningKeyPair> old_key_pair,
     base::OnceCallback<void(KeyRotationResult)> result_callback,
     KeyNetworkDelegate::HttpResponseCode response_code) {
   const bool is_rotation = IsValidKey(old_key_pair.get());

@@ -24,7 +24,7 @@ class MockKeyRotationLauncher : public KeyRotationLauncher {
 
   MOCK_METHOD(void,
               SynchronizePublicKey,
-              (const SigningKeyPair&, SynchronizationCallback),
+              (scoped_refptr<SigningKeyPair>, SynchronizationCallback),
               (override));
 };
 

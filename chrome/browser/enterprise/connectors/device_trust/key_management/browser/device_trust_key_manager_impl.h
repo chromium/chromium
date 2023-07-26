@@ -61,7 +61,7 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   // false, the manager will simply respond to all pending callbacks.
   void LoadKey(bool create_on_fail);
   void OnKeyLoaded(bool create_on_fail,
-                   std::unique_ptr<SigningKeyPair> loaded_key_pair);
+                   scoped_refptr<SigningKeyPair> loaded_key_pair);
 
   // Invoked when synchronization of the loaded key has been done with the
   // server. `response_code` will hold the HTTP response code of the key upload
@@ -114,7 +114,7 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
 
   // Currently loaded device-trust key pair. If nullptr, it effectively means
   // that a key hasn't been loaded into memory yet.
-  std::unique_ptr<SigningKeyPair> key_pair_;
+  scoped_refptr<SigningKeyPair> key_pair_;
 
   // When set, represents the response code for the synchronization request
   // of `key_pair_`.
