@@ -15,18 +15,22 @@ class PrefRegistrySyncable;
 
 namespace chrome_labs_prefs {
 
-extern const char kBrowserLabsEnabled[];
+extern const char kBrowserLabsEnabledEnterprisePolicy[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kChromeLabsNewBadgeDictAshChrome[];
 #else
 extern const char kChromeLabsNewBadgeDict[];
 #endif
+
+extern const char kChromeLabsActivationThreshold[];
+
+extern const int kChromeLabsActivationThresholdDefaultValue;
+
 extern const int kChromeLabsNewExperimentPrefValue;
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-#endif
 
 }  // namespace chrome_labs_prefs
 

@@ -418,7 +418,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kBrowserAddPersonEnabled,
     base::Value::Type::BOOLEAN },
   { key::kBrowserLabsEnabled,
-    chrome_labs_prefs::kBrowserLabsEnabled,
+    chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy,
     base::Value::Type::BOOLEAN },
 #if defined(TOOLKIT_VIEWS)
   { key::kSideSearchEnabled,

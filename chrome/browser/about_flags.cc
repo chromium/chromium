@@ -2007,6 +2007,13 @@ const FeatureEntry::FeatureVariation kTabSearchSearchThresholdVariations[] = {
     {" - fuzzy level: large", kTabSearchSearchThresholdLarge,
      std::size(kTabSearchSearchThresholdLarge), nullptr}};
 
+const FeatureEntry::FeatureParam kChromeLabsEnabledInFlags[] = {
+    {features::kChromeLabsActivationParameterName, "100"}};
+
+const FeatureEntry::FeatureVariation kChromeLabsVariations[] = {
+    {" use this one!", kChromeLabsEnabledInFlags,
+     std::size(kChromeLabsEnabledInFlags), nullptr}};
+
 #if !BUILDFLAG(IS_ANDROID)
 const flags_ui::FeatureEntry::FeatureParam kDelayPriceTrackingChip[] = {
     {commerce::kCommercePriceTrackingChipExperimentVariationParam, "1"}};
@@ -8618,7 +8625,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,
      flag_descriptions::kChromeLabsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeLabs)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kChromeLabs,
+                                    kChromeLabsVariations,
+                                    "ChromeLabs")},
 
     {flag_descriptions::kChromeRefresh2023Id,
      flag_descriptions::kChromeRefresh2023Name,

@@ -396,7 +396,7 @@ void ToolbarView::Init() {
         gfx::Size(kToolbarDividerWidth, kToolbarDividerHeight));
   }
 
-  if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
+  if (IsChromeLabsEnabled()) {
     chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),
                                   chrome_labs_model_.get());
@@ -406,7 +406,7 @@ void ToolbarView::Init() {
               browser_view_, chrome_labs_model_.get()));
 
       show_chrome_labs_button_.Init(
-          chrome_labs_prefs::kBrowserLabsEnabled, prefs,
+          chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, prefs,
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
                               base::Unretained(this)));
       // Set the visibility for the button based on initial enterprise policy

@@ -49,6 +49,12 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -105,6 +111,10 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        channel_override_(chrome::ScopedChannelOverride(
+            chrome::ScopedChannelOverride::Channel::kDev)),
+#endif
         scoped_feature_entries_(
             {{kFirstTestFeatureId, "", "",
               flags_ui::FlagsState::GetCurrentPlatform(),
@@ -114,8 +124,8 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
               FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
                                              kTestVariations2,
                                              "TestTrial")},
-             // kThirdTestFeatureId will be the Id of a FeatureEntry that is not
-             // compatible with the current platform.
+             // kThirdTestFeatureId will be the Id of a FeatureEntry that is
+             // not compatible with the current platform.
              {kThirdTestFeatureId, "", "", 0,
               FEATURE_VALUE_TYPE(kTestFeature3)},
              {kExpiredFlagTestFeatureId, "", "",
@@ -133,14 +143,16 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
     user_manager_->LoginUser(account_id);
 #endif
 
-    scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kChromeLabs,
+        {{features::kChromeLabsActivationPercentage.name, "100"}});
 
     // Set up test data on the model.
     scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
 
     TestWithBrowserView::SetUp();
-    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
-                                      true);
+    profile()->GetPrefs()->SetBoolean(
+        chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
 
     ChromeLabsButton* button = browser_view()->toolbar()->chrome_labs_button();
     chrome_labs_coordinator_ = std::make_unique<ChromeLabsCoordinator>(
@@ -176,6 +188,9 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  chrome::ScopedChannelOverride channel_override_;
+#endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -247,6 +262,10 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        channel_override_(chrome::ScopedChannelOverride(
+            chrome::ScopedChannelOverride::Channel::kDev)),
+#endif
         scoped_feature_entries_(
             {{kFirstTestFeatureId, "", "",
               flags_ui::FlagsState::GetCurrentPlatform(),
@@ -256,8 +275,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
               FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
                                              kTestVariations2,
                                              "TestTrial")},
-             // kThirdTestFeatureId will be the Id of a FeatureEntry that is not
-             // compatible with the current platform.
+             // kThirdTestFeatureId will be the Id of a FeatureEntry that is
+             // not compatible with the current platform.
              {kThirdTestFeatureId, "", "", 0,
               FEATURE_VALUE_TYPE(kTestFeature3)},
              {kExpiredFlagTestFeatureId, "", "",
@@ -275,14 +294,15 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
     user_manager_->LoginUser(account_id);
 #endif
 
-    scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kChromeLabs,
+        {{features::kChromeLabsActivationPercentage.name, "100"}});
 
     // Set up test data on the model.
     scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
-
     TestWithBrowserView::SetUp();
-    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
-                                      true);
+    profile()->GetPrefs()->SetBoolean(
+        chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // On ash-chrome we expect the PrefService from the profile to be used.
@@ -390,7 +410,9 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
-
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  chrome::ScopedChannelOverride channel_override_;
+#endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<flags_ui::PrefServiceFlagsStorage> flags_storage_;
@@ -636,3 +658,5 @@ TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
   EXPECT_FALSE(new_badge_prefs.contains(kFirstTestFeatureId));
   EXPECT_FALSE(new_badge_prefs.contains(kTestFeatureWithVariationId));
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -1385,9 +1385,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   browser_shutdown::RegisterPrefs(registry);
   BrowserProcessImpl::RegisterPrefs(registry);
   ChromeContentBrowserClient::RegisterLocalStatePrefs(registry);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   chrome_labs_prefs::RegisterLocalStatePrefs(registry);
-#endif
   ChromeMetricsServiceClient::RegisterPrefs(registry);
   chrome::enterprise_util::RegisterLocalStatePrefs(registry);
   component_updater::RegisterPrefs(registry);

@@ -30,6 +30,8 @@ BASE_DECLARE_FEATURE(kDesktopPWAsAppHomePage);
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kChromeLabs);
+extern const char kChromeLabsActivationParameterName[];
+extern const base::FeatureParam<int> kChromeLabsActivationPercentage;
 
 BASE_DECLARE_FEATURE(kChromeWhatsNewUI);
 

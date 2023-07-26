@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/flags_ui/feature_entry.h"
 
 namespace features {
 
@@ -24,7 +25,11 @@ BASE_FEATURE(kDesktopPWAsAppHomePage,
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
-BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_ENABLED_BY_DEFAULT);
+const char kChromeLabsActivationParameterName[] =
+    "chrome_labs_activation_percentage";
+const base::FeatureParam<int> kChromeLabsActivationPercentage{
+    &kChromeLabs, kChromeLabsActivationParameterName, 99};
 
 // Enables "Chrome What's New" UI.
 BASE_FEATURE(kChromeWhatsNewUI,

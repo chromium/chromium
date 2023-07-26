@@ -708,14 +708,15 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddCheckItemWithStringId(IDC_PROFILING_ENABLED, IDS_PROFILING_ENABLED);
   }
   if (features::IsChromeRefresh2023()) {
-    if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
+    if (IsChromeLabsEnabled()) {
       auto* profile = browser->profile();
       chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
       UpdateChromeLabsNewBadgePrefs(profile, chrome_labs_model_.get());
       if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), profile)) {
         BooleanPrefMember show_chrome_labs_item;
-        show_chrome_labs_item.Init(chrome_labs_prefs::kBrowserLabsEnabled,
-                                   profile->GetPrefs());
+        show_chrome_labs_item.Init(
+            chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy,
+            profile->GetPrefs());
         if (show_chrome_labs_item.GetValue()) {
           AddSeparator(ui::NORMAL_SEPARATOR);
           AddItemWithStringIdAndIcon(IDC_SHOW_CHROME_LABS, IDS_CHROMELABS,
