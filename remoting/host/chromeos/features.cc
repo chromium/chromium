@@ -20,4 +20,8 @@ BASE_FEATURE(kEnableCrdFileTransferForKiosk,
              "EnableCrdFileTransferForKiosk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kForceEnableEnterpriseCrdFileTransfer,
+             "ForceEnableEnterpriseCrdFileTransfer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace remoting::features

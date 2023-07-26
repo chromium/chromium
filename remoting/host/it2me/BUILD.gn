@@ -114,6 +114,7 @@ source_set("common") {
     deps += [
       "//chromeos/ui/vector_icons",
       "//remoting/host/chromeos",
+      "//remoting/host/chromeos:features",
       "//remoting/host/chromeos:host_event_reporter_impl",
       "//ui/message_center",
       "//ui/message_center/public/cpp",

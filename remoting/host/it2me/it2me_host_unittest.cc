@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,6 +24,7 @@
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
+#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/host_event_reporter.h"
@@ -935,6 +937,19 @@ TEST_F(It2MeHostTest,
   StartHost(/*enterprise_params=*/absl::nullopt);
 
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
+}
+
+TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWhenForcedByFeatureFlag) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      remoting::features::kForceEnableEnterpriseCrdFileTransfer);
+
+  SetPolicies({{policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer,
+                base::Value(false)}});
+
+  StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
+
+  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_file_transfer());
 }
 
 TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyNotSet) {

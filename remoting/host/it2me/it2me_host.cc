@@ -44,6 +44,11 @@
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/feature_list.h"
+#include "remoting/host/chromeos/features.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/wayland_manager.h"
 #include "remoting/host/linux/wayland_utils.h"
@@ -391,6 +396,17 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
       policies
           .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
           .value_or(false);
+
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kForceEnableEnterpriseCrdFileTransfer)) {
+    HOST_LOG
+        << "Overriding enable enterprise file transfer policy. Original value: "
+        << enterprise_file_transfer_allowed_;
+    enterprise_file_transfer_allowed_ = true;
+  }
+
+  HOST_LOG << "RemoteAccessHostEnterpriseFileTransfer capability is enabled: "
+           << enterprise_file_transfer_allowed_;
 #endif
 
   absl::optional<bool> nat_policy_value =
