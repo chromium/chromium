@@ -36,7 +36,7 @@ const enum DialogState {
   READY,
 }
 
-const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
+export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
 
 /**
  * Dialog that shows the benefits of enabling bulk pinning along with storage
@@ -141,6 +141,11 @@ export class XfBulkPinningDialog extends XfBase {
     this.$button_.disabled = s !== DialogState.READY;
   }
 
+  // Indicates if this dialog is currently open.
+  get is_open(): boolean {
+    return this.$dialog_.open;
+  }
+
   async show() {
     this.stage_ = BulkPinStage.LISTING_FILES;
     this.state = DialogState.LISTING;
@@ -194,7 +199,7 @@ export class XfBulkPinningDialog extends XfBase {
         <div slot="body">
           <div class="description">
             ${str('BULK_PINNING_EXPLANATION')}
-            <a href="_blank" @click="${this.onLearnMore}">
+            <a id="learn-more-link" href="_blank" @click="${this.onLearnMore}">
               ${str('LEARN_MORE_LABEL')}
             </a>
           </div>
@@ -219,14 +224,16 @@ export class XfBulkPinningDialog extends XfBase {
           </div>
           <div id="not-enough-space-footer" class="error-footer">
             ${str('BULK_PINNING_NOT_ENOUGH_SPACE')}
-            <a href="_blank" @click="${this.onViewStorage}">
+            <a id="view-storage-link" href="_blank"
+              @click="${this.onViewStorage}">
               ${str('BULK_PINNING_VIEW_STORAGE')}
             </a>
           </div>
           <div id="ready-footer" class="normal-footer"></div>
         </div>
         <div slot="button-container">
-          <cr-button class="cancel-button" @click="${this.onCancel}">
+          <cr-button id="cancel-button" class="cancel-button"
+            @click="${this.onCancel}">
             ${str('CANCEL_LABEL')}
           </cr-button>
           <cr-button id="continue-button" class="continue-button action-button"
