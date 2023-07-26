@@ -187,10 +187,6 @@ source_set("audio") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "mac/audio_device_listener_mac.cc",

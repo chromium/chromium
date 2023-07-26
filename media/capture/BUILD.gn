@@ -186,7 +186,6 @@ component("capture_lib") {
       "video/apple/video_capture_device_frame_receiver.h",
     ]
     deps += [ "//components/crash/core/common:crash_key" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "AVFoundation.framework",
       "CoreFoundation.framework",
@@ -533,7 +532,6 @@ test("capture_unittests") {
       "CoreMedia.framework",
       "CoreVideo.framework",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
