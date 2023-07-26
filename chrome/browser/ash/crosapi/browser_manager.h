@@ -782,6 +782,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // shared resource file after ash is rebooted.
   bool is_initial_lacros_launch_after_reboot_ = true;
 
+  // Whether a shutdown request was received while Lacros was in prelaunched
+  // state.
+  bool shutdown_requested_while_prelaunched_ = false;
+
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
   std::unique_ptr<EnvironmentProvider> environment_provider_;
 

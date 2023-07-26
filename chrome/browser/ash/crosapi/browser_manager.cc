@@ -20,6 +20,7 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -932,6 +933,7 @@ void BrowserManager::Shutdown() {
   // `shutdown_requested_` has been set.
   UpdateKeepAliveInBrowserIfNecessary(false);
   shutdown_requested_ = true;
+  shutdown_requested_while_prelaunched_ = (state_ == State::PRE_LAUNCHED);
   pending_actions_.Clear();
 
   // The lacros-chrome process may have already been terminated as the result of
@@ -1454,7 +1456,18 @@ void BrowserManager::OnLacrosChromeTerminated() {
   // Relaunch lacros-chrome if it was closed due to ash shutting down.
   // Note that this only matters for side-by-side lacros.
   if (!reload_requested_) {
-    SetLaunchOnLoginPref(shutdown_requested_);
+    auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+    if (primary_user && primary_user->is_profile_created()) {
+      // We check that the user profile is available, to avoid the case
+      // in which Lacros is terminated before the profile is initialized.
+      SetLaunchOnLoginPref(shutdown_requested_);
+    } else if (shutdown_requested_ && !shutdown_requested_while_prelaunched_) {
+      // TODO(andreaorru): We expect that the case in which the profile isn't
+      // initialized when shutting down only happens when prelaunching at login
+      // screen. Here we collect other instances. Remove once we verify there
+      // are no such cases.
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   if (reload_requested_) {
