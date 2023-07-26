@@ -107,6 +107,7 @@ export {CrSearchableDropDownElement} from 'chrome://resources/cr_elements/cr_sea
 export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {SettingsAudioElement} from './device_page/audio.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';

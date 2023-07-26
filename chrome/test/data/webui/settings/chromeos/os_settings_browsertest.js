@@ -591,7 +591,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsBluetoothPageOsBluetoothTrueWirelessImages',
    'os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js',
  ],
- ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOneDrivePage', 'os_files_page/one_drive_page_test.js'],
@@ -609,6 +608,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsLanguagesPageOsClearPersonalizationDataPage',
    'os_languages_page/os_clear_personalization_data_page_test.js'
+ ],
+ [
+   'OsLanguagesPageOsEditDictionaryPage',
+   'os_languages_page/os_edit_dictionary_page_test.js'
  ],
  [
    'OsLanguagesPageSmartInputsPage',

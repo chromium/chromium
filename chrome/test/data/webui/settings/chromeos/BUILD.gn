@@ -54,7 +54,6 @@ build_webui_tests("build") {
     "network_device_info_dialog_test.js",
     "onc_mojo_test.ts",
     "os_about_page_tests.js",
-    "os_edit_dictionary_page_test.js",
     "os_languages_page_v2_tests.js",
     "os_paired_bluetooth_list_item_tests.js",
     "os_paired_bluetooth_list_tests.js",
@@ -222,6 +221,7 @@ build_webui_tests("build") {
     "os_languages_page/input_method_options_page_test.ts",
     "os_languages_page/input_page_test.ts",
     "os_languages_page/os_clear_personalization_data_page_test.ts",
+    "os_languages_page/os_edit_dictionary_page_test.ts",
     "os_languages_page/os_languages_page_test.ts",
     "os_languages_page/smart_inputs_page_test.ts",
 

@@ -42,14 +42,14 @@ enum NewWordState {
 const OsSettingsEditDictionaryPageElementBase =
     GlobalScrollTargetMixin(I18nMixin(PolymerElement));
 
-interface OsSettingsEditDictionaryPageElement {
+export interface OsSettingsEditDictionaryPageElement {
   $: {
     keys: IronA11yKeysElement,
     newWord: CrInputElement,
   };
 }
 
-class OsSettingsEditDictionaryPageElement extends
+export class OsSettingsEditDictionaryPageElement extends
     OsSettingsEditDictionaryPageElementBase {
   static get is() {
     return 'os-settings-edit-dictionary-page' as const;
