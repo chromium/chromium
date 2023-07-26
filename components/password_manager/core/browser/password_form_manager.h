@@ -121,12 +121,14 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void ProcessServerPredictions(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
-  // Sends fill data to the renderer.
+  // Sends fill data to the renderer. If no server predictions exist, it
+  // schedules to fill when they become available (or the wait times out).
   void Fill();
 
-  // Sends fill data to the renderer to fill |observed_form_data| using
-  // new relevant data from |predictions|.
-  void FillForm(
+  // Updates `observed_form_or_digest_` and form predictions stored in
+  // `parser_`, resets the amount of autofills left and stops the timer waiting
+  // for server predictions.
+  void UpdateFormManagerWithFormChanges(
       const autofill::FormData& observed_form_data,
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
@@ -338,20 +340,18 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const PossibleUsernameData* possible_username,
       bool& password_form_had_username);
 
-  // Updates the predictions stored in |parser_| with predictions relevant for
-  // |observed_form_or_digest_|.
+  // Updates the predictions stored in `parser_` with predictions relevant for
+  // `observed_form_or_digest_`.
   void UpdatePredictionsForObservedForm(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
-  // Updates |observed_form_or_digest_| and form predictions stored in
-  // |parser_| and resets the amount of autofills left.
-  void UpdateFormManagerWithFormChanges(
-      const autofill::FormData& observed_form_data,
-      const std::map<autofill::FormSignature, FormPredictions>& predictions);
-
-  // Sets the timer on |async_predictions_waiter_| while waiting for
-  // server-side predictions.
+  // Creates a timer to wait for server side predictions. On timeout (or on
+  // receiving server side predictions), `Fill()` is triggered.
   void DelayFillForServerSidePredictions();
+
+  // Sends fill data to the renderer immediately regardless of whether server
+  // predictions are available.
+  void FillNow();
 
   // Returns true if WebAuthn credential filling is enabled and there are
   // credentials available to use.
@@ -428,6 +428,12 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Used to transform FormData into PasswordForms.
   FormDataParser parser_;
 };
+
+// Returns whether `form_data` differs from the form observed by `form_manager`
+// in one of the following ways: 1) The number of form fields differ. 2) A form
+// field's renderer id, name, control type, or autocomplete attribute differs.
+bool HasObservedFormChanged(const autofill::FormData& form_data,
+                            PasswordFormManager& form_manager);
 
 }  // namespace password_manager
 

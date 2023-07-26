@@ -22,6 +22,12 @@ void PasswordFormPredictionWaiter::StartTimer() {
                &PasswordFormPredictionWaiter::OnTimeout);
 }
 
+void PasswordFormPredictionWaiter::Reset() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  outstanding_closures_ = 0;
+  timer_.Stop();
+}
+
 base::OnceClosure PasswordFormPredictionWaiter::CreateClosure() {
   outstanding_closures_++;
   return base::BindOnce(&PasswordFormPredictionWaiter::OnClosureComplete,

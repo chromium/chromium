@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -458,6 +459,7 @@ class PasswordFormManagerTest : public testing::Test,
   void SetUp() override { CreateFormManager(observed_form_); }
 
  protected:
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   MockAutofillDownloadManager mock_autofill_download_manager_;
   FormData observed_form_;
   FormData submitted_form_;
@@ -472,9 +474,9 @@ class PasswordFormManagerTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   TestingPrefServiceSimple pref_service_;
-  MockPasswordManagerClient client_;
-  MockPasswordManagerDriver driver_;
-  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
+  NiceMock<MockPasswordManagerClient> client_;
+  NiceMock<MockPasswordManagerDriver> driver_;
+  NiceMock<MockWebAuthnCredentialsDelegate> webauthn_credentials_delegate_;
   absl::optional<std::vector<PasskeyCredential>> passkeys_;
 
   // Define |fetcher_| before |form_manager_|, because the former needs to
@@ -579,6 +581,7 @@ TEST_P(PasswordFormManagerTest, Autofill) {
 }
 
 TEST_P(PasswordFormManagerTest, AutofillNotMoreThan5Times) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
   EXPECT_CALL(driver_, SetPasswordFillData(_));
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
@@ -808,6 +811,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsNewCredentials) {
 // Tests that when submitted credentials are equal to already saved one then
 // pending credentials equal to saved match.
 TEST_P(PasswordFormManagerTest, CreatePendingCredentialsAlreadySaved) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
   submitted_form_.fields[kUsernameFieldIndex].value =
@@ -1801,110 +1805,170 @@ TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
   }
 }
 
-TEST_P(PasswordFormManagerTest, FillForm) {
-  for (bool observed_form_changed : {false, true}) {
-    SCOPED_TRACE(testing::Message("observed_form_changed=")
-                 << observed_form_changed);
-    CreateFormManager(observed_form_);
-    EXPECT_CALL(driver_, SetPasswordFillData(_));
-    SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
-    task_environment_.FastForwardUntilNoTasksRemain();
-    Mock::VerifyAndClearExpectations(&driver_);
+TEST_P(PasswordFormManagerTest, HasObservedFormChangedRendererIds) {
+  CreateFormManager(observed_form_);
+  base::HistogramTester histogram_tester;
 
-    FormData form = observed_form_;
+  FormData form = observed_form_;
+  form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 100;
+  EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
+  form_manager_.reset();
 
-    if (observed_form_changed) {
-      form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 1000;
-      form.fields[kUsernameFieldIndex].name += u"1";
-      form.fields[kUsernameFieldIndex].id_attribute += u"1";
-      form.fields[kPasswordFieldIndex].unique_renderer_id.value() += 1000;
-    }
-
-    PasswordFormFillData fill_data;
-    EXPECT_CALL(driver_, SetPasswordFillData(_))
-        .WillOnce(SaveArg<0>(&fill_data));
-    form_manager_->FillForm(form, {});
-    task_environment_.FastForwardUntilNoTasksRemain();
-
-    EXPECT_EQ(form.fields[kUsernameFieldIndex].unique_renderer_id,
-              fill_data.username_element_renderer_id);
-    EXPECT_EQ(saved_match_.username_value,
-              fill_data.preferred_login.username_value);
-    EXPECT_EQ(form.fields[kPasswordFieldIndex].unique_renderer_id,
-              fill_data.password_element_renderer_id);
-    EXPECT_EQ(saved_match_.password_value,
-              fill_data.preferred_login.password_value);
-
-    base::HistogramTester histogram_tester;
-    form_manager_.reset();
-    uint32_t expected_differences_mask = 0;
-    if (observed_form_changed) {
-      expected_differences_mask |=
-          PasswordFormMetricsRecorder::kRendererFieldIDs;
-      expected_differences_mask |= PasswordFormMetricsRecorder::kFormFieldNames;
-    }
-    histogram_tester.ExpectUniqueSample("PasswordManager.DynamicFormChanges",
-                                        expected_differences_mask, 1);
-  }
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.DynamicFormChanges",
+      PasswordFormMetricsRecorder::kRendererFieldIDs, 1);
 }
 
-TEST_P(PasswordFormManagerTest, FillFormWaitForServerPredictions) {
+TEST_P(PasswordFormManagerTest, HasObservedFormChangedNames) {
+  CreateFormManager(observed_form_);
+  base::HistogramTester histogram_tester;
+
+  FormData form = observed_form_;
+  form.fields[kUsernameFieldIndex].name += u"123";
+  EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
+  form_manager_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.DynamicFormChanges",
+      PasswordFormMetricsRecorder::kFormFieldNames, 1);
+}
+
+TEST_P(PasswordFormManagerTest, HasObservedFormChangedAutocompleteAttribute) {
+  CreateFormManager(observed_form_);
+  base::HistogramTester histogram_tester;
+
+  FormData form = observed_form_;
+  form.fields[kUsernameFieldIndex].autocomplete_attribute += "...";
+  EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
+  form_manager_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.DynamicFormChanges",
+      PasswordFormMetricsRecorder::kAutocompleteAttributes, 1);
+}
+
+TEST_P(PasswordFormManagerTest, HasObservedFormChangedFormControlsType) {
+  CreateFormManager(observed_form_);
+  base::HistogramTester histogram_tester;
+
+  FormData form = observed_form_;
+  form.fields[kUsernameFieldIndex].form_control_type = "password";
+  EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
+  form_manager_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.DynamicFormChanges",
+      PasswordFormMetricsRecorder::kFormControlTypes, 1);
+}
+
+TEST_P(PasswordFormManagerTest, HasObservedFormChangedFieldsNumber) {
+  CreateFormManager(observed_form_);
+  base::HistogramTester histogram_tester;
+
+  FormData form = observed_form_;
+  form.fields.push_back(
+      autofill::test::CreateTestFormField("label", "new field", "", "text"));
+  EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
+  form_manager_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.DynamicFormChanges",
+      PasswordFormMetricsRecorder::kFieldsNumber, 1);
+}
+
+TEST_P(PasswordFormManagerTest, HasObservedFormChangedCssClasses) {
+  CreateFormManager(observed_form_);
+  base::HistogramTester histogram_tester;
+
+  FormData form = observed_form_;
+  form.fields[kUsernameFieldIndex].css_classes = u"class1";
+  EXPECT_FALSE(HasObservedFormChanged(form, *form_manager_));
+  form_manager_.reset();
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.DynamicFormChanges", 0,
+                                      1);
+}
+
+TEST_P(PasswordFormManagerTest, UpdateFormAndFill) {
+  CreateFormManager(observed_form_);
+  EXPECT_CALL(driver_, SetPasswordFillData(_));
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+  task_environment_.FastForwardUntilNoTasksRemain();
+  Mock::VerifyAndClearExpectations(&driver_);
+
+  FormData form = observed_form_;
+  form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 1000;
+  form.fields[kUsernameFieldIndex].name += u"1";
+  form.fields[kUsernameFieldIndex].id_attribute += u"1";
+  form.fields[kPasswordFieldIndex].unique_renderer_id.value() += 1000;
+
+  PasswordFormFillData fill_data;
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
+  form_manager_->UpdateFormManagerWithFormChanges(form, {});
+  form_manager_->Fill();
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  EXPECT_EQ(form.fields[kUsernameFieldIndex].unique_renderer_id,
+            fill_data.username_element_renderer_id);
+  EXPECT_EQ(saved_match_.username_value,
+            fill_data.preferred_login.username_value);
+  EXPECT_EQ(form.fields[kPasswordFieldIndex].unique_renderer_id,
+            fill_data.password_element_renderer_id);
+  EXPECT_EQ(saved_match_.password_value,
+            fill_data.preferred_login.password_value);
+}
+
+TEST_P(PasswordFormManagerTest, FillWaitsForServerPredictions) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
-  FormData changed_form = observed_form_;
-
-  changed_form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 1000;
-  changed_form.fields[kPasswordFieldIndex].unique_renderer_id.value() += 1000;
-
-  // Check that no filling until server predicions or filling timeout
-  // expiration.
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(0);
-  form_manager_->FillForm(changed_form, {});
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+  form_manager_->Fill();
+  Mock::VerifyAndClearExpectations(&driver_);
 
   // Check that the changed form is filled after the filling timeout expires.
-
-  PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
-
-  task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(changed_form.fields[kUsernameFieldIndex].unique_renderer_id,
-            fill_data.username_element_renderer_id);
-  EXPECT_EQ(changed_form.fields[kPasswordFieldIndex].unique_renderer_id,
-            fill_data.password_element_renderer_id);
-
-  base::HistogramTester histogram_tester;
-  form_manager_.reset();
-  uint32_t expected_differences_mask = 2;  // renderer_id changes.
-  histogram_tester.ExpectUniqueSample("PasswordManager.DynamicFormChanges",
-                                      expected_differences_mask, 1);
+  EXPECT_CALL(driver_, SetPasswordFillData);
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
 }
 
-TEST_P(PasswordFormManagerTest, UpdateFormWaitForServerPredictions) {
+TEST_P(PasswordFormManagerTest, RepeatedFillDoesNotResetTimer) {
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+  form_manager_->Fill();
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions / 2);
+  form_manager_->Fill();
+
+  // Check that the fill call is not delayed further.
+  EXPECT_CALL(driver_, SetPasswordFillData);
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions / 2);
+}
+
+TEST_P(PasswordFormManagerTest, UpdateFormManagerWithFormChangesResetsTimer) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
   FormData changed_form = observed_form_;
-
   changed_form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 1000;
   changed_form.fields[kPasswordFieldIndex].unique_renderer_id.value() += 1000;
 
-  // Check that no filling until server predicions or filling timeout
-  // expiration.
+  // Check that no filling happens until server predictions arrive or the
+  // filling timeout expires.
   EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
 
-  // Wait half-delay time before updating form
+  // Wait half-delay time before updating form.
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions / 2);
 
-  // Updating form should cancel previous task for fill and start a new delayed
-  // fill task for waiting server-side predictions
-  form_manager_->FillForm(changed_form, {});
+  // Updating form should cancel the previous task for fill and start a new
+  // delayed fill task for waiting server-side predictions.
+  form_manager_->UpdateFormManagerWithFormChanges(changed_form, {});
+  form_manager_->Fill();
 
-  // Fire the cancelled fill task should do nothing
+  // Fire the cancelled fill task should do nothing.
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions / 2);
 
   PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
+  EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
 
-  // Check new fill task trigger form filling
+  // Check that the new fill task triggers form filling.
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(changed_form.fields[kUsernameFieldIndex].unique_renderer_id,
             fill_data.username_element_renderer_id);

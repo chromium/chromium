@@ -705,17 +705,18 @@ void PasswordManager::CreateFormManagers(
 
     PasswordFormManager* manager =
         GetMatchedManager(driver, form_data.unique_renderer_id);
-
-    if (manager) {
-      // This extra filling is just duplicating redundancy that was in
-      // PasswordFormManager, that helps to fix cases when the site overrides
-      // filled values.
-      // TODO(https://crbug.com/831123): Implement more robust filling and
-      // remove the next line.
-      manager->FillForm(form_data, predictions_);
-    } else {
+    if (!manager) {
       new_forms_data.push_back(&form_data);
+      continue;
     }
+
+    if (HasObservedFormChanged(form_data, *manager)) {
+      manager->UpdateFormManagerWithFormChanges(form_data, predictions_);
+    }
+    // Call fill regardless of whether the form was updated. In the no-update
+    // case, this call provides extra redundancy to handle cases in which the
+    // site overrides filled values.
+    manager->Fill();
   }
 
   // Create form manager for new forms.
