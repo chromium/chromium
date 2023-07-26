@@ -790,7 +790,7 @@ BASE_FEATURE(kEnableAllSystemWebApps,
 // Enables per-desk Z order for all-desk windows.
 BASE_FEATURE(kEnablePerDeskZOrder,
              "EnablePerDeskZOrder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables RFC8925 (prefer IPv6-only on an IPv6-only-capable network).
 BASE_FEATURE(kEnableRFC8925,
