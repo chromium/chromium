@@ -87,7 +87,10 @@ rules {
         arg: "executable_suffix"
         arg: "skip_usage_check"
 
-        # mixin
+        # mixin/variant
+        arg: "enabled"
+        arg: "identifier"
+        arg: "description"
         arg: "args"
         arg: "precommit_args"
         arg: "linux_args"
