@@ -68,12 +68,12 @@
 - (void)setShareTabsButtonEnabled:(BOOL)enabled;
 
 // Sets the `menu` displayed on tapping the Add To button.
-- (void)setAddToButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0));
+- (void)setAddToButtonMenu:(UIMenu*)menu;
 // Set `enabled` on the Add To button.
 - (void)setAddToButtonEnabled:(BOOL)enabled;
 
 // Sets the `menu` displayed on tapping the Edit button.
-- (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0));
+- (void)setEditButtonMenu:(UIMenu*)menu;
 // Set `enabled` on the Edit button.
 - (void)setEditButtonEnabled:(BOOL)enabled;
 

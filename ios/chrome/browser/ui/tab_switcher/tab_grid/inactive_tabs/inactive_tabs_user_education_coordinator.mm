@@ -126,19 +126,15 @@ UIImage* ConfirmationAlertImage() {
   _confirmationAlert.showDismissBarButton = NO;
   _confirmationAlert.actionHandler = self;
   _confirmationAlert.presentationController.delegate = self;
-  if (@available(iOS 15, *)) {
-    _confirmationAlert.modalPresentationStyle = UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        _confirmationAlert.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = 20;
-  } else {
-    _confirmationAlert.modalPresentationStyle = UIModalPresentationFormSheet;
-  }
+  _confirmationAlert.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      _confirmationAlert.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = 20;
   _confirmationAlert.view.accessibilityIdentifier =
       kInactiveTabsUserEducationAccessibilityIdentifier;
 

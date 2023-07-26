@@ -232,7 +232,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 #pragma mark Edit Button
 
-- (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0)) {
+- (void)setEditButtonMenu:(UIMenu*)menu {
   _editButton.menu = menu;
 }
 

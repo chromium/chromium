@@ -234,7 +234,7 @@
 
 #pragma mark Add To
 
-- (void)setAddToButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0)) {
+- (void)setAddToButtonMenu:(UIMenu*)menu {
   _addToButton.menu = menu;
 }
 
@@ -244,7 +244,7 @@
 
 #pragma mark Edit Button
 
-- (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0)) {
+- (void)setEditButtonMenu:(UIMenu*)menu {
   _editButton.menu = menu;
 }
 

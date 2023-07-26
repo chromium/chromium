@@ -90,9 +90,6 @@ id<GREYMatcher> UndoSnackbarAction() {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 14.");
-  }
 
   [ChromeEarlGreyUI openToolsMenu];
 
@@ -111,9 +108,6 @@ id<GREYMatcher> UndoSnackbarAction() {
 - (void)testOverflowMenuOniPad {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone.");
-  }
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 14.");
   }
 
   [ChromeEarlGreyUI openToolsMenu];
@@ -135,9 +129,6 @@ id<GREYMatcher> UndoSnackbarAction() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
-  }
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 14.");
   }
 
   [ChromeEarlGreyUI openToolsMenu];
@@ -181,9 +172,6 @@ id<GREYMatcher> UndoSnackbarAction() {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 14.");
-  }
 
   [ChromeEarlGreyUI openToolsMenu];
 
@@ -214,9 +202,6 @@ id<GREYMatcher> UndoSnackbarAction() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
-  }
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 14.");
   }
 
   [ChromeEarlGreyUI openToolsMenu];
