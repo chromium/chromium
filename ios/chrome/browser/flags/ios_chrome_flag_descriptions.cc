@@ -426,12 +426,6 @@ const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
 const char kEnableFollowUIUpdateDescription[] =
     "Enable Follow UI Update for the Feed.";
 
-const char kPasswordsGroupingName[] =
-    "Enable password grouping for the Password Manager";
-const char kPasswordsGroupingDescription[] =
-    "Group passwords into the same affiliated group in the Password Manager "
-    "for the Saved Passwords section";
-
 const char kEnablePreferencesAccountStorageName[] =
     "Enable the account data storage for preferences for syncing users";
 const char kEnablePreferencesAccountStorageDescription[] =

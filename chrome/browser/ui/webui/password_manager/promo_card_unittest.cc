@@ -25,7 +25,6 @@
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -221,7 +220,6 @@ class PromoCardCheckupTest : public PromoCardBaseTest {
  public:
   void SetUp() override {
     PromoCardBaseTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kPasswordsGrouping);
     delegate_ =
         extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(
             profile(), true);
@@ -244,7 +242,6 @@ class PromoCardCheckupTest : public PromoCardBaseTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<extensions::PasswordsPrivateDelegate> delegate_;
 };
 

@@ -94,18 +94,6 @@ BASE_FEATURE(kPasswordGenerationExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables requesting and saving passwords grouping information from the
-// affiliation service.
-// TODO(crbug.com/1359392): Remove once launched on all platforms.
-BASE_FEATURE(kPasswordsGrouping,
-             "PasswordsGrouping_LAUNCHED",
-#if (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
 BASE_FEATURE(kRecoverFromNeverSaveAndroid,

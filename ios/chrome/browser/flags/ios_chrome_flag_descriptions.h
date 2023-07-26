@@ -366,11 +366,6 @@ extern const char kEnableFeedAblationDescription[];
 extern const char kEnableFullscreenAPIName[];
 extern const char kEnableFullscreenAPIDescription[];
 
-// Title and description for the flag to enable password grouping for the
-// Password Manager.
-extern const char kPasswordsGroupingName[];
-extern const char kPasswordsGroupingDescription[];
-
 // Title and description for the flag to enable the preferences account storage.
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];
