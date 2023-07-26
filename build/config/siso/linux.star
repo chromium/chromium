@@ -58,7 +58,9 @@ def __disable_remote_b289968566(ctx, step_config):
         "action_outs": [
             "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
             "./clang_x64_v8_arm64/obj/v8/torque_generated_initializers/js-to-wasm-tq-csa.o",
+            "./clang_x64_v8_arm64/obj/v8/torque_generated_initializers/wasm-to-js-tq-csa.o",
             "./clang_x86_v8_arm/obj/v8/torque_generated_initializers/js-to-wasm-tq-csa.o",
+            "./clang_x86_v8_arm/obj/v8/torque_generated_initializers/wasm-to-js-tq-csa.o",
             "./obj/chrome/browser/ash/ash/autotest_private_api.o",
             "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
             "./obj/chrome/browser/browser/browser_prefs.o",
