@@ -20,6 +20,7 @@ export function makePasswordCheckStatus(params: PasswordCheckParams):
     elapsedTimeSinceLastCheck: params.lastCheck,
   };
 }
+
 export function makeFamilyFetchResults(
     status?: chrome.passwordsPrivate.FamilyFetchStatus,
     members?: chrome.passwordsPrivate.RecipientInfo[]):
@@ -27,6 +28,17 @@ export function makeFamilyFetchResults(
   return {
     status: status || chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS,
     members: members || [],
+  };
+}
+
+export function makeRecipientInfo(isEligible: boolean = true):
+    chrome.passwordsPrivate.RecipientInfo {
+  return {
+    userId: 'user-id',
+    email: 'user@example.com',
+    displayName: 'New User',
+    profileImageUrl: 'data://image/url',
+    isEligible: isEligible,
   };
 }
 

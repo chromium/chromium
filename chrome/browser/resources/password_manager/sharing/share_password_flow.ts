@@ -44,6 +44,8 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
 
       flowState: Number,
 
+      fetchResults_: Object,
+
       flowStateEnum_: {
         type: Object,
         value: ShareFlowState,
@@ -54,6 +56,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
 
   passwordName: string;
   flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
+  private fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|null = null;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -67,8 +70,8 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
     // TODO(crbug/1445526): Add timeout to avoid flickering.
     this.flowState = ShareFlowState.FETCHING;
 
-    const results = await this.passwordManager_.fetchFamilyMembers();
-    switch (results.status) {
+    this.fetchResults_ = await this.passwordManager_.fetchFamilyMembers();
+    switch (this.fetchResults_.status) {
       case chrome.passwordsPrivate.FamilyFetchStatus.UNKNOWN_ERROR:
         this.flowState = ShareFlowState.ERROR;
         break;

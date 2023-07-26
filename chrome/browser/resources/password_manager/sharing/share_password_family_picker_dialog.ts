@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './share_password_dialog_header.js';
+import './share_password_recipient.js';
 import '../shared_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -37,10 +38,14 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
   }
 
   static get properties() {
-    return {dialogTitle: {type: String}};
+    return {
+      dialogTitle: String,
+      members: Array,
+    };
   }
 
   dialogTitle: string;
+  members: chrome.passwordsPrivate.RecipientInfo[];
 
   private onClickCancel_() {
     this.dispatchEvent(

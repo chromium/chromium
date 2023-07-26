@@ -10,6 +10,8 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+import {makeRecipientInfo} from './test_util.js';
+
 
 function assertVisibleTextContent(element: HTMLElement, expectedText: string) {
   assertTrue(isVisible(element));
@@ -36,8 +38,13 @@ suite('SharePasswordFamilyPickerDialogTest', function() {
     const dialog =
         document.createElement('share-password-family-picker-dialog');
     dialog.dialogTitle = expectedTitle;
+    dialog.members = [makeRecipientInfo()];
     document.body.appendChild(dialog);
     await flushTasks();
+
+    dialog.querySelectorAll('share-password-recipient').forEach(element => {
+      assertTrue(isVisible(element));
+    });
 
     assertVisibleTextContent(dialog.$.header, expectedTitle);
     assertVisibleTextContent(
