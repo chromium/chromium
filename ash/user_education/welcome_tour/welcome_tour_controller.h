@@ -21,6 +21,7 @@
 namespace ash {
 
 class SessionController;
+class WelcomeTourAcceleratorHandler;
 class WelcomeTourControllerObserver;
 class WelcomeTourNotificationBlocker;
 class WelcomeTourScrim;
@@ -82,6 +83,10 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // while the Welcome Tour is in progress. Exists only while the Welcome Tour
   // is in progress.
   std::unique_ptr<WelcomeTourScrim> scrim_;
+
+  // Handles accelerator actions during the Welcome Tour. Created/destroyed when
+  // the Welcome Tour starts/ends.
+  std::unique_ptr<WelcomeTourAcceleratorHandler> accelerator_handler_;
 
   // The collection of observers to be notified of events.
   base::ObserverList<WelcomeTourControllerObserver> observer_list_;

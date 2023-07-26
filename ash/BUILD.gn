@@ -927,6 +927,8 @@ component("ash") {
     "user_education/views/help_bubble_factory_views_ash.h",
     "user_education/views/help_bubble_view_ash.cc",
     "user_education/views/help_bubble_view_ash.h",
+    "user_education/welcome_tour/welcome_tour_accelerator_handler.cc",
+    "user_education/welcome_tour/welcome_tour_accelerator_handler.h",
     "user_education/welcome_tour/welcome_tour_controller.cc",
     "user_education/welcome_tour/welcome_tour_controller.h",
     "user_education/welcome_tour/welcome_tour_controller_observer.h",

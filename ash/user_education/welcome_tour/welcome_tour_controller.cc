@@ -16,6 +16,7 @@
 #include "ash/user_education/user_education_tutorial_controller.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
+#include "ash/user_education/welcome_tour/welcome_tour_accelerator_handler.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_notification_blocker.h"
@@ -328,6 +329,8 @@ void WelcomeTourController::MaybeAbortWelcomeTour() {
 // TODO(http://b/277091619): Stabilize wallpaper.
 // TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
+  accelerator_handler_ = std::make_unique<WelcomeTourAcceleratorHandler>();
+
   notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
   notification_blocker_->Init();
 
@@ -359,6 +362,7 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091619): Restore wallpaper.
 // TODO(http://b/277091624): Restore nudges/toasts.
 void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
+  accelerator_handler_.reset();
   notification_blocker_.reset();
   scrim_.reset();
   tablet_mode_observation_.Reset();

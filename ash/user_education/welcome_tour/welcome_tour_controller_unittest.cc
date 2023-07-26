@@ -9,9 +9,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/test_session_controller_client.h"
@@ -24,6 +26,7 @@
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/mock_welcome_tour_controller_observer.h"
+#include "ash/user_education/welcome_tour/welcome_tour_accelerator_handler.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
@@ -149,6 +152,23 @@ MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
          arg.context_mode() == context_mode;
 }
+
+// MockPretargetEventHandler ---------------------------------------------------
+
+// A mock pre-target event handler to expose the received events.
+class MockPretargetEventHandler : public ui::EventHandler {
+ public:
+  MockPretargetEventHandler() {
+    Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
+  }
+
+  ~MockPretargetEventHandler() override {
+    Shell::Get()->RemovePreTargetHandler(this);
+  }
+
+  // ui::EventHandler:
+  MOCK_METHOD(void, OnKeyEvent, (ui::KeyEvent*), (override));
+};
 
 // MockView --------------------------------------------------------------------
 
@@ -647,6 +667,120 @@ TEST_F(WelcomeTourControllerRunTest, Scrim) {
 
   // Case: After Welcome Tour.
   ExpectScrimsOnAllRootWindows(false);
+}
+
+// Verifies accelerator actions before/during/after the Welcome Tour.
+class WelcomeTourAcceleratorHandlerRunTest
+    : public WelcomeTourControllerRunTest {
+ public:
+  // WelcomeTourControllerRunTest:
+  void SetUp() override {
+    WelcomeTourControllerRunTest::SetUp();
+
+    // Create a mock pre-target event handler that always consumes the received
+    // events.
+    mock_pretarget_event_handler_ =
+        std::make_unique<MockPretargetEventHandler>();
+    ON_CALL(*mock_pretarget_event_handler_, OnKeyEvent)
+        .WillByDefault(
+            [](ui::KeyEvent* key_event) { key_event->StopPropagation(); });
+  }
+
+  void TearDown() override {
+    mock_pretarget_event_handler_.reset();
+    WelcomeTourControllerRunTest::TearDown();
+  }
+
+  // Peforms the specified accelerator action. Then checks the key events
+  // received as expected.
+  void PerformActionAndCheckKeyEvents(AcceleratorAction action, bool received) {
+    // Get the accelerators corresponding to `action`.
+    const std::vector<ui::Accelerator>& accelerators =
+        Shell::Get()->ash_accelerator_configuration()->GetAcceleratorsForAction(
+            action);
+    ASSERT_FALSE(accelerators.empty());
+
+    for (const ui::Accelerator& accelerator : accelerators) {
+      // If `received` is true, then `accelerator` should be received;
+      // otherwise, `accelerator` should NOT be received.
+      EXPECT_CALL(
+          *mock_pretarget_event_handler_,
+          OnKeyEvent(AllOf(
+              Property(&ui::KeyEvent::type,
+                       Eq(accelerator.key_state() ==
+                                  ui::Accelerator::KeyState::PRESSED
+                              ? ui::ET_KEY_PRESSED
+                              : ui::ET_KEY_RELEASED)),
+              Property(&ui::KeyEvent::key_code, Eq(accelerator.key_code())))))
+          .Times(received ? 1u : 0u);
+
+      // The key event that does NOT trigger `action` should be received.
+      EXPECT_CALL(
+          *mock_pretarget_event_handler_,
+          OnKeyEvent(AllOf(
+              Property(&ui::KeyEvent::type,
+                       Eq(accelerator.key_state() ==
+                                  ui::Accelerator::KeyState::PRESSED
+                              ? ui::ET_KEY_RELEASED
+                              : ui::ET_KEY_PRESSED)),
+              Property(&ui::KeyEvent::key_code, Eq(accelerator.key_code())))));
+
+      // Press and release `accelerator`.
+      PressAndReleaseKey(accelerator.key_code(), accelerator.modifiers());
+      Mock::VerifyAndClearExpectations(mock_pretarget_event_handler_.get());
+    }
+  }
+
+  void VerifyActionsInAllowedList() {
+    for (auto allowed_action : WelcomeTourAcceleratorHandler::kAllowedActions) {
+      PerformActionAndCheckKeyEvents(allowed_action, /*received=*/true);
+    }
+  }
+
+  std::unique_ptr<MockPretargetEventHandler> mock_pretarget_event_handler_;
+};
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that the key events that trigger the allowed accelerator actions are
+// received during the Welcome Tour.
+TEST_F(WelcomeTourAcceleratorHandlerRunTest, AllowActionsInAllowedList) {
+  // Verify that before the Welcome Tour, the key events for the actions in the
+  // allowed list are received by the mock event handler.
+  VerifyActionsInAllowedList();
+
+  // Verify that during the Welcome Tour, the key events for these actions are
+  // received by the mock event handler.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting(
+          [&]() { VerifyActionsInAllowedList(); })));
+
+  // Verify that after the Welcome Tour, the key events for these actions are
+  // received by the mock event handler.
+  VerifyActionsInAllowedList();
+}
+
+// Verifies that the accelerator actions NOT in the allowed list should be
+// blocked during the Welcome Tour.
+TEST_F(WelcomeTourAcceleratorHandlerRunTest, BlockActionsNotInAllowedList) {
+  // Verify that before the Welcome Tour, the key events for the actions that
+  // are NOT in the allowed list are received by the mock event handler.
+  PerformActionAndCheckKeyEvents(AcceleratorAction::kTakePartialScreenshot,
+                                 /*received=*/true);
+
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        // During the Welcome Tour, the key events that trigger these actions
+        // should NOT be received by the mock event handler.
+        PerformActionAndCheckKeyEvents(
+            AcceleratorAction::kTakePartialScreenshot,
+            /*received=*/false);
+      })));
+
+  // Verify that after the Welcome Tour, these key events are received by
+  // the mock event handler.
+  PerformActionAndCheckKeyEvents(AcceleratorAction::kTakePartialScreenshot,
+                                 /*received=*/true);
 }
 
 // WelcomeTourControllerTabletTest ---------------------------------------------
