@@ -83,6 +83,7 @@
   [_bookmarkManager reindexBookmarksIfNeeded];
   [_actionsManager indexActionsWithIsGoogleDefaultSearchEngine:
                        [self isGoogleDefaultSearchEngine]];
+  [_topSitesManager reindexTopSites];
   [self.readingListManager clearAndReindexReadingList];
   [self.openTabsManager clearAndReindexOpenTabs];
 }
