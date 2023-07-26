@@ -170,7 +170,8 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(0, provider->GetDistanceMetric(
                              DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+      provider->GetDistanceMetric(
+          DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING)));
 
   const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
   auto* icon = line_container->AddChildView(

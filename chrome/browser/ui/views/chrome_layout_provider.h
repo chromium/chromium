@@ -100,6 +100,9 @@ enum ChromeDistanceMetric {
   DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW,
   // Horizontal padding applied between the icon and label in the infobar.
   DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING,
+  // Horizontal padding applied between the icon and label in the permission
+  // prompt.
+  DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING,
   // Horizontal spacing between icon and label in the rich hover button.
   DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL,
 };
