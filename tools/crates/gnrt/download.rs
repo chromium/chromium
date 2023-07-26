@@ -136,7 +136,7 @@ static CRATES_IO_VIEW_URL: &str = "https://crates.io/crates";
 
 // Allowed licenses, in the format they are specified in Cargo.toml files from
 // crates.io, and the format to write to README.chromium.
-static ALLOWED_LICENSES: [(&str, &str); 15] = [
+static ALLOWED_LICENSES: [(&str, &str); 16] = [
     // ("Cargo.toml string", "License for README.chromium")
     ("Apache-2.0", "Apache 2.0"),
     ("MIT OR Apache-2.0", "Apache 2.0"),
@@ -151,6 +151,7 @@ static ALLOWED_LICENSES: [(&str, &str); 15] = [
     ("BSD-3-Clause", "BSD 3-Clause"),
     ("ISC", "ISC"),
     ("MIT OR Zlib OR Apache-2.0", "Apache 2.0"),
+    ("Zlib OR Apache-2.0 OR MIT", "Apache 2.0"),
     ("0BSD OR MIT OR Apache-2.0", "Apache 2.0"),
     (
         "(MIT OR Apache-2.0) AND Unicode-DFS-2016",
