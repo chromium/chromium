@@ -60,6 +60,10 @@ struct MT21DecompressionJob : public base::RefCounted<MT21DecompressionJob> {
   bool is_chroma;
   base::WaitableEvent wakeup_event;
   base::WaitableEvent done_event;
+
+ private:
+  friend class base::RefCounted<MT21DecompressionJob>;
+  ~MT21DecompressionJob() = default;
 };
 
 // We considered making this an ImageProcessorBackend, but it turns out we need
