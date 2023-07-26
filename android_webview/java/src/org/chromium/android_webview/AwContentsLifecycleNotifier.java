@@ -4,10 +4,7 @@
 
 package org.chromium.android_webview;
 
-import android.os.Build;
-
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -33,7 +30,7 @@ public class AwContentsLifecycleNotifier {
     private static final ObserverList<Observer> sLifecycleObservers =
             new ObserverList<Observer>();
     private static boolean sHasWebViewInstances;
-    private static volatile @AppState int sAppState = AppState.DESTROYED;
+    private static @AppState int sAppState = AppState.DESTROYED;
 
     private AwContentsLifecycleNotifier() {}
 
@@ -49,7 +46,6 @@ public class AwContentsLifecycleNotifier {
         return sHasWebViewInstances;
     }
 
-    // Calls to this are thread safe
     public static @AppState int getAppState() {
         return sAppState;
     }
@@ -81,8 +77,5 @@ public class AwContentsLifecycleNotifier {
     private static void onAppStateChanged(@AppState int appState) {
         ThreadUtils.assertOnUiThread();
         sAppState = appState;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            TrackExitReasonsOfInterest.writeLastWebViewState();
-        }
     }
 }

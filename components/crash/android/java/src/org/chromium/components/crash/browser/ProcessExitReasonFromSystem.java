@@ -10,9 +10,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -27,8 +25,6 @@ import java.util.List;
  * ActivityManager, and record to UMA.
  */
 public class ProcessExitReasonFromSystem {
-    private static ActivityManager sActivityManager;
-
     /**
      * Get the exit reason of the most recent chrome process that died and had |pid| as the process
      * ID. Only available on R+ devices, returns -1 otherwise.
@@ -39,9 +35,8 @@ public class ProcessExitReasonFromSystem {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return -1;
         }
-        ActivityManager am = sActivityManager != null
-                ? sActivityManager
-                : (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
+        ActivityManager am =
+                (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.ACTIVITY_SERVICE);
         // Set maxNum to 1 since we want the latest reason with the pid.
         List<ApplicationExitInfo> reasons =
@@ -62,7 +57,7 @@ public class ProcessExitReasonFromSystem {
             ExitReason.REASON_UNKNOWN, ExitReason.REASON_USER_REQUESTED,
             ExitReason.REASON_USER_STOPPED})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ExitReason {
+    @interface ExitReason {
         int REASON_ANR = 0;
         int REASON_CRASH = 1;
         int REASON_CRASH_NATIVE = 2;
@@ -90,15 +85,8 @@ public class ProcessExitReasonFromSystem {
      * @see #getExitReason
      */
     public static void recordAsEnumHistogram(String umaName, int systemReason) {
-        Integer exitReason = convertApplicationExitInfoToExitReason(systemReason);
-        if (exitReason != null) {
-            RecordHistogram.recordEnumeratedHistogram(umaName, exitReason, ExitReason.NUM_ENTRIES);
-        }
-    }
-
-    public static @Nullable Integer convertApplicationExitInfoToExitReason(int systemReason) {
         @ExitReason
-        Integer reason = null;
+        int reason;
         switch (systemReason) {
             case ApplicationExitInfo.REASON_ANR:
                 reason = ExitReason.REASON_ANR;
@@ -143,14 +131,9 @@ public class ProcessExitReasonFromSystem {
                 reason = ExitReason.REASON_USER_STOPPED;
                 break;
             default:
-                break;
+                // Reason is unavailable in current platform, so skip recording.
+                return;
         }
-
-        return reason;
-    }
-
-    @VisibleForTesting
-    public static void setActivityManagerForTest(ActivityManager am) {
-        sActivityManager = am;
+        RecordHistogram.recordEnumeratedHistogram(umaName, reason, ExitReason.NUM_ENTRIES);
     }
 };

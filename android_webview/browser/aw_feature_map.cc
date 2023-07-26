@@ -23,7 +23,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewConnectionlessSafeBrowsing,
     &features::kWebViewServerSideSampling,
     &features::kWebViewDisplayCutout,
-    &features::kWebViewExitReasonMetric,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
     &features::kWebViewJavaJsBridgeMojo,
