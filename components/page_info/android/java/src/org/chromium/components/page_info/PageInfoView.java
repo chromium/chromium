@@ -18,6 +18,8 @@ import android.widget.TextView;
  * Represents the view inside the page info popup.
  */
 public class PageInfoView extends FrameLayout implements OnClickListener {
+    private static final int COOKIES_ROW_POSITION = 1;
+
     private LinearLayout mRowWrapper;
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
@@ -38,6 +40,13 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     public PageInfoView(Context context, Params params) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.page_info, this, true);
+        // Elevate the "Cookies and site data" item when User Bypass is enabled.
+        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+            LinearLayout rowWrapper = (LinearLayout) findViewById(R.id.page_info_row_wrapper);
+            PageInfoRowView cookiesRow = (PageInfoRowView) findViewById(R.id.page_info_cookies_row);
+            rowWrapper.removeView(cookiesRow);
+            rowWrapper.addView(cookiesRow, COOKIES_ROW_POSITION);
+        }
         init(params);
     }
 

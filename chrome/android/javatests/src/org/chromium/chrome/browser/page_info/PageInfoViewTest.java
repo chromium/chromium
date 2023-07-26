@@ -449,6 +449,19 @@ public class PageInfoViewTest {
     }
 
     /**
+     * Tests PageInfo on a website with cookie controls and permissions with User Bypass enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    public void testShowWithPermissionsAndCookieBlockingUserBypass() throws IOException {
+        addSomePermissions(mTestServerRule.getServer().getURL("/"));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_Permissions");
+    }
+
+    /**
      * Tests PageInfo on a website with default setting permissions.
      */
     @Test
