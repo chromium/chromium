@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -69,24 +70,18 @@
     return;
   }
 
-  _viewController = [[HistorySyncViewController alloc] init];
-  _viewController.delegate = self;
-  ChromeAccountManagerService* chromeAccountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+  // Skip History Sync Opt-in if sync is disabled, or if history or tabs sync
+  // is disabled by policy.
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  _mediator = [[HistorySyncMediator alloc]
-      initWithAuthenticationService:authenticationService
-        chromeAccountManagerService:chromeAccountManagerService
-                    identityManager:identityManager
-                        syncService:syncService];
-  _mediator.consumer = _viewController;
-  _mediator.delegate = self;
-  if (_firstRun) {
-    _viewController.modalInPresentation = YES;
+  if (IsSyncDisabledByPolicy(syncService) ||
+      IsManagedSyncDataType(syncService, syncer::UserSelectableType::kTabs) ||
+      IsManagedSyncDataType(syncService,
+                            syncer::UserSelectableType::kHistory)) {
+    [_delegate closeHistorySyncCoordinator:self];
+    return;
   }
+
   syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
   if (syncUserSettings->GetSelectedTypes().Has(
           syncer::UserSelectableType::kHistory)) {
@@ -97,6 +92,24 @@
     [_delegate closeHistorySyncCoordinator:self];
     return;
   }
+
+  _viewController = [[HistorySyncViewController alloc] init];
+  _viewController.delegate = self;
+  ChromeAccountManagerService* chromeAccountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  _mediator = [[HistorySyncMediator alloc]
+      initWithAuthenticationService:authenticationService
+        chromeAccountManagerService:chromeAccountManagerService
+                    identityManager:identityManager
+                        syncService:syncService];
+  _mediator.consumer = _viewController;
+  _mediator.delegate = self;
+  if (_firstRun) {
+    _viewController.modalInPresentation = YES;
+  }
+
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
                                            animated:animated];

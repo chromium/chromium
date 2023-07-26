@@ -168,12 +168,14 @@ void DismissDefaultBrowserPromo() {
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
 
-  if ([self isRunningTest:@selector(testHistorySyncSkippedIfNoSignIn)] ||
+  if ([self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
       [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
       [self isRunningTest:@selector
             (testSignInSubtitleIfHistorySyncOptInEnabled)] ||
-      [self isRunningTest:@selector(testSignInSubtitleIfSyncDisabled)] ||
-      [self isRunningTest:@selector(testSignInSubtitleIfTabsSyncDisabled)]) {
+      [self isRunningTest:@selector(testHistorySyncSkipIfSyncDisabled)] ||
+      [self isRunningTest:@selector(testHistorySyncSkipIfTabsSyncDisabled)] ||
+      [self isRunningTest:@selector
+            (testHistorySyncShownIfBookmarksSyncDisabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -894,7 +896,7 @@ void DismissDefaultBrowserPromo() {
 
 // Tests if the user skip the Sign-in step, the History Sync Opt-in screen is
 // skipped and the default browser screen is shown.
-- (void)testHistorySyncSkippedIfNoSignIn {
+- (void)testHistorySyncSkipIfNoSignIn {
   // Skip sign-in.
   [[self
       elementInteractionWithGreyMatcher:PromoStyleSecondaryActionButtonMatcher()
@@ -955,17 +957,21 @@ void DismissDefaultBrowserPromo() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that the correct subtitle is shown in the FRE sign-in screen if the
-// sync is disabled by policy, and History Sync Opt-In feature is enabled.
-- (void)testSignInSubtitleIfSyncDisabled {
+// Tests that the standard subtitle is shown in the FRE sign-in screen, and that
+// History Sync Opt-In screen is skipped, if the sync is disabled by policy, and
+// History Sync Opt-In feature is enabled.
+- (void)testHistorySyncSkipIfSyncDisabled {
   [self relaunchAppWithPolicyKey:policy::key::kSyncDisabled
                   xmlPolicyValue:"<true/>"];
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify that the first run screen is present.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
-  // Validate the subtitle text is the standard one.
+  // Verify the subtitle text is the standard one.
   NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
   [[self elementInteractionWithGreyMatcher:grey_allOf(
@@ -974,19 +980,42 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       assertWithMatcher:grey_notNil()];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that the correct subtitle is shown in the FRE sign-in screen if the
-// tabs sync is disabled by policy, and History Sync Opt-In feature is enabled.
-- (void)testSignInSubtitleIfTabsSyncDisabled {
+// Tests that the standard subtitle is shown in the FRE sign-in screen, and that
+// History Sync Opt-In screen is skipped, in case the tabs sync is disabled by
+// policy, and History Sync Opt-In feature is enabled.
+- (void)testHistorySyncSkipIfTabsSyncDisabled {
   [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
                   xmlPolicyValue:"<array><string>tabs</string></array>"];
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify that the first run screen is present.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
-  // Validate the subtitle text is the standard one.
+  // Verify the subtitle text is the standard one.
   NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
   [[self elementInteractionWithGreyMatcher:grey_allOf(
@@ -995,6 +1024,63 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       assertWithMatcher:grey_notNil()];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the standard subtitle is shown in the FRE sign-in screen, and
+// that History Sync Opt-In screen is shown, in case only the bookmarks sync is
+// disabled by policy, and History Sync Opt-In feature is enabled.
+- (void)testHistorySyncShownIfBookmarksSyncDisabled {
+  [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
+                  xmlPolicyValue:"<array><string>bookmarks</string></array>"];
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Verify the subtitle text is the standard one.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Helper
