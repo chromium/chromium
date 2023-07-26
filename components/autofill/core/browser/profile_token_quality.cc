@@ -13,16 +13,19 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/common/autofill_l10n_util.h"
 
 namespace autofill {
 
 namespace {
+
+using ObservationType = ProfileTokenQuality::ObservationType;
 
 ServerFieldTypeSet GetSupportedTypes(const AutofillProfile& profile) {
   ServerFieldTypeSet types;
@@ -60,6 +63,57 @@ ServerFieldType GetStoredTypeOf(ServerFieldType type) {
   auto* it = kStoredTypeOf.find(type);
   CHECK_NE(it, kStoredTypeOf.end());
   return it->second;
+}
+
+// Computes the `ObservationType` if a field of the given `type` was autofilled
+// with the `profile`, but the autofilled value was edited to `edited_value`
+// after filling.
+ObservationType GetObservationTypeForEditedField(
+    ServerFieldType type,
+    std::u16string_view edited_value,
+    const AutofillProfile& profile,
+    const std::vector<AutofillProfile*>& other_profiles,
+    const std::string& app_locale) {
+  if (edited_value.empty()) {
+    return ObservationType::kEditedValueCleared;
+  }
+
+  // Returns true if the `current_field_value` case-insensitively equals the
+  // value of the `profile` for any of the `types`.
+  auto matches = [&](ServerFieldTypeSet types, const AutofillProfile& profile) {
+    const l10n::CaseInsensitiveCompare compare;
+    return base::ranges::any_of(types, [&](ServerFieldType type) {
+      return profile.HasInfo(type) &&
+             compare.StringsEqual(edited_value,
+                                  profile.GetInfo(type, app_locale));
+    });
+  };
+
+  // Returns all supported types of the `profile` except for `type`.
+  auto other_types = [&](const AutofillProfile& profile) {
+    ServerFieldTypeSet other_types = GetSupportedTypes(profile);
+    other_types.erase(type);
+    return other_types;
+  };
+
+  if (matches(other_types(profile), profile)) {
+    return ObservationType::kEditedToDifferentTokenOfSameProfile;
+  }
+
+  if (base::ranges::any_of(other_profiles, [&](AutofillProfile* other_profile) {
+        return matches(other_types(*other_profile), *other_profile);
+      })) {
+    return ObservationType::kEditedToDifferentTokenOfOtherProfile;
+  }
+
+  if (base::ranges::any_of(other_profiles, [&](AutofillProfile* other_profile) {
+        return matches({type}, *other_profile);
+      })) {
+    return ObservationType::kEditedToSameTokenOfOtherProfile;
+  }
+
+  // TODO(crbug.com/1453650): Handle the `kEditedToSimilarValue` case.
+  return ObservationType::kEditedFallback;
 }
 
 }  // namespace
@@ -117,7 +171,7 @@ void ProfileTokenQuality::AddObservationForTesting(
   AddObservation(field_type, Observation{.type = observation_type});
 }
 
-std::vector<ProfileTokenQuality::ObservationType>
+std::vector<ObservationType>
 ProfileTokenQuality::GetObservationTypesForFieldType(
     ServerFieldType type) const {
   CHECK(GetSupportedTypes(*profile_).contains(type));
@@ -147,8 +201,7 @@ void ProfileTokenQuality::AddObservation(ServerFieldType type,
   observations.push_back(std::move(observation));
 }
 
-ProfileTokenQuality::ObservationType
-ProfileTokenQuality::GetObservationTypeFromField(
+ObservationType ProfileTokenQuality::GetObservationTypeFromField(
     const AutofillField& field,
     std::u16string_view current_field_value,
     const std::vector<AutofillProfile*>& other_profiles,
@@ -169,8 +222,8 @@ ProfileTokenQuality::GetObservationTypeFromField(
   // Since the `autofill_source_profile_guid()` is set and the field is not
   // autofilled anymore, it must have been previously autofilled.
   CHECK(field.previously_autofilled());
-  NOTIMPLEMENTED();
-  return ObservationType::kNone;
+  return GetObservationTypeForEditedField(type, current_field_value, *profile_,
+                                          other_profiles, app_locale);
 }
 
 ProfileTokenQuality::FormSignatureHash

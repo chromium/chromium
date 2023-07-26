@@ -47,6 +47,17 @@ class ProfileTokenQualityTest : public testing::Test {
     return form_data;
   }
 
+  // Edits the value of field number `field_index` to `new_value` and notifies
+  // the `bam_` about this change.
+  void EditFieldValue(FormData& form,
+                      size_t field_index,
+                      std::u16string new_value) {
+    FormFieldData& field = form.fields[field_index];
+    field.value = std::move(new_value);
+    bam_.OnTextFieldDidChange(form, field, gfx::RectF(),
+                              AutofillTickClock::NowTicks());
+  }
+
   // Fills the `form` with the `profile`, as-if autofilling was triggered from
   // the first field.
   void FillForm(const FormData& form, const AutofillProfile& profile) {
@@ -128,6 +139,68 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_MIDDLE),
               UnorderedElementsAre(ObservationType::kPartiallyAccepted));
+}
+
+// Tests that `AddObservationsForFilledForm()` derives the correct observation
+// types when fields are edited to values that don't occur in another profile.
+TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
+  AutofillProfile profile = test::GetFullProfile();
+  pdm_.AddProfile(profile);
+  ProfileTokenQuality quality(&profile);
+
+  FormData form = GetFormWithTypes({NAME_FIRST, NAME_LAST, ADDRESS_HOME_CITY});
+  FillForm(form, profile);
+
+  // Clear the value of field 0.
+  EditFieldValue(form, 0, u"");
+  // Edit field 1 to a different token of the same `profile`.
+  EditFieldValue(form, 1, profile.GetInfo(NAME_MIDDLE, pdm_.app_locale()));
+  // Edit field 2 to a completely different token.
+  EditFieldValue(form, 2, u"different value");
+
+  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  EXPECT_TRUE(
+      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
+              UnorderedElementsAre(ObservationType::kEditedValueCleared));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_LAST),
+              UnorderedElementsAre(
+                  ObservationType::kEditedToDifferentTokenOfSameProfile));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(ADDRESS_HOME_CITY),
+              UnorderedElementsAre(ObservationType::kEditedFallback));
+}
+
+// Tests that `AddObservationsForFilledForm()` derives the correct observation
+// types when fields are edited to values occurring in another profile.
+TEST_F(ProfileTokenQualityTest,
+       AddObservationsForFilledForm_Edited_DifferentProfile) {
+  AutofillProfile profile = test::GetFullProfile();
+  AutofillProfile other_profile = test::GetFullProfile2();
+  pdm_.AddProfile(profile);
+  pdm_.AddProfile(other_profile);
+  ProfileTokenQuality quality(&profile);
+
+  FormData form = GetFormWithTypes({EMAIL_ADDRESS, ADDRESS_HOME_ZIP});
+  FillForm(form, profile);
+
+  // Edit field 0 to the same token of a another profile.
+  EditFieldValue(form, 0,
+                 other_profile.GetInfo(EMAIL_ADDRESS, pdm_.app_locale()));
+  // Edit field 1 to a different token of another profile.
+  EditFieldValue(form, 1,
+                 other_profile.GetInfo(ADDRESS_HOME_STATE, pdm_.app_locale()));
+
+  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  EXPECT_TRUE(
+      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+
+  EXPECT_THAT(
+      quality.GetObservationTypesForFieldType(EMAIL_ADDRESS),
+      UnorderedElementsAre(ObservationType::kEditedToSameTokenOfOtherProfile));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(ADDRESS_HOME_ZIP),
+              UnorderedElementsAre(
+                  ObservationType::kEditedToDifferentTokenOfOtherProfile));
 }
 
 // Tests that only a single observation is collected per field.
