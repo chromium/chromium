@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/fake_search_data.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -44,6 +45,13 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
                           const ui::Accelerator& accelerator) {
     auto shortcut_result = CreateKeyboardShortcutResult();
     shortcut_result->PopulateTextVector(text_vector, accelerator);
+  }
+
+  void PopulateTextVectorWithText(
+      TextVector* text_vector,
+      const std::vector<ash::mojom::TextAcceleratorPartPtr>& text_parts) {
+    auto shortcut_result = CreateKeyboardShortcutResult();
+    shortcut_result->PopulateTextVectorWithTextParts(text_vector, text_parts);
   }
 
   std::unique_ptr<KeyboardShortcutResult> CreateKeyboardShortcutResult() {
@@ -272,6 +280,24 @@ TEST_F(KeyboardShortcutResultTest,
   VerifyTextItem(text_vector[2], u" or ", TextType::kString);
   VerifyTextItem(text_vector[3], u"Ctrl", TextType::kIconifiedText);
   VerifyTextItem(text_vector[4], u"g", TextType::kIconifiedText);
+}
+
+TEST_F(KeyboardShortcutResultTest, PopulateTextVectorWithText) {
+  std::vector<ash::mojom::TextAcceleratorPartPtr> text_parts;
+  text_parts.push_back(ash::mojom::TextAcceleratorPart::New(
+      u"Press ", ash::mojom::TextAcceleratorPartType::kPlainText));
+  text_parts.push_back(ash::mojom::TextAcceleratorPart::New(
+      u"Ctrl", ash::mojom::TextAcceleratorPartType::kModifier));
+  text_parts.push_back(ash::mojom::TextAcceleratorPart::New(
+      u"A", ash::mojom::TextAcceleratorPartType::kKey));
+
+  TextVector text_vector;
+  PopulateTextVectorWithText(&text_vector, text_parts);
+
+  ASSERT_EQ(text_vector.size(), 3u);
+  VerifyTextItem(text_vector[0], u"Press ", TextType::kString);
+  VerifyTextItem(text_vector[1], u"Ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[2], u"A", TextType::kIconifiedText);
 }
 
 }  // namespace app_list::test

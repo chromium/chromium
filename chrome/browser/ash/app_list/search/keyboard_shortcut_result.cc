@@ -9,6 +9,7 @@
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
@@ -199,6 +200,35 @@ void KeyboardShortcutResult::PopulateTextVector(
   }
 }
 
+// Example shortcuts:
+//   Title: Highlight next item on shelf
+//   Parts:
+//     type: kModifier,  text: alt
+//     type: kModifier,  text: shift
+//     type: kKey,       text: l
+//     type: kPlainText, text:  then
+//     type: kKey,       text: tab
+//     type: kPlainText, text:  or
+//     type: kKey,       text: ArrowRight
+//
+void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
+    TextVector* text_vector,
+    const std::vector<ash::mojom::TextAcceleratorPartPtr>& accelerator_parts) {
+  for (auto& part : accelerator_parts) {
+    switch (part->type) {
+      case ash::mojom::TextAcceleratorPartType::kPlainText:
+      case ash::mojom::TextAcceleratorPartType::kDelimiter:
+        text_vector->push_back(CreateStringTextItem(part->text));
+        break;
+      case ash::mojom::TextAcceleratorPartType::kKey:
+      case ash::mojom::TextAcceleratorPartType::kModifier:
+        // TODO(xiangdongkong): Handle keys with Icon code.
+        text_vector->push_back(CreateIconifiedTextTextItem(part->text));
+        break;
+    }
+  }
+}
+
 KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
                                                const KeyboardShortcutData& data,
                                                double relevance)
@@ -353,17 +383,7 @@ KeyboardShortcutResult::KeyboardShortcutResult(
     } else {
       ash::mojom::TextAcceleratorPropertiesPtr& text_accelerator =
           accelerator_info->layout_properties->get_text_accelerator();
-      // Example:
-      //  press
-      //  ctrl
-      //  shift
-      //   and click a link
-      //
-      // TODO(xiangdongkong): Generate text vector. For now, just show the
-      // shortcut text.
-      for (auto& part : text_accelerator->parts) {
-        text_vector.push_back(CreateStringTextItem(part->text));
-      }
+      PopulateTextVectorWithTextParts(&text_vector, text_accelerator->parts);
     }
   }
 
