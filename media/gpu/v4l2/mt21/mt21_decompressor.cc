@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/mt21/mt21_decompressor.h"
-
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(COMPILER_GCC) || defined(__clang__))
-
 #include <sched.h>
 #include <stdlib.h>
 
 #include "base/bits.h"
+#include "media/gpu/v4l2/mt21/mt21_decompressor.h"
 #include "media/gpu/v4l2/mt21/mt21_util.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
@@ -249,5 +245,3 @@ void MT21Decompressor::MT21ToNV12(const uint8_t* src_y,
 }
 
 }  // namespace media
-
-#endif

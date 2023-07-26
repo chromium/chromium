@@ -64,6 +64,14 @@ source_set("v4l2") {
     ]
   }
 
+  if (current_cpu == "arm" || current_cpu == "arm64") {
+    sources += [
+      "mt21/mt21_decompressor.cc",
+      "mt21/mt21_decompressor.h",
+      "mt21/mt21_util.h",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [
       # AV1 delegate depends on header files only in ChromeOS SDK
@@ -75,14 +83,6 @@ source_set("v4l2") {
       "v4l2_video_encode_accelerator.cc",
       "v4l2_video_encode_accelerator.h",
     ]
-
-    if (current_cpu == "arm" || current_cpu == "arm64") {
-      sources += [
-        "mt21/mt21_decompressor.cc",
-        "mt21/mt21_decompressor.h",
-        "mt21/mt21_util.h",
-      ]
-    }
   }
 
   libs = [
@@ -224,7 +224,7 @@ test("v4l2_unittest") {
   ]
 }
 
-if (is_chromeos && (current_cpu == "arm" || current_cpu == "arm64")) {
+if (current_cpu == "arm" || current_cpu == "arm64") {
   test("mt21_util_unittest") {
     testonly = true
     sources = [

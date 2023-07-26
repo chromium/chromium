@@ -413,18 +413,22 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
     return;
   }
 
+  const bool prefer_software_mt21 =
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+      base::FeatureList::IsEnabled(media::kPreferSoftwareMT21);
+#else
+      false;
+#endif
   enum v4l2_memory memory;
-  if (!image_processor_device_ &&
-      !base::FeatureList::IsEnabled(media::kPreferSoftwareMT21) &&
+  if (!image_processor_device_ && !prefer_software_mt21 &&
       output_mode_ == Config::OutputMode::IMPORT) {
     memory = V4L2_MEMORY_DMABUF;
   } else {
     memory = V4L2_MEMORY_MMAP;
   }
 
-  if (output_queue_->AllocateBuffers(
-          buffers.size(), memory,
-          base::FeatureList::IsEnabled(media::kPreferSoftwareMT21)) == 0) {
+  if (output_queue_->AllocateBuffers(buffers.size(), memory,
+                                     prefer_software_mt21) == 0) {
     LOG(ERROR) << "Failed to request buffers!";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return;
@@ -573,7 +577,11 @@ void V4L2VideoDecodeAccelerator::AssignEGLImage(size_t buffer_index,
 
   // Make ourselves available if CreateEGLImageFor has been called from
   // ImportBufferForPictureTask.
-  if (!image_processor_ && !mt21_decompressor_) {
+  if (!image_processor_
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+      && !mt21_decompressor_
+#endif
+  ) {
     DCHECK_EQ(output_wait_map_.count(picture_buffer_id), 1u);
     output_wait_map_.erase(picture_buffer_id);
     if (decoder_state_ != kChangingResolution) {
@@ -677,16 +685,22 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
     }
     DCHECK_EQ(egl_image_size_, handle_size);
 
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
     if (base::FeatureList::IsEnabled(media::kPreferSoftwareMT21) &&
         !mt21_decompressor_) {
       mt21_decompressor_ = std::make_unique<MT21Decompressor>(coded_size_);
     }
+#endif
 
     // For allocate mode, the IP will already have been created in
     // AssignPictureBuffersTask.
     // Note: usage of the MT21 software decompressor disables the image
     // processor.
-    if (image_processor_device_ && !image_processor_ && !mt21_decompressor_) {
+    if (image_processor_device_ && !image_processor_
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+        && !mt21_decompressor_
+#endif
+    ) {
       DCHECK_EQ(kAwaitingPictureBuffers, decoder_state_);
       // This is the first buffer import. Create the image processor and change
       // the decoder state. The client may adjust the coded width. We don't have
@@ -752,7 +766,11 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
     // time since we already have its DMABUF fds. It is guaranteed that
     // CreateEGLImageFor will run before the picture is passed to the client
     // because the picture will need to be cleared on the child thread first.
-    if (!image_processor_ && !mt21_decompressor_) {
+    if (!image_processor_
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+        && !mt21_decompressor_
+#endif
+    ) {
       DCHECK_GT(handle.planes.size(), 0u);
       size_t index = iter - output_buffer_map_.begin();
 
@@ -1513,7 +1531,11 @@ bool V4L2VideoDecodeAccelerator::DequeueOutputBuffer() {
     DCHECK_GE(bitstream_buffer_id, 0);
     DVLOGF(4) << "Dequeue output buffer: dqbuf index=" << buf->BufferId()
               << " bitstream input_id=" << bitstream_buffer_id;
-    if (image_processor_device_ || mt21_decompressor_) {
+    if (image_processor_device_
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+        || mt21_decompressor_
+#endif
+    ) {
       if (!ProcessFrame(bitstream_buffer_id, buf)) {
         LOG(ERROR) << "Processing frame failed";
         NOTIFY_ERROR(PLATFORM_FAILURE);
@@ -1896,7 +1918,10 @@ void V4L2VideoDecodeAccelerator::DestroyTask() {
   image_processor_ = nullptr;
   while (!buffers_at_ip_.empty())
     buffers_at_ip_.pop();
+
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
   mt21_decompressor_ = nullptr;
+#endif
 
   DestroyInputBuffers();
   DestroyOutputBuffers();
@@ -2025,7 +2050,10 @@ void V4L2VideoDecodeAccelerator::StartResolutionChange() {
   buffers_at_client_.clear();
 
   image_processor_ = nullptr;
+
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
   mt21_decompressor_ = nullptr;
+#endif
 
   if (!DestroyOutputBuffers()) {
     LOG(ERROR) << "Failed destroying output buffers.";
@@ -2305,10 +2333,14 @@ bool V4L2VideoDecodeAccelerator::SetupFormats() {
   DCHECK(!image_processor_device_);
   if (!output_format_fourcc_) {
     VLOGF(2) << "Could not find a usable output format. Try image processor";
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
     if (base::FeatureList::IsEnabled(media::kPreferSoftwareMT21)) {
       output_format_fourcc_ = Fourcc(Fourcc::MT21);
       egl_image_format_fourcc_ = Fourcc(Fourcc::NV12);
     } else {
+#else
+    {
+#endif
       if (!V4L2ImageProcessorBackend::IsSupported()) {
         VLOGF(1) << "Image processor not available";
         return false;
@@ -2402,6 +2434,7 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
   // Keep reference to the IP input until the frame is processed
   buffers_at_ip_.push(std::make_pair(bitstream_buffer_id, buf));
 
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
   if (base::FeatureList::IsEnabled(media::kPreferSoftwareMT21)) {
     if (!mt21_decompressor_) {
       LOG(ERROR) << "PreferSoftwareMT21 enabled, but MT21 decompressor was not "
@@ -2457,6 +2490,7 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
 
     return true;
   }
+#endif
 
   scoped_refptr<VideoFrame> input_frame = buf->GetVideoFrame();
   if (!input_frame) {

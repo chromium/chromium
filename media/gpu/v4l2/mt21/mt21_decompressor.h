@@ -22,8 +22,13 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(COMPILER_GCC) || defined(__clang__))
+#if !defined(ARCH_CPU_ARM_FAMILY)
+#error "MT21Decompressor is only intended to run on MT8173 (ARM)"
+#endif
+
+#if !(defined(COMPILER_GCC) || defined(__clang__))
+#error "MT21Decompressor is only intended to be built with GCC or Clang"
+#endif
 
 #include <stdint.h>
 
@@ -116,7 +121,5 @@ class MT21Decompressor {
 };
 
 }  // namespace media
-
-#endif
 
 #endif  // MEDIA_GPU_V4L2_MT21_MT21_DECOMPRESSOR_H_
