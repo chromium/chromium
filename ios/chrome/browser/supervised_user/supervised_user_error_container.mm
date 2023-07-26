@@ -239,6 +239,10 @@ void SupervisedUserInterstitialBlockingPage::HandleCommand(
     security_interstitials::SecurityInterstitialCommand command) {
   CHECK(error_container_);
   error_container_->HandleCommand(*interstitial_, command);
+
+  // If the page was pre-rendered, the first time banner was not marked
+  // on page loading.
+  MaybeUpdateFirstTimeInterstitialBanner();
 }
 
 bool SupervisedUserInterstitialBlockingPage::ShouldCreateNewNavigation() const {
@@ -255,9 +259,41 @@ std::string_view SupervisedUserInterstitialBlockingPage::GetInterstitialType()
   return kSupervisedUserInterstitialType;
 }
 
+// Note: The SupervisedUserInterstitialBlockingPage has a pointer to
+// error_container_ (which is WebStateUserData helper) and is managed by
+// SupervisedUserInterstitialBlockingPage (another WebStateUserData helper).
+// The order of their destruction is unspecified, so the present object
+// observes the `web_state` to reset the pointer.
 void SupervisedUserInterstitialBlockingPage::WebStateDestroyed(
     web::WebState* web_state) {
   DCHECK(scoped_observation_.IsObservingSource(web_state));
   error_container_ = nullptr;
   scoped_observation_.Reset();
+}
+
+void SupervisedUserInterstitialBlockingPage::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  MaybeUpdateFirstTimeInterstitialBanner();
+}
+
+void SupervisedUserInterstitialBlockingPage::
+    MaybeUpdateFirstTimeInterstitialBanner() {
+  if (!interstitial_->web_content_handler()->IsMainFrame()) {
+    return;
+  }
+  if (!web_state_->IsVisible()) {
+    // Only mark the banner if the loaded page is visible (it might be
+    // pre-rendered).
+    return;
+  }
+
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  CHECK(chrome_browser_state);
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForBrowserState(chrome_browser_state);
+
+  CHECK(supervised_user_service);
+  supervised_user_service->MarkFirstTimeInterstitialBannerShown();
 }

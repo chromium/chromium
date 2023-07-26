@@ -137,13 +137,14 @@ class SupervisedUserInterstitialBlockingPage
       base::Value::Dict& load_time_data) const override;
   std::string_view GetInterstitialType() const override;
 
-  // Note: The SupervisedUserInterstitialBlockingPage has a pointer to
-  // error_container_ (which is WebStateUserData helper) and is managed by
-  // SupervisedUserInterstitialBlockingPage (another WebStateUserData helper).
-  // The order of their destruction is unspecified, so the present object
-  // observes the `web_state` to reset the pointer.
-  // web::WebStateObserver override:
+  // web::WebStateObserver implementation:
   void WebStateDestroyed(web::WebState* web_state) override;
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
+
+  // Marks the SU interstitial first time banner as shown for a visible page.
+  void MaybeUpdateFirstTimeInterstitialBanner();
 
   const std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial_;
   std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
