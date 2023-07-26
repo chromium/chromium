@@ -494,7 +494,7 @@ class BuildConfigGenerator extends DefaultTask {
 
             /* groovylint-disable-next-line EmptyIfStatement */
             if (dep.id in DISALLOW_DEPS || dep.exclude) {
-              // Do not depend on excluded or disallowed deps.
+                // Do not depend on excluded or disallowed deps.
             } else if (existingLib) {
                 depsStr += "\"${existingLib}\","
             } else if (aliasedLib) {
@@ -817,6 +817,11 @@ class BuildConfigGenerator extends DefaultTask {
                 |  ]
                 |
                 |'''.stripMargin())
+                break
+            case 'com_google_guava_listenablefuture':
+                sb.append('\n')
+                sb.append('  # This dep should be used when ListenableFuture is needed.\n')
+                sb.append('  preferred_dep = true\n')
                 break
             case 'net_sf_kxml_kxml2':
                 sb.append('  # Target needs to exclude *xmlpull* files as already included in Android SDK.\n')

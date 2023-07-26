@@ -314,6 +314,9 @@ java_prebuilt("com_google_guava_listenablefuture_java") {
   output_name = "com_google_guava_listenablefuture"
   supports_android = true
   enable_bytecode_checks = false
+
+  # This dep should be used when ListenableFuture is needed.
+  preferred_dep = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
