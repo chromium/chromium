@@ -160,6 +160,14 @@ void MessagePumpIOSForIO::HandleFdIOEvent(CFFileDescriptorRef fdref,
   int fd = CFFileDescriptorGetNativeDescriptor(fdref);
   MessagePumpIOSForIO* pump = controller->pump().get();
   DCHECK(pump);
+
+  // Inform ThreadController of this native work item for tracking and tracing
+  // purposes.
+  Delegate::ScopedDoWorkItem scoped_do_work_item;
+  if (pump->delegate()) {
+    scoped_do_work_item = pump->delegate()->BeginWorkItem();
+  }
+
   if (callback_types & kCFFileDescriptorWriteCallBack)
     controller->OnFileCanWriteWithoutBlocking(fd, pump);
 

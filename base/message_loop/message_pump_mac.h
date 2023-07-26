@@ -138,6 +138,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // Get the current mode mask from |enabled_modes_|.
   int GetModeMask() const;
 
+ protected:
+  raw_ptr<Delegate> delegate() { return delegate_; }
+
  private:
   class ScopedModeEnabler;
 
