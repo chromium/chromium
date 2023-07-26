@@ -110,7 +110,6 @@ correctly build the test module. The skeleton of the target:
 ```
 source_set("eg2_tests") {
   configs += [
-    "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
