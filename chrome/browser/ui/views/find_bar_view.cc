@@ -468,11 +468,13 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
 
 void FindBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
       kColorFindBarBackground);
-
-  border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
+  border->set_md_shadow_elevation(
+      layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh));
+  border->SetCornerRadius(layout_provider->GetCornerRadiusMetric(
       views::ShapeContextTokens::kFindBarViewRadius));
 
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
