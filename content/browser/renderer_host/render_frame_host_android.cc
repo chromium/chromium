@@ -164,6 +164,12 @@ void RenderFrameHostAndroid::NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kVoiceSearch);
 }
 
+void RenderFrameHostAndroid::NotifyWebAuthnAssertionRequestSucceeded(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>&) {
+  render_frame_host_->WebAuthnAssertionRequestSucceeded();
+}
+
 jboolean RenderFrameHostAndroid::SignalCloseWatcherIfActive(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&) const {

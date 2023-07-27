@@ -1969,6 +1969,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // WebAuthn tests do not work on Android because there is no current way to
 // install a virtual authenticator.
+// NOTE: Manual testing was performed to ensure this implementation works as
+// expected on Android platform.
+// TODO(crbug.com/1449328): Implement automated testing once the infrastructure
+// permits it (Requires mocking the Android Platform Authenticator i.e. GMS
+// Core).
 #if !BUILDFLAG(IS_ANDROID)
 // Some refs for this test fixture:
 // clang-format off

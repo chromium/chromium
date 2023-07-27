@@ -777,6 +777,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 GetAssertionAuthenticatorResponse r = (GetAssertionAuthenticatorResponse) response;
                 if (mClientDataJson != null) {
                     r.info.clientDataJson = mClientDataJson;
+                    if (mFrameHost != null) {
+                        mFrameHost.notifyWebAuthnAssertionRequestSucceeded();
+                    }
                 }
                 r.echoAppidExtension = mAppIdExtensionUsed;
                 mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, r);
@@ -1165,6 +1168,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 notifyBrowserOnCredManClosed(true);
                 mMetricsHelper.reportGetCredentialMetrics(
                         CredManGetRequestEnum.SUCCESS_PASSKEY, mConditionalUiState);
+                if (mFrameHost != null) {
+                    mFrameHost.notifyWebAuthnAssertionRequestSucceeded();
+                }
                 mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, response);
                 mGetAssertionCallback = null;
             }
