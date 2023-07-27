@@ -8,7 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/local_network_access_util.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
