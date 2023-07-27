@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/uuid.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -39,7 +40,7 @@ class MockShoppingService : public commerce::ShoppingService {
               (override));
   MOCK_METHOD(void,
               GetUpdatedProductInfoForBookmarks,
-              (const std::vector<int64_t>& bookmark_ids,
+              (const std::vector<base::Uuid>& bookmark_uuids,
                BookmarkProductInfoUpdatedCallback info_updated_callback),
               (override));
   MOCK_METHOD(size_t, GetMaxProductBookmarkUpdatesPerBatch, (), (override));
@@ -103,7 +104,7 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetResponseForGetPriceInsightsInfoForUrl(
       absl::optional<commerce::PriceInsightsInfo> price_insights_info);
   void SetResponsesForGetUpdatedProductInfoForBookmarks(
-      std::map<int64_t, ProductInfo> bookmark_updates);
+      std::map<base::Uuid, ProductInfo> bookmark_updates);
   void SetResponseForGetMerchantInfoForUrl(
       absl::optional<commerce::MerchantInfo> merchant_info);
   void SetSubscribeCallbackValue(bool subscribe_should_succeed);
