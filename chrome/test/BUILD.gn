@@ -3010,10 +3010,8 @@ if (!is_android) {
     }
 
     if (include_js_tests) {
-      deps += [ "//chrome/test/data/webui:browser_tests" ]
-    }
-    if (include_js2gtest_tests) {
       deps += [
+        "//chrome/test/data/webui:browser_tests",
         "//chrome/test/data/webui:browser_tests_js_mojo_webui",
         "//chrome/test/data/webui:browser_tests_js_webui",
       ]
@@ -7775,7 +7773,7 @@ test("unit_tests") {
 
     data += [ "//ash/components/arc/test/data/icons/" ]
 
-    if (include_js2gtest_tests) {
+    if (include_js_tests) {
       deps += [ "//chrome/test/data/webui:unit_tests_js" ]
       if (is_chromeos_ash) {
         deps += [
@@ -10252,10 +10250,10 @@ if (!is_android) {
       "//ui/web_dialogs:test_support",
     ]
     if (include_js_tests) {
-      deps += [ "//chrome/test/data/webui:interactive_ui_tests" ]
-    }
-    if (include_js2gtest_tests) {
-      deps += [ "//chrome/test/data/webui:interactive_ui_tests_js_webui" ]
+      deps += [
+        "//chrome/test/data/webui:interactive_ui_tests",
+        "//chrome/test/data/webui:interactive_ui_tests_js_webui",
+      ]
     }
 
     # Runtime dependencies
@@ -10668,7 +10666,7 @@ if (!is_android) {
         "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_interactive_uitest.cc",
       ]
 
-      if (include_js2gtest_tests) {
+      if (include_js_tests) {
         sources += [
           "../browser/ui/webui/management/management_a11y_browsertest.cc",
           "../browser/ui/webui/management/management_a11y_browsertest.h",
