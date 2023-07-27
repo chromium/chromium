@@ -62,8 +62,12 @@ namespace internal {
 
 extern int RecordReplayObjectId(v8::Isolate* isolate, v8::Local<v8::Context> cx,
                                 v8::Local<v8::Value> object, bool allow_create);
-extern void RecordReplayConfirmObjectHasId(v8::Isolate* isolate, v8::Local<v8::Context> cx,
+extern void RecordReplayConfirmObjectHasId(v8::Isolate* isolate,
+                                           v8::Local<v8::Context> cx,
                                            v8::Local<v8::Value> object);
+extern v8::Local<v8::Object> RecordReplayGetBytecode(
+    v8::Isolate* isolate_,
+    v8::Local<v8::Object> paramsObj);
 
 } // namespace internal
 } // namespace v8
@@ -4627,6 +4631,19 @@ static void fromJsCollectEventListeners(const v8::FunctionCallbackInfo<v8::Value
   args.GetReturnValue().Set(result);
 }
 
+static void fromJsGetFunctionBytecode(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsObject() &&
+        "[RuntimeError] must be called with a single plain object");
+
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::Local<v8::Object> paramObj = args[0].As<v8::Object>();
+
+  v8::Local<v8::Object> rv = v8::internal::RecordReplayGetBytecode(isolate, paramObj);
+
+  args.GetReturnValue().Set(rv);
+}
+
 /** ###########################################################################
  * misc
  * ##########################################################################*/
@@ -4823,6 +4840,8 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
                       fromJsCollectEventListeners);
   SetFunctionProperty(isolate, args, "fromJsDomPerformSearch",
                       fromJsDomPerformSearch);
+  SetFunctionProperty(isolate, args, "getFunctionBytecode",
+                      fromJsGetFunctionBytecode);
 
   // unsorted RR stuff
   SetFunctionProperty(
