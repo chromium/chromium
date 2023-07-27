@@ -181,7 +181,8 @@ bool PopupBaseView::DoShow() {
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
   if (initialize_widget) {
-    views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
+    CHECK(!focus_observation_.IsObserving());
+    focus_observation_.Observe(views::WidgetFocusManager::GetInstance());
   }
 
   return true;
@@ -289,8 +290,7 @@ void PopupBaseView::RemoveWidgetObservers() {
     parent_widget_->RemoveObserver(this);
   }
   GetWidget()->RemoveObserver(this);
-
-  views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
+  focus_observation_.Reset();
 }
 
 void PopupBaseView::UpdateClipPath() {
