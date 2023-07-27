@@ -221,6 +221,8 @@ if (is_linux || is_chromeos) {
   if (current_cpu == "arm64") {
     if (target_environment == "simulator") {
       rust_abi_target = "aarch64-apple-ios-sim"
+    } else if (target_environment == "catalyst") {
+      rust_abi_target = "aarch64-apple-ios-macabi"
     } else {
       rust_abi_target = "aarch64-apple-ios"
     }
@@ -231,7 +233,11 @@ if (is_linux || is_chromeos) {
     # with Rust, we might want to be more precise here.
     rust_abi_target = "armv7-apple-ios"
   } else if (current_cpu == "x64") {
-    rust_abi_target = "x86_64-apple-ios"
+    if (target_environment == "catalyst") {
+      rust_abi_target = "x86_64-apple-ios-macabi"
+    } else {
+      rust_abi_target = "x86_64-apple-ios"
+    }
   } else if (current_cpu == "x86") {
     rust_abi_target = "i386-apple-ios"
   } else {
