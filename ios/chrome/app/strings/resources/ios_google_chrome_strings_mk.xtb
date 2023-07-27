@@ -39,6 +39,7 @@
 <translation id="2767464022270041271">Немате зачувани лозинки. Google Password Manager може да ги проверува вашите лозинки кога ги зачувувате.</translation>
 <translation id="2840432500933227975">Отворете „Поставки за Chrome“ на iOS, па допрете на „Стандардна АПЛИКАЦИЈА за прелистување“ и изберете Chrome.</translation>
 <translation id="2869959624320573933">Најавете се на Chrome</translation>
+<translation id="2876628302275096482">Дознајте повеќе за тоа <ph name="BEGIN_LINK" />како Chrome ја штити приватноста на вашите податоци<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chrome ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
 <translation id="3167189358072330585">Сметката не работи на Google Chrome. Контактирајте го администраторот на доменот или употребете обична сметка на Google за да се најавите.</translation>
@@ -79,6 +80,7 @@
 <translation id="5162467219239570114">Chrome е застарен. Ако нема достапно ажурирање во <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, можно е уредот веќе да не поддржува нови верзии на Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome не може да ја користи камерата затоа што друга апликација ја користи во моментов</translation>
 <translation id="5395376160638294582">Уверете се дека секогаш ќе може да ги користите податоците на Chrome во вашата сметка на Google</translation>
+<translation id="5439191312780166229">Ве предупредува за опасни сајтови, дури и оние што Google не ги знаел претходно, така што анализира повеќе податоци од сајтови од стандардната заштита. Може да изберете да се прескокнуваат предупредувањата на Chrome.</translation>
 <translation id="5460571915754665838">4. Изберете Chrome</translation>
 <translation id="5492504007368565877">Google Password Manager не може да ги провери вашите лозинки.</translation>
 <translation id="5527026824954593399">Допрете „Прикажи со „Карти на Google“ во Chrome“.</translation>

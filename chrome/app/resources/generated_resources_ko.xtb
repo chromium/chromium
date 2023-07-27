@@ -197,6 +197,7 @@
 <translation id="1153636665119721804">Google 고급 보호 프로그램</translation>
 <translation id="1155545602507378023">아니요, 이 기기에만 저장</translation>
 <translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
+<translation id="1157952955648710254">Google 검색 측면 패널 닫기</translation>
 <translation id="1158080958325422608">Make Uppercase(대문자로 표시)</translation>
 <translation id="1158238185437008462">추억 보기</translation>
 <translation id="1159879754517035595">확장 프로그램 설정 관리</translation>
@@ -511,6 +512,7 @@
 <translation id="1418954524306642206">탐색하여 프린터 PPD 지정</translation>
 <translation id="1420834118113404499">미디어 라이선스</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />을(를) 통해 페어링 허용</translation>
+<translation id="1421514190500081936">이 데이터를 다운로드하는 이유를 입력하세요.</translation>
 <translation id="1422159345171879700">안전하지 않은 스크립트 로드</translation>
 <translation id="1425040197660226913">업로드할 수 없습니다. 20MB보다 작은 이미지를 사용하세요.</translation>
 <translation id="1426410128494586442">예</translation>
@@ -2144,6 +2146,7 @@
 <translation id="2719936478972253983">다음 쿠키가 차단됨</translation>
 <translation id="2721037002783622288"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
+<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"에 허용하는 권한은 이 앱에서도 허용됩니다.}other{"<ph name="APP_NAME" />"에 허용하는 권한은 이러한 앱에서도 허용됩니다.}}</translation>
 <translation id="2721695630904737430">관리자가 관리 대상 사용자를 사용 중지했습니다.</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> 후 기기가 종료됩니다. 기기 전원을 다시 켜기 전에 USB를 제거하세요. 그런 다음 <ph name="DEVICE_OS" /> 사용을 시작할 수 있습니다</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -2493,6 +2496,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{맞춤설정된 키 없음}=1{맞춤설정된 키 1개}other{맞춤설정된 키 {COUNT}개}}</translation>
 <translation id="3001835006423291524">키보드 오른쪽 하단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="3003144360685731741">기본 설정된 네트워크</translation>
+<translation id="3003253259757197230">다음에 방문할 사이트를 예측하고 현재 방문 중인 페이지에 관한 추가 정보를 표시하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="3003623123441819449">CSS 캐시</translation>
 <translation id="3003828226041301643">기기가 도메인에 가입하지 못했습니다. 기기를 추가할 권한이 계정에 있는지 확인하세요.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />에서 비공개 Wi-Fi 연결을 생성합니다.</translation>
@@ -3282,6 +3286,7 @@
 <translation id="3699920817649120894">동기화 및 맞춤설정을 사용 중지하시겠습니까?</translation>
 <translation id="3700888195348409686">표시 중(<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">사이트에서 카메라 위치를 추적하도록 허용하지 않음</translation>
+<translation id="3701515417135397388">정보 유출로 인해 비밀번호가 유출된 경우 경고</translation>
 <translation id="3702500414347826004">시작 페이지가 <ph name="URL" />을(를) 포함하도록 변경되었습니다.</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />이 데모 기기를 구성하려는 소매업체 이름과 상점 번호를 입력합니다*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />상점 번호를 모르는 경우 '0000'을 입력하여 데모 모드 설치를 계속 진행할 수 있습니다. <ph name="END_PARAGRAPH2" />
@@ -6627,6 +6632,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 위치 서비스는 기기 위치를 파악하는 데 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 기기에서 Android 위치를 사용 중지할 수 있습니다. 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 보안 및 위치 &gt; 위치로 이동하세요. 동일한 메뉴에서 'Google 위치 정확도'를 사용 중지하여 Android 위치에 Wi-Fi, 모바일 네트워크, 센서를 사용하지 않도록 할 수도 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
+<translation id="6548945820758901244">Google 검색 측면 패널 열기</translation>
 <translation id="6549038875972762904">다시 설정</translation>
 <translation id="6550675742724504774">옵션</translation>
 <translation id="65513682072153627">관리자가 관리하는 설정이나 기능의 경우 관리됨 아이콘이 표시됩니다</translation>
@@ -6952,6 +6958,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6820079682647046800">Kerberos 인증 실패</translation>
 <translation id="6823174134746916417">터치패드 탭하여 클릭</translation>
 <translation id="6823429960180594870">다운로드하는 파일 관리 및 완료 시 열기</translation>
+<translation id="6823561724060793716">주소 표시줄에서 페이지 정보를 열어 현재 방문 중인 페이지에 대한 추가 정보를 볼 수 있습니다.</translation>
 <translation id="6824564591481349393">이메일 주소 복사(&amp;E)</translation>
 <translation id="6824584962142919697">요소 검사(&amp;I)</translation>
 <translation id="6824725898506587159">언어 관리</translation>
@@ -7482,6 +7489,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="727952162645687754">다운로드 오류</translation>
 <translation id="7280649757394340890">TTS 음성 설정</translation>
 <translation id="7280877790564589615">권한 요청됨</translation>
+<translation id="7281166215790160128">모드</translation>
 <translation id="7282056103720203738">연결된 기기 정보 및 데이터 읽기</translation>
 <translation id="7282547042039404307">원활함</translation>
 <translation id="7282992757463864530">정보 표시줄</translation>
@@ -8784,6 +8792,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 1개<ph name="END_BOLD" />를 검토합니다.}other{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 {NUM_SITES}개<ph name="END_BOLD" />를 검토합니다.}}</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
+<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"(<ph name="DOMAIN" />)에서 기기에 다음 앱을 설치하려고 합니다.}other{"<ph name="APP_NAME" />"(<ph name="DOMAIN" />)에서 기기에 다음 앱을 설치하려고 합니다.}}</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="834785183489258869">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
@@ -9381,6 +9390,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8856028055086294840">앱 및 페이지 복원</translation>
 <translation id="885701979325669005">저장소</translation>
 <translation id="885746075120788020">Google 계정을 사용해 로그인할 경우 모든 ChromeOS 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요</translation>
+<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{앱을 설치하시겠습니까?}other{앱을 설치하시겠습니까?}}</translation>
 <translation id="8858369206579825206">개인 정보 보호 설정</translation>
 <translation id="8859174528519900719">서브프레임: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">서비스 약관을 로드할 수 없습니다.</translation>
@@ -9566,6 +9576,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9011262023858991985">이 탭 전송 중</translation>
 <translation id="9011393886518328654">출시 노트</translation>
 <translation id="9012122671773859802">마우스 움직임에 따라 계속 화면 움직이기</translation>
+<translation id="9012585441087414258">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 페이지에서 의심스러운 작업을 수행하면 URL 및 페이지 콘텐츠 일부가 Google 세이프 브라우징으로 전송됩니다.</translation>
 <translation id="9013037634206938463">Linux를 설치하려면 <ph name="INSTALL_SIZE" />의 여유 공간이 있어야 합니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="9014206344398081366">ChromeVox 가이드</translation>
 <translation id="901668144954885282">Google Drive에 백업</translation>

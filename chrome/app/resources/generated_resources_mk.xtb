@@ -260,6 +260,7 @@
 <translation id="1197935538609051549">Деактивирај</translation>
 <translation id="1198066799963193307">Алатки за говор при слаб вид</translation>
 <translation id="119944043368869598">Избриши ги сите</translation>
+<translation id="1199631150313925648">Внесете рачно</translation>
 <translation id="1199814941632954229">Подготвени се сертификати за следниве профили со сертификат</translation>
 <translation id="120069043972472860">Не може да се гледа</translation>
 <translation id="1201402288615127009">Следно</translation>
@@ -3386,6 +3387,7 @@
 <translation id="3776508619697147021">Сајтовите може да прашуваат дали автоматски да преземаат повеќе датотеки</translation>
 <translation id="3776796446459804932">Наставката ја прекршува политиката на Веб-продавницата на Chrome.</translation>
 <translation id="3777483481409781352">Не може да се активира мобилниот уред</translation>
+<translation id="3777796259512476958">Ќе ве одјави од повеќето сајтови</translation>
 <translation id="3778208826288864398">Безбедносниот клуч е заклучен бидејќи внесовте погрешен PIN премногу пати. Ќе треба да го ресетирате безбедносниот клуч.</translation>
 <translation id="3778740492972734840">&amp;Програмерски алатки</translation>
 <translation id="3778868487658107119">Поставувајте му прашања. Кажувајте му што да направи. Тој е вашиот личен Google, секогаш подготвен да помогне.</translation>
@@ -4202,6 +4204,7 @@
 <translation id="4460014764210899310">Одгрупирајте</translation>
 <translation id="4461483878391246134">Додајте јазици за кои никогаш не треба да се нуди превод</translation>
 <translation id="4462159676511157176">Сервери со приспособено име</translation>
+<translation id="4463530025936541315">Ако продолжите, ќе дозволите трети страни да потврдуваат податоци што го идентификуваат уредов на мрежата</translation>
 <translation id="4465236939126352372">Поставено е временско ограничување од <ph name="TIME" /> за <ph name="APP_NAME" /></translation>
 <translation id="4466839823729730432">Видете ги спомените овде</translation>
 <translation id="4469324811108161144">Белешките може да заштедат до <ph name="CHARACTER_LIMIT" /> знаци.</translation>
@@ -8583,6 +8586,7 @@
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Преместете ја картичката во нов прозорец}one{Преместете ги картичките во нов прозорец}other{Преместете ги картичките во нов прозорец}}</translation>
 <translation id="8179188928355984576">Не се користи со апликации на Android</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Печатач <ph name="ITEM_POSITION" /> од <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">„Штедачот на енергија“ е вклучен</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />“ може да чита и да брише слики, видео- и аудиодатотеки на означените локации.</translation>
 <translation id="8180826593917851025">Конфигурирање точка на пристап на <ph name="DEVICE_TYPE" /></translation>
@@ -9552,6 +9556,7 @@
 <translation id="8999560016882908256">Синтаксичка грешка во делот: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Допрете го сензорот за отпечатоци десно на вашиот <ph name="DEVICE_TYPE" />. Податоците за отпечатокот безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9003185744423389627">Поврзувањето со серверот на „Управник со уреди“ не успеа и има статус „<ph name="STATUS_TEXT" />“ во <ph name="FAILURE_TIME" /></translation>
+<translation id="90033698482696970">Да се скенира автоматски за достапни профили на eSIM?</translation>
 <translation id="9003647077635673607">Дозволи на сите веб-локации</translation>
 <translation id="9003677638446136377">Проверете повторно</translation>
 <translation id="9004754973617721124">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" />, сите сајтови под него и неговите инсталирани апликации?</translation>

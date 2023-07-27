@@ -39,6 +39,7 @@
 <translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
 <translation id="2840432500933227975">‏افتح إعدادات Chrome على جهاز iOS، ثم انقر على Default Browser App (تطبيق المتصفِّح التلقائي) واختَر Chrome.</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
+<translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
 <translation id="3167189358072330585">‏لا يعمل حسابك على Google Chrome. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
@@ -79,6 +80,7 @@
 <translation id="5162467219239570114">‏إصدار Chrome قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chrome.</translation>
 <translation id="5389212809648216794">‏يتعذر على Google Chrome استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
 <translation id="5395376160638294582">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chrome في حسابك على Google في أي وقت.</translation>
+<translation id="5439191312780166229">‏ستتلقّى تحذيرات بشأن المواقع الإلكترونية الخطيرة، بما فيها المواقع التي لم يتعرّف عليها محرك البحث Google من قَبل، من خلال تحليل بيانات من المواقع الإلكترونية أكثر من الحماية العادية. يمكنك اختيار تخطّي تحذيرات Chrome.</translation>
 <translation id="5460571915754665838">‏4- اختيار Chrome</translation>
 <translation id="5492504007368565877">‏يتعذَّر على "مدير كلمات المرور في Google" التحقّق من كلمات المرور.</translation>
 <translation id="5527026824954593399">‏انقر على "العرض على Chrome باستخدام خرائط Google".</translation>

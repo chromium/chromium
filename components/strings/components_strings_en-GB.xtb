@@ -101,6 +101,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1201402288615127009">Next</translation>
 <translation id="1201895884277373915">More from this site</translation>
 <translation id="1202892408424955784">Tracked products</translation>
+<translation id="1204184165594298176">{0,plural, =1{File blocked from copying}other{<ph name="FILE_COUNT" /> files blocked from copying}}</translation>
 <translation id="1204602502194308272">Fish and aquaria</translation>
 <translation id="1206967143813997005">Bad initial signature</translation>
 <translation id="1209206284964581585">Hide for now</translation>
@@ -889,6 +890,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2916038427272391327">Close other programmes</translation>
 <translation id="2918922650248459053">Diving and underwater activities</translation>
 <translation id="2922350208395188000">Server's certificate cannot be checked.</translation>
+<translation id="2922792708490674">{0,plural, =1{File blocked from downloading}other{<ph name="FILE_COUNT" /> files blocked from downloading}}</translation>
 <translation id="2923275635648511531">Sun Care and Tanning Products</translation>
 <translation id="292371311537977079">Chrome settings</translation>
 <translation id="2925454999967523701">Create doc button, activate to quickly create a new Google Doc</translation>
@@ -1269,6 +1271,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3713662424819367124">Perfumes and fragrances</translation>
 <translation id="3714633008798122362">web calendar</translation>
 <translation id="3714780639079136834">Turning on mobile data or Wi-Fi</translation>
+<translation id="3715016660240337709">{0,plural, =1{File blocked from uploading}other{<ph name="FILE_COUNT" /> files blocked from uploading}}</translation>
 <translation id="3715545959749027023">When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages that you visit in Chrome, file names or metadata, browser or tab crashes and the username that you use to sign in to web based applications, your device and Chrome.</translation>
 <translation id="3715597595485130451">Connect to Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Checking the proxy, firewall and DNS configuration<ph name="END_LINK" /></translation>
@@ -1349,6 +1352,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3890664840433101773">Add email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">The card is expired</translation>
+<translation id="3905894480064208252">{0,plural, =1{File blocked from transferring}other{<ph name="FILE_COUNT" /> files blocked from transferring}}</translation>
 <translation id="3906095212874392000">End of converted text</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1757,6 +1761,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4757993714154412917">You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.</translation>
 <translation id="4758311279753947758">Add contact info</translation>
 <translation id="4761104368405085019">Use your microphone</translation>
+<translation id="4761326898079498987">Review for further details</translation>
 <translation id="4761869838909035636">Run Chrome Safety Check</translation>
 <translation id="4764680219299728632">Ranges, Hobs and Ovens</translation>
 <translation id="4764776831041365478">The web page at <ph name="URL" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
@@ -2130,6 +2135,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="555128936272638662">Mobile and Wireless Accessories</translation>
 <translation id="5551890439174915351">100 mm x 200 mm</translation>
 <translation id="5552137475244467770">Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
+<translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5558083606899411167">Air Conditioners</translation>
 <translation id="5558125320634132440">This site is blocked because it may have mature content</translation>
@@ -2441,6 +2447,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6240447795304464094">Google Pay logo</translation>
 <translation id="6241121617266208201">Hide suggestions</translation>
 <translation id="624499991300733384">Print compositor service</translation>
+<translation id="6251906504834538140">{0,plural, =1{File blocked from moving}other{<ph name="FILE_COUNT" /> files blocked from moving}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage files that you have downloaded in Chrome</translation>
 <translation id="6254436959401408446">Not enough memory to open this page</translation>
 <translation id="6259156558325130047">&amp;Redo Reorder</translation>
@@ -3152,6 +3159,7 @@ Additional details:
 <translation id="7682287625158474539">Shipping</translation>
 <translation id="7682451652090915298">Rugby</translation>
 <translation id="7684683146428206649">Metal</translation>
+<translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> was blocked because of policy}other{<ph name="FILE_COUNT" /> files were blocked because of policy}}</translation>
 <translation id="7687186412095877299">Fills in payment forms with your saved payment methods</translation>
 <translation id="7687305263118037187">Retry time-out</translation>
 <translation id="7690647519407127574">Ofuku Hagaki Postcard</translation>
@@ -3367,6 +3375,7 @@ Additional details:
 <translation id="8175796834047840627">Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behaviour in settings.</translation>
 <translation id="8176440868214972690">The administrator of this device has sent some info to the following websites, like settings or policies.</translation>
 <translation id="817820454357658398">Feminine Hygiene Products</translation>
+<translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> was blocked because of content}other{<ph name="FILE_COUNT" /> files were blocked because of content}}</translation>
 <translation id="8183800802493617952">Family-Orientated Games and Activities</translation>
 <translation id="8184538546369750125">Use global default (Allow)</translation>
 <translation id="8186706823560132848">Software</translation>
@@ -3418,6 +3427,7 @@ Additional details:
 <translation id="8265992338205884890">Visible data</translation>
 <translation id="8267698848189296333">Signing in as <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Separate documents/Collated copies</translation>
+<translation id="8269703227894255363">{0,plural, =1{File blocked from opening}other{<ph name="FILE_COUNT" /> files blocked from opening}}</translation>
 <translation id="826991611711124547">Cruises and charters</translation>
 <translation id="8270242299912238708">PDF documents</translation>
 <translation id="8275952078857499577">Don‘t offer to translate this site</translation>

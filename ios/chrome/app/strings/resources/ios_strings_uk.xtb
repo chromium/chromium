@@ -425,6 +425,7 @@
 <translation id="3533436815740441613">Нова вкладка</translation>
 <translation id="3540141921715814660">Додати в закладки</translation>
 <translation id="3551320343578183772">Закрити вкладку</translation>
+<translation id="3554280880535219766">Показати нижній адресний рядок</translation>
 <translation id="3565207542107370586">Очистити дані веб-перегляду</translation>
 <translation id="3575234738189584619">Шукати через Об’єктив</translation>
 <translation id="3577555362230509265">Зробіть Chrome веб-переглядачем за умовчанням.</translation>
@@ -593,6 +594,7 @@
 <translation id="469300482518076788">Закрити вкладку</translation>
 <translation id="4697071790493980729">Результатів не знайдено</translation>
 <translation id="470966556546083668">Не вмикати синхронізацію</translation>
+<translation id="4711809265250406889">Коли функцію ввімкнено</translation>
 <translation id="4737560986434232178">Шукати серед останніх вкладок</translation>
 <translation id="473775607612524610">Оновити</translation>
 <translation id="4746926359847517643">Їх завжди можна знайти в історії.</translation>
@@ -648,6 +650,7 @@
 <translation id="5017828934289857214">Нагадати пізніше</translation>
 <translation id="5037676449506322593">Вибрати всі</translation>
 <translation id="5039804452771397117">Дозволити</translation>
+<translation id="5050294464480863218">Що варто врахувати</translation>
 <translation id="5056446788882570708">Проблеми виявлено <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Установити Google Диск</translation>
@@ -742,6 +745,7 @@
 <translation id="5684761169742812828">Цей пароль розкрито через порушення безпеки даних в Інтернеті. Якщо у вас немає часу змінити його прямо зараз, радимо не закривати це попередження – воно слугуватиме для вас нагадуванням.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано 1 вікно Chrome}one{Показано {count} вікно Chrome}few{Показано {count} вікна Chrome}many{Показано {count} вікон Chrome}other{Показано {count} вікна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ до камери надано</translation>
+<translation id="5702108177581350218">Якщо ви поділитеся іменем користувача й паролем, учасник вашої сімейної групи зможе заповнювати їх за допомогою Google Менеджера паролів.</translation>
 <translation id="5704908597376970822">Не вдається ввійти.</translation>
 <translation id="5706552126692816153">У мережі 1 день тому</translation>
 <translation id="5711039611392265845">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Синхронізація та сервіси Google<ph name="END_LINK" />.</translation>
@@ -756,6 +760,7 @@
 <translation id="574762237186762643">Події</translation>
 <translation id="5755162682436943950">Ви вийшли. Ця опція відкриває вікно, де можна ввійти та ввімкнути синхронізацію.</translation>
 <translation id="5758631781033351321">Тут відображатиметься ваш список читання</translation>
+<translation id="5760258696409739442">Показати верхній адресний рядок</translation>
 <translation id="5762370665605786758">Шифрування за допомогою парольної фрази не застосовується до способів оплати й адрес із Google Pay.
 
 Зашифровані дані може читати лише користувач, який знає вашу парольну фразу. Парольна фраза не надсилається й не зберігається в Google. Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />очистьте дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
@@ -772,6 +777,7 @@
 <translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Зберігайте паролі, способи оплати й адреси, і Chrome автоматично заповнюватиме їх.</translation>
 <translation id="5834415013958049700">Шукати скопійоване зображення через Об’єктив</translation>
+<translation id="5844284118433003733">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
 <translation id="5846482154967366008">Пошукова система</translation>
 <translation id="5854790677617711513">Понад 30 днів тому</translation>
 <translation id="5857090052475505287">Нова папка</translation>
@@ -805,6 +811,7 @@
 <translation id="6011308810877101166">Покращувати підказки в пошуку</translation>
 <translation id="6012140227487808125">Шифрування…</translation>
 <translation id="6021332621416007159">Відкрити в...</translation>
+<translation id="6027619584715411062">Увійдіть в обліковий запис, щоб отримати доступ до закладок, паролів і інших даних на всіх пристроях.</translation>
 <translation id="6027945736510816438">Можливо, ви мали на увазі <ph name="WEBSITE" />?</translation>
 <translation id="6036215966221662377">Очистити дані веб-перегляду</translation>
 <translation id="6036514205982097558">Усі ваші вкладки в одному веб-переглядачі</translation>
@@ -1108,6 +1115,7 @@
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="777572173400717978">{count,plural, =1{Закладку створено}one{Закладки створено}few{Закладки створено}many{Закладки створено}other{Закладки створено}}</translation>
+<translation id="777637629667389858">Якщо ви ввійшли в обліковий запис, ця функція захищає вас у всіх сервісах Google.</translation>
 <translation id="7781011649027948662">Перекласти сторінку?</translation>
 <translation id="7781069478569868053">Сторінка нової вкладки</translation>
 <translation id="7781829728241885113">Учора</translation>
@@ -1284,6 +1292,7 @@
 <translation id="8840513115188359703">Ви не вийдете з облікового запису Google.</translation>
 <translation id="8843129975935593190">Ваша організація обмежила дані, які можна синхронізувати.</translation>
 <translation id="8849001918648564819">Приховано</translation>
+<translation id="8855242995793521265">Не сповільнює роботу веб-переглядача або пристрою.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Нещодавно закриті</translation>
 <translation id="8876882697946675716">Синхронізуйте свої пристрої</translation>
