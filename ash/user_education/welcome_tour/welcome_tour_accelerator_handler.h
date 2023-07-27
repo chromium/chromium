@@ -8,6 +8,7 @@
 #include <array>
 
 #include "ash/public/cpp/accelerator_actions.h"
+#include "base/functional/callback.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -15,18 +16,32 @@ namespace ash {
 // Handles the accelerator key events during the Welcome Tour.
 class WelcomeTourAcceleratorHandler : public ui::EventHandler {
  public:
-  // The accelerator actions allowed during the Welcome Tour.
-  static constexpr std::array<AcceleratorAction, 7> kAllowedActions = {
-      AcceleratorAction::kBrightnessDown,
-      AcceleratorAction::kBrightnessUp,
-      AcceleratorAction::kPrintUiHierarchies,
-      AcceleratorAction::kTakeScreenshot,
-      AcceleratorAction::kVolumeDown,
-      AcceleratorAction::kVolumeMute,
-      AcceleratorAction::kVolumeUp,
+  struct AllowedAction {
+    const AcceleratorAction action;
+
+    // If true, when `action` is triggered during the Welcome Tour, the tour is
+    // aborted and `action` continues to perform as usual.
+    const bool aborts_tour;
   };
 
-  WelcomeTourAcceleratorHandler();
+  // The accelerator actions allowed during the Welcome Tour.
+  static constexpr std::array<AllowedAction, 12> kAllowedActions = {{
+      {AcceleratorAction::kBrightnessDown, /*aborts_tour=*/false},
+      {AcceleratorAction::kBrightnessUp, /*aborts_tour=*/false},
+      {AcceleratorAction::kExit, /*aborts_tour=*/true},
+      {AcceleratorAction::kLockScreen, /*aborts_tour=*/true},
+      {AcceleratorAction::kPowerPressed, /*aborts_tour=*/true},
+      {AcceleratorAction::kPowerReleased, /*aborts_tour=*/true},
+      {AcceleratorAction::kPrintUiHierarchies, /*aborts_tour=*/false},
+      {AcceleratorAction::kSuspend, /*aborts_tour=*/true},
+      {AcceleratorAction::kTakeScreenshot, /*aborts_tour=*/false},
+      {AcceleratorAction::kVolumeDown, /*aborts_tour=*/false},
+      {AcceleratorAction::kVolumeMute, /*aborts_tour=*/false},
+      {AcceleratorAction::kVolumeUp, /*aborts_tour=*/false},
+  }};
+
+  explicit WelcomeTourAcceleratorHandler(
+      base::RepeatingClosure abort_tour_callback);
   WelcomeTourAcceleratorHandler(const WelcomeTourAcceleratorHandler&) = delete;
   WelcomeTourAcceleratorHandler& operator=(
       const WelcomeTourAcceleratorHandler&) = delete;
@@ -35,6 +50,9 @@ class WelcomeTourAcceleratorHandler : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
+
+  // The callback to abort the Welcome Tour.
+  base::RepeatingClosure abort_tour_callback_;
 };
 
 }  // namespace ash

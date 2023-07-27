@@ -329,7 +329,9 @@ void WelcomeTourController::MaybeAbortWelcomeTour() {
 // TODO(http://b/277091619): Stabilize wallpaper.
 // TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
-  accelerator_handler_ = std::make_unique<WelcomeTourAcceleratorHandler>();
+  accelerator_handler_ = std::make_unique<WelcomeTourAcceleratorHandler>(
+      base::BindRepeating(&WelcomeTourController::MaybeAbortWelcomeTour,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
   notification_blocker_->Init();

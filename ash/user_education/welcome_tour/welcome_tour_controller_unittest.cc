@@ -34,14 +34,12 @@
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
-#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -733,7 +731,8 @@ class WelcomeTourAcceleratorHandlerRunTest
 
   void VerifyActionsInAllowedList() {
     for (auto allowed_action : WelcomeTourAcceleratorHandler::kAllowedActions) {
-      PerformActionAndCheckKeyEvents(allowed_action, /*received=*/true);
+      PerformActionAndCheckKeyEvents(allowed_action.action,
+                                     /*received=*/true);
     }
   }
 
@@ -781,6 +780,33 @@ TEST_F(WelcomeTourAcceleratorHandlerRunTest, BlockActionsNotInAllowedList) {
   // the mock event handler.
   PerformActionAndCheckKeyEvents(AcceleratorAction::kTakePartialScreenshot,
                                  /*received=*/true);
+}
+
+// Verifies the accelerator actions that abort the Welcome Tour when performed.
+TEST_F(WelcomeTourAcceleratorHandlerRunTest, CheckActionsThatAbortTour) {
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        for (const auto& allowed_action :
+             WelcomeTourAcceleratorHandler::kAllowedActions) {
+          if (!allowed_action.aborts_tour) {
+            // Skip `allowed_action` if it does not need to abort the tour.
+            continue;
+          }
+
+          base::test::TestFuture<void> aborted_future;
+          EXPECT_CALL(*user_education_delegate(), AbortTutorial)
+              .WillOnce(RunOnceClosure(aborted_future.GetCallback()));
+
+          // During the Welcome Tour, the key events for `action` should be
+          // received by the mock event handler.
+          PerformActionAndCheckKeyEvents(allowed_action.action,
+                                         /*received=*/true);
+
+          // The delegate API that aborts the Welcome Tour should be called.
+          EXPECT_TRUE(aborted_future.Wait());
+          Mock::VerifyAndClearExpectations(user_education_delegate());
+        }
+      })));
 }
 
 // WelcomeTourControllerTabletTest ---------------------------------------------

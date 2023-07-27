@@ -10,7 +10,6 @@
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
-#include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -24,8 +23,10 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
-#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -98,14 +99,21 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
     return WaitForShow(kBrowserViewElementId);
   }
 
-  // Returns a builder for an interaction step that waits for the dialog.
-  [[nodiscard]] static auto WaitForDialog() {
-    return WaitForShow(ash::kWelcomeTourDialogElementId);
+  // Returns a builder for an interaction step that waits for the dialog to have
+  // the expected visibility.
+  [[nodiscard]] static auto WaitForDialogVisibility(bool visible) {
+    return visible ? WaitForShow(ash::kWelcomeTourDialogElementId)
+                   : WaitForHide(ash::kWelcomeTourDialogElementId);
   }
 
   // Returns a builder for an interaction step that waits for a help bubble.
   [[nodiscard]] static auto WaitForHelpBubble() {
     return WaitForShow(ash::HelpBubbleViewAsh::kHelpBubbleElementIdForTesting);
+  }
+
+  // Returns a builder for an interaction step that waits for login user view.
+  [[nodiscard]] static auto WaitForLoginUserView() {
+    return WaitForShow(ash::kLoginUserViewElementId);
   }
 
   // Returns a builder for an interaction step that checks the visibility of
@@ -230,7 +238,7 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
   RunTestSequence(
       // Step 0: Dialog.
-      InAnyContext(WaitForDialog()),
+      InAnyContext(WaitForDialogVisibility(true)),
       InSameContext(Steps(
           CheckDialogAcceptButtonFocus(true), CheckDialogAcceptButtonText(),
           CheckDialogCancelButtonText(), CheckDialogDescription(),
@@ -302,4 +310,25 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
       InAnyContext(WaitForBrowser()),
       InSameContext(Steps(WaitForAppListBubbleToHide(),
                           CheckBrowserIsForWebApp(web_app::kHelpAppId))));
+}
+
+IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest,
+                       LockScreenDuringWelcomeTour) {
+  RunTestSequence(
+      // Wait for the Welcome Tour dialog to show.
+      InAnyContext(WaitForDialogVisibility(true)),
+
+      InSameContext(Steps(
+          // Lock screen through accelerator.
+          Do([]() {
+            ui::test::EventGenerator(ash::Shell::GetPrimaryRootWindow())
+                .PressAndReleaseKey(ui::KeyboardCode::VKEY_L,
+                                    ui::EF_COMMAND_DOWN);
+          }),
+
+          // Wait for the Welcome Tour dialog to hide.
+          WaitForDialogVisibility(false))),
+
+      // Wait for the login user view to show.
+      InAnyContext(WaitForLoginUserView()));
 }

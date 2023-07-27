@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/image_parser.h"
@@ -415,6 +416,8 @@ LoginUserView::LoginUserView(LoginDisplayStyle style,
   DCHECK(!show_dropdown || style == LoginDisplayStyle::kLarge);
   // `on_dropdown_pressed` is only available iff `show_dropdown` is true.
   DCHECK(show_dropdown == !!on_dropdown_pressed);
+
+  SetProperty(views::kElementIdentifierKey, kLoginUserViewElementId);
 
   user_image_ = new UserImage(style);
   int label_width =
