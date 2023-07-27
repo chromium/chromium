@@ -588,6 +588,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   mojo::Receiver<mojom::GpuService> receiver_{this};
 
   gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
+  bool supported_gmb_configurations_inited_ = false;
 
   // Map of client_id to ClientGmbInterfaceImpl object.
   std::unordered_map<int, std::unique_ptr<ClientGmbInterfaceImpl>> gmb_clients_;
