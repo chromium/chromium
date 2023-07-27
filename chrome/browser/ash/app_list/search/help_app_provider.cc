@@ -98,8 +98,9 @@ HelpAppProvider::HelpAppProvider(Profile* profile,
     : profile_(profile), search_handler_(search_handler) {
   DCHECK(profile_);
 
-  app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  Observe(&app_service_proxy_->AppRegistryCache());
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)
+           ->AppRegistryCache());
   LoadIcon();
 
   // TODO(b/261867385): We manually load the icon from the local codebase as
@@ -195,7 +196,7 @@ void HelpAppProvider::OnAppUpdate(const apps::AppUpdate& update) {
 
 void HelpAppProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 // If the availability of search results changed, start a new search.
@@ -213,8 +214,9 @@ void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 }
 
 void HelpAppProvider::LoadIcon() {
-  app_service_proxy_->LoadIcon(
-      app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId),
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->LoadIcon(
+      proxy->AppRegistryCache().GetAppType(web_app::kHelpAppId),
       web_app::kHelpAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,

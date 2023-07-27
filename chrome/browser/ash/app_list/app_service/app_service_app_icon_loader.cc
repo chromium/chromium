@@ -64,8 +64,9 @@ AppServiceAppIconLoader::AppServiceAppIconLoader(
     int resource_size_in_dip,
     AppIconLoaderDelegate* delegate)
     : AppIconLoader(profile, resource_size_in_dip, delegate) {
-  Observe(&apps::AppServiceProxyFactory::GetForProfile(profile)
-               ->AppRegistryCache());
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile)
+           ->AppRegistryCache());
 }
 
 AppServiceAppIconLoader::~AppServiceAppIconLoader() = default;
@@ -127,7 +128,7 @@ void AppServiceAppIconLoader::OnAppUpdate(const apps::AppUpdate& update) {
 
 void AppServiceAppIconLoader::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,

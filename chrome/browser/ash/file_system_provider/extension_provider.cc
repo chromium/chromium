@@ -27,8 +27,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 // Timeout before an onMountRequested request is considered as stale and hence
@@ -178,7 +177,7 @@ void ExtensionProvider::ObserveAppServiceForIcons(Profile* profile) {
     // AppService loading apps from extensions might be slow due to async. Even
     // if the app doesn't exist in AppRegistryCache, it might be added later. So
     // we still observe the AppRegistry to catch the app update information.
-    Observe(&AppServiceProxy->AppRegistryCache());
+    app_registry_cache_observer_.Observe(&AppServiceProxy->AppRegistryCache());
 
     if (AppServiceProxy->AppRegistryCache().GetAppType(
             provider_id_.GetExtensionId()) != apps::AppType::kUnknown) {
@@ -197,7 +196,7 @@ void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
 
 void ExtensionProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void ExtensionProvider::OnLacrosOperationForwarded(int request_id,
@@ -205,5 +204,4 @@ void ExtensionProvider::OnLacrosOperationForwarded(int request_id,
   request_manager_->RejectRequest(request_id, RequestValue(), error);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

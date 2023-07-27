@@ -44,7 +44,7 @@ void FilesAppLauncher::Launch(base::OnceClosure callback) {
   }
 
   // Files.app is not yet initialized. Wait for its ready.
-  apps::AppRegistryCache::Observer::Observe(&app_registry);
+  app_registry_cache_observer_.Observe(&app_registry);
 }
 
 void FilesAppLauncher::LaunchInternal() {
@@ -66,14 +66,14 @@ void FilesAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
 
   // So it's ready to launch files.app now.
   // We no longer need to observe the update.
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 
   LaunchInternal();
 }
 
 void FilesAppLauncher::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void FilesAppLauncher::OnInstanceUpdate(const apps::InstanceUpdate& update) {

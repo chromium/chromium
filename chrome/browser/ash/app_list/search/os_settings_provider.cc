@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -194,12 +195,10 @@ void OsSettingsResult::Open(int event_flags) {
 OsSettingsProvider::OsSettingsProvider(
     Profile* profile,
     ash::settings::SearchHandler* search_handler,
-    const ash::settings::Hierarchy* hierarchy,
-    apps::AppServiceProxy* app_service_proxy)
+    const ash::settings::Hierarchy* hierarchy)
     : profile_(profile),
       search_handler_(search_handler),
-      hierarchy_(hierarchy),
-      app_service_proxy_(app_service_proxy) {
+      hierarchy_(hierarchy) {
   DCHECK(profile_);
 
   // |search_handler_| can be nullptr in the case that the new OS settings
@@ -223,18 +222,15 @@ OsSettingsProvider::OsSettingsProvider(
   icon_ = ui::ImageModel::FromVectorIcon(
       app_list::kOsSettingsIcon, SK_ColorTRANSPARENT, kAppIconDimension);
 
-  if (app_service_proxy_) {
-    Observe(&app_service_proxy_->AppRegistryCache());
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile)
+           ->AppRegistryCache());
 
-    // TODO(b/261867385): `LoadIcon()` from constructor is removed as it never
-    // succeeds and the icon is only updated from "OnAppUpdate()" according to
-    // the UMA metrics. We can either remove this comments if this issue is
-    // confirmed, or revert the remove if this issue is solved.
-    LogIconLoadStatus(IconLoadStatus::kBindOnLoadIconFromConstructor);
-  } else {
-    LogStatus(Status::kNoAppServiceProxy);
-    LogIconLoadStatus(IconLoadStatus::kNoAppServiceProxy);
-  }
+  // TODO(b/261867385): `LoadIcon()` from constructor is removed as it never
+  // succeeds and the icon is only updated from "OnAppUpdate()" according to
+  // the UMA metrics. We can either remove this comments if this issue is
+  // confirmed, or revert the remove if this issue is solved.
+  LogIconLoadStatus(IconLoadStatus::kBindOnLoadIconFromConstructor);
 }
 
 OsSettingsProvider::~OsSettingsProvider() = default;
@@ -311,14 +307,14 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
 
   // Request the Settings app icon when either the readiness or the icon has
   // changed.
-  if (app_service_proxy_ &&
-      (update.ReadinessChanged() || update.IconKeyChanged())) {
-    app_service_proxy_->LoadIcon(update.AppType(), web_app::kOsSettingsAppId,
-                                 apps::IconType::kStandard, kAppIconDimension,
-                                 /*allow_placeholder_icon=*/false,
-                                 base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                                                weak_factory_.GetWeakPtr(),
-                                                /*is_from_constructor=*/false));
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  if (update.ReadinessChanged() || update.IconKeyChanged()) {
+    proxy->LoadIcon(update.AppType(), web_app::kOsSettingsAppId,
+                    apps::IconType::kStandard, kAppIconDimension,
+                    /*allow_placeholder_icon=*/false,
+                    base::BindOnce(&OsSettingsProvider::OnLoadIcon,
+                                   weak_factory_.GetWeakPtr(),
+                                   /*is_from_constructor=*/false));
     LogIconLoadStatus(IconLoadStatus::kBindOnLoadIconFromOnAppUpdate);
   } else {
     if (!update.ReadinessChanged()) {
@@ -332,7 +328,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
 
 void OsSettingsProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
   if (icon_.IsEmpty()) {
     LogIconLoadStatus(IconLoadStatus::kIconNotExistOnDestroyed);
   } else {

@@ -174,6 +174,10 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_{this};
 
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 

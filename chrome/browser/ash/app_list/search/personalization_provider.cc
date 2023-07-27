@@ -72,8 +72,9 @@ PersonalizationProvider::PersonalizationProvider(
     Profile* profile,
     ash::personalization_app::SearchHandler* search_handler)
     : profile_(profile), search_handler_(search_handler) {
-  app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  Observe(&app_service_proxy_->AppRegistryCache());
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)
+           ->AppRegistryCache());
   StartLoadIcon();
 
   if (search_handler_) {
@@ -135,7 +136,9 @@ void PersonalizationProvider::OnAppUpdate(const apps::AppUpdate& update) {
 }
 
 void PersonalizationProvider::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {}
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
+}
 
 void PersonalizationProvider::OnSearchDone(
     base::TimeTicks start_time,
@@ -154,9 +157,9 @@ void PersonalizationProvider::OnSearchDone(
 }
 
 void PersonalizationProvider::StartLoadIcon() {
-  app_service_proxy_->LoadIcon(
-      app_service_proxy_->AppRegistryCache().GetAppType(
-          web_app::kPersonalizationAppId),
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->LoadIcon(
+      proxy->AppRegistryCache().GetAppType(web_app::kPersonalizationAppId),
       web_app::kPersonalizationAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().search_list_icon_dimension(),
       /*allow_placeholder_icon=*/false,

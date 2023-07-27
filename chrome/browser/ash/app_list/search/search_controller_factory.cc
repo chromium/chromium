@@ -126,7 +126,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   if (os_settings_manager && app_service_proxy) {
     controller->AddProvider(std::make_unique<OsSettingsProvider>(
         profile, os_settings_manager->search_handler(),
-        os_settings_manager->hierarchy(), app_service_proxy));
+        os_settings_manager->hierarchy()));
   }
 
   controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(profile));

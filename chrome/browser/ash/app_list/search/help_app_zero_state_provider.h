@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -78,10 +79,15 @@ class HelpAppZeroStateProvider : public SearchProvider,
   void LoadIcon();
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<ash::AppListNotifier, ExperimentalAsh> notifier_;
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
   gfx::ImageSkia icon_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
+  base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>
+      notifier_observer_{this};
 
   base::WeakPtrFactory<HelpAppZeroStateProvider> weak_factory_{this};
 };

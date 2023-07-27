@@ -279,7 +279,7 @@ void ArcAppQueueRestoreHandler::OnAppUpdate(const apps::AppUpdate& update) {
 
 void ArcAppQueueRestoreHandler::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void ArcAppQueueRestoreHandler::OnWindowActivated(

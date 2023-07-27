@@ -71,7 +71,7 @@ apps::PauseData PauseAppInfoToPauseData(const PauseAppInfo& pause_info) {
 }  // namespace
 
 AppServiceWrapper::AppServiceWrapper(Profile* profile) : profile_(profile) {
-  apps::AppRegistryCache::Observer::Observe(&GetAppCache());
+  app_registry_cache_observer_.Observe(&GetAppCache());
   instance_registry_observation_.Observe(&GetInstanceRegistry());
 }
 
@@ -258,7 +258,7 @@ void AppServiceWrapper::OnAppUpdate(const apps::AppUpdate& update) {
 
 void AppServiceWrapper::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void AppServiceWrapper::OnInstanceUpdate(const apps::InstanceUpdate& update) {
