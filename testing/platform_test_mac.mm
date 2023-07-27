@@ -4,13 +4,17 @@
 
 #include "platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// /!\ WARNING!
+//
+// Chromium compiles this file as ARC, but other dependencies pull it in and
+// compile it as non-ARC. Be sure that this file compiles correctly with either
+// build setting.
+//
+// /!\ WARNING!
 
 // Note that this uses the direct runtime interface to the autorelease pool.
 // https://clang.llvm.org/docs/AutomaticReferenceCounting.html#runtime-support
-// This is so this can work when compiled for ARC.
+// This is so this can work correctly whether or not it's compiled for ARC.
 
 extern "C" {
 void* objc_autoreleasePoolPush(void);

@@ -10,22 +10,25 @@
 #include "third_party/googletest/src/googletest/include/gtest/internal/gtest-port.h"
 #include "third_party/googletest/src/googletest/include/gtest/internal/gtest-string.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// /!\ WARNING!
+//
+// Chromium compiles this file as ARC, but other dependencies pull it in and
+// compile it as non-ARC. Be sure that this file compiles correctly with either
+// build setting.
+//
+// /!\ WARNING!
 
 #ifdef GTEST_OS_MAC
 
 #import <Foundation/Foundation.h>
 
-namespace testing {
-namespace internal {
+namespace testing::internal {
 
 static std::string StringFromNSString(NSString* string) {
-  // Note that -[NSString UTF8String] is banned in chromium code because
+  // Note that -[NSString UTF8String] is banned in Chromium code because
   // base::SysNSStringToUTF8() is safer, but //testing isn't allowed to depend
   // on //base, so deliberately ignore that function ban.
-  const char* utf_string = [string UTF8String];
+  const char* utf_string = string.UTF8String;
   return utf_string ? std::string(utf_string) : std::string("(nil nsstring)");
 }
 
@@ -148,7 +151,6 @@ GTEST_API_ AssertionResult CmpHelperNSNE(const char* expected_expression,
 
 #endif  // !GTEST_OS_IOS
 
-}  // namespace internal
-}  // namespace testing
+}  // namespace testing::internal
 
 #endif  // GTEST_OS_MAC
