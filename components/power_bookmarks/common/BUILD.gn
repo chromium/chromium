@@ -14,13 +14,12 @@ static_library("common") {
     "search_params.h",
   ]
 
-  public_deps = [ "//components/sync/protocol" ]
-
-  deps = [
+  public_deps = [
     "//base",
     "//components/sync/protocol",
-    "//url",
   ]
+
+  deps = [ "//url" ]
 }
 
 static_library("test_support") {
