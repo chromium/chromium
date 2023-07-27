@@ -42,7 +42,7 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-#include "base/allocator/partition_allocator/extended_api.h"  // nogncheck
+#include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
