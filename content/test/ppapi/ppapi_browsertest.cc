@@ -114,7 +114,13 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest,
 // Flaky on all platforms (crbug.com/438729, crbug.com/800376)
 TEST_PPAPI_OUT_OF_PROCESS(DISABLED_MediaStreamAudioTrack)
 
-TEST_PPAPI_OUT_OF_PROCESS(MediaStreamVideoTrack)
+// Failing on M116 Mac (crbug.com/1465575)
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MediaStreamVideoTrack DISABLED_MediaStreamVideoTrack
+#else
+#define MAYBE_MediaStreamVideoTrack MediaStreamVideoTrack
+#endif
+TEST_PPAPI_OUT_OF_PROCESS(MAYBE_MediaStreamVideoTrack)
 
 TEST_PPAPI_IN_PROCESS(Memory)
 TEST_PPAPI_OUT_OF_PROCESS(Memory)
