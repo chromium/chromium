@@ -1570,6 +1570,8 @@ void AshNotificationView::OnInlineReplyUpdated() {
 
 void AshNotificationView::SetExpandCollapseEnabled(bool enabled) {
   disable_expand_collapse_ = !enabled;
+
+  expand_button_->SetExpandCollapseEnabled(enabled);
 }
 
 views::View* AshNotificationView::FindGroupNotificationView(
