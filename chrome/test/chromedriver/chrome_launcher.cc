@@ -46,6 +46,7 @@
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/chrome/target_utils.h"
 #include "chrome/test/chromedriver/chrome/user_data_dir.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/constants/version.h"
@@ -288,76 +289,6 @@ Status CheckVersion(const BrowserInfo& browser_info,
     }
   }
   return Status{kOk};
-}
-
-Status GetWebViewsInfo(DevToolsClient& devtools_websocket_client,
-                       const Timeout& timeout,
-                       WebViewsInfo& views_info) {
-  Status status{kOk};
-
-  base::Value::Dict params;
-  base::Value::Dict result;
-  status = devtools_websocket_client.SendCommandAndGetResultWithTimeout(
-      "Target.getTargets", params, &timeout, &result);
-  if (status.IsError()) {
-    return status;
-  }
-  base::Value* target_infos = result.Find("targetInfos");
-  if (!target_infos) {
-    return Status(
-        kUnknownError,
-        "result of call to Target.getTargets does not contain targetInfos");
-  }
-  if (!target_infos->is_list()) {
-    return Status(kUnknownError,
-                  "targetInfos in Target.getTargets response is not a list");
-  }
-  std::vector<WebViewInfo> temp_views_info;
-  for (const base::Value& info_value : target_infos->GetList()) {
-    if (!info_value.is_dict()) {
-      return Status(kUnknownError, "DevTools contains non-dictionary item");
-    }
-    const base::Value::Dict* info = info_value.GetIfDict();
-    DCHECK(info);
-    const std::string* id = info->FindString("targetId");
-    if (!id) {
-      return Status(kUnknownError, "DevTools did not include id");
-    }
-    const std::string* type_as_string = info->FindString("type");
-    if (!type_as_string) {
-      return Status(kUnknownError, "DevTools did not include type");
-    }
-    const std::string* url = info->FindString("url");
-    if (!url) {
-      return Status(kUnknownError, "DevTools did not include url");
-    }
-    WebViewInfo::Type type;
-    Status parse_status = ParseType(*type_as_string, &type);
-    if (parse_status.IsError()) {
-      return parse_status;
-    }
-    temp_views_info.emplace_back(*id, std::string(), *url, type);
-  }
-  views_info = WebViewsInfo(temp_views_info);
-  return status;
-}
-
-Status WaitForPage(DevToolsClient& client, const Timeout& timeout) {
-  Status status{kOk};
-  do {
-    WebViewsInfo views_info;
-    status = GetWebViewsInfo(client, timeout, views_info);
-    if (status.IsError()) {
-      return status;
-    }
-    for (size_t i = 0; i < views_info.GetSize(); ++i) {
-      if (views_info.Get(i).type == WebViewInfo::kPage) {
-        return Status(kOk);
-      }
-    }
-    base::PlatformThread::Sleep(base::Milliseconds(50));
-  } while (!timeout.IsExpired());
-  return Status(kUnknownError, "unable to discover open pages");
 }
 
 Status WaitForDevToolsAndCheckVersion(
@@ -712,7 +643,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       status = CheckVersion(browser_info, capabilities, ChromeType::Desktop);
     }
     if (status.IsOk()) {
-      status = WaitForPage(*devtools_websocket_client, timeout);
+      status = target_utils::WaitForPage(*devtools_websocket_client, timeout);
     }
     Status close_child_enpoints_status = pipe_builder.CloseChildEndpoints();
     if (status.IsOk()) {

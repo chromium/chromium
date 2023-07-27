@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -22,9 +21,9 @@
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
-#include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/page_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/chrome/target_utils.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,7 +57,8 @@ bool ChromeImpl::HasCrashedWebView() {
 Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
                                            bool w3c_compliant) {
   WebViewsInfo views_info;
-  Status status = GetWebViewsInfo(nullptr, views_info);
+  Status status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
+                                                nullptr, views_info);
   if (status.IsError())
     return status;
   status = UpdateWebViews(views_info, w3c_compliant);
@@ -77,7 +77,8 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
 Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
                                  bool w3c_compliant) {
   WebViewsInfo views_info;
-  Status status = GetWebViewsInfo(nullptr, views_info);
+  Status status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
+                                                nullptr, views_info);
   if (status.IsError())
     return status;
   status = UpdateWebViews(views_info, w3c_compliant);
@@ -121,8 +122,9 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         }
       }
       if (!found) {
-        std::unique_ptr<DevToolsClientImpl> client;
-        Status status = CreateClient(view.id, &client);
+        std::unique_ptr<DevToolsClient> client;
+        Status status = target_utils::AttachToPageTarget(
+            *devtools_websocket_client_, view.id, nullptr, client);
         if (status.IsError()) {
           return status;
         }
@@ -187,37 +189,6 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
   *window_handle = *target_id_str;
 
   return Status(kOk);
-}
-
-Status ChromeImpl::CreateClient(const std::string& id,
-                                std::unique_ptr<DevToolsClientImpl>* client) {
-  Status status{kOk};
-  std::string session_id;
-  {
-    base::Value::Dict params;
-    base::Value::Dict result;
-    params.Set("targetId", id);
-    params.Set("flatten", true);
-    status = devtools_websocket_client_->SendCommandAndGetResult(
-        "Target.attachToTarget", params, &result);
-    if (status.IsError()) {
-      return status;
-    }
-
-    std::string* session_id_ptr = result.FindString("sessionId");
-
-    if (session_id_ptr == nullptr) {
-      return Status(kUnknownError,
-                    "No sessionId in the response to Target.attachToTarget");
-    }
-
-    session_id = *session_id_ptr;
-  }
-
-  *client = std::make_unique<DevToolsClientImpl>(id, session_id);
-  (*client)->SetMainPage(true);
-
-  return status;
 }
 
 Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
@@ -467,52 +438,6 @@ Status ChromeImpl::SetWindowBounds(Window* window,
   return MakeFailedStatus(*desired_state, window->state);
 }
 
-Status ChromeImpl::GetWebViewsInfo(const Timeout* timeout,
-                                   WebViewsInfo& views_info) {
-  Status status{kOk};
-
-  base::Value::Dict params;
-  base::Value::Dict result;
-  status = devtools_websocket_client_->SendCommandAndGetResultWithTimeout(
-      "Target.getTargets", params, timeout, &result);
-  if (status.IsError()) {
-    return status;
-  }
-  base::Value* target_infos = result.Find("targetInfos");
-  if (!target_infos) {
-    return Status(
-        kUnknownError,
-        "result of call to Target.getTargets does not contain targetInfos");
-  }
-  if (!target_infos->is_list()) {
-    return Status(kUnknownError,
-                  "targetInfos in Target.getTargets response is not a list");
-  }
-  std::vector<WebViewInfo> temp_views_info;
-  for (const base::Value& info_value : target_infos->GetList()) {
-    if (!info_value.is_dict())
-      return Status(kUnknownError, "DevTools contains non-dictionary item");
-    const base::Value::Dict* info = info_value.GetIfDict();
-    DCHECK(info);
-    const std::string* id = info->FindString("targetId");
-    if (!id)
-      return Status(kUnknownError, "DevTools did not include id");
-    const std::string* type_as_string = info->FindString("type");
-    if (!type_as_string)
-      return Status(kUnknownError, "DevTools did not include type");
-    const std::string* url = info->FindString("url");
-    if (!url)
-      return Status(kUnknownError, "DevTools did not include url");
-    WebViewInfo::Type type;
-    Status parse_status = ParseType(*type_as_string, &type);
-    if (parse_status.IsError())
-      return parse_status;
-    temp_views_info.emplace_back(*id, std::string(), *url, type);
-  }
-  views_info = WebViewsInfo(temp_views_info);
-  return status;
-}
-
 Status ChromeImpl::ParseWindow(const base::Value::Dict& params,
                                Window* window) {
   absl::optional<int> id = params.FindInt("windowId");
@@ -571,7 +496,8 @@ Status ChromeImpl::CloseTarget(const std::string& id) {
   Timeout timeout(base::Seconds(20));
   while (!timeout.IsExpired()) {
     WebViewsInfo views_info;
-    status = GetWebViewsInfo(&timeout, views_info);
+    status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
+                                           &timeout, views_info);
     if (status.code() == kChromeNotReachable)
       return Status(kOk);
     if (status.code() == kDisconnected)  // The closed target has gone

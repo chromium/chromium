@@ -4,16 +4,13 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-void ExpectEqual(const WebViewInfo& info1,
-                 const WebViewInfo& info2) {
+void ExpectEqual(const WebViewInfo& info1, const WebViewInfo& info2) {
   EXPECT_EQ(info1.id, info2.id);
   EXPECT_EQ(info1.type, info2.type);
   EXPECT_EQ(info1.url, info2.url);
@@ -24,43 +21,40 @@ void ExpectEqual(const WebViewInfo& info1,
 
 TEST(ParseWebViewsInfo, Normal) {
   WebViewsInfo views_info;
-  Status status = internal::ParseWebViewsInfo(
+  Status status = DevToolsHttpClient::ParseWebViewsInfo(
       "[{\"type\": \"page\", \"id\": \"1\", \"url\": \"http://page1\","
       "  \"webSocketDebuggerUrl\": \"ws://debugurl1\"}]",
-      &views_info);
+      views_info);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(1u, views_info.GetSize());
   ExpectEqual(
-      WebViewInfo(
-          "1", "ws://debugurl1", "http://page1", WebViewInfo::kPage),
+      WebViewInfo("1", "ws://debugurl1", "http://page1", WebViewInfo::kPage),
       *views_info.GetForId("1"));
 }
 
 TEST(ParseWebViewsInfo, Multiple) {
   WebViewsInfo views_info;
-  Status status = internal::ParseWebViewsInfo(
+  Status status = DevToolsHttpClient::ParseWebViewsInfo(
       "[{\"type\": \"page\", \"id\": \"1\", \"url\": \"http://page1\","
       "  \"webSocketDebuggerUrl\": \"ws://debugurl1\"},"
       " {\"type\": \"other\", \"id\": \"2\", \"url\": \"http://page2\","
       "  \"webSocketDebuggerUrl\": \"ws://debugurl2\"}]",
-      &views_info);
+      views_info);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(2u, views_info.GetSize());
   ExpectEqual(
-      WebViewInfo(
-          "1", "ws://debugurl1", "http://page1", WebViewInfo::kPage),
+      WebViewInfo("1", "ws://debugurl1", "http://page1", WebViewInfo::kPage),
       views_info.Get(0));
   ExpectEqual(
-      WebViewInfo(
-          "2", "ws://debugurl2", "http://page2", WebViewInfo::kOther),
+      WebViewInfo("2", "ws://debugurl2", "http://page2", WebViewInfo::kOther),
       views_info.Get(1));
 }
 
 TEST(ParseWebViewsInfo, WithoutDebuggerUrl) {
   WebViewsInfo views_info;
-  Status status = internal::ParseWebViewsInfo(
+  Status status = DevToolsHttpClient::ParseWebViewsInfo(
       "[{\"type\": \"page\", \"id\": \"1\", \"url\": \"http://page1\"}]",
-      &views_info);
+      views_info);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(1u, views_info.GetSize());
   ExpectEqual(
@@ -72,9 +66,9 @@ namespace {
 
 void AssertTypeIsOk(const std::string& type_as_string, WebViewInfo::Type type) {
   WebViewsInfo views_info;
-  std::string data = "[{\"type\": \"" + type_as_string
-      + "\", \"id\": \"1\", \"url\": \"http://page1\"}]";
-  Status status = internal::ParseWebViewsInfo(data, &views_info);
+  std::string data = "[{\"type\": \"" + type_as_string +
+                     "\", \"id\": \"1\", \"url\": \"http://page1\"}]";
+  Status status = DevToolsHttpClient::ParseWebViewsInfo(data, views_info);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(1u, views_info.GetSize());
   ExpectEqual(WebViewInfo("1", std::string(), "http://page1", type),
@@ -83,7 +77,7 @@ void AssertTypeIsOk(const std::string& type_as_string, WebViewInfo::Type type) {
 
 void AssertFails(const std::string& data) {
   WebViewsInfo views_info;
-  Status status = internal::ParseWebViewsInfo(data, &views_info);
+  Status status = DevToolsHttpClient::ParseWebViewsInfo(data, views_info);
   ASSERT_FALSE(status.IsOk());
   ASSERT_EQ(0u, views_info.GetSize());
 }
