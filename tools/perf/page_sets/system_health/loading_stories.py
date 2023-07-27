@@ -111,10 +111,6 @@ class LoadNaverStory2023(_LoadingStory):
   TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2023]
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
 
-  @classmethod
-  def Name(cls):
-    return 'UNSCHEDULED_load:search:naver:2023'
-
 ################################################################################
 # Social networks.
 ################################################################################
