@@ -1973,6 +1973,47 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
           contents));
 }
 
+// Tests that if the HttpAllowlist enterprise policy is set, then HTTPS upgrades
+// and HTTPS-First Mode For Site Engagement checks are skipped for hosts in the
+// allowlist.
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    EnterpriseAllowlistDisablesHttpsFirstModeForSiteEngagament) {
+  // Skip this test when HTTPS-First Mode for Site Engagement isn't enabled.
+  if (!IsSiteEngagementHeuristicEnabled()) {
+    return;
+  }
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Without any policy allowlist, navigate to an HTTP URL. It should show the
+  // HFM+SE interstitial.
+  auto http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  auto https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+  SetSiteEngagementScore(http_url, kLowSiteEngagementScore);
+  SetSiteEngagementScore(https_url, kHighSiteEnagementScore);
+
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+
+  // Artificially add the pref that gets mapped from the enterprise policy.
+  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto* prefs = profile->GetPrefs();
+  base::Value::List allowlist;
+  allowlist.Append("bad-https.com");
+  prefs->SetList(prefs::kHttpAllowlist, std::move(allowlist));
+
+  // Navigate to the same URL. It should not get upgraded to HTTPS and
+  // no interstitial should be shown.
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+}
+
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        EnterprisePolicyDisablesUpgrades) {
   // Disable HTTPS-Upgrades via enterprise policy.
