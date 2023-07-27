@@ -50,7 +50,6 @@ include_rules = [
   "+base/threading/thread.h",
   "+base/threading/thread_checker.h",
   "+base/traits_bag.h",
-  "+components/scheduling_metrics",
   "+services/metrics",
 
   "+third_party/blink/renderer/platform/allow_discouraged_type.h",

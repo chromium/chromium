@@ -7,7 +7,6 @@
 
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
