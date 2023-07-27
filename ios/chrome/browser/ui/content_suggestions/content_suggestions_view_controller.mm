@@ -1073,6 +1073,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       case ContentSuggestionsModuleType::kSetUpListSync:
       case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
       case ContentSuggestionsModuleType::kSetUpListAutofill:
+      case ContentSuggestionsModuleType::kCompactedSetUpList:
         [viewIndicesToRemove addObject:@(index)];
         break;
       default:
