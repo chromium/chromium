@@ -286,7 +286,7 @@ vars = {
   'reclient_version': 're_client_version:0.110.0.43ec6b1-gomaip',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:4dda257f62ccf08abc8603bc1d0b811af166aebf',
+  'siso_version': 'git_revision:2b38a4d12d613f79c142b4630e56b7814d8b5571',
 
   # download libaom test data
   'download_libaom_testdata': False,
