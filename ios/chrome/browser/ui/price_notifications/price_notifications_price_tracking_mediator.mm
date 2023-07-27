@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
-#import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -30,6 +30,22 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// The histogram used to record a product's new tracking state when a user
+// initates a state change.
+const char kPriceTrackingStatusHistogram[] =
+    "Commerce.PriceTracking.IOS.ProductStatus";
+
+// This enum is used to represent the different tracking states a product can
+// observe.
+enum class PriceNotificationProductStatus {
+  kTrack,
+  kUntrack,
+  kMaxValue = kUntrack
+};
+
+}  // namespace
 
 using PriceNotificationItems =
     NSMutableArray<PriceNotificationsTableViewItem*>*;
@@ -270,6 +286,8 @@ using PriceNotificationItems =
   trackableItem.tracking = YES;
   [self.consumer reconfigureCellsForItems:@[ trackableItem ]];
   [self.consumer didStartPriceTrackingForItem:trackableItem];
+
+  [self recordProductStatus:PriceNotificationProductStatus::kTrack];
 }
 
 // This function handles the response from the user attempting to unsubscribe to
@@ -291,6 +309,8 @@ using PriceNotificationItems =
         [strongSelf.consumer didStopPriceTrackingItem:item
                                         onCurrentSite:isProductOnCurrentSite];
       }));
+
+  [self recordProductStatus:PriceNotificationProductStatus::kUntrack];
 }
 
 // This function fetches the product data for the items the user has subscribed
@@ -457,6 +477,10 @@ using PriceNotificationItems =
   }
 
   return false;
+}
+
+- (void)recordProductStatus:(PriceNotificationProductStatus)status {
+  base::UmaHistogramEnumeration(kPriceTrackingStatusHistogram, status);
 }
 
 @end

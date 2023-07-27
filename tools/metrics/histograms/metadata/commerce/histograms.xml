@@ -530,6 +530,19 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PriceTracking.IOS.ProductStatus"
+    enum="PriceNotificationProductStatus" expires_after="2024-07-21">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records a product's new tracking state every time a user successfully
+    tracks/untracks a product via the Track and Untrack buttons on the price
+    tracking UI in Chrome for iOS. This metric serves as a way to determine user
+    engagement with price tracking relative to the iOS platform.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
     enum="PriceInsightsPriceBucket" expires_after="2024-01-03">
   <owner>yuezhanggg@chromium.org</owner>

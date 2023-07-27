@@ -1973,6 +1973,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.LifecyleEvents"
+    enum="PushNotificationLifecycleEvent" expires_after="2024-07-21">
+  <owner>ajuma@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
+  <summary>
+    Logs various lifecycle stages a push notification can observe on the device.
+    This histogram is logged each time a push notification is received on the
+    device, displayed while Chrome is in the foreground, and tapped by the user.
+    An important stipulation to note is that if Chrome is neither in the
+    foreground nor the background and a push notification is received on the
+    device, iOS will not notify Chrome of this reception and thus will not be
+    represented in the histogram. Therefore, when interpreting this metric, the
+    push notification reception count may be lower than in reality.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
     expires_after="2024-06-07">
   <owner>olivierrobin@chromium.org</owner>
