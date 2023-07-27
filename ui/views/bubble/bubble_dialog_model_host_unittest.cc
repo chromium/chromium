@@ -260,4 +260,46 @@ TEST_F(BubbleDialogModelHostTest, TestFieldVisibility) {
   bubble_widget->CloseNow();
 }
 
+TEST_F(BubbleDialogModelHostTest, TestButtonLabelUpdate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButtonId);
+
+  constexpr char16_t kStartingButtonLabel[] = u"Starting";
+  constexpr char16_t kFinalButtonLabel[] = u"Final";
+
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      ui::DialogModel::Builder()
+          .AddOkButton(base::DoNothing(), ui::DialogModelButton::Params()
+                                              .SetLabel(kStartingButtonLabel)
+                                              .SetEnabled(true)
+                                              .SetId(kButtonId))
+          .Build();
+
+  // Get a raw pointer to the model before we move ownership so it can be
+  // changed after the host is created.
+  ui::DialogModel* model = dialog_model.get();
+
+  auto host_unique = std::make_unique<BubbleDialogModelHost>(
+      std::move(dialog_model), anchor_widget->GetContentsView(),
+      BubbleBorder::Arrow::TOP_RIGHT);
+
+  auto* host = host_unique.get();
+  Widget* const bubble_widget =
+      BubbleDialogDelegate::CreateBubble(std::move(host_unique));
+  test::WidgetVisibleWaiter waiter(bubble_widget);
+  bubble_widget->Show();
+  waiter.Wait();
+
+  model->SetButtonLabel(model->GetButtonByUniqueId(kButtonId),
+                        kFinalButtonLabel);
+
+  EXPECT_EQ(host->GetOkButton()->GetEnabled(), true);
+  EXPECT_EQ(host->GetOkButton()->GetText(), kFinalButtonLabel);
+
+  bubble_widget->CloseNow();
+}
+
 }  // namespace views

@@ -215,6 +215,10 @@ DialogModelTextfield* DialogModel::GetTextfieldByUniqueId(
   return GetFieldByUniqueId(id)->AsTextfield();
 }
 
+DialogModelButton* DialogModel::GetButtonByUniqueId(ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsButton();
+}
+
 void DialogModel::OnDialogAcceptAction(base::PassKey<DialogModelHost>) {
   if (accept_action_callback_)
     std::move(accept_action_callback_).Run();
@@ -243,6 +247,16 @@ void DialogModel::SetVisible(ElementIdentifier id, bool visible) {
 
   if (host_) {
     host_->OnFieldChanged(field);
+  }
+}
+
+void DialogModel::SetButtonLabel(DialogModelButton* button,
+                                 const std::u16string& label) {
+  CHECK(button);
+  button->label_ = label;
+
+  if (host_) {
+    host_->OnFieldChanged(button);
   }
 }
 

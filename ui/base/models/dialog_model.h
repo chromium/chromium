@@ -364,6 +364,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelCheckbox* GetCheckboxByUniqueId(ElementIdentifier id);
   DialogModelCombobox* GetComboboxByUniqueId(ElementIdentifier id);
   DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id);
+  DialogModelButton* GetButtonByUniqueId(ElementIdentifier id);
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
   // by the DialogModelHost implementation.
@@ -374,6 +375,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   void OnDialogDestroying(base::PassKey<DialogModelHost>);
 
   void SetVisible(ElementIdentifier id, bool visible);
+
+  void SetButtonLabel(DialogModelButton* button, const std::u16string& label);
 
   // Called when added to a DialogModelHost.
   void set_host(base::PassKey<DialogModelHost>, DialogModelHost* host) {

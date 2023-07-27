@@ -295,7 +295,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
  private:
   friend class DialogModel;
 
-  const std::u16string label_;
+  std::u16string label_;
   const absl::optional<ButtonStyle> style_;
   const bool is_enabled_;
   // The button callback gets called when the button is activated. Whether
