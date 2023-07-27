@@ -141,7 +141,7 @@ class ConsumerUpdateScreen : public BaseScreen,
   base::OneShotTimer delay_skip_button_timer_;
 
   // Delay to show the Skip button
-  base::TimeDelta delay_skip_button_time_ = base::Seconds(30);
+  base::TimeDelta delay_skip_button_time_ = base::Seconds(15);
 
   // Maximum time estimate to force update
   base::TimeDelta maximum_time_force_update_ = base::Minutes(5);
