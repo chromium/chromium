@@ -64,7 +64,7 @@ apps::DeviceInfo LoadVersionAndCustomLabel(apps::DeviceInfo info) {
   absl::optional<std::string> platform_version =
       chromeos::version_loader::GetVersion(
           chromeos::version_loader::VERSION_SHORT);
-  info.version_info.platform = platform_version.value_or("unknown");
+  info.version_info.platform = platform_version.value_or("");
   info.version_info.channel = chrome::GetChannel();
 
   // Load device identifiers from chromeos-config, as per

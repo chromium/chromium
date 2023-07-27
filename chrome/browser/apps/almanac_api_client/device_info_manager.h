@@ -24,7 +24,7 @@ struct VersionInfo {
   // The ash Chrome browser version of the device. e.g. "107.0.5296.0"
   std::string ash_chrome;
   // The ChromeOS platform version of the device. e.g. "15088.0.0"
-  // The value is set to "unknown" if the version was not known.
+  // The value is empty if the version is not known.
   std::string platform;
   // The channel of the build.
   version_info::Channel channel = version_info::Channel::UNKNOWN;
