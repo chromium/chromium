@@ -16,10 +16,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
+#include "components/feature_engagement/internal/blocked_iph_features.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
 #include "components/feature_engagement/internal/display_lock_controller_impl.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
@@ -455,29 +457,18 @@ void TrackerImpl::OnReceiveExportedEvents(
 }
 
 // static
-bool TrackerImpl::IsFeatureBlockedByTest(const base::Feature& feature) {
-  auto& data = GetAllowedTestFeatureMap();
-  // Refcount for nullptr is the number of active ScopedIphFeatureList.
-  if (!data[nullptr]) {
-    return false;
-  }
-
-  // If the refcount for the feature is nonzero, then it is explicitly allowed.
-  if (data[&feature]) {
-    return false;
-  }
-
-  // At least one ScopedIphFeatureList is active and this feature is not
-  // explicitly allowed.
-  return true;
+void Tracker::PropagateTestStateToChildProcess(
+    base::CommandLine& command_line) {
+  auto* const blocked = BlockedIphFeatures::GetInstance();
+  base::AutoLock lock(blocked->GetLock());
+  blocked->MaybeWriteToCommandLine(command_line);
 }
 
 // static
-std::map<const base::Feature*, size_t>&
-TrackerImpl::GetAllowedTestFeatureMap() {
-  static base::NoDestructor<std::map<const base::Feature*, size_t>> instance{
-      {std::make_pair(nullptr, 0)}};
-  return *instance;
+bool TrackerImpl::IsFeatureBlockedByTest(const base::Feature& feature) {
+  auto* const blocked = BlockedIphFeatures::GetInstance();
+  base::AutoLock lock(blocked->GetLock());
+  return blocked->IsFeatureBlocked(feature.name);
 }
 
 }  // namespace feature_engagement

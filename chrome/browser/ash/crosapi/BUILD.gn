@@ -348,6 +348,7 @@ source_set("crosapi") {
     "//components/arc",
     "//components/crash/core/app",
     "//components/exo",
+    "//components/feature_engagement",
     "//components/flags_ui",
     "//components/keyed_service/content",
     "//components/language/core/browser:browser",

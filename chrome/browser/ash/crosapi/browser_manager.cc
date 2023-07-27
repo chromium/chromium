@@ -91,6 +91,7 @@
 #include "components/account_id/account_id.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -1282,6 +1283,13 @@ void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
   if (crash_reporter::IsCrashpadEnabled()) {
     command_line.AppendSwitch(switches::kEnableCrashpad);
   }
+
+  // Ensure that child processes have the same rules about what help features
+  // may show as the current process.
+  //
+  // NOTE: this may add an --enable-features flag to the command line if not
+  // already present, or append to the flag if it is.
+  feature_engagement::Tracker::PropagateTestStateToChildProcess(command_line);
 
   if (params.enable_resource_file_sharing) {
     // Pass a flag to enable resources file sharing to Lacros.

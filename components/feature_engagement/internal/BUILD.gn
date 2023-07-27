@@ -18,6 +18,8 @@ static_library("internal") {
     "availability_model.h",
     "availability_model_impl.cc",
     "availability_model_impl.h",
+    "blocked_iph_features.cc",
+    "blocked_iph_features.h",
     "chrome_variations_configuration.cc",
     "chrome_variations_configuration.h",
     "condition_validator.cc",
@@ -93,6 +95,7 @@ source_set("unit_tests") {
   # tests in //components/feature_engagement/components_unittests.filter
   sources = [
     "availability_model_impl_unittest.cc",
+    "blocked_iph_features_unittest.cc",
     "chrome_variations_configuration_unittest.cc",
     "condition_validator_unittest.cc",
     "display_lock_controller_impl_unittest.cc",

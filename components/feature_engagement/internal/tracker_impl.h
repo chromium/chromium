@@ -25,10 +25,6 @@ class DisplayLockHandle;
 class EventModel;
 class TimeProvider;
 
-namespace test {
-class ScopedIphFeatureList;
-}
-
 // The internal implementation of the Tracker.
 class TrackerImpl : public Tracker {
  public:
@@ -70,8 +66,6 @@ class TrackerImpl : public Tracker {
   const Configuration* GetConfigurationForTesting() const override;
 
  private:
-  friend test::ScopedIphFeatureList;
-
   // Invoked by the EventModel when it has been initialized.
   void OnEventModelInitializationFinished(bool success);
 
@@ -96,9 +90,6 @@ class TrackerImpl : public Tracker {
   // methods were called and returned true. This logs a time histogram based on
   // the feature name.
   void RecordShownTime(const base::Feature& feature);
-
-  // Gets internal data used by test::ScopedIphFeatureList.
-  static std::map<const base::Feature*, size_t>& GetAllowedTestFeatureMap();
 
   // Returns whether a feature engagement feature is blocked by
   // test::ScopedIphFeatureList.

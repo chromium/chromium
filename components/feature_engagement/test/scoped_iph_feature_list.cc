@@ -4,10 +4,9 @@
 
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 
-#include "base/check_op.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/feature_engagement/internal/tracker_impl.h"
+#include "components/feature_engagement/internal/blocked_iph_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 
@@ -86,19 +85,18 @@ void ScopedIphFeatureList::Reset() {
 
   active_ = false;
 
-  auto& data = TrackerImpl::GetAllowedTestFeatureMap();
-
-  // This is the "total number of scopes" refcount.
-  CHECK_GT(data[nullptr], 0U);
-  --data[nullptr];
+  auto* const allowed = BlockedIphFeatures::GetInstance();
+  base::AutoLock lock(allowed->GetLock());
 
   // Decrement the individual feature refcounts for each feature that was
   // previously added.
   for (auto* feature : added_features_) {
-    CHECK_GT(data[feature], 0U);
-    --data[feature];
+    allowed->DecrementFeatureAllowedCount(feature->name);
   }
   added_features_.clear();
+
+  // Decrement total count of entities requesting blocks.
+  allowed->DecrementGlobalBlockCount();
 
   // Reset the feature list in case any features were enabled.
   feature_list_.Reset();
@@ -111,16 +109,17 @@ void ScopedIphFeatureList::InitCommon(
 
   active_ = true;
 
-  auto& data = TrackerImpl::GetAllowedTestFeatureMap();
+  auto* const allowed = BlockedIphFeatures::GetInstance();
+  base::AutoLock lock(allowed->GetLock());
 
-  // Increment the total number of scopes.
-  ++data[nullptr];
+  // Increment the total number of entities requesting a block.
+  allowed->IncrementGlobalBlockCount();
 
   // Increment the refcount for each unique feature and add it to the saved
   // list for when they will be removed.
   for (auto* feature : features) {
     if (added_features_.insert(feature).second) {
-      ++data[feature];
+      allowed->IncrementFeatureAllowedCount(feature->name);
     }
   }
 }

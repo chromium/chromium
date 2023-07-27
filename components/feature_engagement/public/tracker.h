@@ -22,6 +22,10 @@
 #include "base/android/jni_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace base {
+class CommandLine;
+}
+
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }
@@ -144,6 +148,13 @@ class Tracker : public KeyedService, public base::SupportsUserData {
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
       base::WeakPtr<TrackerEventExporter> event_exporter);
+
+  // Possibly adds a command line argument for a child browser process to
+  // communicate what IPH are allowed in a testing environment. Has no effect if
+  // IPH behavior is not being modified for testing. If specific IPH features
+  // are explicitly allowed for the test, may add those to the --enable-features
+  // command line parameter as well (will add it if not present).
+  static void PropagateTestStateToChildProcess(base::CommandLine& command_line);
 
   Tracker(const Tracker&) = delete;
   Tracker& operator=(const Tracker&) = delete;
