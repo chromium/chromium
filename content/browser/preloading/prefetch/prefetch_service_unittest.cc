@@ -36,6 +36,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "net/base/load_flags.h"
 #include "net/base/proxy_server.h"
+#include "net/base/request_priority.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
@@ -214,6 +215,18 @@ class TestNetworkContext : public network::TestNetworkContext {
   absl::optional<net::ProxyInfo> proxy_info_;
 };
 
+net::RequestPriority ExpectedPriorityForEagerness(
+    blink::mojom::SpeculationEagerness eagerness) {
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kConservative:
+      return net::RequestPriority::MEDIUM;
+    case blink::mojom::SpeculationEagerness::kModerate:
+      return net::RequestPriority::LOW;
+    default:
+      return net::RequestPriority::IDLE;
+  }
+}
+
 class PrefetchServiceTest : public RenderViewHostTestHarness {
  public:
   PrefetchServiceTest()
@@ -316,7 +329,18 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         });
   }
 
-  void VerifyCommonRequestState(const GURL& url, bool use_prefetch_proxy) {
+  struct VerifyCommonRequestStateOptions {
+    bool use_prefetch_proxy = false;
+    net::RequestPriority expected_priority = net::RequestPriority::IDLE;
+  };
+
+  void VerifyCommonRequestState(const GURL& url) {
+    VerifyCommonRequestState(url, {});
+  }
+
+  void VerifyCommonRequestState(
+      const GURL& url,
+      const VerifyCommonRequestStateOptions& options) {
     SCOPED_TRACE(url.spec());
     EXPECT_EQ(RequestCount(), 1);
 
@@ -338,8 +362,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     std::string sec_purpose_value;
     EXPECT_TRUE(
         request->request.headers.GetHeader("Sec-Purpose", &sec_purpose_value));
-    EXPECT_EQ(sec_purpose_value,
-              use_prefetch_proxy ? "prefetch;anonymous-client-ip" : "prefetch");
+    EXPECT_EQ(sec_purpose_value, options.use_prefetch_proxy
+                                     ? "prefetch;anonymous-client-ip"
+                                     : "prefetch");
 
     std::string accept_value;
     EXPECT_TRUE(request->request.headers.GetHeader("Accept", &accept_value));
@@ -353,6 +378,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
     ASSERT_TRUE(request->request.trusted_params.has_value());
     VerifyIsolationInfo(request->request.trusted_params->isolation_info);
+
+    EXPECT_EQ(request->request.priority, options.expected_priority);
   }
 
   void VerifyIsolationInfo(const net::IsolationInfo& isolation_info) {
@@ -691,7 +718,7 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -916,7 +943,7 @@ TEST_F(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1000,7 +1027,7 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1133,7 +1160,7 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+                           {.use_prefetch_proxy = false});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1437,8 +1464,7 @@ TEST_F(PrefetchServiceTest,
                    blink::mojom::SpeculationEagerness::kEager));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1557,8 +1583,7 @@ TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
                    blink::mojom::SpeculationEagerness::kEager));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://localhost"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://localhost"));
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1679,7 +1704,7 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1797,7 +1822,7 @@ TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1861,8 +1886,7 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
       /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1930,7 +1954,7 @@ TEST_F(PrefetchServiceTest, MAYBE_FailedCookiesChangedAfterPrefetchStarted) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2008,8 +2032,7 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
       /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2214,8 +2237,7 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
       /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2279,7 +2301,7 @@ TEST_F(PrefetchServiceTest, FailedNon2XXResponseCode) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_NOT_FOUND, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2337,7 +2359,7 @@ TEST_F(PrefetchServiceTest, FailedNetError) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2401,7 +2423,7 @@ TEST_F(PrefetchServiceTest, HandleRetryAfterResponse) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
 
   // Simulate the origin responding with a "retry-after" header.
   MakeResponseAndWait(net::HTTP_SERVICE_UNAVAILABLE, net::OK, kHTMLMimeType,
@@ -2463,7 +2485,7 @@ TEST_F(PrefetchServiceTest, SuccessNonHTML) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
 
   std::string body = "fake PDF";
   MakeResponseAndWait(net::HTTP_OK, net::OK, "application/pdf",
@@ -2525,7 +2547,7 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2593,7 +2615,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example1.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2605,7 +2627,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example2.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2767,7 +2789,7 @@ TEST_F(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
 
   std::string body = "fake PDF";
   MakeResponseAndWait(net::HTTP_OK, net::OK, "application/pdf",
@@ -2841,7 +2863,7 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, DecoyRequest) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -2971,7 +2993,7 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -3250,7 +3272,7 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
 
   // Send the head of the navigation. The prefetch should be servable after this
   // point. The body of the response will be streaming to the serving URL loader
@@ -3383,7 +3405,7 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com/?a=1"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   MakeResponseAndWait(
       net::HTTP_OK, net::OK, kHTMLMimeType,
       /*use_prefetch_proxy=*/true,
@@ -3467,7 +3489,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -3563,7 +3585,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -3656,7 +3678,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -3744,7 +3766,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
   // The redirect is considered invalid because it has a non-3XX HTTP code.
@@ -3831,8 +3853,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -3936,8 +3957,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   // The request to the same-origin prefetch URL should ignore the proxy
   // requirement, since it only applies to cross-origin prefetches.
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   VerifyFollowRedirectParams(0);
 
   // Redirect to a same-site cross-origin URL. The proxy requirement should
@@ -4030,8 +4050,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
       /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -4051,8 +4070,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   // be followed directly.
   VerifyFollowRedirectParams(0);
   ClearCompletedRequests();
-  VerifyCommonRequestState(GURL("https://redirect.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://redirect.com"));
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Redirect.Result",
@@ -4140,7 +4158,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   // The same-origin request should not use the proxy.
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+                           {.use_prefetch_proxy = false});
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -4161,7 +4179,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   VerifyFollowRedirectParams(0);
   ClearCompletedRequests();
   VerifyCommonRequestState(GURL("https://redirect.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Redirect.Result",
@@ -4248,7 +4266,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://other.com"),
-                           /*use_prefetch_proxy=*/false);
+                           {.use_prefetch_proxy = false});
   VerifyFollowRedirectParams(0);
 
   net::RedirectInfo redirect_info;
@@ -4269,7 +4287,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   VerifyFollowRedirectParams(0);
   ClearCompletedRequests();
   VerifyCommonRequestState(GURL("https://example.com/redirect"),
-                           /*use_prefetch_proxy=*/false);
+                           {.use_prefetch_proxy = false});
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Redirect.Result",
@@ -4371,8 +4389,7 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
       /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://example.com"));
   VerifyFollowRedirectParams(0);
 
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -4411,8 +4428,7 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   // be followed directly.
   VerifyFollowRedirectParams(0);
   ClearCompletedRequests();
-  VerifyCommonRequestState(GURL("https://redirect.com"),
-                           /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(GURL("https://redirect.com"));
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Redirect.Result",
@@ -4499,7 +4515,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
   // Redirect to a different site. This will check the referrer policy, but
@@ -4595,7 +4611,7 @@ TEST_F(PrefetchServiceNeverBlockUntilHeadTest, MAYBE_HeadNotReceived) {
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+                           {.use_prefetch_proxy = true});
 
   // Navigate to the URL before the head of the prefetch response is received.
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -4675,8 +4691,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -4800,8 +4818,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com/index.html?a=5"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com/index.html?a=5"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com/index.html"), main_rfh()->GetFrameToken());
@@ -4928,8 +4948,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com/index.html?a=5"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com/index.html?a=5"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com/index.html"), main_rfh()->GetFrameToken());
@@ -5047,8 +5069,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com/index.html?a=5"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com/index.html?a=5"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com/index.html"), main_rfh()->GetFrameToken());
@@ -5155,8 +5179,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -5261,8 +5287,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -5359,8 +5387,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -5485,8 +5515,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -5585,8 +5617,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           /*use_prefetch_proxy=*/true);
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = true,
+       .expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
@@ -5692,14 +5726,16 @@ class PrefetchServiceNewLimitsTest : public PrefetchServiceTest {
     MakePrefetchOnMainFrame(
         url, PrefetchType(/*use_prefetch_proxy=*/false, eagerness));
     base::RunLoop().RunUntilIdle();
-    return CompleteExistingPrefetch(url);
+    return CompleteExistingPrefetch(
+        url, {.expected_priority = ExpectedPriorityForEagerness(eagerness)});
   }
 
   // Unlike the above method, this expects the prefetch for |url| to have
   // already been triggered.
-  PrefetchContainer::Reader CompleteExistingPrefetch(GURL url) {
-    VerifyCommonRequestState(url,
-                             /*use_prefetch_proxy=*/false);
+  PrefetchContainer::Reader CompleteExistingPrefetch(
+      GURL url,
+      const VerifyCommonRequestStateOptions& common_options = {}) {
+    VerifyCommonRequestState(url, common_options);
     MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                         /*use_prefetch_proxy=*/false,
                         {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -5898,7 +5934,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
   prefetch_document_manager->ProcessCandidates(candidates,
                                                /*devtools_observer=*/nullptr);
   base::RunLoop().RunUntilIdle();
-  VerifyCommonRequestState(url_1, /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(url_1);
 
   // Remove |url_2| from the list of candidates while a prefetch for |url_1| is
   // in progress.
@@ -5914,7 +5950,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
   // PrefetchService skips |url_2| because its candidate was removed, and starts
   // prefetching |url_3| instead.
-  VerifyCommonRequestState(url_3, /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(url_3);
   // Finish prefetch of |url_2|.
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
@@ -5960,7 +5996,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
   base::RunLoop().RunUntilIdle();
 
   // Prefetch for |url_1| should have started.
-  VerifyCommonRequestState(url_1, /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(url_1);
 
   // Remove |candidate_1|.
   candidates.clear();
@@ -5980,7 +6016,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
-  VerifyCommonRequestState(url_2, /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(url_2);
   PrefetchContainer::Reader serveable_reader = GetPrefetchToServe(url_1);
   EXPECT_FALSE(serveable_reader);
 }
@@ -6089,7 +6125,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchReset) {
   prefetch_document_manager->ProcessCandidates(candidates,
                                                /*devtools_observer=*/nullptr);
   // Prefetch for |url| should have started again.
-  VerifyCommonRequestState(url, /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(url);
 }
 
 TEST_F(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
@@ -6146,7 +6182,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
   EXPECT_FALSE(prefetch_1);
 
   // Prefetch of |url_2| should now be queued.
-  VerifyCommonRequestState(url_2, /*use_prefetch_proxy=*/false);
+  VerifyCommonRequestState(url_2);
 }
 
 TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {

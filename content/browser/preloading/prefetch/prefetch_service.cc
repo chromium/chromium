@@ -1062,6 +1062,28 @@ void PrefetchService::MakePrefetchRequest(
   request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
   request->devtools_request_id = prefetch_container->RequestId();
 
+  // This may seem inverted (surely eager prefetches would be higher priority),
+  // but the fact that we're doing this at all for more conservative candidates
+  // suggests a strong engagement signal.
+  //
+  // TODO(crbug.com/1467928): Ideally, we would actually use a combination of
+  // the actual engagement seen (rather than the minimum required to trigger the
+  // candidate) and the declared eagerness, and update them as the prefetch
+  // becomes increasingly likely.
+  blink::mojom::SpeculationEagerness eagerness =
+      prefetch_container->GetPrefetchType().GetEagerness();
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kConservative:
+      request->priority = net::RequestPriority::MEDIUM;
+      break;
+    case blink::mojom::SpeculationEagerness::kModerate:
+      request->priority = net::RequestPriority::LOW;
+      break;
+    case blink::mojom::SpeculationEagerness::kEager:
+      request->priority = net::RequestPriority::IDLE;
+      break;
+  }
+
   const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
   if (devtools_observer && !prefetch_container->IsDecoy()) {
     request->trusted_params->devtools_observer =
