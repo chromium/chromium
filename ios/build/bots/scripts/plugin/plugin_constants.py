@@ -28,3 +28,7 @@ MAX_RECORDED_COUNT = 3
 # Options for enabling video recording on EG tests
 VIDEO_RECORDER_PLUGIN_OPTIONS = Enum('video_recorder_plugin_options',
                                      {'failed_only': 1})
+SIMULATOR_FOLDERS = [
+    os.path.expanduser('~/Library/Developer/CoreSimulator/Devices'),
+    os.path.expanduser('~/Library/Developer/XCTestDevices')
+]

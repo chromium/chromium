@@ -21,6 +21,10 @@ service TestPluginService {
   rpc TestCaseDidFail(TestCaseDidFailRequest)
       returns (TestCaseDidFailResponse) {};
 
+  // API to signal the plugin service that the test bundle is about to finish
+  rpc TestBundleWillFinish(TestBundleWillFinishRequest)
+      returns (TestBundleWillFinishResponse) {};
+
   // API to check on what plugins are enabled for the current test run
   rpc ListEnabledPlugins(ListEnabledPluginsRequest)
       returns (ListEnabledPluginsResponse) {};
@@ -29,6 +33,7 @@ service TestPluginService {
 // Request to signal that a test case is about to start
 message TestCaseWillStartRequest {
   TestCaseInfo test_case_info = 1;
+  DeviceInfo device_info = 2;
 }
 // Empty response because gRPC doesn't support null response
 message TestCaseWillStartResponse {}
@@ -36,6 +41,7 @@ message TestCaseWillStartResponse {}
 // Request to signal that a test case is finished
 message TestCaseDidFinishRequest {
   TestCaseInfo test_case_info = 1;
+  DeviceInfo device_info = 2;
 }
 // Empty response
 message TestCaseDidFinishResponse {}
@@ -43,9 +49,18 @@ message TestCaseDidFinishResponse {}
 // Request to signal that a test case failed unexpectedly
 message TestCaseDidFailRequest {
   TestCaseInfo test_case_info = 1;
+  DeviceInfo device_info = 2;
 }
 // Empty response
 message TestCaseDidFailResponse {}
+
+// Request to signal that test bundle is about to finish
+message TestBundleWillFinishRequest {
+  DeviceInfo device_info = 1;
+}
+
+// Empty response
+message TestBundleWillFinishResponse {}
 
 // Request to get the list of enabled plugins
 message ListEnabledPluginsRequest {}
@@ -55,5 +70,8 @@ message ListEnabledPluginsResponse {
 }
 
 message TestCaseInfo {
+  string name = 1;
+}
+message DeviceInfo {
   string name = 1;
 }

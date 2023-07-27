@@ -9,23 +9,72 @@ import unittest
 import subprocess
 import os
 import signal
+import glob
 
 # if the current directory is in scripts (pwd), then we need to
 # add plugin in order to import from that directory
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
       os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
+
+# if executing from plugin directory, pull in scripts
+else:
+  sys.path.append(
+      os.path.join(os.path.abspath(os.path.dirname(__file__)), '..'))
 from plugin_constants import PLUGIN_PROTOS_PATH, MAX_RECORDED_COUNT
-from test_plugins import VideoRecorderPlugin
+from test_plugins import VideoRecorderPlugin, BasePlugin, FileCopyPlugin
+import iossim_util
 
 sys.path.append(PLUGIN_PROTOS_PATH)
 import test_plugin_service_pb2
 import test_plugin_service_pb2_grpc
 
 TEST_DEVICE_ID = '123'
+TEST_DEVICE_NAME = 'simulator_x_y'
+TEST_DEVICE_PATH = '/root/dir'
 TEST_CASE_NAME = '[AAA_BBB]'
 TEST_CASE_INFO = test_plugin_service_pb2.TestCaseInfo(name=TEST_CASE_NAME)
+TEST_DEVICE_INFO = test_plugin_service_pb2.DeviceInfo(name=TEST_DEVICE_NAME)
 OUT_DIR = 'out/dir'
+
+
+class BasePluginTest(unittest.TestCase):
+
+  @mock.patch("iossim_util.get_simulator_list")
+  def test_get_udid_and_path_for_device_name_no_cache(self, mock_get_list):
+    mock_get_list.return_value = {
+        'devices': {
+            'RUNTIME': [{
+                'name': TEST_DEVICE_NAME,
+                'udid': TEST_DEVICE_ID
+            }]
+        }
+    }
+    base_plugin = BasePlugin('DEVICE_ID', 'OUT_DIR')
+
+    self.assertEqual(
+        base_plugin.get_udid_and_path_for_device_name(TEST_DEVICE_NAME,
+                                                      [TEST_DEVICE_PATH]),
+        (TEST_DEVICE_ID, TEST_DEVICE_PATH))
+    mock_get_list.assert_called_once_with(TEST_DEVICE_PATH)
+    self.assertEqual(
+        base_plugin.devices.get(TEST_DEVICE_NAME), {
+            'UDID': TEST_DEVICE_ID,
+            'path': TEST_DEVICE_PATH,
+        })
+
+  @mock.patch('iossim_util.get_simulator_list')
+  def test_get_udid_and_path_for_device_name_with_cache(self, mock_get_list):
+    base_plugin = BasePlugin('DEVICE_ID', 'OUT_DIR')
+    base_plugin.devices['NAME'] = {
+        'UDID': TEST_DEVICE_ID,
+        'path': TEST_DEVICE_PATH
+    }
+
+    self.assertEqual(
+        base_plugin.get_udid_and_path_for_device_name('NAME'),
+        (TEST_DEVICE_ID, TEST_DEVICE_PATH))
+    mock_get_list.assert_not_called()
 
 
 class VideoRecorderPluginTest(unittest.TestCase):
@@ -195,6 +244,63 @@ class VideoRecorderPluginTest(unittest.TestCase):
 
     # reset again to make sure no exception is thrown
     video_recorder_plugin.reset()
+
+
+class FileCopyPluginTest(unittest.TestCase):
+
+  @mock.patch("os.path.exists")
+  @mock.patch("os.mkdir")
+  @mock.patch("glob.glob")
+  @mock.patch("shutil.move")
+  def testOutputPathExists(self, move_mock: mock.MagicMock,
+                           glob_mock: mock.MagicMock,
+                           mkdir_mock: mock.MagicMock,
+                           path_mock: mock.MagicMock):
+    path_mock.return_value = True
+    glob_mock.return_value = ["glob_return_value"]
+
+    file_copy_plugin = FileCopyPlugin('GLOB_PATTERN', OUT_DIR)
+    file_copy_plugin.devices[TEST_DEVICE_NAME] = {
+        'UDID': TEST_DEVICE_ID,
+        'path': TEST_DEVICE_PATH
+    }
+    request = test_plugin_service_pb2.TestBundleWillFinishRequest(
+        device_info=TEST_DEVICE_INFO)
+
+    file_copy_plugin.test_bundle_will_finish(request)
+
+    mkdir_mock.assert_not_called()
+    path_mock.assert_called_once_with(OUT_DIR)
+    glob_mock.assert_called_once_with(
+        os.path.join(TEST_DEVICE_PATH, TEST_DEVICE_ID, "GLOB_PATTERN"))
+    move_mock.assert_called_once_with("glob_return_value", OUT_DIR)
+
+  @mock.patch("os.path.exists")
+  @mock.patch("os.mkdir")
+  @mock.patch("glob.glob")
+  @mock.patch("shutil.move")
+  def testOutputPathDoesNotExist(self, move_mock: mock.MagicMock,
+                                 glob_mock: mock.MagicMock,
+                                 mkdir_mock: mock.MagicMock,
+                                 path_mock: mock.MagicMock):
+    path_mock.return_value = False
+    glob_mock.return_value = ["glob_return_value"]
+
+    file_copy_plugin = FileCopyPlugin('GLOB_PATTERN', OUT_DIR)
+    file_copy_plugin.devices[TEST_DEVICE_NAME] = {
+        'UDID': TEST_DEVICE_ID,
+        'path': TEST_DEVICE_PATH
+    }
+    request = test_plugin_service_pb2.TestBundleWillFinishRequest(
+        device_info=TEST_DEVICE_INFO)
+
+    file_copy_plugin.test_bundle_will_finish(request)
+
+    mkdir_mock.assert_called_once_with(OUT_DIR)
+    path_mock.assert_called_once_with(OUT_DIR)
+    glob_mock.assert_called_once_with(
+        os.path.join(TEST_DEVICE_PATH, TEST_DEVICE_ID, "GLOB_PATTERN"))
+    move_mock.assert_called_once_with("glob_return_value", OUT_DIR)
 
 
 if __name__ == '__main__':

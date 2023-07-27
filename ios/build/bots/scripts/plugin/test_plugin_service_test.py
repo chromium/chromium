@@ -54,6 +54,14 @@ class UnitTest(unittest.TestCase):
     self.assertEqual(response, expected_response)
     self.video_recorder_plugin.test_case_did_fail.assert_called_with(request)
 
+  def test_TestBundleWillFinish(self):
+    request = test_plugin_service_pb2.TestBundleWillFinishRequest()
+    response = self.servicer.TestBundleWillFinish(request, None)
+    expected_response = test_plugin_service_pb2.TestBundleWillFinishResponse()
+    self.assertEqual(response, expected_response)
+    self.video_recorder_plugin.test_bundle_will_finish.assert_called_with(
+        request)
+
   def test_ListEnabledPlugins_succeed(self):
     request = test_plugin_service_pb2.ListEnabledPluginsRequest()
     response = self.servicer.ListEnabledPlugins(request, None)

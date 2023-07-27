@@ -25,9 +25,10 @@ class TestPluginClient {
  public:
   TestPluginClient(std::shared_ptr<Channel> channel);
   ~TestPluginClient();
-  void TestCaseWillStart(std::string test_name);
-  void TestCaseDidFail(std::string test_name);
-  void TestCaseDidFinish(std::string test_name);
+  void TestCaseWillStart(std::string test_name, std::string device_name);
+  void TestCaseDidFail(std::string test_name, std::string device_name);
+  void TestCaseDidFinish(std::string test_name, std::string device_name);
+  void TestBundleWillFinish(std::string device_name);
   std::vector<std::string> ListEnabledPlugins();
   void set_is_service_enabled(bool is_service_enabled);
 

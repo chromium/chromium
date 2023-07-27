@@ -10,7 +10,7 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
       os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
 from plugin_constants import VIDEO_RECORDER_PLUGIN_OPTIONS
-from test_plugins import VideoRecorderPlugin
+from test_plugins import VideoRecorderPlugin, FileCopyPlugin
 
 
 def init_plugins_from_args(device_id, out_dir, **kwargs):
@@ -19,4 +19,8 @@ def init_plugins_from_args(device_id, out_dir, **kwargs):
     video_plugin_option = kwargs.get('video_plugin_option')
     if (video_plugin_option == VIDEO_RECORDER_PLUGIN_OPTIONS.failed_only.name):
       plugins.append(VideoRecorderPlugin(device_id, out_dir))
+  if (kwargs.get('use_clang_coverage')):
+    plugins.append(
+        FileCopyPlugin('data/*.profraw',
+                       os.path.join(os.path.dirname(out_dir), 'profraw')))
   return plugins

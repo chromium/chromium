@@ -2,18 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import glob
 import logging
 import os
 import re
+import shutil
 import subprocess
 import signal
+import sys
 
 # if the current directory is in scripts (pwd), then we need to
 # add plugin in order to import from that directory
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
       os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
-from plugin_constants import MAX_RECORDED_COUNT
+
+# if executing from plugin directory, pull in scripts
+else:
+  sys.path.append(
+      os.path.join(os.path.abspath(os.path.dirname(__file__)), '..'))
+
+from plugin_constants import MAX_RECORDED_COUNT, SIMULATOR_FOLDERS
+import iossim_util
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,32 +43,44 @@ class BasePlugin(object):
     self.device_id = device_id
     self.out_dir = out_dir
 
+    # Dict where keys are `request.device_info.name`. The value is a dictionary
+    # where useful information about that device name can be stored.
+    self.devices = {}
+
   def test_case_will_start(self, request):
-    """ Required method to implement when a test case is about to start """
-    raise NotImplementedError("test_case_will_start method not defined")
+    """ Optional method to implement when a test case is about to start """
+    pass
 
   def test_case_did_finish(self, request):
-    """ Required method to implement when a test case is finished executing
+    """ Optional method to implement when a test case is finished executing
 
     Note that this method will always be called at the end of a test case
     execution, regardless whether a test case failed or not.
     """
-    raise NotImplementedError("test_case_did_finish method not defined")
+    pass
 
   def test_case_did_fail(self, request):
-    """ Required method to implement when a test case failed unexpectedly
+    """ Optional method to implement when a test case failed unexpectedly
 
     Note that this method is being called right before test_case_did_finish,
     if the test case failed unexpectedly.
     """
-    raise NotImplementedError("test_case_did_fail method not defined")
+    pass
+
+  def test_bundle_will_finish(self, request):
+    """ Optional method to implement when a test bundle will finish
+
+    Note that this method will be called exactly once at the very end of the
+    testing process.
+    """
+    pass
 
   def reset(self):
     """
-    Required method to implement to reset any running process/state
+    Optional method to implement to reset any running process/state
     in between each test attempt
     """
-    raise NotImplementedError("reset method not defined")
+    pass
 
   def start_proc(self, cmd):
     """ Starts a non-block process
@@ -69,6 +91,44 @@ class BasePlugin(object):
     """
     LOGGER.info('Executing command: %s', cmd)
     return subprocess.Popen(cmd)
+
+  def get_udid_and_path_for_device_name(self,
+                                        device_name,
+                                        paths=SIMULATOR_FOLDERS):
+    """ Get the udid and path for a device name.
+
+    Will first check self.devices if the device name exists, if not call
+    simctl for well known paths to try to find it.
+
+    Args:
+      device_name: A device name as a string
+    Returns:
+      (UDID, path): A tuple of strings with representing the UDID of
+      the device and path the location of the simulator. If the device is not
+      able to be found (None, None) will be returned.
+    """
+    if self.devices.get(device_name) and self.devices[device_name].get(
+        'UDID') and self.devices[device_name].get('path'):
+      LOGGER.info('Found device named %s in cache. UDID: %s PATH: %s',
+                  device_name, self.devices[device_name]['UDID'],
+                  self.devices[device_name]['path'])
+      return (self.devices[device_name]['UDID'],
+              self.devices[device_name]['path'])
+
+    # search over simulators to find device name
+    # loop over paths
+    for path in paths:
+      for _runtime, simulators in iossim_util.get_simulator_list(
+          path)['devices'].items():
+        for simulator in simulators:
+          if simulator['name'] == device_name:
+            if not self.devices.get(device_name):
+              self.devices[device_name] = {}
+            self.devices[device_name]['UDID'] = simulator['udid']
+            self.devices[device_name]['path'] = path
+            return (simulator['udid'], path)
+    # Return none if not found
+    return (None, None)
 
 
 class VideoRecorderPlugin(BasePlugin):
@@ -220,6 +280,44 @@ class VideoRecorderPlugin(BasePlugin):
     # add attempt num at the beginning, Video at the end
     s = 'attempt_' + str(attempt_count) + '_' + s + '_Video.mov'
     return s
+
+
+class FileCopyPlugin(BasePlugin):
+  """ File Copy Plugin. Copies files from simulator at end of test execution """
+
+  def __init__(self, glob_pattern, out_dir):
+    """ Initializes a file copy plugin which will copy all files matching
+    the glob pattern to the dest_dir
+
+    Args:
+      glob_pattern: (str) globbing pattern to match files to pull from simulator
+        The pattern is relative to the simulator's directory. So a globing
+        for profraw files in the data directory of the simulator would be
+        `data/*.profraw`
+      out_dir: (str) Destination directory, it will be created if it doesn't
+        exist
+    """
+    super(FileCopyPlugin, self).__init__(None, out_dir)
+    self.glob_pattern = glob_pattern
+
+  def __str__(self):
+    return "FileCopyPlugin. Glob: {}, Dest: {}".format(self.glob_pattern,
+                                                       self.out_dir)
+
+  def test_bundle_will_finish(self, request):
+    """ Called just as a test bundle will finish.
+    """
+    UDID, path = self.get_udid_and_path_for_device_name(
+        request.device_info.name)
+
+    if not UDID or not path:
+      LOGGER.warning("Can not find udid for device %s in paths %s",
+                     request.device_info.name, SIMULATOR_FOLDERS)
+      return
+    if not os.path.exists(self.out_dir):
+      os.mkdir(self.out_dir)
+    for file in glob.glob(os.path.join(path, UDID, self.glob_pattern)):
+      shutil.move(file, self.out_dir)
 
 
 class RecordingProcess:

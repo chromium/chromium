@@ -61,6 +61,13 @@ class TestPluginServicer(test_plugin_service_pb2_grpc.TestPluginServiceServicer
       plugin.test_case_did_fail(request)
     return test_plugin_service_pb2.TestCaseDidFailResponse()
 
+  def TestBundleWillFinish(self, request, context):
+    """ Executes plugin tasks when a test bundle is about to finish"""
+    LOGGER.info('Received request for TestBundleWillFinish %s', request)
+    for plugin in self.plugins:
+      plugin.test_bundle_will_finish(request)
+    return test_plugin_service_pb2.TestBundleWillFinishResponse()
+
   def ListEnabledPlugins(self, request, context):
     """ Returns the list of enabled plugins """
     LOGGER.info('Received request for ListEnabledPlugins %s', request)

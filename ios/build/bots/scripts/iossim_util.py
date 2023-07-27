@@ -17,16 +17,23 @@ LOGGER = logging.getLogger(__name__)
 
 MAX_WAIT_TIME_TO_DELETE_RUNTIME = 15  # 15 seconds
 
+SIMULATOR_DEFAULT_PATH = os.path.expanduser(
+    '~/Library/Developer/CoreSimulator/Devices')
+
 
 def _compose_simulator_name(platform, version):
   """Composes the name of simulator of platform and version strings."""
   return '%s %s test simulator' % (platform, version)
 
 
-def get_simulator_list():
-  """Gets list of available simulator as a dictionary."""
+def get_simulator_list(path=SIMULATOR_DEFAULT_PATH):
+  """Gets list of available simulator as a dictionary.
+
+  Args:
+    path: (str) Path to be passed to '--set' option.
+  """
   return json.loads(
-      subprocess.check_output(['xcrun', 'simctl', 'list',
+      subprocess.check_output(['xcrun', 'simctl', '--set', path, 'list',
                                '-j']).decode('utf-8'))
 
 

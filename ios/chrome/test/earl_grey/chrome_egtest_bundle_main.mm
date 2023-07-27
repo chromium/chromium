@@ -4,6 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_egtest_bundle_main.h"
 
+#import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import <objc/runtime.h>
 #import <memory>
@@ -183,6 +184,13 @@ class TestMain {
 }
 
 - (void)testBundleDidFinish:(NSBundle*)testBundle {
+  if (_testPluginClient->is_service_enabled()) {
+    NSLog(@"calling testBundleWillFinish to test plugin server");
+    std::string deviceName =
+        base::SysNSStringToUTF8(UIDevice.currentDevice.name);
+    _testPluginClient->TestBundleWillFinish(deviceName);
+  }
+
   [[XCTestObservationCenter sharedTestObservationCenter]
       removeTestObserver:self];
 
@@ -193,7 +201,9 @@ class TestMain {
   if (_testPluginClient->is_service_enabled()) {
     NSLog(@"calling testCaseWillStart to test plugin server");
     std::string testName = base::SysNSStringToUTF8(testCase.name);
-    _testPluginClient->TestCaseWillStart(testName);
+    std::string deviceName =
+        base::SysNSStringToUTF8(UIDevice.currentDevice.name);
+    _testPluginClient->TestCaseWillStart(testName, deviceName);
   }
 }
 
@@ -202,7 +212,9 @@ class TestMain {
   if (_testPluginClient->is_service_enabled()) {
     NSLog(@"calling testCaseDidFail to test plugin server");
     std::string testName = base::SysNSStringToUTF8(testCase.name);
-    _testPluginClient->TestCaseDidFail(testName);
+    std::string deviceName =
+        base::SysNSStringToUTF8(UIDevice.currentDevice.name);
+    _testPluginClient->TestCaseDidFail(testName, deviceName);
   }
 }
 
@@ -210,7 +222,9 @@ class TestMain {
   if (_testPluginClient->is_service_enabled()) {
     NSLog(@"calling testCaseDidFinish to test plugin server");
     std::string testName = base::SysNSStringToUTF8(testCase.name);
-    _testPluginClient->TestCaseDidFinish(testName);
+    std::string deviceName =
+        base::SysNSStringToUTF8(UIDevice.currentDevice.name);
+    _testPluginClient->TestCaseDidFinish(testName, deviceName);
   }
 }
 

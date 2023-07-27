@@ -196,12 +196,6 @@ class LaunchCommand(object):
           attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
-        # out_dir of LaunchCommand object is the TestRunner out_dir joined with
-        # UDID. Use os.path.dirname to retrieve the TestRunner out_dir.
-        file_util.move_raw_coverage_data(self.udid,
-                                         os.path.dirname(self.out_dir))
-
       result = self._log_parser.collect_test_results(outdir_attempt, output)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
@@ -290,10 +284,6 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.logs = collections.OrderedDict()
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
-    # Do not enable parallel testing when code coverage is enabled, because raw
-    # coverage data won't be produced with parallel testing.
-    if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
-      self.shards = 1
 
     # initializing test plugin service
     self.test_plugin_service = None
