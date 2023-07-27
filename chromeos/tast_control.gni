@@ -391,5 +391,8 @@ tast_disabled_tests_from_lacros_all = [
   # https://crbug.com/1446233
   "tast.arc.IntentForward.lacros_vm",
 
+  # b/291697954
+  "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
+
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
