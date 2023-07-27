@@ -2565,7 +2565,7 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
 
   ChromeFileSystemAccessPermissionContext* permission_context =
       FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
-  std::vector<url::Origin> origins_with_grants =
+  std::set<url::Origin> origins_with_grants =
       permission_context->GetOriginsWithGrants();
 
   for (auto& origin : origins_with_grants) {
