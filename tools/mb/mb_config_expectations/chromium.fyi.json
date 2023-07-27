@@ -349,14 +349,27 @@
     }
   },
   "android-build-perf-developer": {
-    "gn_args": {
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 2,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_remoteexec": true
+    "builtin": {
+      "gn_args": {
+        "enable_nacl": false,
+        "enable_precompiled_headers": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android"
+      }
+    },
+    "reproxy": {
+      "gn_args": {
+        "enable_nacl": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_remoteexec": true
+      }
     }
   },
   "android-fieldtrial-rel": {
@@ -905,12 +918,23 @@
     }
   },
   "linux-build-perf-developer": {
-    "gn_args": {
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 2,
-      "use_remoteexec": true
+    "builtin": {
+      "gn_args": {
+        "enable_nacl": false,
+        "enable_precompiled_headers": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2
+      }
+    },
+    "reproxy": {
+      "gn_args": {
+        "enable_nacl": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "use_remoteexec": true
+      }
     }
   },
   "linux-chromeos-annotator-rel": {
@@ -1273,12 +1297,23 @@
     }
   },
   "win-build-perf-developer": {
-    "gn_args": {
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 2,
-      "use_remoteexec": true
+    "builtin": {
+      "gn_args": {
+        "enable_nacl": false,
+        "enable_precompiled_headers": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2
+      }
+    },
+    "reproxy": {
+      "gn_args": {
+        "enable_nacl": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "use_remoteexec": true
+      }
     }
   },
   "win-celab-builder-rel": {

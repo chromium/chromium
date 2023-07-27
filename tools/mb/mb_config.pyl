@@ -409,7 +409,10 @@
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'android-build-perf-developer': 'android_developer',
+      'android-build-perf-developer': {
+        'builtin': 'android_developer_siso',
+        'reproxy': 'android_developer_reclient',
+      },
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
       # Keep in sync with android-arm64-rel
@@ -457,7 +460,10 @@
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
       'linux-blink-wpt-reset-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'linux-build-perf-developer': 'developer',
+      'linux-build-perf-developer': {
+        'builtin': 'developer_siso',
+        'reproxy': 'developer_reclient',
+      },
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot_reclient',
       # Keep in sync with linux-chromeos-rel
       'linux-chromeos-build-perf': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
@@ -495,7 +501,10 @@
       'mac13-arm64-wpt-content-shell-fyi-rel': 'mac_arm64_release_bot_reclient',
       'mac13-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'win-annotator-rel': 'release_bot_reclient',
-      'win-build-perf-developer': 'developer',
+      'win-build-perf-developer': {
+        'builtin': 'developer_siso',
+        'reproxy': 'developer_reclient',
+      },
       'win-celab-builder-rel': 'release_bot_minimal_symbols_reclient',
       'win-cr23-rel': 'release_bot_minimal_symbols_reclient',
       'win-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
@@ -1670,8 +1679,12 @@
     ],
 
     # GN args to simulate Android developer builds.
-    'android_developer': [
+    'android_developer_reclient': [
       'android_developer', 'reclient',
+    ],
+
+    'android_developer_siso': [
+      'android_developer', 'siso',
     ],
 
     'android_official_optimize_reclient': [
@@ -2577,9 +2590,14 @@
       'debug_bot_reclient', 'x86',
     ],
 
-    'developer': [
+    'developer_reclient': [
       'developer', 'reclient',
     ],
+
+    'developer_siso': [
+      'developer', 'siso',
+    ],
+
     'fuchsia_clang_code_coverage_reclient': [
       'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
       'use_clang_coverage',
