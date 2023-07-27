@@ -9,6 +9,7 @@ import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -145,9 +146,10 @@ suite('shortcutCustomizationAppTest', function() {
     // open.
     const acceleratorView =
         accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
-    const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
-                                  '.edit-icon-container') as HTMLDivElement;
-    editIconContainer.click();
+    const editButton = strictQuery(
+        '.edit-button', acceleratorView[0]!.shadowRoot, CrIconButtonElement);
+
+    editButton.click();
     await flushTasks();
   }
 
@@ -320,9 +322,10 @@ suite('shortcutCustomizationAppTest', function() {
     const acceleratorView =
         accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(1, acceleratorView.length);
-    const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
-                                  '.edit-icon-container') as HTMLDivElement;
-    editIconContainer.click();
+    const editButton = strictQuery(
+        '.edit-button', acceleratorView[0]!.shadowRoot, CrIconButtonElement);
+
+    editButton.click();
 
     await flushTasks();
     editDialog = getPage().shadowRoot!.querySelector('#editDialog');

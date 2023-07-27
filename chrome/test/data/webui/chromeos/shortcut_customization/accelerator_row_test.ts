@@ -6,6 +6,7 @@ import 'chrome://shortcut-customization/js/accelerator_row.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
@@ -129,11 +130,11 @@ suite('acceleratorRowTest', function() {
     const acceleratorViewElement =
         rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(1, acceleratorViewElement.length);
-    const editIconContainerElement = strictQuery(
-        '.edit-icon-container', acceleratorViewElement[0]!.shadowRoot,
-        HTMLDivElement);
+    const editButton = strictQuery(
+        '.edit-button', acceleratorViewElement[0]!.shadowRoot,
+        CrIconButtonElement);
 
-    editIconContainerElement.click();
+    editButton.click();
 
     await flushTasks();
 

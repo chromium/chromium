@@ -48,10 +48,11 @@
         hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
       <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
-    <div class="edit-icon-container" on-click="onEditIconClicked"
+    <div class="edit-icon-container"
         hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]">
       <cr-icon-button class="edit-button" class="clickable-button" part="edit-icon"
-          iron-icon="shortcut-customization:edit">
+          iron-icon="shortcut-customization:edit"
+          on-click="onEditIconClicked">
       </cr-icon-button>
     </div>
   </template>
