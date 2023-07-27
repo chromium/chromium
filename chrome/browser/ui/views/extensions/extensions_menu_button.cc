@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,7 +21,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/style/typography.h"
 
 ExtensionsMenuButton::ExtensionsMenuButton(
     Browser* browser,
@@ -80,17 +78,12 @@ void ExtensionsMenuButton::UpdateState() {
     SetBorder(views::CreateEmptyBorder(gfx::Insets(0)));
   } else {
     // The vertical insets need to take into account the icon spacing, since
-    // this
-    // button's icon is larger, to align with others buttons heights.
+    // this button's icon is larger, to align with others buttons heights. The
+    // horizontal insets was previously added to the parent view.
     const int vertical_inset =
         provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN) -
         provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
-    // The horizontal insets reasonably align the extension icons with text
-    // inside the dialog with the default button margin.
-    const int horizontal_inset =
-        provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(vertical_inset, horizontal_inset)));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(vertical_inset, 0)));
   }
 }
 
