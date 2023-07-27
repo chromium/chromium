@@ -270,15 +270,17 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   }
 
   private getBackButtonAriaLabel_() {
-    return this.i18n('subpageBackButtonAriaLabel', this.pageTitle);
+    return loadTimeData.getStringF(
+        'subpageBackButtonAriaLabel', this.pageTitle);
   }
 
   private getBackButtonAriaRoleDescription_() {
-    return this.i18n('subpageBackButtonAriaRoleDescription', this.pageTitle);
+    return loadTimeData.getStringF(
+        'subpageBackButtonAriaRoleDescription', this.pageTitle);
   }
 
   private getLearnMoreAriaLabel_() {
-    return this.i18n('subpageLearnMoreAriaLabel', this.pageTitle);
+    return loadTimeData.getStringF('subpageLearnMoreAriaLabel', this.pageTitle);
   }
 
   // Override FindShortcutMixin methods.
