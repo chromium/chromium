@@ -86,6 +86,9 @@ class CAPTURE_EXPORT StreamBufferManager final {
   // it has free buffers. For input stream, it is always available.
   bool HasFreeBuffers(const std::set<StreamType>& stream_types);
 
+  // Gets the number of free buffers for the stream specified by |stream_type|.
+  size_t GetFreeBufferCount(StreamType stream_type);
+
   // Checks if the target stream types have been configured or not.
   bool HasStreamsConfigured(std::initializer_list<StreamType> stream_types);
 

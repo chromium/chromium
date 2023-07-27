@@ -106,7 +106,8 @@ class CAPTURE_EXPORT RequestManager final
                  std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
                  BlobifyCallback blobify_callback,
                  scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-                 uint32_t device_api_version);
+                 uint32_t device_api_version,
+                 bool use_buffer_management_apis);
 
   RequestManager(const RequestManager&) = delete;
   RequestManager& operator=(const RequestManager&) = delete;
@@ -353,6 +354,9 @@ class CAPTURE_EXPORT RequestManager final
 
   // The API version of the camera device.
   uint32_t device_api_version_;
+
+  // Set true if the buffer management APIs are enabled.
+  bool use_buffer_management_apis_;
 
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 };

@@ -98,7 +98,8 @@ RequestManager::RequestManager(
     std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
     BlobifyCallback blobify_callback,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-    uint32_t device_api_version)
+    uint32_t device_api_version,
+    bool use_buffer_management_apis)
     : device_id_(device_id),
       callback_ops_(this, std::move(callback_ops_receiver)),
       capture_interface_(std::move(capture_interface)),
@@ -114,7 +115,8 @@ RequestManager::RequestManager(
       capturing_(false),
       partial_result_count_(1),
       first_frame_shutter_time_(base::TimeTicks()),
-      device_api_version_(device_api_version) {
+      device_api_version_(device_api_version),
+      use_buffer_management_apis_(use_buffer_management_apis) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(callback_ops_.is_bound());
   DCHECK(device_context_);
@@ -128,7 +130,8 @@ RequestManager::RequestManager(
       base::BindRepeating(&StreamBufferManager::RequestBufferForCaptureRequest,
                           base::Unretained(stream_buffer_manager_.get()));
   request_builder_ = std::make_unique<RequestBuilder>(
-      device_context_, std::move(request_buffer_callback));
+      device_context_, std::move(request_buffer_callback),
+      use_buffer_management_apis_);
 }
 
 RequestManager::~RequestManager() = default;
@@ -841,12 +844,100 @@ void RequestManager::HandleNotifyError(
 void RequestManager::RequestStreamBuffers(
     std::vector<cros::mojom::Camera3BufferRequestPtr> buffer_reqs,
     RequestStreamBuffersCallback callback) {
-  // TODO(b/226688669): Implement RequestManager::RequestStreamBuffers.
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  if (!capturing_) {
+    std::move(callback).Run(cros::mojom::Camera3BufferRequestStatus::
+                                CAMERA3_BUF_REQ_FAILED_CONFIGURING,
+                            {});
+    return;
+  }
+
+  // Validate arguments.
+  if (buffer_reqs.empty()) {
+    std::move(callback).Run(cros::mojom::Camera3BufferRequestStatus::
+                                CAMERA3_BUF_REQ_FAILED_ILLEGAL_ARGUMENTS,
+                            {});
+    return;
+  }
+  std::set<uint64_t> stream_ids;
+  for (const auto& req : buffer_reqs) {
+    StreamType stream_type = StreamIdToStreamType(req->stream_id);
+    if (stream_type == StreamType::kUnknown ||
+        stream_ids.count(req->stream_id) > 0) {
+      std::move(callback).Run(cros::mojom::Camera3BufferRequestStatus::
+                                  CAMERA3_BUF_REQ_FAILED_ILLEGAL_ARGUMENTS,
+                              {});
+      return;
+    }
+    stream_ids.insert(req->stream_id);
+  }
+
+  std::vector<mojo::StructPtr<cros::mojom::Camera3StreamBufferRet>> rets;
+  size_t error_count = 0;
+  for (const auto& req : buffer_reqs) {
+    rets.push_back(cros::mojom::Camera3StreamBufferRet::New());
+    auto& ret = rets.back();
+
+    ret->stream_id = req->stream_id;
+    StreamType stream_type = StreamIdToStreamType(req->stream_id);
+    if (stream_buffer_manager_->GetFreeBufferCount(stream_type) <
+        req->num_buffers_requested) {
+      ret->status = cros::mojom::Camera3StreamBufferReqStatus::
+          CAMERA3_PS_BUF_REQ_MAX_BUFFER_EXCEEDED;
+      ++error_count;
+      continue;
+    }
+
+    ret->status =
+        cros::mojom::Camera3StreamBufferReqStatus::CAMERA3_PS_BUF_REQ_OK;
+    ret->output_buffers = std::vector<cros::mojom::Camera3StreamBufferPtr>();
+    for (size_t i = 0; i < req->num_buffers_requested; ++i) {
+      absl::optional<BufferInfo> buffer_info =
+          stream_buffer_manager_->RequestBufferForCaptureRequest(stream_type);
+      if (!buffer_info.has_value()) {
+        // Return buffers to |stream_buffer_manager_|.
+        for (const auto& b : *ret->output_buffers) {
+          stream_buffer_manager_->ReleaseBufferFromCaptureResult(stream_type,
+                                                                 b->buffer_id);
+        }
+        ret->status = cros::mojom::Camera3StreamBufferReqStatus::
+            CAMERA3_PS_BUF_REQ_UNKNOWN_ERROR;
+        ++error_count;
+        break;
+      }
+      cros::mojom::Camera3StreamBufferPtr stream_buffer =
+          request_builder_->CreateStreamBuffer(stream_type,
+                                               std::move(*buffer_info));
+      ret->output_buffers->push_back(std::move(stream_buffer));
+    }
+  }
+
+  cros::mojom::Camera3BufferRequestStatus status =
+      cros::mojom::Camera3BufferRequestStatus::CAMERA3_BUF_REQ_OK;
+  if (error_count == buffer_reqs.size()) {
+    status =
+        cros::mojom::Camera3BufferRequestStatus::CAMERA3_BUF_REQ_FAILED_UNKNOWN;
+  } else if (error_count > 0) {
+    status =
+        cros::mojom::Camera3BufferRequestStatus::CAMERA3_BUF_REQ_FAILED_PARTIAL;
+  }
+
+  std::move(callback).Run(status, std::move(rets));
 }
 
 void RequestManager::ReturnStreamBuffers(
     std::vector<cros::mojom::Camera3StreamBufferPtr> buffers) {
-  // TODO(b/226688669): Implement RequestManager::ReturnStreamBuffers.
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  for (const auto& buffer : buffers) {
+    StreamType stream_type = StreamIdToStreamType(buffer->stream_id);
+    if (stream_type == StreamType::kUnknown) {
+      continue;
+    }
+    stream_buffer_manager_->ReleaseBufferFromCaptureResult(stream_type,
+                                                           buffer->buffer_id);
+  }
 }
 
 void RequestManager::SubmitCaptureResult(

@@ -194,6 +194,10 @@ bool StreamBufferManager::HasFreeBuffers(
   return true;
 }
 
+size_t StreamBufferManager::GetFreeBufferCount(StreamType stream_type) {
+  return stream_context_[stream_type]->free_buffers.size();
+}
+
 bool StreamBufferManager::HasStreamsConfigured(
     std::initializer_list<StreamType> stream_types) {
   for (auto stream_type : stream_types) {

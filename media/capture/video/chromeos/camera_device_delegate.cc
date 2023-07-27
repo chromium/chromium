@@ -840,6 +840,19 @@ void CameraDeviceDelegate::Initialize() {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(device_context_->GetState(), CameraDeviceContext::State::kStarting);
 
+  bool use_buffer_management_apis = false;
+  if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_6) {
+    auto version = GetMetadataEntryAsSpan<uint8_t>(
+        static_metadata_, cros::mojom::CameraMetadataTag::
+                              ANDROID_INFO_SUPPORTED_BUFFER_MANAGEMENT_VERSION);
+    use_buffer_management_apis =
+        version.size() == 1 &&
+        version[0] ==
+            static_cast<uint8_t>(
+                cros::mojom::AndroidInfoSupportedBufferManagementVersion::
+                    ANDROID_INFO_SUPPORTED_BUFFER_MANAGEMENT_VERSION_HIDL_DEVICE_3_5);
+  }
+
   mojo::PendingRemote<cros::mojom::Camera3CallbackOps> callback_ops;
   // Assumes the buffer_type will be the same for all |chrome_capture_params|.
   request_manager_ = std::make_unique<RequestManager>(
@@ -850,7 +863,7 @@ void CameraDeviceDelegate::Initialize() {
       chrome_capture_params_[ClientType::kPreviewClient].buffer_type,
       std::make_unique<CameraBufferFactory>(),
       base::BindRepeating(&RotateAndBlobify), ipc_task_runner_,
-      device_api_version_);
+      device_api_version_, use_buffer_management_apis);
   camera_3a_controller_ = std::make_unique<Camera3AController>(
       static_metadata_, request_manager_.get(), ipc_task_runner_);
   device_ops_->Initialize(

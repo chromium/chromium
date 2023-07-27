@@ -41,7 +41,8 @@ class CAPTURE_EXPORT RequestBuilder {
                  // Callback to request buffer from StreamBufferManager. Having
                  // this callback, we do not need to include StreamBufferManager
                  // when requesting buffer.
-                 RequestBufferCallback request_buffer_callback);
+                 RequestBufferCallback request_buffer_callback,
+                 bool use_buffer_management_apis);
   ~RequestBuilder();
 
   // Builds a capture request by given streams and settings.
@@ -49,15 +50,16 @@ class CAPTURE_EXPORT RequestBuilder {
       std::set<StreamType> stream_types,
       cros::mojom::CameraMetadataPtr settings);
 
+  // Used to create Camera3StreamBuffer for Camera3CaptureRequest or
+  // Camera3StreamBufferRet.
+  cros::mojom::Camera3StreamBufferPtr CreateStreamBuffer(
+      StreamType stream_type,
+      absl::optional<BufferInfo> buffer_info);
+
  private:
   cros::mojom::CameraBufferHandlePtr CreateCameraBufferHandle(
       StreamType stream_type,
       BufferInfo buffer_info);
-
-  cros::mojom::Camera3StreamBufferPtr CreateStreamBuffer(
-      StreamType stream_type,
-      uint64_t buffer_id,
-      cros::mojom::CameraBufferHandlePtr buffer_handle);
 
   raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
 
@@ -65,6 +67,10 @@ class CAPTURE_EXPORT RequestBuilder {
   uint32_t frame_number_;
 
   RequestBufferCallback request_buffer_callback_;
+
+  // Set true if the buffer management APIs are enabled. If true, capture
+  // requests do not contain buffer handles.
+  bool use_buffer_management_apis_;
 };
 }  // namespace media
 
