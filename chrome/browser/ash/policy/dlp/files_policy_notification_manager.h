@@ -245,13 +245,8 @@ class FilesPolicyNotificationManager
       absl::optional<int> button_index);
 
   // Click handler for DLP warning notifications. Used for non IO tasks.
-  void HandleDlpWarningNotificationClick(
-      std::string notification_id,
-      OnDlpRestrictionCheckedCallback callback,
-      std::vector<DlpConfidentialFile> files,
-      DlpFileDestination destination,
-      dlp::FileAction action,
-      absl::optional<int> button_index);
+  void HandleDlpWarningNotificationClick(std::string notification_id,
+                                         absl::optional<int> button_index);
 
   // Click handler for DLP error notifications. Used for non IO tasks.
   void HandleDlpErrorNotificationClick(std::string notification_id,
@@ -318,7 +313,6 @@ class FilesPolicyNotificationManager
   // associated with `notification_id`. Resumes/cancels the operation based on
   // the value of `should_proceed`.
   void OnNonIOTaskWarningDialogClicked(const std::string& notification_id,
-                                       Policy warning_reason,
                                        bool should_proceed);
 
   // Opens DLP Learn more link and closes the notification having

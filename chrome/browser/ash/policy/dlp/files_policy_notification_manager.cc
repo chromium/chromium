@@ -308,22 +308,23 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
 void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
     const std::string& notification_id,
     const file_manager::io_task::ProgressStatus& status) {
-  const file_manager::io_task::IOTaskId id(status.task_id);
-  if (!HasIOTask(id)) {
-    // Task probably timed out.
-    return;
-  }
   const dlp::FileAction action =
       status.type == file_manager::io_task::OperationType::kCopy
           ? dlp::FileAction::kCopy
           : dlp::FileAction::kMove;
-
   if (status.HasPolicyError() &&
       status.policy_error->type ==
           file_manager::io_task::PolicyErrorType::kDlpWarningTimeout) {
     ShowDlpWarningTimeoutNotification(action, notification_id);
     return;
   }
+
+  const file_manager::io_task::IOTaskId id(status.task_id);
+  if (!HasIOTask(id)) {
+    // Task probably timed out.
+    return;
+  }
+
   auto callback =
       status.HasWarning()
           ? base::BindRepeating(&FilesPolicyNotificationManager::
@@ -459,38 +460,34 @@ bool FilesPolicyNotificationManager::HasWarningTimerForTesting(
 
 void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
     std::string notification_id,
-    OnDlpRestrictionCheckedCallback callback,
-    std::vector<DlpConfidentialFile> files,
-    DlpFileDestination destination,
-    dlp::FileAction action,
     absl::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
 
   Dismiss(context_, notification_id);
+
+  CHECK(HasWarning(notification_id));
+  auto* warning_info = non_io_tasks_.at(notification_id).GetWarningInfo();
+  CHECK(!warning_info->warning_callback.is_null());
+
   switch (button_index.value()) {
     case NotificationButton::CANCEL:
-      std::move(callback).Run(/*should_proceed=*/false);
+      std::move(warning_info->warning_callback).Run(/*should_proceed=*/false);
+      non_io_tasks_.erase(notification_id);
       non_io_tasks_warning_timers_.erase(notification_id);
       break;
-    case NotificationButton::OK:
-      DCHECK(files.size() >= 1);
 
-      if (files.size() == 1) {
+    case NotificationButton::OK:
+      CHECK(warning_info->files.size() >= 1);
+
+      if (warning_info->files.size() == 1) {
         // Action anyway.
-        std::move(callback).Run(/*should_proceed=*/true);
+        std::move(warning_info->warning_callback).Run(/*should_proceed=*/true);
+        non_io_tasks_.erase(notification_id);
         non_io_tasks_warning_timers_.erase(notification_id);
       } else {
-        // Review.
-        FileTaskInfo info(action);
-        info.SetWarningInfo({std::move(files), Policy::kDlp,
-                             std::move(callback),
-                             base::BindOnce(&FilesPolicyNotificationManager::
-                                                OnNonIOTaskWarningDialogClicked,
-                                            weak_factory_.GetWeakPtr(),
-                                            notification_id, Policy::kDlp)});
-        non_io_tasks_.emplace(notification_id, std::move(info));
+        // Review
         // Always open the Files app. This should notify us through
         // OnBrowserSetLastActive() to show the dialog.
         LaunchFilesApp(std::make_unique<DialogInfo>(
@@ -579,8 +576,12 @@ FilesPolicyNotificationManager::WarningInfo::WarningInfo(
       warning_callback(std::move(warning_callback)),
       dialog_callback(std::move(dialog_callback)) {}
 
-FilesPolicyNotificationManager::WarningInfo::WarningInfo(WarningInfo&& other) =
-    default;
+FilesPolicyNotificationManager::WarningInfo::WarningInfo(WarningInfo&& other) {
+  files = std::move(other.files);
+  warning_reason = other.warning_reason;
+  warning_callback = std::move(other.warning_callback);
+  dialog_callback = std::move(other.dialog_callback);
+}
 
 FilesPolicyNotificationManager::WarningInfo::~WarningInfo() = default;
 
@@ -879,7 +880,10 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
 
   if (HasIOTask(status.task_id) && status.IsCompleted()) {
     io_tasks_warning_timers_.erase(status.task_id);
-    if (status.state == file_manager::io_task::State::kCancelled &&
+    // If task is cancelled or completed with error and has a warning, run the
+    // warning callback to cancel the warning.
+    if ((status.state == file_manager::io_task::State::kCancelled ||
+         status.state == file_manager::io_task::State::kError) &&
         HasWarning(status.task_id)) {
       CHECK(!io_tasks_.at(status.task_id)
                  .GetWarningInfo()
@@ -939,7 +943,6 @@ void FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked(
 
 void FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked(
     const std::string& notification_id,
-    Policy warning_reason,
     bool should_proceed) {
   if (!HasWarning(notification_id)) {
     // Task probably timed out.
@@ -1078,14 +1081,24 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     const DlpFileDestination& destination,
     dlp::FileAction action) {
   if (DlpFilesController::kNewFilesPolicyUXEnabled) {
-    std::vector<DlpConfidentialFile> files = std::vector<DlpConfidentialFile>{
-        warning_files.begin(), warning_files.end()};
     const std::string& notification_id =
         GetNotificationId(notification_count_++);
+
+    // Store the task info.
+    FileTaskInfo info(action);
+    info.SetWarningInfo(
+        {std::vector<DlpConfidentialFile>{warning_files.begin(),
+                                          warning_files.end()},
+         Policy::kDlp, std::move(callback),
+         base::BindOnce(
+             &FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked,
+             weak_factory_.GetWeakPtr(), notification_id)});
+    non_io_tasks_.emplace(notification_id, std::move(info));
+
     std::vector<message_center::ButtonInfo> buttons = {
         message_center::ButtonInfo(GetCancelButton(NotificationType::kWarning)),
-        message_center::ButtonInfo(
-            GetOkButton(NotificationType::kWarning, action, files.size()))};
+        message_center::ButtonInfo(GetOkButton(NotificationType::kWarning,
+                                               action, warning_files.size()))};
     // The notification should stay visible until actioned upon.
     message_center::RichNotificationData optional_fields;
     optional_fields.never_timeout = true;
@@ -1094,13 +1107,12 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
         GetNotificationTitle(NotificationType::kWarning, action,
                              /*file_count=*/absl::nullopt),
         GetNotificationMessage(
-            NotificationType::kWarning, files.size(),
+            NotificationType::kWarning, warning_files.size(),
             warning_files.begin()->BaseName().LossyDisplayName(),
             absl::nullopt),
         base::MakeRefCounted<PolicyNotificationClickHandler>(base::BindOnce(
             &FilesPolicyNotificationManager::HandleDlpWarningNotificationClick,
-            weak_factory_.GetWeakPtr(), std::move(notification_id),
-            std::move(callback), std::move(files), destination, action)));
+            weak_factory_.GetWeakPtr(), notification_id)));
     notification->set_buttons(std::move(buttons));
 
     auto* profile = Profile::FromBrowserContext(context_);
@@ -1112,6 +1124,7 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     // Start warning timer.
     non_io_tasks_warning_timers_[notification_id] =
         std::make_unique<base::OneShotTimer>();
+    non_io_tasks_warning_timers_[notification_id]->SetTaskRunner(task_runner_);
     non_io_tasks_warning_timers_[notification_id]->Start(
         FROM_HERE, kWarningTimeout,
         base::BindOnce(
@@ -1164,6 +1177,7 @@ void FilesPolicyNotificationManager::PauseIOTask(
   io_task_controller->Pause(task_id, std::move(pause_params));
   // Start warning timer.
   io_tasks_warning_timers_[task_id] = std::make_unique<base::OneShotTimer>();
+  io_tasks_warning_timers_[task_id]->SetTaskRunner(task_runner_);
   io_tasks_warning_timers_[task_id]->Start(
       FROM_HERE, kWarningTimeout,
       base::BindOnce(&FilesPolicyNotificationManager::OnIOTaskWarningTimedOut,
@@ -1218,11 +1232,9 @@ void FilesPolicyNotificationManager::OnIOTaskWarningTimedOut(
   // Close the warning dialog if there's any.
   io_tasks_.at(task_id).CloseWidget();
 
-  // Run the warning callback with false.
-  std::move(io_tasks_.at(task_id).GetWarningInfo()->warning_callback)
-      .Run(/*should_proceed=*/false);
-
-  // Abort the IOtask.
+  // Abort the IOtask. No need to run the warning callback here as it will be
+  // called in OnIOTaskStatus when there's an update sent that the task
+  // completed with error.
   auto* io_task_controller = GetIOTaskController(context_);
   io_task_controller->CompleteWithError(
       task_id, file_manager::io_task::PolicyError(

@@ -16,6 +16,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -66,6 +68,8 @@ const file_manager::io_task::IOTaskId kTaskId1 = 1u;
 const file_manager::io_task::IOTaskId kTaskId2 = 2u;
 constexpr char kNotificationId1[] = "swa-file-operation-1";
 constexpr char kNotificationId2[] = "swa-file-operation-2";
+
+constexpr base::TimeDelta kWarningTimeout = base::Minutes(5);
 
 }  // namespace
 
@@ -204,11 +208,13 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
   auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
       browser()->profile());
   ASSERT_TRUE(fpnm);
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  fpnm->SetTaskRunnerForTesting(task_runner);
 
   // The callback is not invoked.
   base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
-
   fpnm->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt,
                        {base::FilePath("file1.txt")}, destination, action);
 
@@ -216,6 +222,15 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
   bridge_->Click(kNotificationId, /*button_index=*/absl::nullopt);
   // The notification shouldn't be closed.
   EXPECT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  // Skip the warning timeout. The callback is only invoked when the warning
+  // times out.
+  testing::Mock::VerifyAndClearExpectations(&cb);
+  EXPECT_CALL(cb, Run(/*should_proceed=*/false));
+  task_runner->FastForwardBy(kWarningTimeout);
+  // The warning notification should be closed.
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  // TODO(b/292491068): The warning timeout notification should be shown.
 }
 
 // Tests that closing the warning notification (e.g. by X or Dismiss all)
@@ -295,11 +310,12 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
   auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
       browser()->profile());
   ASSERT_TRUE(fpnm);
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  fpnm->SetTaskRunnerForTesting(task_runner);
 
-  // The callback shouldn't be invoked.
   base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
-
   fpnm->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt, warning_files,
                        destination, action);
 
@@ -326,6 +342,12 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
   Browser* second_app = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_EQ(second_app, FindFilesApp());
   EXPECT_NE(first_app, second_app);
+
+  // Skip the warning timeout. The callback will only be invoked when the
+  // warnings time out.
+  testing::Mock::VerifyAndClearExpectations(&cb);
+  EXPECT_CALL(cb, Run(/*should_proceed=*/false)).Times(2);
+  task_runner->FastForwardBy(kWarningTimeout);
 }
 
 // Tests that clicking the OK button on a warning notification for multiple
@@ -357,10 +379,8 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   fpnm->SetTaskRunnerForTesting(task_runner);
 
-  // The callback shouldn't be invoked.
   base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
-
   fpnm->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt, warning_files,
                        destination, action);
 
@@ -375,6 +395,12 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  // Skip the warning timeout. The callback will only be invoked when the
+  // warning times out.
+  testing::Mock::VerifyAndClearExpectations(&cb);
+  EXPECT_CALL(cb, Run(/*should_proceed=*/false));
+  task_runner->FastForwardBy(kWarningTimeout);
 }
 
 // Tests that clicking the Cancel button on a warning notification cancels the
@@ -714,6 +740,38 @@ class IOTaskBrowserTest
     fpnm_->ShowDlpBlockedFiles(task_id, blocked_files, action);
   }
 
+  // Expects CheckIfTransferAllowed to be called. Once called, it calls
+  // FilesPolicyNotificationManager to show a warning then waits for the user.
+  void ExpectCheckIfTransferAllowedToWarnAndWait(
+      const file_manager::io_task::IOTaskId task_id,
+      const dlp::FileAction action,
+      const bool expected_should_proceed,
+      const std::vector<base::FilePath>& warning_files) {
+    bool is_move = (action == dlp::FileAction::kMove) ? true : false;
+    auto warn_on_check =
+        [=](absl::optional<file_manager::io_task::IOTaskId> task_id,
+            const std::vector<storage::FileSystemURL>& transferred_files,
+            storage::FileSystemURL destination, bool is_move,
+            DlpFilesControllerAsh::CheckIfTransferAllowedCallback
+                result_callback) {
+          auto warn_cb = base::BindOnce(
+              [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
+                 const std::vector<storage::FileSystemURL>& transferred_files,
+                 const bool expected_should_proceed, bool should_proceed) {
+                EXPECT_EQ(should_proceed, expected_should_proceed);
+              },
+              std::move(result_callback), transferred_files,
+              expected_should_proceed);
+          fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
+                                warning_files, DlpFileDestination(""), action);
+        };
+
+    EXPECT_CALL(*files_controller_,
+                CheckIfTransferAllowed(absl::make_optional(task_id), testing::_,
+                                       testing::_, is_move, testing::_))
+        .WillOnce(testing::Invoke(warn_on_check));
+  }
+
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   const blink::StorageKey kTestStorageKey =
@@ -725,6 +783,60 @@ class IOTaskBrowserTest
   raw_ptr<policy::FilesPolicyNotificationManager, ExperimentalAsh> fpnm_ =
       nullptr;
 };
+
+// Tests that warning an IO task with multiple warning files shows a desktop
+// notification. Skipping the timeout will abort the IO tasks with DLP warning
+// timeout error.
+IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
+                       MultiFileTimeoutNotification_Warning) {
+  auto [type, action] = GetParam();
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  fpnm_->SetTaskRunnerForTesting(task_runner);
+
+  // No Files app opened.
+  ASSERT_FALSE(FindFilesApp());
+
+  // CheckIfTransferAllowed will call FPNM to show the warning which will pause
+  // the IO task and trigger the notification.
+  ExpectCheckIfTransferAllowedToWarnAndWait(
+      kTaskId1, action,
+      /*expected_should_proceed=*/false,
+      {base::FilePath("file1.txt"), base::FilePath("file2.txt")});
+
+  // Add the tasks.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
+                     browser()->profile(), file_system_context_, kTaskId1, type,
+                     temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
+                     .empty());
+  }
+
+  ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
+
+  auto notification1 = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification1.has_value());
+  const std::u16string warning_title =
+      action == dlp::FileAction::kCopy
+          ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
+          : l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE);
+  EXPECT_EQ(notification1->title(), warning_title);
+
+  // Skip the warning timeout.
+  task_runner->FastForwardBy(kWarningTimeout);
+
+  const std::u16string timeout_title =
+      action == dlp::FileAction::kCopy
+          ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_TIMEOUT_TITLE)
+          : l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_TITLE);
+  notification1 = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification1.has_value());
+  EXPECT_EQ(notification1->title(), timeout_title);
+
+  EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
+}
 
 // Tests that clicking the OK button on a warning notification shown for copy or
 // move IO task with multiple warning files shows a dialog instead of continuing
@@ -783,12 +895,14 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId2));
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
   const std::u16string title =
       action == dlp::FileAction::kCopy
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
           : l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE);
+
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
 
   notification = bridge_->GetDisplayedNotification(kNotificationId2);
   ASSERT_TRUE(notification.has_value());
@@ -796,7 +910,6 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
   // Show the first dialog.
   ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
-  EXPECT_EQ(notification->title(), title);
   bridge_->Click(kNotificationId1, NotificationButton::OK);
 
   // Check that a new Files app is opened.
@@ -804,7 +917,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_TRUE(first_app);
   ASSERT_EQ(first_app, FindFilesApp());
 
-  // The notification should be closed.
+  // The first notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 
   // Show the second dialog.

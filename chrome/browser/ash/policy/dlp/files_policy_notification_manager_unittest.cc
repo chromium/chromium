@@ -252,7 +252,8 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
 }
 
 // Tests that passing task id to ShowDlpWarning will pause the corresponding
-// IOTask.
+// IOTask. Completing the task with error should abort it and run the warning
+// callback with false.
 TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
   IOTaskStatusObserver observer;
   io_task_controller_->AddObserver(&observer);
@@ -287,8 +288,9 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
                       pause_params))))
       .Times(::testing::AtLeast(1));
 
+  base::MockCallback<OnDlpRestrictionCheckedCallback> mock_cb;
   fpnm_->ShowDlpWarning(
-      base::DoNothing(), task_id, std::vector<base::FilePath>{src_file_path},
+      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
       DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
@@ -305,6 +307,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
                           /*blocked_files=*/1)))))
       .Times(::testing::AtLeast(1));
 
+  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false));
   io_task_controller_->CompleteWithError(
       task_id,
       file_manager::io_task::PolicyError(
