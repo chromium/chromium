@@ -1195,6 +1195,10 @@ void TestLauncher::LaunchChildGTestProcess(
   LaunchOptions options;
   options.flags = launcher_delegate_->GetLaunchOptions();
 
+  if (BotModeEnabled(CommandLine::ForCurrentProcess())) {
+    LOG(INFO) << "Starting [" << base::JoinString(test_names, ", ") << "]";
+  }
+
   ChildProcessResults process_results = DoLaunchChildTestProcess(
       new_command_line, child_temp_dir, result_file,
       launcher_delegate_->GetTimeout(), test_names.size(), options,
