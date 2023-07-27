@@ -6,8 +6,11 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
+#include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -18,11 +21,11 @@
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -31,6 +34,26 @@
 #endif
 
 namespace {
+
+#if !BUILDFLAG(IS_MAC)
+// This waits for the download bubble widget to be shown.
+views::NamedWidgetShownWaiter CreateDownloadBubbleDialogWaiter() {
+  return views::NamedWidgetShownWaiter{views::test::AnyWidgetTestPasskey{},
+                                       DownloadToolbarButtonView::kBubbleName};
+}
+
+// Wait for the bubble to show up. `waiter` should be created before this
+// call, and should be for the download bubble's widget name.
+auto WaitForDownloadBubbleShow(views::NamedWidgetShownWaiter& waiter) {
+  return base::BindLambdaForTesting(
+      [&waiter]() { waiter.WaitIfNeededAndGet(); });
+}
+
+bool IsExclusiveAccessBubbleVisible(ExclusiveAccessBubbleViews* bubble) {
+  bool is_hiding = bubble->animation_for_test()->IsClosing();
+  return bubble->IsShowing() || (bubble->IsVisibleForTesting() && !is_hiding);
+}
+#endif
 
 class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
                                         public InteractiveBrowserTestApi {
@@ -119,6 +142,32 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
     return base::BindLambdaForTesting(
         [this, url]() { DownloadAndWait(browser(), url); });
   }
+
+#if !BUILDFLAG(IS_MAC)
+  // Check for whether the exclusive access bubble is shown ("Press Esc to
+  // exit fullscreen" or other similar message).
+  auto IsExclusiveAccessBubbleDisplayed(bool displayed) {
+    return base::BindLambdaForTesting([&, displayed = displayed]() {
+      ExclusiveAccessBubbleViews* bubble =
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->exclusive_access_bubble();
+      return displayed ==
+             (bubble ? IsExclusiveAccessBubbleVisible(bubble) : false);
+    });
+  }
+
+  // Whether the exclusive access bubble, if any, is a download notification.
+  auto IsExclusiveAccessBubbleForDownload(bool for_download) {
+    return base::BindLambdaForTesting([&, for_download = for_download]() {
+      ExclusiveAccessBubbleViews* bubble =
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->exclusive_access_bubble();
+      return for_download ==
+             (bubble ? ExclusiveAccessTest::IsBubbleDownloadNotification(bubble)
+                     : false);
+    });
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
   auto ToggleFullscreen() {
@@ -215,9 +264,70 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
       Check(DownloadBubbleIsShowingDetails(true)),
       // Hide the bubble so it's not showing while tearing down the test browser
       // (which causes a crash on Mac).
+      // TODO(chlily): Rewrite this test to interact with the UI instead of
+      // hiding the bubble artificially, to properly test user journeys.
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
       WaitForHide(kDownloadToolbarButtonElementId));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+
+// This test is only for Lacros, where tab fullscreen is non-immersive, and
+// other platforms, where fullscreen is not immersive.
+// TODO(chlily): Add test coverage for Mac.
+#if !BUILDFLAG(IS_MAC)
+// Test that downloading a file in tab fullscreen (not browser fullscreen)
+// results in an exclusive access bubble, and the partial view displayed after
+// the tab exits fullscreen.
+IN_PROC_BROWSER_TEST_F(
+    DownloadBubbleInteractiveUiTest,
+    ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+
+  // Grab the fullscreen accelerator, which is used to exit fullscreen in the
+  // test. For some reason, exiting tab fullscreen via JavaScript doesn't work
+  // (times out).
+  ui::Accelerator fullscreen_accelerator;
+  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+      IDC_FULLSCREEN, &fullscreen_accelerator);
+
+  views::NamedWidgetShownWaiter dialog_waiter =
+      CreateDownloadBubbleDialogWaiter();
+
+  RunTestSequenceInContext(
+      browser()->window()->GetElementContext(),
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId,
+                          embedded_test_server()->GetURL("/empty.html")),
+      // Enter tab fullscreen.
+      InParallel(
+          ExecuteJs(kWebContentsElementId,
+                    "() => document.documentElement.requestFullscreen()"),
+          InAnyContext(WaitForShow(kExclusiveAccessBubbleViewElementId))),
+      // The exclusive access bubble should notify about the fullscreen change.
+      Check(IsExclusiveAccessBubbleDisplayed(true),
+            "Exclusive access bubble is displayed upon entering fullscreen"),
+      Check(IsExclusiveAccessBubbleForDownload(false),
+            "Exclusive access bubble is not for a download"),
+      // Download a file to make the exclusive access bubble appear again.
+      Do(DownloadTestFile()),
+      // The exclusive access bubble should be displayed and should be for a
+      // download.
+      InAnyContext(WaitForShow(kExclusiveAccessBubbleViewElementId)),
+      Check(IsExclusiveAccessBubbleDisplayed(true),
+            "Exclusive access bubble is displayed after starting a download"),
+      Check(IsExclusiveAccessBubbleForDownload(true),
+            "Exclusive access bubble is for a download"),
+      FlushEvents(),
+      // Now exit fullscreen, and the partial view should be shown.
+      SendAccelerator(kBrowserViewElementId, fullscreen_accelerator),
+      FlushEvents(), Do(WaitForDownloadBubbleShow(dialog_waiter)),
+      Check(DownloadBubbleIsShowingDetails(true),
+            "Download bubble is showing details after exiting fullscreen"),
+      // TODO(chlily): Rewrite this test to interact with the UI instead of
+      // hiding the bubble artificially, to properly test user journeys.
+      Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
+      WaitForHide(kDownloadToolbarButtonElementId));
+}
+#endif
 
 }  // namespace

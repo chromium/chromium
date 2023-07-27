@@ -238,7 +238,7 @@ void ExclusiveAccessBubbleViews::UpdateViewContent(
   view_->UpdateContent(GetInstructionText(accelerator));
 }
 
-bool ExclusiveAccessBubbleViews::IsVisible() {
+bool ExclusiveAccessBubbleViews::IsVisible() const {
 #if BUILDFLAG(IS_MAC)
   // Due to a quirk on the Mac, the popup will not be visible for a short period
   // of time after it is shown (it's asynchronous) so if we don't check the

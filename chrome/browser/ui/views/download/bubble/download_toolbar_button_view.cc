@@ -519,6 +519,7 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
           ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL)
           : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT));
   bubble_delegate->SetShowTitle(false);
+  bubble_delegate->set_internal_name(kBubbleName);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_delegate->SetDefaultButton(ui::DIALOG_BUTTON_NONE);

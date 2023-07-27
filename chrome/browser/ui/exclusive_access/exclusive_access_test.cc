@@ -97,6 +97,12 @@ void ExclusiveAccessTest::TearDownOnMainThread() {
       base::RepeatingCallback<void(ExclusiveAccessBubbleHideReason)>();
 }
 
+// static
+bool ExclusiveAccessTest::IsBubbleDownloadNotification(
+    ExclusiveAccessBubble* bubble) {
+  return bubble->notify_download_;
+}
+
 bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
