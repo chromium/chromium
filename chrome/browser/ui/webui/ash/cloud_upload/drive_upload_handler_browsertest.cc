@@ -24,6 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/drive/file_errors.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -173,8 +174,7 @@ class DriveUploadHandlerTest
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       EXPECT_TRUE(base::PathExists(source_path.AppendASCII(test_file_name)));
-      EXPECT_FALSE(
-          base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
+      CheckPathNotFoundOnDrive(observed_relative_drive_path());
     }
 
     FileSystemURL source_file_url = FilePathToFileSystemURL(
@@ -213,6 +213,36 @@ class DriveUploadHandlerTest
     run_loop_->Quit();
   }
 
+  void CheckPathExistsOnDrive(const base::FilePath& path) {
+    drive_integration_service()->GetDriveFsInterface()->GetMetadata(
+        path,
+        base::BindOnce(&DriveUploadHandlerTest::OnGetMetadataExpectSuccess,
+                       base::Unretained(this)));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    Wait();
+  }
+
+  void CheckPathNotFoundOnDrive(const base::FilePath& path) {
+    drive_integration_service()->GetDriveFsInterface()->GetMetadata(
+        path,
+        base::BindOnce(&DriveUploadHandlerTest::OnGetMetadataExpectNotFound,
+                       base::Unretained(this)));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    Wait();
+  }
+
+  void OnGetMetadataExpectSuccess(drive::FileError error,
+                                  drivefs::mojom::FileMetadataPtr metadata) {
+    EXPECT_EQ(drive::FILE_ERROR_OK, error);
+    EndWait();
+  }
+
+  void OnGetMetadataExpectNotFound(drive::FileError error,
+                                   drivefs::mojom::FileMetadataPtr metadata) {
+    EXPECT_EQ(drive::FILE_ERROR_NOT_FOUND, error);
+    EndWait();
+  }
+
   // `Wait` will not complete until this is called.
   void OnUploadDone(const GURL& url, int64_t size) {
     if (fail_sync_) {
@@ -231,11 +261,13 @@ class DriveUploadHandlerTest
     return fake_drivefs().delegate();
   }
 
+  drive::DriveIntegrationService* drive_integration_service() {
+    return drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+  }
+
   base::FilePath observed_relative_drive_path() {
-    drive::DriveIntegrationService* drive_integration_service =
-        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     base::FilePath observed_relative_drive_path;
-    drive_integration_service->GetRelativeDrivePath(
+    drive_integration_service()->GetRelativeDrivePath(
         drive_root_dir_.AppendASCII(test_file_name_),
         &observed_relative_drive_path);
     return observed_relative_drive_path;
@@ -368,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFiles) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_FALSE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
-    EXPECT_TRUE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
+    CheckPathExistsOnDrive(observed_relative_drive_path());
   }
 }
 
@@ -394,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
-    EXPECT_TRUE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
+    CheckPathExistsOnDrive(observed_relative_drive_path());
   }
 }
 
@@ -422,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
-    EXPECT_FALSE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
+    CheckPathNotFoundOnDrive(observed_relative_drive_path());
   }
 }
 
@@ -451,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
-    EXPECT_FALSE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
+    CheckPathNotFoundOnDrive(observed_relative_drive_path());
   }
 }
 
