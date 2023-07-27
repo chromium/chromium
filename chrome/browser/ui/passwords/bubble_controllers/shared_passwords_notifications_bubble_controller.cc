@@ -33,8 +33,6 @@ SharedPasswordsNotificationBubbleController::
 
 std::u16string
 SharedPasswordsNotificationBubbleController::GetNotificationBody() {
-  // TODO(crbug.com/1464209): Clarify with UXW if the part about "To use it,
-  // click the sign-in form."
   std::vector<PasswordForm*> credentials_to_notifiy =
       GetSharedCredentialsRequiringNotification();
   std::u16string website = url_formatter::FormatOriginForSecurityDisplay(
