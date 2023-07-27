@@ -162,6 +162,18 @@ def __step_config(ctx, step_config):
             })
             continue
 
+        # Replace nacl-clang/clang++ rules without command_prefix, because they will incorrectly match rewrapper.
+        # Replace the original step rule with one that only rewrites rewrapper and convert its rewrapper config to reproxy config.
+        if rule["name"].find("nacl-clang") >= 0 and not rule.get("command_prefix"):
+            new_rule = {
+                "name": rule["name"],
+                "action": rule["action"],
+                "handler": "rewrite_rewrapper",
+            }
+            rule.clear()
+            rule.update(new_rule)
+            continue
+
         # Other rules where it's enough to only convert native remote config to reproxy config.
         if not rule.get("remote"):
             continue
