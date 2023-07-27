@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -113,10 +114,18 @@
   PrefService* prefs =
       ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
           ->GetPrefs();
+  segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
+      nullptr;
+  if (!browser->GetBrowserState()->IsOffTheRecord()) {
+    deviceSwitcherResult =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDispatcherForBrowserState(browser->GetBrowserState());
+  }
   self.toolbarMediator = [[ToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
                isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
   self.toolbarMediator.delegate = self;
+  self.toolbarMediator.deviceSwitcherResultDispatcher = deviceSwitcherResult;
   self.toolbarMediator.prefService = prefs;
 
   self.locationBarCoordinator =

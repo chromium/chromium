@@ -11,6 +11,10 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
+namespace segmentation_platform {
+class DeviceSwitcherResultDispatcher;
+}  // namespace segmentation_platform
+
 @protocol ToolbarOmniboxConsumer;
 class WebStateList;
 
@@ -37,6 +41,10 @@ class WebStateList;
 @property(nonatomic, weak) id<ToolbarOmniboxConsumer> omniboxConsumer;
 /// Observe user preference changes for preferred omnibox position.
 @property(nonatomic, assign) PrefService* prefService;
+
+@property(nonatomic, assign)
+    segmentation_platform::DeviceSwitcherResultDispatcher*
+        deviceSwitcherResultDispatcher;
 
 /// Creates an instance of the mediator. Observers will be installed into all
 /// existing web states in `webStateList`. While the mediator is alive,

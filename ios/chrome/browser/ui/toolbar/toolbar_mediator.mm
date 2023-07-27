@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
+#import "base/metrics/field_trial_params.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/public/result.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -100,6 +104,7 @@
     [_bottomOmniboxEnabled setObserver:self];
     // Initialize to the correct value.
     [self booleanDidChange:_bottomOmniboxEnabled];
+    [self updateOmniboxDefaultPosition];
   }
 }
 
@@ -232,6 +237,38 @@
   self.omniboxPosition = [self omniboxPositionInCurrentState];
   self.steadyStateOmniboxPosition =
       [self steadyStateOmniboxPositionInCurrentState];
+}
+
+#pragma mark Default omnibox position
+
+/// Updates the default setting for bottom omnibox.
+- (void)updateOmniboxDefaultPosition {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(_isIncognito || self.deviceSwitcherResultDispatcher);
+  CHECK(self.prefService);
+
+  // This only needs to be executed once and deviceSwitcherResult are not
+  // available in incognito.
+  if (!self.deviceSwitcherResultDispatcher ||
+      self.prefService->GetUserPrefValue(prefs::kBottomOmnibox)) {
+    return;
+  }
+
+  std::string featureParam = base::GetFieldTrialParamValueByFeature(
+      kBottomOmniboxDefaultSetting, kBottomOmniboxDefaultSettingParam);
+  BOOL bottomOmniboxEnabledByDefault = NO;  // Top is default.
+  if (featureParam == kBottomOmniboxDefaultSettingParamBottom) {
+    bottomOmniboxEnabledByDefault = YES;
+  } else if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
+    segmentation_platform::ClassificationResult result =
+        self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
+    if (result.status == segmentation_platform::PredictionStatus::kSucceeded) {
+      // TODO(crbug.com/1467244): Check if result IsSafariSwitcher.
+    }
+  }
+
+  self.prefService->SetDefaultPrefValue(
+      prefs::kBottomOmnibox, base::Value(bottomOmniboxEnabledByDefault));
 }
 
 @end
