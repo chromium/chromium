@@ -106,7 +106,10 @@ int g_num_monitors = 0;
 bool g_system_hdr_enabled = false;
 
 // Per-monitor HDR capability
-std::set<HMONITOR> g_hdr_monitors = {};
+std::set<HMONITOR>* GetHDRMonitors() {
+  static base::NoDestructor<std::set<HMONITOR>> hdr_monitors;
+  return hdr_monitors.get();
+}
 
 // Global direct composition device.
 IDCompositionDevice3* g_dcomp_device = nullptr;
@@ -439,11 +442,11 @@ void UpdateMonitorInfo() {
     g_primary_monitor_size = gfx::Size();
   }
 
-  g_hdr_monitors.clear();
+  GetHDRMonitors()->clear();
   g_system_hdr_enabled = false;
   for (const auto& desc : GetDirectCompositionOutputDescs()) {
     if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020) {
-      g_hdr_monitors.insert(desc.Monitor);
+      GetHDRMonitors()->insert(desc.Monitor);
       g_system_hdr_enabled = true;
     }
   }
@@ -640,8 +643,8 @@ bool DirectCompositionMonitorHDREnabled(HWND window) {
     UpdateMonitorInfo();
   }
 
-  return g_hdr_monitors.find(MonitorFromWindow(
-             window, MONITOR_DEFAULTTONEAREST)) != g_hdr_monitors.end();
+  return GetHDRMonitors()->find(MonitorFromWindow(
+             window, MONITOR_DEFAULTTONEAREST)) != GetHDRMonitors()->end();
 }
 
 DXGI_FORMAT GetDirectCompositionSDROverlayFormat() {
