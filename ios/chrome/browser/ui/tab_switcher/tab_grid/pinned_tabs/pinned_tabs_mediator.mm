@@ -461,6 +461,16 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
       int tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
                                             /*pin_state=*/YES);
       if (tabIndex == WebStateList::kInvalidIndex) {
+        BrowserList* browserList =
+            BrowserListFactory::GetForBrowserState(self.browserState);
+        BrowserAndIndex tabBrowserAndIndex = FindBrowserAndIndex(
+            tabInfo.tabID, browserList->AllRegularBrowsers());
+        if (!tabBrowserAndIndex.browser) {
+          // This could happen if the tab is deleted during a drag-and-drop
+          // action.
+          return;
+        }
+
         // Move tab across Browsers.
         base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
                                       DragItemOrigin::kOtherBrwoser);
