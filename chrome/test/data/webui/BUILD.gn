@@ -50,6 +50,10 @@ source_set("browser_tests") {
     "whats_new/whats_new_browsertest.cc",
   ]
 
+  if (is_chrome_branded) {
+    sources += [ "media_router/cast_feedback_ui_browsertest.cc" ]
+  }
+
   if (enable_dice_support) {
     sources += [ "welcome/welcome_browsertest.cc" ]
   }
@@ -177,10 +181,6 @@ if (include_js_tests) {
       "//services/network/public/cpp",
       "//skia",
     ]
-
-    if (is_chrome_branded) {
-      sources += [ "media_router/cast_feedback_ui_browsertest.js" ]
-    }
 
     if (use_nss_certs) {
       deps +=
