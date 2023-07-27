@@ -26,7 +26,7 @@ The main differences between `run_web_tests.py` and `wptrunner` are that:
 
 [WebDriver]: https://www.w3.org/TR/webdriver/
 [protocol mode]: /content/web_test/browser/test_info_extractor.h
-[internal APIs]: writing_web_tests.md#Relying-on-Blink-Specific-Testing-APIs
+[internal APIs]: writing_web_tests.md#Relying-on-Blink_Specific-Testing-APIs
 
 ## Running Tests Locally
 
@@ -205,9 +205,9 @@ crbug.com/3 external/wpt/a/reftest.html [ Pass Timeout ]
         * For convenience, `wptrunner` expects `OK` or `PASS` when `expected` is
           omitted.
           Deleting the entire metadata file implies an all-`PASS` test.
-      * `disabled`: Any nonempty value will skip the test or ignore the subtest
-        result. By convention, `disabled` should contain the reason the (sub)test
-        is disabled, with the literal `neverfix` for [`NeverFixTests`][13].
+    * `disabled`: Any nonempty value will skip the test or ignore the subtest
+      result. By convention, `disabled` should contain the reason the (sub)test
+      is disabled, with the literal `neverfix` for [`NeverFixTests`][13].
 * `#` starts a comment that extends to the end of the line.
 
 *** note
