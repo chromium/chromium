@@ -6,36 +6,36 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets_conversions.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
@@ -60,7 +60,8 @@ constexpr auto kBorderInsets = gfx::Insets::TLBR(
     kBorderThickness);
 
 // This border paints the toolbar color around the side panel content and draws
-// a roundrect viewport around the side panel content.
+// a roundrect viewport around the side panel content. The border can have
+// rounded corners of its own.
 class SidePanelBorder : public views::Border {
  public:
   explicit SidePanelBorder(BrowserView* browser_view)
@@ -70,6 +71,9 @@ class SidePanelBorder : public views::Border {
   SidePanelBorder& operator=(const SidePanelBorder&) = delete;
 
   void SetHeaderHeight(int height) { header_height_ = height; }
+  void SetBorderRadii(const gfx::RoundedCornersF& radii) {
+    border_radii_ = radii;
+  }
 
   // views::Border:
   void Paint(const views::View& view, gfx::Canvas* canvas) override {
@@ -79,21 +83,43 @@ class SidePanelBorder : public views::Border {
     gfx::ScopedCanvas scoped_unscale(canvas);
     float dsf = canvas->UndoDeviceScaleFactor();
 
-    gfx::RectF scaled_bounds = gfx::ConvertRectToPixels(
+    const gfx::RectF scaled_view_bounds_f = gfx::ConvertRectToPixels(
         view.GetLocalBounds(), view.layer()->device_scale_factor());
 
+    gfx::RectF scaled_contents_bounds_f = scaled_view_bounds_f;
     const float corner_radius = view.GetLayoutProvider()->GetCornerRadiusMetric(
         views::ShapeContextTokens::kSidePanelContentRadius);
-    gfx::InsetsF insets_in_pixels(gfx::ConvertInsetsToPixels(GetInsets(), dsf));
-    scaled_bounds.Inset(insets_in_pixels);
+    const gfx::InsetsF insets_in_pixels(
+        gfx::ConvertInsetsToPixels(GetInsets(), dsf));
+    scaled_contents_bounds_f.Inset(insets_in_pixels);
+
     // Use ToEnclosedRect to make sure that the clip bounds never end up larger
     // than the child view.
-    gfx::Rect clip_bounds = ToEnclosedRect(scaled_bounds);
+    gfx::Rect clip_bounds = ToEnclosedRect(scaled_contents_bounds_f);
     SkRRect rect = SkRRect::MakeRectXY(gfx::RectToSkRect(clip_bounds),
                                        corner_radius, corner_radius);
 
     // Clip out the content area from the background about to be painted.
-    canvas->sk_canvas()->clipRRect(rect, SkClipOp::kDifference, true);
+    canvas->sk_canvas()->clipRRect(rect, SkClipOp::kDifference,
+                                   /*do_anti_alias=*/true);
+
+    const SkScalar radii[8] = {
+        border_radii_.upper_left(),  border_radii_.upper_left(),
+        border_radii_.upper_right(), border_radii_.upper_right(),
+        border_radii_.lower_right(), border_radii_.lower_right(),
+        border_radii_.lower_left(),  border_radii_.lower_left()};
+
+    // Use ToEnclosedRect to make sure that `rounded_border_path` never end up
+    // larger than the view bounds.
+    const gfx::Rect scaled_view_bounds = ToEnclosedRect(scaled_view_bounds_f);
+
+    SkPath rounded_border_path;
+    rounded_border_path.addRoundRect(gfx::RectToSkRect(scaled_view_bounds),
+                                     radii, SkPathDirection::kCW);
+
+    // Add another clip to the canvas that rounds the outer corners of the
+    // border.
+    canvas->ClipPath(rounded_border_path, /*do_anti_alias=*/true);
 
     // Draw the top-container background.
     {
@@ -140,6 +166,7 @@ class SidePanelBorder : public views::Border {
 
  private:
   int header_height_ = 0;
+  gfx::RoundedCornersF border_radii_;
   const raw_ptr<BrowserView> browser_view_;
 };
 
@@ -158,6 +185,10 @@ class BorderView : public views::View {
   void HeaderViewChanged(views::View* header_view) {
     border_->SetHeaderHeight(
         header_view ? header_view->GetPreferredSize().height() : 0);
+  }
+
+  void SetBorderRadii(const gfx::RoundedCornersF& radii) {
+    border_->SetBorderRadii(radii);
   }
 
   void Layout() override {
@@ -217,6 +248,18 @@ SidePanel::~SidePanel() {
 void SidePanel::SetPanelWidth(int width) {
   // Only the width is used by BrowserViewLayout.
   SetPreferredSize(gfx::Size(width, 1));
+}
+
+void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  if (radii == background_radii_) {
+    return;
+  }
+  background_radii_ = radii;
+
+  // Since the border_view paints the background, by adding rounded
+  // corners to border will paint a rounded background for the side panel.
+  static_cast<BorderView*>(border_view_)->SetBorderRadii(background_radii_);
+  SchedulePaint();
 }
 
 void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
