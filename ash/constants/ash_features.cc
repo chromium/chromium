@@ -1885,6 +1885,12 @@ BASE_FEATURE(kPasswordlessGaiaForConsumers,
              "PasswordlessGaiaForConsumers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature allows the user to select between setup the local password and
+// Gaia password after the passwordless sign-in in OOBE.
+BASE_FEATURE(kPasswordSelectionInOobe,
+             "PasswordSelectionInOobe",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
 // TODO(crbug/1254930): Revisit this flag when there is a way to query billboard
@@ -3573,6 +3579,11 @@ bool IsPasspointSettingsEnabled() {
 
 bool IsPasswordlessGaiaEnabledForConsumers() {
   return base::FeatureList::IsEnabled(kPasswordlessGaiaForConsumers);
+}
+
+bool IsPasswordSelectionEnabledInOobe() {
+  return base::FeatureList::IsEnabled(kPasswordSelectionInOobe) &&
+         AreLocalPasswordsEnabledForConsumers();
 }
 
 bool IsPcieBillboardNotificationEnabled() {
