@@ -123,7 +123,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
             absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 absl::nullopt);
 
-  views::View* GetContentView() const;
+  views::View* GetContentContainerView() const;
 
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
   // not registered in the currently observed registries. This looks through the
