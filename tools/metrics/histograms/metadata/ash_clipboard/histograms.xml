@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Ash.Clipboard.ConsecutiveCopies" units="times"
-    expires_after="2023-08-27">
+    expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -140,23 +140,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.ClipboardHistory.ControlToVDelay" units="ms"
-    expires_after="2023-08-27">
-  <obsolete>
-    Replaced by version 2 in 10/22. This histogram can be deleted when M109
-    reaches stable.
-  </obsolete>
-  <owner>ckincaid@chromium.org</owner>
-  <owner>multipaste@google.com</owner>
-  <summary>
-    The time between a user's Ctrl key press and the user's V key press when
-    pasting via keyboard. Recorded when V is pressed. Only recorded for the
-    first V press in a sequence. Sample scenario: User holds Ctrl, waits 200ms,
-    presses V (histogram entry recorded), and presses V again without releasing
-    Ctrl (no histogram entry recorded).
-  </summary>
-</histogram>
-
 <histogram name="Ash.ClipboardHistory.ControlToVDelayV2" units="ms"
     expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
@@ -220,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ShownCount"
-    enum="BooleanHit" expires_after="2023-08-27">
+    enum="BooleanHit" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -241,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}Time"
-    units="seconds" expires_after="2023-08-27">
+    units="seconds" expires_after="2024-01-14">
   <obsolete>
     Replaced by version 2 in January 2023. This histogram can be deleted once
     the new version has enough stable channel data.
@@ -266,7 +249,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}TimeV2"
-    units="seconds" expires_after="2023-08-27">
+    units="seconds" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -333,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ReorderType"
-    enum="ClipboardHistoryReorderType" expires_after="2023-12-04">
+    enum="ClipboardHistoryReorderType" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -343,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive"
-    enum="BooleanActive" expires_after="2023-11-12">
+    enum="BooleanActive" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -354,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.UrlTitleFetcher.NumProfiles"
-    units="count" expires_after="2023-11-12">
+    units="count" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -365,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.UrlTitleFetcher.UrlFound"
-    enum="BooleanHit" expires_after="2023-11-12">
+    enum="BooleanHit" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
