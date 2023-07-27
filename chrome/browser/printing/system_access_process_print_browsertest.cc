@@ -2699,20 +2699,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     // 3.  Rendering for 1 page of document of content.
     // 4.  Completes with document done.
     // 5.  Wait for the one print job to be destroyed, to ensure printing
-    //    finished cleanly before completing the test.
+    //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/5);
     PrintAfterPreviewIsReadyAndLoaded();
   } else {
     print_view_manager->set_on_print_preview_done_closure(base::BindOnce(
         &ContentAnalysisBeforePrintPreviewBrowserTest::CheckForQuit,
         base::Unretained(this)));
-#if BUILDFLAG(IS_WIN)
     // Expect an extra message for the print job created after content
     // analysis to be destroyed.
     SetNumExpectedMessages(/*num=*/ContentAnalysisAllowsPrint() ? 2 : 1);
-#else
-    SetNumExpectedMessages(/*num=*/1);
-#endif
     PrintAfterPreviewIsReadyAndLoaded();
   }
 
