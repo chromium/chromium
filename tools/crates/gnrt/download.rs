@@ -13,12 +13,35 @@ use std::process;
 
 use anyhow::{Context, Result};
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum SecurityCritical {
+    Yes,
+    No,
+}
+impl From<bool> for SecurityCritical {
+    fn from(b: bool) -> Self {
+        if b { Self::Yes } else { Self::No }
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum Shipped {
+    Yes,
+    No,
+}
+impl From<bool> for Shipped {
+    fn from(b: bool) -> Self {
+        if b { Self::Yes } else { Self::No }
+    }
+}
+
 /// Runs the download subcommand, which downloads a crate from crates.io and
 /// unpacks it into the Chromium tree.
 pub fn download(
     name: &str,
     version: semver::Version,
-    security: bool,
+    security: SecurityCritical,
+    shipped: Shipped,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
     let vendored_crate = crates::VendoredCrate { name: name.into(), version: version.clone() };
@@ -95,7 +118,7 @@ pub fn download(
         }
     });
 
-    let readme = gen_readme_chromium_text(&cargo, readme_license, githash, security);
+    let readme = gen_readme_chromium_text(&cargo, readme_license, githash, security, shipped);
     std::fs::write(build_path.join("README.chromium"), readme)
         .expect("Failed to write README.chromium");
 
@@ -109,9 +132,11 @@ fn gen_readme_chromium_text(
     manifest: &CargoManifest,
     license: &str,
     githash: Option<&str>,
-    security: bool,
+    security: SecurityCritical,
+    shipped: Shipped,
 ) -> String {
-    let security = if security { "yes" } else { "no" };
+    let security = if security == SecurityCritical::Yes { "yes" } else { "no" };
+    let shipped = if shipped == Shipped::Yes { "yes" } else { "no" };
 
     let revision = githash.map_or_else(String::new, |s| format!("Revision: {s}\n"));
 
@@ -121,6 +146,7 @@ fn gen_readme_chromium_text(
          Description: {description}\n\
          Version: {version}\n\
          Security Critical: {security}\n\
+         Shipped: {shipped}\n\
          License: {license}\n\
          {revision}",
         crate_name = manifest.package.name,

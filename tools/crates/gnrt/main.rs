@@ -73,6 +73,13 @@ fn main() -> Result<()> {
                     )
                     .value_parser(["yes", "no"])
                     .required(true),
+                )
+                .arg(
+                    arg!(--"shipped" <YESNO> "Whether the crate contributes to code shipped to \
+                        users."
+                    )
+                    .value_parser(["yes", "no"])
+                    .required(true),
                 ),
         )
         .get_matches();
@@ -82,10 +89,14 @@ fn main() -> Result<()> {
     match args.subcommand() {
         Some(("gen", args)) => gen::generate(args, &paths),
         Some(("download", args)) => {
-            let security = args.get_one::<String>("security-critical").unwrap() == "yes";
+            let security = download::SecurityCritical::from(
+                args.get_one::<String>("security-critical").unwrap() == "yes",
+            );
+            let shipped =
+                download::Shipped::from(args.get_one::<String>("shipped").unwrap() == "yes");
             let name = args.get_one::<String>("name").unwrap();
             let version = args.get_one::<semver::Version>("version").unwrap().clone();
-            download::download(name, version, security, &paths)
+            download::download(name, version, security, shipped, &paths)
         }
         _ => unreachable!("Invalid subcommand"),
     }
