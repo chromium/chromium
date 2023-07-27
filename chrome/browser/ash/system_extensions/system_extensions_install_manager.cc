@@ -182,13 +182,12 @@ void SystemExtensionsInstallManager::Uninstall(
     return;
   }
 
-  const url::Origin& origin = url::Origin::Create(system_extension->base_url);
-
   // Uninstallation Step #1: Unregister the Service Worker.
   service_worker_manager_->UnregisterServiceWorker(system_extension_id);
 
   // Uninstallation Step #2: Remove the WebUIConfig for the System Extension.
-  content::WebUIConfigMap::GetInstance().RemoveConfig(origin);
+  content::WebUIConfigMap::GetInstance().RemoveConfig(
+      system_extension->base_url);
 
   // Installation Step #3: Remove the System Extension from persistent storage.
   persistent_storage_->Remove(system_extension_id);
