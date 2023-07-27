@@ -2098,7 +2098,16 @@ TEST_F(MenuControllerTest, AsynchronousRepostEventDeletesController) {
 
 // Tests that having the MenuController deleted during OnGestureEvent does not
 // cause a crash. ASAN bots should not detect use-after-free in MenuController.
-TEST_F(MenuControllerTest, AsynchronousGestureDeletesController) {
+//
+// TODO(https://crbug.com/1468172): Failing on Win11.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AsynchronousGestureDeletesController \
+  DISABLED_AsynchronousGestureDeletesController
+#else
+#define MAYBE_AsynchronousGestureDeletesController \
+  AsynchronousGestureDeletesController
+#endif
+TEST_F(MenuControllerTest, MAYBE_AsynchronousGestureDeletesController) {
   views::test::DisableMenuClosureAnimations();
   MenuController* controller = menu_controller();
   std::unique_ptr<TestMenuControllerDelegate> nested_delegate(
