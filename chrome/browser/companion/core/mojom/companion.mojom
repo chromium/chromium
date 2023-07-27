@@ -42,6 +42,9 @@ enum MethodType {
   // Method corresponding to `CompanionPageHandler.OpenUrlInBrowser`.
   kOpenUrlInBrowser = 10,
 
+  // Method corresponding to `CompanionPageHandler.UpdateLoadingState`.
+  kCompanionLoadingState = 11,
+
   // Methods used in browser -> renderer communication.
   // Method corresponding to `CompanionPage.UpdateCompanionPage`.
   kUpdateCompanionPage = 31,
@@ -71,6 +74,20 @@ enum PromoType {
 
   // IPH about region search capability.
   kRegionSearchIPH = 4,
+};
+
+// Loading states currently in the Companion UI.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts
+enum LoadingState {
+  // The companion is not yet loaded, iFrame not ready for post messages.
+  kNotStartedLoading = 1,
+
+  // The companion has started loading, iFrame ready to handle post messages.
+  kStartedLoading = 2,
+
+  // The companion is done loading, iFrame will drop incoming post messages.
+  kFinishedLoading = 3,
 };
 
 // User actions taken on a promo.
@@ -233,6 +250,9 @@ interface CompanionPageHandler {
   // Generic method that can be used to open a URL in the browser. Ignored if
   // `url_to_open` is invalid.
   OpenUrlInBrowser(url.mojom.Url? url_to_open, bool use_new_tab);
+
+  // Called to update the browser with the appropriate companion loading state.
+  OnLoadingState(LoadingState state);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
