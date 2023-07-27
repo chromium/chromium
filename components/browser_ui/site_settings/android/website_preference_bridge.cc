@@ -29,6 +29,7 @@
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
+#include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -68,6 +69,7 @@ using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserContext;
 using content::BrowserThread;
+using content_settings::CookieControlsUtil;
 
 namespace {
 
@@ -972,10 +974,16 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
                static_cast<ContentSettingsType>(content_settings_type))) {
     std::string origin = entry.primary_pattern.ToString();
     seen_origins.push_back(origin);
+    auto hasExpiration = entry.metadata.expiration().is_null();
+    auto expirationInDays = hasExpiration
+                                ? CookieControlsUtil::GetDaysToExpiration(
+                                      entry.metadata.expiration())
+                                : -1;
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
         env, list, content_settings_type, ConvertUTF8ToJavaString(env, origin),
         ConvertUTF8ToJavaString(env, entry.secondary_pattern.ToString()),
         entry.GetContentSetting(), ConvertUTF8ToJavaString(env, entry.source),
+        hasExpiration, expirationInDays,
         /*is_embargoed=*/false);
   }
 
@@ -995,7 +1003,8 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
         env, list, content_settings_type,
         ConvertUTF8ToJavaString(env, embargoed_origin_pattern), jembedder,
         CONTENT_SETTING_BLOCK, /*source=*/ScopedJavaLocalRef<jstring>(),
-        /*is_embargoed=*/true);
+        /*isTemporary=*/false,
+        /*expiration=*/0, /*is_embargoed=*/true);
   }
 }
 

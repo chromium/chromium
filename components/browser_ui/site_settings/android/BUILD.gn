@@ -27,6 +27,7 @@ source_set("android") {
     "//base",
     "//components/browsing_data/content",
     "//components/cdm/browser",
+    "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/permissions",
     "//components/subresource_filter/android",

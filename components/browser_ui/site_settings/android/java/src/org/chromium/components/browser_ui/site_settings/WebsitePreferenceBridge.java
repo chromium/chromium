@@ -203,10 +203,12 @@ public class WebsitePreferenceBridge {
     @CalledByNative
     private static void addContentSettingExceptionToList(ArrayList<ContentSettingException> list,
             @ContentSettingsType int contentSettingsType, String primaryPattern,
-            String secondaryPattern, int contentSetting, String source, boolean isEmbargoed) {
+            String secondaryPattern, int contentSetting, String source, final boolean hasExpiration,
+            final int expirationInDays, boolean isEmbargoed) {
         String nonNullSource = (source == null) ? "" : source;
         ContentSettingException exception = new ContentSettingException(contentSettingsType,
-                primaryPattern, secondaryPattern, contentSetting, nonNullSource, isEmbargoed);
+                primaryPattern, secondaryPattern, contentSetting, nonNullSource,
+                hasExpiration ? expirationInDays : null, isEmbargoed);
         list.add(exception);
     }
 

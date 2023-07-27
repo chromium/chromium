@@ -71,6 +71,11 @@ public interface SiteSettingsDelegate {
     boolean isPrivacySandboxSettings4Enabled();
 
     /**
+     * @return true if the UserBypassUI feature is enabled.
+     */
+    boolean isUserBypassUIEnabled();
+
+    /**
      * @return The id of the notification channel associated with the given origin.
      */
     // TODO(crbug.com/1069895): Remove this once WebLayer supports notifications.

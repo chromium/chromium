@@ -102,6 +102,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &commerce::kShoppingList,
     &commerce::kShoppingPDPMetrics,
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
+    &content_settings::features::kUserBypassUI,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
     &features::kPWAsDefaultOfflinePage,

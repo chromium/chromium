@@ -103,7 +103,9 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
 
     public String getTitle() {
         if (mOrigin == null) return mHost;
-        return UrlFormatter.formatUrlForSecurityDisplay(mOrigin,
+        return UrlFormatter.formatUrlForSecurityDisplay(mOrigin.contains(ANY_SUBDOMAIN_PATTERN)
+                        ? mOrigin.replace(ANY_SUBDOMAIN_PATTERN, "")
+                        : mOrigin,
                 mOmitProtocolAndPort ? SchemeDisplay.OMIT_HTTP_AND_HTTPS : SchemeDisplay.SHOW);
     }
 

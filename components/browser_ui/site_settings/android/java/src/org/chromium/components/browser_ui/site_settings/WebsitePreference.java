@@ -18,6 +18,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -76,7 +77,9 @@ class WebsitePreference extends ChromeImageViewPreference {
      */
     private GURL faviconUrl() {
         String origin = mSite.getMainAddress().getOrigin();
-        GURL uri = new GURL(origin);
+        GURL uri = new GURL(origin.contains(WebsiteAddress.ANY_SUBDOMAIN_PATTERN)
+                        ? origin.replace(WebsiteAddress.ANY_SUBDOMAIN_PATTERN, "")
+                        : origin);
         return UrlUtilities.clearPort(uri);
     }
 
@@ -104,17 +107,29 @@ class WebsitePreference extends ChromeImageViewPreference {
             }
             return;
         }
-        String subtitleText;
-        if (mSite.representsThirdPartiesOnSite()) {
-            subtitleText = getContext().getString(
-                    R.string.website_settings_third_party_cookies_exception_label);
-        } else {
-            subtitleText =
-                    String.format(getContext().getString(R.string.website_settings_embedded_on),
-                            mSite.getEmbedder().getTitle());
+
+        if (!mSiteSettingsDelegate.isPrivacySandboxSettings4Enabled()) {
+            String subtitleText;
+            if (mSite.representsThirdPartiesOnSite()) {
+                subtitleText = getContext().getString(
+                        R.string.website_settings_third_party_cookies_exception_label);
+            } else {
+                subtitleText =
+                        String.format(getContext().getString(R.string.website_settings_embedded_on),
+                                mSite.getEmbedder().getTitle());
+            }
+            setSummary(subtitleText);
         }
 
-        setSummary(subtitleText);
+        if (mSiteSettingsDelegate.isUserBypassUIEnabled()
+                && mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
+            if (exception != null && exception.hasExpiration()) {
+                var expirationInDays = exception.getExpirationInDays();
+                setSummary(getContext().getResources().getQuantityString(
+                        R.plurals.site_settings_expires_label, expirationInDays, expirationInDays));
+            }
+        }
     }
 
     @Override
@@ -148,7 +163,7 @@ class WebsitePreference extends ChromeImageViewPreference {
         ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
         FaviconViewUtils.formatIconForFavicon(getContext().getResources(), icon);
 
-        if (!mFaviconFetched) {
+        if (!mFaviconFetched && faviconUrl().isValid()) {
             // Start the favicon fetching. Will respond in onFaviconAvailable.
             mSiteSettingsDelegate.getFaviconImageForURL(faviconUrl(), this::onFaviconAvailable);
             mFaviconFetched = true;

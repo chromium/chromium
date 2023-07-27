@@ -83,6 +83,11 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
+    public boolean isUserBypassUIEnabled() {
+        return false;
+    }
+
+    @Override
     public String getChannelIdForOrigin(String origin) {
         return null;
     }
