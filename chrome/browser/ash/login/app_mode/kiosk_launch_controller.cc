@@ -179,7 +179,6 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
             /*should_skip_install=*/false, network_delegate);
       }
   }
-  NOTREACHED();
 }
 
 base::TimeDelta GetSplashScreenMinTime() {
@@ -202,12 +201,6 @@ base::TimeDelta GetSplashScreenMinTime() {
   }
 
   return base::Seconds(min_time_in_seconds);
-}
-
-template <class T>
-void DeleteSoon(std::unique_ptr<T> pointer) {
-  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-      FROM_HERE, std::move(pointer));
 }
 
 // Returns network name by service path.
@@ -502,7 +495,6 @@ void KioskLaunchController::CleanUp() {
   DCHECK(!cleaned_up_);
   cleaned_up_ = true;
 
-  network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
 
   splash_screen_view_ = nullptr;

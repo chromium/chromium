@@ -64,7 +64,7 @@ class ScopedCanConfigureNetwork {
 
  private:
   const bool can_configure_;
-  KioskLaunchController::ReturnBoolCallback can_configure_network_callback_;
+  base::RepeatingCallback<bool()> can_configure_network_callback_;
 };
 
 }  // namespace ash
