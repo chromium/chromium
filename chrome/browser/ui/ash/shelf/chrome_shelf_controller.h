@@ -77,7 +77,7 @@ class ChromeShelfController
   static const int kInvalidIndex = -1;
 
   // Returns the single ChromeShelfController instance.
-  static ChromeShelfController* instance() { return instance_; }
+  static ChromeShelfController* instance();
 
   ChromeShelfController(Profile* profile,
                         ash::ShelfModel* model,
@@ -90,9 +90,6 @@ class ChromeShelfController
 
   Profile* profile() const { return profile_; }
   ash::ShelfModel* shelf_model() const { return model_; }
-  ChromeShelfItemFactory* shelf_item_factory() const {
-    return shelf_item_factory_;
-  }
 
   AppServiceAppWindowShelfController* app_service_app_window_controller() {
     return app_service_app_window_controller_;
@@ -144,12 +141,6 @@ class ChromeShelfController
   // Returns true if the specified item is open.
   bool IsOpen(const ash::ShelfID& id) const;
 
-  // Returns true if the specified item is for a platform app.
-  bool IsPlatformApp(const ash::ShelfID& id);
-
-  // Whether the user has permission to modify the given app's settings.
-  bool UninstallAllowed(const std::string& app_id);
-
   // Opens a new instance of the application identified by the ShelfID.
   // Used by the app-list, and by pinned-app shelf items. |display_id| is id of
   // the display from which the app is launched.
@@ -174,14 +165,6 @@ class ChromeShelfController
   // web page (see IDC_CREATE_SHORTCUT).
   void UpdateV1AppState(const std::string& app_id);
 
-  // Returns associated app ID for |contents|. If |contents| is not an app,
-  // returns the browser app id.
-  std::string GetAppIDForWebContents(content::WebContents* contents);
-
-  // Returns ShelfID for |app_id|. If |app_id| is empty, or the app is not
-  // pinned, returns the id of browser shrotcut.
-  ash::ShelfID GetShelfIDForAppId(const std::string& app_id) const;
-
   // Activates a |window|. If |allow_minimize| is true and the system allows
   // it, the the window will get minimized instead.
   // Returns the action performed. Should be one of SHELF_ACTION_NONE,
@@ -201,9 +184,6 @@ class ChromeShelfController
 
   // Get the list of all ARC app windows.
   std::vector<aura::Window*> GetArcWindows();
-
-  // Activates a specified shell application by app id and window index.
-  void ActivateShellApp(const std::string& app_id, int window_index);
 
   // Checks if a given |web_contents| is known to be associated with an
   // application of type |app_id|.
@@ -241,17 +221,6 @@ class ChromeShelfController
   // Temporarily prevent pinned shelf item changes from updating the sync model.
   using ScopedPinSyncDisabler = std::unique_ptr<base::AutoReset<bool>>;
   ScopedPinSyncDisabler GetScopedPinSyncDisabler();
-
-  // Access to the BrowserStatusMonitor for tests.
-  BrowserStatusMonitor* browser_status_monitor_for_test() {
-    return browser_status_monitor_.get();
-  }
-
-  // Access to the AppWindowShelfController list for tests.
-  const std::vector<std::unique_ptr<AppWindowShelfController>>&
-  app_window_controllers_for_test() {
-    return app_window_controllers_;
-  }
 
   // Sets ShelfControllerHelper or AppIconLoader for test, taking ownership.
   void SetShelfControllerHelperForTest(
@@ -320,9 +289,6 @@ class ChromeShelfController
       int index,
       ash::ShelfItemType shelf_item_type,
       const std::u16string& title = std::u16string());
-
-  // Returns the shelf prefs owned by this instance.
-  ChromeShelfPrefs* shelf_prefs() { return shelf_prefs_.get(); }
 
  private:
   friend class ChromeShelfControllerTestBase;
@@ -395,9 +361,6 @@ class ChromeShelfController
   // Create the Chrome browser shortcut ShelfItem.
   void CreateBrowserShortcutItem(bool pinned);
 
-  // Finds the index of where to insert the next item.
-  int FindInsertionPoint();
-
   // Close all windowed V1 applications of a certain extension which was already
   // deleted.
   void CloseWindowedAppsFromRemovedExtension(const std::string& app_id,
@@ -447,8 +410,6 @@ class ChromeShelfController
 
   // Resolves the app icon image loader for the app.
   AppIconLoader* GetAppIconLoaderForApp(const std::string& app_id);
-
-  static ChromeShelfController* instance_;
 
   // The currently loaded profile used for prefs and loading extensions. This is
   // NOT necessarily the profile new windows are created with. Note that in

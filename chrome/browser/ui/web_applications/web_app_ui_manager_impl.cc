@@ -234,7 +234,7 @@ bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(const AppId& app_id) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeShelfController does not exist in unit tests.
   if (auto* controller = ChromeShelfController::instance()) {
-    return IsAppWithIDPinnedToShelf(app_id);
+    return controller->shelf_model()->IsAppPinned(app_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return false;

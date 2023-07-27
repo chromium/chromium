@@ -654,7 +654,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     ash::ShelfID id = shelf_controller_->InsertAppItem(
         std::move(controller), ash::STATUS_RUNNING, model_->item_count(),
         ash::TYPE_APP);
-    DCHECK(shelf_controller_->IsPlatformApp(id));
+    ASSERT_TRUE(IsPlatformApp(id));
   }
 
   // Sets the stage for a multi user test.
@@ -981,8 +981,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         result.append(", ");
       switch (model_->items()[i].type) {
         case ash::TYPE_APP: {
-          if (shelf_controller_->IsPlatformApp(model_->items()[i].id))
+          if (IsPlatformApp(model_->items()[i].id)) {
             result += "*";
+          }
           const std::string& app = model_->items()[i].id.app_id;
           EXPECT_FALSE(shelf_controller_->IsAppPinned(app));
           if (app == extension1_->id()) {
@@ -1011,8 +1012,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
           break;
         }
         case ash::TYPE_PINNED_APP: {
-          if (shelf_controller_->IsPlatformApp(model_->items()[i].id))
+          if (IsPlatformApp(model_->items()[i].id)) {
             result += "*";
+          }
           const std::string& app = model_->items()[i].id.app_id;
           EXPECT_TRUE(shelf_controller_->IsAppPinned(app));
           if (app == extension1_->id()) {
@@ -1353,6 +1355,14 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
+
+  bool IsPlatformApp(const ash::ShelfID& id) const {
+    const extensions::Extension* extension =
+        GetExtensionForAppID(id.app_id, profile());
+    // An extension can be synced / updated at any time and therefore not be
+    // available.
+    return extension ? extension->is_platform_app() : false;
+  }
 
   // Needed for extension service & friends to work.
   scoped_refptr<Extension> extension_chrome_;

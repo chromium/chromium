@@ -117,6 +117,8 @@ using app_constants::kChromeAppId;
 
 namespace {
 
+ChromeShelfController* g_instance = nullptr;
+
 // Returns true if the given |item| has a pinned shelf item type.
 bool ItemTypeIsPinned(const ash::ShelfItem& item) {
   return ash::IsPinnedShelfItemType(item.type);
@@ -227,7 +229,9 @@ void ChromeShelfControllerUserSwitchObserver::AddUser(Profile* profile) {
 }
 
 // static
-ChromeShelfController* ChromeShelfController::instance_ = nullptr;
+ChromeShelfController* ChromeShelfController::instance() {
+  return g_instance;
+}
 
 ChromeShelfController::ChromeShelfController(Profile* profile,
                                              ash::ShelfModel* model,
@@ -235,8 +239,8 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
     : model_(model),
       shelf_item_factory_(creator),
       shelf_prefs_(std::make_unique<ChromeShelfPrefs>(profile)) {
-  DCHECK(!instance_);
-  instance_ = this;
+  DCHECK(!g_instance);
+  g_instance = this;
 
   CHECK(model_);
 
@@ -310,8 +314,7 @@ ChromeShelfController::~ChromeShelfController() {
   // Get rid of the multi user window manager instance.
   MultiUserWindowManagerHelper::DeleteInstance();
 
-  if (instance_ == this)
-    instance_ = nullptr;
+  g_instance = nullptr;
 }
 
 void ChromeShelfController::Init() {
@@ -448,24 +451,6 @@ bool ChromeShelfController::IsOpen(const ash::ShelfID& id) const {
   return item && item->status != ash::STATUS_CLOSED;
 }
 
-bool ChromeShelfController::IsPlatformApp(const ash::ShelfID& id) {
-  const extensions::Extension* extension =
-      GetExtensionForAppID(id.app_id, profile());
-  // An extension can be synced / updated at any time and therefore not be
-  // available.
-  return extension ? extension->is_platform_app() : false;
-}
-
-bool ChromeShelfController::UninstallAllowed(const std::string& app_id) {
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile())->GetInstalledExtension(
-          app_id);
-  const extensions::ManagementPolicy* policy =
-      extensions::ExtensionSystem::Get(profile())->management_policy();
-  return extension && policy->UserMayModifySettings(extension, nullptr) &&
-         !policy->MustRemainInstalled(extension, nullptr);
-}
-
 void ChromeShelfController::LaunchApp(const ash::ShelfID& id,
                                       ash::ShelfLaunchSource source,
                                       int event_flags,
@@ -532,23 +517,6 @@ void ChromeShelfController::UpdateV1AppState(const std::string& app_id) {
         SetShelfIDForBrowserWindowContents(browser, web_contents);
     }
   }
-}
-
-std::string ChromeShelfController::GetAppIDForWebContents(
-    content::WebContents* contents) {
-  std::string app_id = shelf_controller_helper_->GetAppID(contents);
-  if (!app_id.empty())
-    return app_id;
-
-  return kChromeAppId;
-}
-
-ash::ShelfID ChromeShelfController::GetShelfIDForAppId(
-    const std::string& app_id) const {
-  // If there is no dedicated app item, use the browser shortcut item.
-  const ash::ShelfItem* item =
-      !app_id.empty() ? GetItem(ash::ShelfID(app_id)) : nullptr;
-  return item ? item->id : ash::ShelfID(kChromeAppId);
 }
 
 ash::ShelfAction ChromeShelfController::ActivateWindowOrMinimizeIfActive(
@@ -626,18 +594,6 @@ std::vector<aura::Window*> ChromeShelfController::GetArcWindows() {
   if (app_service_app_window_controller_)
     return app_service_app_window_controller_->GetArcWindows();
   return std::vector<aura::Window*>();
-}
-
-void ChromeShelfController::ActivateShellApp(const std::string& app_id,
-                                             int window_index) {
-  const ash::ShelfItem* item = GetItem(ash::ShelfID(app_id));
-  if (item &&
-      (item->type == ash::TYPE_APP || item->type == ash::TYPE_PINNED_APP)) {
-    ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(item->id);
-    AppWindowShelfItemController* item_controller =
-        delegate->AsAppWindowShelfItemController();
-    item_controller->ActivateIndexedApp(window_index);
-  }
 }
 
 bool ChromeShelfController::IsWebContentHandledByApplication(
@@ -749,11 +705,16 @@ void ChromeShelfController::SetShelfIDForBrowserWindowContents(
     return;
   }
 
-  const std::string app_id = GetAppIDForWebContents(web_contents);
+  std::string app_id = shelf_controller_helper_->GetAppID(web_contents);
+  if (app_id.empty()) {
+    app_id = kChromeAppId;
+  }
+
   browser->window()->GetNativeWindow()->SetProperty(ash::kAppIDKey,
                                                     new std::string(app_id));
 
-  const ash::ShelfID shelf_id = GetShelfIDForAppId(app_id);
+  const ash::ShelfItem* item = GetItem(ash::ShelfID(app_id));
+  const ash::ShelfID shelf_id = item ? item->id : ash::ShelfID(kChromeAppId);
   browser->window()->GetNativeWindow()->SetProperty(
       ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
 }
@@ -1343,8 +1304,8 @@ bool ChromeShelfController::EnsureAppPinnedInModelAtIndex(
   // We need to create a new pin for a synced app.
   ash::ShelfItem item;
   std::unique_ptr<ash::ShelfItemDelegate> item_delegate;
-  if (!shelf_item_factory()->CreateShelfItemForAppId(app_id, &item,
-                                                     &item_delegate)) {
+  if (!shelf_item_factory_->CreateShelfItemForAppId(app_id, &item,
+                                                    &item_delegate)) {
     return false;
   }
 
@@ -1466,14 +1427,6 @@ void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
   }
 
   ReportUpdateShelfIconList(model_);
-}
-
-int ChromeShelfController::FindInsertionPoint() {
-  for (int i = model_->item_count() - 1; i > 0; --i) {
-    if (ItemTypeIsPinned(model_->items()[i]))
-      return i;
-  }
-  return 0;
 }
 
 void ChromeShelfController::CloseWindowedAppsFromRemovedExtension(

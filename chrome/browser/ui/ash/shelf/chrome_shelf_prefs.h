@@ -36,7 +36,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
 
   // Key for the dictionary entries in the prefs::kPinnedLauncherApps list
   // specifying the extension ID of the app to be pinned by that entry.
-  static const char kPinnedAppsPrefAppIDKey[];
+  static constexpr char kPinnedAppsPrefAppIDKey[] = "id";
 
   // All prefs must be registered early in the process lifecycle.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

@@ -197,8 +197,6 @@ bool IsOnlyPolicyPinned(app_list::AppListSyncableService::SyncItem* sync_item) {
 
 }  // namespace
 
-const char ChromeShelfPrefs::kPinnedAppsPrefAppIDKey[] = "id";
-
 ChromeShelfPrefs::ChromeShelfPrefs(Profile* profile) : profile_(profile) {}
 
 ChromeShelfPrefs::~ChromeShelfPrefs() = default;

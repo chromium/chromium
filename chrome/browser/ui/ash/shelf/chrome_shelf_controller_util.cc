@@ -197,10 +197,6 @@ void UnpinAppWithIDFromShelf(const std::string& app_id) {
   shelf_controller->shelf_model()->UnpinAppWithID(app_id);
 }
 
-bool IsAppWithIDPinnedToShelf(const std::string& app_id) {
-  return ChromeShelfController::instance()->shelf_model()->IsAppPinned(app_id);
-}
-
 apps::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
     ash::ShelfLaunchSource source) {
   switch (source) {

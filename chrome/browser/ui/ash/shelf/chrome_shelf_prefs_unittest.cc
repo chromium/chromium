@@ -152,15 +152,6 @@ class ChromeShelfPrefsTest : public testing::Test {
     profile_.reset();
   }
 
-  std::vector<std::string> StringsFromShelfIds(
-      const std::vector<ash::ShelfID>& shelf_ids) {
-    std::vector<std::string> results;
-    results.reserve(shelf_ids.size());
-    for (auto& shelf_id : shelf_ids)
-      results.push_back(shelf_id.app_id);
-    return results;
-  }
-
   void AddRegularUser(const std::string& email) {
     AccountId account_id = AccountId::FromUserEmail(email);
     auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
