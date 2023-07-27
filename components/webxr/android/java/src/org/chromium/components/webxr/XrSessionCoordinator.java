@@ -262,9 +262,9 @@ public class XrSessionCoordinator {
 
     @CalledByNative
     private void onNativeDestroy() {
-        // Native destructors should ends sessions before destroying the native XrSessionCoordinator
+        // Native destructors should end sessions before destroying the native XrSessionCoordinator
         // object.
-        assert sActiveSessionInstance == null : "unexpected active session in onNativeDestroy";
+        assert sActiveSessionInstance != this : "unexpected active session in onNativeDestroy";
 
         mNativeXrSessionCoordinator = 0;
     }
