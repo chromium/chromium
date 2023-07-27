@@ -18,6 +18,7 @@ import '../site_favicon.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -35,7 +36,7 @@ export interface StorageAccessSiteListEntryElement {
 }
 
 const StorageAccessSiteListEntryElementBase =
-    FocusRowMixin(SiteSettingsMixin(PolymerElement));
+    FocusRowMixin(SiteSettingsMixin(I18nMixin(PolymerElement)));
 
 export class StorageAccessSiteListEntryElement extends
     StorageAccessSiteListEntryElementBase {
@@ -114,6 +115,21 @@ export class StorageAccessSiteListEntryElement extends
     this.$.originList.get();
 
     this.scrollIntoViewIfNeeded();
+  }
+
+  private getResetAllButtonAriaLabel_() {
+    return this.i18n('storageAccessResetAll', this.model.displayName);
+  }
+
+  private getResetButtonAriaLabel_(item: StorageAccessEmbeddingException) {
+    return this.i18n(
+        'storageAccessResetSite', this.model.displayName,
+        item.embeddingDisplayName);
+  }
+
+  private getExpandButtonAriaLabel_() {
+    return this.expanded_ ? this.i18n('storageAccessCloseExpand') :
+                            this.i18n('storageAccessOpenExpand');
   }
 }
 

@@ -11,6 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {StorageAccessSiteException, StorageAccessSiteListEntryElement, ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createStorageAccessSiteException, createStorageAccessEmbeddingException} from './test_util.js';
@@ -220,5 +221,66 @@ suite('StorageAccessSiteListEntry', function() {
     assertEquals(
         exceptionStorageAccessOrigin.exceptions[0]!.embeddingOrigin, args[1]);
     assertEquals(ContentSettingsTypes.STORAGE_ACCESS, args[2]);
+  });
+
+  test('reset all aria-label', async function() {
+    await setUpEntry(exceptionStorageAccessOrigin);
+
+    const resetButton = testElement.$.resetAllButton;
+
+    // Validate reset button aria-label for top-row.
+    const expectedResetAllLabel =
+        loadTimeData.getStringF('storageAccessResetAll', origin);
+    assertEquals(expectedResetAllLabel, resetButton.getAttribute('aria-label'));
+  });
+
+  test('reset site aria-label', async function() {
+    await setUpEntry(exceptionStorageAccessOrigin);
+
+    // Validate reset button aria-label for nested-rows.
+    const collapseChild = testElement.$.originList.get();
+    assertTrue(!!collapseChild);
+    flush();
+
+    const resetFirstButton =
+        collapseChild.querySelector<HTMLElement>('#resetButton0');
+    assertTrue(!!resetFirstButton);
+    const resetSecondButton =
+        collapseChild.querySelector<HTMLElement>('#resetButton1');
+    assertTrue(!!resetSecondButton);
+
+    const expectedResetFirst = loadTimeData.getStringF(
+        'storageAccessResetSite', origin,
+        exceptionStorageAccessOrigin.exceptions[0]!.embeddingDisplayName);
+    assertEquals(
+        expectedResetFirst, resetFirstButton.getAttribute('aria-label'));
+
+    const expectedResetSecond = loadTimeData.getStringF(
+        'storageAccessResetSite', origin,
+        exceptionStorageAccessOrigin.exceptions[1]!.embeddingDisplayName);
+    assertEquals(
+        expectedResetSecond, resetSecondButton.getAttribute('aria-label'));
+  });
+
+  test('expand aria-label', async function() {
+    await setUpEntry(exceptionStorageAccessOrigin);
+
+    const expandButton =
+        testElement.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+
+    // Validate expand button aria-label when closed.
+    const expectedExpandOpenArialLabel =
+        loadTimeData.getString('storageAccessOpenExpand');
+    assertEquals(
+        expectedExpandOpenArialLabel, expandButton.getAttribute('aria-label'));
+
+    expandButton.click();
+
+    // Validate expand button aria-label when opened.
+    const expectedExpandCloseArialLabel =
+        loadTimeData.getString('storageAccessCloseExpand');
+    assertEquals(
+        expectedExpandCloseArialLabel, expandButton.getAttribute('aria-label'));
   });
 });

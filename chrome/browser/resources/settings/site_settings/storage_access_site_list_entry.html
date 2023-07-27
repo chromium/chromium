@@ -30,6 +30,7 @@
   <div class="list-item">
     <!-- Top row of the collapsible component that represents an origin. -->
     <cr-expand-button id="expandIcon" no-hover expanded="{{expanded_}}"
+        aria-label$="[[getExpandButtonAriaLabel_(expanded_)]]"
         focus-row-control focus-type="embedded-site">
       <div class="settings-row">
         <site-favicon url="[[model.origin]]"></site-favicon>
@@ -47,6 +48,7 @@
     <div class="row-aligned">
       <div class="separator"></div>
       <cr-icon-button id="resetAllButton" class="icon-delete-gray"
+          aria-label$="[[getResetAllButtonAriaLabel_(model.*)]]"
           on-click="onResetAllButtonClick_"
           focus-row-control focus-type="reset-all">
       </cr-icon-button>
@@ -85,6 +87,7 @@
               <div class="row-aligned">
                 <div class="separator"></div>
                 <cr-icon-button id="resetButton[[index]]"
+                    aria-label$="[[getResetButtonAriaLabel_(item, model.*)]]"
                     class="icon-delete-gray" on-click="onResetButtonClick_"
                     focus-row-control focus-type="reset">
                 </cr-icon-button>
