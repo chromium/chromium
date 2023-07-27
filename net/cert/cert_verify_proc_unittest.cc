@@ -1483,10 +1483,11 @@ TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
   CertVerifyResult verify_result;
   int error = Verify(cert_chain.get(), "tntpowerwashservices.com", flags,
                      CertificateList(), &verify_result);
-  EXPECT_THAT(error, IsOk()) << "This test relies on a real certificate that "
-                             << "expires on Aug 24 2024. If failing on/after "
-                             << "that date, please disable and file a bug "
-                             << "against mattm.";
+  EXPECT_THAT(error, IsOk())
+      << "This test relies on a real certificate that "
+      << "expires on Aug 24 2024. If failing on/after "
+      << "that date, please disable and file a bug "
+      << "against mattm. Current time: " << base::Time::Now();
   EXPECT_TRUE(verify_result.is_issued_by_known_root);
 #if BUILDFLAG(IS_MAC)
   if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN) {
