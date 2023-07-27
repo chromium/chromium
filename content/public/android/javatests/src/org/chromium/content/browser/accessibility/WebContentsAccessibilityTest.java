@@ -60,6 +60,8 @@ import static org.chromium.content.browser.accessibility.AccessibilityHistogramR
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_FORM_CONTROLS;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.USAGE_FOREGROUND_TIME;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.USAGE_NATIVE_INITIALIZED_TIME;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_CHROME_ROLE;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_IMAGE_DATA;
@@ -639,6 +641,26 @@ public class WebContentsAccessibilityTest {
                         .build();
 
         performHistogramActions();
+
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Test that UMA histograms are recorded when an instance has been in the foreground.
+     */
+    @Test
+    @SmallTest
+    public void testUMAHistograms_Usage() throws Throwable {
+        setupTestWithHTML("<p>This is a test</p>");
+
+        // Since the test suite always initializes native, we should see values for both histograms.
+        // Unknown test timing means we cannot know for sure if the always on histogram is recorded.
+        var histogramWatcher = HistogramWatcher.newBuilder()
+                                       .expectAnyRecord(USAGE_FOREGROUND_TIME)
+                                       .expectAnyRecord(USAGE_NATIVE_INITIALIZED_TIME)
+                                       .build();
+
+        mActivityTestRule.mWcax.forceRecordUsageUMAHistogramsForTesting();
 
         histogramWatcher.assertExpected();
     }

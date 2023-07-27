@@ -11,6 +11,8 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.accessibility.AccessibilityState;
 
+import java.util.Calendar;
+
 /**
  * Helper class for recording UMA histograms of accessibility events
  */
@@ -46,6 +48,15 @@ public class AccessibilityHistogramRecorder {
     public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC =
             "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.Basic";
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String USAGE_FOREGROUND_TIME = "Accessibility.Android.Usage.Foreground";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String USAGE_NATIVE_INITIALIZED_TIME =
+            "Accessibility.Android.Usage.NativeInit";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String USAGE_ACCESSIBILITY_ALWAYS_ON_TIME =
+            "Accessibility.Android.Usage.A11yAlwaysOn";
+
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -72,6 +83,10 @@ public class AccessibilityHistogramRecorder {
     private int mMaxNodesInCache;
     private int mNodeWasReturnedFromCache;
     private int mNodeWasCreatedFromScratch;
+
+    // These track the usage in time when a web contents is in the foreground.
+    private long mTimeOfFirstShown = -1;
+    private long mTimeOfNativeInitialization = -1;
 
     /**
      * Increment the count of enqueued events
@@ -110,9 +125,23 @@ public class AccessibilityHistogramRecorder {
     }
 
     /**
-     * Record UMA histograms for all tracked data
+     * Set the time this instance was shown to the current time in ms.
      */
-    public void recordHistograms() {
+    public void updateTimeOfFirstShown() {
+        mTimeOfFirstShown = Calendar.getInstance().getTimeInMillis();
+    }
+
+    /**
+     * Set the time this instance had native initialization called to the current time in ms.
+     */
+    public void updateTimeOfNativeInitialization() {
+        mTimeOfNativeInitialization = Calendar.getInstance().getTimeInMillis();
+    }
+
+    /**
+     * Record UMA histograms for performance-related accessibility metrics.
+     */
+    public void recordAccessibilityPerformanceHistograms() {
         // If the OnDemand feature is enabled, log UMA metrics and reset counters.
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             recordEventsHistograms();
@@ -123,7 +152,7 @@ public class AccessibilityHistogramRecorder {
     }
 
     /**
-     * Record UMA histograms for the event counts for the OnDemand feature
+     * Record UMA histograms for the event counts for the OnDemand feature.
      */
     public void recordEventsHistograms() {
         // To investigate whether adding more AXModes could be beneficial, track separate
@@ -186,7 +215,7 @@ public class AccessibilityHistogramRecorder {
     }
 
     /**
-     *  Record UMA histograms for cache usage statistics
+     *  Record UMA histograms for the AccessibilityNodeInfo cache usage statistics.
      */
     public void recordCacheHistograms() {
         RecordHistogram.recordCustomCountHistogram(CACHE_MAX_NODES_HISTOGRAM, mMaxNodesInCache,
@@ -203,5 +232,34 @@ public class AccessibilityHistogramRecorder {
         mMaxNodesInCache = 0;
         mNodeWasReturnedFromCache = 0;
         mNodeWasCreatedFromScratch = 0;
+    }
+
+    /**
+     * Record UMA histograms for the usage timers of the native accessibility engine.
+     */
+    public void recordAccessibilityUsageHistograms() {
+        // If the Tab was not shown, the following histograms have no value.
+        if (mTimeOfFirstShown < 0) return;
+
+        long now = Calendar.getInstance().getTimeInMillis();
+
+        // Record the general usage in the foreground, long histograms are up to 1 hour.
+        RecordHistogram.recordLongTimesHistogram(USAGE_FOREGROUND_TIME, now - mTimeOfFirstShown);
+        mTimeOfFirstShown = -1;
+
+        // If native was not initialized, the following histograms have no value.
+        if (mTimeOfNativeInitialization < 0) return;
+
+        // Record native initialized time, long histograms are up to 1 hour.
+        RecordHistogram.recordLongTimesHistogram(
+                USAGE_NATIVE_INITIALIZED_TIME, now - mTimeOfNativeInitialization);
+
+        // When the foreground and native usage times are close in value, then we will assume this
+        // was an instance with an accessibility service always running, and record that usage.
+        if (Math.abs(mTimeOfNativeInitialization - mTimeOfFirstShown) < 250 /* ms */) {
+            RecordHistogram.recordLongTimesHistogram(
+                    USAGE_ACCESSIBILITY_ALWAYS_ON_TIME, now - mTimeOfNativeInitialization);
+        }
+        mTimeOfNativeInitialization = -1;
     }
 }

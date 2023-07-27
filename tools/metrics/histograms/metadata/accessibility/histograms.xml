@@ -360,6 +360,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.Android.Usage.A11yAlwaysOn" units="ms"
+    expires_after="2023-11-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the total amount of time that this WebContents spent in the
+    foreground for usages with the native accessibility engine always
+    initialized. That is, this is a measure of time spent on the web for users
+    that always have an accessibility service running. Recorded when an instance
+    is hidden per WebContentsObserver#wasHidden (e.g. backgrounded Chrome,
+    opened a new Tab, went to Settings etc), and is equal to the time since the
+    last call to WebContentsObserver#wasShown. This can be recorded multiple
+    times for a single WebContents.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.Usage.{UsageType}" units="ms"
+    expires_after="2023-11-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the total amount of time that this WebContents spent {UsageType}.
+    Recorded when an instance is hidden per WebContentsObserver#wasHidden (e.g.
+    backgrounded Chrome, opened a new Tab, went to Settings etc), and is equal
+    to the time since the last call to WebContentsObserver#wasShown. This can be
+    recorded multiple times for a single WebContents.
+  </summary>
+  <token key="UsageType">
+    <variant name="Foreground" summary="in the foreground of the app"/>
+    <variant name="NativeInit"
+        summary="with the native accessibility code initialized"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
     expires_after="2024-01-14">
   <owner>twellington@chromium.org</owner>
