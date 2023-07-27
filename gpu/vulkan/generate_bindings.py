@@ -367,9 +367,14 @@ def WriteMacros(out_file, functions):
 
     callstat = ''
     if func in ('vkQueueSubmit', 'vkQueueWaitIdle', 'vkQueuePresentKHR'):
-        callstat = '''base::AutoLockMaybe auto_lock
-        (gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
-        \n'''
+        callstat = 'base::Lock* lock = nullptr;\n'
+        callstat += '''auto it = gpu::GetVulkanFunctionPointers()->
+        per_queue_lock_map.find(queue);\n'''
+        callstat += '''if (it != gpu::GetVulkanFunctionPointers()->
+        per_queue_lock_map.end()) {\n'''
+        callstat += '\tlock = it->second.get();\n'
+        callstat += '}\n'
+        callstat += 'base::AutoLockMaybe auto_lock(lock);\n'
 
     callstat += 'return gpu::GetVulkanFunctionPointers()->%s(' % func
     paramdecl = '('
