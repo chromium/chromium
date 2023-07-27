@@ -226,6 +226,7 @@ void AutofillExternalDelegate::OnPopupShown() {
 
 void AutofillExternalDelegate::OnPopupHidden() {
   manager_->driver().PopupHidden();
+  manager_->DidHidePopup();
 }
 
 void AutofillExternalDelegate::OnPopupSuppressed() {

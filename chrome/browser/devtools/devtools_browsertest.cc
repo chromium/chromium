@@ -2133,6 +2133,8 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
                                 "console.log('didShowSuggestions');"));
   }
 
+  void DidHideSuggestions() override {}
+
   void OnTextFieldChanged() override {}
 
  private:
