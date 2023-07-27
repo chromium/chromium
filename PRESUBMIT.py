@@ -744,6 +744,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        '^third_party/blink/renderer/bindings/core/v8/' +
          'v8_wasm_response_extensions.cc',
        '^gin/array_buffer\.(cc|h)',
+       '^gin/per_isolate_data\.(cc|h)',
        '^chrome/services/sharing/nearby/',
        # Needed for interop with third-party library libunwindstack.
        '^base/profiler/libunwindstack_unwinder_android\.(cc|h)',

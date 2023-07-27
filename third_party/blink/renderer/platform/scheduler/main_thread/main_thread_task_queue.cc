@@ -58,6 +58,8 @@ QueueName MainThreadTaskQueue::NameForQueueType(
       return QueueName::FRAME_LOADING_CONTROL_TQ;
     case MainThreadTaskQueue::QueueType::kV8:
       return QueueName::V8_TQ;
+    case MainThreadTaskQueue::QueueType::kV8LowPriority:
+      return QueueName::V8_LOW_PRIORITY_TQ;
     case MainThreadTaskQueue::QueueType::kInput:
       return QueueName::INPUT_TQ;
     case MainThreadTaskQueue::QueueType::kDetached:
@@ -97,6 +99,7 @@ bool MainThreadTaskQueue::IsPerFrameTaskQueue(
     case MainThreadTaskQueue::QueueType::kCompositor:
     case MainThreadTaskQueue::QueueType::kTest:
     case MainThreadTaskQueue::QueueType::kV8:
+    case MainThreadTaskQueue::QueueType::kV8LowPriority:
     case MainThreadTaskQueue::QueueType::kInput:
     case MainThreadTaskQueue::QueueType::kDetached:
     case MainThreadTaskQueue::QueueType::kNonWaking:

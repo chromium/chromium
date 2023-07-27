@@ -95,7 +95,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
   DCHECK(!isolate_);
   ThreadScheduler* scheduler = BackingThread().Scheduler();
   isolate_ = V8PerIsolateData::Initialize(
-      scheduler->V8TaskRunner(),
+      scheduler->V8TaskRunner(), scheduler->V8LowPriorityTaskRunner(),
       V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot, nullptr,
       nullptr);
   scheduler->SetV8Isolate(isolate_);

@@ -70,6 +70,13 @@ class PLATFORM_EXPORT ThreadScheduler {
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
 
+  // Returns a task runner for kV8LowPriority tasks. Can be called from any
+  // thread.
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  V8LowPriorityTaskRunner() {
+    return nullptr;
+  }
+
   // Returns a task runner for tasks to deallocate objects on the appropriate
   // thread. This runner should only be used for freeing of resources.
   // Execution of javascript will be prevented in the future on this task

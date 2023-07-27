@@ -750,6 +750,7 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_LOW_PRIORITY_SCRIPT_EXECUTION = 81;
     TASK_TYPE_STORAGE = 82;
     TASK_TYPE_NETWORKING_UNFREEZABLE_IMAGE_LOADING = 83;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_LOW_PRIORITY = 84;
   }
 
   enum FrameType {
@@ -950,6 +951,8 @@ message SequenceManagerTask {
 
     UI_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 54;
     IO_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 55;
+
+    V8_LOW_PRIORITY_TQ = 56;
   }
 
   optional Priority priority = 1;

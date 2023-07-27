@@ -29,10 +29,12 @@ class WrappableBase;
 // class stores all the Gin-related data that varies per isolate.
 class GIN_EXPORT PerIsolateData {
  public:
-  PerIsolateData(v8::Isolate* isolate,
-                 v8::ArrayBuffer::Allocator* allocator,
-                 IsolateHolder::AccessMode access_mode,
-                 scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  PerIsolateData(
+      v8::Isolate* isolate,
+      v8::ArrayBuffer::Allocator* allocator,
+      IsolateHolder::AccessMode access_mode,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner);
   PerIsolateData(const PerIsolateData&) = delete;
   PerIsolateData& operator=(const PerIsolateData&) = delete;
   ~PerIsolateData();
@@ -75,6 +77,9 @@ class GIN_EXPORT PerIsolateData {
   v8::Isolate* isolate() { return isolate_; }
   v8::ArrayBuffer::Allocator* allocator() { return allocator_; }
   std::shared_ptr<v8::TaskRunner> task_runner() { return task_runner_; }
+  std::shared_ptr<v8::TaskRunner> low_priority_task_runner() {
+    return low_priority_task_runner_;
+  }
 
  private:
   typedef std::map<
@@ -95,6 +100,7 @@ class GIN_EXPORT PerIsolateData {
   IndexedPropertyInterceptorMap indexed_interceptors_;
   NamedPropertyInterceptorMap named_interceptors_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> task_runner_;
+  std::shared_ptr<V8ForegroundTaskRunnerBase> low_priority_task_runner_;
 };
 
 }  // namespace gin

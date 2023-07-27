@@ -868,8 +868,8 @@ void V8Initializer::InitializeMainThread(
     add_histogram_sample_callback = AddHistogramSample;
   }
   v8::Isolate* isolate = V8PerIsolateData::Initialize(
-      scheduler->V8TaskRunner(), snapshot_mode, create_histogram_callback,
-      add_histogram_sample_callback);
+      scheduler->V8TaskRunner(), scheduler->V8LowPriorityTaskRunner(),
+      snapshot_mode, create_histogram_callback, add_histogram_sample_callback);
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer

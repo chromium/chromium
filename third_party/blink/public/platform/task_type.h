@@ -286,6 +286,7 @@ enum class TaskType : unsigned char {
   // get a task queue/runner.
 
   kMainThreadTaskQueueV8 = 37,
+  kMainThreadTaskQueueV8LowPriority = 84,
   kMainThreadTaskQueueCompositor = 38,
   kMainThreadTaskQueueDefault = 39,
   kMainThreadTaskQueueInput = 40,
@@ -304,7 +305,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kNetworkingUnfreezableImageLoading,
+  kMaxValue = kMainThreadTaskQueueV8LowPriority,
 };
 
 }  // namespace blink

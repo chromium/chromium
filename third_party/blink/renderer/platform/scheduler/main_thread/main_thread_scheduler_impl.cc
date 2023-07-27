@@ -299,6 +299,11 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   v8_task_queue_ = NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
       MainThreadTaskQueue::QueueType::kV8));
+  v8_low_priority_task_queue_ = NewTaskQueue(
+      MainThreadTaskQueue::QueueCreationParams(
+          MainThreadTaskQueue::QueueType::kV8LowPriority)
+          .SetPrioritisationType(
+              MainThreadTaskQueue::QueueTraits::PrioritisationType::kLow));
   non_waking_task_queue_ =
       NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
                        MainThreadTaskQueue::QueueType::kNonWaking)
@@ -306,6 +311,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   v8_task_runner_ =
       v8_task_queue_->CreateTaskRunner(TaskType::kMainThreadTaskQueueV8);
+  v8_low_priority_task_runner_ = v8_low_priority_task_queue_->CreateTaskRunner(
+      TaskType::kMainThreadTaskQueueV8LowPriority);
   compositor_task_runner_ = compositor_task_queue_->CreateTaskRunner(
       TaskType::kMainThreadTaskQueueCompositor);
   control_task_runner_ = helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
@@ -2111,6 +2118,11 @@ MainThreadSchedulerImpl::V8TaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+MainThreadSchedulerImpl::V8LowPriorityTaskRunner() {
+  return v8_low_priority_task_runner_;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::CompositorTaskRunner() {
   return compositor_task_runner_;
 }
@@ -2509,6 +2521,8 @@ TaskPriority MainThreadSchedulerImpl::ComputePriority(
       return TaskPriority::kBestEffortPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kRegular:
       return TaskPriority::kNormalPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::kLow:
+      return TaskPriority::kLowPriority;
     default:
       NOTREACHED();
       return TaskPriority::kNormalPriority;

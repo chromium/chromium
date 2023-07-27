@@ -40,7 +40,8 @@ class GIN_EXPORT V8Platform : public v8::Platform {
 #endif
 
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner(
-      v8::Isolate*) override;
+      v8::Isolate* isolate,
+      v8::TaskPriority priority) override;
   int NumberOfWorkerThreads() override;
   void PostTaskOnWorkerThreadImpl(v8::TaskPriority priority,
                                   std::unique_ptr<v8::Task> task,
