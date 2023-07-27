@@ -26,7 +26,7 @@ class RuntimeEnabledFeatures(object):
         cls._features = {}
 
         for filepath in filepaths:
-            with open(filepath) as file_obj:
+            with open(filepath, encoding='utf-8') as file_obj:
                 datastore = json5.load(file_obj)
 
             for entry in datastore["data"]:
