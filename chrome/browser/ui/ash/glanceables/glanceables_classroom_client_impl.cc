@@ -18,7 +18,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -507,7 +508,7 @@ void GlanceablesClassroomClientImpl::FetchCourseWork(
   }
 
   FetchCourseWorkPage(request_id, course_id, /*page_token=*/"",
-                      fetch_submissions, course_work);
+                      /*page_number=*/1, fetch_submissions, course_work);
 }
 
 void GlanceablesClassroomClientImpl::FetchStudentSubmissions(
@@ -529,7 +530,7 @@ void GlanceablesClassroomClientImpl::FetchStudentSubmissions(
   }
 
   FetchStudentSubmissionsPage(course_id, course_work_id,
-                              /*page_token=*/"", course_work,
+                              /*page_token=*/"", /*page_number=*/1, course_work,
                               std::move(callback));
 }
 
@@ -556,7 +557,7 @@ void GlanceablesClassroomClientImpl::InvokeOnceStudentDataFetched(
         /*fetch_submissions_per_course_work=*/false,
         std::ref(student_course_work_),
         base::BindOnce(&GlanceablesClassroomClientImpl::OnStudentDataFetched,
-                       weak_factory_.GetWeakPtr())));
+                       weak_factory_.GetWeakPtr(), clock_->Now())));
   }
 }
 
@@ -585,7 +586,7 @@ void GlanceablesClassroomClientImpl::InvokeOnceTeacherDataFetched(
         /*fetch_submissions_per_course_work=*/true,
         std::ref(teacher_course_work_),
         base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
-                       weak_factory_.GetWeakPtr())));
+                       weak_factory_.GetWeakPtr(), clock_->Now())));
   }
 }
 
@@ -618,10 +619,10 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
   CHECK(!student_id.empty() || !teacher_id.empty());
   CHECK(callback);
 
-  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Classroom.GetCourses.Latency",
-                      clock_->Now() - request_start_time);
-  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourses.Status",
-                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Classroom.GetCourses.Latency",
+                          clock_->Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Classroom.GetCourses.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
     // TODO(b/282013130): handle failures of a single page fetch request more
@@ -639,6 +640,12 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
   }
 
   if (result.value()->next_page_token().empty()) {
+    base::UmaHistogramCounts100(
+        base::ReplaceStringPlaceholders(
+            "Ash.Glanceables.Api.Classroom.$1CoursesCount",
+            {student_id == kOwnCoursesFilterValue ? "Student" : "Teacher"},
+            nullptr),
+        courses_container.size());
     std::move(callback).Run(courses_container);
   } else {
     FetchCoursesPage(student_id, teacher_id, result.value()->next_page_token(),
@@ -675,6 +682,7 @@ void GlanceablesClassroomClientImpl::FetchCourseWorkPage(
     int request_id,
     const std::string& course_id,
     const std::string& page_token,
+    int page_number,
     bool fetch_submissions,
     CourseWorkPerCourse& course_work) {
   CHECK(!course_id.empty());
@@ -692,7 +700,8 @@ void GlanceablesClassroomClientImpl::FetchCourseWorkPage(
           base::BindOnce(
               &GlanceablesClassroomClientImpl::OnCourseWorkPageFetched,
               weak_factory_.GetWeakPtr(), request_id, course_id,
-              fetch_submissions, std::ref(course_work), clock_->Now())));
+              fetch_submissions, std::ref(course_work), clock_->Now(),
+              page_number)));
 }
 
 void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
@@ -701,13 +710,14 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
     bool fetch_submissions,
     CourseWorkPerCourse& course_work,
     const base::Time& request_start_time,
+    int page_number,
     base::expected<std::unique_ptr<CourseWork>, ApiErrorCode> result) {
   CHECK(!course_id.empty());
 
-  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Classroom.GetCourseWork.Latency",
-                      clock_->Now() - request_start_time);
-  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
-                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Classroom.GetCourseWork.Latency",
+                          clock_->Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   auto request_it = course_work_requests_.find(request_id);
   if (request_it == course_work_requests_.end() || !request_it->second) {
@@ -744,8 +754,11 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
 
   if (!result.value()->next_page_token().empty()) {
     FetchCourseWorkPage(request_id, course_id,
-                        result.value()->next_page_token(), fetch_submissions,
-                        course_work);
+                        result.value()->next_page_token(), page_number + 1,
+                        fetch_submissions, course_work);
+  } else {
+    base::UmaHistogramCounts100(
+        "Ash.Glanceables.Api.Classroom.GetCourseWork.PagesCount", page_number);
   }
 
   // NOTE: If `submissions_to_fetch` is empty, `barrier_closure` will run
@@ -780,6 +793,7 @@ void GlanceablesClassroomClientImpl::FetchStudentSubmissionsPage(
     const std::string& course_id,
     const std::string& course_work_id,
     const std::string& page_token,
+    int page_number,
     CourseWorkPerCourse& course_work,
     base::OnceClosure callback) {
   CHECK(!course_id.empty());
@@ -792,7 +806,8 @@ void GlanceablesClassroomClientImpl::FetchStudentSubmissionsPage(
           base::BindOnce(
               &GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched,
               weak_factory_.GetWeakPtr(), course_id, course_work_id,
-              std::ref(course_work), clock_->Now(), std::move(callback))));
+              std::ref(course_work), clock_->Now(), page_number,
+              std::move(callback))));
 }
 
 void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
@@ -800,15 +815,16 @@ void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
     const std::string& course_work_id,
     CourseWorkPerCourse& course_work,
     const base::Time& request_start_time,
+    int page_number,
     base::OnceClosure callback,
     base::expected<std::unique_ptr<StudentSubmissions>, ApiErrorCode> result) {
   CHECK(!course_id.empty());
   CHECK(callback);
 
-  UMA_HISTOGRAM_TIMES(
+  base::UmaHistogramTimes(
       "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Latency",
       clock_->Now() - request_start_time);
-  UMA_HISTOGRAM_SPARSE(
+  base::UmaHistogramSparse(
       "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
       result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
@@ -845,18 +861,26 @@ void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
   }
 
   if (result.value()->next_page_token().empty()) {
+    base::UmaHistogramCounts100(
+        "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.PagesCount",
+        page_number);
     if (shared_course_work_info) {
       shared_course_work_info->SetHasFreshSubmissionsState(true, clock_->Now());
     }
     std::move(callback).Run();
   } else {
-    FetchStudentSubmissionsPage(course_id, course_work_id,
-                                result.value()->next_page_token(), course_work,
-                                std::move(callback));
+    FetchStudentSubmissionsPage(
+        course_id, course_work_id, result.value()->next_page_token(),
+        page_number + 1, course_work, std::move(callback));
   }
 }
 
-void GlanceablesClassroomClientImpl::OnStudentDataFetched() {
+void GlanceablesClassroomClientImpl::OnStudentDataFetched(
+    const base::Time& sequence_start_time) {
+  base::UmaHistogramMediumTimes(
+      "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",
+      clock_->Now() - sequence_start_time);
+
   switch (student_data_fetch_status_) {
     case FetchStatus::kNotFetched:
     case FetchStatus::kFetched:
@@ -880,7 +904,12 @@ void GlanceablesClassroomClientImpl::OnStudentDataFetched() {
   }
 }
 
-void GlanceablesClassroomClientImpl::OnTeacherDataFetched() {
+void GlanceablesClassroomClientImpl::OnTeacherDataFetched(
+    const base::Time& sequence_start_time) {
+  base::UmaHistogramMediumTimes(
+      "Ash.Glanceables.Api.Classroom.TeacherDataFetchTime",
+      clock_->Now() - sequence_start_time);
+
   switch (teacher_data_fetch_status_) {
     case FetchStatus::kNotFetched:
     case FetchStatus::kFetched:
@@ -1041,7 +1070,7 @@ bool GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
     const auto barrier_closure = base::BarrierClosure(
         unfresh_top_items.size(),
         base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), clock_->Now()));
     for (const auto& [course_id, course_work_id] : unfresh_top_items) {
       FetchStudentSubmissions(course_id, course_work_id, teacher_course_work_,
                               barrier_closure);
@@ -1105,7 +1134,7 @@ void GlanceablesClassroomClientImpl::PrefetchTeacherData() {
       /*fetch_submissions_per_course_work=*/true,
       std::ref(teacher_course_work_),
       base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
-                     weak_factory_.GetWeakPtr())));
+                     weak_factory_.GetWeakPtr(), clock_->Now())));
 }
 
 RequestSender* GlanceablesClassroomClientImpl::GetRequestSender() {

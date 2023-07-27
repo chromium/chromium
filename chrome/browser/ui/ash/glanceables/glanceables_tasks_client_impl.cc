@@ -16,7 +16,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
@@ -143,7 +143,7 @@ void GlanceablesTasksClientImpl::GetTaskLists(
 
   if (task_lists_fetch_state_.status != FetchStatus::kRefreshing) {
     task_lists_fetch_state_.status = FetchStatus::kRefreshing;
-    FetchTaskListsPage(/*page_token=*/"");
+    FetchTaskListsPage(/*page_token=*/"", /*page_number=*/1);
   }
 }
 
@@ -171,7 +171,7 @@ void GlanceablesTasksClientImpl::GetTasks(
 
   if (fetch_state.status != FetchStatus::kRefreshing) {
     fetch_state.status = FetchStatus::kRefreshing;
-    FetchTasksPage(task_list_id, /*page_token=*/"",
+    FetchTasksPage(task_list_id, /*page_token=*/"", /*page_number=*/1,
                    /*accumulated_raw_tasks=*/{});
   }
 }
@@ -208,13 +208,15 @@ void GlanceablesTasksClientImpl::OnGlanceablesBubbleClosed() {
 }
 
 void GlanceablesTasksClientImpl::FetchTaskListsPage(
-    const std::string& page_token) {
+    const std::string& page_token,
+    int page_number) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<ListTaskListsRequest>(
           request_sender,
           base::BindOnce(&GlanceablesTasksClientImpl::OnTaskListsPageFetched,
-                         weak_factory_.GetWeakPtr(), base::Time::Now()),
+                         weak_factory_.GetWeakPtr(), base::Time::Now(),
+                         page_number),
           page_token));
   if (task_lists_request_callback_) {
     task_lists_request_callback_.Run(page_token);
@@ -223,11 +225,12 @@ void GlanceablesTasksClientImpl::FetchTaskListsPage(
 
 void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
     const base::Time& request_start_time,
+    int page_number,
     base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) {
-  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.GetTaskLists.Latency",
-                      base::Time::Now() - request_start_time);
-  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
-                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.GetTaskLists.Latency",
+                          base::Time::Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
     task_lists_.DeleteAll();
@@ -241,22 +244,26 @@ void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
   }
 
   if (result.value()->next_page_token().empty()) {
+    base::UmaHistogramCounts100(
+        "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount", page_number);
     RunGetTaskListsCallbacks(FetchStatus::kFresh);
   } else {
-    FetchTaskListsPage(result.value()->next_page_token());
+    FetchTaskListsPage(result.value()->next_page_token(), page_number + 1);
   }
 }
 
 void GlanceablesTasksClientImpl::FetchTasksPage(
     const std::string& task_list_id,
     const std::string& page_token,
+    int page_number,
     std::vector<std::unique_ptr<Task>> accumulated_raw_tasks) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(std::make_unique<ListTasksRequest>(
       request_sender,
       base::BindOnce(&GlanceablesTasksClientImpl::OnTasksPageFetched,
                      weak_factory_.GetWeakPtr(), task_list_id,
-                     std::move(accumulated_raw_tasks), base::Time::Now()),
+                     std::move(accumulated_raw_tasks), base::Time::Now(),
+                     page_number),
       task_list_id, page_token));
 
   if (tasks_request_callback_) {
@@ -268,11 +275,12 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
     const std::string& task_list_id,
     std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
     const base::Time& request_start_time,
+    int page_number,
     base::expected<std::unique_ptr<Tasks>, ApiErrorCode> result) {
-  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.GetTasks.Latency",
-                      base::Time::Now() - request_start_time);
-  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.GetTasks.Status",
-                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.GetTasks.Latency",
+                          base::Time::Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.GetTasks.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   const auto iter = tasks_in_task_lists_.find(task_list_id);
 
@@ -288,13 +296,15 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
       std::make_move_iterator(result.value()->mutable_items()->end()));
 
   if (result.value()->next_page_token().empty()) {
+    base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
+                                page_number);
     for (auto& item : ConvertTasks(accumulated_raw_tasks)) {
       iter->second.Add(std::move(item));
     }
     RunGetTasksCallbacks(task_list_id, FetchStatus::kFresh, &iter->second);
   } else {
     FetchTasksPage(task_list_id, result.value()->next_page_token(),
-                   std::move(accumulated_raw_tasks));
+                   page_number + 1, std::move(accumulated_raw_tasks));
   }
 }
 
@@ -336,10 +346,10 @@ void GlanceablesTasksClientImpl::OnMarkedAsCompleted(
     const base::Time& request_start_time,
     GlanceablesTasksClient::MarkAsCompletedCallback callback,
     ApiErrorCode status_code) {
-  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
-                      base::Time::Now() - request_start_time);
-  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.PatchTask.Status",
-                       status_code);
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
+                          base::Time::Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.PatchTask.Status",
+                           status_code);
 
   if (status_code != ApiErrorCode::HTTP_SUCCESS) {
     std::move(callback).Run(/*success=*/false);

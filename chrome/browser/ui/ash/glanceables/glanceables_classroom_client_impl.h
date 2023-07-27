@@ -268,13 +268,15 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const CourseList& courses);
 
   // Fetches one page of course work items.
-  // `request_id` - the ID for the course work request that's being handled.
-  //                It can be used to get the associated `CourseWorkRequest`
-  //                from `course_work_requests_`.
-  // `course_id`  - identifier of the course.
-  // `page_token` - token specifying the result page to return, comes from the
-  //                previous fetch request. Use an empty string to fetch the
-  //                first page.
+  // `request_id`  - the ID for the course work request that's being handled.
+  //                 It can be used to get the associated `CourseWorkRequest`
+  //                 from `course_work_requests_`.
+  // `course_id`   - identifier of the course.
+  // `page_token`  - token specifying the result page to return, comes from the
+  //                 previous fetch request. Use an empty string to fetch the
+  //                 first page.
+  // `page_number` - 1-based page number of this fetch request. Used for UMA
+  //                 to track the total number of pages needed to fetch.
   // `fetch_submissions` - whether student submissions need to be fetched for
   //                       each course work item. For student glanceables,
   //                       student submissions will be fetched independently
@@ -283,6 +285,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void FetchCourseWorkPage(int request_id,
                            const std::string& course_id,
                            const std::string& page_token,
+                           int page_number,
                            bool fetch_submissions,
                            CourseWorkPerCourse& course_work);
 
@@ -295,6 +298,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       bool fetch_submissions,
       CourseWorkPerCourse& course_work,
       const base::Time& request_start_time,
+      int page_number,
       base::expected<std::unique_ptr<google_apis::classroom::CourseWork>,
                      google_apis::ApiErrorCode> result);
 
@@ -306,6 +310,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // `page_token`     - token specifying the result page to return, comes from
   //                    the previous fetch request. Use an empty string to fetch
   //                    the first page.
+  // `page_number`    - 1-based page number of this fetch request. Used for UMA
+  //                    to track the total number of pages needed to fetch.
   // `course_work`    - the map where fetched student submissions information
   //                    gets saved.
   // `callback`       - a callback that runs when all student submissions in a
@@ -315,6 +321,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void FetchStudentSubmissionsPage(const std::string& course_id,
                                    const std::string& course_work_id,
                                    const std::string& page_token,
+                                   int page_number,
                                    CourseWorkPerCourse& course_work,
                                    base::OnceClosure callback);
 
@@ -326,6 +333,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const std::string& course_work_id,
       CourseWorkPerCourse& course_work,
       const base::Time& request_start_time,
+      int page_number,
       base::OnceClosure callback,
       base::expected<
           std::unique_ptr<google_apis::classroom::StudentSubmissions>,
@@ -343,12 +351,12 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Invokes all pending callbacks from `callbacks_waiting_for_student_data_`
   // once all student data are fetched (courses + course work + student
   // submissions).
-  void OnStudentDataFetched();
+  void OnStudentDataFetched(const base::Time& sequence_start_time);
 
   // Invokes all pending callbacks from `callbacks_waiting_for_teacher_data_`
   // once all teacher data are fetched (courses + course work + student
   // submissions).
-  void OnTeacherDataFetched();
+  void OnTeacherDataFetched(const base::Time& sequence_start_time);
 
   // Selects student assignments that satisfy both filtering predicates below.
   // `due_predicate`              - returns `true` if passed due date/time

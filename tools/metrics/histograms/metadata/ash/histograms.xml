@@ -3603,6 +3603,37 @@ chromium-metrics-reviews@google.com.
   <summary>Record the floating workspace template upload status.</summary>
 </histogram>
 
+<histogram name="Ash.Glanceables.Api.Classroom.{Role}CoursesCount"
+    units="courses" expires_after="2024-01-01">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API. The
+    recorded value indicates the total number of active courses returned for the
+    user. This number serves as a multiplier for futher requests to get course
+    work items and student submissions.
+  </summary>
+  <token key="Role">
+    <variant name="Student"/>
+    <variant name="Teacher"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Glanceables.Api.Classroom.{Role}DataFetchTime" units="ms"
+    expires_after="2024-01-01">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API. The
+    recorded value indicates the time needed to fetch all student or teacher
+    data (courses, course work, student submissions).
+  </summary>
+  <token key="Role">
+    <variant name="Student"/>
+    <variant name="Teacher"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Glanceables.Api.{Method}.Latency" units="ms"
     expires_after="2024-01-01">
   <owner>amitrokhin@google.com</owner>
@@ -3619,6 +3650,23 @@ chromium-metrics-reviews@google.com.
     <variant name="Tasks.GetTaskLists"/>
     <variant name="Tasks.GetTasks"/>
     <variant name="Tasks.PatchTask"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Glanceables.Api.{Method}.PagesCount" units="pages"
+    expires_after="2024-01-01">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API or
+    Tasks API. The recorded value indicates the total number of pages needed to
+    fetch in order to get all data.
+  </summary>
+  <token key="Method">
+    <variant name="Classroom.GetCourseWork"/>
+    <variant name="Classroom.GetStudentSubmissions"/>
+    <variant name="Tasks.GetTaskLists"/>
+    <variant name="Tasks.GetTasks"/>
   </token>
 </histogram>
 

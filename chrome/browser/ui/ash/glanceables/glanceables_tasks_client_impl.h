@@ -111,10 +111,12 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   };
 
   // Fetches one page of task lists data.
-  // `page_token` - token specifying the result page to return, comes from the
-  //                previous fetch request. Use an empty string to fetch the
-  //                first page.
-  void FetchTaskListsPage(const std::string& page_token);
+  // `page_token`  - token specifying the result page to return, comes from the
+  //                 previous fetch request. Use an empty string to fetch the
+  //                 first page.
+  // `page_number` - 1-based page number of this fetch request. Used for UMA
+  //                 to track the total number of pages needed to fetch.
+  void FetchTaskListsPage(const std::string& page_token, int page_number);
 
   // Callback for `FetchTaskListsPage()`. Transforms fetched items to
   // ash-friendly types. If `next_page_token()` in the `result` is not empty -
@@ -122,6 +124,7 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   // `RunGetTaskListsCallbacks()`.
   void OnTaskListsPageFetched(
       const base::Time& request_start_time,
+      int page_number,
       base::expected<std::unique_ptr<google_apis::tasks::TaskLists>,
                      google_apis::ApiErrorCode> result);
 
@@ -130,6 +133,9 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   // `page_token`            - token specifying the result page to return, comes
   //                           from the previous fetch request. Use an empty
   //                           string to fetch the first page.
+  // `page_number`           - 1-based page number of this fetch request. Used
+  //                           for UMA to track the total number of pages needed
+  //                           to fetch.
   // `accumulated_raw_tasks` - in contrast to the task lists conversion logic,
   //                           tasks can't be converted independently on every
   //                           single page response (subtasks could go first,
@@ -139,6 +145,7 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   //                           page is fetched.
   void FetchTasksPage(const std::string& task_list_id,
                       const std::string& page_token,
+                      int page_number,
                       std::vector<std::unique_ptr<google_apis::tasks::Task>>
                           accumulated_raw_tasks);
 
@@ -150,6 +157,7 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       std::vector<std::unique_ptr<google_apis::tasks::Task>>
           accumulated_raw_tasks,
       const base::Time& request_start_time,
+      int page_number,
       base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
                      google_apis::ApiErrorCode> result);
 

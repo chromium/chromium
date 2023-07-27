@@ -202,17 +202,24 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
             })");
       }));
 
-  auto fetch_courses_methods = std::vector<base::RepeatingCallback<void(
-      GlanceablesClassroomClientImpl::FetchCoursesCallback)>>{
-      base::BindRepeating(&GlanceablesClassroomClientImpl::FetchStudentCourses,
-                          base::Unretained(client())),
-      base::BindRepeating(&GlanceablesClassroomClientImpl::FetchTeacherCourses,
-                          base::Unretained(client()))};
+  struct {
+    base::RepeatingCallback<void(
+        GlanceablesClassroomClientImpl::FetchCoursesCallback)>
+        fetch_method;
+    std::string expected_courses_count_histogram_name;
+  } test_cases[] = {
+      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchStudentCourses,
+                           base::Unretained(client())),
+       "Ash.Glanceables.Api.Classroom.StudentCoursesCount"},
+      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchTeacherCourses,
+                           base::Unretained(client())),
+       "Ash.Glanceables.Api.Classroom.TeacherCoursesCount"},
+  };
 
-  for (auto fetch_method : fetch_courses_methods) {
+  for (const auto& test_case : test_cases) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
-    fetch_method.Run(base::BindLambdaForTesting(
+    test_case.fetch_method.Run(base::BindLambdaForTesting(
         [&](const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
                 courses) {
           run_loop.Quit();
@@ -228,6 +235,10 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
           histogram_tester.ExpectUniqueSample(
               "Ash.Glanceables.Api.Classroom.GetCourses.Status",
               ApiErrorCode::HTTP_SUCCESS,
+              /*expected_bucket_count=*/1);
+          histogram_tester.ExpectUniqueSample(
+              test_case.expected_courses_count_histogram_name,
+              /*sample=*/1,
               /*expected_bucket_count=*/1);
         }));
     run_loop.Run();
@@ -308,18 +319,25 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
             })");
       }));
 
-  auto fetch_courses_methods = std::vector<base::RepeatingCallback<void(
-      GlanceablesClassroomClientImpl::FetchCoursesCallback)>>{
-      base::BindRepeating(&GlanceablesClassroomClientImpl::FetchStudentCourses,
-                          base::Unretained(client())),
-      base::BindRepeating(&GlanceablesClassroomClientImpl::FetchTeacherCourses,
-                          base::Unretained(client()))};
+  struct {
+    base::RepeatingCallback<void(
+        GlanceablesClassroomClientImpl::FetchCoursesCallback)>
+        fetch_method;
+    std::string expected_courses_count_histogram_name;
+  } test_cases[] = {
+      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchStudentCourses,
+                           base::Unretained(client())),
+       "Ash.Glanceables.Api.Classroom.StudentCoursesCount"},
+      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchTeacherCourses,
+                           base::Unretained(client())),
+       "Ash.Glanceables.Api.Classroom.TeacherCoursesCount"},
+  };
 
-  for (auto fetch_method : fetch_courses_methods) {
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
-    fetch_method.Run(base::BindLambdaForTesting(
-        [&run_loop](
-            const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+    test_case.fetch_method.Run(base::BindLambdaForTesting(
+        [&](const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
                 courses) {
           run_loop.Quit();
 
@@ -328,6 +346,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
           EXPECT_EQ(courses.at(0)->id, "course-id-from-page-1");
           EXPECT_EQ(courses.at(1)->id, "course-id-from-page-2");
           EXPECT_EQ(courses.at(2)->id, "course-id-from-page-3");
+
+          histogram_tester.ExpectUniqueSample(
+              test_case.expected_courses_count_histogram_name,
+              /*sample=*/3,
+              /*expected_bucket_count=*/1);
         }));
     run_loop.Run();
   }
@@ -409,6 +432,10 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWork) {
             histogram_tester()->ExpectUniqueSample(
                 "Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
                 ApiErrorCode::HTTP_SUCCESS,
+                /*expected_bucket_count=*/1);
+            histogram_tester()->ExpectUniqueSample(
+                "Ash.Glanceables.Api.Classroom.GetCourseWork.PagesCount",
+                /*sample=*/1,
                 /*expected_bucket_count=*/1);
           }));
   run_loop.Run();
@@ -738,6 +765,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
             EXPECT_EQ(course_work_3.total_submissions(), 3);
             EXPECT_EQ(course_work_3.turned_in_submissions(), 2);
             EXPECT_EQ(course_work_3.graded_submissions(), 1);
+
+            histogram_tester()->ExpectUniqueSample(
+                "Ash.Glanceables.Api.Classroom.GetCourseWork.PagesCount",
+                /*sample=*/3,
+                /*expected_bucket_count=*/1);
           }));
   run_loop.Run();
 }
@@ -869,6 +901,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissions) {
                 "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
                 ApiErrorCode::HTTP_SUCCESS,
                 /*expected_bucket_count=*/1);
+            histogram_tester()->ExpectUniqueSample(
+                "Ash.Glanceables.Api.Classroom.GetStudentSubmissions."
+                "PagesCount",
+                /*sample=*/1,
+                /*expected_bucket_count=*/1);
           }));
   run_loop.Run();
 }
@@ -966,6 +1003,11 @@ TEST_F(GlanceablesClassroomClientImplTest,
         EXPECT_EQ(course_work_map.at("courseWork2").total_submissions(), 1);
         EXPECT_EQ(course_work_map.at("courseWork2").turned_in_submissions(), 0);
         EXPECT_EQ(course_work_map.at("courseWork2").graded_submissions(), 0);
+
+        histogram_tester()->ExpectUniqueSample(
+            "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.PagesCount",
+            /*sample=*/3,
+            /*expected_bucket_count=*/1);
       }));
   run_loop.Run();
 }
@@ -1114,6 +1156,10 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   const bool active = future.Get();
   ASSERT_TRUE(active);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -1729,6 +1775,10 @@ TEST_F(GlanceablesClassroomClientImplTest, TeacherRoleIsActiveWithCourses) {
 
   const bool active = future.Get();
   ASSERT_TRUE(active);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Classroom.TeacherDataFetchTime",
+      /*expected_count=*/1);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
