@@ -242,10 +242,8 @@ ErrorCode Parse(base::StringPiece tag,
                 absl::optional<base::StringPiece> app_installer_data_args,
                 TagArgs* args);
 
-std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
-                        std::vector<uint8_t>::const_iterator cert_end);
-std::string ReadTagUtf16(std::vector<uint8_t>::const_iterator cert_begin,
-                         std::vector<uint8_t>::const_iterator cert_end);
+std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
+                    std::vector<uint8_t>::const_iterator end);
 std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
 std::string ExeReadTag(const base::FilePath& file);
 bool ExeWriteTag(const base::FilePath& in_file,

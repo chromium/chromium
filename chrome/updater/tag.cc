@@ -94,15 +94,9 @@ constexpr base::StringPiece kAppArgInstallerData = "installerdata";
 // Character that is disallowed from appearing in the tag.
 constexpr char kDisallowedCharInTag = '/';
 
-// Magic strings used to identify the tag in the binary.
+// Magic string used to identify the tag in the binary.
 constexpr uint8_t kTagMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
                                      '0', 'O', 'm', 'a', 'h', 'a'};
-constexpr uint8_t kTagStartMagicUtf16[] = {0, 'G', 0, 'a', 0, 'c', 0, 't',
-                                           0, '2', 0, '.', 0, '0', 0, 'O',
-                                           0, 'm', 0, 'a', 0, 'h', 0, 'a'};
-constexpr uint8_t kTagEndMagicUtf16[] = {0, 'a', 0, 'h', 0, 'a', 0, 'm',
-                                         0, 'O', 0, '0', 0, '.', 0, '2',
-                                         0, 't', 0, 'c', 0, 'a', 0, 'G'};
 
 absl::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
@@ -563,8 +557,7 @@ absl::optional<tagging::TagArgs> ParseTagBuffer(
     return {};
   }
 
-  const std::string tag_string =
-      ReadTagUtf8(tag_buffer.begin(), tag_buffer.end());
+  const std::string tag_string = ReadTag(tag_buffer.begin(), tag_buffer.end());
   if (tag_string.empty()) {
     return {};
   }
@@ -744,22 +737,22 @@ std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string) {
   return tag;
 }
 
-std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
-                        std::vector<uint8_t>::const_iterator cert_end) {
+std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
+                    std::vector<uint8_t>::const_iterator end) {
   const uint8_t* magic_begin = std::begin(kTagMagicUtf8);
   const uint8_t* magic_end = std::end(kTagMagicUtf8);
 
   std::vector<uint8_t>::const_iterator magic_str =
-      std::search(cert_begin, cert_end, magic_begin, magic_end);
-  if (magic_str == cert_end) {
+      std::search(begin, end, magic_begin, magic_end);
+  if (magic_str == end) {
     return std::string();
   }
 
   std::vector<uint8_t>::const_iterator taglen_buf =
-      internal::AdvanceIt(magic_str, magic_end - magic_begin, cert_end);
+      internal::AdvanceIt(magic_str, magic_end - magic_begin, end);
 
   // Checks that the stored tag length is found within the binary.
-  if (!internal::CheckRange(taglen_buf, sizeof(uint16_t), cert_end)) {
+  if (!internal::CheckRange(taglen_buf, sizeof(uint16_t), end)) {
     return std::string();
   }
 
@@ -767,57 +760,17 @@ std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
   const uint16_t tag_len = BigEndianReadU16(taglen_buf);
 
   std::vector<uint8_t>::const_iterator tag_buf =
-      internal::AdvanceIt(taglen_buf, sizeof(uint16_t), cert_end);
-  if (tag_buf == cert_end) {
+      internal::AdvanceIt(taglen_buf, sizeof(uint16_t), end);
+  if (tag_buf == end) {
     return std::string();
   }
 
   // Checks that the specified tag is found within the binary.
-  if (!internal::CheckRange(tag_buf, tag_len, cert_end)) {
+  if (!internal::CheckRange(tag_buf, tag_len, end)) {
     return std::string();
   }
 
   return std::string(tag_buf, tag_buf + tag_len);
-}
-
-std::string ReadTagUtf16(std::vector<uint8_t>::const_iterator cert_begin,
-                         std::vector<uint8_t>::const_iterator cert_end) {
-  const uint8_t* magic_begin = std::begin(kTagStartMagicUtf16);
-  const uint8_t* magic_end = std::end(kTagStartMagicUtf16);
-
-  std::vector<uint8_t>::const_iterator magic_str =
-      std::search(cert_begin, cert_end, magic_begin, magic_end);
-  if (magic_str == cert_end) {
-    return std::string();
-  }
-
-  std::vector<uint8_t>::const_iterator tag_buf =
-      internal::AdvanceIt(magic_str, magic_end - magic_begin, cert_end);
-
-  std::vector<uint8_t>::const_iterator tag_buf_end =
-      std::search(tag_buf, cert_end, std::begin(kTagEndMagicUtf16),
-                  std::end(kTagEndMagicUtf16));
-  if (tag_buf_end == cert_end) {
-    return std::string();
-  }
-
-  // UTF-16 strings can only have an even number of bytes since each
-  // character occupies two bytes.
-  if ((tag_buf_end - tag_buf) % 2 != 0) {
-    return std::string();
-  }
-
-  std::wstring tag_utf16;
-  tag_utf16.resize((tag_buf_end - tag_buf) / sizeof(uint16_t));
-
-  // Converts the UTF-16 tag from big-endian to little-endian.
-  size_t tag_utf16_idx = 0;
-  for (auto it = tag_buf; it < tag_buf_end; it += sizeof(uint16_t)) {
-    tag_utf16[tag_utf16_idx] = std::wstring::value_type{BigEndianReadU16(it)};
-    ++tag_utf16_idx;
-  }
-
-  return base::WideToUTF8(tag_utf16);
 }
 
 std::string ExeReadTag(const base::FilePath& file) {
@@ -835,7 +788,7 @@ std::string ExeReadTag(const base::FilePath& file) {
   }
 
   const std::vector<const uint8_t> tag_data = {tag->begin(), tag->end()};
-  const std::string tag_string = ReadTagUtf8(tag_data.begin(), tag_data.end());
+  const std::string tag_string = ReadTag(tag_data.begin(), tag_data.end());
   if (tag_string.empty()) {
     LOG(ERROR) << __func__ << ": file is untagged: " << file;
   }
