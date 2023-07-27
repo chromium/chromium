@@ -268,15 +268,15 @@ void InjectNTP(Browser* browser) {
       base::ScopedObservation<PolicyWatcherBrowserAgent,
                               PolicyWatcherBrowserAgentObserverBridge>>
       _policyWatcherObserver;
+
+  // The scene level component for url loading. Is passed down to
+  // browser state level UrlLoadingService instances.
+  std::unique_ptr<SceneUrlLoadingService> _sceneURLLoadingService;
 }
 
 // Navigation View controller for the settings.
 @property(nonatomic, strong)
     SettingsNavigationController* settingsNavigationController;
-
-// The scene level component for url loading. Is passed down to
-// browser state level UrlLoadingService instances.
-@property(nonatomic, assign) SceneUrlLoadingService* sceneURLLoadingService;
 
 // Coordinator for displaying history.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
@@ -359,7 +359,7 @@ void InjectNTP(Browser* browser) {
     [_sceneState addObserver:self];
     [_sceneState.appState addObserver:self];
 
-    _sceneURLLoadingService = new SceneUrlLoadingService();
+    _sceneURLLoadingService = std::make_unique<SceneUrlLoadingService>();
     _sceneURLLoadingService->SetDelegate(self);
 
     _webStateListForwardingObserver =
@@ -854,7 +854,7 @@ void InjectNTP(Browser* browser) {
 // Starts up a single chrome window and its UI.
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
-  DCHECK(self.sceneURLLoadingService);
+  DCHECK(_sceneURLLoadingService.get());
   DCHECK(self.sceneState.appState.mainBrowserState);
 
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
@@ -1016,9 +1016,9 @@ void InjectNTP(Browser* browser) {
   // for the regular and incognito interfaces. This will lazily instantiate the
   // incognito interface if it isn't already created.
   UrlLoadingBrowserAgent::FromBrowser(self.mainInterface.browser)
-      ->SetSceneService(self.sceneURLLoadingService);
+      ->SetSceneService(_sceneURLLoadingService.get());
   UrlLoadingBrowserAgent::FromBrowser(self.incognitoInterface.browser)
-      ->SetSceneService(self.sceneURLLoadingService);
+      ->SetSceneService(_sceneURLLoadingService.get());
   // Observe the web state lists for both browsers.
   _incognitoWebStateObserver = std::make_unique<
       base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
@@ -1225,13 +1225,13 @@ void InjectNTP(Browser* browser) {
   self.browserViewWrangler = nil;
 
   [self.sceneState.appState removeObserver:self];
-  _sceneURLLoadingService = nullptr;
+  _sceneURLLoadingService.reset();
 }
 
 - (void)dealloc {
   // TODO(crbug.com/1454777)
   DUMP_WILL_BE_CHECK(!self.sceneState.UIEnabled);
-  DUMP_WILL_BE_CHECK(!_sceneURLLoadingService);
+  DUMP_WILL_BE_CHECK(!_sceneURLLoadingService.get());
 }
 
 // Formats string for display on iPadOS application switcher with the
@@ -1697,7 +1697,7 @@ void InjectNTP(Browser* browser) {
   params.user_initiated = command.userInitiated;
   params.should_focus_omnibox = command.shouldFocusOmnibox;
   params.inherit_opener = !command.inBackground;
-  self.sceneURLLoadingService->LoadUrlInNewTab(params);
+  _sceneURLLoadingService->LoadUrlInNewTab(params);
 }
 
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
@@ -3546,7 +3546,7 @@ void InjectNTP(Browser* browser) {
   // There should be a new URL loading browser agent for the incognito browser,
   // so set the scene URL loading service on it.
   UrlLoadingBrowserAgent::FromBrowser(self.incognitoInterface.browser)
-      ->SetSceneService(self.sceneURLLoadingService);
+      ->SetSceneService(_sceneURLLoadingService.get());
   _incognitoWebStateObserver = std::make_unique<
       base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
       _webStateListForwardingObserver.get());

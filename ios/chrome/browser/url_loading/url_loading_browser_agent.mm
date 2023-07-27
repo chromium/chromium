@@ -318,12 +318,12 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   ChromeBrowserState* active_browser_state =
       scene_service_->GetCurrentBrowser()->GetBrowserState();
 
-  // Two UrlLoadingServices exist, normal and incognito.  Handle two special
-  // cases that need to be sent up to the SceneUrlLoadingService:
-  // 1) The URL needs to be loaded by the UrlLoadingService for the other mode.
-  // 2) The URL will be loaded in a foreground tab by this UrlLoadingService,
-  // but the UI associated with this UrlLoadingService is not currently visible,
-  // so the SceneUrlLoadingService needs to switch modes before loading the URL.
+  // Two UrlLoadingServices exist per scene, normal and incognito.  Handle two
+  // special cases that need to be sent up to the SceneUrlLoadingService: 1) The
+  // URL needs to be loaded by the UrlLoadingService for the other mode. 2) The
+  // URL will be loaded in a foreground tab by this UrlLoadingService, but the
+  // UI associated with this UrlLoadingService is not currently visible, so the
+  // SceneUrlLoadingService needs to switch modes before loading the URL.
   if (params.in_incognito != browser_state->IsOffTheRecord() ||
       (!params.in_background() &&
        params.in_incognito != active_browser_state->IsOffTheRecord())) {
