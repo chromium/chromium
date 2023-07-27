@@ -63,6 +63,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
       'getPrinterCapabilities',
       'hidePreview',
       'managePrinters',
+      'recordInHistogram',
       'saveAppState',
       'showSystemDialog',
     ]);
@@ -181,7 +182,9 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     this.methodCalled('showSystemDialog');
   }
 
-  recordInHistogram() {}
+  recordInHistogram(histogram: string, bucket: number) {
+    this.methodCalled('recordInHistogram', histogram, bucket);
+  }
 
   recordBooleanHistogram() {}
 

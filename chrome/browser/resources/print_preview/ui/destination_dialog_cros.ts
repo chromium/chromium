@@ -32,13 +32,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {PrintServerStore, PrintServerStoreEventType} from '../data/print_server_store.js';
+import {MetricsContext, PrintPreviewLaunchSourceBucket} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
 import {getTemplate} from './destination_dialog_cros.html.js';
 import {PrintPreviewDestinationListItemElement} from './destination_list_item_cros.js';
 import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
+import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';
 import {PrintPreviewProvisionalDestinationResolverElement} from './provisional_destination_resolver.js';
-import {PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
 
 interface PrintServersChangedEventDetail {
   printServerNames: string[];
@@ -139,6 +140,12 @@ export class PrintPreviewDestinationDialogCrosElement extends
         value: PrinterSetupInfoMessageType.NO_PRINTERS,
         readOnly: true,
       },
+
+      destinationDialogCrosSource_: {
+        type: Number,
+        value: PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS,
+        readOnly: true,
+      },
     };
   }
 
@@ -152,6 +159,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private loadingServerPrinters_: boolean;
   private loadingAnyDestinations_: boolean;
   private isPrintPreviewSetupAssistanceEnabled_: boolean;
+  private metricsContext_: MetricsContext;
 
   private tracker_: EventTracker = new EventTracker();
   private destinationInConfiguring_: Destination|null = null;
@@ -186,6 +194,8 @@ export class PrintPreviewDestinationDialogCrosElement extends
     if (this.destinationStore) {
       this.printServerStore_.setDestinationStore(this.destinationStore);
     }
+    this.metricsContext_ =
+        MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -352,6 +362,10 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
   private onManageButtonClick_() {
     NativeLayerImpl.getInstance().managePrinters();
+    if (this.isPrintPreviewSetupAssistanceEnabled_) {
+      this.metricsContext_.record(
+          PrintPreviewLaunchSourceBucket.DESTINATION_DIALOG_CROS_HAS_PRINTERS);
+    }
   }
 
   /**

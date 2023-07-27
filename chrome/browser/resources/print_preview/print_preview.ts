@@ -82,7 +82,7 @@ export {PluginProxy, PluginProxyImpl, ViewportChangedCallback} from './ui/plugin
 export {PreviewAreaState, PreviewTicket, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 // <if expr="is_chromeos">
-export {PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from './ui/printer_setup_info_cros.js';
+export {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource, PrintPreviewPrinterSetupInfoCrosElement} from './ui/printer_setup_info_cros.js';
 // </if>
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
 export {SelectMixin, SelectMixinInterface} from './ui/select_mixin.js';

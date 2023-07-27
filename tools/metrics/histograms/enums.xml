@@ -88097,6 +88097,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="PREVIEW_EVENT_INITIATED"/>
 </enum>
 
+<enum name="PrintPreviewLaunchSourceType">
+  <int value="0" label="Preview area shows connection error manage button"/>
+  <int value="1" label="Destination dialog no printers manage button"/>
+  <int value="2" label="Destination dialog has printers manage button"/>
+</enum>
+
 <enum name="PrintPreviewPdfActionBuckets">
   <obsolete>
     Deprecated 07/2019.

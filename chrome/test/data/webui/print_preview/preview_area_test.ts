@@ -26,6 +26,8 @@ const preview_area_test = {
     // <if expr="is_chromeos">
     StateChangesPrinterSetupCros:
         'state changes with printer setup flag enabled',
+    ManagePrinterMetricsCros:
+        'manage printer metrics triggered with printer setup flag enabled',
     // </if>
     ViewportSizeChanges: 'viewport size changes',
   },
@@ -178,6 +180,49 @@ suite(preview_area_test.suiteName, function() {
           previewArea.shadowRoot!
               .querySelector(
                   PrintPreviewPrinterSetupInfoCrosElement.is)!.messageType);
+    });
+  });
+
+  // Verify correct metric is triggered when launch printer settings button
+  // is pressed from preview-area error state.
+  test(preview_area_test.TestNames.ManagePrinterMetricsCros, function() {
+    previewArea.remove();
+    loadTimeData.overrideValues({
+      isPrintPreviewSetupAssistanceEnabled: true,
+    });
+    setupPreviewElement();
+
+    // Simulate starting the preview.
+    const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
+    previewArea.state = State.READY;
+    previewArea.startPreview(false);
+
+    return whenPreviewStarted.then(() => {
+      // If destination capabilities fetch fails, the invalid printer error
+      // will be set by the destination settings.
+      previewArea.destination = new Destination(
+          'InvalidDevice', DestinationOrigin.LOCAL, 'InvalidName');
+      previewArea.state = State.ERROR;
+      previewArea.error = Error.INVALID_PRINTER;
+      const managePrintersFunction = 'managePrinters';
+      const recordMetricFunction = 'recordInHistogram';
+      assertEquals(0, nativeLayer.getCallCount(managePrintersFunction));
+      assertEquals(0, nativeLayer.getCallCount(recordMetricFunction));
+
+      // Click button to launch settings.
+      const setupInfoElement = previewArea.shadowRoot!.querySelector(
+          PrintPreviewPrinterSetupInfoCrosElement.is)!;
+      const managePrintersButton =
+          setupInfoElement.shadowRoot!.querySelector('cr-button')!;
+      managePrintersButton.click();
+
+      // Verify manage printers button clicked and triggers recording histogram.
+      assertEquals(1, nativeLayer.getCallCount(managePrintersFunction));
+      assertEquals(1, nativeLayer.getCallCount(recordMetricFunction));
+      const call = nativeLayer.getArgs(recordMetricFunction)[0];
+      assertEquals('PrintPreview.PrinterSettingsLaunchSource', call[0]);
+      // Call should use bucket `PREVIEW_AREA_CONNECTION_ERROR`.
+      assertEquals(0, call[1]);
     });
   });
   // </if>

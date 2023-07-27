@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayerImpl, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -17,6 +17,7 @@ const printer_setup_info_cros_test = {
     ButtonLocalized: 'Button text is localized',
     ManagePrintersButton: 'Manage printers button launches settings',
     MessageMatchesMessageType: 'Message matches message type',
+    ManagePrintersButtonMetrics: 'Manage printers button records metrics',
   },
 };
 
@@ -50,8 +51,24 @@ suite(printer_setup_info_cros_test.suiteName, function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setupInfoElement =
         document.createElement(PrintPreviewPrinterSetupInfoCrosElement.is);
+    setupInfoElement.setMetricsSourceForTesting(
+        PrinterSetupInfoMetricsSource.PREVIEW_AREA);
     document.body.appendChild(setupInfoElement);
     flush();
+  }
+
+
+  /**
+   * Checks that `recordInHistogram` is called with expected bucket.
+   */
+  function verifyRecordInHistogramCall(
+      callIndex: number, expectedBucket: number): void {
+    const calls = nativeLayer.getArgs('recordInHistogram');
+    assertTrue(!!calls && calls.length > 0);
+    assertTrue(callIndex < calls.length);
+    const [histogramName, bucket] = calls[callIndex];
+    assertEquals('PrintPreview.PrinterSettingsLaunchSource', histogramName);
+    assertEquals(expectedBucket, bucket);
   }
 
   /** Verifies element can be added to UI and display. */
@@ -151,5 +168,34 @@ suite(printer_setup_info_cros_test.suiteName, function() {
         assertEquals(
             setupInfoElement.i18n(printerOfflineMessageDetailLabelKey),
             messageDetail.textContent!.trim());
+      });
+
+  /**
+   * Verifies manage printers button invokes launch settings metric.
+   */
+  test(
+      printer_setup_info_cros_test.TestNames.ManagePrintersButtonMetrics,
+      function() {
+        setupElement();
+        const recordMetricsFunction = 'recordInHistogram';
+        assertEquals(0, nativeLayer.getCallCount(recordMetricsFunction));
+
+        // Set metrics source to destination-dialog-cros and click.
+        setupInfoElement.setMetricsSourceForTesting(
+            PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS);
+        const managePrinters =
+            getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
+        managePrinters.click();
+
+        // Call should use bucket `DESTINATION_DIALOG_CROS_NO_PRINTERS`.
+        verifyRecordInHistogramCall(/*callIndex=*/ 0, /*expectedBucket=*/ 1);
+
+        // Set metrics source to destination-dialog-cros and click.
+        setupInfoElement.setMetricsSourceForTesting(
+            PrinterSetupInfoMetricsSource.PREVIEW_AREA);
+        managePrinters.click();
+
+        // Call should use bucket `PREVIEW_AREA_CONNECTION_ERROR`.
+        verifyRecordInHistogramCall(/*callIndex=*/ 1, /*expectedBucket=*/ 0);
       });
 });

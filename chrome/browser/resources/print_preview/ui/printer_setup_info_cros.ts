@@ -7,9 +7,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './print_preview_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MetricsContext, PrintPreviewLaunchSourceBucket} from '../metrics.js';
 import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
 
 import {getTemplate} from './printer_setup_info_cros.html.js';
@@ -23,6 +24,11 @@ import {getTemplate} from './printer_setup_info_cros.html.js';
  */
 
 const PrintPreviewPrinterSetupInfoCrosElementBase = I18nMixin(PolymerElement);
+
+export enum PrinterSetupInfoMetricsSource {
+  PREVIEW_AREA,
+  DESTINATION_DIALOG_CROS,
+}
 
 export enum PrinterSetupInfoMessageType {
   NO_PRINTERS,
@@ -68,15 +74,21 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
         type: Number,
         value: PrinterSetupInfoMessageType.NO_PRINTERS,
       },
+
+      metricsSource: Number,
     };
   }
 
   messageType: PrinterSetupInfoMessageType;
+  private metricsSource: PrinterSetupInfoMetricsSource;
   private nativeLayer: NativeLayer;
+  private metricsContext: MetricsContext;
 
   override connectedCallback() {
     super.connectedCallback();
     this.nativeLayer = NativeLayerImpl.getInstance();
+    this.metricsContext =
+        MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
   }
 
   private getMessageDetail(): string {
@@ -95,6 +107,24 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
 
   private onManagePrintersClicked(): void {
     this.nativeLayer.managePrinters();
+    switch (this.metricsSource) {
+      case PrinterSetupInfoMetricsSource.PREVIEW_AREA:
+        this.metricsContext.record(
+            PrintPreviewLaunchSourceBucket.PREVIEW_AREA_CONNECTION_ERROR);
+        break;
+      case PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS:
+        // `<print-preview-printer-setup-info-cros>` is only displayed when
+        // there are no printers.
+        this.metricsContext.record(
+            PrintPreviewLaunchSourceBucket.DESTINATION_DIALOG_CROS_NO_PRINTERS);
+        break;
+      default:
+        assertNotReached();
+    }
+  }
+
+  setMetricsSourceForTesting(source: PrinterSetupInfoMetricsSource): void {
+    this.metricsSource = source;
   }
 }
 

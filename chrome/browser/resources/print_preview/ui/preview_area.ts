@@ -34,7 +34,7 @@ import {MARGIN_KEY_MAP, PrintPreviewMarginControlContainerElement} from './margi
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
 // <if expr="is_chromeos">
-import {PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
+import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';
 // </if>
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -125,6 +125,12 @@ export class PrintPreviewPreviewAreaElement extends
       printerOffline_: {
         type: Number,
         value: PrinterSetupInfoMessageType.PRINTER_OFFLINE,
+        readOnly: true,
+      },
+
+      previewAreaSource_: {
+        type: Number,
+        value: PrinterSetupInfoMetricsSource.PREVIEW_AREA,
         readOnly: true,
       },
       // </if>

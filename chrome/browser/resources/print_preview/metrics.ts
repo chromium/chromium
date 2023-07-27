@@ -44,6 +44,25 @@ export enum PrintSettingsUiBucket {
   PRINT_SETTINGS_UI_MAX_BUCKET = 6
 }
 
+// <if expr="is_chromeos">
+/**
+ * Launch printer settings usage metric buckets.
+ */
+export enum PrintPreviewLaunchSourceBucket {
+  // "Manage printers" button in preview-area when it fails to fetch
+  // capabilities.
+  PREVIEW_AREA_CONNECTION_ERROR = 0,
+  // "Manage printers" button in destination-dialog-cros when there are no
+  // destinations.
+  DESTINATION_DIALOG_CROS_NO_PRINTERS = 1,
+  // "Manage printers" button in destination-dialog-cros when there are
+  // destinations.
+  DESTINATION_DIALOG_CROS_HAS_PRINTERS = 2,
+  // Max value.
+  PRINT_PREVIEW_LAUNCH_SOURCE_MAX_BUCKET = 3,
+}
+// </if>
+
 /* A context for recording a value in a specific UMA histogram. */
 export class MetricsContext {
   private histogram_: string;
@@ -78,4 +97,16 @@ export class MetricsContext {
         'PrintPreview.PrintSettingsUi',
         PrintSettingsUiBucket.PRINT_SETTINGS_UI_MAX_BUCKET);
   }
+
+  // <if expr="is_chromeos">
+  /**
+   * Get `MetricsContext` for `PrintPreview.PrinterSettingsLaunchSource`
+   * histogram.
+   */
+  static getLaunchPrinterSettingsMetricsContextCros(): MetricsContext {
+    return new MetricsContext(
+        'PrintPreview.PrinterSettingsLaunchSource',
+        PrintPreviewLaunchSourceBucket.PRINT_PREVIEW_LAUNCH_SOURCE_MAX_BUCKET);
+  }
+  // </if>
 }
