@@ -7,7 +7,7 @@
 load("@builtin//struct.star", "module")
 
 __KNOWN_CONFIG_OPTIONS = [
-    "remote_to_reproxy",
+    "remote_all",
 ]
 
 def __check(ctx):

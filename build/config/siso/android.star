@@ -56,11 +56,8 @@ def __step_config(ctx, step_config):
                 # Slow actions that exceed deadline on the default worker pool.
                 "./obj/chrome/android/chrome_test_java.turbine.jar": {"platform_ref": "large"},
             },
-            # TODO(crbug.com/1452038): include only required jar files in GN config.
-            "indirect_inputs": {
-                "includes": ["*.jar"],
-            },
-            "remote": remote_run,
+            # TODO(b/284252142): Run turbine actions locally by default because it slows down developer builds.
+            "remote": config.get(ctx, "remote_all"),
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -94,10 +91,6 @@ def __step_config(ctx, step_config):
                 "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
                 "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
-            # TODO(crbug.com/1452038): include only required java, jar files in GN config.
-            "indirect_inputs": {
-                "includes": ["*.java", "*.ijar.jar", "*.turbine.jar", "*.kt"],
-            },
             # Don't include files under --generated-dir.
             # This is probably optimization for local incrmental builds.
             # However, this is harmful for remote build cache hits.
@@ -106,16 +99,6 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
-        },
-        {
-            # TODO(b/284252142): this dex action takes long time even on a n2-highmem-8 worker.
-            # It needs to figure out how to make it faster. e.g. use intermediate files.
-            "name": "android/dex-local",
-            "command_prefix": "python3 ../../build/android/gyp/dex.py",
-            "action_outs": [
-                "./obj/android_webview/tools/system_webview_shell/system_webview_shell_apk/system_webview_shell_apk.mergeddex.jar",
-            ],
-            "remote": False,
         },
         {
             "name": "android/dex",
@@ -136,7 +119,8 @@ def __step_config(ctx, step_config):
             # Fo remote actions, let's ignore them, assuming remote cache hits compensate.
             "ignore_extra_input_pattern": ".*\\.dex",
             "ignore_extra_output_pattern": ".*\\.dex",
-            "remote": remote_run,
+            # TODO(b/284252142): Run dex actions locally by default because it slows down developer builds.
+            "remote": config.get(ctx, "remote_all"),
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -230,10 +214,12 @@ def __android_compile_java_handler(ctx, cmd):
     #   --header-jar obj/chrome/android/chrome_test_java.turbine.jar
     #   --classpath=\[\"obj/chrome/android/chrome_test_java.turbine.jar\"\]
     #   --classpath=@FileArg\(gen/chrome/android/chrome_test_java.build_config.json:deps_info:javac_full_interface_classpath\)
+    #   --kotlin-jar-path=obj/chrome/browser/tabmodel/internal/java.kotlinc.jar
     #   --chromium-code=1
     #   --warnings-as-errors
     #   --jar-info-exclude-globs=\[\"\*/R.class\",\ \"\*/R\\\$\*.class\",\ \"\*/Manifest.class\",\ \"\*/Manifest\\\$\*.class\",\ \"\*/\*GEN_JNI.class\"\]
     #   @gen/chrome/android/chrome_test_java.sources
+
     out = cmd.outputs[0]
     outputs = [
         out + ".md5.stamp",
@@ -245,7 +231,7 @@ def __android_compile_java_handler(ctx, cmd):
         if arg.startswith("@"):
             sources = str(ctx.fs.read(ctx.fs.canonpath(arg.removeprefix("@")))).splitlines()
             inputs += sources
-        for k in ["--java-srcjars=", "--classpath=", "--bootclasspath=", "--processorpath="]:
+        for k in ["--java-srcjars=", "--classpath=", "--bootclasspath=", "--processorpath=", "--kotlin-jar-path="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 fn, v = __filearg(ctx, arg)
