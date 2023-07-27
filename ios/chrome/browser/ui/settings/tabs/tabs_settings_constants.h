@@ -10,4 +10,10 @@
 // The accessibility identifier of the Tabs setting table view.
 extern NSString* const kTabsSettingsTableViewId;
 
+// The accessibility identifier of the Inactive tabs setting table view.
+extern NSString* const kInactiveTabsSettingsTableViewId;
+
+// The accessibility identifier of the tab pickup setting table view.
+extern NSString* const kTabPickupSettingsTableViewId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_TABS_TABS_SETTINGS_CONSTANTS_H_

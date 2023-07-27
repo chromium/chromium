@@ -1,0 +1,45 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_pickup") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_pickup_settings_coordinator.h",
+    "tab_pickup_settings_coordinator.mm",
+    "tab_pickup_settings_mediator.h",
+    "tab_pickup_settings_mediator.mm",
+  ]
+  deps = [
+    ":tab_pickup_ui",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/ui/settings/utils",
+  ]
+}
+
+source_set("tab_pickup_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_pickup_settings_consumer.h",
+    "tab_pickup_settings_table_view_controller.h",
+    "tab_pickup_settings_table_view_controller.mm",
+    "tab_pickup_settings_table_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}

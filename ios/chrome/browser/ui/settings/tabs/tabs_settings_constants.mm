@@ -9,3 +9,9 @@
 #endif
 
 NSString* const kTabsSettingsTableViewId = @"kTabsSettingsTableViewId";
+
+NSString* const kInactiveTabsSettingsTableViewId =
+    @"kInactiveTabsSettingsTableViewId";
+
+NSString* const kTabPickupSettingsTableViewId =
+    @"kTabPickupSettingsTableViewId";

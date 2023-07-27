@@ -143,7 +143,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/reading_list:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:inactive_tabs_constants",
+    "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/common/ui/confirmation_alert:constants",

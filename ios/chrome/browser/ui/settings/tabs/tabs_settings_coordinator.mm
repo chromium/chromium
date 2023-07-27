@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller.h"
@@ -24,6 +25,8 @@
   TabsSettingsTableViewController* _viewController;
   // Coordinator for the inactive tabs settings.
   InactiveTabsSettingsCoordinator* _inactiveTabsSettingsCoordinator;
+  // Coordinator for the tab pickup settings.
+  TabPickupSettingsCoordinator* _tabPickupSettingsCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -73,7 +76,10 @@
 }
 
 - (void)showTabPickupSettings {
-  // TODO(crbug.com/1457175): Implement this.
+  _tabPickupSettingsCoordinator = [[TabPickupSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  [_tabPickupSettingsCoordinator start];
 }
 
 @end

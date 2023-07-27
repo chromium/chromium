@@ -22382,6 +22382,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabPickupSettingsBack">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    Reported when user goes back from Tab Pickup Settings UI to Tabs Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileTabPickupSettingsClose">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    Reported when Tab Pickup Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileTabPinned">
   <owner>ewannpv@chromium.org</owner>
   <owner>pakzhygitov@google.com</owner>

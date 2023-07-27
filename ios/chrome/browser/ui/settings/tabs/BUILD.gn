@@ -20,6 +20,7 @@ source_set("tabs") {
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",
+    "//ios/chrome/browser/ui/settings/tabs/tab_pickup",
   ]
 }
 
