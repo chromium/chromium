@@ -122,8 +122,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
   // the names set in read_anything_font_model.cc.
-  // TODO(1266555): The displayed names of the fonts should be messages that
-  //                will be translated to other languages.
   private defaultFontName_: string = 'sans-serif';
   private validFontNames_: Array<{name: string, css: string}> = [
     {name: 'Poppins', css: 'Poppins'},

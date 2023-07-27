@@ -18,7 +18,7 @@
     display: block;
     padding: 6px 0 6px 16px;
   }
-  /* TODO(b/1465029): Investigate why chrome refresh colors don't always 
+  /* TODO(b/1465029): Investigate why chrome refresh colors don't always
      work on first launch. */
   :host-context([chrome-refresh-2023]) cr-action-menu {
     --cr-menu-background-color: var(--color-side-panel-menu-background, white);
@@ -157,8 +157,6 @@
       <iron-icon class="button-image" icon="cr:arrow-back"></iron-icon>
       $i18n{back}
     </button>
-  <!-- TODO(1266555): The displayed names of the fonts should be messages that
-                  will be translated to other languages.-->
     <button class="dropdown-item" on-click="onPoppinsClick_">
       Poppins
     </button>
