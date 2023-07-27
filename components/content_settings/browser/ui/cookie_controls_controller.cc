@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
@@ -39,15 +40,44 @@ namespace {
 // high confidence breakage signal.
 constexpr int kFrequentReloadThreshold = 3;
 
+constexpr char kEntryPointAnimatedKey[] = "entry_point_animated";
+
+base::Value::Dict GetMetadata(HostContentSettingsMap* settings_map,
+                              const GURL& url) {
+  base::Value stored_value = settings_map->GetWebsiteSetting(
+      url, url, ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr);
+  if (!stored_value.is_dict()) {
+    return base::Value::Dict();
+  }
+
+  return std::move(stored_value.GetDict());
+}
+
+bool WasEntryPointAlreadyAnimated(const base::Value::Dict& metadata) {
+  absl::optional<bool> entry_point_animated =
+      metadata.FindBool(kEntryPointAnimatedKey);
+  return entry_point_animated.has_value() && entry_point_animated.value();
+}
+
+void ApplyMetadataChanges(HostContentSettingsMap* settings_map,
+                          const GURL& url,
+                          base::Value::Dict&& dict) {
+  settings_map->SetWebsiteSettingDefaultScope(
+      url, url, ContentSettingsType::COOKIE_CONTROLS_METADATA,
+      base::Value(std::move(dict)));
+}
+
 }  // namespace
 
 namespace content_settings {
 
 CookieControlsController::CookieControlsController(
     scoped_refptr<CookieSettings> cookie_settings,
-    scoped_refptr<CookieSettings> original_cookie_settings)
+    scoped_refptr<CookieSettings> original_cookie_settings,
+    HostContentSettingsMap* settings_map)
     : cookie_settings_(cookie_settings),
-      original_cookie_settings_(original_cookie_settings) {
+      original_cookie_settings_(original_cookie_settings),
+      settings_map_(settings_map) {
   cookie_observation_.Observe(cookie_settings_.get());
 }
 
@@ -176,6 +206,12 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
     return CookieControlsBreakageConfidenceLevel::kMedium;
   }
 
+  // Only high confidence signals from now on. Check if the entry point was
+  // already animated for the site and return medium confidence in that case.
+  if (WasEntryPointAlreadyAnimated(GetMetadata(settings_map_, url))) {
+    return CookieControlsBreakageConfidenceLevel::kMedium;
+  }
+
   if (recent_reloads_count_ >= kFrequentReloadThreshold) {
     return CookieControlsBreakageConfidenceLevel::kHigh;
   }
@@ -186,9 +222,6 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
           score, blink::mojom::EngagementLevel::HIGH)) {
     return CookieControlsBreakageConfidenceLevel::kHigh;
   }
-
-  // TODO(crbug.com/1446230): Record if the entry point was already animated for
-  // the site. Only animate it once per site.
 
   return CookieControlsBreakageConfidenceLevel::kMedium;
 }
@@ -213,6 +246,13 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
           ContentSetting::CONTENT_SETTING_ALLOW);
     }
   }
+}
+
+void CookieControlsController::OnEntryPointAnimated() {
+  const GURL& url = GetWebContents()->GetLastCommittedURL();
+  base::Value::Dict metadata = GetMetadata(settings_map_, url);
+  metadata.Set(kEntryPointAnimatedKey, base::Value(true));
+  ApplyMetadataChanges(settings_map_, url, std::move(metadata));
 }
 
 bool CookieControlsController::FirstPartyCookiesBlocked() {

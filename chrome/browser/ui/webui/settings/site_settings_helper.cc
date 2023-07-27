@@ -197,6 +197,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
      nullptr},
     {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, nullptr},
+    {ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

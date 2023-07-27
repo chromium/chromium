@@ -108,7 +108,8 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
     cookie_settings_ = CookieSettingsFactory::GetForProfile(profile());
     cookie_controls_ =
         std::make_unique<content_settings::CookieControlsController>(
-            cookie_settings_, nullptr);
+            cookie_settings_, nullptr,
+            HostContentSettingsMapFactory::GetForProfile(profile()));
     cookie_controls_->AddObserver(mock());
     testing::Mock::VerifyAndClearExpectations(mock());
   }
@@ -301,7 +302,8 @@ TEST_F(CookieControlsTest, Incognito) {
   content_settings::CookieControlsController incognito_cookie_controls(
       CookieSettingsFactory::GetForProfile(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
-      CookieSettingsFactory::GetForProfile(profile()));
+      CookieSettingsFactory::GetForProfile(profile()),
+      HostContentSettingsMapFactory::GetForProfile(profile()));
   incognito_cookie_controls.AddObserver(&incognito_mock_);
 
   // Navigate incognito web_contents to the same URL.
@@ -640,7 +642,8 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
   content_settings::CookieControlsController incognito_cookie_controls(
       CookieSettingsFactory::GetForProfile(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
-      CookieSettingsFactory::GetForProfile(profile()));
+      CookieSettingsFactory::GetForProfile(profile()),
+      HostContentSettingsMapFactory::GetForProfile(profile()));
   incognito_cookie_controls.AddObserver(&incognito_mock_);
 
   // Navigate incognito web_contents to the same URL.
@@ -713,6 +716,7 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
 TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
   // Update on the initial web contents to ensure the tab observer is setup.
   cookie_controls()->Update(web_contents());
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsStatus::kEnabled,
@@ -768,7 +772,16 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
       StorageType::DATABASE,
       CreateFirstPartyStorageKey(GURL("https://example.com")),
       /*blocked_by_policy=*/false);
+  cookie_controls()->OnEntryPointAnimated();
   testing::Mock::VerifyAndClearExpectations(mock());
+
+  // After the entry point was animated (due to high confidence signal), a
+  // setting is recorded.
+  base::Value stored_value = hcsm->GetWebsiteSetting(
+      GURL("https://example.com"), GURL(),
+      ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr);
+  EXPECT_TRUE(stored_value.is_dict());
+  EXPECT_TRUE(stored_value.GetDict().FindBool("entry_point_animated").value());
 
   // Visiting some other site that have access site data, should reset the
   // confidence level.
@@ -844,6 +857,8 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
 }
 
 TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+
   // An engagement score above HIGH.
   const int kHighEngagement = 60;
   // An engagement score below MEDIUM.
@@ -873,7 +888,16 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
       StorageType::DATABASE,
       CreateFirstPartyStorageKey(GURL("https://highengagement.com")),
       /*blocked_by_policy=*/false);
+  cookie_controls()->OnEntryPointAnimated();
   testing::Mock::VerifyAndClearExpectations(mock());
+
+  // After the entry point was animated (due to high confidence signal), a
+  // setting is recorded.
+  base::Value stored_value = hcsm->GetWebsiteSetting(
+      GURL("https://highengagement.com"), GURL(),
+      ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr);
+  EXPECT_TRUE(stored_value.is_dict());
+  EXPECT_TRUE(stored_value.GetDict().FindBool("entry_point_animated").value());
 
   // Visiting some other site resets the confidence level.
   NavigateAndCommit(GURL("https://somethingelse.com"));
@@ -895,6 +919,18 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
   page_specific_content_settings()->OnStorageAccessed(
       StorageType::DATABASE,
       CreateFirstPartyStorageKey(GURL("https://somethingelse.com")),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Revisiting high site engagement site doesn't lead to high confidence signal
+  // because the entry point was already animated for that site.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  NavigateAndCommit(GURL("https://highengagement.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE,
+      CreateFirstPartyStorageKey(GURL("https://highengagement.com")),
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 }

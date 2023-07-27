@@ -219,7 +219,8 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
       CookieSettingsFactory::GetForProfile(profile),
       profile->IsOffTheRecord()
           ? CookieSettingsFactory::GetForProfile(profile->GetOriginalProfile())
-          : nullptr);
+          : nullptr,
+      HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
 bool ChromePageInfoDelegate::IsIsolatedWebApp() {

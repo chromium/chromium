@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/grit/generated_resources.h"
@@ -91,7 +93,8 @@ void CookieControlsIconView::UpdateImpl() {
               CookieSettingsFactory::GetForProfile(profile),
               profile->IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
                                               profile->GetOriginalProfile())
-                                        : nullptr);
+                                        : nullptr,
+              HostContentSettingsMapFactory::GetForProfile(profile));
       controller_observation_.Observe(controller_.get());
     }
     controller_->Update(web_contents);
@@ -112,6 +115,11 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
         if (label.has_value()) {
           GetViewAccessibility().AnnounceText(
               l10n_util::GetStringUTF16(label.value()));
+        }
+        if (controller_) {
+          controller_->OnEntryPointAnimated();
+        } else {
+          CHECK_IS_TEST();
         }
       }
       RecordShownActionForConfidence(confidence_);

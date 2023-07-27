@@ -337,6 +337,9 @@ enum class ContentSettingsType : int32_t {
   // https://github.com/screen-share/capture-all-screens
   ALL_SCREEN_CAPTURE,
 
+  // Stores per origin metadata for cookie controls.
+  COOKIE_CONTROLS_METADATA,
+
   NUM_TYPES,
 };
 

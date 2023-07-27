@@ -1806,6 +1806,19 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
             content_settings::URLToSchemefulSitePattern(secondary_url));
 
   // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
+  host_content_settings_map->SetWebsiteSettingDefaultScope(
+      primary_url, secondary_url, ContentSettingsType::COOKIE_CONTROLS_METADATA,
+      base::Value(base::Value::Dict()));
+
+  settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::COOKIE_CONTROLS_METADATA);
+
+  EXPECT_EQ(settings[0].primary_pattern,
+            content_settings::URLToSchemefulSitePattern(primary_url));
+  EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
+
+  // Testing cases:
   //   WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
   host_content_settings_map->SetContentSettingDefaultScope(
       primary_url, secondary_url, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,

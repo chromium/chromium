@@ -595,6 +595,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
                                                    website_settings_filter,
                                                    host_content_settings_map_);
+
+    // Cleared for both DATA_TYPE_HISTORY and DATA_TYPE_CONTENT_SETTINGS.
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::COOKIE_CONTROLS_METADATA, delete_begin, delete_end,
+        website_settings_filter);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -714,6 +719,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                                                   delete_end_);
       privacy_sandbox_settings->ClearTopicSettings(delete_begin_, delete_end_);
     }
+
+    // Cleared for both DATA_TYPE_HISTORY and DATA_TYPE_CONTENT_SETTINGS.
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::COOKIE_CONTROLS_METADATA, delete_begin, delete_end,
+        website_settings_filter);
 
 #if !BUILDFLAG(IS_ANDROID)
     content::HostZoomMap* zoom_map =

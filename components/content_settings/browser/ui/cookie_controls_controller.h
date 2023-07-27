@@ -36,7 +36,8 @@ class CookieControlsController
  public:
   CookieControlsController(
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
-      scoped_refptr<content_settings::CookieSettings> original_cookie_settings);
+      scoped_refptr<content_settings::CookieSettings> original_cookie_settings,
+      HostContentSettingsMap* settings_map);
   CookieControlsController(const CookieControlsController& other) = delete;
   CookieControlsController& operator=(const CookieControlsController& other) =
       delete;
@@ -51,6 +52,9 @@ class CookieControlsController
   // Called when the user clicks on the button to enable/disable cookie
   // blocking.
   void OnCookieBlockingEnabledForSite(bool block_third_party_cookies);
+
+  // Called when the entry point for cookie controls was animated.
+  void OnEntryPointAnimated();
 
   // Returns whether first-party cookies are blocked.
   bool FirstPartyCookiesBlocked();
@@ -158,6 +162,7 @@ class CookieControlsController
   // corresponds to the regular profile when |cookie_settings_| is incognito.
   // This may be null.
   scoped_refptr<content_settings::CookieSettings> original_cookie_settings_;
+  raw_ptr<HostContentSettingsMap> settings_map_;
 
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>

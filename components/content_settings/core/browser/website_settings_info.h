@@ -79,6 +79,11 @@ class WebsiteSettingsInfo {
     // * MEDIA_ENGAGEMENT is always scoped to the origin of the frame that a
     // video is played in. A `FRAME_ORIGIN_ONLY` scope could be considered.
     GENERIC_SINGLE_ORIGIN_SCOPE,
+
+    // Settings scoped to the schemeful site of the requesting frame only.
+    // Similar to `REQUESTING_ORIGIN_ONLY_SCOPE` but is site-scoped, not
+    // origin-scoped.
+    REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
   };
 
   enum IncognitoBehavior {

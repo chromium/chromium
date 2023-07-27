@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -70,7 +71,8 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
     TestWithBrowserView::SetUp();
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
-        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr);
+        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
     PageActionIconView* button =
         browser_view()->toolbar_button_provider()->GetPageActionIconView(
@@ -138,7 +140,8 @@ class CookieControlsBubbleViewControllerTest
     empty_reloading_view_ = std::make_unique<views::View>();
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
-        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr);
+        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
     ON_CALL(*mock_bubble_view(), GetContentView())
         .WillByDefault(testing::Return(mock_content_view()));
@@ -279,7 +282,8 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
             PageActionIconType::kCookieControls);
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
-        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr);
+        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(button);
     coordinator_->ShowBubble(web_contents, controller_.get());

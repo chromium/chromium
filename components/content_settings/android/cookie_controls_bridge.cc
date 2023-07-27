@@ -39,11 +39,15 @@ void CookieControlsBridge::UpdateWebContents(
   content::BrowserContext* original_context =
       content::BrowserContextFromJavaHandle(joriginal_browser_context_handle);
 
+  content::BrowserContext* context = web_contents->GetBrowserContext();
   auto* permissions_client = permissions::PermissionsClient::Get();
+
   controller_ = std::make_unique<CookieControlsController>(
-      permissions_client->GetCookieSettings(web_contents->GetBrowserContext()),
+      permissions_client->GetCookieSettings(context),
       original_context ? permissions_client->GetCookieSettings(original_context)
-                       : nullptr);
+                       : nullptr,
+      permissions_client->GetSettingsMap(context));
+
   old_observation_.Reset();
   old_observation_.Observe(controller_.get());
   observation_.Reset();

@@ -64,7 +64,8 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
             ->GetPageActionIconView(PageActionIconType::kCookieControls);
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
-        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr);
+        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(button);
   }

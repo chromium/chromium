@@ -125,6 +125,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     // Removed GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS in M116.
     {ContentSettingsType::MIDI, 102},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, 103},
+    {ContentSettingsType::COOKIE_CONTROLS_METADATA, 104},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
