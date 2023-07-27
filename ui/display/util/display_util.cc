@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "components/device_event_log/device_event_log.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/icc_profile.h"
@@ -234,6 +235,12 @@ bool HasInternalDisplay() {
 }
 
 void SetInternalDisplayIds(base::flat_set<int64_t> display_ids) {
+  // TODO(crbug.com/1457025): Fix isInternal inaccuracies and remove logging.
+  DISPLAY_LOG(DEBUG) << "Internal display ids updated, count: "
+                     << display_ids.size();
+  for (const auto& display_id : display_ids) {
+    DISPLAY_LOG(DEBUG) << "Internal display id: " << display_id;
+  }
   *internal_display_ids() = std::move(display_ids);
 }
 

@@ -2632,6 +2632,7 @@ source_set("browser") {
     ]
     deps += [
       ":mac_helpers",
+      "//components/device_event_log",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//components/remote_cocoa/common:mojo",

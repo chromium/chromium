@@ -5,6 +5,8 @@
 #ifndef UI_DISPLAY_SCREEN_INFO_H_
 #define UI_DISPLAY_SCREEN_INFO_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_export.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
@@ -92,6 +94,9 @@ struct DISPLAY_EXPORT ScreenInfo {
   ScreenInfo& operator=(const ScreenInfo& other);
   bool operator==(const ScreenInfo& other) const;
   bool operator!=(const ScreenInfo& other) const;
+
+  // Returns a string representation of the screen.
+  std::string ToString() const;
 };
 
 }  // namespace display

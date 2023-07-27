@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/remote_cocoa/browser/ns_view_ids.h"
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "components/viz/common/features.h"
@@ -210,6 +211,13 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   screen_infos_ = screen->GetScreenInfosNearestDisplay(
       screen->GetDisplayNearestWindow([NSApp keyWindow]).id());
   original_screen_infos_ = screen_infos_;
+
+  // TODO(crbug.com/1457025): Fix isInternal inaccuracies and remove logging.
+  DISPLAY_LOG(DEBUG) << "RWHVMac ScreenInfos initialized, count: "
+                     << screen_infos_.screen_infos.size();
+  for (const auto& screen_info : screen_infos_.screen_infos) {
+    DISPLAY_LOG(DEBUG) << screen_info.ToString();
+  }
 
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
@@ -871,6 +879,15 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   if (dip_size_changed || current_display_changed) {
     browser_compositor_->UpdateSurfaceFromNSView(
         view_bounds_in_window_dip_.size());
+  }
+
+  // TODO(crbug.com/1457025): Fix isInternal innacuracies and remove logging.
+  if (any_display_changed) {
+    DISPLAY_LOG(DEBUG) << "RWHVMac ScreenInfos updated, count: "
+                       << screen_infos_.screen_infos.size();
+    for (const auto& screen_info : screen_infos_.screen_infos) {
+      DISPLAY_LOG(DEBUG) << screen_info.ToString();
+    }
   }
 
   // TODO(crbug.com/1169312): Unify display info caching and change detection.

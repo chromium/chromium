@@ -24,6 +24,7 @@ component("util") {
 
   deps = [
     "//base",
+    "//components/device_event_log",
     "//skia",
     "//ui/display/types",
     "//ui/gfx:color_space",
