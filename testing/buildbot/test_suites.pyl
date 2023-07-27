@@ -7017,13 +7017,11 @@
     'gpu_angle_ios_gtests': {
       'gpu_angle_ios_end2end_gtests': {
         'variants': [
-          'SIM_IPHONE_14_16_2',
           'SIM_IPHONE_14_17_0',
         ],
       },
       'gpu_angle_ios_white_box_gtests': {
         'variants': [
-          'SIM_IPHONE_14_16_2',
           'SIM_IPHONE_14_17_0',
         ],
       },
