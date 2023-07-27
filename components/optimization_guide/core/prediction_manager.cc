@@ -957,7 +957,7 @@ void PredictionManager::RemoveModelFromStore(
   if (model_and_features_store_ &&
       model_and_features_store_->FindPredictionModelEntryKey(
           optimization_target, &model_entry_key)) {
-    LOCAL_HISTOGRAM_BOOLEAN(
+    base::UmaHistogramBoolean(
         "OptimizationGuide.PredictionModelRemoved." +
             GetStringNameForOptimizationTarget(optimization_target),
         true);
