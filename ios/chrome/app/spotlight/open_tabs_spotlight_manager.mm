@@ -178,14 +178,6 @@ using web::WebState;
   _webStateListObserverBridges.erase(webStateList);
 }
 
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  [self updateLatestCommittedURLForWebState:webState];
-  webState->AddObserver(_webStateObserverBridge.get());
-}
-
 #pragma mark - CRWWebStateObserver
 
 // Invoked by WebStateObserverBridge::DidStartNavigation.

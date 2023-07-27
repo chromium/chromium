@@ -132,7 +132,7 @@ BOOL SetStartupParametersForSpotlightAction(
 
 + (ActionsSpotlightManager*)actionsSpotlightManager {
   return [[ActionsSpotlightManager alloc]
-      initWithspotlightInterface:[SpotlightInterface defaultInterface]
+      initWithSpotlightInterface:[SpotlightInterface defaultInterface]
            searchableItemFactory:
                [[SearchableItemFactory alloc]
                    initWithLargeIconService:nil
@@ -142,7 +142,7 @@ BOOL SetStartupParametersForSpotlightAction(
 #pragma mark public methods
 
 - (instancetype)
-    initWithspotlightInterface:(SpotlightInterface*)spotlightInterface
+    initWithSpotlightInterface:(SpotlightInterface*)spotlightInterface
          searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
   self = [super init];
   if (self) {

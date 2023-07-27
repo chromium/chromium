@@ -155,11 +155,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 }
 
 - (NSString*)spotlightIDForURL:(const GURL&)URL {
-  NSString* spotlightID = [NSString
-      stringWithFormat:@"%@.%016llx",
-                       spotlight::StringFromSpotlightDomain(_spotlightDomain),
-                       [self hashForURL:URL title:@""]];
-  return spotlightID;
+  return [self spotlightIDForURL:URL title:@""];
 }
 
 - (NSString*)spotlightIDForURL:(const GURL&)URL title:(NSString*)title {

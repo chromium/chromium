@@ -36,7 +36,7 @@ BOOL SetStartupParametersForSpotlightAction(
 + (ActionsSpotlightManager*)actionsSpotlightManager;
 
 - (instancetype)
-    initWithspotlightInterface:(SpotlightInterface*)spotlightInterface
+    initWithSpotlightInterface:(SpotlightInterface*)spotlightInterface
          searchableItemFactory:(SearchableItemFactory*)searchableItemFactory;
 
 - (instancetype)init NS_UNAVAILABLE;
