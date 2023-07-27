@@ -20,15 +20,18 @@ class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
 public:
   explicit TextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
 
-  Vector<wtf_size_t> AutoSpaceOffsets(String html) {
-    SetBodyInnerHTML(String(R"HTML(
-    <style>
-    #container {
-      font-size: 10px;
-    }
-    </style>
-    <div id="container">)HTML") +
-                     html + "</div>");
+  Vector<wtf_size_t> AutoSpaceOffsets(String html,
+                                      String container_css = String()) {
+    html = String(R"HTML(
+      <style>
+      #container {
+        font-size: 10px;)HTML") +
+           container_css + R"HTML(
+      }
+      </style>
+      <div id="container">)HTML" +
+           html + "</div>";
+    SetBodyInnerHTML(html);
     const auto* container = GetLayoutBlockFlowByElementId("container");
     NGInlineNodeData* node_data = container->GetNGInlineNodeData();
     Vector<wtf_size_t> offsets;
@@ -98,6 +101,7 @@ TEST_F(TextAutoSpaceTest, NonHanIdeograph) {
 struct HtmlData {
   const UChar* html;
   std::vector<wtf_size_t> offsets;
+  const char* container_css = nullptr;
 } g_html_data[] = {
     {u"ああああ", {}},
     {u"English only", {}},
@@ -117,6 +121,11 @@ struct HtmlData {
     {u"ああ 12 ああ", {}},
     {u"あ<span style='text-autospace: no-autospace'>1</span>2", {}},
     {u"あ<span style='text-autospace: no-autospace'>あ</span>2", {2}},
+    {u"あAあ", {}, "writing-mode: vertical-rl; text-orientation: upright"},
+    {u"あ1あ", {}, "writing-mode: vertical-rl; text-orientation: upright"},
+    {u"あ<span style='text-orientation: upright'>1</span>あ",
+     {},
+     "writing-mode: vertical-rl"},
 };
 class HtmlTest : public TextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};
@@ -126,7 +135,7 @@ INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
 
 TEST_P(HtmlTest, Apply) {
   const auto& test = GetParam();
-  Vector<wtf_size_t> offsets = AutoSpaceOffsets(test.html);
+  Vector<wtf_size_t> offsets = AutoSpaceOffsets(test.html, test.container_css);
   EXPECT_THAT(offsets, ElementsAreArray(test.offsets));
 }
 

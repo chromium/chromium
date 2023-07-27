@@ -105,6 +105,16 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
       last_type.reset();
       continue;
     }
+    if (UNLIKELY(!style->IsHorizontalWritingMode()) &&
+        UNLIKELY(style->GetTextOrientation() == ETextOrientation::kUpright)) {
+      // Upright non-ideographic characters are `kOther`.
+      // https://drafts.csswg.org/css-text-4/#non-ideographic-letters
+      last_type = GetPrevType(text, item.EndOffset());
+      if (last_type == kLetterOrNumeral) {
+        last_type = kOther;
+      }
+      continue;
+    }
 
     wtf_size_t offset = item.StartOffset();
     do {
