@@ -16,6 +16,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
 ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
@@ -122,22 +123,30 @@ void ConfirmInfoBar::Layout() {
             DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING);
   }
 
+  // Add buttons into a vector to be displayed in an ordered row.
+  // Depending on the PlatformStyle, reverse the vector so the ok button will be
+  // on the correct leading style.
+  std::vector<views::MdTextButton*> order_of_buttons;
   if (ok_button_) {
-    ok_button_->SetPosition(gfx::Point(x, OffsetY(ok_button_)));
-    x = ok_button_->bounds().right() +
-        layout_provider->GetDistanceMetric(
-            views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+    order_of_buttons.push_back(ok_button_);
   }
-
   if (cancel_button_) {
-    cancel_button_->SetPosition(gfx::Point(x, OffsetY(cancel_button_)));
-    x = cancel_button_->bounds().right() +
+    order_of_buttons.push_back(cancel_button_);
+  }
+  if (extra_button_) {
+    order_of_buttons.push_back(extra_button_);
+  }
+
+  if (!views::PlatformStyle::kIsOkButtonLeading) {
+    base::ranges::reverse(order_of_buttons);
+  }
+
+  for (views::MdTextButton* button : order_of_buttons) {
+    button->SetPosition(gfx::Point(x, OffsetY(button)));
+    x = button->bounds().right() +
         layout_provider->GetDistanceMetric(
             views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
   }
-
-  if (extra_button_)
-    extra_button_->SetPosition(gfx::Point(x, OffsetY(extra_button_)));
 
   link_->SetPosition(gfx::Point(GetEndX() - link_->width(), OffsetY(link_)));
 }
