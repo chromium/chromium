@@ -27,8 +27,6 @@ source_set("ios") {
 
   frameworks = [ "Foundation.framework" ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base:base_static",
     "//base:debugging_buildflags",

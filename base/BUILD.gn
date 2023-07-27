@@ -1988,7 +1988,6 @@ component("base") {
       "Foundation.framework",
       "Security.framework",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   # Desktop Mac.
@@ -3702,7 +3701,6 @@ test("base_unittests") {
       "mac/foundation_util_unittest.mm",
       "strings/sys_string_conversions_mac_unittest.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_apple && enable_mach_absolute_time_ticks) {
@@ -4932,7 +4930,6 @@ source_set("partition_alloc_test_support") {
   }
   if (is_apple) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_mac_for_testing.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_linux || is_chromeos) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_linux_for_testing.cc" ]

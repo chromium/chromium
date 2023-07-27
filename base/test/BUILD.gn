@@ -219,10 +219,6 @@ static_library("test_support") {
     public_deps += [ "//third_party/test_fonts/fontconfig:test_support" ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [
@@ -505,10 +501,7 @@ if (is_ios) {
       "//base",
     ]
     frameworks = [ "UIKit.framework" ]
-    configs += [
-      "//build/config/compiler:enable_arc",
-      "//build/config/ios:xctest_config",
-    ]
+    configs += [ "//build/config/ios:xctest_config" ]
   }
 }
 
