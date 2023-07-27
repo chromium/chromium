@@ -19,6 +19,13 @@ function createFakeSelectmenu(selectedValueText) {
       border: 1px solid ButtonBorder;
       border-radius: 0.25em;
       padding: 0.25em;
+      overflow-x:hidden;
+      overflow-y:hidden;
+    }
+
+    .fake-selectmenu-selected-value {
+      color: HighlightText;
+      flex-grow:1;
     }
 
     .fake-selectmenu-internal-selectmenu-button-icon {

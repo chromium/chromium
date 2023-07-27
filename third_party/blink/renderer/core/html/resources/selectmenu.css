@@ -26,11 +26,20 @@ selectmenu::-internal-selectmenu-button {
   border: 1px solid ButtonBorder;
   border-radius: 0.25em;
   padding: 0.25em;
+  flex-grow:1;
+  flex-shrink:1;
+  overflow-x:hidden;
+  overflow-y:hidden;
 }
 
-/* TODO(masonf) We need an internal pseudo for the selected value part */
-selectmenu::part(selected-value) {
+selectmenu::-internal-selectmenu-selected-value {
   color: HighlightText;
+  min-width:0px;
+  max-height:100%;
+  flex-grow:1;
+  flex-shrink:1;
+  overflow-x:hidden;
+  overflow-y:hidden;
 }
 
 selectmenu option {
@@ -75,6 +84,8 @@ selectmenu::-internal-selectmenu-button-icon {
   padding-inline-end: 3px;
   padding-top: 2px;
   width: 1.2em;
+  min-width: 1.2em;
+  max-width: 1.2em;
 }
 
 selectmenu:-internal-autofill-selected::-internal-selectmenu-button {

@@ -278,6 +278,8 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
                                      selected_value_part);
   selected_value_part_->setAttribute(html_names::kBehaviorAttr,
                                      selected_value_part);
+  selected_value_part_->SetShadowPseudoId(
+      AtomicString("-internal-selectmenu-selected-value"));
 
   AtomicString marker_part(kMarkerPartName);
   marker_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
