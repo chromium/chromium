@@ -350,11 +350,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
-  private validatedFontName_(): string {
+  // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
+  // this should be renamed to just validatedFontName_ and the current
+  // validatedFontName_ method can be removed.
+  private validatedFontNameFromName_(fontName: string): string {
     // Validate that the given font name is a valid choice, or use the default.
-    const validFontName = this.validFontNames_.find(
-        (f: {name: string}) => f.name === chrome.readingMode.fontName);
+    const validFontName =
+        this.validFontNames_.find((f: {name: string}) => f.name === fontName);
     return validFontName ? validFontName.css : this.defaultFontName_;
+  }
+
+  private validatedFontName_(): string {
+    return this.validatedFontNameFromName_(chrome.readingMode.fontName);
   }
 
   private getLinkColor_(backgroundSkColor: SkColor): LinkColor {
@@ -394,6 +401,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   updateLetterSpacing(newLetterSpacing: string) {
     this.updateStyles({
       '--letter-spacing': newLetterSpacing + 'em',
+    });
+  }
+
+  updateFont(fontName: string) {
+    this.updateStyles({
+      '--font-family': this.validatedFontNameFromName_(fontName),
     });
   }
 

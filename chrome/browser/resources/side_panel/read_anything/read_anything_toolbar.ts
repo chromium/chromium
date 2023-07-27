@@ -21,6 +21,7 @@ export interface ReadAnythingToolbar {
     colorSubmenu: CrActionMenuElement,
     lineSpacingSubmenu: CrActionMenuElement,
     letterSpacingSubmenu: CrActionMenuElement,
+    fontSubmenu: CrActionMenuElement,
   };
 }
 
@@ -66,11 +67,16 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.openMenu_(this.$.menu);
   }
 
+  private onShowFontSubMenuClick_() {
+    this.openMenu_(this.$.fontSubmenu);
+  }
+
   private openMenu_(menuToOpen: CrActionMenuElement) {
     this.$.menu.close();
     this.$.colorSubmenu.close();
     this.$.lineSpacingSubmenu.close();
     this.$.letterSpacingSubmenu.close();
+    this.$.fontSubmenu.close();
 
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
@@ -116,6 +122,40 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   private onLetterSpacingVeryWideClick_() {
     if (this.contentPage) {
       this.contentPage.updateLetterSpacing('.1');
+    }
+  }
+
+  private onPoppinsClick_() {
+    this.onFontClick_('Poppins');
+  }
+
+  private onSansSerifClick_() {
+    this.onFontClick_('Sans-Serif');
+  }
+
+  private onSerifClick_() {
+    this.onFontClick_('Serif');
+  }
+
+  private onComicNeueClick_() {
+    this.onFontClick_('Comic Neue');
+  }
+
+  private onLexendDecaClick_() {
+    this.onFontClick_('Lexend Deca');
+  }
+
+  private onEbGaramondClick_() {
+    this.onFontClick_('EB Garamond');
+  }
+
+  private onStixClick_() {
+    this.onFontClick_('STIX Two Text');
+  }
+
+  private onFontClick_(fontName: string) {
+    if (this.contentPage) {
+      this.contentPage.updateFont(fontName);
     }
   }
 }

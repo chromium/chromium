@@ -51,7 +51,7 @@
       <iron-icon class="button-image end-image" icon="cr:arrow-right">
       </iron-icon>
     </button>
-    <button class="dropdown-item">
+    <button class="dropdown-item" on-click="onShowFontSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:font">
       </iron-icon>
       $i18n{fontNameTitle}
@@ -147,6 +147,38 @@
       <iron-icon class="button-image"
       icon="read-anything:letter-spacing-very-wide"></iron-icon>
       $i18n{letterSpacingVeryWideTitle}
+    </button>
+  </cr-action-menu>
+  <!-- TODO(b/1465029): Use the brower's preferred language to hide unsupported
+       fonts.
+  -->
+  <cr-action-menu id="fontSubmenu">
+    <button class="dropdown-item back" on-click="onBackClick_">
+      <iron-icon class="button-image" icon="cr:arrow-back"></iron-icon>
+      $i18n{back}
+    </button>
+  <!-- TODO(1266555): The displayed names of the fonts should be messages that
+                  will be translated to other languages.-->
+    <button class="dropdown-item" on-click="onPoppinsClick_">
+      Poppins
+    </button>
+    <button class="dropdown-item" on-click="onSansSerifClick_">
+      Sans-serif
+    </button>
+    <button class="dropdown-item" on-click="onSerifClick_">
+      Serif
+    </button>
+    <button class="dropdown-item" on-click="onComicNeueClick_">
+      Comic Neue
+    </button>
+    <button class="dropdown-item" on-click="onLexendDecaClick_">
+      Lexend Deca
+    </button>
+    <button class="dropdown-item" on-click="onEbGaramondClick_">
+      EB Garamond
+    </button>
+    <button class="dropdown-item" on-click="onStixClick_">
+      STIX Two Text
     </button>
   </cr-action-menu>
 </div>
