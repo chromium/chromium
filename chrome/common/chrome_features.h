@@ -196,6 +196,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kKeepForceInstalledPreinstalledApps);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways;
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturing);
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

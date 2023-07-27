@@ -322,6 +322,12 @@ BASE_FEATURE(kKeepForceInstalledPreinstalledApps,
 // Controls if the 'launch anyways' button is shown.
 const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways{
     &kChromeAppsDeprecation, "HideLaunchAnyways", true};
+
+// Enables user link capturing on desktop platforms, i.e. Windows, Mac
+// Linux amd Fuchsia.
+BASE_FEATURE(kDesktopPWAsLinkCapturing,
+             "DesktopPWAsLinkCapturing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables notification permission revocation for origins that may send
