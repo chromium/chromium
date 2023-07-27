@@ -10,8 +10,8 @@
  */
 #ifndef AOM_CONFIG_H_
 #define AOM_CONFIG_H_
-#define AOM_ARCH_AARCH64 0
-#define AOM_ARCH_ARM 0
+#define AOM_ARCH_AARCH64 1
+#define AOM_ARCH_ARM 1
 #define AOM_ARCH_PPC 0
 #define AOM_ARCH_X86 0
 #define AOM_ARCH_X86_64 0
@@ -36,7 +36,7 @@
 #define CONFIG_ENTROPY_STATS 0
 #define CONFIG_EXCLUDE_SIMD_MISMATCH 0
 #define CONFIG_FPMT_TEST 0
-#define CONFIG_GCC 1
+#define CONFIG_GCC 0
 #define CONFIG_GCOV 0
 #define CONFIG_GPROF 0
 #define CONFIG_INSPECTION 0
@@ -72,24 +72,24 @@
 #define DECODE_HEIGHT_LIMIT 16384
 #define DECODE_WIDTH_LIMIT 16384
 #define FORCE_HIGHBITDEPTH_DECODING 0
-#define HAVE_ARM_CRC32 0
+#define HAVE_ARM_CRC32 1
 #define HAVE_AVX 0
 #define HAVE_AVX2 0
 #define HAVE_FEXCEPT 1
 #define HAVE_MMX 0
-#define HAVE_NEON 0
-#define HAVE_NEON_DOTPROD 0
-#define HAVE_NEON_I8MM 0
-#define HAVE_PTHREAD_H 1
+#define HAVE_NEON 1
+#define HAVE_NEON_DOTPROD 1
+#define HAVE_NEON_I8MM 1
+#define HAVE_PTHREAD_H 0
 #define HAVE_SSE 0
 #define HAVE_SSE2 0
 #define HAVE_SSE3 0
 #define HAVE_SSE4_1 0
 #define HAVE_SSE4_2 0
 #define HAVE_SSSE3 0
-#define HAVE_UNISTD_H 1
+#define HAVE_UNISTD_H 0
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0
-#define INLINE inline
+#define INLINE __inline
 #define STATIC_LINK_JXL 0
 #endif  // AOM_CONFIG_H_

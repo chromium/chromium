@@ -180,7 +180,8 @@ gen_config_files linux/arm \
 
 reset_dirs linux/arm-neon
 gen_config_files linux/arm-neon \
-  "${toolchain}/armv7-linux-gcc.cmake ${all_platforms}"
+  "${toolchain}/armv7-linux-gcc.cmake -DCONFIG_RUNTIME_CPU_DETECT=0 \
+   ${all_platforms}"
 
 reset_dirs linux/arm-neon-cpu-detect
 gen_config_files linux/arm-neon-cpu-detect \
@@ -189,7 +190,13 @@ gen_config_files linux/arm-neon-cpu-detect \
 
 reset_dirs linux/arm64
 gen_config_files linux/arm64 \
-  "${toolchain}/arm64-linux-gcc.cmake ${all_platforms}"
+  "${toolchain}/arm64-linux-gcc.cmake -DCONFIG_RUNTIME_CPU_DETECT=0 \
+   ${all_platforms}"
+
+reset_dirs linux/arm64-cpu-detect
+gen_config_files linux/arm64-cpu-detect \
+  "${toolchain}/arm64-linux-gcc.cmake -DCONFIG_RUNTIME_CPU_DETECT=1 \
+   ${all_platforms}"
 
 # CMAKE_INSTALL_NAME_TOOL is set to a non-empty/true value to allow this
 # configuration to complete on platforms without `install_name`. The build
@@ -205,9 +212,10 @@ gen_config_files ios/arm64 \
    ${all_platforms}"
 
 # Copy linux configurations and modify for Windows.
-reset_dirs win/arm64
-cp "${CFG}/linux/arm64/config"/* "${CFG}/win/arm64/config/"
-convert_to_windows "${CFG}/win/arm64/config/aom_config.h"
+reset_dirs win/arm64-cpu-detect
+cp "${CFG}/linux/arm64-cpu-detect/config"/* \
+  "${CFG}/win/arm64-cpu-detect/config/"
+convert_to_windows "${CFG}/win/arm64-cpu-detect/config/aom_config.h"
 )
 
 update_readme
