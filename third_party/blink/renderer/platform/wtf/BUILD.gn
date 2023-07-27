@@ -245,7 +245,6 @@ component("wtf") {
       "text/string_apple.mm",
       "text/string_impl_apple.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {

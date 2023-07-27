@@ -374,7 +374,6 @@ component("core") {
 
   if (is_mac) {
     deps += [ "//ui/base/mojom" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (enable_printing) {
@@ -1418,10 +1417,6 @@ source_set("unit_tests") {
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
   ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   deps = [
     ":core",
