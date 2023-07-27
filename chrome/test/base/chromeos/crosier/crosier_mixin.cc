@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
+#include "chrome/test/base/chromeos/crosier/crosier_mixin.h"
 
 #include "build/chromeos_buildflags.h"
 
@@ -11,15 +11,9 @@
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 
-ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
-    InProcessBrowserTestMixinHost* host)
-    : InProcessBrowserTestMixin(host) {}
-
-ChromeOSIntegrationTestMixin::~ChromeOSIntegrationTestMixin() = default;
-
-bool ChromeOSIntegrationTestMixin::SetUpUserDataDirectory() {
+bool CrosierMixin::SetUpUserDataDirectory() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Always have --user-data-dir present in commandline arguments.
   // Without the argument, there are some permission issues. Here the logic
@@ -31,6 +25,6 @@ bool ChromeOSIntegrationTestMixin::SetUpUserDataDirectory() {
   if (!cmdline->HasSwitch(switches::kUserDataDir)) {
     cmdline->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
   return InProcessBrowserTestMixin::SetUpUserDataDirectory();
 }
