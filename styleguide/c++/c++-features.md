@@ -1719,10 +1719,7 @@ absl::string_view
 *** promo
 Originally banned due to only working with 8-bit characters. Now it is
 unnecessary because, in Chromium, it is the same type as `std::string_view`.
-Use `base::StringPiece` from `base/strings/`, unless interfacing with
-third-party code, in which case prefer to write the type as `std::string_view`.
-Note `base::StringPiece` implicitly converts to and from `std::string_view`, so
-one typically does not need to write the STL name.
+Please use `std::string_view` instead.
 ***
 
 ### Strings Library <sup>[banned]</sup>
