@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -549,11 +550,6 @@ class MockAutofillDriver : public TestAutofillDriver {
 
 class BrowserAutofillManagerTest : public testing::Test {
  public:
-  BrowserAutofillManagerTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
-  }
-
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data().set_auto_accept_address_imports_for_testing(true);
@@ -1253,7 +1249,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
+  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_{
+      features::kAutofillParseAsync};
 };
 
 class SuggestionMatchingTest
@@ -3707,6 +3704,46 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
 
   EXPECT_EQ(2U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
+}
+
+// Tests that `ProfileTokenQuality` is correctly integrated into
+// `AutofillProfile` and that on form submit, observations are collected.
+TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
+  base::test::ScopedFeatureList profile_token_quality_feature{
+      features::kAutofillTrackProfileTokenQuality};
+  AutofillProfile* profile =
+      personal_data().GetProfileByGUID(kElvisProfileGuid);
+  profile->token_quality().disable_randomization_for_testing();
+
+  // Create and fill an address form with profile `kElvisProfileGuid`.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  FormsSeen({form});
+  FormData filled_form;
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], kElvisProfileGuid,
+                                     &filled_form);
+
+  // Expect that no observations for any of the form's types were collected yet.
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(filled_form.global_id());
+  EXPECT_TRUE(base::ranges::all_of(
+      *form_structure, [&](const std::unique_ptr<AutofillField>& field) {
+        return profile->token_quality()
+            .GetObservationTypesForFieldType(field->Type().GetStorableType())
+            .empty();
+      }));
+
+  // Submit the form and expect observations for all of the form's types.
+  FormSubmitted(filled_form);
+  // `profile` is invalidated by the form submission, since the importing logic
+  // overwrites all profiles of the PDM using `SetProfilesForAllSources()`.
+  profile = personal_data().GetProfileByGUID(kElvisProfileGuid);
+  EXPECT_TRUE(base::ranges::none_of(
+      *form_structure, [&](const std::unique_ptr<AutofillField>& field) {
+        return profile->token_quality()
+            .GetObservationTypesForFieldType(field->Type().GetStorableType())
+            .empty();
+      }));
 }
 
 // Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,

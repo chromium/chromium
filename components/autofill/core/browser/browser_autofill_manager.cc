@@ -79,6 +79,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
@@ -817,10 +818,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   LogValuePatternsMetric(form);
 
   // Note that `ValidateSubmittedForm()` returns nullptr in incognito mode.
-  // Consequently, no importing and no voting happens in incognito mode.
-  // Moreover, no key metrics are emitted in incognito mode due to this line,
-  // since they are conditioned form submission (see
-  // `FormEventLoggerBase::OnWillSubmitForm()`)
+  // Consequently, in incognito mode Autofill doesn't:
+  // - Import
+  // - Vote
+  // - Collect any key metrics (since they are conditioned form submission - see
+  //  `FormEventLoggerBase::OnWillSubmitForm()`)
+  // - Collect profile token quality observations
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
   if (!submitted_form) {
@@ -947,6 +950,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
     }
   }
+
+  ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
+      *submitted_form, form, *client().GetPersonalDataManager());
 }
 
 bool BrowserAutofillManager::MaybeStartVoteUploadProcess(

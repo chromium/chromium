@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/profile_token_quality.h"
 
 #include <algorithm>
+#include <set>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -21,6 +23,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 
 namespace autofill {
@@ -195,6 +198,9 @@ ProfileTokenQuality::ProfileTokenQuality(AutofillProfile* profile)
   CHECK(profile);
 }
 
+ProfileTokenQuality::ProfileTokenQuality(const ProfileTokenQuality& other) =
+    default;
+
 ProfileTokenQuality::~ProfileTokenQuality() = default;
 
 bool ProfileTokenQuality::AddObservationsForFilledForm(
@@ -234,6 +240,34 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
                                  .form_hash = hash});
   }
   return AddSubsetOfObservations(std::move(possible_observations)) > 0;
+}
+
+// static
+void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
+    const FormStructure& form_structure,
+    const FormData& form_data,
+    PersonalDataManager& pdm) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillTrackProfileTokenQuality)) {
+    return;
+  }
+
+  std::set<std::string> guids_seen;
+  for (const std::unique_ptr<AutofillField>& field : form_structure) {
+    if (!field->autofill_source_profile_guid() ||
+        !guids_seen.insert(*field->autofill_source_profile_guid()).second) {
+      // The field was not autofilled or observations were already collected
+      // for the profile that was used to autofill the field.
+      continue;
+    }
+    AutofillProfile* profile =
+        pdm.GetProfileByGUID(*field->autofill_source_profile_guid());
+    if (profile && profile->token_quality().AddObservationsForFilledForm(
+                       form_structure, form_data, pdm)) {
+      // TODO(crbug.com/1453650): Update `*profile` in the database, once
+      // `AutofillTable` supports storing token quality.
+    }
+  }
 }
 
 void ProfileTokenQuality::AddObservationForTesting(

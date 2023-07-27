@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/birthdate.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
 
 namespace autofill {
 
@@ -290,6 +291,9 @@ class AutofillProfile : public AutofillDataModel {
   // Clears all specified |fields| from the profile.
   void ClearFields(const ServerFieldTypeSet& fields);
 
+  const ProfileTokenQuality& token_quality() const { return token_quality_; }
+  ProfileTokenQuality& token_quality() { return token_quality_; }
+
  private:
   // FormGroup:
   std::u16string GetInfoImpl(const AutofillType& type,
@@ -371,6 +375,11 @@ class AutofillProfile : public AutofillDataModel {
   // represented by the value `kInitialCreatorOrModifierChrome`.
   int initial_creator_id_ = 0;
   int last_modifier_id_ = 0;
+
+  // Stores information about the quality of this profile's stored types.
+  // Only used when `kAutofillTrackProfileTokenQuality` is enabled.
+  // TODO(crbug.com/1453650): Clean-up comment.
+  ProfileTokenQuality token_quality_;
 };
 
 // So we can compare AutofillProfiles with EXPECT_EQ().

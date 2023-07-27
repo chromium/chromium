@@ -61,13 +61,17 @@ class ProfileTokenQualityTest : public testing::Test {
   }
 
   // Fills the `form` with the `profile`, as-if autofilling was triggered from
-  // the first field.
-  void FillForm(const FormData& form, const AutofillProfile& profile) {
-    bam_.FillProfileForm(profile, form, form.fields[0],
+  // the `triggering_field_index`-th field.
+  void FillForm(const FormData& form,
+                const AutofillProfile& profile,
+                size_t triggering_field_index = 0) {
+    bam_.FillProfileForm(profile, form, form.fields[triggering_field_index],
                          AutofillTriggerSource::kPopup);
   }
 
  protected:
+  base::test::ScopedFeatureList feature_{
+      features::kAutofillTrackProfileTokenQuality};
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillDriver driver_;
@@ -256,6 +260,44 @@ TEST_F(ProfileTokenQualityTest, IsWithinLevenshteinDistance) {
   EXPECT_TRUE(has_levenshtein_distance(u"asdf", u"fdsa", 4));
   EXPECT_TRUE(has_levenshtein_distance(std::u16string(100, 'a'),
                                        std::u16string(200, 'a'), 100));
+}
+
+// Tests that `SaveObservationsForFilledFormForAllSubmittedProfiles()` collects
+// observations for all profiles that were used to fill the form.
+TEST_F(ProfileTokenQualityTest,
+       SaveObservationsForFilledFormForAllSubmittedProfiles) {
+  // Create two profiles, one without an `EMAIL_ADDRESS` and one without an
+  // `ADDRESS_HOME_CITY`.
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.ClearFields({EMAIL_ADDRESS});
+  AutofillProfile profile2 = test::GetFullProfile2();
+  profile2.ClearFields({ADDRESS_HOME_CITY});
+  pdm_.AddProfile(profile1);
+  pdm_.AddProfile(profile2);
+
+  // No profile contains sufficient data to fill both fields.
+  FormData form = GetFormWithTypes({ADDRESS_HOME_CITY, EMAIL_ADDRESS});
+  FillForm(form, profile1, /*triggering_field_index=*/0);
+  FillForm(form, profile2, /*triggering_field_index=*/1);
+
+  ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
+      *bam_.FindCachedFormById(form.global_id()), form, pdm_);
+
+  // Expect that observations for both profiles were collected. Since
+  // `SaveObservationsForFilledFormForAllSubmittedProfiles()` operates on the
+  // profiles owned by the `pdm_`, the profiles need to be accessed through the
+  // `pdm_`. `profile1` and `profile2` haven't changed.
+  const ProfileTokenQuality& quality1 =
+      pdm_.GetProfileByGUID(profile1.guid())->token_quality();
+  EXPECT_THAT(quality1.GetObservationTypesForFieldType(ADDRESS_HOME_CITY),
+              UnorderedElementsAre(ObservationType::kAccepted));
+  EXPECT_TRUE(quality1.GetObservationTypesForFieldType(EMAIL_ADDRESS).empty());
+  const ProfileTokenQuality& quality2 =
+      pdm_.GetProfileByGUID(profile2.guid())->token_quality();
+  EXPECT_THAT(quality2.GetObservationTypesForFieldType(EMAIL_ADDRESS),
+              UnorderedElementsAre(ObservationType::kAccepted));
+  EXPECT_TRUE(
+      quality2.GetObservationTypesForFieldType(ADDRESS_HOME_CITY).empty());
 }
 
 // Tests the dropping of random observations during

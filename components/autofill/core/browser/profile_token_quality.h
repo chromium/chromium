@@ -16,15 +16,16 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
+
+class AutofillField;
+class AutofillProfile;
+class FormStructure;
+class PersonalDataManager;
 
 // `ProfileTokenQuality` is associated with one `AutofillProfile` and tracks if
 // the supported types of that profile are accepted or edited after filling.
@@ -42,8 +43,6 @@ namespace autofill {
 // corresponding stored type.
 // See `components/autofill/README.md` for details on stored and derived types.
 //
-// TODO(crbug.com/1453650): Implement the class, make it a member of
-// `AutofillProfile` and start collecting observations.
 // TODO(crbug.com/1453650): Interface + logic to reset observations for
 // `kAccount` profiles and for edits via settings.
 // TODO(crbug.com/1453650): Interface + logic to initialize the class with
@@ -97,6 +96,7 @@ class ProfileTokenQuality {
   // Initializes the `ProfileTokenQuality` for the `profile`. `profile` must
   // be non-null and outlive the `ProfileTokenQuality` instance.
   explicit ProfileTokenQuality(AutofillProfile* profile);
+  ProfileTokenQuality(const ProfileTokenQuality& other);
   ~ProfileTokenQuality();
 
   // Derives an observation from every field of the `form_structure` that was
@@ -117,6 +117,14 @@ class ProfileTokenQuality {
                                     const FormData& form_data,
                                     const PersonalDataManager& pdm);
 
+  // Collects observations using `AddObservationsForFilledForm()` for all
+  // profiles that were used to autofill the form.
+  // Persists any newly collected observations.
+  static void SaveObservationsForFilledFormForAllSubmittedProfiles(
+      const FormStructure& form_structure,
+      const FormData& form_data,
+      PersonalDataManager& pdm);
+
   void AddObservationForTesting(ServerFieldType field_type,
                                 ObservationType observation_type);
 
@@ -127,6 +135,11 @@ class ProfileTokenQuality {
   // the observations of the corresponding stored type are returned.
   std::vector<ObservationType> GetObservationTypesForFieldType(
       ServerFieldType type) const;
+
+  void set_profile(AutofillProfile* profile) {
+    CHECK(profile);
+    profile_ = profile;
+  }
 
   // Returns true if `a` and `b` are within Levenshtein distance `k`.
   static bool IsWithinLevenshteinDistanceForTesting(std::u16string_view a,

@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -220,7 +221,8 @@ AutofillProfile::AutofillProfile(const std::string& guid, Source source)
       has_converted_(false),
       source_(source),
       initial_creator_id_(kInitialCreatorOrModifierChrome),
-      last_modifier_id_(kInitialCreatorOrModifierChrome) {}
+      last_modifier_id_(kInitialCreatorOrModifierChrome),
+      token_quality_(this) {}
 
 AutofillProfile::AutofillProfile(Source source)
     : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -233,12 +235,15 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
       server_id_(server_id),
       record_type_(type),
       has_converted_(false),
-      source_(Source::kLocalOrSyncable) {
+      source_(Source::kLocalOrSyncable),
+      token_quality_(this) {
   DCHECK(type == SERVER_PROFILE);
 }
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
-    : AutofillDataModel(/*guid=*/""), phone_number_(this) {
+    : AutofillDataModel(/*guid=*/""),
+      phone_number_(this),
+      token_quality_(this) {
   operator=(profile);
 }
 
@@ -275,6 +280,9 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   source_ = profile.source_;
   initial_creator_id_ = profile.initial_creator_id_;
   last_modifier_id_ = profile.last_modifier_id_;
+
+  token_quality_ = profile.token_quality_;
+  token_quality_.set_profile(this);
 
   return *this;
 }

@@ -540,6 +540,13 @@ BASE_FEATURE(kAutofillTokenPrefixMatching,
              "AutofillTokenPrefixMatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, on form submit, observations for every used profile are
+// collected into the profile's `token_quality()`.
+// TODO(crbug.com/1453650): Remove when launched.
+BASE_FEATURE(kAutofillTrackProfileTokenQuality,
+             "AutofillTrackProfileTokenQuality",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to use the AutofillUseAlternativeStateNameMap for filling
 // of state selection fields, comparison of profiles and sending state votes to
 // the server.
