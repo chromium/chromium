@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
@@ -128,6 +129,14 @@ message_center::NotificationType GetNotificationType(
       return message_center::NOTIFICATION_TYPE_SIMPLE;
   }
   NOTREACHED_NORETURN();
+}
+
+bool IsAppValidForProfile(Profile* profile, const std::string& app_id) {
+  if (app_id == arc::kPlayStoreAppId) {
+    return arc::IsArcPlayStoreEnabledForProfile(profile);
+  }
+
+  return arc::IsArcAllowedForProfile(profile);
 }
 
 void OpenUrlForProfile(Profile* profile, const GURL& url) {
@@ -347,8 +356,10 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenPlayStore: {
-      arc::LaunchApp(profile_, arc::kPlayStoreAppId, ui::EF_NONE,
-                     arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+      if (IsAppValidForProfile(profile_, arc::kPlayStoreAppId)) {
+        arc::LaunchApp(profile_, arc::kPlayStoreAppId, ui::EF_NONE,
+                       arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+      }
       break;
     }
     case ActionType::kOpenGoogleDocs: {
@@ -357,8 +368,10 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenGooglePhotos: {
-      arc::LaunchApp(profile_, arc::kGooglePhotosAppId, ui::EF_NONE,
-                     arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+      if (IsAppValidForProfile(profile_, arc::kGooglePhotosAppId)) {
+        arc::LaunchApp(profile_, arc::kGooglePhotosAppId, ui::EF_NONE,
+                       arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+      }
       break;
     }
     case ActionType::kOpenSettingsPrinter: {
@@ -374,7 +387,8 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
     }
     case ActionType::kOpenYouTube: {
       if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-              profile_)) {
+              profile_) &&
+          IsAppValidForProfile(profile_, extension_misc::kYoutubePwaAppId)) {
         auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
         proxy->LaunchAppWithUrl(
             extension_misc::kYoutubePwaAppId,
