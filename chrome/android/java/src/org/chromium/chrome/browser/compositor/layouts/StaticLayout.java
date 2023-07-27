@@ -292,9 +292,13 @@ public class StaticLayout extends Layout {
 
     @Override
     public void doneHiding() {
-        super.doneHiding();
         mIsActive = false;
         mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+
+        // Call super last because it might re-show this layout. If we do any work after
+        // super.doneHiding() the layout might become unexpectedly inactive or have an
+        // incorrect tab id. See crbug/1468214.
+        super.doneHiding();
     }
 
     @Override
