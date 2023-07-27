@@ -4051,6 +4051,12 @@
   <message name="IDS_SETTINGS_STORAGE_ACCESS_CLOSE_EXPAND" translateable="false" desc="Label for an expand button to close a collapse row with the websites an origin website is allowed or blocked to access its unpartitioned cookies while embedded.">
     Show less
   </message>
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_ALLOWED_SITE_LABEL" translateable="false" desc="Text after a url (e.g. google.com) that explains that that website is allowed to access its unpartitioned cookies on one or more sites that follow this text.">
+    can use your info as you browse
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_SITE_LABEL" translateable="false" desc="Text after a url (e.g. google.com) that explains that that website is not allowed to access its unpartitioned cookies on one or more sites that follow this text.">
+    is blocked from using your info on
+  </message>
 
   <message name="IDS_SETTINGS_NO_BLUETOOTH_DEVICES_FOUND" desc="Explanation for not showing Bluetooth devices in site settings.">
     No Bluetooth devices found

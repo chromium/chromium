@@ -115,7 +115,8 @@ export interface SiteException {
 export interface StorageAccessSiteException {
   origin: string;
   displayName: string;
-  description: string;
+  closeDescription: string;
+  openDescription: string;
   setting: ContentSetting;
   exceptions: StorageAccessEmbeddingException[];
 }

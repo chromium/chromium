@@ -298,7 +298,8 @@ export function createStorageAccessSiteException(
         origin: origin,
         displayName: origin,
         setting: ContentSetting.ALLOW,
-        description: '',
+        openDescription: '',
+        closeDescription: '',
         exceptions: [createStorageAccessEmbeddingException(
             embeddingOrigin || 'google.com')],
       },

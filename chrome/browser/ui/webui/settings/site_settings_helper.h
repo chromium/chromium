@@ -75,6 +75,7 @@ using ChooserExceptionDetails = std::set<std::tuple<GURL, std::string, bool>>;
 // TODO(crbug.com/1373962): Prefix the types related to the File System Access
 // API so that their relation to the file system is more apparent.
 constexpr char kChooserType[] = "chooserType";
+constexpr char kCloseDescription[] = "closeDescription";
 constexpr char kDisabled[] = "disabled";
 constexpr char kDisplayName[] = "displayName";
 constexpr char kDescription[] = "description";
@@ -90,6 +91,7 @@ constexpr char kIsEmbargoed[] = "isEmbargoed";
 constexpr char kIsWritable[] = "isWritable";
 constexpr char kNotificationInfoString[] = "notificationInfoString";
 constexpr char kObject[] = "object";
+constexpr char kOpenDescription[] = "openDescription";
 constexpr char kOrigin[] = "origin";
 constexpr char kOriginForFavicon[] = "originForFavicon";
 constexpr char kPermissions[] = "permissions";

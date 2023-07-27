@@ -31,6 +31,7 @@ export interface StorageAccessSiteListEntryElement {
   $: {
     displayName: HTMLElement,
     resetAllButton: HTMLElement,
+    expandButton: HTMLElement,
     originList: CrLazyRenderElement<IronCollapseElement>,
   };
 }
@@ -54,7 +55,10 @@ export class StorageAccessSiteListEntryElement extends
        * A group of storage access site exceptions with the same |origin| and
        * |setting|.
        */
-      model: Object,
+      model: {
+        type: Object,
+        observer: 'onModelChanged_',
+      },
 
       /**
        * Signals if the expand button is opened or closed.
@@ -70,6 +74,7 @@ export class StorageAccessSiteListEntryElement extends
 
   model: StorageAccessSiteException;
 
+  private description_: string;
   private expanded_: boolean;
 
   /**
@@ -102,10 +107,19 @@ export class StorageAccessSiteListEntryElement extends
   }
 
   /**
+   * A handler for the model change.
+   */
+  private onModelChanged_() {
+    this.description_ = this.computeDescription_();
+  }
+
+  /**
    * A handler for clicking on the top-row. This will scroll to the
    * element if needed.
    */
   private onExpandedChanged_() {
+    this.description_ = this.computeDescription_();
+
     if (!this.expanded_) {
       return;
     }
@@ -130,6 +144,18 @@ export class StorageAccessSiteListEntryElement extends
   private getExpandButtonAriaLabel_() {
     return this.expanded_ ? this.i18n('storageAccessCloseExpand') :
                             this.i18n('storageAccessOpenExpand');
+  }
+
+  /**
+   * @returns the correct description according to the widget's state.
+   */
+  private computeDescription_(): string {
+    if (!this.model) {
+      return '';
+    }
+
+    return this.expanded_ ? this.model.openDescription :
+                            this.model.closeDescription;
   }
 }
 

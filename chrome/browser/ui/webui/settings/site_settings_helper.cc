@@ -737,9 +737,15 @@ base::Value::Dict GetStorageAccessExceptionForPage(
   base::Value::Dict exception;
   exception.Set(kOrigin, pattern.ToString());
   exception.Set(kDisplayName, display_name);
-  exception.Set(kDescription,
+  exception.Set(kCloseDescription,
                 l10n_util::GetPluralStringFUTF16(IDS_DEL_SITE_SETTINGS_COUNTER,
                                                  exceptions.size()));
+  const int open_description_id =
+      (setting == ContentSetting::CONTENT_SETTING_ALLOW)
+          ? IDS_SETTINGS_STORAGE_ACCESS_ALLOWED_SITE_LABEL
+          : IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_SITE_LABEL;
+  exception.Set(kOpenDescription,
+                l10n_util::GetStringUTF16(open_description_id));
 
   std::string setting_string =
       content_settings::ContentSettingToString(setting);

@@ -29,7 +29,8 @@ const origin = 'https://example.com';
 const exceptionStorageAccessOrigin: StorageAccessSiteException =
     createStorageAccessSiteException(origin, {
       setting: ContentSetting.BLOCK,
-      description: 'description',
+      closeDescription: 'open description',
+      openDescription: 'close description',
       exceptions: [
         createStorageAccessEmbeddingException(
             'https://foo.com', {description: 'embedding description'}),
@@ -44,7 +45,8 @@ const exceptionStorageAccessOrigin: StorageAccessSiteException =
 const exceptionStorageAccessOriginWithIncognito: StorageAccessSiteException =
     createStorageAccessSiteException(origin, {
       setting: ContentSetting.BLOCK,
-      description: 'description',
+      closeDescription: 'open description',
+      openDescription: 'close description',
       exceptions: [
         createStorageAccessEmbeddingException(
             'https://foo.com',
@@ -99,9 +101,16 @@ suite('StorageAccessSiteListEntry', function() {
     const secondLine = testElement.$.displayName.querySelector('.second-line');
     assertTrue(!!secondLine);
 
-    // Validate the row description.
+    // Validate the row description when closed.
     assertEquals(
-        exceptionStorageAccessOrigin.description,
+        exceptionStorageAccessOrigin.closeDescription,
+        secondLine.textContent!.trim());
+
+    testElement.$.expandButton.click();
+
+    // Validate the row description when opened.
+    assertEquals(
+        exceptionStorageAccessOrigin.openDescription,
         secondLine.textContent!.trim());
   });
 
@@ -265,9 +274,7 @@ suite('StorageAccessSiteListEntry', function() {
   test('expand aria-label', async function() {
     await setUpEntry(exceptionStorageAccessOrigin);
 
-    const expandButton =
-        testElement.shadowRoot!.querySelector('cr-expand-button');
-    assertTrue(!!expandButton);
+    const expandButton = testElement.$.expandButton;
 
     // Validate expand button aria-label when closed.
     const expectedExpandOpenArialLabel =

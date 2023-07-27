@@ -35,7 +35,8 @@ const categoryHeader = 'category header';
 const exceptionsStorageAccessOriginBlock: StorageAccessSiteException[] = [
   createStorageAccessSiteException(origin, {
     setting: ContentSetting.BLOCK,
-    description: 'description',
+    openDescription: 'open description',
+    closeDescription: 'close description',
     exceptions: [
       createStorageAccessEmbeddingException(
           'https://foo.com', {description: 'embedding description'}),
@@ -43,7 +44,8 @@ const exceptionsStorageAccessOriginBlock: StorageAccessSiteException[] = [
   }),
   createStorageAccessSiteException(origin, {
     setting: ContentSetting.BLOCK,
-    description: 'description 2',
+    openDescription: 'open description 2',
+    closeDescription: 'close description 2',
     exceptions: [
       createStorageAccessEmbeddingException(
           'https://foo2.com', {description: 'embedding 2 description'}),

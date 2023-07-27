@@ -552,11 +552,21 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_TRUE(display_name);
     ASSERT_EQ(expected_display_name, *display_name);
 
-    const auto expected_description = l10n_util::GetPluralStringFUTF8(
+    const auto expected_close_description = l10n_util::GetPluralStringFUTF8(
         IDS_DEL_SITE_SETTINGS_COUNTER, expected_embedding_exceptions.size());
-    const auto* description = exception.FindString(site_settings::kDescription);
-    ASSERT_TRUE(description);
-    ASSERT_EQ(expected_description, *description);
+    const auto* close_description =
+        exception.FindString(site_settings::kCloseDescription);
+    ASSERT_TRUE(close_description);
+    ASSERT_EQ(expected_close_description, *close_description);
+
+    const auto expected_open_description = l10n_util::GetStringUTF8(
+        (expected_setting == ContentSetting::CONTENT_SETTING_ALLOW)
+            ? IDS_SETTINGS_STORAGE_ACCESS_ALLOWED_SITE_LABEL
+            : IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_SITE_LABEL);
+    const auto* open_description =
+        exception.FindString(site_settings::kOpenDescription);
+    ASSERT_TRUE(open_description);
+    ASSERT_EQ(expected_open_description, *open_description);
 
     const auto* setting = exception.FindString(site_settings::kSetting);
     ASSERT_TRUE(setting);
@@ -3166,6 +3176,31 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_Extension) {
       {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}});
 }
 
+TEST_P(SiteSettingsHandlerTest, StorageAccessExceptions_Description_All) {
+  const std::string kOrigin("google.com");
+  const std::string kEmbeddingOrigin("example.com");
+
+  const ContentSetting content_setting =
+      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
+
+  SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
+                               kPermissionStorageAccess, content_setting);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(
+      content_settings::ContentSettingToString(content_setting));
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+
+  // Verify that the grouped exception is correct.
+  ValidateStorageAccessList(/*expected_total_calls=*/2U,
+                            /*expected_num_groups=*/1U);
+
+  ValidateStorageAccessException(
+      kOrigin, kOrigin, content_setting,
+      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false}});
+}
+
 TEST_F(SiteSettingsHandlerTest,
        StorageAccessExceptions_Description_IsEmbargoed) {
   const std::string kOrigin("https://google.com:443");
@@ -3243,8 +3278,7 @@ TEST_P(StorageAccessSiteSettingsHandlerTest, StorageAccessExceptions_Origins) {
 
   // Verify that the grouped exception is correct.
   ValidateStorageAccessList(/*expected_total_calls=*/2U,
-                            /*expected_num_groups=*/
-                            1U);
+                            /*expected_num_groups=*/1U);
 
   ValidateStorageAccessException(
       kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,

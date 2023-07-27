@@ -29,7 +29,7 @@
 <div id="collapseParent" focus-row-container>
   <div class="list-item">
     <!-- Top row of the collapsible component that represents an origin. -->
-    <cr-expand-button id="expandIcon" no-hover expanded="{{expanded_}}"
+    <cr-expand-button id="expandButton" no-hover expanded="{{expanded_}}"
         aria-label$="[[getExpandButtonAriaLabel_(expanded_)]]"
         focus-row-control focus-type="embedded-site">
       <div class="settings-row">
@@ -38,9 +38,7 @@
           <div class="site-representation url-directionality text-elide">
             [[model.displayName]]
           </div>
-          <div class="second-line cr-secondary-text">
-            [[model.description]]
-          </div>
+          <div class="second-line cr-secondary-text">[[description_]]</div>
         </div>
       </div>
     </cr-expand-button>
