@@ -168,7 +168,7 @@ using DestinationLookup =
     return _actionCustomizationModel;
   }
 
-  [self initializeActionOrderDataIfEmpty];
+  [self updateActionOrderData];
 
   NSMutableArray<OverflowMenuAction*>* actions = [[NSMutableArray alloc] init];
   for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
@@ -618,18 +618,23 @@ using DestinationLookup =
   [self flushDestinationsToPrefs];
 }
 
-// Uses the current `actionProvider` to get the initial order of actions for new
-// users without an ordering.
-- (void)initializeActionOrderDataIfEmpty {
+// Uses the current `actionProvider` to add any new actions to the shown list.
+// This handles new users with no stored data and new actions added.
+- (void)updateActionOrderData {
   ActionRanking availableActions = [self.actionProvider basePageActions];
 
-  if (_actionOrderData.empty()) {
-    ActionOrderData initialOrderData;
-    initialOrderData.shownActions = availableActions;
-    _actionOrderData = initialOrderData;
+  // Add any available actions not present in shown or hidden to the shown list.
+  std::set<overflow_menu::ActionType> knownActions(
+      _actionOrderData.shownActions.begin(),
+      _actionOrderData.shownActions.end());
+  knownActions.insert(_actionOrderData.hiddenActions.begin(),
+                      _actionOrderData.hiddenActions.end());
 
-    [self flushActionsToPrefs];
-  }
+  std::set_difference(availableActions.begin(), availableActions.end(),
+                      knownActions.begin(), knownActions.end(),
+                      std::back_inserter(_actionOrderData.shownActions));
+
+  [self flushActionsToPrefs];
 }
 
 // Uses the current `destinationProvider` to get the initial order of
@@ -681,7 +686,7 @@ using DestinationLookup =
     return sortedActions;
   }
 
-  [self initializeActionOrderDataIfEmpty];
+  [self updateActionOrderData];
 
   // Convert back to Objective-C array for returning. This step also filters out
   // any actions that are not supported on the current page.

@@ -173,7 +173,9 @@ class OverflowMenuOrdererTest : public PlatformTest {
   }
 
   void InitializeOverflowMenuOrderer(BOOL isIncognito) {
-    CreatePrefs();
+    if (!prefs_) {
+      CreatePrefs();
+    }
 
     overflow_menu_model_ = [[OverflowMenuModel alloc] initWithDestinations:@[]
                                                               actionGroups:@[]];
@@ -887,4 +889,56 @@ TEST_F(OverflowMenuOrdererTest, EnablingDestinationUsageHistory) {
   const base::Value::Dict& new_history =
       prefs_->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
   EXPECT_EQ(new_history.size(), 0u);
+}
+
+// Tests that new action in code are added to the ranking
+TEST_F(OverflowMenuOrdererTest, AddsNewActionsToRanking) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  CreatePrefs();
+
+  // Set the pref state what it would be with a few actions shown and hidden.
+  base::Value::Dict actions_order =
+      base::Value::Dict()
+          .Set("shown", base::Value::List()
+                            .Append(overflow_menu::StringNameForActionType(
+                                overflow_menu::ActionType::Follow))
+                            .Append(overflow_menu::StringNameForActionType(
+                                overflow_menu::ActionType::Bookmark)))
+          .Set("hidden",
+               base::Value::List()
+                   .Append(overflow_menu::StringNameForActionType(
+                       overflow_menu::ActionType::ReadingList))
+                   .Append(overflow_menu::StringNameForActionType(
+                       overflow_menu::ActionType::ClearBrowsingData)));
+
+  prefs_->SetDict(prefs::kOverflowMenuActionsOrder, std::move(actions_order));
+
+  InitializeOverflowMenuOrderer(NO);
+  ActionRanking sample_actions = SampleActions();
+  action_provider_.basePageActions = sample_actions;
+
+  OverflowMenuActionGroup* group =
+      [[OverflowMenuActionGroup alloc] initWithGroupName:@"test"
+                                                 actions:@[]
+                                                  footer:nil];
+  overflow_menu_orderer_.pageActionsGroup = group;
+
+  [overflow_menu_orderer_ updatePageActions];
+
+  ASSERT_EQ(group.actions.count, 6u);
+  // The action order should first be shown actions, and then any new actions in
+  // order.
+  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[0].actionType),
+            overflow_menu::ActionType::Follow);
+  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[1].actionType),
+            overflow_menu::ActionType::Bookmark);
+  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[2].actionType),
+            overflow_menu::ActionType::Translate);
+  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[3].actionType),
+            overflow_menu::ActionType::DesktopSite);
+  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[4].actionType),
+            overflow_menu::ActionType::FindInPage);
+  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[5].actionType),
+            overflow_menu::ActionType::TextZoom);
 }
