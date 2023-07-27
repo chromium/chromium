@@ -340,9 +340,6 @@ crbug.com/angleproject/7109 [ win angle-d3d11 ] conformance2/renderbuffers/inval
 
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 
-# win10 / angle-d3d11 / passthrough command decoder failures.
-crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough target-cpu-32 win10 ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
-crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough target-cpu-32 win10 ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
 ## Win / NVIDIA ##
 
