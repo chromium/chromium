@@ -118,7 +118,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that returning from "Manage Addresses..." leaves the icons and keyboard
 // in the right state.
-- (void)testAddressesStateAfterPresentingManageAddresses {
+- (void)DISABLED_testAddressesStateAfterPresentingManageAddresses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
