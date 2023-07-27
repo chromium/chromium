@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -59,6 +58,35 @@ class GLTextureImageRepresentationImpl : public GLTextureImageRepresentation {
   void EndAccess() override {}
 
   std::vector<raw_ptr<gles2::Texture>> textures_;
+};
+
+// Representation of a GLTextureImageBacking as a GLTexturePassthrough.
+class GLTexturePassthroughImageRepresentationImpl
+    : public GLTexturePassthroughImageRepresentation {
+ public:
+  GLTexturePassthroughImageRepresentationImpl(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::vector<scoped_refptr<gles2::TexturePassthrough>> textures)
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
+        textures_(std::move(textures)) {
+    DCHECK_EQ(textures_.size(), NumPlanesExpected());
+  }
+
+  ~GLTexturePassthroughImageRepresentationImpl() override = default;
+
+ private:
+  // GLTexturePassthroughImageRepresentation:
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override {
+    DCHECK(format().IsValidPlaneIndex(plane_index));
+    return textures_[plane_index];
+  }
+  bool BeginAccess(GLenum mode) override { return true; }
+  void EndAccess() override {}
+
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_;
 };
 
 // Skia representation.
@@ -325,8 +353,8 @@ GLTextureImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
     gl_textures.push_back(texture.passthrough_texture());
   }
 
-  return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
-      manager, this, nullptr, tracker, std::move(gl_textures));
+  return std::make_unique<GLTexturePassthroughImageRepresentationImpl>(
+      manager, this, tracker, std::move(gl_textures));
 }
 
 std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
