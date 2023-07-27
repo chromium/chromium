@@ -1935,6 +1935,13 @@ enum class ToolbarKind {
     return;
   }
 
+  if (self.defaultBrowserPromoManager) {
+    // The default browser promo manager is already being displayed. Early
+    // return as this is expected if a default browser promo was open and the
+    // app was backgrounded.
+    return;
+  }
+
   self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
