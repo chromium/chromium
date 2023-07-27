@@ -423,6 +423,8 @@ class SupervisedUserIframeFilterTest
   bool IsInterstitialBeingShownInFrame(int frame_id);
   bool IsRemoteApprovalsButtonBeingShown(int frame_id);
   bool IsLocalApprovalsButtonBeingShown(int frame_id);
+  bool IsBlockReasonBeingShown(int frame_id);
+  bool IsDetailsLinkBeingShown(int frame_id);
   void CheckPreferredApprovalButton(int frame_id);
   bool IsLocalApprovalsInsteadButtonBeingShown(int frame_id);
   void SendCommandToFrame(const std::string& command_name, int frame_id);
@@ -498,6 +500,17 @@ bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(
     int frame_id) {
   std::string command =
       "document.getElementsByClassName('supervised-user-block') != null";
+  return RunCommandAndGetBooleanFromFrame(frame_id, command);
+}
+
+bool SupervisedUserIframeFilterTest::IsBlockReasonBeingShown(int frame_id) {
+  std::string command = "!document.getElementById('block-reason').hidden";
+  return RunCommandAndGetBooleanFromFrame(frame_id, command);
+}
+
+bool SupervisedUserIframeFilterTest::IsDetailsLinkBeingShown(int frame_id) {
+  std::string command =
+      "!document.getElementById('block-reason-show-details-link').hidden";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
@@ -809,6 +822,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   // Expect that the local approvals button is shown if the flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+  // Expect that the "Block reason" is shown.
+  EXPECT_TRUE(IsBlockReasonBeingShown(blocked_frames[0]));
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);
@@ -835,6 +850,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   // flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsInsteadButtonBeingShown(blocked_frames[0]));
+  // Expect that the "Block reason" is not shown.
+  EXPECT_FALSE(IsBlockReasonBeingShown(blocked_frames[0]));
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -933,6 +950,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
   // Expect that the local approvals button is shown if the flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
+  // Expect that the "Details" link is shown.
+  EXPECT_TRUE(IsDetailsLinkBeingShown(blocked_frames[0]));
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);
@@ -959,6 +978,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
   // flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsInsteadButtonBeingShown(blocked_frames[0]));
+  // "Details" link is not shown.
+  EXPECT_FALSE(IsDetailsLinkBeingShown(blocked_frames[0]));
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

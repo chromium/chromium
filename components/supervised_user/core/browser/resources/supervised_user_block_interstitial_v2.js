@@ -93,10 +93,14 @@ function initialize() {
       loadTimeData.getBoolean('alreadySentRemoteRequest');
   if (alreadyRequestedAccessRemote) {
     const isMainFrame = loadTimeData.getBoolean('isMainFrame');
+    // Generates the `waiting for permission` page. Safe to exit here
+    // early and skip the rest of the IU setup for approval manipulations.
     requestCreated(true, isMainFrame);
     return;
   }
 
+  // The rest of the method sets up the functionality for
+  // approval manipulations.
   if (allowAccessRequests) {
     $('remote-approvals-button').hidden = false;
     if (localWebApprovalsEnabled) {
@@ -161,7 +165,10 @@ function requestCreated(isSuccessful, isMainFrame) {
   $('block-page-header').hidden = true;
   $('block-page-message').hidden = true;
   $('hide-details-link').hidden = true;
-  $('block-reason').style.display = 'none';
+  // Hide block reason from the waiting screen.
+  $('block-reason').hidden = true;
+  $('block-reason-show-details-link').hidden = true;
+  $('block-reason-hide-details-link').hidden = true;
   if (localWebApprovalsEnabled) {
     $('local-approvals-button').hidden = false;
   }
