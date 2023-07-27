@@ -70,6 +70,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationDummyFeature" summary="Dummy feature"/>
   <variant name="SegmentationFeedUser"
       summary="Segmentation: Feed usage in Chrome"/>
+  <variant name="SegmentationIosModuleRanker"
+      summary="Segmentation: Ios module ranker"/>
   <variant name="SegmentationNewTab" summary="Segmentation: New tab page user"/>
   <variant name="SegmentationQueryTiles" summary="Query tiles"/>
   <variant name="SegmentationSearchUser" summary="Segmentation: Search user"/>

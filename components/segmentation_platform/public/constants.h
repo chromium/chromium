@@ -100,6 +100,9 @@ const char kDeviceTierUmaName[] = "DeviceTier";
 const char kTabResumptionClassifierKey[] = "tab_resupmtion_classifier";
 const char kTabResumptionClassifierUmaName[] = "TabResumptionClassifier";
 
+const char kIosModuleRankerKey[] = "ios_module_ranker";
+const char kIosModuleRankerUmaName[] = "IosModuleRanker";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in

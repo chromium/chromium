@@ -79,6 +79,9 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformPasswordManagerUser);
 
 // Feature flag for enabling tab resumption ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformTabResumptionRanker);
+
+// Feature flag for enabling ios module ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRanker);
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

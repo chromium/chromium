@@ -116,6 +116,20 @@ std::unique_ptr<Config> GetConfigForSearchUserModel() {
   return config;
 }
 
+std::unique_ptr<Config> GetConfigForIosModuleRanker() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformIosModuleRanker)) {
+    return nullptr;
+  }
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kIosModuleRankerKey;
+  config->segmentation_uma_name = kIosModuleRankerUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER);
+  config->auto_execute_and_cache = false;
+  return config;
+}
+
 }  // namespace
 
 using proto::SegmentId;
@@ -139,6 +153,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(ShoppingUserModel::GetConfig());
+  configs.emplace_back(GetConfigForIosModuleRanker());
 
   // Add new configs here.
   base::EraseIf(configs, [](const auto& config) { return !config.get(); });
