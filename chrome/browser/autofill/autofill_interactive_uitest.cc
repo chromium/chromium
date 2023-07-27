@@ -1558,7 +1558,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
               ValuesAre(kEmptyAddress));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
+// TODO(crbug.com/1468282) Flaky on Mac.
+#if BUILDFLAG(IS_MAC) 
+#define MAYBE_ModifyTextFieldAndFill DISABLED_ModifyTextFieldAndFill
+#else
+#define MAYBE_ModifyTextFieldAndFill ModifyTextFieldAndFill
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
+                       MAYBE_ModifyTextFieldAndFill) {
   CreateTestProfile();
   SetTestUrlResponse(kTestShippingFormString);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
