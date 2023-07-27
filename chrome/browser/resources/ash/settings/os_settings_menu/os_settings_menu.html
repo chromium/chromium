@@ -42,7 +42,6 @@
     border-style: solid;
     color: var(--cros-text-color-primary);
     display: flex;
-    font-weight: 500;
     margin-bottom: 8px;
     margin-inline-end: 2px;
     min-height: 32px;
@@ -53,6 +52,14 @@
   :host-context([dir=rtl]) a.item {
     /* Chrome doesn't support border-start-end-radius, so override. */
     border-radius: 20px 0 0 20px;
+  }
+
+  :host-context(body:not(.jelly-enabled)) a.item {
+    font-weight: 500;
+  }
+
+  :host-context(body.jelly-enabled) a.item {
+    font: var(--cros-button-1-font);
   }
 
   a.item.iron-selected {
@@ -100,13 +107,20 @@
     box-shadow: none;
     color: var(--cros-text-color-primary);
     display: flex;
-    font-weight: 500;
     height: unset;
     margin-inline-end: 2px;
     margin-top: 8px;
     padding-inline-end: 0;
     padding-inline-start: 20px;
     text-transform: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #advancedButton {
+    font-weight: 500;
+  }
+
+  :host-context(body.jelly-enabled) #advancedButton {
+    font: var(--cros-button-1-font);
   }
 
   #advancedButton:focus {
