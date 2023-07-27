@@ -132,7 +132,6 @@ views::Builder<views::Label> CreateSummaryLabel(
       .SizeToFit(fixed_width)
       .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
       .SetSubpixelRenderingEnabled(false)
-      .SetTextContext(CONTEXT_CALENDAR_DATE)
       .SetTooltipText(tooltip_text);
 }
 
@@ -148,7 +147,6 @@ views::Builder<views::Label> CreateTimeLabel(
       .SetAutoColorReadabilityEnabled(false)
       .SetElideBehavior(gfx::ElideBehavior::NO_ELIDE)
       .SetSubpixelRenderingEnabled(false)
-      .SetTextContext(CONTEXT_CALENDAR_DATE)
       .SetTooltipText(tooltip_text);
 }
 
