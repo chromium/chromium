@@ -378,21 +378,11 @@ class XPy:
             # This mainly influences the glibc version that rustc itself needs.
             sysroot_cflag = f'--sysroot={debian_sysroot}'
 
-            # TODO(crbug.com/1459650): fix the next two lines to refer to
-            # CXXFLAGS and LDFLAGS. Although just setting CFLAGS gets the
-            # correct result, all three should be set in case the Rust build
-            # changes later.
-            self._env['CFLAGS_x86_64-unknown-linux-gnu'] += f' {sysroot_cflag}'
-            # self._env['CFLAGS_x86_64-unknown-linux-gnu'] += f' {sysroot_cflag}'
-            # self._env['CFLAGS_x86_64-unknown-linux-gnu'] += f' {sysroot_cflag}'
+            self._env['CFLAGS'] += f' {sysroot_cflag}'
+            self._env['CXXFLAGS'] += f' {sysroot_cflag}'
+            self._env['LDFLAGS'] += f' {sysroot_cflag}'
 
-            # Note: we only set the sysroot for 64-bit since only libstd is
-            # built for 32-bit, and that is only built as a workaround.
-            #
-            # TODO(crbug.com/1467003): once we only target 64-bit replace the
-            # target-specific env vars with the regular ones.
-            self._env['CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
-                f' -Clink-arg={sysroot_cflag}')
+            self._env['RUSTFLAGS'] += f' -Clink-arg={sysroot_cflag}'
 
             # pkg-config will by default look for system-wide libs. This tells
             # it to look exclusively in the sysroot instead.
@@ -420,18 +410,8 @@ class XPy:
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
                 f' -Clink-arg={gcc_toolchain_flag}')
             self._env['RUSTFLAGS_BOOTSTRAP'] += (
-                f' -L native={gcc_toolchain_path}/lib32')
-            self._env['RUSTFLAGS_BOOTSTRAP'] += (
                 f' -L native={gcc_toolchain_path}/lib64')
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-                f' -L native={gcc_toolchain_path}/lib32')
-            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-                f' -L native={gcc_toolchain_path}/lib64')
-            # TODO(crbug.com/1467003): once we only target 64-bit replace the
-            # target-specific env vars with the regular ones.
-            self._env['CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
-                f' -L native={gcc_toolchain_path}/lib32')
-            self._env['CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
                 f' -L native={gcc_toolchain_path}/lib64')
 
         # TODO(danakj): On windows we point the to lld-link in config.toml so
@@ -546,23 +526,16 @@ def GetLatestRustCommit():
     return main['commit']
 
 
-def RustTargetTriple(build_mac_arm=False, target_x86=False):
+def RustTargetTriple(build_mac_arm=False):
     if sys.platform == 'darwin':
-        assert not target_x86  # No cross-compile to x86 on MacOS.
         if platform.machine() == 'arm64' or build_mac_arm:
             return 'aarch64-apple-darwin'
         else:
             return 'x86_64-apple-darwin'
     elif sys.platform == 'win32':
-        if target_x86:
-            return 'i686-pc-windows-msvc'
-        else:
-            return 'x86_64-pc-windows-msvc'
+        return 'x86_64-pc-windows-msvc'
     else:
-        if target_x86:
-            return 'i686-unknown-linux-gnu'
-        else:
-            return 'x86_64-unknown-linux-gnu'
+        return 'x86_64-unknown-linux-gnu'
 
 
 # Fetch or build the LLVM libraries, for the host machine and when
@@ -823,20 +796,6 @@ def main():
             # The compiler will build stuff for ARM.
             '--target',
             building_for_host_triple
-        ])
-    elif sys.platform.startswith('linux'):
-        # TODO(crbug.com/1467003): remove the 32-bit linux libstd build, which
-        # is no longer needed.
-        #
-        # TODO(crbug.com/1448334): or sys.platform == 'win32': Windows x64
-        # targeting x86 uses x86 as the host toolchain too in our GN rules, so
-        # we need the stdlib to be available for x86.
-        x86_target_triple = RustTargetTriple(target_x86=True)
-        xpy_args.extend([
-            # The compiler will build stuff for the host, and
-            # the compiler can also build stuff for x86 targets.
-            '--target',
-            f'{building_on_host_triple},{x86_target_triple}'
         ])
 
     if not args.skip_clean:
