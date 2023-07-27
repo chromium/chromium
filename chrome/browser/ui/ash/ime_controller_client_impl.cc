@@ -32,7 +32,7 @@ ImeControllerClientImpl::ImeControllerClientImpl(InputMethodManager* manager)
   input_method_manager_->AddObserver(this);
   input_method_manager_->AddImeMenuObserver(this);
   if (input_method_manager_->GetImeKeyboard())
-    input_method_manager_->GetImeKeyboard()->AddObserver(this);
+    observation_.Observe(input_method_manager_->GetImeKeyboard());
   InputMethodMenuManager::GetInstance()->AddObserver(this);
 
   // This does not need to send the initial state to ash because that happens
@@ -50,8 +50,6 @@ ImeControllerClientImpl::~ImeControllerClientImpl() {
   InputMethodMenuManager::GetInstance()->RemoveObserver(this);
   input_method_manager_->RemoveImeMenuObserver(this);
   input_method_manager_->RemoveObserver(this);
-  if (input_method_manager_->GetImeKeyboard())
-    input_method_manager_->GetImeKeyboard()->RemoveObserver(this);
 }
 
 void ImeControllerClientImpl::Init() {

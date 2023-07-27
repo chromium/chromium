@@ -22,13 +22,16 @@ struct AutoRepeatRate {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the caps lock state has changed.
     virtual void OnCapsLockChanged(bool enabled) = 0;
 
     // Called when the layout state is changing.
     virtual void OnLayoutChanging(const std::string& layout_name) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   ImeKeyboard();
@@ -76,8 +79,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
  private:
   bool caps_lock_is_enabled_ = false;
   std::string last_layout_;
-
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace input_method

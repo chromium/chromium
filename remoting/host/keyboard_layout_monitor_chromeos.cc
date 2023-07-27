@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -52,6 +53,9 @@ class KeyboardLayoutMonitorChromeOs
   LayoutKeyFunction GetFunctionFromKeyboardCode(ui::KeyboardCode key_code);
 
   base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback_;
+  base::ScopedObservation<ash::input_method::ImeKeyboard,
+                          ash::input_method::ImeKeyboard::Observer>
+      observation_{this};
   base::WeakPtrFactory<KeyboardLayoutMonitorChromeOs> weak_ptr_factory_{this};
 };
 
@@ -59,17 +63,13 @@ KeyboardLayoutMonitorChromeOs::KeyboardLayoutMonitorChromeOs(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
     : callback_(callback) {}
 
-KeyboardLayoutMonitorChromeOs::~KeyboardLayoutMonitorChromeOs() {
-  ash::input_method::InputMethodManager::Get()
-      ->GetImeKeyboard()
-      ->RemoveObserver(this);
-}
+KeyboardLayoutMonitorChromeOs::~KeyboardLayoutMonitorChromeOs() = default;
 
 void KeyboardLayoutMonitorChromeOs::Start() {
   QueryLayout();
 
-  ash::input_method::InputMethodManager::Get()->GetImeKeyboard()->AddObserver(
-      this);
+  observation_.Observe(
+      ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
 }
 
 void KeyboardLayoutMonitorChromeOs::OnCapsLockChanged(bool enabled) {}

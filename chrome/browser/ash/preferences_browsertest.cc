@@ -61,10 +61,10 @@ class PreferencesTest : public LoginManagerTest {
 
     GetFakeUserManager().SetOwnerId(login_mixin_.users()[0].account_id);
 
-    keyboard_ = new input_method::FakeImeKeyboard();
-    static_cast<input_method::InputMethodManagerImpl*>(
-        input_method::InputMethodManager::Get())
-        ->SetImeKeyboardForTesting(keyboard_);
+    // In browser_test environment, FakeImeKeyboard is used by
+    // InputMethodManager.
+    keyboard_ = static_cast<input_method::FakeImeKeyboard*>(
+        input_method::InputMethodManager::Get()->GetImeKeyboard());
   }
 
   // Sets set of preferences in given |prefs|. Value of preference depends on
@@ -147,7 +147,7 @@ class PreferencesTest : public LoginManagerTest {
         prefs->GetInteger(prefs::kTouchpadScrollSensitivity),
         input_settings_->current_touchpad_settings().GetScrollSensitivity());
     EXPECT_EQ(prefs->GetBoolean(prefs::kXkbAutoRepeatEnabled),
-              keyboard_->auto_repeat_is_enabled_);
+              keyboard_->GetAutoRepeatEnabled());
     input_method::AutoRepeatRate rate = keyboard_->last_auto_repeat_rate_;
     EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatDelay),
               rate.initial_delay.InMilliseconds());
