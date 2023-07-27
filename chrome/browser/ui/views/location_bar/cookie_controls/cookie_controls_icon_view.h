@@ -36,6 +36,7 @@ class CookieControlsIconView : public PageActionIconView,
                            int blocked_third_party_sites_count) override;
   void OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel level) override;
+  void OnFinishedPageReloadWithChangedSettings() override;
 
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;

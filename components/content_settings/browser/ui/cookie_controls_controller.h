@@ -94,6 +94,7 @@ class CookieControlsController
 
     // content::WebContentsObserver:
     void PrimaryPageChanged(content::Page& page) override;
+    void DidStopLoading() override;
 
    private:
     raw_ptr<CookieControlsController> cookie_controls_;
@@ -131,6 +132,8 @@ class CookieControlsController
 
   void OnPageReloadDetected(int recent_reloads_count);
 
+  void OnPageFinishedLoading();
+
   // Returns the number of allowed cookies.
   int GetAllowedCookieCount() const;
 
@@ -164,6 +167,8 @@ class CookieControlsController
 
   // The number of page reloads in last 30 seconds.
   int recent_reloads_count_ = 0;
+
+  bool waiting_for_page_load_finish_ = false;
 
   // Record the initial control status when the page was navigated to, to allow
   // querying of whether the effective cookie control status has changed.

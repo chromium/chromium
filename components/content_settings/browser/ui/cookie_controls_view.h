@@ -54,6 +54,10 @@ class CookieControlsObserver : public base::CheckedObserver {
   // engagement index and recent user activity (like frequent page reloads).
   virtual void OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel level) = 0;
+
+  // Called when the current page has finished reloading, after the effective
+  // cookie setting was changed on the previous load via the controller.
+  virtual void OnFinishedPageReloadWithChangedSettings() {}
 };
 
 }  // namespace content_settings

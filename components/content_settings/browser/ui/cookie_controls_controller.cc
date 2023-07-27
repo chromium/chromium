@@ -307,6 +307,10 @@ void CookieControlsController::PresentBlockedCookieCounter() {
 }
 
 void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
+  if (HasCookieBlockingChangedForSite() && recent_reloads_count > 0) {
+    waiting_for_page_load_finish_ = true;
+  }
+
   auto status = GetStatus(GetWebContents());
   initial_page_cookie_controls_status_ = status.status;
   CHECK(initial_page_cookie_controls_status_ !=
@@ -329,6 +333,17 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
   for (auto& observer : observers_) {
     observer.OnBreakageConfidenceLevelChanged(
         GetConfidenceLevel(status.status, allowed_sites, blocked_sites));
+  }
+}
+
+void CookieControlsController::OnPageFinishedLoading() {
+  if (!waiting_for_page_load_finish_) {
+    return;
+  }
+  waiting_for_page_load_finish_ = false;
+
+  for (auto& observer : observers_) {
+    observer.OnFinishedPageReloadWithChangedSettings();
   }
 }
 
@@ -389,7 +404,8 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
     content::Page& page) {
   const GURL& current_url =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
-  if (last_visited_url_ != GURL() && current_url != last_visited_url_) {
+
+  if (current_url != last_visited_url_) {
     reload_count_ = 0;
     timer_.Stop();
   } else {
@@ -401,6 +417,10 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
   }
   last_visited_url_ = current_url;
   cookie_controls_->OnPageReloadDetected(reload_count_);
+}
+
+void CookieControlsController::TabObserver::DidStopLoading() {
+  cookie_controls_->OnPageFinishedLoading();
 }
 
 void CookieControlsController::TabObserver::ResetReloadCounter() {

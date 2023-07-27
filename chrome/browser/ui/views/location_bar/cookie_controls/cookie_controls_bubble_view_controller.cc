@@ -65,9 +65,9 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
     CookieControlsBubbleView* bubble_view,
     content_settings::CookieControlsController* controller,
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      bubble_view_(bubble_view),
-      controller_(controller->AsWeakPtr()) {
+    : bubble_view_(bubble_view),
+      controller_(controller->AsWeakPtr()),
+      web_contents_(web_contents->GetWeakPtr()) {
   controller_observation_.Observe(controller);
   bubble_view_->UpdateSubtitle(GetSubjectUrlName(web_contents));
 
@@ -82,19 +82,17 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 }
 
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
-  controller_observation_.Reset();
-
   if (!controller_->HasCookieBlockingChangedForSite()) {
+    controller_observation_.Reset();
     bubble_view_->CloseWidget();
     return;
   }
 
-  if (web_contents()) {
-    web_contents()->GetController().SetNeedsReload();
-    web_contents()->GetController().LoadIfNecessary();
+  if (web_contents_) {
+    web_contents_->GetController().SetNeedsReload();
+    web_contents_->GetController().LoadIfNecessary();
   }
   bubble_view_->SwitchToReloadingView();
-  waiting_for_reload_ = true;
 }
 
 void CookieControlsBubbleViewController::OnFaviconFetched(
@@ -197,6 +195,12 @@ void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
   // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
 }
 
+void CookieControlsBubbleViewController::
+    OnFinishedPageReloadWithChangedSettings() {
+  controller_observation_.Reset();
+  bubble_view_->CloseWidget();
+}
+
 void CookieControlsBubbleViewController::SetCallbacks() {
   on_user_closed_content_view_callback_ =
       bubble_view_->RegisterOnUserClosedContentViewCallback(base::BindRepeating(
@@ -222,7 +226,7 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(bool new_value) {
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
   chrome::ShowFeedbackPage(
-      chrome::FindBrowserWithWebContents(web_contents()),
+      chrome::FindBrowserWithWebContents(web_contents_.get()),
       chrome::kFeedbackSourceCookieControls,
       /*description_template=*/std::string(),
       l10n_util::GetStringUTF8(
@@ -288,12 +292,6 @@ void CookieControlsBubbleViewController::FetchFaviconFrom(
       base::BindOnce(&CookieControlsBubbleViewController::OnFaviconFetched,
                      weak_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
-}
-
-void CookieControlsBubbleViewController::DidStopLoading() {
-  if (waiting_for_reload_) {
-    bubble_view_->CloseWidget();
-  }
 }
 
 std::u16string CookieControlsBubbleViewController::GetSubjectUrlName(

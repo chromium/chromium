@@ -49,6 +49,7 @@ class MockCookieControlsObserver
   MOCK_METHOD(void,
               OnBreakageConfidenceLevelChanged,
               (CookieControlsBreakageConfidenceLevel));
+  MOCK_METHOD(void, OnFinishedPageReloadWithChangedSettings, ());
 };
 
 blink::StorageKey CreateFirstPartyStorageKey(const GURL& url) {
@@ -710,7 +711,9 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
 }
 
 TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
-  NavigateAndCommit(GURL("https://example.com"));
+  // Update on the initial web contents to ensure the tab observer is setup.
+  cookie_controls()->Update(web_contents());
+
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsStatus::kEnabled,
                               CookieControlsEnforcement::kNoEnforcement,
@@ -718,6 +721,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kLow));
+  NavigateAndCommit(GURL("https://example.com"));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -1056,6 +1060,33 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
       ContentSettingsPattern::FromString("[*.]com"),
       ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
   testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
+  // Check that when the page is reloaded after settings have changed, that
+  // the appropriate observer method is fired. Reloading the page without a
+  // change, should not fire the observer.
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
+  cookie_controls()->Update(web_contents());
+  NavigateAndCommit(GURL("https://example.com"));
+
+  // Loading the same page after not making an effective change should not fire.
+  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  NavigateAndCommit(GURL("https://example.com"));
+
+  // Loading a different page after making an effective change should not fire.
+  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  NavigateAndCommit(GURL("https://example2.com"));
+
+  // Observer should fire when reloaded after change.
+  testing::Mock::VerifyAndClearExpectations(mock());
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(2);
+  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+
+  NavigateAndCommit(GURL("https://example2.com"));
+  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  NavigateAndCommit(GURL("https://example2.com"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, CookieControlsUserBypassTest, testing::Bool());
