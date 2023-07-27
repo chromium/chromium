@@ -629,6 +629,7 @@ void DownloadBubbleSecurityView::UpdateProgressBar() {
 }
 
 void DownloadBubbleSecurityView::ClearWideFields() {
+  bubble_delegate_->set_fixed_width(0);
   bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, std::u16string());
   bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_OK, std::u16string());
   paragraphs_->SetText(std::u16string());

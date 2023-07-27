@@ -25,6 +25,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace {
 
@@ -270,4 +271,34 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
     EXPECT_EQ(events[3].action, WarningAction::BACK);
     EXPECT_EQ(events[4].action, WarningAction::DISMISS);
   }
+}
+
+TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
+  // This test simulates the deep scanning flow. The prompt for scanning is
+  // wider than the scan in progress view. The bubble should be able to scale up
+  // and down in these transitions.
+  row_view_->SetUIInfoForTesting(
+      DownloadUIModel::BubbleUIInfo().AddPrimarySubpageButton(
+          std::u16string(u""), DownloadCommands::Command::DISCARD));
+  security_view_->UpdateSecurityView(row_view_.get());
+  int short_width =
+      bubble_delegate_->GetDialogClientView()->GetMinimumSize().width();
+
+  row_view_->SetUIInfoForTesting(
+      DownloadUIModel::BubbleUIInfo().AddPrimarySubpageButton(
+          std::u16string(
+              u"really really really really really really long button text"),
+          DownloadCommands::Command::DISCARD));
+  security_view_->UpdateSecurityView(row_view_.get());
+  int medium_width =
+      bubble_delegate_->GetDialogClientView()->GetMinimumSize().width();
+
+  ASSERT_LT(short_width, medium_width);
+
+  row_view_->SetUIInfoForTesting(
+      DownloadUIModel::BubbleUIInfo().AddPrimarySubpageButton(
+          std::u16string(u""), DownloadCommands::Command::DISCARD));
+  security_view_->UpdateSecurityView(row_view_.get());
+  EXPECT_EQ(short_width,
+            bubble_delegate_->GetDialogClientView()->GetMinimumSize().width());
 }
