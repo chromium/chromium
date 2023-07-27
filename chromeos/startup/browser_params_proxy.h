@@ -146,6 +146,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsDriveFsBulkPinningEnabled() const;
 
+  bool IsSysUiDownloadsIntegrationV2Enabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

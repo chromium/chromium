@@ -334,4 +334,8 @@ bool BrowserParamsProxy::IsDriveFsBulkPinningEnabled() const {
   return BrowserInitParams::Get()->is_drivefs_bulk_pinning_enabled;
 }
 
+bool BrowserParamsProxy::IsSysUiDownloadsIntegrationV2Enabled() const {
+  return BrowserInitParams::Get()->is_sys_ui_downloads_integration_v2_enabled;
+}
+
 }  // namespace chromeos

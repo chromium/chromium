@@ -986,8 +986,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 66
-// Next id: 66
+// Next version: 68
+// Next id: 68
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1396,6 +1396,11 @@ struct BrowserInitParams {
   // Tell lacros whether the device is available to enable Floss.
   [MinVersion=66]
   bool is_floss_available@66;
+
+  // Indicates whether the new downloads integration with System UI surfaces is
+  // enabled in Ash, so as to allow the browser to disable competing behaviors.
+  [MinVersion=67]
+  bool is_sys_ui_downloads_integration_v2_enabled@67;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

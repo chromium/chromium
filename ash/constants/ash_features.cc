@@ -1685,6 +1685,11 @@ BASE_FEATURE(kNewLockScreenReauthLayout,
              "NewLockScreenReauthLayout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the new downloads integration with System UI surfaces.
+BASE_FEATURE(kSysUiDownloadsIntegrationV2,
+             "SysUiDownloadsIntegrationV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of the new System Nudges. (go/cros-educationalnudge-spec)
 BASE_FEATURE(kSystemNudgeV2,
              "SystemNudgeV2",
@@ -3433,6 +3438,10 @@ bool IsNewLockScreenReauthLayoutEnabled() {
 
 bool IsSuppressTextMessagesEnabled() {
   return base::FeatureList::IsEnabled(kSuppressTextMessages);
+}
+
+bool IsSysUiDownloadsIntegrationV2Enabled() {
+  return base::FeatureList::IsEnabled(kSysUiDownloadsIntegrationV2);
 }
 
 bool IsSystemNudgeV2Enabled() {

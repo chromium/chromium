@@ -648,6 +648,9 @@ void InjectBrowserInitParams(
 
   params->is_drivefs_bulk_pinning_enabled =
       ash::features::IsDriveFsBulkPinningEnabled();
+
+  params->is_sys_ui_downloads_integration_v2_enabled =
+      ash::features::IsSysUiDownloadsIntegrationV2Enabled();
 }
 
 template <typename BrowserParams>
