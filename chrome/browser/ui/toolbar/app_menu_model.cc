@@ -137,6 +137,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kMoreToolsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
+                                      kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
@@ -483,6 +485,8 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
       IDC_SHOW_PASSWORD_MANAGER, IDS_VIEW_PASSWORDS,
       ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
                                      kDefaultIconSize));
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_PASSWORD_MANAGER).value(),
+                         AppMenuModel::kPasswordManagerMenuItem);
   AddItemWithStringIdAndIcon(
       IDC_SHOW_PAYMENT_METHODS, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
       ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon,
@@ -1391,7 +1395,8 @@ bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
     return alert_item_ == AlertMenuItem::kPerformance;
   }
 
-  if (command_id == IDC_VIEW_PASSWORDS) {
+  if (command_id == IDC_VIEW_PASSWORDS ||
+      command_id == IDC_SHOW_PASSWORD_MANAGER) {
     return alert_item_ == AlertMenuItem::kPasswordManager;
   }
 
@@ -1485,6 +1490,9 @@ void AppMenuModel::Build() {
     AddSubMenuWithStringId(IDC_PASSWORDS_AND_AUTOFILL_MENU,
                            IDS_PASSWORDS_AND_AUTOFILL_MENU,
                            sub_menus_.back().get());
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value(),
+        kPasswordAndAutofillMenuItem);
   }
 
   if (!browser_->profile()->IsOffTheRecord()) {

@@ -764,6 +764,21 @@ void MaybeRegisterChromeTutorials(
               .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_APP_MENU)
               .SetBubbleArrow(HelpBubbleArrow::kTopRight),
 
+          // Wait for one of the next elements so the If step can check
+          // for the optional element.
+          TutorialDescription::WaitForAnyOf(
+              AppMenuModel::kPasswordAndAutofillMenuItem)
+              .Or(AppMenuModel::kPasswordManagerMenuItem),
+
+          TutorialDescription::If(AppMenuModel::kPasswordAndAutofillMenuItem)
+              .Then(
+                  // Bubble step - Passwords and Autofill sub menu item
+                  TutorialDescription::BubbleStep(
+                      AppMenuModel::kPasswordAndAutofillMenuItem)
+                      .SetBubbleBodyText(
+                          IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_PASSWORDS_MENU)
+                      .SetBubbleArrow(HelpBubbleArrow::kRightCenter)),
+
           // Bubble step - "Password Manager" menu item
           TutorialDescription::BubbleStep(
               AppMenuModel::kPasswordManagerMenuItem)
