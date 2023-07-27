@@ -235,7 +235,7 @@ void IsCurrentUserOwner(content::BrowserContext* context,
   auto on_owner_fetched = base::IgnoreArgs<const AccountId&>(
       base::BindOnce(&IsCurrentUserOwnerOnOwnerFetched, std::move(callback)));
 
-  user_manager::UserManager::Get()->RequestOwnerAccountId(
+  user_manager::UserManager::Get()->GetOwnerAccountIdAsync(
       std::move(on_owner_fetched));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

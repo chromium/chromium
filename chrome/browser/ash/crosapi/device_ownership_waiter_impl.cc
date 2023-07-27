@@ -25,7 +25,7 @@ void DeviceOwnershipWaiterImpl::WaitForOwnerhipFetched(
     return;
   }
 
-  user_manager::UserManager::Get()->RequestOwnerAccountId(
+  user_manager::UserManager::Get()->GetOwnerAccountIdAsync(
       base::IgnoreArgs<const AccountId&>(std::move(callback)));
 }
 
