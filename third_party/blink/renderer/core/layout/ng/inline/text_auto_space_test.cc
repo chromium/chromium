@@ -115,6 +115,8 @@ struct HtmlData {
     {u"ああ<span>A</span>ああ", {2, 3}},
     {u"ああ<span>Aああ</span>", {2, 3}},
     {u"ああ 12 ああ", {}},
+    {u"あ<span style='text-autospace: no-autospace'>1</span>2", {}},
+    {u"あ<span style='text-autospace: no-autospace'>あ</span>2", {2}},
 };
 class HtmlTest : public TextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};

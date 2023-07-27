@@ -102,6 +102,7 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
     const ComputedStyle* style = item.Style();
     DCHECK(style);
     if (UNLIKELY(style->TextAutospace() != ETextAutospace::kNormal)) {
+      last_type.reset();
       continue;
     }
 
