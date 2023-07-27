@@ -1784,8 +1784,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
     ::testing::Values(
-        // Flaky. TODO(b/291674465): Re-enable.
-        // TestCase("transferShowDlpToast").EnableDlp(),
+        TestCase("transferShowDlpToast").EnableDlp(),
         TestCase("dlpShowManagedIcon").EnableDlp(),
         TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
         TestCase("saveAsDlpRestrictedAndroid").EnableArcVm().EnableDlp(),
