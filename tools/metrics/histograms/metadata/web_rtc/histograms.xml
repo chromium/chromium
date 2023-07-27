@@ -1669,19 +1669,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.SrtpCryptoSuite{WebRTCMediaType}"
-    enum="DTLS_SRTPCryptoSuite" expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    Counters on the type of SRTP crypto suites used by WebRTC. This is collected
-    whenever the transport signals the OnCompleted event. {WebRTCMediaType}
-  </summary>
-  <token key="WebRTCMediaType" variants="WebRTCMediaType">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.SrtpUnprotectError" enum="SrtpErrorCode"
     expires_after="never">
 <!-- expires-never: Needed for long-term tracking of the ecosystem. -->
