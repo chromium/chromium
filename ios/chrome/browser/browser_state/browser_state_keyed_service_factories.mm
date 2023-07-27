@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/account_reconcilor_factory.h"
@@ -178,6 +179,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   SafeBrowsingClientFactory::GetInstance();
   SafeBrowsingMetricsCollectorFactory::GetInstance();
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
+  SessionRestorationServiceFactory::GetInstance();
   SigninBrowserStateInfoUpdaterFactory::GetInstance();
   SigninClientFactory::GetInstance();
   SupervisedUserMetricsServiceFactory::GetInstance();
