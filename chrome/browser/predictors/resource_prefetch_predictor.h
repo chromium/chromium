@@ -195,20 +195,10 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   virtual bool PredictPreconnectOrigins(const GURL& url,
                                         PreconnectPrediction* prediction) const;
 
-  // Returns LCP element locators in the past loads for a given `url`.  The
-  // returned LCP element locators are ordered by descending frequency (the most
-  // frequent one comes first). If there is no data, it returns an empty vector.
-  std::vector<std::string> PredictLcpElementLocators(const GURL& url) const;
-
   // Called by the collector after a page has finished loading resources and
   // assembled a PageRequestSummary.
   virtual void RecordPageRequestSummary(
       std::unique_ptr<PageRequestSummary> summary);
-
-  // Record LCP element locators after a page has finished loading and LCP has
-  // been determined.
-  void LearnLcpp(const std::string& host,
-                 const std::string& lcp_element_locator);
 
   // Deletes all URLs from the predictor database and caches.
   void DeleteAllUrls();
@@ -309,6 +299,9 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
       const GURL& main_frame_origin,
       const std::map<url::Origin, OriginRequestSummary>& summaries);
 
+  void LearnLcpp(const std::string& host,
+                 const std::string& lcp_element_locator);
+
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -359,8 +352,6 @@ class TestObserver {
   virtual void OnPredictorInitialized() {}
 
   virtual void OnNavigationLearned(const PageRequestSummary& summary) {}
-
-  virtual void OnLcppLearned() {}
 
  protected:
   // |predictor| must be non-NULL and has to outlive the TestObserver.

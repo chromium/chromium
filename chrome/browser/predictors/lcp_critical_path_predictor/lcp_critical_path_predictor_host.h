@@ -37,8 +37,6 @@ class LCPCriticalPathPredictorHost
           receiver);
 
   ~LCPCriticalPathPredictorHost() override;
-
-  void SetLcpElementLocator(const std::string& lcp_element_locator) override;
 };
 
 }  // namespace predictors

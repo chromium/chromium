@@ -21,7 +21,6 @@
 #include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/javascript_frameworks_ukm_observer.h"
-#include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/loading_predictor_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/local_network_requests_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
@@ -173,11 +172,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
                 web_contents());
     if (loading_predictor_observer)
       tracker->AddObserver(std::move(loading_predictor_observer));
-    if (auto lcp_critical_path_predictor_observer =
-            LcpCriticalPathPredictorPageLoadMetricsObserver::CreateIfNeeded(
-                web_contents())) {
-      tracker->AddObserver(std::move(lcp_critical_path_predictor_observer));
-    }
     tracker->AddObserver(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());
     tracker->AddObserver(

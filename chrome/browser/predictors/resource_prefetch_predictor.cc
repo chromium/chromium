@@ -390,42 +390,6 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
   return has_any_prediction;
 }
 
-std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
-    const GURL& url) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // The `initialization_state_` can be not `INITIALIZED` in the very first
-  // navigation on browser startup. Because this object is initialized on the
-  // first navigation.
-  if (initialization_state_ != INITIALIZED) {
-    return {};
-  }
-
-  LcppData data;
-  if (!lcpp_data_->TryGetData(url.host(), &data)) {
-    return {};
-  }
-
-  const auto& buckets =
-      data.lcpp_stat().lcp_element_locator_stat().lcp_element_locator_buckets();
-  std::vector<std::pair<double, std::string>>
-      lcp_element_locators_with_frequency;
-  lcp_element_locators_with_frequency.reserve(buckets.size());
-  for (const auto& bucket : buckets) {
-    lcp_element_locators_with_frequency.emplace_back(
-        bucket.frequency(), bucket.lcp_element_locator());
-  }
-
-  std::sort(lcp_element_locators_with_frequency.rbegin(),
-            lcp_element_locators_with_frequency.rend());
-
-  std::vector<std::string> lcp_element_locators;
-  lcp_element_locators.reserve(lcp_element_locators_with_frequency.size());
-  for (auto& bucket : lcp_element_locators_with_frequency) {
-    lcp_element_locators.push_back(std::move(bucket.second));
-  }
-  return lcp_element_locators;
-}
-
 void ResourcePrefetchPredictor::CreateCaches(
     std::unique_ptr<RedirectDataMap> host_redirect_data,
     std::unique_ptr<OriginDataMap> origin_data,
@@ -658,10 +622,7 @@ void ResourcePrefetchPredictor::LearnLcpp(
     const std::string& host,
     const std::string& lcp_element_locator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (host.size() > ResourcePrefetchPredictorTables::kMaxStringLength ||
-      lcp_element_locator.size() >
-          ResourcePrefetchPredictorTables::kMaxStringLength ||
-      lcp_element_locator.empty()) {
+  if (host.size() > ResourcePrefetchPredictorTables::kMaxStringLength) {
     return;
   }
 
@@ -833,9 +794,6 @@ void ResourcePrefetchPredictor::LearnLcpp(
 
   // Update the database.
   lcpp_data_->UpdateData(host, data);
-  if (observer_) {
-    observer_->OnLcppLearned();
-  }
 }
 
 void ResourcePrefetchPredictor::OnURLsDeleted(

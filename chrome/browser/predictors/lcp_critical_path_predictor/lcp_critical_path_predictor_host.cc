@@ -4,7 +4,7 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h"
 
-#include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace predictors {
@@ -26,18 +26,5 @@ void LCPCriticalPathPredictorHost::Create(
 }
 
 LCPCriticalPathPredictorHost::~LCPCriticalPathPredictorHost() = default;
-
-void LCPCriticalPathPredictorHost::SetLcpElementLocator(
-    const std::string& lcp_element_locator) {
-  // `LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit()` stores
-  // `LcpCriticalPathPredictorPageLoadMetricsObserver` in `PageData` as a weak
-  // pointer. This weak pointer can be deleted at any time.
-  if (auto* plmo =
-          LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
-              render_frame_host().GetPage())
-              ->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-    plmo->SetLcpElementLocator(lcp_element_locator);
-  }
-}
 
 }  // namespace predictors
