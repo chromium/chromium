@@ -265,6 +265,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitAudioCollectors();
 
+  void InitBootPerformanceCollector();
+
   void InitPeripheralsCollectors();
 
   void InitDisplayCollectors();

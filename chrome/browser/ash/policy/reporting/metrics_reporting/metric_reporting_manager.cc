@@ -296,18 +296,7 @@ void MetricReportingManager::DelayedInit() {
       /*enable_setting_path=*/::ash::kReportDeviceNetworkConfiguration,
       /*setting_enabled_default_value=*/true);
 
-  // Boot performance telemetry collector.
-  auto boot_performance_handler =
-      std::make_unique<CrosHealthdBootPerformanceSamplerHandler>();
-  auto boot_performance_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      std::move(boot_performance_handler),
-      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance);
-  InitOneShotTelemetryCollector(
-      /*collector_name=*/kBootPerformance, boot_performance_sampler.get(),
-      telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceBootMode,
-      /*enable_default_value=*/true, delegate_->GetInitDelay());
-  samplers_.push_back(std::move(boot_performance_sampler));
+  InitBootPerformanceCollector();
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
@@ -591,6 +580,22 @@ void MetricReportingManager::InitAudioCollectors() {
           metrics::kDefaultAudioTelemetryCollectionRate),
       /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
   samplers_.push_back(std::move(audio_telemetry_sampler));
+}
+
+void MetricReportingManager::InitBootPerformanceCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto boot_performance_handler =
+      std::make_unique<CrosHealthdBootPerformanceSamplerHandler>();
+  auto boot_performance_sampler = std::make_unique<CrosHealthdMetricSampler>(
+      std::move(boot_performance_handler),
+      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance);
+  InitOneShotTelemetryCollector(
+      /*collector_name=*/kBootPerformance, boot_performance_sampler.get(),
+      telemetry_report_queue_.get(),
+      /*enable_setting_path=*/::ash::kReportDeviceBootMode,
+      /*enable_default_value=*/true, delegate_->GetInitDelay());
+  samplers_.push_back(std::move(boot_performance_sampler));
 }
 
 void MetricReportingManager::InitPeripheralsCollectors() {
