@@ -324,6 +324,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   [SigninPromoViewMediator registerBrowserStatePrefs:registry];
 
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
+  registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
   registry->RegisterBooleanPref(kDataSaverEnabled, false);

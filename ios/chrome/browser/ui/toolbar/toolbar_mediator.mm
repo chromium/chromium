@@ -254,9 +254,14 @@
     return;
   }
 
+  BOOL bottomOmniboxEnabledByDefault = NO;
+  if (base::FeatureList::IsEnabled(kBottomOmniboxDefaultSetting)) {
+    bottomOmniboxEnabledByDefault =
+        self.prefService->GetBoolean(prefs::kBottomOmniboxByDefault);
+  }
+
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
       kBottomOmniboxDefaultSetting, kBottomOmniboxDefaultSettingParam);
-  BOOL bottomOmniboxEnabledByDefault = NO;  // Top is default.
   if (featureParam == kBottomOmniboxDefaultSettingParamBottom) {
     bottomOmniboxEnabledByDefault = YES;
   } else if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
@@ -265,6 +270,14 @@
     if (result.status == segmentation_platform::PredictionStatus::kSucceeded) {
       // TODO(crbug.com/1467244): Check if result IsSafariSwitcher.
     }
+  } else if (featureParam == kBottomOmniboxDefaultSettingParamTop) {
+    bottomOmniboxEnabledByDefault = NO;
+  }
+
+  // Make sure that users who have already seen the bottom omnibox by default
+  // keep it.
+  if (bottomOmniboxEnabledByDefault) {
+    self.prefService->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
   }
 
   self.prefService->SetDefaultPrefValue(

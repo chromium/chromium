@@ -11,6 +11,7 @@ extern const char kApplicationLocale[];
 extern const char kAppStoreRatingPolicyEnabled[];
 extern const char kArticlesForYouEnabled[];
 extern const char kBottomOmnibox[];
+extern const char kBottomOmniboxByDefault[];
 extern const char kBrowserLockdownModeEnabled[];
 extern const char kBrowserStateInfoCache[];
 extern const char kBrowserStateLastUsed[];
