@@ -405,10 +405,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   base::flat_set<std::string> GetDeviceIdsFromCameraIds(
       base::flat_set<int32_t> camera_ids);
 
-  void BindToMojoServiceManagerOnUIThread(
-      const std::string service_name,
-      mojo::ScopedMessagePipeHandle receiver);
-
   void StopOnProxyThread();
 
   TokenManager* GetTokenManagerForTesting();

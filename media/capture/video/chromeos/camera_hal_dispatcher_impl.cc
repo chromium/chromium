@@ -445,8 +445,8 @@ CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
 void CameraHalDispatcherImpl::RegisterServer(
     mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  LOG(ERROR) << "CameraHalDispatcher::RegisterServer is deprecated. "
-                "CameraHalServer will not be registered.";
+  NOTREACHED() << "CameraHalDispatcher::RegisterServer is deprecated. "
+                  "CameraHalServer will not be registered.";
 }
 
 void CameraHalDispatcherImpl::RegisterServerWithToken(
@@ -519,7 +519,7 @@ void CameraHalDispatcherImpl::RegisterServerWithTokenOnProxyThread(
 
 void CameraHalDispatcherImpl::RegisterClient(
     mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
-  NOTREACHED() << "RegisterClient() is disabled";
+  NOTREACHED() << "CameraHalDispatcher::RegisterClient is deprecated.";
 }
 
 void CameraHalDispatcherImpl::RegisterClientWithToken(
@@ -589,11 +589,9 @@ void CameraHalDispatcherImpl::RegisterSensorClientWithTokenOnProxyThread(
 void CameraHalDispatcherImpl::BindServiceToMojoServiceManager(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle receiver) {
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImpl::BindToMojoServiceManagerOnUIThread,
-          base::Unretained(this), service_name, std::move(receiver)));
+  NOTREACHED()
+      << "CameraHalDispatcher::BindServiceToMojoServiceManager is deprecated. "
+         "Please ask for services from Mojo Service Manager.";
 }
 
 void CameraHalDispatcherImpl::CameraDeviceActivityChange(
@@ -1185,15 +1183,6 @@ base::flat_set<std::string> CameraHalDispatcherImpl::GetDeviceIdsFromCameraIds(
 
 TokenManager* CameraHalDispatcherImpl::GetTokenManagerForTesting() {
   return &token_manager_;
-}
-
-void CameraHalDispatcherImpl::BindToMojoServiceManagerOnUIThread(
-    const std::string service_name,
-    mojo::ScopedMessagePipeHandle receiver) {
-  CHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  CHECK(ash::mojo_service_manager::IsServiceManagerBound());
-  ash::mojo_service_manager::GetServiceManagerProxy()->Request(
-      service_name, /*timeout=*/absl::nullopt, std::move(receiver));
 }
 
 void CameraHalDispatcherImpl::Request(

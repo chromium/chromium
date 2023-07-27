@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 11
+// Next min version: 12
 
 module cros.mojom;
 
@@ -70,7 +70,7 @@ enum CameraAutoFramingState {
 // channel to the server and pass the established Mojo channel to the client in
 // order to set up a Mojo channel between the client and the server.
 //
-// Next method ID: 7
+// Next method ID: 8
 interface CameraHalDispatcher {
   // [Deprecated in version 4]
   // A CameraHalServer calls RegisterServer to register itself with the
@@ -118,9 +118,8 @@ interface CameraHalDispatcher {
       pending_remote<chromeos.sensors.mojom.SensorHalClient> client,
       mojo_base.mojom.UnguessableToken auth_token) => (int32 result);
 
+  // [Deprecated in version 11]
   // Workaround for cros-camera service to request other services via
-  // mojo service manager.
-  // TODO(b/258095854): Remove this once camera mojo network is migrated to
   // mojo service manager.
   [MinVersion=10] BindServiceToMojoServiceManager@7(string service_name,
       handle<message_pipe> receiver);
