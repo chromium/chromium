@@ -80,3 +80,5 @@
 # crbug.com/1169250
 -org.chromium.chrome.browser.omnibox.LocationBarTest.testFocusLogic_keyboardVisibility
 
+# crbug.com/1467211
+-org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testSigninWithNonDefaultAccount
