@@ -18,6 +18,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ios/public/provider/chrome/browser/mailto_handler:mailto_handler_api",
+    "//ios/public/provider/chrome/browser/modals:mini_map_api",
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
