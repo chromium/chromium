@@ -316,6 +316,17 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
          CONTENT_SETTING_ALLOW;
 }
 
+ContentSetting CookieSettingsBase::GetSettingForLegacyCookieAccess(
+    const std::string& cookie_domain) const {
+  // The content setting patterns are treated as domains, not URLs, so the
+  // scheme is irrelevant (so we can just arbitrarily pass false).
+  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      cookie_domain, false /* secure scheme */);
+
+  return GetContentSetting(cookie_domain_url, GURL(),
+                           ContentSettingsType::LEGACY_COOKIE_ACCESS);
+}
+
 // static
 bool CookieSettingsBase::IsValidSetting(ContentSetting setting) {
   return (setting == CONTENT_SETTING_ALLOW ||

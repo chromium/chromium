@@ -98,45 +98,6 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
                              std::cref(content_settings_));
 }
 
-ContentSetting CookieSettings::GetSettingForLegacyCookieAccess(
-    const std::string& cookie_domain) const {
-  // Default to match what was registered in the ContentSettingsRegistry.
-  ContentSetting setting = CONTENT_SETTING_BLOCK;
-
-  if (settings_for_legacy_cookie_access_.empty())
-    return setting;
-
-  // If there are no domain-specific settings, return early to avoid the cost of
-  // constructing a GURL to match against.
-  if (base::ranges::all_of(settings_for_legacy_cookie_access_,
-                           [](const ContentSettingPatternSource& entry) {
-                             return entry.primary_pattern.MatchesAllHosts();
-                           })) {
-    // Take the first entry because we know all entries match any host.
-    setting = settings_for_legacy_cookie_access_[0].GetContentSetting();
-    DCHECK(IsValidSettingForLegacyAccess(setting));
-    return setting;
-  }
-
-  // The content setting patterns are treated as domains, not URLs, so the
-  // scheme is irrelevant (so we can just arbitrarily pass false).
-  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
-      cookie_domain, false /* secure scheme */);
-
-  for (const auto& entry : settings_for_legacy_cookie_access_) {
-    // TODO(crbug.com/1015611): This should ignore scheme and port, but
-    // currently takes them into account. It says in the policy description that
-    // specifying a scheme or port in the pattern may lead to undefined
-    // behavior, but this is not ideal.
-    if (entry.primary_pattern.Matches(cookie_domain_url)) {
-      DCHECK(IsValidSettingForLegacyAccess(entry.GetContentSetting()));
-      return entry.GetContentSetting();
-    }
-  }
-
-  return setting;
-}
-
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies) const {
@@ -298,6 +259,8 @@ const ContentSettingsForOneType& CookieSettings::GetContentSettings(
       return storage_access_grants_;
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       return top_level_storage_access_grants_;
+    case ContentSettingsType::LEGACY_COOKIE_ACCESS:
+      return settings_for_legacy_cookie_access_;
     default:
       // Only implements types that are actually used by CookieSettings since
       // settings need to be copied to the network service.

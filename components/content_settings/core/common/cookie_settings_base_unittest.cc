@@ -68,13 +68,6 @@ class CallbackCookieSettings : public CookieSettingsBase {
 
   bool IsStorageAccessApiEnabled() const override { return true; }
 
-  ContentSetting GetSettingForLegacyCookieAccess(
-      const std::string& cookie_domain) const override {
-    GURL cookie_domain_url =
-        net::cookie_util::CookieOriginToURL(cookie_domain, false);
-    return callback_.Run(cookie_domain_url);
-  }
-
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override {

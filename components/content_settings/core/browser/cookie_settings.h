@@ -154,8 +154,6 @@ class CookieSettings : public CookieSettingsBase,
   bool HasAnyFrameRequestedStorageAccess(const GURL& first_party_url) const;
 
   // content_settings::CookieSettingsBase:
-  ContentSetting GetSettingForLegacyCookieAccess(
-      const std::string& cookie_domain) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override;
