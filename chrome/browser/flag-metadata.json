@@ -7162,8 +7162,8 @@
   },
   {
     "name": "shared-highlighting-amp",
-    "owners": ["cheickcisse@google.com"],
-    "expiry_milestone": 97
+    "owners": ["cheickcisse@google.com", "sczs"],
+    "expiry_milestone": 120
   },
   {
     "name": "shared-highlighting-ios",
