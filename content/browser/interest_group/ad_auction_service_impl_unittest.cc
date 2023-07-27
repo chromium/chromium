@@ -1204,14 +1204,16 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
          "metadata": {"new_a": "b"},
          "buyerReportingId": "new_brid",
          "buyerAndSellerReportingId": "new_shrid",
-         "adRenderId": "123abc"
+         "adRenderId": "123abc",
+         "allowedReportingOrigins": ["https://g.test"]
         }],
 "adComponents": [{"renderURL": "https://example.com/component_url",
                   "sizeGroup": "group_new",
                   "metadata": {"new_c": "d"},
                   "buyerReportingId": "ignored1",
                   "buyerAndSellerReportingId": "ignored2",
-                  "adRenderId": "456def"
+                  "adRenderId": "456def",
+                  "allowedReportingOrigins": ["https://ignored.test"]
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
 "sizeGroups": {"group_new": ["size_new"]}
@@ -1236,13 +1238,15 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
+  std::vector<url::Origin> allowed_reporting_origins = {kOriginG};
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
       /*size_group=*/"group_old",
       /*buyer_reporting_id=*/"old_brid",
       /*buyer_and_seller_reporting_id=*/"old_shrid",
-      /*ad_render_id=*/"123abc");
+      /*ad_render_id=*/"123abc",
+      /*allowed_reporting_origins*/ std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
   interest_group.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
@@ -1328,6 +1332,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(*group.ads.value()[0].buyer_reporting_id, "new_brid");
   ASSERT_TRUE(group.ads.value()[0].buyer_and_seller_reporting_id.has_value());
   EXPECT_EQ(*group.ads.value()[0].buyer_and_seller_reporting_id, "new_shrid");
+  ASSERT_TRUE(group.ads.value()[0].allowed_reporting_origins.has_value());
+  ASSERT_EQ(group.ads.value()[0].allowed_reporting_origins->size(), 1u);
+  EXPECT_EQ(
+      group.ads.value()[0].allowed_reporting_origins.value()[0].Serialize(),
+      kOriginStringG);
   ASSERT_TRUE(group.ad_components.has_value());
   ASSERT_EQ(group.ad_components->size(), 1u);
   EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
@@ -1337,6 +1346,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_FALSE(group.ad_components.value()[0].buyer_reporting_id.has_value());
   EXPECT_FALSE(
       group.ad_components.value()[0].buyer_and_seller_reporting_id.has_value());
+  EXPECT_FALSE(
+      group.ad_components.value()[0].allowed_reporting_origins.has_value());
   ASSERT_TRUE(group.ad_components.value()[0].ad_render_id.has_value());
   EXPECT_EQ(group.ad_components.value()[0].ad_render_id.value(), "456def");
   ASSERT_TRUE(group.ad_sizes.has_value());
@@ -2054,18 +2065,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
             "https://example.com/render");
 }
 
-// The `ads` field is valid, but the ad `renderURL` field is an invalid
-// URL. The entire update should get cancelled, since updates are atomic.
+// The `ads` field is valid, but one of its fields is invalid. The entire update
+// should get cancelled, since updates are atomic.
 TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
-  network_responder_->RegisterUpdateResponse(
-      kUpdateUrlPath, base::StringPrintf(R"({
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
-"ads": [{"renderURL": "https://invalid^&",
-         "metadata": {"new_a": "b"}
-        }]
-})",
-                                         kOriginStringA));
-
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
@@ -2080,21 +2082,46 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
-  UpdateInterestGroupNoFlush();
-  task_environment()->RunUntilIdle();
+  struct TestCase {
+    const std::string render_url;
+    const std::string allowed_reporting_origins;
+  } kTestCases[] = {
+      {"https://invalid^&", ""},
+      {"http://test.com", ""},
+      {"https://test.com", R"(["http://example.com"])"},
+      {"https://test.com", R"(["https://1", "https://2","https://3","https://4",
+    "https://5","https://6","https://7","https://8","https://9","https://10","https://11"])"},
+  };
 
-  // Check that the ads and bidding logic URL didn't change.
-  std::vector<StorageInterestGroup> groups =
-      GetInterestGroupsForOwner(kOriginA);
-  ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].interest_group;
-  ASSERT_TRUE(group.ads.has_value());
-  ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
-  EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
+  for (const auto& test_case : kTestCases) {
+    network_responder_->RegisterUpdateResponse(
+        kUpdateUrlPath,
+        base::StringPrintf(R"({
+"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"ads": [{"renderURL": %s,
+        "metadata": {"new_a": "b"},
+        "allowedReportingOrigins": %s
+        }]
+})",
+                           kOriginStringA, test_case.render_url.c_str(),
+                           test_case.allowed_reporting_origins.c_str()));
+
+    UpdateInterestGroupNoFlush();
+    task_environment()->RunUntilIdle();
+
+    // Check that the ads and bidding logic URL didn't change.
+    std::vector<StorageInterestGroup> groups =
+        GetInterestGroupsForOwner(kOriginA);
+    ASSERT_EQ(groups.size(), 1u);
+    const auto& group = groups[0].interest_group;
+    ASSERT_TRUE(group.ads.has_value());
+    ASSERT_EQ(group.ads->size(), 1u);
+    EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+              "https://example.com/render");
+    EXPECT_EQ(group.ads.value()[0].metadata,
+              "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+    EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
+  }
 }
 
 // The `priority` field is not a valid number. The entire update should get

@@ -116,9 +116,11 @@ class InterestGroupStorageTest : public testing::Test {
         /*user_bidding_signals=*/"foo",
         /*ads=*/
         std::vector<InterestGroup::Ad>{
-            blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
-                                     "metadata1", "group_1", "buyer_id",
-                                     "shared_id", "adRenderId"),
+            blink::InterestGroup::Ad(
+                GURL("https://full.example.com/ad1"), "metadata1", "group_1",
+                "buyer_id", "shared_id", "adRenderId",
+                std::vector<url::Origin>{
+                    url::Origin::Create(GURL("https://reporting.com"))}),
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
                                      "metadata2", "group_2", "buyer_id2")},
         /*ad_components=*/
@@ -174,9 +176,11 @@ class InterestGroupStorageTest : public testing::Test {
     update.trusted_bidding_signals_keys =
         std::vector<std::string>{"a", "b2", "c", "d"};
     update.ads = full.ads;
-    update.ads->emplace_back(GURL("https://full.example.com/ad3"), "metadata3",
-                             "group_3", "new_buyer_id", "another_share_id",
-                             "adRenderId3");
+    update.ads->emplace_back(
+        GURL("https://full.example.com/ad3"), "metadata3", "group_3",
+        "new_buyer_id", "another_share_id", "adRenderId3",
+        std::vector<url::Origin>{
+            url::Origin::Create(GURL("https://reporting.updated.com"))});
     update.ad_components = full.ad_components;
     update.ad_components->emplace_back(
         GURL("https://full.example.com/adcomponent3"), "metadata3c", "group_3");

@@ -35,7 +35,8 @@ mojom::blink::InterestGroupAdPtr MakeAdWithUrl(const KURL& url) {
       url, /*size_group=*/String(),
       /*buyer_reporting_id=*/String(),
       /*buyer_and_seler_reporting_id=*/String(),
-      /*metadata=*/String(), /*ad_render_id=*/String());
+      /*metadata=*/String(), /*ad_render_id=*/String(),
+      /*allowed_reporting_origins=*/absl::nullopt);
 }
 
 }  // namespace
@@ -64,8 +65,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
               interest_group.EstimateSize());
   }
 
-  // Check that `blink_interest_group` is valid, if added from `blink_origin`,
-  // and returns the provided error values.
+  // Check that `blink_interest_group` is not valid, if added from
+  // `blink_origin`, and returns the provided error values.
   void ExpectInterestGroupIsNotValid(
       const mojom::blink::InterestGroupPtr& blink_interest_group,
       const std::string& expected_error_field_name,
@@ -132,6 +133,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     mojo_ad1->metadata =
         String::FromUTF8("\"This field isn't actually validated\"");
     mojo_ad1->ad_render_id = String::FromUTF8("\"NotTooLong\"");
+    mojo_ad1->allowed_reporting_origins.emplace();
+    mojo_ad1->allowed_reporting_origins->emplace_back(kOrigin);
     blink_interest_group->ads->push_back(std::move(mojo_ad1));
     auto mojo_ad2 = mojom::blink::InterestGroupAd::New();
     mojo_ad2->render_url =
@@ -950,7 +953,8 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
         /*size_group=*/test_case.ad_size_group,
         /*buyer_reporting_id=*/String(),
         /*buyer_and_seler_reporting_id=*/String(),
-        /*metadata=*/String(), /*ad_render_id=*/String()));
+        /*metadata=*/String(), /*ad_render_id=*/String(),
+        /*allowed_reporting_origins=*/absl::nullopt));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(
@@ -990,7 +994,8 @@ TEST_F(ValidateBlinkInterestGroupTest,
             /*size_group=*/test_case.ad_component_size_group,
             /*buyer_reporting_id=*/String(),
             /*buyer_and_seler_reporting_id=*/String(),
-            /*metadata=*/String(), /*ad_render_id=*/String()));
+            /*metadata=*/String(), /*ad_render_id=*/String(),
+            /*allowed_reporting_origins=*/absl::nullopt));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(
@@ -1035,6 +1040,48 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderIdTooLong) {
       /*expected_error_field_name=*/"adComponents[0].adRenderId",
       /*expected_error_field_value=*/"ThisIsTooLong",
       /*expected_error=*/"The adRenderId is too long.");
+}
+
+// The interest group is invalid if its ad object's "allowedReporting" field
+// have more than `kMaxAllowedReportingOrigins` elements.
+TEST_F(ValidateBlinkInterestGroupTest, AdTooManyAllowedReportingOrigins) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->allowed_reporting_origins.emplace();
+  for (size_t i = 0; i < mojom::blink::kMaxAllowedReportingOrigins + 1; ++i) {
+    ad->allowed_reporting_origins->emplace_back(
+        SecurityOrigin::CreateFromString(
+            String::Format("https://origin%zu.test/", i)));
+  }
+  blink_interest_group->ads->emplace_back(std::move(ad));
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/"ads[0].allowedReportingOrigins",
+      /*expected_error_field_value=*/"",
+      /*expected_error=*/
+      "allowedReportingOrigins cannot have more than 10 elements.");
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, AdNonHttpsAllowedReportingOrigins) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->allowed_reporting_origins.emplace();
+  ad->allowed_reporting_origins->emplace_back(
+      SecurityOrigin::CreateFromString("https://origin1.test/"));
+  ad->allowed_reporting_origins->emplace_back(
+      SecurityOrigin::CreateFromString("http://origin2.test/"));
+  blink_interest_group->ads->emplace_back(std::move(ad));
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/"ads[0].allowedReportingOrigins",
+      /*expected_error_field_value=*/"http://origin2.test",
+      /*expected_error=*/"allowedReportingOrigins must all be HTTPS.");
 }
 
 }  // namespace blink

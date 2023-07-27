@@ -146,8 +146,16 @@ base::Value ToValue(const blink::InterestGroup::Ad& ad) {
   if (ad.ad_render_id) {
     dict.Set("ad_render_id", ad.ad_render_id.value());
   }
+  if (ad.allowed_reporting_origins) {
+    base::Value::List allowed_reporting_origins;
+    for (const auto& origin : ad.allowed_reporting_origins.value()) {
+      allowed_reporting_origins.Append(Serialize(origin));
+    }
+    dict.Set("allowed_reporting_origins", std::move(allowed_reporting_origins));
+  }
   return value;
 }
+
 blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value::Dict& dict,
                                                   bool for_components) {
   blink::InterestGroup::Ad result;
@@ -170,7 +178,21 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value::Dict& dict,
       result.buyer_and_seller_reporting_id =
           *maybe_buyer_and_seller_reporting_id;
     }
+    const auto* maybe_allowed_reporting_origins =
+        dict.FindList("allowed_reporting_origins");
+    if (maybe_allowed_reporting_origins) {
+      std::vector<url::Origin> allowed_reporting_origins_vector;
+      for (const auto& origin : *maybe_allowed_reporting_origins) {
+        const std::string* origin_str = origin.GetIfString();
+        DCHECK(origin_str);
+        allowed_reporting_origins_vector.emplace_back(
+            DeserializeOrigin(*origin_str));
+      }
+      result.allowed_reporting_origins =
+          std::move(allowed_reporting_origins_vector);
+    }
   }
+
   const std::string* maybe_metadata = dict.FindString("metadata");
   if (maybe_metadata)
     result.metadata = *maybe_metadata;

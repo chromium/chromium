@@ -20,17 +20,25 @@ struct InterestGroupAd {
   // Optional size groups assigned to this Ad.
   string? size_group;
   // Optional identifiers that may be passed to reporting functions, if
-  // sufficiently k-anonymous.
+  // sufficiently k-anonymous. Only meaningful in `InterestGroup.ads`, but
+  // ignored in `InterestGroup.ad_components`.
   string? buyer_reporting_id;
   string? buyer_and_seller_reporting_id;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
-  // Optional alias to use with B&A auctions
+  // Optional alias to use with B&A auctions.
   string? ad_render_id;
+  // A list of up to `kMaxAllowedReportingOrigins` reporting origins that can
+  // receive reports with macros. All origins must be HTTPS. Only meaningful in
+  // `InterestGroup.ads`, but ignored in `InterestGroup.ad_components`.
+  array<url.mojom.Origin>? allowed_reporting_origins;
 };
 
 // The maximum size of a valid interest group in bytes.
 const uint32 kMaxInterestGroupSize = 1048576; // 1 * 1024 * 1024
+
+// The maximum number of allowed reporting origins.
+const uint16 kMaxAllowedReportingOrigins = 10;
 
 // Permissions granted by an interest group to sellers.
 struct SellerCapabilities {

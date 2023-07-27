@@ -19,7 +19,8 @@ bool StructTraits<
       !data.ReadBuyerAndSellerReportingId(
           &out->buyer_and_seller_reporting_id) ||
       !data.ReadMetadata(&out->metadata) ||
-      !data.ReadAdRenderId(&out->ad_render_id)) {
+      !data.ReadAdRenderId(&out->ad_render_id) ||
+      !data.ReadAllowedReportingOrigins(&out->allowed_reporting_origins)) {
     return false;
   }
   return true;

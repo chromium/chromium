@@ -281,6 +281,31 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithAdRenderId) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAdsWithAllowedReportingOrigins) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  std::vector<url::Origin> allowed_reporting_origins_1 = {
+      url::Origin::Create(GURL(kOrigin1))};
+  std::vector<url::Origin> allowed_reporting_origins_2 = {
+      url::Origin::Create(GURL(kOrigin2))};
+  interest_group.ads->emplace_back(
+      GURL(kUrl1),
+      /*metadata=*/absl::nullopt,
+      /*size_group=*/absl::nullopt,
+      /*buyer_reporting_id=*/absl::nullopt,
+      /*buyer_and_seller_reporting_id=*/absl::nullopt,
+      /*ad_render_id=*/absl::nullopt, allowed_reporting_origins_1);
+  interest_group.ads->emplace_back(
+      GURL(kUrl2),
+      /*metadata=*/"[]",
+      /*size_group=*/absl::nullopt,
+      /*buyer_reporting_id=*/absl::nullopt,
+      /*buyer_and_seller_reporting_id=*/absl::nullopt,
+      /*ad_render_id=*/absl::nullopt, allowed_reporting_origins_2);
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdComponents) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_components.emplace();

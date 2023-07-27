@@ -63,18 +63,21 @@ size_t EstimateFlatMapSize(
 
 InterestGroup::Ad::Ad() = default;
 
-InterestGroup::Ad::Ad(GURL render_url,
-                      absl::optional<std::string> metadata,
-                      absl::optional<std::string> size_group,
-                      absl::optional<std::string> buyer_reporting_id,
-                      absl::optional<std::string> buyer_and_seller_reporting_id,
-                      absl::optional<std::string> ad_render_id)
+InterestGroup::Ad::Ad(
+    GURL render_url,
+    absl::optional<std::string> metadata,
+    absl::optional<std::string> size_group,
+    absl::optional<std::string> buyer_reporting_id,
+    absl::optional<std::string> buyer_and_seller_reporting_id,
+    absl::optional<std::string> ad_render_id,
+    absl::optional<std::vector<url::Origin>> allowed_reporting_origins)
     : render_url(std::move(render_url)),
       size_group(std::move(size_group)),
       metadata(std::move(metadata)),
       buyer_reporting_id(std::move(buyer_reporting_id)),
       buyer_and_seller_reporting_id(std::move(buyer_and_seller_reporting_id)),
-      ad_render_id(std::move(ad_render_id)) {}
+      ad_render_id(std::move(ad_render_id)),
+      allowed_reporting_origins(std::move(allowed_reporting_origins)) {}
 
 InterestGroup::Ad::~Ad() = default;
 
@@ -84,8 +87,9 @@ size_t InterestGroup::Ad::EstimateSize() const {
   if (size_group) {
     size += size_group->size();
   }
-  if (metadata)
+  if (metadata) {
     size += metadata->size();
+  }
   if (buyer_reporting_id) {
     size += buyer_reporting_id->size();
   }
@@ -95,15 +99,21 @@ size_t InterestGroup::Ad::EstimateSize() const {
   if (ad_render_id) {
     size += ad_render_id->size();
   }
+  if (allowed_reporting_origins) {
+    for (const url::Origin& origin : *allowed_reporting_origins) {
+      size += origin.Serialize().size();
+    }
+  }
   return size;
 }
 
 bool InterestGroup::Ad::operator==(const Ad& other) const {
   return std::tie(render_url, size_group, metadata, buyer_reporting_id,
-                  buyer_and_seller_reporting_id, ad_render_id) ==
+                  buyer_and_seller_reporting_id, ad_render_id,
+                  allowed_reporting_origins) ==
          std::tie(other.render_url, other.size_group, other.metadata,
                   other.buyer_reporting_id, other.buyer_and_seller_reporting_id,
-                  other.ad_render_id);
+                  other.ad_render_id, other.allowed_reporting_origins);
 }
 
 InterestGroup::InterestGroup() = default;
@@ -220,6 +230,17 @@ bool InterestGroup::IsValid() const {
           return false;
         }
       }
+      if (ad.allowed_reporting_origins) {
+        if (ad.allowed_reporting_origins->size() >
+            blink::mojom::kMaxAllowedReportingOrigins) {
+          return false;
+        }
+        for (const auto& origin : ad.allowed_reporting_origins.value()) {
+          if (origin.scheme() != url::kHttpsScheme) {
+            return false;
+          }
+        }
+      }
     }
   }
 
@@ -240,7 +261,8 @@ bool InterestGroup::IsValid() const {
         }
       }
       // These shouldn't be in components array.
-      if (ad.buyer_reporting_id || ad.buyer_and_seller_reporting_id) {
+      if (ad.buyer_reporting_id || ad.buyer_and_seller_reporting_id ||
+          ad.allowed_reporting_origins) {
         return false;
       }
     }

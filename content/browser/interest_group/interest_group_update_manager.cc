@@ -35,6 +35,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -297,6 +298,18 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           ads_dict->FindString("buyerAndSellerReportingId");
       if (maybe_buyer_and_seller_reporting_id) {
         ad.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+      }
+      const base::Value::List* maybe_allowed_reporting_origins =
+          ads_dict->FindList("allowedReportingOrigins");
+      if (maybe_allowed_reporting_origins) {
+        ad.allowed_reporting_origins.emplace();
+        for (const auto& maybe_origin : *maybe_allowed_reporting_origins) {
+          const std::string* origin_string = maybe_origin.GetIfString();
+          if (origin_string) {
+            ad.allowed_reporting_origins->emplace_back(
+                url::Origin::Create(GURL(*origin_string)));
+          }
+        }
       }
     }
     const base::Value* maybe_metadata = ads_dict->Find("metadata");

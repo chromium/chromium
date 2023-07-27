@@ -53,6 +53,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
     return ad.ad_render_id;
   }
 
+  static const absl::optional<std::vector<url::Origin>>&
+  allowed_reporting_origins(const blink::InterestGroup::Ad& ad) {
+    return ad.allowed_reporting_origins;
+  }
+
   static bool Read(blink::mojom::InterestGroupAdDataView data,
                    blink::InterestGroup::Ad* out);
 };

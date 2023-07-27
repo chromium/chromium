@@ -356,30 +356,25 @@ String WarningPermissionsPolicy(const String& feature, const String& api) {
 
 // Console warnings.
 
-void AddWarningMessageToConsole(ScriptState* script_state,
-                                const String& feature,
-                                const String& api) {
-  auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
+void AddWarningMessageToConsole(const ExecutionContext& execution_context,
+                                const String& message) {
+  auto* window = To<LocalDOMWindow>(&execution_context);
   WebLocalFrameImpl::FromFrame(window->GetFrame())
       ->AddMessageToConsole(
           WebConsoleMessage(mojom::blink::ConsoleMessageLevel::kWarning,
-                            WarningPermissionsPolicy(feature, api)),
+                            message),
           /*discard_duplicates=*/true);
 }
 
 void ConsoleWarnDeprecatedEnum(const ExecutionContext& execution_context,
                                String enum_name,
                                String deprecated_value) {
-  auto* window = To<LocalDOMWindow>(&execution_context);
-  WebLocalFrameImpl::FromFrame(window->GetFrame())
-      ->AddMessageToConsole(
-          WebConsoleMessage(
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              String::Format(
-                  "Enum %s used deprecated value %s -- \"dashed-naming\" "
-                  "should be used instead of \"camelCase\".",
-                  enum_name.Utf8().c_str(), deprecated_value.Utf8().c_str())),
-          /*discard_duplicates=*/true);
+  AddWarningMessageToConsole(
+      execution_context,
+      String::Format("Enum %s used deprecated value %s -- \"dashed-naming\" "
+                     "should be used instead of \"camelCase\".",
+                     enum_name.Utf8().c_str(),
+                     deprecated_value.Utf8().c_str()));
 }
 
 // JSON and Origin conversion helpers.
@@ -735,6 +730,20 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
     }
     if (ad->hasAdRenderId()) {
       mojo_ad->ad_render_id = ad->adRenderId();
+    }
+    if (ad->hasAllowedReportingOrigins()) {
+      mojo_ad->allowed_reporting_origins.emplace();
+      for (const String& origin_string : ad->allowedReportingOrigins()) {
+        scoped_refptr<const SecurityOrigin> origin = ParseOrigin(origin_string);
+        if (origin) {
+          mojo_ad->allowed_reporting_origins->push_back(std::move(origin));
+        } else {
+          exception_state.ThrowTypeError(
+              ErrorInvalidInterestGroup(input, "ad allowedReportingOrigins", "",
+                                        "must all be https origins."));
+          return false;
+        }
+      }
     }
     output.ads->push_back(std::move(mojo_ad));
   }
@@ -2208,8 +2217,9 @@ ScriptPromise JoinAdInterestGroupInternal(
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
       FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
-                               "joinAdInterestGroup");
+    AddWarningMessageToConsole(
+        *context, WarningPermissionsPolicy("join-ad-interest-group",
+                                           "joinAdInterestGroup"));
   }
 
   return NavigatorAuction::From(ExecutionContext::From(script_state), navigator)
@@ -2748,8 +2758,9 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
       FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
-                               "leaveAdInterestGroup");
+    AddWarningMessageToConsole(
+        *context, WarningPermissionsPolicy("join-ad-interest-group",
+                                           "leaveAdInterestGroup"));
   }
 
   return From(context, navigator)
@@ -2766,9 +2777,8 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
                                       "The document has no window associated.");
     return ScriptPromise();
   }
-  ExecutionContext* context = ExecutionContext::From(script_state);
   // According to the spec, implicit leave bypasses permission policy.
-  return From(context, navigator)
+  return From(ExecutionContext::From(script_state), navigator)
       .leaveAdInterestGroupForDocument(script_state, exception_state);
 }
 
@@ -2797,8 +2807,9 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
       FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
-                               "updateAdInterestGroups");
+    AddWarningMessageToConsole(
+        *context, WarningPermissionsPolicy("join-ad-interest-group",
+                                           "updateAdInterestGroups"));
   }
 
   return From(context, navigator).updateAdInterestGroups();
@@ -2880,7 +2891,8 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
       FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(script_state, "run-ad-auction", "runAdAuction");
+    AddWarningMessageToConsole(
+        *context, WarningPermissionsPolicy("run-ad-auction", "runAdAuction"));
   }
 
   return From(ExecutionContext::From(script_state), navigator)
@@ -3442,8 +3454,9 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
       FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(script_state, "run-ad-auction",
-                               "getInterestGroupAdAuctionData");
+    AddWarningMessageToConsole(
+        *context, WarningPermissionsPolicy("run-ad-auction",
+                                           "getInterestGroupAdAuctionData"));
   }
 
   return From(ExecutionContext::From(script_state), navigator)

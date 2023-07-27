@@ -100,6 +100,11 @@ size_t EstimateBlinkInterestGroupSize(
       size += ad->buyer_and_seller_reporting_id.length();
       size += ad->metadata.length();
       size += ad->ad_render_id.length();
+      if (ad->allowed_reporting_origins) {
+        for (const auto& origin : ad->allowed_reporting_origins.value()) {
+          size += origin->ToString().length();
+        }
+      }
     }
   }
 
@@ -259,6 +264,32 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "The adRenderId is too long.";
         return false;
       }
+      auto& allowed_reporting_origins =
+          group.ads.value()[i]->allowed_reporting_origins;
+      if (allowed_reporting_origins) {
+        if (allowed_reporting_origins->size() >
+            mojom::blink::kMaxAllowedReportingOrigins) {
+          error_field_name =
+              String::Format("ads[%u].allowedReportingOrigins", i);
+          error_field_value = "";
+          error = String::Format(
+              "allowedReportingOrigins cannot have more than %hu elements.",
+              mojom::blink::kMaxAllowedReportingOrigins);
+          return false;
+        }
+        for (WTF::wtf_size_t j = 0; j < allowed_reporting_origins->size();
+             ++j) {
+          if (allowed_reporting_origins.value()[j]->Protocol() !=
+              url::kHttpsScheme) {
+            error_field_name =
+                String::Format("ads[%u].allowedReportingOrigins", i);
+            error_field_value =
+                allowed_reporting_origins.value()[j]->ToString();
+            error = "allowedReportingOrigins must all be HTTPS.";
+            return false;
+          }
+        }
+      }
     }
   }
 
@@ -300,6 +331,8 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
       DCHECK(group.ad_components.value()[i]->buyer_reporting_id.IsNull());
       DCHECK(group.ad_components.value()[i]
                  ->buyer_and_seller_reporting_id.IsNull());
+      DCHECK(!group.ad_components.value()[i]
+                  ->allowed_reporting_origins.has_value());
     }
   }
 

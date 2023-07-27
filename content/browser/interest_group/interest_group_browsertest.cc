@@ -141,6 +141,15 @@ base::Value JsonToValue(const std::string& json) {
   return std::move(metadata).value();
 }
 
+base::Value::List AdAllowedReportingOriginsToList(
+    std::vector<url::Origin> origins) {
+  base::Value::List allowed_reporting_origins;
+  for (const auto& origin : origins) {
+    allowed_reporting_origins.Append(origin.Serialize());
+  }
+  return allowed_reporting_origins;
+}
+
 // Creates base::Value representations of ads and adComponents arrays from the
 // provided InterestGroup::Ads.
 base::Value::List MakeAdsValue(
@@ -162,6 +171,11 @@ base::Value::List MakeAdsValue(
       entry.Set("metadata", JsonToValue(*ad.metadata));
     if (ad.ad_render_id) {
       entry.Set("adRenderId", std::move(ad.ad_render_id.value()));
+    }
+    if (ad.allowed_reporting_origins) {
+      entry.Set("allowedReportingOrigins",
+                AdAllowedReportingOriginsToList(
+                    ad.allowed_reporting_origins.value()));
     }
     list.Append(std::move(entry));
   }
@@ -980,6 +994,25 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             /*ad_sizes=*/{},
             /*size_groups=*/{}),
         execution_target);
+  }
+
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  [[nodiscard]] content::EvalJsResult JoinInterestGroupAndWait(
+      const std::string& interest_group_json,
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
+    return EvalJs(execution_target ? *execution_target : shell(),
+                  base::StringPrintf(
+                      R"(
+(async function() {
+  try {
+    return await navigator.joinAdInterestGroup(%s);
+  } catch (e) {
+    return e.toString();
+  }
+})())",
+                      interest_group_json.c_str()));
   }
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
@@ -3081,6 +3114,92 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupValidAllowedReportingOrigins) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  auto origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  std::vector<url::Origin> allowed_reporting_origins = {
+      url::Origin::Create(GURL("https://report.test"))};
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/origin,
+              /*name=*/"cars")
+              .SetAds(
+                  {{{GURL("https://example.com/render"),
+                     /*metadata=*/absl::nullopt,
+                     /*size_group=*/absl::nullopt,
+                     /*buyer_reporting_id=*/absl::nullopt,
+                     /*buyer_and_seller_reporting_id=*/absl::nullopt,
+                     /*ad_render_id=*/"123abc",
+                     /*allowed_reporting_origins=*/allowed_reporting_origins}}})
+              .Build()));
+
+  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups.size(), 1u);
+  const blink::InterestGroup& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url,
+            GURL("https://example.com/render"));
+  EXPECT_EQ(group.ads.value()[0].ad_render_id, "123abc");
+  EXPECT_EQ(group.ads.value()[0].allowed_reporting_origins,
+            allowed_reporting_origins);
+}
+
+// Some of ad's fields are ignored in adComponents, such as
+// allowedReportingOrigins.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupAdComponentsIgnoredFields) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          lifetimeMs: 1000000,
+          ads: [{
+            renderURL: 'https://ad.com/render'
+          }],
+          adComponents: [{
+            renderURL: 'https://ad-components.com/render',
+            adRenderId: '123abc',
+            buyerReportingId: 'ignored',
+            buyerAndSellerReportingId: 'ignored_2',
+            allowedReportingOrigins: ['https://ignored.com']
+          }],
+        });
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                              origin.Serialize().c_str())));
+  WaitForAccessObserved({
+      {TestInterestGroupObserver::kJoin, origin, "cars"},
+  });
+  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups.size(), 1u);
+  const blink::InterestGroup& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ad_components.has_value());
+  ASSERT_EQ(group.ad_components->size(), 1u);
+  const auto& ad_component = group.ad_components.value()[0];
+  EXPECT_EQ(ad_component.render_url, GURL("https://ad-components.com/render"));
+  EXPECT_EQ(ad_component.ad_render_id, "123abc");
+  EXPECT_FALSE(ad_component.buyer_reporting_id.has_value());
+  EXPECT_FALSE(ad_component.buyer_and_seller_reporting_id.has_value());
+  EXPECT_FALSE(ad_component.allowed_reporting_origins.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidBiddingLogicUrl) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
@@ -3859,6 +3978,83 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           ads: [{renderURL: "https://test.com", adRenderId: "ThisIsTooLong"}],
         },
         /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                origin_string.c_str())));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupNonHttpsAllowedReportingOrigins) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "ad allowedReportingOrigins '' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' must all be https origins.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          ads: [{
+            renderURL: 'https://test.com',
+            adRenderId: '123abc',
+            allowedReportingOrigins: ['http://example.com']
+          }],
+        },
+        /*joinDurationSec=*/ 1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                origin_string.c_str())));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupTooManyAllowedReportingOrigins) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "ads[0].allowedReportingOrigins '' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' allowedReportingOrigins cannot have more "
+          "than 10 elements.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          ads: [{
+            renderURL: 'https://test.com',
+            adRenderId: '123abc',
+            allowedReportingOrigins: [
+              'https://1', 'https://2', 'https://3', 'https://4', 'https://5',
+              'https://6', 'https://7', 'https://8', 'https://9', 'https://10',
+              'https://11'
+            ]
+          }],
+        },
+        /*joinDurationSec=*/ 1);
   } catch (e) {
     return e.toString();
   }
