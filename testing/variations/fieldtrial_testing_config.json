@@ -9738,6 +9738,26 @@
             ]
         }
     ],
+    "OmniboxOnDeviceHeadBigModelMobile": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Experiment",
+                    "params": {
+                        "ForceModelLocaleConstraint": "500000"
+                    },
+                    "enable_features": [
+                        "OmniboxOnDeviceHeadProviderIncognito",
+                        "OmniboxOnDeviceHeadProviderNonIncognito"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnDeviceTailSuggestDesktop": [
         {
             "platforms": [
