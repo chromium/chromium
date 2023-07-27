@@ -8260,7 +8260,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImprovedSemanticsActivityIndicatorsDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
-         permissions::features::kImprovedSemanticsActivityIndicators)},
+         content_settings::features::kImprovedSemanticsActivityIndicators)},
 
     {"attribution-reporting-debug-mode",
      flag_descriptions::kAttributionReportingDebugModeName,

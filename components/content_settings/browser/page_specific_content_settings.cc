@@ -32,6 +32,7 @@
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -72,8 +73,10 @@ namespace {
 // A delay before the media indicator disappears if they were previously used
 // longer than `kMediaIndicatorMinimumHoldDuration`.
 constexpr auto kMediaIndicatorHoldAfterUseDuration = base::Seconds(1);
-// A minimum delay the before media indicator disappears.
+// A minimum delay before media indicator disappears.
 constexpr auto kMediaIndicatorMinimumHoldDuration = base::Seconds(5);
+// A delay before blocked media indicator disappears.
+constexpr auto kBlockedMediaIndicatorDismissDelay = base::Minutes(1);
 
 // Determines which taxonomy is used to generate sample topics for the Topics
 // API.
@@ -1226,6 +1229,17 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     }
     MaybeUpdateLocationBar();
   }
+
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kImprovedSemanticsActivityIndicators)) {
+    // Camera and/or Mic is blocked, start a blocked indicator's dismiss timer.
+    if (microphone_camera_state_.Has(kMicrophoneBlocked)) {
+      OnMediaBlockedIndicatorsShown(ContentSettingsType::MEDIASTREAM_MIC);
+    }
+    if (microphone_camera_state_.Has(kCameraBlocked)) {
+      OnMediaBlockedIndicatorsShown(ContentSettingsType::MEDIASTREAM_CAMERA);
+    }
+  }
 }
 
 void PageSpecificContentSettings::ClearPopupsBlocked() {
@@ -1528,6 +1542,31 @@ const base::Time PageSpecificContentSettings::GetLastUsedTime(
                           GetWebContents()->GetLastCommittedURL(), type, &info);
 
   return info.metadata.last_used();
+}
+
+void PageSpecificContentSettings::OnMediaBlockedIndicatorsShown(
+    ContentSettingsType type) {
+  media_blocked_indicator_timer_[type].Start(
+      FROM_HERE, kBlockedMediaIndicatorDismissDelay,
+      base::BindOnce(
+          &PageSpecificContentSettings::OnMediaBlockedIndicatorsDismiss,
+          weak_factory_.GetWeakPtr(), type));
+}
+
+void PageSpecificContentSettings::OnMediaBlockedIndicatorsDismiss(
+    ContentSettingsType type) {
+  media_blocked_indicator_timer_.erase(type);
+
+  if (type == ContentSettingsType::MEDIASTREAM_MIC) {
+    microphone_camera_state_.Remove(kMicrophoneBlocked);
+    microphone_camera_state_.Remove(kMicrophoneAccessed);
+
+  } else {
+    microphone_camera_state_.Remove(kCameraBlocked);
+    microphone_camera_state_.Remove(kCameraAccessed);
+  }
+
+  MaybeUpdateLocationBar();
 }
 
 void PageSpecificContentSettings::MaybeNotifySiteDataObservers(

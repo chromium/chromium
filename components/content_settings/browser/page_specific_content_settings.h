@@ -481,6 +481,11 @@ class PageSpecificContentSettings
     last_used_time_[type] = time;
   }
 
+  std::map<ContentSettingsType, base::OneShotTimer>&
+  get_media_blocked_indicator_timer_for_testing() {
+    return media_blocked_indicator_timer_;
+  }
+
  private:
   friend class content::PageUserData<PageSpecificContentSettings>;
 
@@ -498,6 +503,12 @@ class PageSpecificContentSettings
   // Updates `microphone_camera_state_` after audio/video is started/finished.
   void OnCapturingStateChangedInternal(ContentSettingsType type,
                                        bool is_capturing);
+
+  // This methods is called when a camera and/or mic blocked indicator is
+  // displayed.
+  void OnMediaBlockedIndicatorsShown(ContentSettingsType type);
+
+  void OnMediaBlockedIndicatorsDismiss(ContentSettingsType type);
 
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
@@ -632,6 +643,10 @@ class PageSpecificContentSettings
   std::map<ContentSettingsType, base::Time> last_used_time_;
   // Stores `ContentSettingsType` that is currently used by a page.
   std::set<ContentSettingsType> in_use_;
+
+  // A timer to removed a blocked media indicator.
+  std::map<ContentSettingsType, base::OneShotTimer>
+      media_blocked_indicator_timer_;
 
   // Observer to watch for content settings changed.
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>

@@ -25,7 +25,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "components/permissions/features.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_service.h"
@@ -41,7 +41,7 @@ PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {
   if (base::FeatureList::IsEnabled(
-          permissions::features::kImprovedSemanticsActivityIndicators)) {
+          content_settings::features::kImprovedSemanticsActivityIndicators)) {
     media_observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
                                    ->GetMediaStreamCaptureIndicator()
                                    .get());

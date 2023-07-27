@@ -157,10 +157,6 @@ BASE_FEATURE(kBlockMidiByDefault,
              "BlockMidiByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kImprovedSemanticsActivityIndicators,
-             "ImprovedSemanticsActivityIndicators",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
 namespace feature_params {
 

@@ -14,6 +14,7 @@
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -1432,6 +1433,46 @@ TEST_F(PageSpecificContentSettingsTest, GetLastUsedReturnCorrectTimeTest) {
 
   EXPECT_EQ(time,
             pscs->GetLastUsedTime(ContentSettingsType::MEDIASTREAM_CAMERA));
+}
+
+// Tests that a permission blocked indicator is visible only for 60 seconds.
+TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      content_settings::features::kImprovedSemanticsActivityIndicators);
+
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  EXPECT_FALSE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+
+  PageSpecificContentSettings::MicrophoneCameraState
+      blocked_microphone_camera_state = {
+          PageSpecificContentSettings::kMicrophoneAccessed,
+          PageSpecificContentSettings::kMicrophoneBlocked};
+  pscs->OnMediaStreamPermissionSet(
+      GURL("http://google.com"), blocked_microphone_camera_state, std::string(),
+      std::string(), std::string(), std::string());
+
+  EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+
+  task_environment()->AdvanceClock(base::Seconds(57));
+  base::RunLoop().RunUntilIdle();
+
+  // The timer is still there because a delay is 60 seconds.
+  EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+
+  task_environment()->AdvanceClock(base::Seconds(4));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
 }
 
 }  // namespace content_settings

@@ -73,6 +73,10 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kUserBypassUIExceptionExpiration;
 
+// Hide activity indicators if a permission is no longer used.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
+
 }  // namespace features
 }  // namespace content_settings
 

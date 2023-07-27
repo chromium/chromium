@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/permissions/features.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -26,8 +26,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 class PermissionIndicatorsInteractiveUITest : public InteractiveBrowserTest {
  public:
   PermissionIndicatorsInteractiveUITest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kImprovedSemanticsActivityIndicators}, {});
+    scoped_feature_list_.InitAndEnableFeature(
+        content_settings::features::kImprovedSemanticsActivityIndicators);
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
