@@ -1288,7 +1288,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Startup.AccountInfoFullyLoaded" enum="BooleanLoaded"
+<histogram name="Sync.Startup.AccountInfoFullyLoaded2" enum="BooleanLoaded"
     expires_after="2024-06-15">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
@@ -1343,7 +1343,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Startup.SignedInWithoutAccountInfo"
+<histogram name="Sync.Startup.SignedInWithoutAccountInfo2"
     enum="BooleanIsSignedIn" expires_after="2024-06-15">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
@@ -1353,7 +1353,7 @@ chromium-metrics-reviews@google.com.
     Records whether there was a signed-in user during SyncService initialization
     (i.e. during browser/profile startup), specifically in the case where the
     account info was NOT fully loaded yet (see
-    Sync.Startup.AccountInfoFullyLoaded).
+    Sync.Startup.AccountInfoFullyLoaded2).
   </summary>
 </histogram>
 

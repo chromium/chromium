@@ -291,15 +291,13 @@ void SyncServiceImpl::Initialize() {
       GetSyncAccountStateForPrefs(),
       signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
 
-  if (!IsLocalSyncEnabled()) {
-    // TODO(crbug.com/1454037): Record these histograms only if
-    // `is_regular_profile_for_uma_` is true.
+  if (!IsLocalSyncEnabled() && is_regular_profile_for_uma_) {
     const bool account_info_fully_loaded =
         auth_manager_->IsActiveAccountInfoFullyLoaded();
-    base::UmaHistogramBoolean("Sync.Startup.AccountInfoFullyLoaded",
+    base::UmaHistogramBoolean("Sync.Startup.AccountInfoFullyLoaded2",
                               account_info_fully_loaded);
     if (!account_info_fully_loaded) {
-      base::UmaHistogramBoolean("Sync.Startup.SignedInWithoutAccountInfo",
+      base::UmaHistogramBoolean("Sync.Startup.SignedInWithoutAccountInfo2",
                                 IsSignedIn());
     }
   }
