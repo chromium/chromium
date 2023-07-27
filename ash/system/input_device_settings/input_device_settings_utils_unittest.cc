@@ -323,4 +323,47 @@ TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
   EXPECT_FALSE(remapping8);
 }
 
+TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
+  std::vector<mojom::ButtonRemappingPtr> remappings;
+  remappings.push_back(button_remapping1.Clone());
+  remappings.push_back(button_remapping2.Clone());
+  base::Value::List list = ConvertButtonRemappingArrayToList(remappings);
+  EXPECT_EQ(2, static_cast<int>(list.size()));
+
+  ASSERT_TRUE(list[0].is_dict());
+  const auto& dict1 = list[0].GetDict();
+  EXPECT_EQ(button_remapping1.name,
+            *dict1.FindString(prefs::kButtonRemappingName));
+  EXPECT_EQ(
+      static_cast<int>(button_remapping1.button->get_customizable_button()),
+      *dict1.FindInt(prefs::kButtonRemappingCustomizableButton));
+  EXPECT_EQ(static_cast<int>(button_remapping1.remapping_action->get_action()),
+            *dict1.FindInt(prefs::kButtonRemappingAction));
+
+  ASSERT_TRUE(list[1].is_dict());
+  const auto& dict2 = list[1].GetDict();
+  EXPECT_EQ(button_remapping2.name,
+            *dict2.FindString(prefs::kButtonRemappingName));
+  EXPECT_EQ(
+      static_cast<int>(button_remapping2.button->get_customizable_button()),
+      *dict2.FindInt(prefs::kButtonRemappingCustomizableButton));
+  EXPECT_NE(nullptr, dict2.FindDict(prefs::kButtonRemappingKeyEvent));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping2.remapping_action->get_key_event()->dom_code),
+            *dict2.FindDict(prefs::kButtonRemappingKeyEvent)
+                 ->FindInt(prefs::kButtonRemappingDomCode));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping2.remapping_action->get_key_event()->dom_key),
+            *dict2.FindDict(prefs::kButtonRemappingKeyEvent)
+                 ->FindInt(prefs::kButtonRemappingDomKey));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping2.remapping_action->get_key_event()->modifiers),
+            *dict2.FindDict(prefs::kButtonRemappingKeyEvent)
+                 ->FindInt(prefs::kButtonRemappingModifiers));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping2.remapping_action->get_key_event()->vkey),
+            *dict2.FindDict(prefs::kButtonRemappingKeyEvent)
+                 ->FindInt(prefs::kButtonRemappingKeyboardCode));
+}
+
 }  // namespace ash

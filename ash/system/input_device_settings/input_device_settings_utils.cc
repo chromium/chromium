@@ -178,6 +178,16 @@ base::Value::Dict ConvertButtonRemappingToDict(
   return dict;
 }
 
+base::Value::List ConvertButtonRemappingArrayToList(
+    const std::vector<mojom::ButtonRemappingPtr>& remappings) {
+  base::Value::List list;
+  for (const auto& remapping : remappings) {
+    base::Value::Dict dict = ConvertButtonRemappingToDict(*remapping);
+    list.Append(std::move(dict));
+  }
+  return list;
+}
+
 mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
     const base::Value::Dict& dict) {
   const std::string* name = dict.FindString(prefs::kButtonRemappingName);
