@@ -52,5 +52,8 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kPrivacyAndSecurity]: !!routes.OS_PRIVACY,
     [Section.kReset]: !!routes.OS_RESET,
     [Section.kSearchAndAssistant]: !!routes.OS_SEARCH,
+
+    // Only available when OsSettingsRevampWayfinding feature is enabled.
+    [Section.kSystemPreferences]: !!routes.SYSTEM_PREFERENCES,
   };
 }

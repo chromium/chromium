@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 
 namespace ash::settings {
@@ -35,11 +36,39 @@ std::vector<T> All() {
   return all;
 }
 
+void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
+  auto isOldSection = [](mojom::Section section) {
+    // TODO(b/292678609) Gradually add checks here to filter out old Sections
+    // from the set of available Sections. An old Section can be filtered out
+    // once it has been fully incorporated into the new revamp Section.
+    return false;
+  };
+  sections.erase(std::remove_if(sections.begin(), sections.end(), isOldSection),
+                 sections.end());
+}
+
+void RemoveRevampSections(std::vector<mojom::Section>& sections) {
+  auto isRevampSection = [](mojom::Section section) {
+    return section == mojom::Section::kSystemPreferences;
+  };
+  sections.erase(
+      std::remove_if(sections.begin(), sections.end(), isRevampSection),
+      sections.end());
+}
+
 }  // namespace
 
 const std::vector<mojom::Section>& AllSections() {
-  static const base::NoDestructor<std::vector<mojom::Section>> all_sections(
-      All<mojom::Section>());
+  static const base::NoDestructor<std::vector<mojom::Section>> all_sections([] {
+    std::vector<mojom::Section> sections = All<mojom::Section>();
+    if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+      IncludeRevampSectionsOnly(sections);
+    } else {
+      RemoveRevampSections(sections);
+    }
+    return sections;
+  }());
+
   return *all_sections;
 }
 

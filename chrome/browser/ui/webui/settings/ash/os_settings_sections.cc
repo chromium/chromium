@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/webui/settings/ash/privacy_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/browser/ui/webui/settings/ash/search_section.h"
+#include "chrome/browser/ui/webui/settings/ash/system_preferences_section.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 
 namespace ash::settings {
@@ -123,6 +125,12 @@ OsSettingsSections::OsSettingsSections(
   AddSection(mojom::Section::kKerberos,
              std::make_unique<KerberosSection>(profile, search_tag_registry,
                                                kerberos_credentials_manager));
+
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    AddSection(mojom::Section::kSystemPreferences,
+               std::make_unique<SystemPreferencesSection>(profile,
+                                                          search_tag_registry));
+  }
 }
 
 OsSettingsSections::OsSettingsSections() = default;

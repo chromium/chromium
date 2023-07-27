@@ -54,31 +54,78 @@ suite('Page availability', () => {
       loadTimeData.overrideValues({isGuest: false});
     });
 
-    const availablePages: SectionName[] = [
-      'kAccessibility',
-      'kApps',
-      'kBluetooth',
-      'kCrostini',
-      'kDateAndTime',
-      'kDevice',
-      'kFiles',
-      'kLanguagesAndInput',
-      'kMultiDevice',
-      'kNetwork',
-      'kPeople',
-      'kPersonalization',
-      'kPrinting',
-      'kPrivacyAndSecurity',
-      'kSearchAndAssistant',
-    ];
-    availablePages.forEach((sectionName) => {
-      test(`${sectionName} page should always be available`, () => {
-        const pageAvailability = initializePageAvailability();
-        assertTrue(pageAvailability[Section[sectionName]]);
+    suite('and OsSettingsRevampWayfinding is disabled', () => {
+      setup(() => {
+        loadTimeData.overrideValues({isRevampWayfindingEnabled: false});
       });
+
+      const availablePages: SectionName[] = [
+        'kAccessibility',
+        'kApps',
+        'kBluetooth',
+        'kCrostini',
+        'kDateAndTime',
+        'kDevice',
+        'kFiles',
+        'kLanguagesAndInput',
+        'kMultiDevice',
+        'kNetwork',
+        'kPeople',
+        'kPersonalization',
+        'kPrinting',
+        'kPrivacyAndSecurity',
+        'kSearchAndAssistant',
+      ];
+      availablePages.forEach((sectionName) => {
+        test(`${sectionName} page should always be available`, () => {
+          const pageAvailability = initializePageAvailability();
+          assertTrue(pageAvailability[Section[sectionName]]);
+        });
+      });
+
+      test('Revamp pages are always unavailable', () => {
+        const pageAvailability = initializePageAvailability();
+        assertFalse(pageAvailability[Section.kSystemPreferences]);
+      });
+
+      runLoadTimeControlledTests();
     });
 
-    runLoadTimeControlledTests();
+    suite('and OsSettingsRevampWayfinding is enabled', () => {
+      setup(() => {
+        loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
+      });
+
+      const availablePages: SectionName[] = [
+        'kAccessibility',
+        'kApps',
+        'kBluetooth',
+        'kCrostini',
+        'kDateAndTime',
+        'kDevice',
+        'kFiles',
+        'kLanguagesAndInput',
+        'kMultiDevice',
+        'kNetwork',
+        'kPeople',
+        'kPersonalization',
+        'kPrinting',
+        'kPrivacyAndSecurity',
+        'kSearchAndAssistant',
+        'kSystemPreferences',
+      ];
+      availablePages.forEach((sectionName) => {
+        test(`${sectionName} page should always be available`, () => {
+          const pageAvailability = initializePageAvailability();
+          assertTrue(pageAvailability[Section[sectionName]]);
+        });
+      });
+
+      // TODO(b/292678609) Add test that asserts pages for old Sections are
+      // always unavailable.
+
+      runLoadTimeControlledTests();
+    });
   });
 
   suite('When in guest mode', () => {
@@ -86,39 +133,90 @@ suite('Page availability', () => {
       loadTimeData.overrideValues({isGuest: true});
     });
 
-    const availablePages: SectionName[] = [
-      'kAccessibility',
-      'kApps',
-      'kBluetooth',
-      'kCrostini',
-      'kDateAndTime',
-      'kDevice',
-      'kLanguagesAndInput',
-      'kNetwork',
-      'kPrinting',
-      'kPrivacyAndSecurity',
-      'kSearchAndAssistant',
-    ];
-    availablePages.forEach((sectionName) => {
-      test(`${sectionName} page should always be available`, () => {
-        const pageAvailability = initializePageAvailability();
-        assertTrue(pageAvailability[Section[sectionName]]);
+    suite('and OsSettingsRevampWayfinding is disabled', () => {
+      setup(() => {
+        loadTimeData.overrideValues({isRevampWayfindingEnabled: false});
       });
+
+      const availablePages: SectionName[] = [
+        'kAccessibility',
+        'kApps',
+        'kBluetooth',
+        'kCrostini',
+        'kDateAndTime',
+        'kDevice',
+        'kLanguagesAndInput',
+        'kNetwork',
+        'kPrinting',
+        'kPrivacyAndSecurity',
+        'kSearchAndAssistant',
+      ];
+      availablePages.forEach((sectionName) => {
+        test(`${sectionName} page should always be available`, () => {
+          const pageAvailability = initializePageAvailability();
+          assertTrue(pageAvailability[Section[sectionName]]);
+        });
+      });
+
+      const unavailablePages: SectionName[] = [
+        'kFiles',
+        'kMultiDevice',
+        'kPeople',
+        'kPersonalization',
+        'kSystemPreferences',
+      ];
+      unavailablePages.forEach((sectionName) => {
+        test(`${sectionName} page should never be available`, () => {
+          const pageAvailability = initializePageAvailability();
+          assertFalse(pageAvailability[Section[sectionName]]);
+        });
+      });
+
+      runLoadTimeControlledTests();
     });
 
-    const unavailablePages: SectionName[] = [
-      'kFiles',
-      'kMultiDevice',
-      'kPeople',
-      'kPersonalization',
-    ];
-    unavailablePages.forEach((sectionName) => {
-      test(`${sectionName} page should never be available`, () => {
-        const pageAvailability = initializePageAvailability();
-        assertFalse(pageAvailability[Section[sectionName]]);
+    suite('and OsSettingsRevampWayfinding is enabled', () => {
+      setup(() => {
+        loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
       });
-    });
 
-    runLoadTimeControlledTests();
+      const availablePages: SectionName[] = [
+        'kAccessibility',
+        'kApps',
+        'kBluetooth',
+        'kCrostini',
+        'kDateAndTime',
+        'kDevice',
+        'kLanguagesAndInput',
+        'kNetwork',
+        'kPrinting',
+        'kPrivacyAndSecurity',
+        'kSearchAndAssistant',
+        'kSystemPreferences',
+      ];
+      availablePages.forEach((sectionName) => {
+        test(`${sectionName} page should always be available`, () => {
+          const pageAvailability = initializePageAvailability();
+          assertTrue(pageAvailability[Section[sectionName]]);
+        });
+      });
+
+      // TODO(b/292678609) Add test that asserts pages for old Sections are
+      // always unavailable.
+      const unavailablePages: SectionName[] = [
+        'kFiles',
+        'kMultiDevice',
+        'kPeople',
+        'kPersonalization',
+      ];
+      unavailablePages.forEach((sectionName) => {
+        test(`${sectionName} page should never be available`, () => {
+          const pageAvailability = initializePageAvailability();
+          assertFalse(pageAvailability[Section[sectionName]]);
+        });
+      });
+
+      runLoadTimeControlledTests();
+    });
   });
 });

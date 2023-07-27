@@ -3292,6 +3292,8 @@ static_library("ui") {
       "webui/settings/ash/settings_with_tts_preview_handler.h",
       "webui/settings/ash/switch_access_handler.cc",
       "webui/settings/ash/switch_access_handler.h",
+      "webui/settings/ash/system_preferences_section.cc",
+      "webui/settings/ash/system_preferences_section.h",
       "webui/settings/ash/tts_handler.cc",
       "webui/settings/ash/tts_handler.h",
       "webui/settings/chromeos/constants/routes_util.cc",

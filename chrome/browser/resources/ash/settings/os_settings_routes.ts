@@ -13,7 +13,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isArcVmEnabled, isCrostiniSupported, isGuest, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed} from './common/load_time_booleans.js';
+import {androidAppsVisible, isArcVmEnabled, isCrostiniSupported, isGuest, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /**
@@ -213,6 +213,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   STYLUS: Route;
   SYNC: Route;
   SYNC_ADVANCED: Route;
+  SYSTEM_PREFERENCES: Route;
 }
 
 function createSection(
@@ -605,6 +606,12 @@ export function createRoutes(): OsSettingsRoutes {
   r.ABOUT_DETAILED_BUILD_INFO = createSubpage(
       r.ABOUT, routesMojom.DETAILED_BUILD_INFO_SUBPAGE_PATH,
       Subpage.kDetailedBuildInfo);
+
+  if (isRevampWayfindingEnabled()) {
+    r.SYSTEM_PREFERENCES = createSection(
+        r.BASIC, routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
+        Section.kSystemPreferences);
+  }
 
   return r as OsSettingsRoutes;
 }
