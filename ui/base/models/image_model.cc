@@ -4,8 +4,9 @@
 
 #include <tuple>
 
-#include "base/functional/callback.h"
 #include "ui/base/models/image_model.h"
+
+#include "base/functional/callback.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
