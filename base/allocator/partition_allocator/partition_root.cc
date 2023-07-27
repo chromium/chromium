@@ -876,7 +876,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     settings.allow_aligned_alloc =
         opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-    settings.use_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
+    settings.use_cookie = true;
 #else
     static_assert(!Settings::use_cookie);
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)

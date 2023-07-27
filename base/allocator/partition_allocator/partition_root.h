@@ -166,11 +166,6 @@ struct PartitionOptions {
     kAllowed,
   };
 
-  // TODO(bartekn): Remove.
-  enum class Cookie : uint8_t {
-    kAllowed,
-  };
-
   enum class BackupRefPtr : uint8_t {
     kDisabled,
     kEnabled,
@@ -189,7 +184,6 @@ struct PartitionOptions {
   AlignedAlloc aligned_alloc = AlignedAlloc::kDisallowed;
   ThreadCache thread_cache = ThreadCache::kDisabled;
   StarScanQuarantine star_scan_quarantine = StarScanQuarantine::kDisallowed;
-  Cookie cookie = Cookie::kAllowed;
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
   size_t ref_count_size = 0;
