@@ -303,8 +303,8 @@
 #include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-#include "chrome/browser/ui/webui/waffle/waffle_ui.h"
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #endif
 
 using content::WebUI;
@@ -718,10 +718,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SigninEmailConfirmationUI>;
 #endif
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-  if (url.host_piece() == chrome::kChromeUIWaffleHost &&
-      base::FeatureList::IsEnabled(switches::kWaffle)) {
-    return &NewWebUI<WaffleUI>;
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  if (url.host_piece() == chrome::kChromeUISearchEngineChoiceHost &&
+      base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    return &NewWebUI<SearchEngineChoiceUI>;
   }
 #endif
 

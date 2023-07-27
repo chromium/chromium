@@ -15617,25 +15617,25 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
-    <!-- Waffle strings -->
-    <if expr="enable_waffle_desktop">
-      <message name="IDS_WAFFLE_PAGE_TITLE" desc="The title for the Waffle page."
+    <!-- Search Engine Choice strings -->
+    <if expr="enable_search_engine_choice">
+      <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE" desc="The title for the Search Engine Choice page."
         translateable="false">
         Lorem ipsum dolor sit amet
       </message>
-      <message name="IDS_WAFFLE_PAGE_SUBTITLE" desc="The subtitle for the Waffle page."
+      <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE" desc="The subtitle for the Search Engine Choice page."
         translateable="false">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
       </message>
-      <message name="IDS_WAFFLE_PAGE_SUBTITLE_INFO_LINK" desc="The info link in the subtitle of the Waffle page."
+      <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK" desc="The info link in the subtitle of the Search Engine Choice page."
         translateable="false">
         labore
       </message>
-      <message name="IDS_WAFFLE_BUTTON_TITLE" desc="The title of the button of the Waffle page."
+      <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="The title of the button of the Search Engine Choice page."
         translateable="false">
         Button
       </message>
-      <message name="IDS_WAFFLE_INFO_DIALOG_TITLE" desc="The title of the info dialog of the Waffle page."
+      <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE" desc="The title of the info dialog of the Search Engine Choice page."
         translateable="false">
         Lorem ipsum dolor sit amet
       </message>

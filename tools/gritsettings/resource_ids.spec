@@ -378,6 +378,10 @@
     "META": {"sizes": {"includes": [1000],}},
     "includes": [3700],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/search_engine_choice/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [3710],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/resources.grd": {
     "META": {"sizes": {"includes": [500],}},
     "includes": [3720],
@@ -405,10 +409,6 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [3840],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/waffle/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
-    "includes": [3860],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/welcome/resources.grd": {
     "META": {"sizes": {"includes": [60]}},

@@ -1604,7 +1604,7 @@ void TemplateURLService::Init(const Initializer* initializers,
 
   if (prefs_) {
     pref_change_registrar_.Init(prefs_);
-    if (base::FeatureList::IsEnabled(switches::kWaffle)) {
+    if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
       pref_change_registrar_.Add(
           prefs::kDefaultSearchProviderGUID,
           base::BindRepeating(

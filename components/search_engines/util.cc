@@ -320,7 +320,7 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
 }
 
 const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
-  if (base::FeatureList::IsEnabled(switches::kWaffle)) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
     const auto& default_search_provider =
         prefs.GetString(prefs::kDefaultSearchProviderGUID);
 
@@ -341,7 +341,7 @@ const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
 
 void SetDefaultSearchProviderPrefValue(PrefService& prefs,
                                        const std::string& value) {
-  if (base::FeatureList::IsEnabled(switches::kWaffle)) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
     prefs.SetString(prefs::kDefaultSearchProviderGUID, value);
   } else {
     prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);

@@ -533,8 +533,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (PrivacySandboxPromptHelper::ProfileRequiresPrompt(profile))
     PrivacySandboxPromptHelper::CreateForWebContents(web_contents);
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-  if (base::FeatureList::IsEnabled(switches::kWaffle)) {
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
     SearchEngineChoiceTabHelper::CreateForWebContents(web_contents);
   }
 #endif

@@ -24,7 +24,7 @@ SearchEngineChoiceTabHelper::SearchEngineChoiceTabHelper(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<SearchEngineChoiceTabHelper>(*web_contents) {
-  CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
+  CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
 }
 
 void SearchEngineChoiceTabHelper::DidFinishNavigation(

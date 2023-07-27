@@ -9,9 +9,9 @@ declare_args() {
   # Warning: The feature is still under development.
   enable_bound_session_credentials = is_linux
 
-  # Compile time flag for Waffle.
+  # Compile time flag for the Search Engine Choice page.
   # Warning: The feature is still under development. See b/280753754.
-  enable_waffle_desktop = false
+  enable_search_engine_choice = false
 }
 
 # Dice is supported on the platform (but not necessarily enabled).

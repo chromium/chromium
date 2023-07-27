@@ -126,7 +126,8 @@ std::unique_ptr<TemplateURLData> CreateTestSearchEngine() {
 }
 
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
-  return info.param ? "WaffleEnabled" : "WaffleDisabled";
+  return info.param ? "SearchEngineChoiceEnabled"
+                    : "SearchEngineChoiceDisabled";
 }
 
 }  // namespace
@@ -191,7 +192,7 @@ class TemplateURLServiceTest : public testing::Test,
   }
 
  protected:
-  bool IsWaffleEnabled() const { return GetParam(); }
+  bool IsSearchEngineChoiceEnabled() const { return GetParam(); }
 
  private:
   content::BrowserTaskEnvironment
@@ -219,10 +220,10 @@ TemplateURLServiceTest::TemplateURLServiceTest() {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
 
-  if (IsWaffleEnabled()) {
-    enabled_features.push_back(switches::kWaffle);
+  if (IsSearchEngineChoiceEnabled()) {
+    enabled_features.push_back(switches::kSearchEngineChoice);
   } else {
-    disabled_features.push_back(switches::kWaffle);
+    disabled_features.push_back(switches::kSearchEngineChoice);
   }
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
@@ -1277,7 +1278,7 @@ TEST_P(TemplateURLServiceTest, RepairStarterPackEngines) {
 
 TEST_P(TemplateURLServiceTest, SetDefaultSearchProviderPref) {
   std::string pref_value = "sync";
-  if (IsWaffleEnabled()) {
+  if (IsSearchEngineChoiceEnabled()) {
     pref_value = "no_sync";
   }
 
@@ -1288,7 +1289,7 @@ TEST_P(TemplateURLServiceTest, SetDefaultSearchProviderPref) {
 
   // Test that the correct preference is set when
   // `SetDefaultSearchProviderPrefValue` is called.
-  if (IsWaffleEnabled()) {
+  if (IsSearchEngineChoiceEnabled()) {
     EXPECT_EQ(pref_value, prefs->GetString(prefs::kDefaultSearchProviderGUID));
     EXPECT_EQ(std::string(),
               prefs->GetString(prefs::kSyncedDefaultSearchProviderGUID));
@@ -1310,7 +1311,7 @@ TEST_P(TemplateURLServiceTest, GetDefaultSearchProviderPref) {
   EXPECT_EQ(std::string(),
             prefs->GetString(prefs::kSyncedDefaultSearchProviderGUID));
 
-  if (IsWaffleEnabled()) {
+  if (IsSearchEngineChoiceEnabled()) {
     const std::string no_sync_pref_value = "no_sync";
     // Test that `GetDefaultSearchProviderPrefValue` will set the value of
     // `kDefaultSearchProviderGUID` when it's empty with the value in

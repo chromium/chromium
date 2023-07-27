@@ -381,9 +381,9 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (enable_waffle_desktop) {
-      sources += [ "$root_gen_dir/chrome/waffle_resources.pak" ]
-      deps += [ "//chrome/browser/resources/waffle:resources" ]
+    if (enable_search_engine_choice) {
+      sources += [ "$root_gen_dir/chrome/search_engine_choice_resources.pak" ]
+      deps += [ "//chrome/browser/resources/search_engine_choice:resources" ]
     }
 
     if (is_win || is_mac || is_linux || is_fuchsia) {

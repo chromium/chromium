@@ -248,11 +248,12 @@ TemplateURLServiceSyncTest::TemplateURLServiceSyncTest()
     : sync_processor_(new TestChangeProcessor),
       sync_processor_wrapper_(new syncer::SyncChangeProcessorWrapperForTest(
           sync_processor_.get())) {
-  // We disable the waffle feature because, when enabled, the default search
-  // provider pref is not synced. This test can be removed when the feature flag
-  // is inlined."
-  feature_list_.InitWithFeatures(/*enabled_features=*/{},
-                                 /*disabled_features=*/{switches::kWaffle});
+  // We disable the search engine choice feature because, when enabled, the
+  // default search provider pref is not synced. This test can be removed when
+  // the feature flag is inlined."
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{switches::kSearchEngineChoice});
 }
 
 void TemplateURLServiceSyncTest::SetUp() {

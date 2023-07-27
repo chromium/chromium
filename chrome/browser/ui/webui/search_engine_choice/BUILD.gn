@@ -5,10 +5,10 @@
 import("//components/signin/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(enable_waffle_desktop)
+assert(enable_search_engine_choice)
 
 mojom("mojo_bindings") {
-  sources = [ "waffle.mojom" ]
+  sources = [ "search_engine_choice.mojom" ]
   webui_module_path = "/"
   use_typescript_sources = true
 }

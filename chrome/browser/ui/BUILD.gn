@@ -721,17 +721,17 @@ static_library("ui") {
     ]
   }
 
-  if (enable_waffle_desktop) {
-    deps += [ "//chrome/browser/ui/webui/waffle:mojo_bindings" ]
+  if (enable_search_engine_choice) {
+    deps += [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings" ]
     sources += [
       "search_engine_choice/search_engine_choice_tab_helper.cc",
       "search_engine_choice/search_engine_choice_tab_helper.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
-      "webui/waffle/waffle_handler.cc",
-      "webui/waffle/waffle_handler.h",
-      "webui/waffle/waffle_ui.cc",
-      "webui/waffle/waffle_ui.h",
+      "webui/search_engine_choice/search_engine_choice_handler.cc",
+      "webui/search_engine_choice/search_engine_choice_handler.h",
+      "webui/search_engine_choice/search_engine_choice_ui.cc",
+      "webui/search_engine_choice/search_engine_choice_ui.h",
     ]
   }
 

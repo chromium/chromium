@@ -633,9 +633,9 @@ const char kCleanupSubPage[] = "cleanup";
 const char kChromeUICastFeedbackHost[] = "cast-feedback";
 #endif
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-const char kChromeUIWaffleHost[] = "waffle";
-const char kChromeUIWaffleURL[] = "chrome://waffle";
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+const char kChromeUISearchEngineChoiceHost[] = "search-engine-choice";
+const char kChromeUISearchEngineChoiceURL[] = "chrome://search-engine-choice";
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

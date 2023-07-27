@@ -15,18 +15,17 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {WaffleChoice} from './browser_proxy';
-import {WaffleBrowserProxy} from './browser_proxy.js';
+import {SearchEngineChoice, SearchEngineChoiceBrowserProxy} from './browser_proxy.js';
 
-export interface WaffleAppElement {
+export interface SearchEngineChoiceAppElement {
   $: {
     infoDialog: CrDialogElement,
   };
 }
 
-export class WaffleAppElement extends PolymerElement {
+export class SearchEngineChoiceAppElement extends PolymerElement {
   static get is() {
-    return 'waffle-app';
+    return 'search-engine-choice-app';
   }
 
   static get template() {
@@ -49,7 +48,7 @@ export class WaffleAppElement extends PolymerElement {
     };
   }
 
-  private choiceList_: WaffleChoice[];
+  private choiceList_: SearchEngineChoice[];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -58,7 +57,7 @@ export class WaffleAppElement extends PolymerElement {
       // Prefer using `document.body.offsetHeight` instead of
       // `document.body.scrollHeight` as it returns the correct height of the
       // page even when the page zoom in Chrome is different than 100%.
-      WaffleBrowserProxy.getInstance().handler.displayDialog(
+      SearchEngineChoiceBrowserProxy.getInstance().handler.displayDialog(
           document.body.offsetHeight);
     });
   }
@@ -70,8 +69,9 @@ export class WaffleAppElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'waffle-app': WaffleAppElement;
+    'search-engine-choice-app': SearchEngineChoiceAppElement;
   }
 }
 
-customElements.define(WaffleAppElement.is, WaffleAppElement);
+customElements.define(
+    SearchEngineChoiceAppElement.is, SearchEngineChoiceAppElement);

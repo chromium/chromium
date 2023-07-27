@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module waffle.mojom;
+module search_engine_choice.mojom;
 
 // Lives in the browser process. A renderer uses this to link itself with
 // a page handler.
@@ -13,7 +13,8 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Displays the Waffle dialog using the height of its content. Triggered by
-  // the `displayDialog()` call in `chrome/browser/resources/waffle/app.ts`
+  // Displays the Search Engine Choice dialog using the height of its content.
+  // Triggered by the `displayDialog()` call in
+  // `chrome/browser/resources/search_engine_choice/app.ts`
   DisplayDialog(uint32 content_height);
 };

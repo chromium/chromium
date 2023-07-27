@@ -117,8 +117,8 @@ group("resources") {
     ]
   }
 
-  if (enable_waffle_desktop) {
-    public_deps += [ "waffle:resources" ]
+  if (enable_search_engine_choice) {
+    public_deps += [ "search_engine_choice:resources" ]
   }
 
   if (enable_webui_tab_strip) {

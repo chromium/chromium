@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/waffle/waffle_ui.h"
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/waffle/waffle_handler.h"
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/search_engine_choice_resources.h"
+#include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
-#include "chrome/grit/waffle_resources.h"
-#include "chrome/grit/waffle_resources_map.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -47,21 +47,24 @@ std::string GetChoiceListJSON(Profile* profile) {
 }
 }  // namespace
 
-WaffleUI::WaffleUI(content::WebUI* web_ui)
+SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
-  CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
+  CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
   auto* profile = Profile::FromWebUI(web_ui);
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIWaffleHost);
+      chrome::kChromeUISearchEngineChoiceHost);
 
-  source->AddLocalizedString("title", IDS_WAFFLE_PAGE_TITLE);
-  source->AddLocalizedString("subtitle", IDS_WAFFLE_PAGE_SUBTITLE);
+  source->AddLocalizedString("title", IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE);
+  source->AddLocalizedString("subtitle",
+                             IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE);
   source->AddLocalizedString("subtitleInfoLink",
-                             IDS_WAFFLE_PAGE_SUBTITLE_INFO_LINK);
-  source->AddLocalizedString("buttonText", IDS_WAFFLE_BUTTON_TITLE);
-  source->AddLocalizedString("infoTitle", IDS_WAFFLE_INFO_DIALOG_TITLE);
+                             IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK);
+  source->AddLocalizedString("buttonText",
+                             IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
+  source->AddLocalizedString("infoTitle",
+                             IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE);
 
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
@@ -75,28 +78,31 @@ WaffleUI::WaffleUI(content::WebUI* web_ui)
   source->AddString("choiceList", GetChoiceListJSON(profile));
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kWaffleResources, kWaffleResourcesSize),
-      IDR_WAFFLE_WAFFLE_HTML);
+      source,
+      base::make_span(kSearchEngineChoiceResources,
+                      kSearchEngineChoiceResourcesSize),
+      IDR_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HTML);
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(WaffleUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(SearchEngineChoiceUI)
 
-WaffleUI::~WaffleUI() = default;
+SearchEngineChoiceUI::~SearchEngineChoiceUI() = default;
 
-void WaffleUI::BindInterface(
-    mojo::PendingReceiver<waffle::mojom::PageHandlerFactory> receiver) {
+void SearchEngineChoiceUI::BindInterface(
+    mojo::PendingReceiver<search_engine_choice::mojom::PageHandlerFactory>
+        receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void WaffleUI::Initialize(
+void SearchEngineChoiceUI::Initialize(
     base::OnceCallback<void(int)> display_dialog_callback) {
   CHECK(display_dialog_callback);
   display_dialog_callback_ = std::move(display_dialog_callback);
 }
 
-void WaffleUI::CreatePageHandler(
-    mojo::PendingReceiver<waffle::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<WaffleHandler>(
+void SearchEngineChoiceUI::CreatePageHandler(
+    mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver) {
+  page_handler_ = std::make_unique<SearchEngineChoiceHandler>(
       std::move(receiver), std::move(display_dialog_callback_));
 }

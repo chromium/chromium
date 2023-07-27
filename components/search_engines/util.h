@@ -149,13 +149,13 @@ void ApplyActionsFromCurrentData(
 
 // Returns the GUID of the default search provider.
 // Migrates `kSyncedDefaultSearchProviderGUID` to `kDefaultSearchProviderGUID`
-// if the latter is empty and the waffle feature is enabled.
-// Gets the value of the corresponding preference based on the waffle feature
-// flag.
+// if the latter is empty and the search engine choice feature is enabled.
+// Gets the value of the corresponding preference based on the search engine
+// choice feature flag.
 const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs);
 
-// Sets the corresponding default search provider preference based on the waffle
-// feature flag.
+// Sets the corresponding default search provider preference based on the search
+// engine choice feature flag.
 void SetDefaultSearchProviderPrefValue(PrefService& prefs,
                                        const std::string& value);
 

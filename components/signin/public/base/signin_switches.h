@@ -47,7 +47,7 @@ BASE_DECLARE_FEATURE(kFinchIosFre);
 
 BASE_DECLARE_FEATURE(kTangibleSync);
 
-BASE_DECLARE_FEATURE(kWaffle);
+BASE_DECLARE_FEATURE(kSearchEngineChoice);
 
 }  // namespace switches
 

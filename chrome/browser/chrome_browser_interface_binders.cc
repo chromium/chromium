@@ -429,9 +429,9 @@ void ash::SystemExtensionsInternalsUI::BindInterface(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-#include "chrome/browser/ui/webui/waffle/waffle.mojom.h"
-#include "chrome/browser/ui/webui/waffle/waffle_ui.h"
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #endif
 
 namespace chrome {
@@ -1036,10 +1036,11 @@ void PopulateChromeWebUIFrameBinders(
       enterprise_connectors::ConnectorsInternalsUI>(map);
 #endif
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-  if (base::FeatureList::IsEnabled(switches::kWaffle)) {
-    RegisterWebUIControllerInterfaceBinder<waffle::mojom::PageHandlerFactory,
-                                           WaffleUI>(map);
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    RegisterWebUIControllerInterfaceBinder<
+        search_engine_choice::mojom::PageHandlerFactory, SearchEngineChoiceUI>(
+        map);
   }
 #endif
 
