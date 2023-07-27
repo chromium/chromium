@@ -3456,6 +3456,12 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
           line_break_type = LineBreakType::kKeepAll;
           break_anywhere_if_overflow_ = false;
           break;
+        case EWordBreak::kAuto:
+          // TODO(crbug.com/1443291): Same as `kNormal` for now.
+          DCHECK(RuntimeEnabledFeatures::CSSPhraseLineBreakEnabled());
+          line_break_type = LineBreakType::kNormal;
+          break_anywhere_if_overflow_ = false;
+          break;
       }
       if (!break_anywhere_if_overflow_) {
         // `overflow-wrap: anywhere` affects both layout and min-content, while

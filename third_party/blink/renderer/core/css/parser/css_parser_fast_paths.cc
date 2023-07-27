@@ -1597,10 +1597,17 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kPreserveBreaks ||
              value_id == CSSValueID::kBreakSpaces;
     case CSSPropertyID::kWordBreak:
+      if (!RuntimeEnabledFeatures::CSSPhraseLineBreakEnabled()) {
+        return value_id == CSSValueID::kNormal ||
+               value_id == CSSValueID::kBreakAll ||
+               value_id == CSSValueID::kKeepAll ||
+               value_id == CSSValueID::kBreakWord;
+      }
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kBreakAll ||
              value_id == CSSValueID::kKeepAll ||
-             value_id == CSSValueID::kBreakWord;
+             value_id == CSSValueID::kBreakWord ||
+             value_id == CSSValueID::kAuto;
     case CSSPropertyID::kScrollbarWidth:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kThin ||
              value_id == CSSValueID::kNone;
