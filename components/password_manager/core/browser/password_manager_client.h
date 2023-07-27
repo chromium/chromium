@@ -79,7 +79,6 @@ class WebAuthnCredManDelegate;
 
 namespace password_manager {
 
-class FieldInfoManager;
 class PasswordFeatureManager;
 class PasswordFormManagerForUI;
 class PasswordManagerDriver;
@@ -473,9 +472,6 @@ class PasswordManagerClient {
 
   // Returns true if the current page is to the new tab page.
   virtual bool IsNewTabPage() const = 0;
-
-  // Returns a FieldInfoManager associated with the current profile.
-  virtual FieldInfoManager* GetFieldInfoManager() const = 0;
 
   // Returns the WebAuthnCredentialsDelegate for the given driver, if available.
   virtual WebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegateForDriver(

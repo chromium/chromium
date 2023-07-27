@@ -22,7 +22,6 @@ class LoginDatabase;
 class PasswordSyncBridge;
 class UnsyncedCredentialsDeletionNotifier;
 
-struct FieldInfo;
 struct InteractionsStats;
 
 // Class which interacts directly with LoginDatabase. It is also responsible to
@@ -69,11 +68,6 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end);
-
-  // Synchronous implementation of FieldInfoStore.
-  void AddFieldInfo(const FieldInfo& field_info);
-  std::vector<FieldInfo> GetAllFieldInfo();
-  void RemoveFieldInfoByTime(base::Time remove_begin, base::Time remove_end);
 
   // Instantiates a proxy controller delegate to react to sync events.
   base::WeakPtr<syncer::ModelTypeControllerDelegate>

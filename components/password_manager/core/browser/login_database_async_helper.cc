@@ -332,26 +332,6 @@ void LoginDatabaseAsyncHelper::RemoveStatisticsByOriginAndTime(
   }
 }
 
-// Synchronous implementation for manipulating with field info.
-void LoginDatabaseAsyncHelper::AddFieldInfo(const FieldInfo& field_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_)
-    login_db_->field_info_table().AddRow(field_info);
-}
-
-std::vector<FieldInfo> LoginDatabaseAsyncHelper::GetAllFieldInfo() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return login_db_ ? login_db_->field_info_table().GetAllRows()
-                   : std::vector<FieldInfo>();
-}
-
-void LoginDatabaseAsyncHelper::RemoveFieldInfoByTime(base::Time remove_begin,
-                                                     base::Time remove_end) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_)
-    login_db_->field_info_table().RemoveRowsByTime(remove_begin, remove_end);
-}
-
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 LoginDatabaseAsyncHelper::GetSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

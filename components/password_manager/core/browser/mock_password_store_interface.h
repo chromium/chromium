@@ -77,7 +77,6 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
-  MOCK_METHOD(FieldInfoStore*, GetFieldInfoStore, (), (override));
   MOCK_METHOD(std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>,
               CreateSyncControllerDelegate,
               (),

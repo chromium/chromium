@@ -321,10 +321,6 @@ SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {
   return backend_ ? backend_->GetSmartBubbleStatsStore() : nullptr;
 }
 
-FieldInfoStore* PasswordStore::GetFieldInfoStore() {
-  return backend_ ? backend_->GetFieldInfoStore() : nullptr;
-}
-
 void PasswordStore::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

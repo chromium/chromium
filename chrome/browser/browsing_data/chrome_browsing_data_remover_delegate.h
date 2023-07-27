@@ -136,7 +136,7 @@ class ChromeBrowsingDataRemoverDelegate
     kTpmAttestationKeys = 30,
     kStrikes = 31,
     // kLeakedCredentials = 32, deprecated
-    kFieldInfo = 33,
+    // kFieldInfo = 33, deprecated
     kCompromisedCredentials = 34,
     kUserDataSnapshot = 35,
     kMediaFeeds = 36,

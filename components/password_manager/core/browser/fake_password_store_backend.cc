@@ -169,10 +169,6 @@ SmartBubbleStatsStore* FakePasswordStoreBackend::GetSmartBubbleStatsStore() {
   return nullptr;
 }
 
-FieldInfoStore* FakePasswordStoreBackend::GetFieldInfoStore() {
-  return nullptr;
-}
-
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 FakePasswordStoreBackend::CreateSyncControllerDelegate() {
   NOTIMPLEMENTED();

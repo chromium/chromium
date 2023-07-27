@@ -18,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -290,10 +289,6 @@ void PasswordStoreProxyBackend::DisableAutoSignInForOriginsAsync(
 
 SmartBubbleStatsStore* PasswordStoreProxyBackend::GetSmartBubbleStatsStore() {
   return main_backend()->GetSmartBubbleStatsStore();
-}
-
-FieldInfoStore* PasswordStoreProxyBackend::GetFieldInfoStore() {
-  return main_backend()->GetFieldInfoStore();
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>

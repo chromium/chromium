@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_notes_table.h"
@@ -183,7 +182,6 @@ class LoginDatabase {
   }
   PasswordNotesTable& password_notes_table() { return password_notes_table_; }
 
-  FieldInfoTable& field_info_table() { return field_info_table_; }
   PasswordStoreSync::MetadataStore& password_sync_metadata_store() {
     return password_sync_metadata_store_;
   }
@@ -369,7 +367,6 @@ class LoginDatabase {
   mutable sql::Database db_;
   sql::MetaTable meta_table_;
   StatisticsTable stats_table_;
-  FieldInfoTable field_info_table_;
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
   SyncMetadataStore password_sync_metadata_store_{&db_};

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -33,11 +32,6 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
   MOCK_METHOD(void,
               OnGetPasswordStoreResultsOrErrorFrom,
               (PasswordStoreInterface*, FormsOrError),
-              (override));
-
-  MOCK_METHOD(void,
-              OnGetAllFieldInfo,
-              (const std::vector<FieldInfo>),
               (override));
 
   base::WeakPtr<PasswordStoreConsumer> GetWeakPtr();

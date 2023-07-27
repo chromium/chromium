@@ -332,11 +332,6 @@ bool IOSChromePasswordManagerClient::IsNewTabPage() const {
   return false;
 }
 
-password_manager::FieldInfoManager*
-IOSChromePasswordManagerClient::GetFieldInfoManager() const {
-  return nullptr;
-}
-
 safe_browsing::PasswordProtectionService*
 IOSChromePasswordManagerClient::GetPasswordProtectionService() const {
   return ChromePasswordProtectionServiceFactory::GetForBrowserState(

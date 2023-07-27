@@ -312,11 +312,6 @@ bool WebViewPasswordManagerClient::IsNewTabPage() const {
   return false;
 }
 
-password_manager::FieldInfoManager*
-WebViewPasswordManagerClient::GetFieldInfoManager() const {
-  return nullptr;
-}
-
 safe_browsing::PasswordProtectionService*
 WebViewPasswordManagerClient::GetPasswordProtectionService() const {
   // TODO(crbug.com/1148229): Enable PhishGuard in web_view.

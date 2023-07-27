@@ -122,7 +122,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/mock_field_info_store.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -684,17 +683,11 @@ class RemovePasswordsTester {
     return &mock_smart_bubble_stats_store_;
   }
 
-  password_manager::MockFieldInfoStore* mock_field_info_store() {
-    return &mock_field_info_store_;
-  }
-
  private:
   raw_ptr<password_manager::MockPasswordStoreInterface> profile_store_;
   raw_ptr<password_manager::MockPasswordStoreInterface> account_store_;
   testing::NiceMock<password_manager::MockSmartBubbleStatsStore>
       mock_smart_bubble_stats_store_;
-  testing::NiceMock<password_manager::MockFieldInfoStore>
-      mock_field_info_store_;
 };
 
 class RemoveDIPSEventsTester {
@@ -2630,19 +2623,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePasswordStatistics) {
 
   ON_CALL(*tester.profile_store(), GetSmartBubbleStatsStore)
       .WillByDefault(Return(tester.mock_smart_bubble_stats_store()));
-  ON_CALL(*tester.profile_store(), GetFieldInfoStore)
-      .WillByDefault(Return(tester.mock_field_info_store()));
   EXPECT_CALL(
       *tester.mock_smart_bubble_stats_store(),
       RemoveStatisticsByOriginAndTime(ProbablySameFilter(empty_filter),
                                       base::Time(), base::Time::Max(), _))
       .WillOnce(testing::WithArg<3>([](base::OnceClosure completion) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(completion));
-      }));
-  EXPECT_CALL(*tester.mock_field_info_store(),
-              RemoveFieldInfoByTime(base::Time(), base::Time::Max(), _))
-      .WillOnce(testing::WithArg<2>([](base::OnceClosure completion) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(completion));
       }));

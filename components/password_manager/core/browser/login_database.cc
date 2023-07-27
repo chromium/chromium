@@ -62,10 +62,10 @@ using signin::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 37;
+constexpr int kCurrentVersionNumber = 38;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
-constexpr int kCompatibleVersionNumber = 36;
+constexpr int kCompatibleVersionNumber = 38;
 
 base::Pickle SerializeAlternativeElementVector(
     const AlternativeElementVector& vector) {
@@ -186,7 +186,7 @@ enum DatabaseInitError {
   MIGRATION_ERROR = 7,
   COMMIT_TRANSACTION_ERROR = 8,
   INIT_COMPROMISED_CREDENTIALS_ERROR = 9,
-  INIT_FIELD_INFO_ERROR = 10,
+  INIT_FIELD_INFO_ERROR = 10,  // Deprecated.
   FOREIGN_KEY_ERROR = 11,
   INIT_PASSWORD_NOTES_ERROR = 12,
 
@@ -958,7 +958,6 @@ bool LoginDatabase::Init() {
   stats_table_.Init(&db_);
   insecure_credentials_table_.Init(&db_);
   password_notes_table_.Init(&db_);
-  field_info_table_.Init(&db_);
 
   int current_version = meta_table_.GetVersionNumber();
   bool migration_success = FixVersionIfNeeded(&db_, &current_version);
@@ -1036,12 +1035,14 @@ bool LoginDatabase::Init() {
     }
   }
 
-  if (!field_info_table_.CreateTableIfNecessary()) {
-    LogDatabaseInitError(INIT_FIELD_INFO_ERROR);
-    LOG(ERROR) << "Unable to create the field info table.";
-    transaction.Rollback();
-    db_.Close();
-    return false;
+  // The table "field_info" is deprecated.
+  if (db_.DoesTableExist("field info")) {
+    if (!db_.Execute("DROP TABLE field_info")) {
+      LOG(ERROR) << "Unable to delete the field info table.";
+      transaction.Rollback();
+      db_.Close();
+      return false;
+    }
   }
 
   if (!transaction.Commit()) {

@@ -167,10 +167,6 @@ bool StubPasswordManagerClient::IsNewTabPage() const {
   return false;
 }
 
-FieldInfoManager* StubPasswordManagerClient::GetFieldInfoManager() const {
-  return nullptr;
-}
-
 version_info::Channel StubPasswordManagerClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }

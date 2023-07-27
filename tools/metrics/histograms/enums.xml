@@ -15752,7 +15752,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="32"
       label="(Obsolete) kLeakedCredentials. Use kCompromisedCredentials
              instead. This expired 2019-11."/>
-  <int value="33" label="kFieldInfo"/>
+  <int value="33" label="(Obsolete) kFieldInfo. Deprecated in M117"/>
   <int value="34" label="kCompromisedCredentials"/>
   <int value="35" label="kUserDataSnapshot"/>
   <int value="36" label="kMediaFeeds"/>
@@ -68127,7 +68127,7 @@ from previous Chrome versions.
   <int value="7" label="Migration error"/>
   <int value="8" label="Commit transaction error"/>
   <int value="9" label="Initialization of compromised credentials error"/>
-  <int value="10" label="Init field info table error"/>
+  <int value="10" label="(Deprecated) Init field info table error"/>
   <int value="11" label="Foreign key init error"/>
   <int value="12" label="Password notes table failed initialization"/>
 </enum>

@@ -819,10 +819,6 @@ SmartBubbleStatsStore* PasswordStoreAndroidBackend::GetSmartBubbleStatsStore() {
   return nullptr;
 }
 
-FieldInfoStore* PasswordStoreAndroidBackend::GetFieldInfoStore() {
-  return nullptr;
-}
-
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreAndroidBackend::CreateSyncControllerDelegate() {
   return sync_controller_delegate_->CreateProxyModelControllerDelegate();

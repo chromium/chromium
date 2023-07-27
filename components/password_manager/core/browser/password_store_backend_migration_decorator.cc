@@ -271,10 +271,6 @@ PasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
   return active_backend_->GetSmartBubbleStatsStore();
 }
 
-FieldInfoStore* PasswordStoreBackendMigrationDecorator::GetFieldInfoStore() {
-  return active_backend_->GetFieldInfoStore();
-}
-
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   if (base::FeatureList::IsEnabled(

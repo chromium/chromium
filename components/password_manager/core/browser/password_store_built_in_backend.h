@@ -11,7 +11,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 
@@ -29,13 +28,10 @@ class LoginDatabase;
 class LoginDatabaseAsyncHelper;
 class UnsyncedCredentialsDeletionNotifier;
 
-struct FieldInfo;
-
 // Simple password store implementation that delegates everything to
 // the LoginDatabaseAsyncHelper. Works only on the main sequence.
 class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
-                                    public SmartBubbleStatsStore,
-                                    protected FieldInfoStore {
+                                    public SmartBubbleStatsStore {
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
@@ -82,7 +78,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void ClearAllLocalPasswords() override;
@@ -98,13 +93,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceClosure completion) override;
-
-  // FieldInfoStore:
-  void AddFieldInfo(const FieldInfo& field_info) override;
-  void GetAllFieldInfo(base::WeakPtr<PasswordStoreConsumer> consumer) override;
-  void RemoveFieldInfoByTime(base::Time remove_begin,
-                             base::Time remove_end,
-                             base::OnceClosure completion) override;
 
   // Ensures that all methods are called on the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);

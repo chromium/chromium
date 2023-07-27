@@ -25,7 +25,6 @@ namespace password_manager {
 struct PasswordForm;
 
 class AffiliatedMatchHelper;
-class FieldInfoStore;
 class SmartBubbleStatsStore;
 
 using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
@@ -146,7 +145,6 @@ class PasswordStoreBackend {
       base::OnceClosure completion) = 0;
 
   virtual SmartBubbleStatsStore* GetSmartBubbleStatsStore() = 0;
-  virtual FieldInfoStore* GetFieldInfoStore() = 0;
 
   // For sync codebase only: instantiates a proxy controller delegate to
   // react to sync events.

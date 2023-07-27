@@ -232,7 +232,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (override));
   MOCK_METHOD(bool, IsNewTabPage, (), (const, override));
   MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
-  MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
   MOCK_METHOD(profile_metrics::BrowserProfileType,
               GetProfileType,
               (),

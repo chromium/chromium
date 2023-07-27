@@ -476,12 +476,6 @@ TEST_P(PasswordStoreProxyBackendTest,
   proxy_backend().GetSmartBubbleStatsStore();
 }
 
-TEST_P(PasswordStoreProxyBackendTest, UseMainBackendToGetFieldInfoStore) {
-  EXPECT_CALL(main_backend(), GetFieldInfoStore);
-  EXPECT_CALL(shadow_backend(), GetFieldInfoStore).Times(0);
-  proxy_backend().GetFieldInfoStore();
-}
-
 TEST_P(PasswordStoreProxyBackendTest,
        OnSyncServiceInitializedPropagatedToAndroidBackend) {
   syncer::TestSyncService sync_service;
