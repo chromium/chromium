@@ -1690,8 +1690,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DomainReliability.BeaconOutcome"
-    enum="DomainReliabilityBeaconOutcome" expires_after="2023-08-08">
-  <owner>mmenke@chromium.org</owner>
+    enum="DomainReliabilityBeaconOutcome" expires_after="2024-07-26">
+  <owner>ricea@chromium.org</owner>
   <owner>src/net/network_error_logging/OWNERS</owner>
   <summary>
     The outcome of a Domain Reliability beacon, logged upon destruction of the
