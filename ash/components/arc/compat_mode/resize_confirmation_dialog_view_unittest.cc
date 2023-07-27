@@ -14,6 +14,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/test/test_widget_observer.h"
 
 namespace arc {
 namespace {
@@ -25,8 +26,10 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
     CompatModeTestBase::SetUp();
     widget_ = CreateTestWidget();
     widget_->SetBounds(gfx::Rect(800, 800));
+    parent_widget_ = CreateArcWidget(/*app_id=*/"123");
     dialog_view_ =
         widget_->SetContentsView(std::make_unique<ResizeConfirmationDialogView>(
+            parent_widget_.get(),
             base::BindOnce(&ResizeConfirmationDialogViewTest::OnClicked,
                            base::Unretained(this))));
     widget_->Show();
@@ -51,6 +54,7 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
     LeftClickOnView(widget_.get(), target_button);
   }
 
+  views::Widget* widget() { return widget_.get(); }
   bool callback_called() { return callback_called_; }
   bool callback_accepted() { return callback_accepted_; }
   bool callback_do_not_ask_again() { return callback_do_not_ask_again_; }
@@ -75,6 +79,7 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
 
   raw_ptr<ResizeConfirmationDialogView, ExperimentalAsh> dialog_view_;
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> parent_widget_;
 };
 
 TEST_F(ResizeConfirmationDialogViewTest, ClickAcceptWithCheckbox) {
@@ -105,5 +110,12 @@ TEST_F(ResizeConfirmationDialogViewTest, ClickCancelWithoutCheckbox) {
   EXPECT_FALSE(callback_do_not_ask_again());
 }
 
+TEST_F(ResizeConfirmationDialogViewTest, CloseWidget) {
+  EXPECT_FALSE(callback_called());
+  widget()->CloseNow();
+  EXPECT_TRUE(callback_called());
+  EXPECT_FALSE(callback_accepted());
+  EXPECT_FALSE(callback_do_not_ask_again());
+}
 }  // namespace
 }  // namespace arc
