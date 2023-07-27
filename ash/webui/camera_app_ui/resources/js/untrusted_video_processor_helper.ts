@@ -11,8 +11,11 @@ import * as Comlink from './lib/comlink.js';
 const mp4VideoProcessorURL: TrustedScriptURL = (() => {
   const staticUrlPolicy = assertExists(window.trustedTypes)
                               .createPolicy('video-processor-js-static', {
+                                // util.expandPath is not used here since this
+                                // is in a different window, and local dev
+                                // doesn't override this.
                                 createScriptURL: (_url: string) =>
-                                    '/js/models/ffmpeg/video_processor.js',
+                                    '../js/models/ffmpeg/video_processor.js',
                               });
   // TODO(crbug.com/980846): Remove the empty string if
   // https://github.com/w3c/webappsec-trusted-types/issues/278 gets fixed.

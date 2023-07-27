@@ -13,6 +13,7 @@ import {
   GaMetricDimension,
 } from './untrusted_ga_helper.js';
 import {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
+import {expandPath} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
 interface UntrustedIFrame {
@@ -29,7 +30,8 @@ export function createUntrustedIframe(): UntrustedIFrame {
   const iframe = document.createElement('iframe');
   iframe.addEventListener('load', () => untrustedPageReady.signal());
   if (isLocalDev()) {
-    iframe.setAttribute('src', '/views/untrusted_script_loader.html');
+    iframe.setAttribute(
+        'src', expandPath('/views/untrusted_script_loader.html'));
   } else {
     iframe.setAttribute(
         'src',

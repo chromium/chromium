@@ -6,6 +6,7 @@ import {assert, assertNotReached} from '../../assert.js';
 import {ClearableAsyncJobQueue} from '../../async_job_queue.js';
 import * as Comlink from '../../lib/comlink.js';
 import runFFmpeg from '../../lib/ffmpeg.js';
+import {expandPath} from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {AsyncWriter} from '../async_writer.js';
 
@@ -330,7 +331,7 @@ class FFMpegVideoProcessor {
       arguments: args,
       locateFile: (file: string) => {
         assert(file === 'ffmpeg.wasm');
-        return '/js/lib/ffmpeg.wasm';
+        return expandPath('/js/lib/ffmpeg.wasm');
       },
       noFSInit: true,  // It would be setup in preRun().
       preRun: [() => {
