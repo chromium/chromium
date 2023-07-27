@@ -23,11 +23,11 @@ owners:
 - file://base/metrics/OWNERS
 schema:
   type: boolean
-supported_on:
-- chrome.*:116-
-- chrome_os:116-
-- android:116-
-- ios:116-
+future_on:
+- chrome.*
+- chrome_os
+- android
+- ios
 tags:
 - google-sharing
 type: main
