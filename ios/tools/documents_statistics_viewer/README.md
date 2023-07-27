@@ -7,8 +7,9 @@ This tool allows interactive analysis of the statistics file created by
 
 To generate a report, enable the switch within the system Settings app.
 `Settings > Chrome Canary > Experimental Settings > Dump Sandbox File Statistics
-to Documents` then re-launch Chrome. A report will be placed within the
-Application's Documents directory inside the `sandboxFileStats` directory.
+to Documents` then re-launch Chrome. Wait at least 30 seconds with Chrome in the
+foreground while the report is created. Once complete, it will be placed within
+the Application's Documents directory inside the `sandboxFileStats` directory.
 
 NOTE: This option is intentionally NOT generally available on Stable. It
 requires a build with the `ios_enable_sandbox_dump` arg enabled, which is
@@ -33,6 +34,25 @@ methods:
 ## Report Analysis
 
 To inspect a report, open `./viewer.html` in your desktop browser.
+
+## Removing Downloaded File names from Report
+
+The generated report contains the real file and directory names from the
+application sandbox. If you'd like to share this file with someone else, you can
+use the `cleanSandboxFileStats.py` script to replace the real names of downloads
+with a placeholder value.
+
+### Example Usage
+
+For example, running this command:
+
+```
+cleanSandboxFileStats.py sandboxFileStats/file.json
+```
+
+will generate a file at `sandboxFileStats/file_clean.json` with the names of all
+files and directories under the path which stores user downloads replaced with
+`##DOWNLOADED_ITEM##`.
 
 ## Making Changes
 
