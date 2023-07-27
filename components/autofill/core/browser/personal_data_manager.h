@@ -629,7 +629,7 @@ class PersonalDataManager : public KeyedService,
   // increments the counter that denotes the number of times that the promo has
   // been shown, and this counter is used very similarly to a strike database
   // when it comes time to check whether we should show the promo.
-  void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
+  virtual void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
   virtual bool IsPaymentMethodsMandatoryReauthEnabled();
   bool ShouldShowPaymentMethodsMandatoryReauthPromo();
   void IncrementPaymentMethodsMandatoryReauthPromoShownCounter();

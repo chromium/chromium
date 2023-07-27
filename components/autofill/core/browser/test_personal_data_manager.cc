@@ -323,6 +323,12 @@ bool TestPersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
   return PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled();
 }
 
+void TestPersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
+    bool enabled) {
+  payment_methods_mandatory_reauth_enabled_ = enabled;
+  PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
+}
+
 void TestPersonalDataManager::ClearProfiles() {
   synced_local_profiles_.clear();
   account_profiles_.clear();

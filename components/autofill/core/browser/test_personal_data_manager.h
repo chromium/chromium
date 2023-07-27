@@ -83,6 +83,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   const AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase()
       const override;
   bool IsPaymentMethodsMandatoryReauthEnabled() override;
+  void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
 
   // Unique to TestPersonalDataManager:
 
@@ -166,10 +167,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   }
 
   void ClearCreditCardArtImages() { credit_card_art_images_.clear(); }
-
-  void SetPaymentMethodsMandatoryReauthEnabled(bool val) {
-    payment_methods_mandatory_reauth_enabled_ = val;
-  }
 
  private:
   std::string timezone_country_code_;

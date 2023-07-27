@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -51,6 +51,10 @@
 
 namespace autofill_private = extensions::api::autofill_private;
 namespace addressinput = i18n::addressinput;
+
+using autofill::autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent;
+using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
+using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 namespace {
 
@@ -758,8 +762,27 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
   const std::u16string message =
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
 
+  // If `personal_data_manager` is not available or `IsDataLoaded` is false,
+  // then don't do anything.
+  autofill::PersonalDataManager* personal_data_manager =
+      client->GetPersonalDataManager();
+  if (!personal_data_manager || !personal_data_manager->IsDataLoaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  // We will be modifying the pref `kAutofillPaymentMethodsMandatoryReauth`
+  // asynchronously. The pref value directly correlates to the mandatory auth
+  // toggle.
+  // We are also logging the start of the auth flow and
+  // `!personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled()` denotes
+  // if the user is either opting in or out.
   base::RecordAction(base::UserMetricsAction(
       "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
+  LogMandatoryReauthOptInOrOutUpdateEvent(
+      MandatoryReauthOptInOrOutSource::kSettingsPage,
+      /*opt_in=*/
+      !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled(),
+      MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
   client->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
       message,
       base::BindOnce(
@@ -773,24 +796,38 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
 #endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
-// Update the Mandatory auth toggle pref after a successful user auth.
+// Update the Mandatory auth toggle pref and log whether the auth was successful
+// or not.
 void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
     UpdateMandatoryAuthTogglePref(bool reauth_succeeded) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   content::WebContents* sender_web_contents = GetSenderWebContents();
-  if (sender_web_contents && reauth_succeeded) {
-    autofill::ContentAutofillClient* client =
-        autofill::ContentAutofillClient::FromWebContents(sender_web_contents);
-    CHECK(client);
-    autofill::PersonalDataManager* personal_data_manager =
-        client->GetPersonalDataManager();
-    // This function is not called in incognito mode and therefore a
-    // PersonalDataManager should always exist.
-    CHECK(personal_data_manager);
-    personal_data_manager->SetPaymentMethodsMandatoryReauthEnabled(
-        !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled());
+  if (!sender_web_contents) {
+    return;
+  }
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(sender_web_contents);
+  CHECK(client);
+  autofill::PersonalDataManager* personal_data_manager =
+      client->GetPersonalDataManager();
+  // This function is not called in incognito mode and therefore a
+  // PersonalDataManager should always exist.
+  CHECK(personal_data_manager);
+
+  // `opt_in` bool denotes whether the user is trying to opt in or out of the
+  // mandatory reauth feature. If the mandatory reauth toggle on the settings is
+  // currently enabled, then the `opt_in` bool will be false because the user is
+  // opting-out, otherwise the `opt_in` bool will be true.
+  const bool opt_in =
+      !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled();
+  LogMandatoryReauthOptInOrOutUpdateEvent(
+      MandatoryReauthOptInOrOutSource::kSettingsPage, opt_in,
+      reauth_succeeded ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
+                       : MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
+  if (reauth_succeeded) {
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
+    personal_data_manager->SetPaymentMethodsMandatoryReauthEnabled(opt_in);
   }
 #endif
 }

@@ -68932,6 +68932,13 @@ from previous Chrome versions.
   <int value="1" label="Settings link clicked"/>
 </enum>
 
+<enum name="MandatoryReauthOptInOrOutUpdateEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Flow started"/>
+  <int value="2" label="Flow succeeded"/>
+  <int value="3" label="Flow failed"/>
+</enum>
+
 <enum name="ManifestFetchResultType">
   <int value="0" label="Fetch succeeded"/>
   <int value="1" label="Fetch failed because of empty URL"/>
