@@ -10,6 +10,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
@@ -124,6 +125,22 @@ GURL TestPageURL() {
         "<dict><key>SyncTypesListDisabled</key><array><string>tabs</"
         "string></array></dict>");
   }
+  if ([self isRunningTest:@selector
+            (testShowPromoIfSignedOut_SyncToSigninDisabled)] ||
+      [self isRunningTest:@selector
+            (testShowPromoIfSignedIn_SyncToSigninDisabled)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector
+            (testShowPromoIfSignedOut_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
+            (testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
+            (testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
   return config;
 }
 
@@ -209,7 +226,8 @@ GURL TestPageURL() {
 }
 
 // Tests that a promo to sign in + sync is shown to a signed out user.
-- (void)testShowPromoIfSignedOut {
+// kReplaceSyncPromosWithSignInPromos is disabled.
+- (void)testShowPromoIfSignedOut_SyncToSigninDisabled {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
@@ -233,6 +251,32 @@ GURL TestPageURL() {
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
+// Tests that a promo to sign in is shown to a signed out user.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testShowPromoIfSignedOut_SyncToSigninEnabled {
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
+                           closeButton:NO];
+
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // TODO(crbug.com/1447014): Test tapping shows the history opt-in screen.
+}
+
 // Tests that no promo to sign-in + sync is shown to a user who is signed out
 // but has sign-in disabled by policy.
 - (void)testNoPromoIfSignedOutAndSigninDisabledByPolicy {
@@ -250,6 +294,10 @@ GURL TestPageURL() {
 
 // Tests that no promo to sign-in + sync is shown to a signed-out user if sync
 // is disabled by policy.
+// Note this also applies when kReplaceSyncPromosWithSignInPromos is enabled:
+// even though kSyncDisabled doesn't block sign-in, there's no sense in
+// promoting sign-in if the user won't be able to see their tabs from other
+// devices.
 - (void)testNoPromoIfSignedOutAndSyncDisabledByPolicy {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
@@ -268,7 +316,8 @@ GURL TestPageURL() {
 }
 
 // Tests that a promo to sync is shown to a signed-in non-syncing user.
-- (void)testShowPromoIfSignedIn {
+// kReplaceSyncPromosWithSignInPromos is disabled.
+- (void)testShowPromoIfSignedIn_SyncToSigninDisabled {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
 
@@ -291,6 +340,54 @@ GURL TestPageURL() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that the tab sync promo is shown to a signed-in user who hasn't
+// opted in yet.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
+                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // TODO(crbug.com/1447014): Test tapping shows history opt-in screen.
+}
+
+// Tests no promo is shown to a signed-in user who has already opted in to
+// tab sync.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kTabs)
+              enabled:YES];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
+                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests no promo to sync is shown to a signed-in non-syncing user if sync is

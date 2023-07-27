@@ -7,6 +7,7 @@
 #import <objc/runtime.h>
 
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -21,6 +22,7 @@
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
@@ -658,10 +660,17 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_OFF:
         itemType = ItemTypeOtherDevicesSyncOff;
-        itemSubtitle = l10n_util::GetNSString(
-            IDS_IOS_RECENT_TABS_OTHER_DEVICES_SYNC_IS_OFF_MESSAGE);
+        itemSubtitle =
+            l10n_util::GetNSString(IDS_IOS_RECENT_TABS_OTHER_DEVICES_LABEL);
         itemButtonText = l10n_util::GetNSString(
-            IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_SYNC);
+            IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_TABS);
+        if (!base::FeatureList::IsEnabled(
+                syncer::kReplaceSyncPromosWithSignInPromos)) {
+          itemSubtitle = l10n_util::GetNSString(
+              IDS_IOS_RECENT_TABS_OTHER_DEVICES_SYNC_IS_OFF_MESSAGE);
+          itemButtonText = l10n_util::GetNSString(
+              IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_SYNC);
+        }
         break;
 
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_NO_SESSIONS:
@@ -673,8 +682,13 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       case SessionsSyncUserState::USER_SIGNED_OUT:
         [self addSigninPromoViewItem];
         itemType = ItemTypeOtherDevicesSignedOut;
-        itemSubtitle = l10n_util::GetNSString(
-            IDS_IOS_RECENT_TABS_OTHER_DEVICES_SIGNED_OUT_MESSAGE);
+        itemSubtitle =
+            base::FeatureList::IsEnabled(
+                syncer::kReplaceSyncPromosWithSignInPromos)
+                ? l10n_util::GetNSString(
+                      IDS_IOS_RECENT_TABS_OTHER_DEVICES_LABEL)
+                : l10n_util::GetNSString(
+                      IDS_IOS_RECENT_TABS_OTHER_DEVICES_SIGNED_OUT_MESSAGE);
         break;
     }
     NSString* title =
@@ -727,6 +741,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                                   ACCESS_POINT_RECENT_TABS
                     presenter:self
            baseViewController:self];
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      self.signinPromoViewMediator.signinPromoAction =
+          SigninPromoAction::kSigninSheet;
+    }
     self.signinPromoViewMediator.consumer = self;
   }
 
@@ -1183,8 +1202,18 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     [self.signinPromoViewMediator signinPromoViewIsVisible];
     TableViewSigninPromoCell* signinPromoCell =
         base::mac::ObjCCastStrict<TableViewSigninPromoCell>(cell);
-    signinPromoCell.signinPromoView.imageView.hidden = YES;
-    signinPromoCell.signinPromoView.textLabel.hidden = YES;
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      TableViewSigninPromoItem* signinPromoItem =
+          base::mac::ObjCCastStrict<TableViewSigninPromoItem>(
+              [self.tableViewModel itemAtIndexPath:indexPath]);
+      [signinPromoItem.configurator
+          configureSigninPromoView:signinPromoCell.signinPromoView
+                         withStyle:SigninPromoViewStyleOnlyButton];
+    } else {
+      signinPromoCell.signinPromoView.imageView.hidden = YES;
+      signinPromoCell.signinPromoView.textLabel.hidden = YES;
+    }
     // Disable animations when setting the background color to prevent flash on
     // rotation.
     [UIView setAnimationsEnabled:NO];

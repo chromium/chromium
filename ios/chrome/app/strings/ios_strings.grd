@@ -2776,6 +2776,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_SYNC" desc="Button label to turn Sync on for user. [Length: 30em]" meaning="Label using the Title Casing as recommended for buttons.">
           Turn On Sync
       </message>
+      <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_LABEL" desc="Label for the sign-in promo in the Recent tabs page.">
+          To see tabs from your other devices, sync your tabs and history.
+      </message>
+      <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_TABS" desc="Button for the sign-in promo in the Recent tabs page.">
+          Turn On
+      </message>
       <message name="IDS_IOS_RECENT_TABS_RECENTLY_CLOSED" desc="The heading of the recently closed section in the recent tab panel. [Length: 35em] [iOS only]">
         Recently Closed
       </message>
