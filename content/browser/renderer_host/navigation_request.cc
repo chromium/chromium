@@ -1930,7 +1930,17 @@ NavigationRequest::NavigationRequest(
       // the NotRestoredReasons API.
       commit_params_->not_restored_reasons =
           metrics->GetWebExposedNotRestoredReasons();
+      // Check that the reasons are not null since |this| is not served from
+      // back/forward cache.
+      CHECK(!commit_params_->not_restored_reasons.is_null());
     }
+  }
+  // Check that the reasons are null when |this| is served from back/forward
+  // cache.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheSendNotRestoredReasons) &&
+      IsBackForwardCacheEnabled() && IsServedFromBackForwardCache()) {
+    CHECK(commit_params_->not_restored_reasons.is_null());
   }
 
   // Record `SameDocumentCrossOriginInitiator` metric. It happens in the
