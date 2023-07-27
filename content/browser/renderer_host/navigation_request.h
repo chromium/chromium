@@ -829,6 +829,8 @@ class CONTENT_EXPORT NavigationRequest
   // and same-document navigations and to
   // RenderFrameHost::FromID(GetPreviousRenderFrameHostId())
   //     ->GetPageUkmSourceId() for main-frame cross-document navigations.
+  // Note: If this method is called on a prerender navigation, it will return
+  // ukm::kInvalidSourceId due to our data collection policy.
   ukm::SourceId GetPreviousPageUkmSourceId();
 
   void OnServiceWorkerAccessed(const GURL& scope,

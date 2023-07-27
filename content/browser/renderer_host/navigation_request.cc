@@ -1010,6 +1010,21 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
   return DeriveTopicsHeaderValue(topics, num_versions_in_epochs);
 }
 
+ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
+  CHECK(frame_tree_node);
+  RenderFrameHost* render_frame_host = frame_tree_node->current_frame_host();
+  CHECK(render_frame_host);
+  // Our data collection policy disallows collecting UKMs while prerendering.
+  // So, return kInvalidSourceId when the page is in the prerendering state.
+  // See //content/browser/preloading/prerender/README.md and ask the team to
+  // explore options to record data for prerendering pages.
+  if (render_frame_host->IsInLifecycleState(
+          RenderFrameHost::LifecycleState::kPrerendering)) {
+    return ukm::kInvalidSourceId;
+  }
+  return render_frame_host->GetPageUkmSourceId();
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -1522,8 +1537,7 @@ NavigationRequest::NavigationRequest(
       is_credentialless_(
           IsDocumentToCommitAnonymous(frame_tree_node,
                                       is_synchronous_renderer_commit)),
-      previous_page_ukm_source_id_(
-          frame_tree_node_->current_frame_host()->GetPageUkmSourceId()),
+      previous_page_ukm_source_id_(GetPageUkmSourceId(frame_tree_node_)),
       is_pdf_(is_pdf),
       is_embedder_initiated_fenced_frame_navigation_(
           is_embedder_initiated_fenced_frame_navigation),
