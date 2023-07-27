@@ -25,9 +25,9 @@
     font-weight: var(--oobe-header-font-weight);
   }
 
-  :root.jelly-enabled .screen-title {
+  :host-context(.jelly-enabled) .screen-title {
     color: var(--cros-sys-on_surface);
-    font: var(--cros-body-1-font);
+    font-weight: var(--cros-button-1-font-weight);
   }
 
   .screen-subtitle {
@@ -35,7 +35,7 @@
     font-weight: var(--oobe-default-font-weight);
   }
 
-  :root.jelly-enabled .screen-subtitle {
+  :host-context(.jelly-enabled) .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
     font: var(--cros-body-2-font);
   }
@@ -53,22 +53,11 @@
     padding: 0;
     transition: color 250ms linear, background-color 250ms linear;
     width: calc(100% - 8px);
-    --cros-sys-on_secondary: var(--cros-color-secondary);
-    --cros-sys-on_secondary_container: var(--iron-icon-fill-color);
   }
 
-  :root.jelly-enabled .screen-item {
+  :host-context(.jelly-enabled) .screen-item {
     background-color: var(--cros-sys-base_elevated);
-  }
-
-  .screen-icon  {
-    align-items: center;
-    align-self: center;
-    display: flex;
-    height: 32px;
-    margin-inline-end: 16px;
-    margin-inline-start: 16px ;
-    width: 32px;
+    box-shadow: none;
   }
 
   .text-container {
@@ -90,7 +79,7 @@
     background-color: var(--cros-button-background-color-secondary-hover);
   }
 
-  :root.jelly-enabled .screen-item[checked=true] {
+  :host-context(.jelly-enabled) .screen-item[checked=true] {
     background-color: var(--cros-sys-primary_container);
   }
 
@@ -99,10 +88,11 @@
     color: var(--cros-color-prominent);
   }
 
-  :root.jelly-enabled .screen-item[checked=true] .screen-title {
+  :host-context(.jelly-enabled) .screen-item[checked=true] .screen-title {
     color: var(--cros-sys-on_surface);
   }
-  :root.jelly-enabled .screen-item[checked=true] .screen-subtitle {
+
+  :host-context(.jelly-enabled) .screen-item[checked=true] .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
   }
 
@@ -115,15 +105,17 @@
   .screen-item[visited] {
     --cros-second-tone-opacity: 1;
     background-color: var(--cros-button-background-color-primary-disabled);
-    --iron-icon-fill-color: var(--cros-icon-color-secondary);
-    --cros-sys-on_secondary_container: var(--cros-bg-color);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[visited] {
+    background-color: var(--cros-sys-hover_on_subtle);
   }
 
   .screen-item[visited] .screen-title {
     color: var(--cros-text-color-secondary);
   }
 
-  :root.jelly-enabled .screen-item[visited] .screen-title {
+  :host-context(.jelly-enabled) .screen-item[visited] .screen-title {
     color: var(--cros-sys-on_surface);
   }
 
@@ -131,17 +123,15 @@
     color: var(--cros-text-color-secondary);
   }
 
-  :root.jelly-enabled .screen-item[visited] .screen-subtitle {
+  :host-context(.jelly-enabled) .screen-item[visited] .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
   }
 
   .screen-item[disabled] {
-    --cros-sys-inverse_primary : var(--cros-color-disabled);
-    --cros-sys-primary : var(--cros-color-disabled);
     background-color: var(--disabled-bg-action);
   }
 
-  :root.jelly-enabled .screen-item[disabled] {
+  :host-context(.jelly-enabled) .screen-item[disabled] {
     background-color: var(--cros-sys-disabled_container);
   }
 
@@ -150,13 +140,61 @@
     color: var(--cros-color-disabled);
   }
 
-  :root.jelly-enabled .screen-item[disabled] .screen-title,
-  :root.jelly-enabled .screen-item[disabled] .screen-subtitle {
+  :host-context(.jelly-enabled) .screen-item[disabled] .screen-title,
+  :host-context(.jelly-enabled) .screen-item[disabled] .screen-subtitle {
     color: var(--cros-sys-disabled);
   }
 
   .sync {
     --iron-icon-fill-color: var(--cros-color-secondary);
+  }
+
+  /* Styles of icons in screen cards */
+  .screen-icon  {
+    align-items: center;
+    align-self: center;
+    display: flex;
+    height: 32px;
+    margin-inline-end: 16px;
+    margin-inline-start: 16px ;
+    width: 32px;
+    --oobe-duotone-primary: var(--oobe-adaptive-dialog-icon-fill-color);
+    --oobe-duotone-secondary: var(--oobe-adaptive-dialog-icon-fill-color);
+    --oobe-duotone-secondary-opacity: 0.3;
+    --oobe-duotone-bg: var(--oobe-adaptive-dialog-icon-fill-color);
+  }
+
+  :host-context(.jelly-enabled) .screen-icon {
+    --oobe-duotone-primary: var(--cros-sys-primary);
+    --oobe-duotone-secondary: var(--cros-sys-inverse_primary);
+    --oobe-duotone-cut-out: var(--cros-sys-primary);
+    --oobe-duotone-secondary-opacity: 1;
+  }
+
+  .screen-item[visited] .screen-icon {
+    --oobe-duotone-primary: var(--cros-icon-color-secondary);
+    --oobe-duotone-secondary: var(--cros-icon-color-secondary);
+    --oobe-duotone-cut-out: var(--oobe-bg-color);
+    --oobe-duotone-secondary-opacity: 1;
+  }
+
+  :host-context(.jelly-enabled) .screen-item[visited] .screen-icon {
+    --oobe-duotone-primary: var(--cros-sys-secondary);
+    --oobe-duotone-secondary: var(--cros-sys-secondary);
+    --oobe-duotone-cut-out: var(--cros-sys-base_elevated);
+  }
+
+  .screen-item[disabled] .screen-icon {
+    --oobe-duotone-primary: var(--cros-color-disabled);
+    --oobe-duotone-secondary: var(--cros-color-disabled);
+    --oobe-duotone-cut-out: var(--cros-color-disabled);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[disabled] .screen-icon {
+    --oobe-duotone-primary: var(--cros-sys-disabled);
+    --oobe-duotone-secondary: var(--cros-sys-disabled);
+    --oobe-duotone-cut-out: var(--cros-sys-base_elevated);
+    --oobe-duotone-secondary-opacity: 1;
   }
 </style>
 <div id="screensList">
