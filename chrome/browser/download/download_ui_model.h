@@ -116,7 +116,7 @@ class DownloadUIModel {
       std::u16string label;
       bool is_prominent = false;
 
-      // Controls the text color of the button. Only applied for secondary
+      // Controls the text color of the button. Only applied for some secondary
       // buttons.
       absl::optional<ui::ColorId> color;
 
@@ -188,13 +188,22 @@ class DownloadUIModel {
     // The checkbox, if present, controls the secondary.
     BubbleUIInfo& AddPrimarySubpageButton(const std::u16string& label,
                                           DownloadCommands::Command command);
-    BubbleUIInfo& AddSecondarySubpageButton(const std::u16string& label,
-                                            DownloadCommands::Command command,
-                                            ui::ColorId color);
+    BubbleUIInfo& AddSecondarySubpageButton(
+        const std::u16string& label,
+        DownloadCommands::Command command,
+        absl::optional<ui::ColorId> color = absl::nullopt);
     BubbleUIInfo& SetProgressBarLooping();
     BubbleUIInfo& AddQuickAction(DownloadCommands::Command command,
                                  const std::u16string& label,
                                  const gfx::VectorIcon* icon);
+
+    // Set common characteristics for dangerous or suspicious downloads.
+    static BubbleUIInfo DangerousUiPattern(
+        const std::u16string& subpage_summary);
+    static BubbleUIInfo SuspiciousUiPattern(
+        const std::u16string& subpage_summary,
+        const std::u16string& secondary_subpage_button_label);
+
     ui::ColorId GetColorForSecondaryText() const;
     bool HasSubpage() const;
     bool HasCheckbox() const;

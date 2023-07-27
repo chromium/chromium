@@ -2820,6 +2820,18 @@ are declared in tools/grit/grit_rule.gni.
                desc="When a download has finished deep scanning and the result is safe, let the user know.">
         Scan is done
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_INSECURE"
+               desc="Status message displayed when a download is blocked because it is insecure.">
+        Insecure download blocked
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_SUSPICIOUS"
+               desc="Status message displayed when a download is blocked because it is suspicious.">
+        Suspicious download blocked
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_DANGEROUS"
+               desc="Status message displayed when a download is blocked because it is dangerous.">
+        Dangerous download blocked
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_BLOCKED"
                desc="When a download is blocked because of warnings, let the user know.">
         Blocked
@@ -2840,9 +2852,21 @@ are declared in tools/grit/grit_rule.gni.
                desc="Label for the Continue button on the blocked download bubble subpage.">
         Continue download
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_CONTINUE_INSECURE_FILE"
+               desc="Label for the Download insecure file button on the blocked download bubble subpage.">
+        Download insecure file
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE"
+               desc="Label for the Download suspicious file button on the blocked download bubble subpage.">
+        Download suspicious file
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_DELETE"
                desc="Label for the Delete button on the blocked download bubble subpage.">
         Delete
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_DELETE_FROM_HISTORY"
+               desc="Label for the Delete from history button on the blocked download bubble subpage.">
+        Delete from history
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_MAIN_BUTTON_SUBPAGE"
                desc="Accessibility label for the main button on the download bubble main page. It opens the bubble subpage when activated.">
@@ -2951,6 +2975,30 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_INSECURE"
                desc="Subpage summary text for a download item when the download is insecure.">
         This file may have been read or edited because this site isn't using a secure connection
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_INSECURE"
+               desc="Subpage summary text for a download item when the download is insecure.">
+        This site isn't using a secure connection and the file may have been tampered with
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_DANGEROUS"
+               desc="Subpage summary text for a download item when the download is dangerous.">
+        This file is dangerous
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_DECEPTIVE"
+               desc="Subpage summary text for a download item when the download is deceptive.">
+        This file is deceptive and may make unexpected changes to your device
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_DANGEROUS_FILE_TYPE"
+               desc="Subpage summary text for a download item when the download is a dangerous file type.">
+        This file type isn't commonly downloaded and it may be dangerous
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_UNCOMMON_FILE"
+               desc="Subpage summary text for a download item when the downloaded file is not commonly downloaded.">
+        This file isn't commonly downloaded and it may be dangerous
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE"
+               desc="Subpage summary text for a download item when the downloaded file may hide malware.">
+        This file may hide malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS"
                desc="Dangerous warning for the user.">
@@ -3185,6 +3233,14 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT"
                desc="Subpage summary for cookie theft warning with account info.">
         This file contains malware that can compromise your personal or social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT"
+               desc="Subpage summary for cookie theft warning.">
+        This file can harm your personal and social network accounts
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT"
+               desc="Subpage summary for cookie theft warning with account info.">
+        This file can harm your personal and social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
       </message>
 
       <!-- Desktop omnibox PWA install icon -->

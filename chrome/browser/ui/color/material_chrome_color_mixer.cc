@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -127,12 +128,22 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
                                  kColorDownloadShelfBackground),
       kColorDownloadShelfBackground);
   mixer[kColorDownloadItemIconDangerous] = {ui::kColorSysError};
-  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead.
-  mixer[kColorDownloadItemIconWarning] = {ui::kColorAlertMediumSeverityIcon};
+  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead for the
+  // non-ImprovedDownloadBubbleWarnings case.
+  mixer[kColorDownloadItemIconWarning] = {
+      base::FeatureList::IsEnabled(
+          safe_browsing::kImprovedDownloadBubbleWarnings)
+          ? ui::kColorSysOnSurfaceSubtle
+          : ui::kColorAlertMediumSeverityIcon};
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorSysPrimary};
   mixer[kColorDownloadItemTextDangerous] = {ui::kColorSysError};
-  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead.
-  mixer[kColorDownloadItemTextWarning] = {ui::kColorAlertMediumSeverityText};
+  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead for the
+  // non-ImprovedDownloadBubbleWarnings case.
+  mixer[kColorDownloadItemTextWarning] = {
+      base::FeatureList::IsEnabled(
+          safe_browsing::kImprovedDownloadBubbleWarnings)
+          ? ui::kColorSysOnSurfaceSubtle
+          : ui::kColorAlertMediumSeverityText};
   mixer[kColorDownloadShelfBackground] = {ui::kColorSysBase};
   mixer[kColorDownloadShelfButtonIcon] = {kColorDownloadShelfForeground};
   mixer[kColorDownloadShelfButtonIconDisabled] = {ui::kColorSysStateDisabled};

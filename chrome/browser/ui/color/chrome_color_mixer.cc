@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome_color_id.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -167,12 +168,20 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorAlertLowSeverity, kColorDownloadShelfBackground,
       color_utils::kMinimumReadableContrastRatio);
   mixer[kColorDownloadItemIconDangerous] = {ui::kColorAlertHighSeverity};
-  mixer[kColorDownloadItemIconWarning] = {ui::kColorAlertMediumSeverityIcon};
+  mixer[kColorDownloadItemIconWarning] = {
+      base::FeatureList::IsEnabled(
+          safe_browsing::kImprovedDownloadBubbleWarnings)
+          ? ui::kColorSecondaryForeground
+          : ui::kColorAlertMediumSeverityIcon};
   mixer[kColorDownloadItemProgressRingBackground] = ui::SetAlpha(
       kColorDownloadItemProgressRingForeground, gfx::kGoogleGreyAlpha400);
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};
   mixer[kColorDownloadItemTextDangerous] = {ui::kColorAlertHighSeverity};
-  mixer[kColorDownloadItemTextWarning] = {ui::kColorAlertMediumSeverityText};
+  mixer[kColorDownloadItemTextWarning] = {
+      base::FeatureList::IsEnabled(
+          safe_browsing::kImprovedDownloadBubbleWarnings)
+          ? ui::kColorSecondaryForeground
+          : ui::kColorAlertMediumSeverityText};
   mixer[kColorDownloadShelfBackground] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
   mixer[kColorDownloadShelfButtonIcon] = {kColorToolbarButtonIcon};

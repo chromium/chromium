@@ -18,6 +18,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -964,11 +965,19 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
       tailored_verdict.tailored_verdict_type() ==
           TailoredVerdict::SUSPICIOUS_ARCHIVE) {
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kImprovedDownloadBubbleWarnings)) {
+      return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE),
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
+    }
     return DownloadUIModel::BubbleUIInfo()
         .AddSubpageSummary(l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE))
         .AddIconAndColor(features::IsChromeRefresh2023()
-                             ? vector_icons::kNotSecureWarningChromeRefreshIcon
+                             ? kDownloadWarningIcon
                              : vector_icons::kNotSecureWarningIcon,
                          ui::kColorAlertMediumSeverityIcon)
         .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
@@ -999,6 +1008,13 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
           "SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo",
           !email.empty());
       if (!email.empty()) {
+        if (base::FeatureList::IsEnabled(
+                safe_browsing::kImprovedDownloadBubbleWarnings)) {
+          return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+              l10n_util::GetStringFUTF16(
+                  IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT,
+                  base::ASCIIToUTF16(email)));
+        }
         return DownloadUIModel::BubbleUIInfo()
             .AddSubpageSummary(l10n_util::GetStringFUTF16(
                 IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT,
@@ -1012,6 +1028,12 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
                 DownloadCommands::Command::DISCARD);
       }
+    }
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kImprovedDownloadBubbleWarnings)) {
+      return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
     }
     return DownloadUIModel::BubbleUIInfo()
         .AddSubpageSummary(l10n_util::GetStringUTF16(
