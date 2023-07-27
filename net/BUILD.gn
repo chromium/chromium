@@ -1297,7 +1297,7 @@ component("net") {
       "base/winsock_init.h",
       "base/winsock_util.cc",
       "base/winsock_util.h",
-      "cert/test_root_certs_win.cc",
+      "cert/test_root_certs_builtin.cc",
       "cert/x509_util_win.cc",
       "cert/x509_util_win.h",
       "disk_cache/blockfile/file_win.cc",

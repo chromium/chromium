@@ -11,11 +11,7 @@
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/trust_store_in_memory.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#include "base/win/wincrypt_shim.h"
-#include "crypto/scoped_capi_types.h"
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <CoreFoundation/CFArray.h>
 #include <Security/SecTrust.h>
 #include "base/mac/scoped_cftyperef.h"
@@ -60,13 +56,6 @@ class NET_EXPORT TestRootCerts {
   // certificates stored in |temporary_roots_|. If IsEmpty() is true, this
   // does not modify |trust_ref|.
   OSStatus FixupSecTrustRef(SecTrustRef trust_ref) const;
-#elif BUILDFLAG(IS_WIN)
-  HCERTSTORE temporary_roots() const { return temporary_roots_; }
-
-  // Returns an HCERTCHAINENGINE suitable to be used for certificate
-  // validation routines, or NULL to indicate that the default system chain
-  // engine is appropriate.
-  crypto::ScopedHCERTCHAINENGINE GetChainEngine() const;
 #endif
 
   TrustStore* test_trust_store() { return &test_trust_store_; }
@@ -92,9 +81,7 @@ class NET_EXPORT TestRootCerts {
   bool AddImpl(X509Certificate* certificate);
   void ClearImpl();
 
-#if BUILDFLAG(IS_WIN)
-  HCERTSTORE temporary_roots_;
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   base::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
 #endif
 
