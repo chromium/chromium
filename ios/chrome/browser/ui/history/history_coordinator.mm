@@ -198,6 +198,9 @@ history::WebHistoryService* WebHistoryServiceGetter(
 }
 
 - (void)displayClearHistoryData {
+  if (self.historyClearBrowsingDataCoordinator) {
+    return;
+  }
   self.historyClearBrowsingDataCoordinator =
       [[HistoryClearBrowsingDataCoordinator alloc]
           initWithBaseViewController:self.historyNavigationController
