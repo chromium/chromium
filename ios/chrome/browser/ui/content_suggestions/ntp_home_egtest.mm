@@ -103,14 +103,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                               descriptionBlock:describe];
 }
-
-// Returns a matcher which is true if the view is not practically visible.
-// Sometimes grey_notVisible() fails because the view is 0.0000XYZ percent
-// visible, but not actually zero, probably due to some sort of floating
-// point calculation.
-id<GREYMatcher> notPracticallyVisible() {
-  return grey_not(grey_minimumVisiblePercent(0.01));
-}
 }
 
 // Test case for the NTP home UI. More precisely, this tests the positions of
@@ -937,8 +929,9 @@ id<GREYMatcher> notPracticallyVisible() {
   }
 
   // Ensures that logo/doodle is no longer visible when scrolled down.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
-      assertWithMatcher:notPracticallyVisible()];
+  UIView* NTPLogoView = [NewTabPageAppInterface NTPLogo];
+  GREYAssert(NTPLogoView.alpha < 0.1,
+             @"NTP logo is still visible when scrolled to minimum height.");
 }
 
 // Test to ensure that initial position and content are maintained when rotating

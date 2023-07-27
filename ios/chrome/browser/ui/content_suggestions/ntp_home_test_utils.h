@@ -25,6 +25,10 @@ UICollectionView* ContentSuggestionsCollectionView();
 // in the view hierarchy.
 UIView* FakeOmnibox();
 
+// Returns the view corresponding to the NTP's logo. Returns nil if it is not in
+// the view hierarchy.
+UIView* NTPLogo();
+
 // Returns the label corresponding to the Discover header label. Returns nil if
 // it is not in the view hierarchy.
 UILabel* DiscoverHeaderLabel();

@@ -137,13 +137,13 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhoneLandscape) {
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, heightForLogoHeaderIPad) {
   // Action, tests.
-  EXPECT_EQ(346, HeightForLogoHeader(YES, YES, 0, IPadTraitCollection()));
+  EXPECT_EQ(331, HeightForLogoHeader(YES, YES, IPadTraitCollection()));
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, heightForLogoHeaderIPhone) {
   // Action, tests.
-  EXPECT_EQ(235,
-            HeightForLogoHeader(YES, YES, 0, IPhonePortraitTraitCollection()));
+  EXPECT_EQ(220,
+            HeightForLogoHeader(YES, YES, IPhonePortraitTraitCollection()));
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, NearestAncestor) {

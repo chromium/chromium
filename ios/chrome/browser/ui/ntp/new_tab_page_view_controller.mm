@@ -114,10 +114,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // changes.
 @property(nonatomic, assign, readwrite) BOOL scrolledToMinimumHeight;
 
-// The added y-offset of the NTP collection view to make up for the header.
-// Without this, the offset is negative at the top of the NTP.
-@property(nonatomic, assign) CGFloat additionalOffset;
-
 // If YES the animations of the fake omnibox triggered when the collection is
 // scrolled (expansion) are disabled. This is used for the fake omnibox focus
 // animations so the constraints aren't changed while the ntp is scrolled.
@@ -154,7 +150,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
                 action:@selector(unfocusOmnibox)];
 
     _collectionShiftingOffset = 0;
-    _additionalOffset = 0;
     _shouldAnimateHeader = YES;
     _focusAccessibilityOmniboxWhenViewAppears = YES;
   }
@@ -290,21 +285,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   self.headerViewController.showing = NO;
 }
 
-- (void)viewSafeAreaInsetsDidChange {
-  [super viewSafeAreaInsetsDidChange];
-
-  if (!self.viewDidAppear) {
-    // The native views in the NTP are not top anchored to the surface in any
-    // way. They are stacked on top of the top of the Feed contents, and the top
-    // Safe Area insets are factored in the height needed above the feed in
-    // -updateFeedInsetsForContentAbove. Update that height here as it is the
-    // soonest place the Safe Area insets are ready.
-    [self updateHeightAboveFeedAndScrollToTopIfNeeded];
-  }
-
-  [self.headerViewController updateConstraints];
-}
-
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -319,13 +299,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
       id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf handleStickyElementsForScrollPosition:[weakSelf scrollPosition]
                                               force:YES];
-
-    // Redraw the ContentSuggestionsViewController to properly
-    // caclculate the new adjustedContentSuggestionsHeight value.
-    // TODO(crbug.com/1170995): Remove once the Feed supports a custom
-    // header.
-    [[weakSelf contentSuggestionsViewController].view setNeedsLayout];
-    [[weakSelf contentSuggestionsViewController].view layoutIfNeeded];
 
     CGFloat heightAboveFeedDifference =
         [weakSelf heightAboveFeed] - heightAboveFeedBeforeRotation;
@@ -562,9 +535,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 - (void)updateFeedInsetsForMinimumHeight {
   DCHECK(self.isFeedVisible);
-  CGFloat minimumNTPHeight =
-      self.collectionView.bounds.size.height +
-      self.feedWrapperViewController.view.safeAreaInsets.top;
+  CGFloat minimumNTPHeight = self.collectionView.bounds.size.height;
   minimumNTPHeight -= [self feedHeaderHeight];
   if ([self shouldPinFakeOmnibox]) {
     minimumNTPHeight -= ([self.headerViewController headerHeight] +
@@ -643,7 +614,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 - (CGFloat)heightAboveFeed {
-  CGFloat heightAboveFeed = self.view.safeAreaInsets.top;
+  CGFloat heightAboveFeed = 0;
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     heightAboveFeed += viewController.view.frame.size.height;
   }
@@ -655,7 +626,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 - (CGFloat)pinnedOffsetY {
-  return [self.headerViewController pinnedOffsetY] - self.additionalOffset;
+  return [self.headerViewController pinnedOffsetY] - [self heightAboveFeed];
 }
 
 - (void)omniboxDidResignFirstResponder {
@@ -788,7 +759,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   CGFloat yOffset = (1.0 - percentComplete) * [self pinnedOffsetY] +
                     percentComplete * MAX([self pinnedOffsetY] -
                                               self.collectionShiftingOffset,
-                                          -self.additionalOffset);
+                                          -[self heightAboveFeed]);
   self.collectionView.contentOffset = CGPointMake(0, yOffset);
 
   if (percentComplete == 1.0) {
@@ -810,6 +781,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
                                  animated:NO];
   }
 
+  // If the fake omnibox is already at the final position, just focus it and
+  // return early.
   if (self.scrolledToMinimumHeight) {
     self.shouldAnimateHeader = NO;
     self.disableScrollAnimation = NO;
@@ -820,18 +793,19 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     return;
   }
 
+  self.shouldAnimateHeader = YES;
+  CGFloat pinnedOffsetBeforeAnimation = [self pinnedOffsetY];
   if (CGSizeEqualToSize(self.collectionView.contentSize, CGSizeZero)) {
     [self.collectionView layoutIfNeeded];
   }
 
-  CGFloat headerPinnedOffsetY = [self.headerViewController pinnedOffsetY];
-  self.collectionShiftingOffset = MAX(
-      -self.additionalOffset, headerPinnedOffsetY - [self adjustedOffset].y);
-  self.shouldAnimateHeader = YES;
+  // Save the scroll position prior to the animation to allow the user to return
+  // to it on defocus.
+  self.collectionShiftingOffset =
+      MAX(-[self heightAboveFeed],
+          [self.headerViewController pinnedOffsetY] - [self adjustedOffset].y);
 
-  CGFloat pinnedOffsetBeforeAnimation = [self pinnedOffsetY];
   __weak __typeof(self) weakSelf = self;
-
   ProceduralBlock shiftOmniboxToTop = ^{
     __typeof(weakSelf) strongSelf = weakSelf;
     // Changing the contentOffset of the collection results in a
@@ -840,7 +814,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
         CGPointMake(0, [strongSelf pinnedOffsetY]);
     // Layout the header for the constraints to be animated.
     [strongSelf.headerViewController layoutHeader];
-    //    [strongSelf.collectionView.collectionViewLayout invalidateLayout];
   };
 
   self.animator = [[UIViewPropertyAnimator alloc]
@@ -907,12 +880,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (CGFloat)stickyOmniboxHeight {
   // Takes the height of the entire header and subtracts the margin to stick the
   // fake omnibox. Adjusts this for the device by further subtracting the
-  // toolbar height and safe area insets.
-  return [self.headerViewController headerHeight] -
-         ntp_header::kFakeOmniboxScrolledToTopMargin -
-         ToolbarExpandedHeight(
-             [UIApplication sharedApplication].preferredContentSizeCategory) -
-         self.view.safeAreaInsets.top - [self feedHeaderHeight];
+  // toolbar height.
+  return content_suggestions::FakeOmniboxHeight();
 }
 
 // Configures overscroll actions controller.
@@ -1016,10 +985,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   [NSLayoutConstraint deactivateConstraints:self.fakeOmniboxConstraints];
 
-  self.headerTopAnchor = [self.headerViewController.view.topAnchor
-      constraintEqualToAnchor:self.feedWrapperViewController.view.topAnchor
-                     constant:-([self stickyOmniboxHeight] +
-                                [self feedHeaderHeight])];
+  self.headerTopAnchor = [self.headerViewController.view.bottomAnchor
+      constraintEqualToAnchor:self.feedWrapperViewController.view
+                                  .safeAreaLayoutGuide.topAnchor
+                     constant:[self stickyOmniboxHeight]];
   // This issue fundamentally comes down to the topAnchor being set just once
   // and if it is set in landscape mode, it never is updated upon rotation.
   // And landscape is when it doesn't matter.
@@ -1151,14 +1120,11 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 // Sets an top inset to the feed collection view to fit the content above it.
 - (void)updateFeedInsetsForContentAbove {
-  CGFloat heightAboveFeed = [self heightAboveFeed];
-  // Updates `additionalOffset` using the content above the feed.
-  self.additionalOffset = heightAboveFeed;
   // Setting the contentInset will cause a scroll, which will call
   // scrollViewDidScroll which calls updateScrolledToMinimumHeight. So no need
   // to call here.
   self.collectionView.contentInset = UIEdgeInsetsMake(
-      heightAboveFeed, 0, self.collectionView.contentInset.bottom, 0);
+      [self heightAboveFeed], 0, self.collectionView.contentInset.bottom, 0);
 }
 
 // Checks whether the feed top section is visible and updates the
@@ -1169,9 +1135,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
 
   // The y-position where NTP content starts being visible.
-  CGFloat visibleContentStartingPoint = [self scrollPosition] +
-                                        self.view.frame.size.height -
-                                        self.view.safeAreaInsets.top;
+  CGFloat visibleContentStartingPoint =
+      [self scrollPosition] + self.view.frame.size.height;
 
   // Signin promo is logged as visible when at least the top 2/3 or bottom 1/3
   // of it can be seen. This is not logged if the user focuses the omnibox since
@@ -1364,10 +1329,11 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   return stickyContentHeight;
 }
 
-// Returns y-offset compensated for any additionalOffset that might be set.
+// Returns y-offset compensated for any content insets that might be set for the
+// content above the feed.
 - (CGPoint)adjustedOffset {
   CGPoint adjustedOffset = self.collectionView.contentOffset;
-  adjustedOffset.y += self.additionalOffset;
+  adjustedOffset.y += [self heightAboveFeed];
   return adjustedOffset;
 }
 
@@ -1425,9 +1391,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // the NTP bottom bar. This allows the Most Visited cells to be scrolled up
   // to the top of the screen. Also computes the total NTP scrolling height
   // for Discover infinite feed.
-  CGFloat ntpHeight = collectionViewHeight + headerHeight;
-  CGFloat minimumHeight =
-      ntpHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
+  CGFloat minimumHeight = collectionViewHeight + headerHeight;
   if (!IsRegularXRegularSizeClass(self.collectionView)) {
     CGFloat toolbarHeight =
         IsSplitToolbarMode(self.collectionView)
@@ -1445,11 +1409,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // Returns the current height of the content suggestions content.
 - (CGFloat)contentSuggestionsContentHeight {
   return [self.contentSuggestionsViewController contentSuggestionsHeight];
-}
-
-// Content suggestions height adjusted with the safe area top insets.
-- (CGFloat)adjustedContentSuggestionsHeight {
-  return [self contentSuggestionsContentHeight] + self.view.safeAreaInsets.top;
 }
 
 // Height of the feed header, returns 0 if it is not visible.
@@ -1474,8 +1433,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if ([self shouldPinFakeOmnibox]) {
     offset = -(self.headerViewController.view.frame.size.height -
                [self stickyOmniboxHeight] -
-               [self.feedHeaderViewController customSearchEngineViewHeight] -
-               content_suggestions::HeaderBottomPadding());
+               [self.feedHeaderViewController customSearchEngineViewHeight]);
   } else {
     offset = -[self feedHeaderHeight];
   }
@@ -1493,9 +1451,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // Do not need to factor in safeAreaInsets.top because the fake omnibox sticks
   // below it, so it is effectively just the scroll distance between top of
   // NTPHeader and the top of the Fake Omnibox.
-  return -([self heightAboveFeed] -
-           [self.headerViewController
-                   offsetToBeginFakeOmniboxExpansionForSplitMode]);
+  return -([self heightAboveFeed] - [self.headerViewController headerHeight] +
+           [self stickyOmniboxHeight]);
 }
 
 // Whether the collection view has attained its minimum height.
@@ -1578,9 +1535,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // updates property.
 - (void)updateScrolledToMinimumHeight {
   CGFloat scrollPosition = [self scrollPosition];
-  CGFloat offset = [self pinnedOffsetY];
+  CGFloat minimumHeightOffset = [self pinnedOffsetY];
 
-  self.scrolledToMinimumHeight = scrollPosition >= offset;
+  self.scrolledToMinimumHeight = scrollPosition >= minimumHeightOffset;
 }
 
 // Adds `viewController` as a child of `parentViewController` and adds

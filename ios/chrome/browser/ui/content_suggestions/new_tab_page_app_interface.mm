@@ -50,6 +50,10 @@ using set_up_list_prefs::SetUpListItemState;
   return ntp_home::FakeOmnibox();
 }
 
++ (UIView*)NTPLogo {
+  return ntp_home::NTPLogo();
+}
+
 + (UILabel*)discoverHeaderLabel {
   return ntp_home::DiscoverHeaderLabel();
 }
