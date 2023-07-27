@@ -51,8 +51,9 @@
       assertWithMatcher:grey_notNil()];
 }
 
-// TODO(crbug.com/1466839): Flaky on iPhone.
-- (void)DISABLED_testPriceTrackingIsNotVisibleInIncognito {
+// Confirms the Price Tracking carousel destination is not visible when the user
+// is in Incognito.
+- (void)testPriceTrackingIsNotVisibleInIncognito {
   CGFloat const kMenuScrollDisplacement = 150;
   id<GREYAction> scrollRight =
       grey_scrollInDirection(kGREYDirectionRight, kMenuScrollDisplacement);
