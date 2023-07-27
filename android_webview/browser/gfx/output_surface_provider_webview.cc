@@ -167,7 +167,6 @@ void OutputSurfaceProviderWebView::InitializeContext() {
     // EGL context and restore state of the native EGL context when releasing
     // the ANGLE context.
     attribs.angle_create_from_external_context = is_angle;
-    attribs.angle_restore_external_context_state = is_angle;
 
     if (is_angle && display->ext->b_EGL_ANGLE_create_context_client_arrays) {
       // By default client arrays are disabled as they are not supported by

@@ -17,6 +17,8 @@ namespace gl {
 
 class GLContext;
 
+typedef void(GL_BINDING_CALL* eglAcquireExternalContextANGLEProc)(
+    EGLDisplay dpy);
 typedef EGLBoolean(GL_BINDING_CALL* eglBindAPIProc)(EGLenum api);
 typedef EGLBoolean(GL_BINDING_CALL* eglBindTexImageProc)(EGLDisplay dpy,
                                                          EGLSurface surface,
@@ -293,6 +295,8 @@ typedef EGLBoolean(GL_BINDING_CALL* eglQuerySurfacePointerANGLEProc)(
 typedef void(GL_BINDING_CALL* eglReacquireHighPowerGPUANGLEProc)(
     EGLDisplay dpy,
     EGLContext ctx);
+typedef void(GL_BINDING_CALL* eglReleaseExternalContextANGLEProc)(
+    EGLDisplay dpy);
 typedef void(GL_BINDING_CALL* eglReleaseHighPowerGPUANGLEProc)(EGLDisplay dpy,
                                                                EGLContext ctx);
 typedef EGLBoolean(GL_BINDING_CALL* eglReleaseTexImageProc)(EGLDisplay dpy,
@@ -443,6 +447,7 @@ struct GL_EXPORT DisplayExtensionsEGL {
 };
 
 struct ProcsEGL {
+  eglAcquireExternalContextANGLEProc eglAcquireExternalContextANGLEFn;
   eglBindAPIProc eglBindAPIFn;
   eglBindTexImageProc eglBindTexImageFn;
   eglChooseConfigProc eglChooseConfigFn;
@@ -520,6 +525,7 @@ struct ProcsEGL {
   eglQuerySurfaceProc eglQuerySurfaceFn;
   eglQuerySurfacePointerANGLEProc eglQuerySurfacePointerANGLEFn;
   eglReacquireHighPowerGPUANGLEProc eglReacquireHighPowerGPUANGLEFn;
+  eglReleaseExternalContextANGLEProc eglReleaseExternalContextANGLEFn;
   eglReleaseHighPowerGPUANGLEProc eglReleaseHighPowerGPUANGLEFn;
   eglReleaseTexImageProc eglReleaseTexImageFn;
   eglReleaseThreadProc eglReleaseThreadFn;
@@ -552,6 +558,7 @@ class GL_EXPORT EGLApi {
 
   virtual void SetDisabledExtensions(const std::string& disabled_extensions) {}
 
+  virtual void eglAcquireExternalContextANGLEFn(EGLDisplay dpy) = 0;
   virtual EGLBoolean eglBindAPIFn(EGLenum api) = 0;
   virtual EGLBoolean eglBindTexImageFn(EGLDisplay dpy,
                                        EGLSurface surface,
@@ -791,6 +798,7 @@ class GL_EXPORT EGLApi {
                                                    void** value) = 0;
   virtual void eglReacquireHighPowerGPUANGLEFn(EGLDisplay dpy,
                                                EGLContext ctx) = 0;
+  virtual void eglReleaseExternalContextANGLEFn(EGLDisplay dpy) = 0;
   virtual void eglReleaseHighPowerGPUANGLEFn(EGLDisplay dpy,
                                              EGLContext ctx) = 0;
   virtual EGLBoolean eglReleaseTexImageFn(EGLDisplay dpy,
@@ -843,6 +851,8 @@ class GL_EXPORT EGLApi {
 
 }  // namespace gl
 
+#define eglAcquireExternalContextANGLE \
+  ::gl::g_current_egl_context->eglAcquireExternalContextANGLEFn
 #define eglBindAPI ::gl::g_current_egl_context->eglBindAPIFn
 #define eglBindTexImage ::gl::g_current_egl_context->eglBindTexImageFn
 #define eglChooseConfig ::gl::g_current_egl_context->eglChooseConfigFn
@@ -948,6 +958,8 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglQuerySurfacePointerANGLEFn
 #define eglReacquireHighPowerGPUANGLE \
   ::gl::g_current_egl_context->eglReacquireHighPowerGPUANGLEFn
+#define eglReleaseExternalContextANGLE \
+  ::gl::g_current_egl_context->eglReleaseExternalContextANGLEFn
 #define eglReleaseHighPowerGPUANGLE \
   ::gl::g_current_egl_context->eglReleaseHighPowerGPUANGLEFn
 #define eglReleaseTexImage ::gl::g_current_egl_context->eglReleaseTexImageFn

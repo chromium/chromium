@@ -62,18 +62,48 @@ BASE_FEATURE(kWebViewUseOutputSurfaceClipRect,
              "WebViewUseOutputSurfaceClipRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-class ScopedCurrentContext {
+class ScopedAcquireExternalContext {
  public:
-  explicit ScopedCurrentContext(gpu::SharedContextState* state,
-                                gl::GLSurface* surface)
-      : state_(state), surface_(surface) {
-    state_->MakeCurrent(surface_);
+  ScopedAcquireExternalContext(gpu::SharedContextState* state,
+                               gl::GLSurface* surface,
+                               bool is_angle)
+      : state_(state), surface_(surface), is_angle_(is_angle) {
+    if (is_angle_) {
+      // When using ANGLE, need to make sure ANGLE's internals are in sync
+      // with the external context.
+      base::TimeTicks start_time = base::TimeTicks::Now();
+
+      eglAcquireExternalContextANGLE(state_->display()->GetDisplay());
+
+      auto delta = base::TimeTicks::Now() - start_time;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Android.WebView.Gfx.AcquireExternalContextANGLEMicroseconds", delta,
+          base::Microseconds(1), base::Seconds(1), 100);
+    } else {
+      // When not using ANGLE, fake context and surface are used, so the
+      // MakeCurrent calls are cheap.
+      state_->MakeCurrent(surface_);
+    }
   }
-  ~ScopedCurrentContext() { state_->ReleaseCurrent(surface_); }
+  ~ScopedAcquireExternalContext() {
+    if (is_angle_) {
+      base::TimeTicks start_time = base::TimeTicks::Now();
+
+      eglReleaseExternalContextANGLE(state_->display()->GetDisplay());
+
+      auto delta = base::TimeTicks::Now() - start_time;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Android.WebView.Gfx.ReleaseExternalContextANGLEMicroseconds", delta,
+          base::Microseconds(1), base::Seconds(1), 100);
+    } else {
+      state_->ReleaseCurrent(surface_);
+    }
+  }
 
  private:
   const raw_ptr<gpu::SharedContextState> state_;
   raw_ptr<gl::GLSurface> surface_;
+  const bool is_angle_;
 };
 
 void MoveCopyRequests(CopyOutputRequestQueue* from,
@@ -566,35 +596,16 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
-  base::TimeTicks make_context_current_start_time = base::TimeTicks::Now();
+  const bool is_angle =
+      !IsUsingVulkan() && gl::GLSurfaceEGL::GetGLDisplayEGL()
+                              ->IsANGLEExternalContextAndSurfaceSupported();
 
-  // Ensure that the context is current and that it is released before
-  // returning. When using ANGLE, the former is not guaranteed to be true and
-  // the latter is required for the external ANGLE context. For non-ANGLE case,
-  // fake context and surface are used, so releasing current context should be
-  // very cheap.
-  ScopedCurrentContext scoped_context(
+  // Ensure that the context is synced from external and synced back before
+  // returning. This is only necessary when using ANGLE to keep its internals
+  // synced with the external context
+  ScopedAcquireExternalContext scoped_acquire(
       output_surface_provider_.shared_context_state().get(),
-      output_surface_provider_.gl_surface().get());
-
-  static bool first_make_context_current = true;
-  if (!IsUsingVulkan() && gl::GLSurfaceEGL::GetGLDisplayEGL()
-                              ->IsANGLEExternalContextAndSurfaceSupported()) {
-    auto delta = base::TimeTicks::Now() - make_context_current_start_time;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Android.WebView.Gfx.MakeANGLEContextCurrentMicroseconds", delta,
-        base::Microseconds(1), base::Seconds(1), 100);
-    if (first_make_context_current) {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Android.WebView.Gfx.InitialMakeANGLEContextCurrentMicroseconds",
-          delta, base::Microseconds(1), base::Seconds(1), 100);
-      first_make_context_current = false;
-    } else {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Android.WebView.Gfx.NonInitialMakeANGLEContextCurrentMicroseconds",
-          delta, base::Microseconds(1), base::Seconds(1), 100);
-    }
-  }
+      output_surface_provider_.gl_surface().get(), is_angle);
 
   viz::FrameTimingDetailsMap timing_details;
 

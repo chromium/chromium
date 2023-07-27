@@ -333,10 +333,6 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
       context_attributes.push_back(EGL_EXTERNAL_CONTEXT_ANGLE);
       context_attributes.push_back(EGL_TRUE);
     }
-    if (attribs.angle_restore_external_context_state) {
-      context_attributes.push_back(EGL_EXTERNAL_CONTEXT_SAVE_STATE_ANGLE);
-      context_attributes.push_back(EGL_TRUE);
-    }
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_context_virtualization) {
