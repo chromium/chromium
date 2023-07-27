@@ -485,8 +485,10 @@ void PredictionManager::OnModelsFetched(
   }
   SetLastModelFetchSuccessTime(clock_->Now());
 
-  if ((*get_models_response_data)->models_size() > 0) {
-    UpdatePredictionModels((*get_models_response_data)->models());
+  if ((*get_models_response_data)->models_size() > 0 ||
+      models_request_info.size() > 0) {
+    UpdatePredictionModels(models_request_info,
+                           (*get_models_response_data)->models());
   }
 
   fetch_timer_.Stop();
@@ -595,6 +597,7 @@ void PredictionManager::MaybeDownloadOrUpdatePredictionModel(
 }
 
 void PredictionManager::UpdatePredictionModels(
+    const std::vector<proto::ModelInfo>& models_request_info,
     const google::protobuf::RepeatedPtrField<proto::PredictionModel>&
         prediction_models) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -607,6 +610,7 @@ void PredictionManager::UpdatePredictionModels(
       StoreUpdateData::CreatePredictionModelStoreUpdateData(
           clock_->Now() + features::StoredModelsValidDuration());
   bool has_models_to_update = false;
+  std::set<proto::OptimizationTarget> received_optimization_targets;
   for (const auto& model : prediction_models) {
     if (!model.has_model()) {
       // We already have this updated model, so don't update in store.
@@ -615,6 +619,7 @@ void PredictionManager::UpdatePredictionModels(
     DCHECK(!model.model().download_url().empty());
     UpdateModelMetadata(model);
     auto optimization_target = model.model_info().optimization_target();
+    received_optimization_targets.emplace(optimization_target);
     if (ShouldDownloadNewModel(model)) {
       StartModelDownload(optimization_target,
                          GURL(model.model().download_url()));
@@ -649,6 +654,15 @@ void PredictionManager::UpdatePredictionModels(
           << "Model Download Not Required for target: " << optimization_target
           << "\nNew Version: "
           << base::NumberToString(model.model_info().version());
+    }
+  }
+
+  for (const auto& model_info : models_request_info) {
+    if (received_optimization_targets.find(model_info.optimization_target()) ==
+        received_optimization_targets.end()) {
+      RemoveModelFromStore(
+          model_info.optimization_target(),
+          PredictionModelStoreModelRemovalReason::kNoModelInGetModelsResponse);
     }
   }
 
@@ -924,16 +938,29 @@ void PredictionManager::OnProcessLoadedModel(
                              model.model_info().version());
     return;
   }
+  RemoveModelFromStore(
+      model.model_info().optimization_target(),
+      PredictionModelStoreModelRemovalReason::kModelLoadFailed);
+}
+
+void PredictionManager::RemoveModelFromStore(
+    proto::OptimizationTarget optimization_target,
+    PredictionModelStoreModelRemovalReason model_removal_reason) {
+  if (features::IsInstallWideModelStoreEnabled()) {
+    prediction_model_store_->RemoveModel(optimization_target, model_cache_key_,
+                                         model_removal_reason);
+    return;
+  }
 
   // Remove model from store if it exists.
   OptimizationGuideStore::EntryKey model_entry_key;
   if (model_and_features_store_ &&
       model_and_features_store_->FindPredictionModelEntryKey(
-          model.model_info().optimization_target(), &model_entry_key)) {
-    LOCAL_HISTOGRAM_BOOLEAN("OptimizationGuide.PredictionModelRemoved." +
-                                GetStringNameForOptimizationTarget(
-                                    model.model_info().optimization_target()),
-                            true);
+          optimization_target, &model_entry_key)) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "OptimizationGuide.PredictionModelRemoved." +
+            GetStringNameForOptimizationTarget(optimization_target),
+        true);
     model_and_features_store_->RemovePredictionModelFromEntryKey(
         model_entry_key);
   }

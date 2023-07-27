@@ -79190,6 +79190,10 @@ Called by update_net_trust_anchors.py.-->
     Model file path verification failed on a model update.
   </int>
   <int value="6" label="ModelVersionInvalid">Model version is invalid.</int>
+  <int value="7" label="NoModelInGetModelsResponse">
+    Remote optimization guide service returned no model in the
+    GetModelsResponse.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideProcessHintsResult">

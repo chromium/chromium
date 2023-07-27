@@ -149,10 +149,15 @@ class PredictionManager : public PredictionModelDownloadObserver {
       download::BackgroundDownloadService* background_download_service);
 
  protected:
-  // Process |prediction_models| to be stored in the in memory optimization
+  // Process `prediction_models` to be stored in the in memory optimization
   // target prediction model map for immediate use and asynchronously write the
   // models to the model and features store to be persisted.
+  // `models_request_info` is the list of models the fetch request was made
+  // for, and `prediction_models` is the models received in response. Any models
+  // missing in the response will be deleted from the store, since the remote
+  // optimization guide service has no models for them.
   void UpdatePredictionModels(
+      const std::vector<proto::ModelInfo>& models_request_info,
       const google::protobuf::RepeatedPtrField<proto::PredictionModel>&
           prediction_models);
 
@@ -214,6 +219,12 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // Process loaded |model| into memory. Return true if a prediction
   // model object was created and successfully stored, otherwise false.
   bool ProcessAndStoreLoadedModel(const proto::PredictionModel& model);
+
+  // Removes the model for `optimization_target` from store, for the
+  // `model_removal_reason`.
+  void RemoveModelFromStore(
+      proto::OptimizationTarget optimization_target,
+      PredictionModelStoreModelRemovalReason model_removal_reason);
 
   // Return whether the model stored in memory for |optimization_target| should
   // be updated based on what's currently stored and |new_version|.

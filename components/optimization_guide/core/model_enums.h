@@ -69,9 +69,12 @@ enum class PredictionModelStoreModelRemovalReason {
   kModelUpdateFilePathVerifyFailed = 5,
   // Model version is invalid.
   kModelVersionInvalid = 6,
+  // Remote optimization guide service returned no model in the
+  // GetModelsResponse.
+  kNoModelInGetModelsResponse = 7,
 
   // Add new values above this line.
-  kMaxValue = kModelVersionInvalid,
+  kMaxValue = kNoModelInGetModelsResponse,
 };
 
 }  // namespace optimization_guide

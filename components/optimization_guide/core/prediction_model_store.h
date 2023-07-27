@@ -102,6 +102,14 @@ class PredictionModelStore {
       const proto::ModelCacheKey& client_model_cache_key,
       const proto::ModelCacheKey& server_model_cache_key);
 
+  // Removes the model represented by |optimization_target| and
+  // |model_cache_key| from the store if it exists. The model metadata will be
+  // removed immediately while the model directories will be slated for removal
+  // at next startup, by CleanUpOldModelFiles.
+  void RemoveModel(proto::OptimizationTarget optimization_target,
+                   const proto::ModelCacheKey& model_cache_key,
+                   PredictionModelStoreModelRemovalReason model_removal_reason);
+
   // Allows tests to reset the store for subsequent tests since the store is a
   // singleton.
   void ResetForTesting();
@@ -129,14 +137,6 @@ class PredictionModelStore {
                              const proto::ModelCacheKey& model_cache_key,
                              base::OnceClosure callback,
                              bool model_paths_exist);
-
-  // Removes the model represented by |optimization_target| and
-  // |model_cache_key| from the store if it exists. The model metadata will be
-  // removed immediately while the model directories will be slated for removal
-  // at next startup, by CleanUpOldModelFiles.
-  void RemoveModel(proto::OptimizationTarget optimization_target,
-                   const proto::ModelCacheKey& model_cache_key,
-                   PredictionModelStoreModelRemovalReason model_removal_reason);
 
   // Removes all models that are considered inactive, such as expired models,
   // models unused for a long time. When models' |keep_beyond_valid_duration| is
