@@ -60,9 +60,7 @@ DawnD3DImageRepresentation::DawnD3DImageRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     const wgpu::Device& device)
-    : DawnImageRepresentation(manager, backing, tracker),
-      device_(device),
-      dawn_procs_(dawn::native::GetProcs()) {
+    : DawnImageRepresentation(manager, backing, tracker), device_(device) {
   DCHECK(device_);
 }
 

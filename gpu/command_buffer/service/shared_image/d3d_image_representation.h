@@ -14,12 +14,6 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/buildflags.h"
 
-// Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
-// ui/gl/buildflags.h
-#if BUILDFLAG(USE_DAWN)
-#include <dawn/native/D3D12Backend.h>
-#endif  // BUILDFLAG(USE_DAWN)
-
 namespace gpu {
 
 // Representation of a D3DImageBacking as a GL TexturePassthrough.
@@ -69,10 +63,6 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
  private:
   const wgpu::Device device_;
   wgpu::Texture texture_;
-
-  // TODO(cwallez@chromium.org): Load procs only once when the factory is
-  // created and pass a pointer to them around?
-  DawnProcTable dawn_procs_;
 };
 #endif  // BUILDFLAG(USE_DAWN)
 
