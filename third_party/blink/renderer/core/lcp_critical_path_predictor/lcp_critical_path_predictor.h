@@ -34,6 +34,10 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   // Member functions invoked in LCPP hint consumption path (read path):
 
+  // Checks if `this` has some hint data available for the page load.
+  // Meant to be used as preconditions on metrics.
+  bool HasAnyHintData() const;
+
   void set_lcp_element_locators(Vector<ElementLocator> locators);
 
   const Vector<ElementLocator>& lcp_element_locators() {

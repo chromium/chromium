@@ -491,6 +491,7 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   // Note: The `priority` set here may be overridden by the logic below,
   //       while that is not the case as of July 2023.
   if (is_potentially_lcp_element) {
+    ++potentially_lcp_resource_priority_boosts_;
     priority = ResourceLoadPriority::kVeryHigh;
   }
 
@@ -2872,6 +2873,15 @@ void ResourceFetcher::OnResourceCacheContainsFinished(
       base::StrCat({"Blink.MemoryCache.Remote.", visibility, lifecycle,
                     ".IPCRecvDelay"}),
       recv_delay);
+}
+
+void ResourceFetcher::RecordLCPPSubresourceMetrics() {
+  if (!context_->DoesLCPPHaveAnyHintData()) {
+    return;
+  }
+
+  base::UmaHistogramCounts100("Blink.LCPP.PotentiallyLCPResourcePriorityBoosts",
+                              potentially_lcp_resource_priority_boosts_);
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

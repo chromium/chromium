@@ -113,6 +113,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   bool IsPrerendering() const override;
 
+  bool DoesLCPPHaveAnyHintData() override;
+
   // Exposed for testing.
   void ModifyRequestForCSP(ResourceRequest&);
   void AddClientHintsIfNecessary(const absl::optional<float> resource_width,

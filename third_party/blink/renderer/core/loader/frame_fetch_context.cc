@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -526,6 +527,18 @@ bool FrameFetchContext::IsPrerendering() const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->is_prerendering;
   return document_->IsPrerendering();
+}
+
+bool FrameFetchContext::DoesLCPPHaveAnyHintData() {
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return false;
+  }
+
+  LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP();
+  if (!lcpp) {
+    return false;
+  }
+  return lcpp->HasAnyHintData();
 }
 
 void FrameFetchContext::SetFirstPartyCookie(ResourceRequest& request) {

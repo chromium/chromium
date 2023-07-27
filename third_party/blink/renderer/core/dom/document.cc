@@ -3905,6 +3905,7 @@ bool Document::CheckCompletedInternal() {
 
   DCHECK(fetcher_);
   fetcher_->ScheduleWarnUnusedPreloads();
+  fetcher_->RecordLCPPSubresourceMetrics();
 
   // The readystatechanged or load event may have disconnected this frame.
   if (!GetFrame() || !GetFrame()->IsAttached())

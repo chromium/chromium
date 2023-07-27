@@ -362,6 +362,8 @@ class PLATFORM_EXPORT ResourceFetcher
   void SetResourceCache(
       mojo::PendingRemote<mojom::blink::ResourceCache> remote);
 
+  void RecordLCPPSubresourceMetrics();
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {
@@ -651,6 +653,10 @@ class PLATFORM_EXPORT ResourceFetcher
 
   // Area (in pixels) below which an image is considered "small"
   uint32_t small_image_max_size_ = 0;
+
+  // Number of images that have had their priority boosted based on LCPP
+  // signals.
+  uint32_t potentially_lcp_resource_priority_boosts_ = 0;
 };
 
 class ResourceCacheValidationSuppressor {
