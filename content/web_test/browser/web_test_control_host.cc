@@ -263,7 +263,6 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->enable_scroll_animator =
       !command_line.HasSwitch(switches::kDisableSmoothScrolling);
   prefs->threaded_scrolling_enabled =
-      command_line.HasSwitch(switches::kEnableThreadedCompositing) &&
       !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
   prefs->minimum_logical_font_size = 9;
   prefs->accelerated_2d_canvas_enabled =
