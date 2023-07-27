@@ -87,6 +87,17 @@ constexpr char kPointingStickSettingSensitivity[] = "sensitivity";
 constexpr char kPointingStickSettingSwapRight[] = "swap_right";
 constexpr char kPointingStickSettingAcceleration[] = "acceleration";
 
+// Button Remapping dictionary keys.
+constexpr char kButtonRemappings[] = "button_remappings";
+constexpr char kButtonRemappingName[] = "name";
+constexpr char kButtonRemappingCustomizableButton[] = "customizable_button";
+constexpr char kButtonRemappingKeyboardCode[] = "vkey";
+constexpr char kButtonRemappingAction[] = "action";
+constexpr char kButtonRemappingKeyEvent[] = "key_event";
+constexpr char kButtonRemappingDomCode[] = "dom_code";
+constexpr char kButtonRemappingDomKey[] = "dom_key";
+constexpr char kButtonRemappingModifiers[] = "modifiers";
+
 }  // namespace ash::prefs
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_PREF_NAMES_H_

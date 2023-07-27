@@ -84,6 +84,9 @@ ASH_EXPORT const base::Value::Dict* GetLoginScreenSettingsDict(
     AccountId account_id,
     const std::string& pref_name);
 
+ASH_EXPORT base::Value::Dict ConvertButtonRemappingToDict(
+    const mojom::ButtonRemapping& remapping);
+
 ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
 
 }  // namespace ash

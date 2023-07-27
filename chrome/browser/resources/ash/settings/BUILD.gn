@@ -436,6 +436,8 @@ build_webui("build") {
 
   mojo_files_deps = [
     ":rename_personalization_search_mojom",
+    "//ash/public/mojom:accelerator_actions_ts__generator",
+    "//ash/public/mojom:accelerator_keys_ts__generator",
     "//ash/public/mojom:input_device_settings_ts__generator",
     "//chrome/browser/ui/webui/settings/ash/files_page/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/settings/ash/input_device_settings:mojom_ts__generator",
@@ -447,6 +449,8 @@ build_webui("build") {
     "//ui/events/ash/mojom:mojom_ts__generator",
   ]
   mojo_files = [
+    "$root_gen_dir/ash/public/mojom/accelerator_actions.mojom-webui.ts",
+    "$root_gen_dir/ash/public/mojom/accelerator_keys.mojom-webui.ts",
     "$root_gen_dir/ash/public/mojom/input_device_settings.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom-webui.ts",

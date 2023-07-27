@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/export_template.h"
 #include "base/strings/strcat.h"
@@ -136,6 +137,45 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
 
   return kKeyboardsPretendingToBeMice.contains(
       {device.vendor_id, device.product_id});
+}
+
+base::Value::Dict ConvertButtonRemappingToDict(
+    const mojom::ButtonRemapping& remapping) {
+  base::Value::Dict dict;
+
+  dict.Set(prefs::kButtonRemappingName, remapping.name);
+  if (remapping.button->is_customizable_button()) {
+    dict.Set(prefs::kButtonRemappingCustomizableButton,
+             static_cast<int>(remapping.button->get_customizable_button()));
+  } else if (remapping.button->is_vkey()) {
+    dict.Set(prefs::kButtonRemappingKeyboardCode,
+             static_cast<int>(remapping.button->get_vkey()));
+  }
+
+  if (!remapping.remapping_action) {
+    return dict;
+  }
+  if (remapping.remapping_action->is_key_event()) {
+    base::Value::Dict key_event;
+    key_event.Set(prefs::kButtonRemappingDomCode,
+                  static_cast<int>(
+                      remapping.remapping_action->get_key_event()->dom_code));
+    key_event.Set(
+        prefs::kButtonRemappingDomKey,
+        static_cast<int>(remapping.remapping_action->get_key_event()->dom_key));
+    key_event.Set(prefs::kButtonRemappingModifiers,
+                  static_cast<int>(
+                      remapping.remapping_action->get_key_event()->modifiers));
+    key_event.Set(
+        prefs::kButtonRemappingKeyboardCode,
+        static_cast<int>(remapping.remapping_action->get_key_event()->vkey));
+    dict.Set(prefs::kButtonRemappingKeyEvent, std::move(key_event));
+  } else if (remapping.remapping_action->is_action()) {
+    dict.Set(prefs::kButtonRemappingAction,
+             static_cast<int>(remapping.remapping_action->get_action()));
+  }
+
+  return dict;
 }
 
 }  // namespace ash
