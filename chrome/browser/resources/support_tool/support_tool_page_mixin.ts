@@ -7,6 +7,7 @@
  * pages.
  */
 
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -14,7 +15,9 @@ type Constructor<T> = new (...args: any[]) => T;
 export const SupportToolPageMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<SupportToolPageMixinInterface> => {
-      class SupportToolPageMixin extends superClass implements
+      const superClassBase = I18nMixin(superClass);
+
+      class SupportToolPageMixin extends superClassBase implements
           SupportToolPageMixinInterface {
         $$<E extends Element = Element>(query: string) {
           return this.shadowRoot!.querySelector<E>(query);
@@ -30,7 +33,7 @@ export const SupportToolPageMixin = dedupingMixin(
       return SupportToolPageMixin;
     });
 
-export interface SupportToolPageMixinInterface {
+export interface SupportToolPageMixinInterface extends I18nMixinInterface {
   $$<E extends Element = Element>(query: string): E|null;
 
   ensureFocusOnPageHeader(): void;

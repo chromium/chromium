@@ -26,13 +26,13 @@ found in the LICENSE file.
     <data-collectors id="dataCollectors"
         page-index="[[supportToolPageIndex_.DATA_COLLECTOR_SELECTION]]">
     </data-collectors>
-    <spinner-page id="spinnerPage"  page-title="Collecting diagnostic data"
+    <spinner-page id="spinnerPage"  page-title="$i18n{dataCollectionSpinner}"
         page-index="[[supportToolPageIndex_.SPINNER]]">
     </spinner-page>
     <pii-selection id="piiSelection"
         page-index="[[supportToolPageIndex_.PII_SELECTION]]">
     </pii-selection>
-    <spinner-page id="exportSpinner" page-title="Exporting diagnostic data"
+    <spinner-page id="exportSpinner" page-title="$i18n{dataExportSpinner}"
         page-index="[[supportToolPageIndex_.EXPORT_SPINNER]]">
     </spinner-page>
     <data-export-done id="dataExportDone"
@@ -44,17 +44,17 @@ found in the LICENSE file.
     hidden$="[[shouldHideContinueButtonContainer_(selectedPage_)]]">
   <cr-button id="backButton" hidden$="[[shouldHideBackButton_(selectedPage_)]]"
       on-click="onBackClick_">
-    Back
+    $i18n{backButtonText}
   </cr-button>
   <cr-button id="continueButton" class="action-button"
       on-click="onContinueClick_">
-    Continue
+    $i18n{continueButtonText}
   </cr-button>
 </div>
 <cr-toast id="errorMessageToast" duration="0" tabindex="0"
     aria-labelledby="error-message">
   <span id="error-message">[[errorMessage_]]</span>
   <cr-button on-click="onErrorMessageToastCloseClicked_">
-    Dismiss
+    $i18n{dismissButtonText}
   </cr-button>
 </cr-toast>

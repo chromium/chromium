@@ -311,6 +311,11 @@ are declared in tools/grit/grit_rule.gni.
         <part file="shared_settings_strings.grdp"/>
       </if>
 
+      <!-- Support Tool strings -->
+      <if expr="not is_android">
+        <part file="support_tool_strings.grdp" />
+      </if>
+
       <!-- MD Extensions specific strings -->
       <if expr="enable_extensions">
         <part file="extensions_strings.grdp" />

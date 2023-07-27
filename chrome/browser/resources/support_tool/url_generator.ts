@@ -12,14 +12,12 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, SupportTokenGenerationResult} from './browser_proxy.js';
 import {getTemplate} from './url_generator.html.js';
-
-const LINK_COPIED_TOAST: string = 'Link copied';
-const TOKEN_COPIED_TOAST: string = 'Token copied';
 
 export interface UrlGeneratorElement {
   $: {
@@ -28,7 +26,9 @@ export interface UrlGeneratorElement {
   };
 }
 
-export class UrlGeneratorElement extends PolymerElement {
+const UrlGeneratorElementBase = I18nMixin(PolymerElement);
+
+export class UrlGeneratorElement extends UrlGeneratorElementBase {
   static get is() {
     return 'url-generator';
   }
@@ -111,7 +111,7 @@ export class UrlGeneratorElement extends PolymerElement {
       result: SupportTokenGenerationResult, toastMessage: string) {
     if (result.success) {
       this.generatedResult_ = result.token;
-      navigator.clipboard.writeText(this.generatedResult_.toString());
+      navigator.clipboard.writeText(this.generatedResult_);
       this.copiedToastMessage_ = toastMessage;
       this.$.copyToast.show();
       this.$.copyToast.focus();
@@ -121,11 +121,11 @@ export class UrlGeneratorElement extends PolymerElement {
   }
 
   private onUrlGenerationResult_(result: SupportTokenGenerationResult) {
-    this.showGenerationResult(result, LINK_COPIED_TOAST);
+    this.showGenerationResult(result, this.i18n('linkCopied'));
   }
 
   private onTokenGenerationResult_(result: SupportTokenGenerationResult) {
-    this.showGenerationResult(result, TOKEN_COPIED_TOAST);
+    this.showGenerationResult(result, this.i18n('tokenCopied'));
   }
 
   private onCopyUrlClick_() {

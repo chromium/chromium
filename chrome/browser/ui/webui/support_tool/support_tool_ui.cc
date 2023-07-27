@@ -32,6 +32,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/support_tool_resources.h"
 #include "chrome/grit/support_tool_resources_map.h"
 #include "components/feedback/redaction_tool/pii_types.h"
@@ -43,6 +45,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
@@ -62,6 +65,8 @@ void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
   source->AddBoolean(
       "enableCopyTokenButton",
       base::FeatureList::IsEnabled(features::kSupportToolCopyTokenButton));
+
+  source->AddLocalizedStrings(SupportToolUI::GetLocalizedStrings());
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kSupportToolResources, kSupportToolResourcesSize),
@@ -287,11 +292,10 @@ void SupportToolMessageHandler::HandleStartDataCollection(
   // Send error message to UI if there's no selected data collectors to include.
   if (included_data_collectors.empty()) {
     ResolveJavascriptCallback(
-        callback_id,
-        GetStartDataCollectionResult(
-            /*success=*/false,
-            /*error_message=*/"No data collector selected. Please select at "
-                              "least one data collector."));
+        callback_id, GetStartDataCollectionResult(
+                         /*success=*/false,
+                         /*error_message=*/l10n_util::GetStringUTF16(
+                             IDS_SUPPORT_TOOL_SELECT_DATA_COLLECTOR_ERROR)));
     return;
   }
   this->handler_ =
@@ -305,7 +309,7 @@ void SupportToolMessageHandler::HandleStartDataCollection(
                      weak_ptr_factory_.GetWeakPtr()));
   ResolveJavascriptCallback(
       callback_id, GetStartDataCollectionResult(
-                       /*success=*/true, /*error_message=*/std::string()));
+                       /*success=*/true, /*error_message=*/std::u16string()));
 }
 
 void SupportToolMessageHandler::OnDataCollectionDone(
@@ -452,6 +456,100 @@ SupportToolUI::SupportToolUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 
 SupportToolUI::~SupportToolUI() = default;
 
+// static
+base::Value::Dict SupportToolUI::GetLocalizedStrings() {
+  base::Value::Dict localized_strings;
+  localized_strings.Set(
+      "issueDetailsPageTitle",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_ISSUE_DETAILS_PAGE_TITLE));
+  localized_strings.Set(
+      "dataSelectionPageTitle",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DATA_SELECTION_PAGE_TITLE));
+  localized_strings.Set(
+      "reviewPiiPageTitle",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_REVIEW_PII_PAGE_TITLE));
+  localized_strings.Set(
+      "dataExportDonePageTitle",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DATA_EXPORT_DONE_PAGE_TITLE));
+  localized_strings.Set(
+      "dataExportedText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DATA_EXPORTED_TEXT));
+  localized_strings.Set("supportCaseId", l10n_util::GetStringUTF16(
+                                             IDS_SUPPORT_TOOL_SUPPORT_CASE_ID));
+  localized_strings.Set("email",
+                        l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_EMAIL));
+  localized_strings.Set(
+      "describeIssueText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DESCRIBE_ISSUE_TEXT));
+  localized_strings.Set("issueDescriptionPlaceholder",
+                        l10n_util::GetStringUTF16(
+                            IDS_SUPPORT_TOOL_ISSUE_DESCRIPTION_PLACEHOLDER));
+  localized_strings.Set(
+      "piiWarningText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_PII_WARNING_TEXT));
+  localized_strings.Set(
+      "includeAllPiiRadioButton",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_INCLUDE_ALL_PII_RADIO_BUTTON));
+  localized_strings.Set(
+      "removePiiRadioButton",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_REMOVE_PII_RADIO_BUTTON));
+  localized_strings.Set(
+      "piiRemovalDisclaimer",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_PII_REMOVAL_DISCLAIMER));
+  localized_strings.Set("manuallySelectPiiRadioButton",
+                        l10n_util::GetStringUTF16(
+                            IDS_SUPPORT_TOOL_MANUALLY_SELECT_PII_RADIO_BUTTON));
+  localized_strings.Set(
+      "cancelButtonText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_CANCEL_BUTTON_TEXT));
+  localized_strings.Set(
+      "exportButtonText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_EXPORT_BUTTON_TEXT));
+  localized_strings.Set(
+      "backButtonText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_BACK_BUTTON_TEXT));
+  localized_strings.Set(
+      "dismissButtonText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DISMISS_BUTTON_TEXT));
+  localized_strings.Set(
+      "continueButtonText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_CONTINUE_BUTTON_TEXT));
+  localized_strings.Set(
+      "dataCollectionSpinner",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DATA_COLLECTION_SPINNER));
+  localized_strings.Set(
+      "dataExportSpinner",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DATA_EXPORT_SPINNER));
+  localized_strings.Set("supportToolTabTitle",
+                        l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_TAB_TITLE));
+  localized_strings.Set(
+      "urlGeneratorPageTitle",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_URL_GENERATOR_PAGE_TITLE));
+  localized_strings.Set(
+      "dataCollectorListTitle",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DATA_COLLECTOR_LIST_TITLE));
+  localized_strings.Set(
+      "getLinkText", l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_GET_LINK_TEXT));
+  localized_strings.Set(
+      "copyLinkDescription",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_COPY_LINK_DESCRIPTION));
+  localized_strings.Set(
+      "copyLinkButtonText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_COPY_LINK_BUTTON_TEXT));
+  localized_strings.Set(
+      "copyTokenButtonText",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_COPY_TOKEN_BUTTON_TEXT));
+  localized_strings.Set("linkCopied", l10n_util::GetStringUTF16(
+                                          IDS_SUPPORT_TOOL_LINK_COPIED_TEXT));
+  localized_strings.Set("tokenCopied", l10n_util::GetStringUTF16(
+                                           IDS_SUPPORT_TOOL_TOKEN_COPIED_TEXT));
+  localized_strings.Set(
+      "dontIncludeEmailAddress",
+      l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DONT_INCLUDE_EMAIL));
+  return localized_strings;
+}
+
+// static
 bool SupportToolUI::IsEnabled(Profile* profile) {
   return policy::IsDeviceEnterpriseManaged() || !profile->IsGuestSession();
 }

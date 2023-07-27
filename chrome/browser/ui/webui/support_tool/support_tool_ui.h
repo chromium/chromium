@@ -18,6 +18,8 @@ class SupportToolUI : public content::WebUIController {
 
   ~SupportToolUI() override;
 
+  static base::Value::Dict GetLocalizedStrings();
+
   // Returns if Support Tool should be enabled. Support Tool is only
   // enabled in managed devices and logged-in sessions on consumer devices. It
   // won't be available in guest sessions of consumer-owned devices.

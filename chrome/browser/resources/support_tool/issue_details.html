@@ -31,12 +31,14 @@ found in the LICENSE file.
   }
 </style>
 
-<h1 tabindex="0">Step 1 of 4: Describe the issue</h1>
-<div class="support-tool-title">Support Case ID</div>
+<h1 tabindex="0">$i18n{issueDetailsPageTitle}</h1>
+<div class="support-tool-title">$i18n{supportCaseId}</div>
 <cr-input class="support-case-id" value="{{caseId_}}"
-  spellcheck="false" maxlength="20" aria-label="Support Case ID">
+  spellcheck="false" maxlength="20" aria-label="$i18n{supportCaseId}">
 </cr-input>
-<div id="email-title" class="support-tool-title" aria-hidden="true">Email</div>
+<div id="email-title" class="support-tool-title" aria-hidden="true">
+  $i18n{email}
+</div>
 <select class="md-select" value="{{selectedEmail_::change}}"
     aria-labelledby="email-title">
   <template is="dom-repeat" items="[[emails_]]">
@@ -44,9 +46,9 @@ found in the LICENSE file.
   </template>
 </select>
 <div id="description-title" class="support-tool-title" aria-hidden="true">
-  Describe the issue
+  $i18n{describeIssueText}
 </div>
 <textarea id="description" class="support-tool-text" spellcheck="true"
   value="{{issueDescription_::input}}" aria-labelledby="description-title"
-  placeholder="Provide a clear desciption of the issue and steps to reproduce the issue (if possible)">
+  placeholder="$i18n{issueDescriptionPlaceholder}">
 </textarea>

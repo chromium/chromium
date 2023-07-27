@@ -11,9 +11,12 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
@@ -21,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
@@ -46,18 +50,6 @@ const PIIMap kPIIMap = {
 const redaction::PIIType kPIITypes[] = {redaction::PIIType::kIPAddress,
                                         redaction::PIIType::kURL,
                                         redaction::PIIType::kStableIdentifier};
-
-// PII strings with the definition strings.
-const auto kPIIStringsWithDefinition = base::MakeFixedFlatMap<
-    base::StringPiece,
-    base::StringPiece>(
-    {{support_tool_ui::kIPAddress, "0.255.255.255, ::ffff:cb0c:10ea"},
-     {support_tool_ui::kURL,
-      "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x"},
-     {support_tool_ui::kStableIdentifier,
-      "123e4567-e89b-12d3-a456-426614174000, "
-      "27540283740a0897ab7c8de0f809add2bacde78f"}});
-
 }  // namespace
 
 class SupportToolUiUtilsTest : public ::testing::Test {
@@ -90,6 +82,26 @@ class SupportToolUiUtilsTest : public ::testing::Test {
     }
   }
 
+  std::string GetExpectedPIIDefinitionString(
+      const redaction::PIIType& pii_type) {
+    // PII types with the definition strings.
+    const auto kExpectedPiiTypeDefinitions =
+        base::MakeFixedFlatMap<redaction::PIIType, std::string>(
+            {{redaction::PIIType::kIPAddress,
+              l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_IP_ADDRESS)},
+             {redaction::PIIType::kURL,
+              l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_URLS)},
+             {redaction::PIIType::kStableIdentifier,
+              l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_STABLE_IDENTIDIERS)}});
+    // fixed_flat_map uses std::array<T> as the backing container, which has
+    // std::array::iterator<T> = T*, thus the iterator of the
+    // `kExpectedPiiTypeDefinitions` is a pointer.
+    auto* it = kExpectedPiiTypeDefinitions.find(pii_type);
+    EXPECT_NE(kExpectedPiiTypeDefinitions.end(), it);
+    std::string definition = it->second;
+    return definition;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -106,18 +118,19 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
     const base::Value::Dict* pii_item = detected_pii_item.GetIfDict();
     // PIIItem must be a Value::Dict.
     EXPECT_TRUE(pii_item);
+    const redaction::PIIType pii_type = static_cast<redaction::PIIType>(
+        pii_item->FindInt(support_tool_ui::kPiiItemPIITypeKey).value());
     const std::string* description =
         pii_item->FindString(support_tool_ui::kPiiItemDescriptionKey);
     // The dictionary must contain description.
     EXPECT_TRUE(description);
-    const auto* pii_string_with_definition =
-        kPIIStringsWithDefinition.find(*description);
-    // The definition string must exist in `kPIIStringsWithDefinition`.
-    EXPECT_NE(pii_string_with_definition, kPIIStringsWithDefinition.end());
+    // The definition string must equal to the expected one in
+    // `kPIIStringsWithDefinition`.
+    EXPECT_EQ(*description, GetExpectedPIIDefinitionString(pii_type));
     const std::string* pii_data =
         pii_item->FindString(support_tool_ui::kPiiItemDetectedDataKey);
     // Check the detected data.
-    EXPECT_THAT(*pii_data, StrEq(pii_string_with_definition->second));
+    EXPECT_TRUE(pii_data);
   }
 
   // Update all PII items to have their keep value as true.
