@@ -712,6 +712,12 @@ void EventRouter::Shutdown() {
     registry->RemoveObserver(this);
   }
 
+  auto* guest_os_share_path =
+      guest_os::GuestOsSharePath::GetForProfile(profile_);
+  if (guest_os_share_path) {
+    guest_os_share_path->RemoveObserver(this);
+  }
+
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile_);

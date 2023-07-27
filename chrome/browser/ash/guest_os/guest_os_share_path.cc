@@ -213,6 +213,10 @@ void GuestOsSharePath::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
 }
 
+void GuestOsSharePath::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
 void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
                                               uint32_t seneschal_server_handle,
                                               const base::FilePath& path,

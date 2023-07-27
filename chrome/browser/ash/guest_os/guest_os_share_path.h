@@ -91,6 +91,7 @@ class GuestOsSharePath : public KeyedService,
 
   // Observer receives unshare events.
   void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
 
   // Convert launch args and return paths to share with the VM, and string args
   // to pass to the app being launched. On failure, returns an error string
