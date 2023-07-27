@@ -96,9 +96,13 @@ public class CloseAllTabsDialog {
         boolean isIncognito = tabModelSelector.getCurrentModel().isIncognito();
         int incognitoCount = tabModelSelector.getModel(/*incognito=*/true).getCount();
 
-        return (isIncognito)
-                ? context.getString(R.string.close_all_tabs_dialog_message_incognito)
-                : context.getResources().getQuantityString(
-                        R.plurals.close_all_tabs_dialog_message, incognitoCount, incognitoCount);
+        if (isIncognito) {
+            return context.getString(R.string.close_all_tabs_dialog_message_incognito);
+        } else {
+            return (incognitoCount > 0) ? context.getResources().getQuantityString(
+                           R.plurals.close_all_tabs_dialog_message_with_incognito_tabs,
+                           incognitoCount, incognitoCount)
+                                        : context.getString(R.string.close_all_tabs_dialog_message);
+        }
     }
 }
