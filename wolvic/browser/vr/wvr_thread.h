@@ -32,8 +32,8 @@ class WvrThread : public base::android::JavaHandlerThread {
   base::OnceCallback<void()> initialized_callback_;
 
   // Created on GL thread.
-  std::unique_ptr<WvrManager> wvr_manager_;
   std::unique_ptr<WvrGraphicsDelegate> wvr_graphics_;
+  std::unique_ptr<WvrManager> wvr_manager_;
 };
 
 }  // namespace wolvic

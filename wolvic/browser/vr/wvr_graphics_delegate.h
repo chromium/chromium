@@ -65,8 +65,8 @@ class WvrGraphicsDelegate {
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::SurfaceTexture> webxr_surface_texture_;
 
-  gfx::Size screen_size_ = {0, 0};
-  gfx::Size webxr_surface_size_ = {0, 0};
+  gfx::Size screen_size_;
+  gfx::Size webxr_surface_size_;
 
   base::WeakPtrFactory<WvrGraphicsDelegate> weak_ptr_factory_{this};
 };
