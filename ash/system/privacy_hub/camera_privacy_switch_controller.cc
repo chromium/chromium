@@ -180,8 +180,8 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
     RemoveNotification();
   } else if (application_added) {
     if (InNotificationExtensionPeriod()) {
-      // Notification is not re-shown, but only updated in the extension period.
-      UpdateNotification();
+      // Notification is not updated. The extension period is prolonged.
+      last_active_notification_update_time_ = base::Time::Now();
     } else {
       ShowNotification();
     }
