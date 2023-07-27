@@ -35,6 +35,11 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
   mojom::ShoppingListEligibleDetailPtr detail =
       mojom::ShoppingListEligibleDetail::New();
 
+  if (!shopping_service_) {
+    std::move(callback).Run(std::move(detail));
+    return;
+  }
+
   detail->is_region_locked_feature_enabled = mojom::EligibleEntry::New(
       IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
                                    shopping_service_->country_on_startup_,
@@ -70,6 +75,9 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
 }
 
 void CommerceInternalsHandler::ResetPriceTrackingEmailPref() {
+  if (!shopping_service_) {
+    return;
+  }
   shopping_service_->pref_service_->ClearPref(kPriceEmailNotificationsEnabled);
 }
 
