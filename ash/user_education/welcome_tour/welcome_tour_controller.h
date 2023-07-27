@@ -25,6 +25,7 @@ class WelcomeTourAcceleratorHandler;
 class WelcomeTourControllerObserver;
 class WelcomeTourNotificationBlocker;
 class WelcomeTourScrim;
+class WelcomeTourWindowMinimizer;
 
 // Controller responsible for the Welcome Tour feature tutorial. Note that the
 // `WelcomeTourController` is owned by the `UserEducationController` and exists
@@ -87,6 +88,11 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // Handles accelerator actions during the Welcome Tour. Created/destroyed when
   // the Welcome Tour starts/ends.
   std::unique_ptr<WelcomeTourAcceleratorHandler> accelerator_handler_;
+
+  // Minimizes any app windows that are visible at the start of the Welcome
+  // Tour, and any that attempt to become visible during the tour. Exists only
+  // while the Welcome Tour is in progress.
+  std::unique_ptr<WelcomeTourWindowMinimizer> window_minimizer_;
 
   // The collection of observers to be notified of events.
   base::ObserverList<WelcomeTourControllerObserver> observer_list_;

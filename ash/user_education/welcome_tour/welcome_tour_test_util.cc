@@ -16,6 +16,8 @@
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
+#include "ash/wm/window_state.h"
+#include "base/test/run_until.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -127,6 +129,13 @@ const views::View* GetDialogCancelButton() {
         ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON);
   }
   return nullptr;
+}
+
+bool WaitUntilMinimized(aura::Window* window) {
+  return base::test::RunUntil([&]() {
+    auto* state = WindowState::Get(window);
+    return state && state->IsMinimized();
+  });
 }
 
 }  // namespace ash

@@ -4,37 +4,17 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_window_minimizer.h"
 
-#include "ash/shell.h"
 #include "ash/user_education/user_education_ash_test_base.h"
-#include "ash/wm/desks/desks_util.h"
+#include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
 #include "ash/wm/window_state.h"
-#include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/window_observer.h"
 
 namespace ash {
 namespace {
 
 // Aliases ---------------------------------------------------------------------
 
-using ::testing::Each;
 using ::testing::Eq;
-using ::testing::Matches;
-
-// Matchers --------------------------------------------------------------------
-
-MATCHER_P(Minimized, matcher, "") {
-  return Matches(matcher)(WindowState::Get(arg.get())->IsMinimized());
-}
-
-// Helpers ---------------------------------------------------------------------
-
-bool WaitUntilMinimized(aura::Window* window) {
-  return base::test::RunUntil([&]() {
-    auto* state = WindowState::Get(window);
-    return state && state->IsMinimized();
-  });
-}
 
 }  // namespace
 

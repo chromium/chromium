@@ -21,6 +21,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_notification_blocker.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
+#include "ash/user_education/welcome_tour/welcome_tour_window_minimizer.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -338,6 +339,7 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 
   scrim_ = std::make_unique<WelcomeTourScrim>();
   tablet_mode_observation_.Observe(TabletMode::Get());
+  window_minimizer_ = std::make_unique<WelcomeTourWindowMinimizer>();
 
   // NOTE: The accept button doesn't need to be explicitly handled because the
   // Welcome Tour will automatically proceed to the next step once the dialog is
@@ -368,6 +370,7 @@ void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
   notification_blocker_.reset();
   scrim_.reset();
   tablet_mode_observation_.Reset();
+  window_minimizer_.reset();
 
   if (completed) {
     // Attempt to launch the Explore app on successful completion of the tour.

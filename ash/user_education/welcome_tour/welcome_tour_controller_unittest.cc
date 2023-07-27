@@ -809,6 +809,27 @@ TEST_F(WelcomeTourAcceleratorHandlerRunTest, CheckActionsThatAbortTour) {
       })));
 }
 
+// Verifies that windows are minimized iff the Welcome Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, WindowMinimizer) {
+  auto window_1 = CreateAppWindow();
+
+  // Case: Before Welcome Tour.
+  EXPECT_THAT(window_1, Minimized(Eq(false)));
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(WaitUntilMinimized(window_1.get()));
+        auto window_2 = CreateAppWindow();
+        EXPECT_TRUE(WaitUntilMinimized(window_2.get()));
+      })));
+
+  // Case: After Welcome Tour.
+  EXPECT_THAT(window_1, Minimized(Eq(true)));
+  auto window_3 = CreateAppWindow();
+  EXPECT_THAT(window_3, Minimized(Eq(false)));
+}
+
 // WelcomeTourControllerTabletTest ---------------------------------------------
 
 // Base class for tests of the `WelcomeTourController` that verify the tour does
