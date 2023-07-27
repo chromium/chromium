@@ -680,10 +680,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_longPressWithDuration(kLongPressDuration)];
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
   // Verify that only Page 2 is in the Reading List.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:VisibleReadingListItem(kPage2Title)];
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
-      assertWithMatcher:grey_notNil()];
   // Sign-out and sign-in with the same account.
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
