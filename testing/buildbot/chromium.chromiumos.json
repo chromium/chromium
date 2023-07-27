@@ -1487,7 +1487,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
         "cros_img": "eve-public/R114-15410.0.0",
@@ -1507,7 +1506,6 @@
         "variant_id": "EVE_PUBLIC_LKGM"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
         "cros_img": "eve-public/R113-15393.12.0",
@@ -1527,7 +1525,6 @@
         "variant_id": "EVE_PUBLIC_DEV"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
         "cros_img": "eve-public/R112-15359.37.0",
@@ -1547,7 +1544,6 @@
         "variant_id": "EVE_PUBLIC_BETA"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
         "cros_img": "eve-public/R111-15329.59.0",
@@ -1646,7 +1642,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R114-15410.0.0",
@@ -1675,7 +1670,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R114-15410.0.0",
