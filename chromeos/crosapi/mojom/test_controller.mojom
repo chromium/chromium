@@ -174,10 +174,19 @@ struct KeyEvent {
   [MinVersion=1] int32 flags@4;
 };
 
+// Next version: 2
+// Next id: 1
+[Stable]
+struct InputMethod {
+  string xkb_layout@0;
+};
+
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 8
-// Next method id: 9
+// By default, this changes Ash to use a US keyboard layout, but this can be
+// changed with `InstallAndSwitchToInputMethod` during a test.
+// Next version: 9
+// Next method id: 10
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -242,6 +251,10 @@ interface InputMethodTestInterface {
   // Calls `ash::InputMethodAsh::DeleteSurroundingText`.
   [MinVersion=7] DeleteSurroundingText@8(uint32 length_before_selection,
                                          uint32 length_after_selection) => ();
+
+  // Installs a new input method `input_method` in Ash and switches to it.
+  [MinVersion=8] InstallAndSwitchToInputMethod@9(InputMethod input_method)
+      => ();
 };
 
 // Types of accessibility features in Ash that Lacros needs to be able

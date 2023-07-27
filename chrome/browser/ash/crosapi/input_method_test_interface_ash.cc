@@ -6,11 +6,14 @@
 
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/crosapi/cpp/input_method_test_interface_constants.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_ash.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -30,13 +33,9 @@ ash::InputMethodAsh* GetTextInputTarget() {
   return static_cast<ash::InputMethodAsh*>(handler->GetInputMethod());
 }
 
-void OverrideTextInputMethod(ash::TextInputMethod* text_input_method) {
-  ash::IMEBridge* bridge = ash::IMEBridge::Get();
-  if (!bridge) {
-    return;
-  }
-
-  bridge->SetCurrentEngineHandler(text_input_method);
+scoped_refptr<ash::input_method::InputMethodManager::State>
+GetInputMethodManagerState() {
+  return ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
 }
 
 bool HasCapability(const base::StringPiece capability) {
@@ -44,7 +43,18 @@ bool HasCapability(const base::StringPiece capability) {
          capability == kInputMethodTestCapabilityConfirmComposition ||
          capability == kInputMethodTestCapabilityAlwaysConfirmComposition ||
          capability == kInputMethodTestCapabilityDeleteSurroundingText ||
-         capability == kInputMethodTestCapabilityExtendedConfirmComposition;
+         capability == kInputMethodTestCapabilityExtendedConfirmComposition ||
+         capability == kInputMethodTestCapabilityChangeInputMethod;
+}
+
+std::string GenerateUniqueExtensionId() {
+  static int counter = 0;
+
+  // Use a static counter to generate unique extension IDs.
+  // The extension ID must be 32 characters long, so pad it out.
+  std::string extension_id = base::NumberToString(counter++);
+  extension_id.append(32 - extension_id.size(), '_');
+  return extension_id;
 }
 
 }  // namespace
@@ -119,13 +129,12 @@ void FakeTextInputMethod::KeyEventHandled(uint64_t key_event_id, bool handled) {
 InputMethodTestInterfaceAsh::InputMethodTestInterfaceAsh()
     : text_input_target_(GetTextInputTarget()) {
   DCHECK(text_input_target_);
-  OverrideTextInputMethod(&fake_text_input_method_);
+  InstallAndSwitchToInputMethod(mojom::InputMethod::New(/*xkb_layout=*/"us"),
+                                base::DoNothing());
   text_input_method_observation_.Observe(&fake_text_input_method_);
 }
 
-InputMethodTestInterfaceAsh::~InputMethodTestInterfaceAsh() {
-  OverrideTextInputMethod(nullptr);
-}
+InputMethodTestInterfaceAsh::~InputMethodTestInterfaceAsh() = default;
 
 void InputMethodTestInterfaceAsh::WaitForFocus(WaitForFocusCallback callback) {
   // If `GetTextInputClient` is not null, then it's already focused.
@@ -221,6 +230,18 @@ void InputMethodTestInterfaceAsh::DeleteSurroundingText(
   std::move(callback).Run();
 }
 
+void InputMethodTestInterfaceAsh::InstallAndSwitchToInputMethod(
+    mojom::InputMethodPtr input_method,
+    InstallAndSwitchToInputMethodCallback callback) {
+  // For testing, only allow one input method to be installed. Replace the
+  // previously installed input method with the new one.
+  installed_input_method_ = std::make_unique<ScopedInputMethodInstall>(
+      *input_method, &fake_text_input_method_);
+  GetInputMethodManagerState()->ChangeInputMethod(
+      installed_input_method_->GetInputMethodId(), /*show_message=*/false);
+  std::move(callback).Run();
+}
+
 void InputMethodTestInterfaceAsh::OnFocus() {
   focus_callbacks_.Notify();
 }
@@ -245,6 +266,40 @@ void InputMethodTestInterfaceAsh::OnSurroundingTextChanged(
 
   std::move(surrounding_text_change_callback_)
       .Run(text_utf8, selection_range_utf8);
+}
+
+InputMethodTestInterfaceAsh::ScopedInputMethodInstall::ScopedInputMethodInstall(
+    const mojom::InputMethod& input_method,
+    ash::TextInputMethod* text_input_method)
+    : extension_id_(GenerateUniqueExtensionId()) {
+  const std::string input_method_id = GetInputMethodId();
+
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
+      GetInputMethodManagerState();
+  ime_state->SetEnabledExtensionImes(std::vector<std::string>{input_method_id});
+  ime_state->AddInputMethodExtension(
+      extension_id_,
+      {ash::input_method::InputMethodDescriptor(
+          input_method_id, "", /*indicator=*/"T", input_method.xkb_layout, {},
+          /*is_login_keyboard=*/true, {}, {})},
+      text_input_method);
+}
+
+InputMethodTestInterfaceAsh::ScopedInputMethodInstall::
+    ~ScopedInputMethodInstall() {
+  GetInputMethodManagerState()->RemoveInputMethodExtension(extension_id());
+}
+
+const std::string&
+InputMethodTestInterfaceAsh::ScopedInputMethodInstall::extension_id() const {
+  return extension_id_;
+}
+
+std::string
+InputMethodTestInterfaceAsh::ScopedInputMethodInstall::GetInputMethodId()
+    const {
+  return ash::extension_ime_util::GetInputMethodID(extension_id_,
+                                                   /*engine_id=*/"test");
 }
 
 }  // namespace crosapi

@@ -35,6 +35,10 @@ inline constexpr base::StringPiece
     kInputMethodTestCapabilityExtendedConfirmComposition =
         "ExtendedConfirmComposition";
 
+COMPONENT_EXPORT(CROSAPI)
+inline constexpr base::StringPiece kInputMethodTestCapabilityChangeInputMethod =
+    "ChangeInputMethod";
+
 }  // namespace crosapi
 
 #endif  // CHROMEOS_CROSAPI_CPP_INPUT_METHOD_TEST_INTERFACE_CONSTANTS_H_
