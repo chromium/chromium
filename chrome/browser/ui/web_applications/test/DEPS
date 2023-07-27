@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "isolated_web_app_test_utils\.(h|cc)": [
+  "isolated_web_app_.*\.(h|cc)": [
     "+components/web_package",
   ],
   "system_web_app_interactive_uitest\.cc": [
