@@ -1055,6 +1055,43 @@ bool AddAutofillProfileToTable(sql::Database* db,
   return true;
 }
 
+// `MigrateToVersion113MigrateLocalAddressProfilesToNewTable()` migrates
+// profiles from one table layout to another. This function inserts the given
+// `profile` into the `GetProfileMetadataTable()` of schema version 113.
+// `AddAutofillProfileToTable()` can't be reused, since the schema can change in
+// future database versions in ways incompatible with version 113 (e.g. adding
+// a column).
+// The code was copied from `AddAutofillProfileToTable()` in version 113. Like
+// the migration logic, it shouldn't be changed.
+bool AddAutofillProfileToTableVersion113(sql::Database* db,
+                                         const AutofillProfile& profile,
+                                         const base::Time& modification_date) {
+  sql::Statement s;
+  InsertBuilder(db, s, GetProfileMetadataTable(profile.source()),
+                {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
+                 kLabel, kInitialCreatorId, kLastModifierId});
+  BindAutofillProfileToStatement(profile, modification_date, s);
+  if (!s.Run()) {
+    return false;
+  }
+  // Note that `GetStoredTypesForAutofillProfile()` might change in future
+  // versions. Due to the flexible layout of the type tokens table, this is not
+  // a problem.
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
+    InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
+                  {kGuid, kType, kValue, kVerificationStatus});
+    s.BindString(0, profile.guid());
+    s.BindInt(1, type);
+    s.BindString16(2, Truncate(profile.GetRawInfo(type)));
+    s.BindInt(3, profile.GetVerificationStatusInt(type));
+    if (!s.Run()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -3464,7 +3501,7 @@ bool AutofillTable::MigrateToVersion113MigrateLocalAddressProfilesToNewTable() {
     success = GetAutofillProfilesFromLegacyTable(&profiles);
     // Migrate profiles to the new tables. Preserve the modification dates.
     for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
-      success = success && AddAutofillProfileToTable(
+      success = success && AddAutofillProfileToTableVersion113(
                                db_, *profile, profile->modification_date());
     }
   }
