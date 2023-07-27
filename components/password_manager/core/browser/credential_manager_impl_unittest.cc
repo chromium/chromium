@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -213,19 +213,6 @@ GURL HttpURLFromHttps(const GURL& https_url) {
   GURL::Replacements rep;
   rep.SetSchemeStr(url::kHttpScheme);
   return https_url.ReplaceComponents(rep);
-}
-
-// Moves the `I`th argument to `*out` and returns `return_value`.
-//
-// `MoveArg` in base/test/gmock_move_support.h only works for functions that
-// return void. At the same time, `DoAll(MoveArg(), Return())` does not work,
-// because the first action only receives a read-only view of its arguments.
-template <size_t I = 0, typename T1, typename T2>
-auto MoveArgAndReturn(T1* out, T2&& return_value) {
-  return [out, value = std::forward<T2>(return_value)](auto&&... args) mutable {
-    *out = std::move(std::get<I>(std::tie(args...)));
-    return std::forward<T2>(value);
-  };
 }
 
 }  // namespace
