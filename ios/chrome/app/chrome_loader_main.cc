@@ -34,7 +34,7 @@ namespace {
 typedef int (*ChromeMainPtr)(int, char**);
 
 // Path to the framework containing the "ChromeMain" exported function.
-const char kFrameworkPath[] = "@rpath/Frameworks/" CHROME_MAIN_FRAMEWORK_NAME
+const char kFrameworkPath[] = "@rpath/" CHROME_MAIN_FRAMEWORK_NAME
                               ".framework/" CHROME_MAIN_FRAMEWORK_NAME;
 
 // Report an error and terminate the application.
