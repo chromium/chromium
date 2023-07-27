@@ -127,6 +127,7 @@ SigninPromoViewStyle GetTopOfFeedPromoStyle() {
     case SigninPromoViewStyleStandard:
     case SigninPromoViewStyleCompactHorizontal:
     case SigninPromoViewStyleCompactVertical:
+    case SigninPromoViewStyleOnlyButton:
       return promoStyle;
   }
   // If no compile-time error was triggered above, it likely means that the

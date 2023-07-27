@@ -290,6 +290,9 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     case SigninPromoViewStyleCompactHorizontal:
       [self updateImageWithSize:kProfileImageCompactHeightWidth];
       break;
+    case SigninPromoViewStyleOnlyButton:
+      // This style has no image.
+      NOTREACHED_NORETURN();
   }
   DCHECK_EQ(kProfileImageHeightWidth, image.size.height);
   DCHECK_EQ(kProfileImageHeightWidth, image.size.width);
@@ -340,6 +343,9 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       ]];
       break;
     }
+    case SigninPromoViewStyleOnlyButton:
+      // This style has no image.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -406,7 +412,9 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
                                             attributes:attributes];
         buttonConfiguration.attributedTitle = attributedTitle;
         break;
-      default:
+      case SigninPromoViewStyleStandard:
+      case SigninPromoViewStyleCompactHorizontal:
+      case SigninPromoViewStyleOnlyButton:
         font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
         attributes = @{NSFontAttributeName : font};
         attributedTitle =
@@ -593,7 +601,6 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   switch (self.promoViewStyle) {
     case SigninPromoViewStyleStandard: {
       // Lays out content vertically for standard view.
-      self.buttonVerticalStackView.axis = UILayoutConstraintAxisVertical;
       self.buttonVerticalStackView.spacing =
           kStandardPromoStyle.kButtonStackViewSubViewSpacing;
       self.mainPromoStackView.spacing =
@@ -756,6 +763,43 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       }
 
       constraintsToActivate = self.compactVerticalLayoutConstraints;
+      break;
+    }
+    case SigninPromoViewStyleOnlyButton: {
+      self.textVerticalStackView.hidden = YES;
+      self.secondaryButton.hidden = YES;
+      self.imageView.hidden = YES;
+      // Configuring spacings and axis for the stack views isn't necessary,
+      // there's only one element shown per stack anyway.
+
+      // Constants and constraints are reused from the standard layout.
+      self.primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+      self.primaryButton.layer.cornerRadius =
+          kStandardPromoStyle.kButtonCornerRadius;
+      self.primaryButton.clipsToBounds = YES;
+
+      if (IsUIButtonConfigurationEnabled()) {
+        self.primaryButton.configuration.baseForegroundColor =
+            [UIColor colorNamed:kSolidButtonTextColor];
+        self.primaryButton.configuration.contentInsets =
+            NSDirectionalEdgeInsetsMake(
+                kStandardPromoStyle.kButtonTitleVerticalContentInset,
+                kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+                kStandardPromoStyle.kButtonTitleVerticalContentInset,
+                kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+      } else {
+        [self.primaryButton
+            setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+                 forState:UIControlStateNormal];
+        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
+            kStandardPromoStyle.kButtonTitleVerticalContentInset,
+            kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+            kStandardPromoStyle.kButtonTitleVerticalContentInset,
+            kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
+      }
+
+      constraintsToActivate = self.standardLayoutConstraints;
       break;
     }
   }

@@ -192,10 +192,17 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void ExpectNoAccountsConfiguration(SigninPromoViewStyle style) {
     OCMExpect([signin_promo_view_ setMode:SigninPromoViewModeNoAccounts]);
     NSString* title = nil;
-    if (style == SigninPromoViewStyleStandard) {
-      title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
-    } else {
-      title = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
+    switch (style) {
+      case SigninPromoViewStyleStandard:
+        title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
+        break;
+      case SigninPromoViewStyleCompactHorizontal:
+      case SigninPromoViewStyleCompactVertical:
+        title = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
+        break;
+      case SigninPromoViewStyleOnlyButton:
+        title = GetNSString(IDS_IOS_SIGNIN_PROMO_TURN_ON);
+        break;
     }
     OCMExpect([signin_promo_view_ configurePrimaryButtonWithTitle:title]);
     image_view_profile_image_ = nil;
@@ -229,11 +236,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_EQ(identity_, mediator_.identity);
     OCMExpect(
         [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
-    OCMExpect([signin_promo_view_
-        setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
-          image_view_profile_image_ = value;
-          return YES;
-        }]]);
     switch (style) {
       case SigninPromoViewStyleStandard: {
         NSString* name = identity_.userGivenName.length
@@ -246,6 +248,12 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         OCMExpect([secondary_button_
             setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
             forState:UIControlStateNormal]);
+        OCMExpect([signin_promo_view_
+            setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
+              image_view_profile_image_ = value;
+              return YES;
+            }]]);
+
         break;
       }
       case SigninPromoViewStyleCompactHorizontal:
@@ -253,8 +261,18 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         OCMExpect([signin_promo_view_
             configurePrimaryButtonWithTitle:
                 GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)]);
+        OCMExpect([signin_promo_view_
+            setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
+              image_view_profile_image_ = value;
+              return YES;
+            }]]);
         break;
       }
+      case SigninPromoViewStyleOnlyButton:
+        OCMExpect([signin_promo_view_
+            configurePrimaryButtonWithTitle:GetNSString(
+                                                IDS_IOS_SIGNIN_PROMO_TURN_ON)]);
+        break;
     }
   }
 
@@ -268,7 +286,16 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
-    EXPECT_NE(nil, image_view_profile_image_);
+    switch (style) {
+      case SigninPromoViewStyleStandard:
+      case SigninPromoViewStyleCompactHorizontal:
+      case SigninPromoViewStyleCompactVertical:
+        EXPECT_NE(nil, image_view_profile_image_);
+        break;
+      case SigninPromoViewStyleOnlyButton:
+        EXPECT_EQ(nil, image_view_profile_image_);
+        break;
+    }
   }
 
   // Expects the sync promo view to be configured
@@ -390,6 +417,15 @@ TEST_F(SigninPromoViewMediatorTest,
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompactHorizontal);
   TestSigninPromoWithAccount(SigninPromoViewStyleCompactHorizontal);
+}
+
+// Tests the sign-in promo with and without account when the promo style is
+// SigninPromoViewStyleOnlyButton.
+TEST_F(SigninPromoViewMediatorTest,
+       ConfigureOnlyButtonSigninPromoViewWithColdAndWarm) {
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleOnlyButton);
+  TestSigninPromoWithAccount(SigninPromoViewStyleOnlyButton);
 }
 
 // Tests the sign-in promo with and without account when the promo style is

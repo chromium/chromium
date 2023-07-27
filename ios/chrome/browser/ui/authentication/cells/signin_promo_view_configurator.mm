@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -85,6 +86,9 @@ using l10n_util::GetNSStringF;
       [self configureCompactPromoView:signinPromoView withStyle:promoViewStyle];
       break;
     }
+    case SigninPromoViewStyleOnlyButton:
+      [self configureOnlyButtonPromoView:signinPromoView];
+      break;
   }
   if (_hasSignInSpinner) {
     [signinPromoView startSignInSpinner];
@@ -139,9 +143,9 @@ using l10n_util::GetNSStringF;
                         withStyle:(SigninPromoViewStyle)promoStyle {
   switch (promoStyle) {
     case SigninPromoViewStyleStandard:
-      // This function shouldn't be used for the standard promo.
-      CHECK(NO);
-      break;
+    case SigninPromoViewStyleOnlyButton:
+      // This function shouldn't be used for the non-compact promos.
+      NOTREACHED_NORETURN();
     case SigninPromoViewStyleCompactVertical:
     case SigninPromoViewStyleCompactHorizontal:
       [signinPromoView configurePrimaryButtonWithTitle:
@@ -157,6 +161,14 @@ using l10n_util::GetNSStringF;
           break;
       }
   }
+}
+
+// Configures the view elements of the `signinPromoView` to conform to the
+// `SigninPromoViewStyleOnlyButton` style.
+- (void)configureOnlyButtonPromoView:(SigninPromoView*)signinPromoView {
+  [signinPromoView
+      configurePrimaryButtonWithTitle:l10n_util::GetNSString(
+                                          IDS_IOS_SIGNIN_PROMO_TURN_ON)];
 }
 
 // Sets profile image to a given `signinPromoView`.
