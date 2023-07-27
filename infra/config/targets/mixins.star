@@ -1346,6 +1346,14 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "timeout_30m",
+    swarming = targets.swarming(
+        hard_timeout_sec = 1800,
+        io_timeout_sec = 1800,
+    ),
+)
+
+targets.mixin(
     name = "updater-default-pool",
     swarming = targets.swarming(
         dimensions = {

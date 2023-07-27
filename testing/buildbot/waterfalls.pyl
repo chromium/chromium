@@ -2318,7 +2318,10 @@
   },
   {
     'name': 'chromium.dawn',
-    'mixins': ['chromium-tester-service-account'],
+    'mixins': [
+      'chromium-tester-service-account',
+      'timeout_30m',
+    ],
     'machines': {
       'Dawn Android arm DEPS Release (Pixel 4)': {
         'os_type': 'android',
@@ -4112,6 +4115,7 @@
     'mixins': [
       'chromium-tester-service-account',
       'swarming_containment_auto',
+      'timeout_30m',
     ],
     'machines': {
       'Android Release (Nexus 5X)': {
@@ -4226,6 +4230,7 @@
     'mixins': [
       'chromium-tester-service-account',
       'swarming_containment_auto',
+      'timeout_30m',
     ],
     'machines': {
       'Android FYI Release (NVIDIA Shield TV)': {

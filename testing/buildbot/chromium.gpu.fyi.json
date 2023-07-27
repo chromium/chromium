@@ -25,6 +25,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -56,6 +58,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -100,6 +104,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -138,6 +144,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -186,7 +194,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -231,7 +241,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -267,7 +279,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -303,7 +317,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -343,7 +359,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -389,7 +407,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -426,7 +446,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -463,7 +485,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -501,7 +525,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -533,6 +559,8 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -590,7 +618,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_webview/"
@@ -625,7 +655,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -669,7 +701,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -704,7 +738,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -739,7 +775,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -778,7 +816,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -813,7 +853,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -848,7 +890,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -893,7 +937,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -929,7 +975,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -965,7 +1013,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -1001,7 +1051,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1038,7 +1090,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -1076,7 +1130,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -1127,7 +1183,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1164,7 +1222,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1203,7 +1263,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -1243,7 +1305,9 @@
               "os": "Android"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -1294,7 +1358,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_webview/"
@@ -1330,7 +1396,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1366,7 +1434,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1411,7 +1481,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1456,7 +1528,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1492,7 +1566,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1528,7 +1604,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1568,7 +1646,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1604,7 +1684,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1640,7 +1722,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1686,7 +1770,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1732,7 +1818,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1769,7 +1857,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1806,7 +1896,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1843,7 +1935,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1879,7 +1973,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -1918,7 +2014,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -1958,7 +2056,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -1997,7 +2097,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2036,7 +2138,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2077,7 +2181,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2113,7 +2219,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2158,7 +2266,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2203,7 +2313,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2239,7 +2351,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2275,7 +2389,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2315,7 +2431,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2351,7 +2469,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2387,7 +2507,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2433,7 +2555,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2479,7 +2603,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2516,7 +2642,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2553,7 +2681,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2590,7 +2720,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2626,7 +2758,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2664,7 +2798,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2703,7 +2839,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2736,6 +2874,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -2769,6 +2909,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -2814,6 +2956,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -2853,6 +2997,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -2903,7 +3049,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2950,7 +3098,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -2988,7 +3138,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3026,7 +3178,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3068,7 +3222,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3116,7 +3272,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3155,7 +3313,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3194,7 +3354,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3234,7 +3396,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -3267,6 +3431,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -3300,6 +3466,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -3345,6 +3513,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -3384,6 +3554,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "output_links": [
             {
               "link": [
@@ -3434,7 +3606,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3481,7 +3655,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3519,7 +3695,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3557,7 +3735,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3599,7 +3779,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3647,7 +3829,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3686,7 +3870,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3725,7 +3911,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
@@ -3765,7 +3953,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -3800,6 +3990,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -3844,6 +4036,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -3897,7 +4091,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -3957,7 +4153,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4008,7 +4206,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4059,7 +4259,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4114,7 +4316,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4165,7 +4369,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4226,7 +4432,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4278,7 +4486,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4330,7 +4540,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4381,7 +4593,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4435,7 +4649,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4491,7 +4707,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4545,7 +4763,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -4592,6 +4812,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_tests",
@@ -4625,6 +4847,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -4666,7 +4890,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -4714,7 +4940,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -4753,7 +4981,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -4792,7 +5022,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -4835,7 +5067,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -4874,7 +5108,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -4923,7 +5159,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -4963,7 +5201,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -5003,7 +5243,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -5042,7 +5284,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -5084,7 +5328,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -5126,7 +5372,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -5544,7 +5792,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5586,7 +5836,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5633,7 +5885,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5671,7 +5925,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5709,7 +5965,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5751,7 +6009,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5789,7 +6049,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5837,7 +6099,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5876,7 +6140,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5915,7 +6181,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5953,7 +6221,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -5993,7 +6263,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -6023,6 +6295,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -6052,6 +6326,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -6073,6 +6349,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -6109,7 +6387,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6152,7 +6432,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6186,7 +6468,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6220,7 +6504,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6258,7 +6544,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6302,7 +6590,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6337,7 +6627,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6372,7 +6664,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6408,7 +6702,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -6444,7 +6740,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6479,7 +6777,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6508,6 +6808,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -6537,6 +6839,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -6558,6 +6862,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -6584,6 +6890,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -6612,6 +6920,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -6638,6 +6948,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -6668,6 +6980,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -6690,6 +7004,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -6713,6 +7029,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "vulkan_tests",
@@ -6750,7 +7068,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6794,7 +7114,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6829,7 +7151,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6864,7 +7188,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6903,7 +7229,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6938,7 +7266,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -6983,7 +7313,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7019,7 +7351,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7055,7 +7389,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7093,7 +7429,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -7131,7 +7469,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -7157,6 +7497,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -7183,6 +7525,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -7212,6 +7556,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -7233,6 +7579,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -7255,6 +7603,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "vulkan_tests",
@@ -7291,7 +7641,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7334,7 +7686,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7368,7 +7722,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7402,7 +7758,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7440,7 +7798,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7474,7 +7834,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7518,7 +7880,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7553,7 +7917,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7588,7 +7954,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7625,7 +7993,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -7662,7 +8032,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -7688,6 +8060,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -7714,6 +8088,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -7743,6 +8119,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -7764,6 +8142,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -7786,6 +8166,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "vulkan_tests",
@@ -7822,7 +8204,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7865,7 +8249,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7899,7 +8285,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7933,7 +8321,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -7971,7 +8361,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8005,7 +8397,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8049,7 +8443,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8084,7 +8480,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8119,7 +8517,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8163,7 +8563,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8200,7 +8602,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -8237,7 +8641,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -8261,6 +8667,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -8288,6 +8696,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -8313,6 +8723,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -8342,6 +8754,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -8364,6 +8778,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -8383,6 +8799,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -8406,6 +8824,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -8443,7 +8863,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8487,7 +8909,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8522,7 +8946,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8557,7 +8983,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8596,7 +9024,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8631,7 +9061,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8676,7 +9108,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8712,7 +9146,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8748,7 +9184,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8783,7 +9221,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8821,7 +9261,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -8859,7 +9301,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -8897,7 +9341,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -8920,6 +9366,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -8946,6 +9394,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -8975,6 +9425,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -8997,6 +9449,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -9016,6 +9470,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -9039,6 +9495,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -9076,7 +9534,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9120,7 +9580,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9155,7 +9617,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9190,7 +9654,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9229,7 +9695,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9274,7 +9742,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9310,7 +9780,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9346,7 +9818,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9383,7 +9857,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -9420,7 +9896,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9444,6 +9922,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -9472,6 +9952,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -9498,6 +9980,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -9528,6 +10012,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -9551,6 +10037,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -9571,6 +10059,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -9595,6 +10085,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -9633,7 +10125,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9678,7 +10172,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9714,7 +10210,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9750,7 +10248,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9790,7 +10290,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9826,7 +10328,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9872,7 +10376,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9909,7 +10415,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9946,7 +10454,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -9982,7 +10492,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10021,7 +10533,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -10062,7 +10576,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -10101,7 +10617,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -10141,7 +10659,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -10180,7 +10700,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10206,6 +10728,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -10236,6 +10760,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -10264,6 +10790,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -10296,6 +10824,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -10321,6 +10851,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -10343,6 +10875,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -10369,6 +10903,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -10409,7 +10945,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10456,7 +10994,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10494,7 +11034,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10532,7 +11074,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10574,7 +11118,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10612,7 +11158,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10660,7 +11208,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10699,7 +11249,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10738,7 +11290,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10776,7 +11330,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -10817,7 +11373,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -10860,7 +11418,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -10901,7 +11461,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -10943,7 +11505,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -10984,7 +11548,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11010,6 +11576,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -11040,6 +11608,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -11068,6 +11638,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -11100,6 +11672,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -11125,6 +11699,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -11147,6 +11723,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -11173,6 +11751,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -11213,7 +11793,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11260,7 +11842,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11298,7 +11882,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11336,7 +11922,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11378,7 +11966,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11416,7 +12006,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11464,7 +12056,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11503,7 +12097,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11542,7 +12138,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11580,7 +12178,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11621,7 +12221,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -11662,7 +12264,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -11703,7 +12307,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11727,6 +12333,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -11755,6 +12363,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -11781,6 +12391,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -11811,6 +12423,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -11834,6 +12448,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -11854,6 +12470,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -11878,6 +12496,8 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -11916,7 +12536,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11961,7 +12583,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -11997,7 +12621,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12033,7 +12659,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12073,7 +12701,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12109,7 +12739,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12155,7 +12787,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12192,7 +12826,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12229,7 +12865,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12265,7 +12903,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12304,7 +12944,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -12345,7 +12987,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -12384,7 +13028,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -12424,7 +13070,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -12463,7 +13111,9 @@
               "pool": "chromium.tests"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12486,6 +13136,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -12513,6 +13165,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -12538,6 +13192,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -12567,6 +13223,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -12589,6 +13247,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -12608,6 +13268,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -12631,6 +13293,8 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -12668,7 +13332,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12712,7 +13378,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12747,7 +13415,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12782,7 +13452,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12821,7 +13493,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12856,7 +13530,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12901,7 +13577,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12937,7 +13615,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -12973,7 +13653,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13008,7 +13690,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13046,7 +13730,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -13086,7 +13772,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -13124,7 +13812,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -13163,7 +13853,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -13201,7 +13893,9 @@
               "os": "Mac-13.3.1"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13226,6 +13920,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -13255,6 +13951,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -13282,6 +13980,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -13313,6 +14013,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -13337,6 +14039,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -13358,6 +14062,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -13383,6 +14089,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -13425,7 +14133,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -13465,7 +14175,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -13505,7 +14217,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13530,6 +14244,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -13558,6 +14274,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -13589,6 +14307,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -13613,6 +14333,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -13634,6 +14356,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -13659,6 +14383,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -13698,7 +14424,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13744,7 +14472,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13781,7 +14511,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13818,7 +14550,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13859,7 +14593,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13906,7 +14642,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13944,7 +14682,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -13982,7 +14722,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14021,7 +14763,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -14047,6 +14791,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -14076,6 +14822,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -14103,6 +14851,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -14134,6 +14884,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -14158,6 +14910,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -14179,6 +14933,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -14204,6 +14960,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -14243,7 +15001,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14289,7 +15049,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14326,7 +15088,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14363,7 +15127,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14404,7 +15170,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14441,7 +15209,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14488,7 +15258,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14526,7 +15298,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14564,7 +15338,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14601,7 +15377,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14641,7 +15419,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -14683,7 +15463,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -14723,7 +15505,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -14764,7 +15548,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -14804,7 +15590,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -14829,6 +15617,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -14858,6 +15648,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -14885,6 +15677,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -14916,6 +15710,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -14940,6 +15736,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -14961,6 +15759,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -14986,6 +15786,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -15025,7 +15827,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15071,7 +15875,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15108,7 +15914,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15145,7 +15953,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15186,7 +15996,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15223,7 +16035,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15270,7 +16084,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15308,7 +16124,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15346,7 +16164,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15383,7 +16203,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15423,7 +16245,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -15465,7 +16289,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -15505,7 +16331,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -15546,7 +16374,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -15586,7 +16416,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15611,6 +16443,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -15640,6 +16474,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -15667,6 +16503,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -15698,6 +16536,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -15722,6 +16562,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -15743,6 +16585,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -15768,6 +16612,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -15807,7 +16653,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15853,7 +16701,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15890,7 +16740,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15927,7 +16779,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -15968,7 +16822,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16005,7 +16861,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16052,7 +16910,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16090,7 +16950,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16128,7 +16990,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16165,7 +17029,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16205,7 +17071,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -16245,7 +17113,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -16285,7 +17155,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16310,6 +17182,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -16339,6 +17213,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -16366,6 +17242,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -16397,6 +17275,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -16421,6 +17301,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -16442,6 +17324,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -16481,7 +17365,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16527,7 +17413,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16564,7 +17452,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16601,7 +17491,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16642,7 +17534,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16689,7 +17583,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16727,7 +17623,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16765,7 +17663,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16805,7 +17705,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -16845,7 +17747,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -16881,7 +17785,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16916,7 +17822,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -16939,6 +17847,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -16965,6 +17875,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -16994,6 +17906,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -17016,6 +17930,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -17040,6 +17956,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -17065,6 +17983,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -17084,6 +18004,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -17108,6 +18030,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -17131,6 +18055,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -17168,7 +18094,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17212,7 +18140,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17247,7 +18177,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17282,7 +18214,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17321,7 +18255,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17366,7 +18302,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17402,7 +18340,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17438,7 +18378,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17475,7 +18417,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -17513,7 +18457,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -17550,7 +18496,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -17587,7 +18535,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17623,7 +18573,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17647,6 +18599,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -17675,6 +18629,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -17701,6 +18657,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -17731,6 +18689,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -17754,6 +18714,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -17779,6 +18741,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -17805,6 +18769,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -17825,6 +18791,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -17849,6 +18817,8 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -17887,7 +18857,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17932,7 +18904,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -17968,7 +18942,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18004,7 +18980,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18044,7 +19022,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18080,7 +19060,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18126,7 +19108,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18163,7 +19147,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18200,7 +19186,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18236,7 +19224,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18275,7 +19265,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -18314,7 +19306,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -18353,7 +19347,9 @@
             }
           ],
           "expiration": 21600,
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -18377,6 +19373,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -18402,6 +19400,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -18428,6 +19428,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -18453,6 +19455,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -18482,6 +19486,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -18504,6 +19510,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -18528,6 +19536,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -18553,6 +19563,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -18572,6 +19584,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -18596,6 +19610,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -18619,6 +19635,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -18656,7 +19674,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18700,7 +19720,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18735,7 +19757,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18770,7 +19794,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18809,7 +19835,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18844,7 +19872,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18889,7 +19919,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18925,7 +19957,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18961,7 +19995,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -18996,7 +20032,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19034,7 +20072,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -19072,7 +20112,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -19110,7 +20152,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -19147,7 +20191,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -19171,6 +20217,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -19198,6 +20246,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -19223,6 +20273,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -19252,6 +20304,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -19274,6 +20328,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -19298,6 +20354,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -19323,6 +20381,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -19342,6 +20402,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -19366,6 +20428,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -19389,6 +20453,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -19426,7 +20492,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19470,7 +20538,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19505,7 +20575,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19540,7 +20612,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19579,7 +20653,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19611,6 +20687,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://gpu:command_buffer_perftests/"
@@ -19655,7 +20733,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19691,7 +20771,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19727,7 +20809,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19762,7 +20846,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -19800,7 +20886,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -19838,7 +20926,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -19876,7 +20966,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -19913,7 +21005,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -19947,6 +21041,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://tools/perf/contrib/vr_benchmarks:vr_perf_tests/"
@@ -19969,6 +21065,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -19996,6 +21094,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -20021,6 +21121,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -20050,6 +21152,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -20072,6 +21176,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -20096,6 +21202,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -20121,6 +21229,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -20140,6 +21250,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -20164,6 +21276,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -20187,6 +21301,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -20224,7 +21340,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20268,7 +21386,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20303,7 +21423,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20338,7 +21460,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20377,7 +21501,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20409,6 +21535,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://gpu:command_buffer_perftests/"
@@ -20453,7 +21581,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20489,7 +21619,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20525,7 +21657,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20560,7 +21694,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -20598,7 +21734,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -20636,7 +21774,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -20674,7 +21814,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -20711,7 +21853,9 @@
               "pool": "chromium.tests.gpu"
             }
           ],
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },

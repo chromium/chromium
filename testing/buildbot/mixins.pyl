@@ -1096,6 +1096,12 @@
       'io_timeout': 900,
     },
   },
+  'timeout_30m': {
+    'swarming': {
+      'hard_timeout': 1800,
+      'io_timeout': 1800,
+    },
+  },
   'updater-default-pool': {
     'swarming': {
       'dimensions': {
