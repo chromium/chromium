@@ -778,6 +778,10 @@ bool AreScrollSettingsAllowed() {
   return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
 }
 
+bool AreTouchpadScrollSettingsAllowed() {
+  return base::FeatureList::IsEnabled(features::kAllowTouchpadScrollSettings);
+}
+
 bool IsUnifiedDesktopAvailable() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableUnifiedDesktop);
@@ -1798,6 +1802,8 @@ void DeviceSection::AddDevicePointersStrings(
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 
   html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
+  html_source->AddBoolean("allowTouchpadScrollSettings",
+                          AreTouchpadScrollSettingsAllowed());
 }
 
 void DeviceSection::AddDeviceGraphicsTabletStrings(

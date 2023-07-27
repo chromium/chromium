@@ -164,10 +164,10 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
       /**
        * TODO(khorimoto): Remove this conditional once the feature is launched.
        */
-      allowScrollSettings_: {
+      allowTouchpadScrollSettings_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('allowScrollSettings');
+          return loadTimeData.getBoolean('allowTouchpadScrollSettings');
         },
       },
 

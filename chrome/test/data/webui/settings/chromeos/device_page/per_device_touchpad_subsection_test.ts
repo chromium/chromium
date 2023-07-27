@@ -27,7 +27,7 @@ suite('<settings-per-device-touchpad-subsection>', () => {
         document.createElement('settings-per-device-touchpad-subsection');
     assert(subsection);
     subsection.set('touchpad', {...fakeTouchpads[0]});
-    subsection.set('allowScrollSettings_', true);
+    subsection.set('allowTouchpadScrollSettings_', true);
     document.body.appendChild(subsection);
     await flushTasks();
   });
@@ -211,7 +211,7 @@ suite('<settings-per-device-touchpad-subsection>', () => {
         subsection.get('reverseScrollValue'));
 
     subsection.set('touchpad', fakeTouchpads[1]);
-    subsection.set('allowScrollSettings_', false);
+    subsection.set('allowTouchpadScrollSettings_', false);
 
     await flushTasks();
     enableTapToClickButton =
