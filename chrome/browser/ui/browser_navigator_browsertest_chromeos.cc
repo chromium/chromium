@@ -211,9 +211,16 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectFail) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_OsSchemeRedirectSucceed DISABLED_OsSchemeRedirectSucceed
+#else
+#define MAYBE_OsSchemeRedirectSucceed OsSchemeRedirectSucceed
+#endif
+// TODO(crbug.com/1467805): Test failing on linux-lacros.
 // Verifies that the navigation of an os:// scheme page is opening an app on
 // the ash side and does not produce a navigation on the Lacros side.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectSucceed) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
+                       MAYBE_OsSchemeRedirectSucceed) {
   if (chromeos::LacrosService::Get()
           ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
