@@ -132,6 +132,16 @@ VkResult QueryVkExternalMemoryProperties(
     VkExternalMemoryHandleTypeFlagBits handle_type,
     VkExternalMemoryProperties* external_memory_properties);
 
+COMPONENT_EXPORT(VULKAN)
+bool IsVkOpaqueExternalSemaphoreSupported(VulkanDeviceQueue* device_queue);
+
+COMPONENT_EXPORT(VULKAN)
+VkSemaphore CreateVkOpaqueExternalSemaphore(VkDevice vk_device);
+
+COMPONENT_EXPORT(VULKAN)
+SemaphoreHandle ExportVkOpaqueExternalSemaphore(VkDevice vk_device,
+                                                VkSemaphore vk_semaphore);
+
 }  // namespace gpu
 
 #endif  // GPU_VULKAN_VULKAN_UTIL_H_
