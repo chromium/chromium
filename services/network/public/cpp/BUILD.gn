@@ -616,6 +616,12 @@ source_set("tests") {
   public_deps = [ ":buildflags" ]
 }
 
+fuzzer_test("coop_fuzzer") {
+  sources = [ "cross_origin_opener_policy_parser_fuzzer.cc" ]
+  dict = "cross_origin_opener_policy.dict"
+  deps = [ ":cpp" ]
+}
+
 fuzzer_test("xfo_fuzzer") {
   sources = [ "x_frame_options_parser_fuzzer.cc" ]
   dict = "x_frame_options.dict"
