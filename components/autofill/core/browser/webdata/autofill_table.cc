@@ -449,6 +449,17 @@ bool AddColumnIfNotExists(sql::Database* db,
          AddColumn(db, table_name, column_name, type);
 }
 
+// Drops the column named `column_name` from `table_name` and returns true if
+// successful.
+bool DropColumn(sql::Database* db,
+                std::string_view table_name,
+                std::string_view column_name) {
+  return db->Execute(
+      base::StrCat({"ALTER TABLE ", table_name, " DROP COLUMN ", column_name})
+          .c_str());
+  ;
+}
+
 // Drops `table_name` and returns true if successful.
 bool DropTable(sql::Database* db, std::string_view table_name) {
   return db->Execute(base::StrCat({"DROP TABLE ", table_name}).c_str());
@@ -500,25 +511,6 @@ bool DeleteWhereColumnEq(sql::Database* db,
   DeleteBuilder(db, statement, table_name, base::StrCat({column, " = ?"}));
   statement.BindInt(0, value);
   return statement.Run();
-}
-
-// Inserts all data from the given `column_names` of table `from` to table `to`.
-// Then, replaces table `from` with table `to` by dropping `from` and renaming
-// `to` into `from`.
-// This is useful when dropping columns from a table. Since the SQL version
-// Chromium uses doesn't support the "ALTER TABLE DROP COLUMN" syntax, the
-// usual approach is to create a new table without the column to drop, and
-// `MoveDataAndReplaceTable()` the existing data into it.
-bool MoveDataAndReplaceTable(
-    sql::Database* db,
-    std::string_view from,
-    std::string_view to,
-    std::initializer_list<std::string_view> column_names) {
-  return db->Execute(base::StrCat({"INSERT INTO ", to, " SELECT ",
-                                   base::JoinString(column_names, ", "),
-                                   " FROM ", from})
-                         .c_str()) &&
-         DropTable(db, from) && RenameTable(db, to, from);
 }
 
 // Initializes `statement` with UPDATE `table_name` SET `column_names` = ?, with
@@ -3112,23 +3104,9 @@ bool AutofillTable::ClearModelTypeState(syncer::ModelType model_type) {
 }
 
 bool AutofillTable::MigrateToVersion83RemoveServerCardTypeColumn() {
-  constexpr std::string_view kMaskedCreditCardsTempTable =
-      "masked_credit_cards_temp";
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kMaskedCreditCardsTempTable,
-                     {{kId, "VARCHAR"},
-                      {kStatus, "VARCHAR"},
-                      {kNameOnCard, "VARCHAR"},
-                      {kNetwork, "VARCHAR"},
-                      {kLastFour, "VARCHAR"},
-                      {kExpMonth, "INTEGER DEFAULT 0"},
-                      {kExpYear, "INTEGER DEFAULT 0"},
-                      {kBankName, "VARCHAR"}}) &&
-         MoveDataAndReplaceTable(db_, kMaskedCreditCardsTable,
-                                 kMaskedCreditCardsTempTable,
-                                 {kId, kStatus, kNameOnCard, kNetwork,
-                                  kLastFour, kExpMonth, kExpYear, kBankName}) &&
+         DropColumn(db_, kMaskedCreditCardsTable, kType) &&
          transaction.Commit();
 }
 
@@ -3177,17 +3155,10 @@ bool AutofillTable::MigrateToVersion92AddNewPrefixedNameColumn() {
 }
 
 bool AutofillTable::MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns() {
-  constexpr std::string_view kUnmaskedCreditCardsTempTable =
-      "unmasked_credit_cards_temp";
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kUnmaskedCreditCardsTempTable,
-                     {{kId, "VARCHAR"},
-                      {kCardNumberEncrypted, "VARCHAR"},
-                      {kUnmaskDate, "INTEGER NOT NULL DEFAULT 0"}}) &&
-         MoveDataAndReplaceTable(db_, kUnmaskedCreditCardsTable,
-                                 kUnmaskedCreditCardsTempTable,
-                                 {kId, kCardNumberEncrypted, kUnmaskDate}) &&
+         DropColumn(db_, kUnmaskedCreditCardsTable, kUseCount) &&
+         DropColumn(db_, kUnmaskedCreditCardsTable, kUseDate) &&
          transaction.Commit();
 }
 
@@ -3311,28 +3282,9 @@ bool AutofillTable::MigrateToVersion95AddVirtualCardMetadata() {
 }
 
 bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
-  constexpr std::string_view kMaskedCreditCardsTempTable =
-      "masked_credit_cards_temp";
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kMaskedCreditCardsTempTable,
-                     {{kId, "VARCHAR"},
-                      {kNameOnCard, "VARCHAR"},
-                      {kNetwork, "VARCHAR"},
-                      {kLastFour, "VARCHAR"},
-                      {kExpMonth, "INTEGER DEFAULT 0"},
-                      {kExpYear, "INTEGER DEFAULT 0"},
-                      {kBankName, "VARCHAR"},
-                      {kNickname, "VARCHAR"},
-                      {kCardIssuer, "INTEGER DEFAULT 0"},
-                      {kInstrumentId, "INTEGER DEFAULT 0"},
-                      {kVirtualCardEnrollmentState, "INTEGER DEFAULT 0"},
-                      {kCardArtUrl, "VARCHAR"}}) &&
-         MoveDataAndReplaceTable(
-             db_, kMaskedCreditCardsTable, kMaskedCreditCardsTempTable,
-             {kId, kNameOnCard, kNetwork, kLastFour, kExpMonth, kExpYear,
-              kBankName, kNickname, kCardIssuer, kInstrumentId,
-              kVirtualCardEnrollmentState, kCardArtUrl}) &&
+         DropColumn(db_, kMaskedCreditCardsTable, kStatus) &&
          transaction.Commit();
 }
 
@@ -3341,34 +3293,11 @@ bool AutofillTable::MigrateToVersion99RemoveAutofillProfilesTrashTable() {
 }
 
 bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
-  constexpr std::string_view kAutofillProfilesTempTable =
-      "autofill_profiles_temp";
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kAutofillProfilesTempTable,
-                     {{kGuid, "VARCHAR PRIMARY KEY"},
-                      {kCompanyName, "VARCHAR"},
-                      {kStreetAddress, "VARCHAR"},
-                      {kDependentLocality, "VARCHAR"},
-                      {kCity, "VARCHAR"},
-                      {kState, "VARCHAR"},
-                      {kZipcode, "VARCHAR"},
-                      {kSortingCode, "VARCHAR"},
-                      {kCountryCode, "VARCHAR"},
-                      {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
-                      {kOrigin, "VARCHAR DEFAULT ''"},
-                      {kLanguageCode, "VARCHAR"},
-                      {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
-                      {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
-                      {kLabel, "VARCHAR"},
-                      {kDisallowSettingsVisibleUpdates,
-                       "INTEGER NOT NULL DEFAULT 0"}}) &&
-         MoveDataAndReplaceTable(
-             db_, kAutofillProfilesTable, kAutofillProfilesTempTable,
-             {kGuid, kCompanyName, kStreetAddress, kDependentLocality, kCity,
-              kState, kZipcode, kSortingCode, kCountryCode, kDateModified,
-              kOrigin, kLanguageCode, kUseCount, kUseDate, kLabel,
-              kDisallowSettingsVisibleUpdates}) &&
+         DropColumn(db_, kAutofillProfilesTable, "validity_bitfield") &&
+         DropColumn(db_, kAutofillProfilesTable,
+                    "is_client_validity_states_updated") &&
          transaction.Commit();
 }
 
