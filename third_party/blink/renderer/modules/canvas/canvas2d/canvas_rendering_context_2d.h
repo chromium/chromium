@@ -165,9 +165,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // BaseRenderingContext2D implementation
   bool OriginClean() const final;
   void SetOriginTainted() final;
-  bool WouldTaintOrigin(CanvasImageSource* source) final {
-    return CanvasRenderingContext::WouldTaintOrigin(source);
-  }
   void DisableAcceleration() override;
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
 

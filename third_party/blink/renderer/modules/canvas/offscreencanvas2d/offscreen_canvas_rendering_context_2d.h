@@ -109,7 +109,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   // BaseRenderingContext2D implementation
   bool OriginClean() const final;
   void SetOriginTainted() final;
-  bool WouldTaintOrigin(CanvasImageSource*) final;
 
   int Width() const final;
   int Height() const final;

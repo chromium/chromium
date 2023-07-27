@@ -1780,8 +1780,9 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
 
   WillDrawImage(image_source);
 
-  if (!origin_tainted_by_content_ && WouldTaintOrigin(image_source))
+  if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
     SetOriginTaintedByContent();
+  }
 
   Draw<OverdrawOp::kDrawImage>(
       [this, image_source, image, src_rect, dst_rect](
@@ -1964,7 +1965,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
   if (!image_for_rendering)
     return nullptr;
 
-  bool origin_clean = !WouldTaintOrigin(image_source);
+  bool origin_clean = !WouldTaintCanvasOrigin(image_source);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       std::move(image_for_rendering), repeat_mode, origin_clean);

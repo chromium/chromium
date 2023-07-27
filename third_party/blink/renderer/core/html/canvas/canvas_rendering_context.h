@@ -70,7 +70,6 @@ class VideoFrame;
 
 namespace blink {
 
-class CanvasImageSource;
 class CanvasResourceProvider;
 class ComputedStyle;
 class Document;
@@ -287,7 +286,6 @@ class CORE_EXPORT CanvasRenderingContext
   // Notification the color scheme of the HTMLCanvasElement may have changed.
   virtual void ColorSchemeMayHaveChanged() {}
 
-  bool WouldTaintOrigin(CanvasImageSource*);
   void DidMoveToNewDocument(Document*);
 
   void DetachHost() { host_ = nullptr; }

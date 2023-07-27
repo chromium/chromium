@@ -121,7 +121,6 @@ class TestRenderingContext2D final
 
   bool OriginClean() const override { return true; }
   void SetOriginTainted() override {}
-  bool WouldTaintOrigin(CanvasImageSource*) override { return false; }
 
   int Width() const override { return 300; }
   int Height() const override { return 300; }

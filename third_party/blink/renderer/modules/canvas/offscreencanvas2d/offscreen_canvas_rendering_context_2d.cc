@@ -169,11 +169,6 @@ void OffscreenCanvasRenderingContext2D::SetOriginTainted() {
   Host()->SetOriginTainted();
 }
 
-bool OffscreenCanvasRenderingContext2D::WouldTaintOrigin(
-    CanvasImageSource* source) {
-  return CanvasRenderingContext::WouldTaintOrigin(source);
-}
-
 int OffscreenCanvasRenderingContext2D::Width() const {
   return Host()->Size().width();
 }
