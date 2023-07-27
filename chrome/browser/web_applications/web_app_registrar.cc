@@ -45,6 +45,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
@@ -66,6 +67,11 @@ bool WebAppSourceSupported(const WebApp& web_app) {
     return false;
 #endif
   return true;
+}
+
+bool DoScopePrefixesMatch(const GURL& scope1, const GURL& scope2) {
+  return base::StartsWith(scope1.spec(), scope2.spec()) ||
+         base::StartsWith(scope2.spec(), scope1.spec());
 }
 
 }  // namespace
@@ -945,6 +951,76 @@ WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
       profile_, partition_name, true);
 }
 
+bool WebAppRegistrar::CapturesLinksInScope(const AppId& app_id) const {
+  if (!IsLocallyInstalled(app_id) || IsShortcutApp(app_id)) {
+    return false;
+  }
+
+  const WebApp* web_app = GetAppById(app_id);
+  CHECK(web_app);
+  return web_app->is_user_selected_app_for_capturing_links();
+}
+
+std::vector<AppId> WebAppRegistrar::GetOverlappingAppsMatchingScopePrefix(
+    const AppId& app_id) const {
+  std::vector<AppId> all_apps_with_supported_links;
+  const GURL& required_scope = GetAppScope(app_id);
+  if (!IsValidScopeForLinkCapturing(required_scope)) {
+    return all_apps_with_supported_links;
+  }
+
+  // If current app already captures links in scope, find if there are any other
+  // apps that are have been set by the user to capture links that can prefix
+  // the scope of the current app_id. If any app is not found, then there are no
+  // other apps that can support the same link.
+  if (CapturesLinksInScope(app_id) && !SharesSamePrefixedScopeAs(app_id)) {
+    return all_apps_with_supported_links;
+  }
+
+  for (const auto& id : GetAppIds()) {
+    // Do not include the same id as the input.
+    if (id == app_id) {
+      continue;
+    }
+
+    // Shortcut apps do not have a scope defined.
+    if (IsShortcutApp(id)) {
+      continue;
+    }
+
+    // If the app has an invalid scope, or the scope prefixes do not match, do
+    // not take them into account.
+    const GURL& current_scope = GetAppScope(id);
+    if (!IsValidScopeForLinkCapturing(current_scope) ||
+        !DoScopePrefixesMatch(current_scope, required_scope)) {
+      continue;
+    }
+
+    // If the app does not capture links in scope, do not take it into
+    // account.
+    if (!CapturesLinksInScope(id)) {
+      continue;
+    }
+    all_apps_with_supported_links.push_back(id);
+  }
+  return all_apps_with_supported_links;
+}
+
+bool WebAppRegistrar::AppScopesMatchForUserLinkCapturing(const AppId& app_id1,
+                                                         const AppId& app_id2) {
+  if (!IsLocallyInstalled(app_id1) || !IsLocallyInstalled(app_id2)) {
+    return false;
+  }
+
+  const GURL& app_scope1 = GetAppScope(app_id1);
+  const GURL& app_scope2 = GetAppScope(app_id2);
+  if (!app_scope1.is_valid() || !app_scope2.is_valid()) {
+    return false;
+  }
+
+  return DoScopePrefixesMatch(app_scope1, app_scope2);
+}
+
 std::string WebAppRegistrar::GetAppShortName(const AppId& app_id) const {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
@@ -1482,6 +1558,18 @@ std::vector<AppId> WebAppRegistrar::GetAppIdsForAppSet(
     app_ids.push_back(app.app_id());
 
   return app_ids;
+}
+
+bool WebAppRegistrar::SharesSamePrefixedScopeAs(const AppId& without_id) const {
+  for (const auto& app_id : GetAppIds()) {
+    if (app_id != without_id &&
+        base::Contains(GetAppScope(app_id).spec(),
+                       GetAppScope(without_id).spec()) &&
+        CapturesLinksInScope(app_id)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace web_app

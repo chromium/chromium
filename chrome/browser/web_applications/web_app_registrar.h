@@ -392,6 +392,19 @@ class WebAppRegistrar : public ProfileManagerObserver {
       const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name);
 
+  // Returns true if a web app is set to be the default app to
+  // capture links by the user. If an app is not locally installed or is a
+  // shortcut, this returns false.
+  bool CapturesLinksInScope(const AppId& app_id) const;
+
+  // Returns a set of app ids that match the scope for user link capturing.
+  std::vector<AppId> GetOverlappingAppsMatchingScopePrefix(
+      const AppId& app_id) const;
+
+  // Verifies if the scopes of 2 apps match for user link capturing.
+  bool AppScopesMatchForUserLinkCapturing(const AppId& app_id1,
+                                          const AppId& app_id2);
+
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const AppId& app_id) const;
   void NotifyAlwaysShowToolbarInFullscreenChanged(const AppId& app_id,
@@ -529,6 +542,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool registry_profile_being_deleted_ = false;
 
  private:
+  bool SharesSamePrefixedScopeAs(const AppId& without_id) const;
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
 

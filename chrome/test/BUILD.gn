@@ -7546,6 +7546,10 @@ test("unit_tests") {
       ]
     }
 
+    if (!is_chromeos_lacros) {
+      sources += [ "../browser/ui/webui/app_management/app_management_page_handler_unittest.cc" ]
+    }
+
     if (is_mac) {
       sources +=
           [ "../browser/webauthn/local_credential_management_mac_unittest.mm" ]
@@ -7986,7 +7990,6 @@ test("unit_tests") {
       "../browser/ui/quick_answers/quick_answers_ui_controller_unittest.cc",
       "../browser/ui/quick_answers/ui/quick_answers_view_unittest.cc",
       "../browser/ui/views/crostini/crostini_app_restart_dialog_unittest.cc",
-      "../browser/ui/webui/app_management/app_management_page_handler_unittest.cc",
       "../browser/ui/webui/ash/add_supervision/add_supervision_handler_utils_unittest.cc",
       "../browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler_unittest.cc",
       "../browser/ui/webui/ash/diagnostics_dialog_unittest.cc",

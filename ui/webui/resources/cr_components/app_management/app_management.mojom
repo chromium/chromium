@@ -191,9 +191,22 @@ interface PageHandler {
   SetResizeLocked(string app_id, bool locked);
   Uninstall(string app_id);
   OpenNativeSettings(string app_id);
+  // On ChromeOS, this updates the preferred apps list for `app_id`.
+  // On Windows, Mac and Linux, this is used to update the
+  // is_user_selected_app_for_capturing_links_ flag on the web_app DB
+  // for the `app_id`. If the app_id is set as a preferred app,
+  // then it resets is_user_selected_app_for_capturing_links_
+  // for all other apps if that is set.
   SetPreferredApp(string app_id, bool is_preferred_app);
-  // Returns a list of |app_ids| that are currently set as preferred apps
-  // and have overlapping intent filters with |app_id|.
+  // On ChromeOS: Returns a list of |app_ids| that are currently set
+  // as preferred apps and have overlapping intent filters with |app_id|.
+  // On Windows, Mac and Linux, this returns a list of |app_ids| that
+  // are currently set as preferred apps and satisfy the following
+  // conditions:
+  // 1. Scope of each app_id in the array matches the scope of
+  // the input app_id and has an http or https scheme.
+  // 2. The app opens in a separate window.
+  // 3. The app is not a shortcut app.
   GetOverlappingPreferredApps(string app_id) => (array<string> app_ids);
   // Used to set the Window Mode from the frontend inside
   // app_management_page_handler.

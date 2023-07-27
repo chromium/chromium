@@ -711,4 +711,8 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
   return alternative_error_page_info;
 }
 
+bool IsValidScopeForLinkCapturing(const GURL& scope) {
+  return scope.is_valid() && scope.has_scheme() && scope.SchemeIsHTTPOrHTTPS();
+}
+
 }  // namespace web_app

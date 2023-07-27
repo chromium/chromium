@@ -219,6 +219,8 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
     std::u16string message,
     std::u16string supplementary_icon);
 
+bool IsValidScopeForLinkCapturing(const GURL& scope);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UTILS_H_
