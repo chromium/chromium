@@ -135,7 +135,7 @@ class AwaitBorealisStartup : public BorealisTask {
   void OnContainerStarted(BorealisContext* context, guest_os::GuestInfo info);
   void OnTimeout();
 
-  absl::optional<base::CallbackListSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
   base::WeakPtrFactory<AwaitBorealisStartup> weak_factory_{this};
 };
 

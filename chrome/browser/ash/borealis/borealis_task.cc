@@ -297,19 +297,11 @@ void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
 
 void AwaitBorealisStartup::OnContainerStarted(BorealisContext* context,
                                               guest_os::GuestInfo info) {
-  if (!subscription_.has_value()) {
-    return;
-  }
-  subscription_.reset();
   context->set_container_name(info.guest_id.container_name);
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
 void AwaitBorealisStartup::OnTimeout() {
-  if (!subscription_.has_value()) {
-    return;
-  }
-  subscription_.reset();
   Complete(BorealisStartupResult::kAwaitBorealisStartupFailed,
            "Awaiting for Borealis launch failed: timed out");
 }
