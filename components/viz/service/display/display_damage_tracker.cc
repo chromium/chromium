@@ -86,6 +86,8 @@ void DisplayDamageTracker::ProcessSurfaceDamage(const SurfaceId& surface_id,
   TRACE_EVENT1("viz", "DisplayDamageTracker::SurfaceDamaged", "surface_id",
                surface_id.ToString());
 
+  has_surface_damage_due_to_scroll_ |= is_actively_scrolling;
+
   if (surface_id == root_surface_id_)
     expecting_root_surface_damage_because_of_resize_ = false;
 
@@ -100,7 +102,6 @@ void DisplayDamageTracker::ProcessSurfaceDamage(const SurfaceId& surface_id,
     if (it != surface_states_.end() &&
         !it->second.last_ack.frame_id.IsNextInSequenceTo(ack.frame_id)) {
       it->second.last_ack = ack;
-      it->second.last_is_actively_scrolling = is_actively_scrolling;
     } else {
       valid_ack = false;
     }
@@ -160,12 +161,13 @@ bool DisplayDamageTracker::HasPendingSurfaces(
 }
 
 bool DisplayDamageTracker::HasDamageDueToActiveScroller() {
-  for (auto& entry : surface_states_) {
-    if (entry.second.last_is_actively_scrolling) {
-      return true;
-    }
-  }
-  return false;
+  return has_surface_damage_due_to_scroll_;
+}
+
+void DisplayDamageTracker::DidDrawAndSwap() {
+  // We need to unset this bit otherwise we will continue to draw immediately
+  // even when we have no new damage from an active scroller.
+  has_surface_damage_due_to_scroll_ = false;
 }
 
 void DisplayDamageTracker::OnSurfaceMarkedForDestruction(

@@ -222,6 +222,8 @@ bool DisplayScheduler::DrawAndSwap() {
             .vsync_id;
   }
   bool success = client_ && client_->DrawAndSwap(params);
+  damage_tracker_->DidDrawAndSwap();
+
   if (!success)
     return false;
 

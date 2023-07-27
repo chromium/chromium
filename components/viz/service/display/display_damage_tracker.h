@@ -69,6 +69,9 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // Returns true if any of the damage received was due to an ongoing scroll.
   bool HasDamageDueToActiveScroller();
 
+  // Called after a successful draw and swap.
+  void DidDrawAndSwap();
+
   bool root_frame_missing() const { return root_frame_missing_; }
   bool IsRootSurfaceValid() const;
 
@@ -92,7 +95,6 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   struct SurfaceBeginFrameState {
     BeginFrameArgs last_args;
     BeginFrameAck last_ack;
-    bool last_is_actively_scrolling;
   };
 
   virtual bool SurfaceHasUnackedFrame(const SurfaceId& surface_id) const;
@@ -126,6 +128,8 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   bool root_frame_missing_ = true;
 
   bool expecting_root_surface_damage_because_of_resize_ = false;
+
+  bool has_surface_damage_due_to_scroll_ = false;
 
   base::flat_map<SurfaceId, SurfaceBeginFrameState> surface_states_;
   std::vector<SurfaceId> surfaces_to_ack_on_next_draw_;
