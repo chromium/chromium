@@ -165,6 +165,9 @@ BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationTranslateFeature,
 BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
              "IPH_AdaptiveButtonInTopToolbarCustomization_AddToBookmarks",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
+             "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAddToHomescreenMessageFeature,
              "IPH_AddToHomescreenMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);

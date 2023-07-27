@@ -24,7 +24,9 @@ public class AdaptiveToolbarStats {
             AdaptiveToolbarRadioButtonState.VOICE, AdaptiveToolbarRadioButtonState.TRANSLATE,
             AdaptiveToolbarRadioButtonState.AUTO_WITH_TRANSLATE,
             AdaptiveToolbarRadioButtonState.ADD_TO_BOOKMARKS,
-            AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS})
+            AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS,
+            AdaptiveToolbarRadioButtonState.READ_ALOUD,
+            AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD})
     @Retention(RetentionPolicy.SOURCE)
     private @interface AdaptiveToolbarRadioButtonState {
         int UNKNOWN = 0;
@@ -38,7 +40,9 @@ public class AdaptiveToolbarStats {
         int AUTO_WITH_TRANSLATE = 8;
         int ADD_TO_BOOKMARKS = 9;
         int AUTO_WITH_ADD_TO_BOOKMARKS = 10;
-        int NUM_ENTRIES = 11;
+        int READ_ALOUD = 11;
+        int AUTO_WITH_READ_ALOUD = 12;
+        int NUM_ENTRIES = 13;
     }
 
     /**
@@ -93,6 +97,8 @@ public class AdaptiveToolbarStats {
                 return AdaptiveToolbarRadioButtonState.ADD_TO_BOOKMARKS;
             case AdaptiveToolbarButtonVariant.TRANSLATE:
                 return AdaptiveToolbarRadioButtonState.TRANSLATE;
+            case AdaptiveToolbarButtonVariant.READ_ALOUD:
+                return AdaptiveToolbarRadioButtonState.READ_ALOUD;
             case AdaptiveToolbarButtonVariant.AUTO:
                 switch (uiState.autoButtonCaption) {
                     case AdaptiveToolbarButtonVariant.NEW_TAB:
@@ -105,6 +111,8 @@ public class AdaptiveToolbarStats {
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS;
                     case AdaptiveToolbarButtonVariant.TRANSLATE:
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_TRANSLATE;
+                    case AdaptiveToolbarButtonVariant.READ_ALOUD:
+                        return AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD;
                 }
         }
         assert false : "Invalid radio button state";

@@ -102,6 +102,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
+import org.chromium.chrome.browser.readaloud.ReadAloudToolbarButtonController;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
@@ -1139,6 +1140,11 @@ public class RootUiCoordinator
                             mModalDialogManagerSupplier.get(),
                             AppCompatResources.getDrawable(
                                     mActivity, R.drawable.ic_mobile_friendly));
+            ReadAloudToolbarButtonController readAloudButtonController =
+                    new ReadAloudToolbarButtonController(mActivity, mActivityTabProvider,
+                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_play_circle),
+                            mReadAloudControllerSupplier, trackerSupplier);
+
             ShareButtonController shareButtonController = new ShareButtonController(mActivity,
                     AppCompatResources.getDrawable(
                             mActivity, R.drawable.ic_toolbar_share_offset_24dp),
@@ -1201,6 +1207,8 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.READER_MODE, readerModeToolbarButtonController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.READ_ALOUD, readAloudButtonController);
             mContextualPageActionController = new ContextualPageActionController(mProfileSupplier,
                     mActivityTabProvider, adaptiveToolbarButtonController,
                     ()

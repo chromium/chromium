@@ -7,19 +7,27 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
   ]
   deps = [
     ":hooks_java",
     "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/user_education:java",
+    "//components/feature_engagement/public:public_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java_resources",
     "//url:gurl_java",
   ]
+  resources_package = "org.chromium.chrome.browser.readaloud"
 }
 
 android_library("hooks_java") {
@@ -47,7 +55,10 @@ android_library("hooks_public_impl_java") {
 
 robolectric_library("junit") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
+  ]
   deps = [
     ":hooks_java",
     ":java",
@@ -60,7 +71,9 @@ robolectric_library("junit") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/toolbar:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/feature_engagement/public:public_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

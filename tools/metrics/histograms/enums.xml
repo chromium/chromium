@@ -1515,6 +1515,7 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Reader mode"/>
   <int value="8" label="Translate"/>
   <int value="9" label="Add to bookmarks"/>
+  <int value="10" label="Read Aloud"/>
 </enum>
 
 <enum name="AdaptiveToolbarRadioButtonState">

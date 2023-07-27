@@ -265,6 +265,10 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED =
             "adaptive_toolbar_customization_translate_opened";
 
+    /** AdaptiveButtonInTopToolbarCustomization read aloud events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_READ_ALOUD_CLICKED =
+            "adaptive_toolbar_customization_read_aloud_clicked";
+
     /** AdaptiveButtonInTopToolbarCustomization add to bookmarks events. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED =
             "adaptive_toolbar_customization_add_to_bookmarks_opened";

@@ -8,8 +8,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 
 /**
  * A utility class for handling feature flags used by {@link AdaptiveToolbarButtonController}.
@@ -65,6 +68,7 @@ public class AdaptiveToolbarFeatures {
     private static Boolean sIgnoreSegmentationResultsForTesting;
     private static Boolean sDisableUiForTesting;
     private static Boolean sShowUiOnlyAfterReadyForTesting;
+    private static Profile sProfileForTesting;
 
     /** @return Whether the button variant is a dynamic action. */
     public static boolean isDynamicAction(@AdaptiveToolbarButtonVariant int variant) {
@@ -197,6 +201,16 @@ public class AdaptiveToolbarFeatures {
                 "reader_mode_session_rate_limiting", true);
     }
 
+    // TODO: This should use a passed in reference to a Profile rather than
+    // getLastUsedRegularProfile, but for starters we use it, just like in
+    // AdaptiveStatePredictor#readFromSegmentationPlatform.
+    public static boolean isAdaptiveToolbarReadAloudEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)
+                && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
+                        sProfileForTesting != null ? sProfileForTesting
+                                                   : Profile.getLastUsedRegularProfile());
+    }
+
     /**
      * @return Whether contextual page actions UI is enabled.
      */
@@ -295,6 +309,12 @@ public class AdaptiveToolbarFeatures {
     static void setShowUiOnlyAfterReadyForTesting(boolean showUiOnlyAfterReady) {
         sShowUiOnlyAfterReadyForTesting = showUiOnlyAfterReady;
         ResettersForTesting.register(() -> sShowUiOnlyAfterReadyForTesting = null);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void setProfile(Profile profile) {
+        sProfileForTesting = profile;
+        ResettersForTesting.register(() -> sProfileForTesting = null);
     }
 
     public static void clearParsedParamsForTesting() {

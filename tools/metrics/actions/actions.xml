@@ -20416,7 +20416,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileMenuReadAloud">
   <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>iwells@chromium.com</owner>
   <description>User pressed 'Listen to this page' in the app menu.</description>
 </action>
 
@@ -22805,6 +22805,14 @@ should be able to be added at any place in this file.
   <description>
     The user tapped on the top toolbar's optional button acting as a new tab
     button.
+  </description>
+</action>
+
+<action name="MobileTopToolbarReadAloudButton">
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.com</owner>
+  <description>
+    The user tapped on the top toolbar's read aloud button.
   </description>
 </action>
 
