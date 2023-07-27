@@ -280,6 +280,12 @@ interface PrintPreviewUI {
   DidStartPreview(DidStartPreviewParams params, int32 request_id);
 };
 
+struct PrintWithParamsResultData {
+  DidPrintDocumentParams params;
+  [EnableIf=enable_tagged_pdf]
+  ax.mojom.AXTreeUpdate accessibility_tree;
+};
+
 enum PrintFailureReason {
   kGeneralFailure,
   kInvalidPageRange,
@@ -287,7 +293,7 @@ enum PrintFailureReason {
 };
 
 union PrintWithParamsResult {
-  DidPrintDocumentParams params;
+  PrintWithParamsResultData data;
   PrintFailureReason failure_reason;
 };
 

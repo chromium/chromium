@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -28,6 +29,8 @@
 #include "components/headless/test/capture_std_stream.h"
 #include "components/headless/test/pdf_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/pdf.h"
+#include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -442,5 +445,60 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
   EXPECT_TRUE(page_bitmap.CheckColoredRect(SkColorSetRGB(0x00, 0x64, 0x00),
                                            SkColorSetRGB(0xff, 0xff, 0xff)));
 }
+
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+
+class HeadlessModeTaggedPrintToPdfCommandBrowserTest
+    : public HeadlessModePrintToPdfCommandBrowserTestBase {
+ public:
+  HeadlessModeTaggedPrintToPdfCommandBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModePrintToPdfCommandBrowserTestBase::SetUpCommandLine(
+        command_line);
+    command_line->AppendArg(GetTargetUrl("/hello.html").spec());
+  }
+};
+
+const char kExpectedStructTreeJSON[] = R"({
+   "lang": "en-US",
+   "type": "Document",
+   "~children": [ {
+      "type": "H1",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   } ]
+}
+)";
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
+                       HeadlessTaggedPrintToPdf) {
+  ASSERT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::string pdf_data;
+  ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
+      << print_to_pdf_filename_;
+
+  auto pdf_span = base::as_bytes(base::make_span(pdf_data));
+
+  int num_pages;
+  ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages,
+                                        /*max_page_width=*/nullptr));
+
+  EXPECT_THAT(num_pages, testing::Eq(1));
+
+  EXPECT_THAT(chrome_pdf::IsPDFDocTagged(pdf_span), testing::Optional(true));
+
+  base::Value struct_tree =
+      chrome_pdf::GetPDFStructTreeForPage(pdf_span, /*page_index=*/0);
+
+  EXPECT_THAT(kExpectedStructTreeJSON, base::test::IsJson((struct_tree)));
+}
+
+#endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
 
 }  // namespace headless

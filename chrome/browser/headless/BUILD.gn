@@ -101,6 +101,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/test:test_support",
       "//content/test:test_support",
+      "//pdf",
       "//testing/gtest",
     ]
 

@@ -656,7 +656,7 @@ class HeadlessTaggedPDFBrowserTest
     EXPECT_THAT(num_pages, testing::Eq(1));
 
     absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
-    EXPECT_THAT(tagged, testing::Optional(true));
+    ASSERT_THAT(tagged, testing::Optional(true));
 
     constexpr int kFirstPage = 0;
     base::Value struct_tree =

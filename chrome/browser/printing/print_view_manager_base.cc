@@ -576,6 +576,9 @@ void PrintViewManagerBase::DidPrintDocument(
     auto* client = PrintCompositeClient::FromWebContents(web_contents());
     client->DoCompositeDocumentToPdf(
         params->document_cookie, GetCurrentTargetFrame(), content,
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+        ui::AXTreeUpdate(),
+#endif
         base::BindOnce(&PrintViewManagerBase::OnComposePdfDone,
                        weak_ptr_factory_.GetWeakPtr(), params->document_cookie,
                        params->page_size, params->content_area,
@@ -1300,6 +1303,9 @@ void PrintViewManagerBase::OnGotSnapshotCallback(
     auto* client = PrintCompositeClient::FromWebContents(web_contents());
     client->DoCompositeDocumentToPdf(
         params->document_cookie, rfh, *params->content,
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+        ui::AXTreeUpdate(),
+#endif
         base::BindOnce(&PrintViewManagerBase::OnCompositedForContentAnalysis,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(data), rfh_id));

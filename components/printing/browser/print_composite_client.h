@@ -86,6 +86,9 @@ class PrintCompositeClient
       int cookie,
       content::RenderFrameHost* render_frame_host,
       const mojom::DidPrintContentParams& content,
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+      const ui::AXTreeUpdate& accessibility_tree,
+#endif
       mojom::PrintCompositor::CompositeDocumentToPdfCallback callback);
 
   // Get the concurrent composition status for a document.  Identifies if the

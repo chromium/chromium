@@ -2390,10 +2390,15 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   // drawing commands are only annotated with a DOMNodeId if accessibility
   // is enabled.
   std::unique_ptr<content::AXTreeSnapshotter> snapshotter;
+  ui::AXTreeUpdate accessibility_tree;
   if (delegate_->ShouldGenerateTaggedPDF()) {
     snapshotter = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
-    snapshotter->Snapshot(/* max_node_count= */ 0,
-                          /* timeout= */ {}, &metafile.accessibility_tree());
+    snapshotter->Snapshot(
+        /*max_node_count=*/0,
+        /*timeout=*/{},
+        print_params.printed_doc_type == mojom::SkiaDocumentType::kMSKP
+            ? &accessibility_tree
+            : &metafile.accessibility_tree());
   }
 
   mojom::DidPrintDocumentParamsPtr page_params =
@@ -2425,8 +2430,13 @@ bool PrintRenderFrameHelper::PrintPagesNative(
 #endif
 
   if (print_with_params_callback_) {
+    auto result = mojom::PrintWithParamsResultData::New();
+    result->params = std::move(page_params);
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+    result->accessibility_tree = std::move(accessibility_tree);
+#endif
     std::move(print_with_params_callback_)
-        .Run(mojom::PrintWithParamsResult::NewParams(std::move(page_params)));
+        .Run(mojom::PrintWithParamsResult::NewData(std::move(result)));
     Reset();
     return true;
   }

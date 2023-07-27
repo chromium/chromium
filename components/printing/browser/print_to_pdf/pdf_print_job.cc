@@ -75,10 +75,10 @@ void PdfPrintJob::OnDidPrintWithParams(
     }
   }
 
-  printing::mojom::DidPrintDocumentParamsPtr& params = result->get_params();
-
-  auto& content = *params->content;
-  auto& region = content.metafile_data_region;
+  const printing::mojom::DidPrintDocumentParamsPtr& params =
+      result->get_data()->params;
+  const auto& content = *params->content;
+  const auto& region = content.metafile_data_region;
   if (!region.IsValid()) {
     FailJob(PdfPrintResult::kInvalidSharedMemoryRegion);
     return;
@@ -94,6 +94,9 @@ void PdfPrintJob::OnDidPrintWithParams(
   printing::PrintCompositeClient::FromWebContents(web_contents())
       ->DoCompositeDocumentToPdf(
           params->document_cookie, printing_rfh_, content,
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+          result->get_data()->accessibility_tree,
+#endif
           base::BindOnce(&PdfPrintJob::OnCompositeDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr()));
 }
