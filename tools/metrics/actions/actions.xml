@@ -7699,6 +7699,38 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CookieControls.HighConfidence.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was clicked on for a high confidence page.
+  </description>
+</action>
+
+<action name="CookieControls.HighConfidence.Shown">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was shown for a high confidence page.
+  </description>
+</action>
+
+<action name="CookieControls.MediumConfidence.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was clicked on for a medium confidence page.
+  </description>
+</action>
+
+<action name="CookieControls.MediumConfidence.Shown">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was shown for a medium confidence page.
+  </description>
+</action>
+
 <action name="CookieControls.NTP.Disabled">
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>

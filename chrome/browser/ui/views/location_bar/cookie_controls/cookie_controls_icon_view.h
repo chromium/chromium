@@ -42,6 +42,8 @@ class CookieControlsIconView : public PageActionIconView,
   void UpdateImpl() override;
 
   CookieControlsBubbleCoordinator* GetCoordinatorForTesting() const;
+  void SetCoordinatorForTesting(
+      std::unique_ptr<CookieControlsBubbleCoordinator> coordinator);
 
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;

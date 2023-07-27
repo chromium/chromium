@@ -27,10 +27,11 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
 
   // Shows the CookieControlsBubbleView. If the bubble is currently shown it
   // simply returns.
-  void ShowBubble(content::WebContents* web_contents,
-                  content_settings::CookieControlsController* controller);
+  virtual void ShowBubble(
+      content::WebContents* web_contents,
+      content_settings::CookieControlsController* controller);
 
-  CookieControlsBubbleViewImpl* GetBubble();
+  virtual CookieControlsBubbleViewImpl* GetBubble() const;
 
   void SetDisplayNameForTesting(const std::u16string& name);
 

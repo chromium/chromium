@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -15,12 +16,39 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "cookie_controls_bubble_coordinator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+
+void RecordShownActionForConfidence(
+    CookieControlsBreakageConfidenceLevel confidence) {
+  if (confidence == CookieControlsBreakageConfidenceLevel::kHigh) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.HighConfidence.Shown"));
+  } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.MediumConfidence.Shown"));
+  }
+}
+
+void RecordOpenedActionForConfidence(
+    CookieControlsBreakageConfidenceLevel confidence) {
+  if (confidence == CookieControlsBreakageConfidenceLevel::kHigh) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.HighConfidence.Opened"));
+  } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.MediumConfidence.Opened"));
+  }
+}
+
+}  // namespace
 
 CookieControlsIconView::CookieControlsIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -45,6 +73,11 @@ CookieControlsIconView::~CookieControlsIconView() = default;
 CookieControlsBubbleCoordinator*
 CookieControlsIconView::GetCoordinatorForTesting() const {
   return bubble_coordinator_.get();
+}
+
+void CookieControlsIconView::SetCoordinatorForTesting(
+    std::unique_ptr<CookieControlsBubbleCoordinator> coordinator) {
+  bubble_coordinator_ = std::move(coordinator);
 }
 
 void CookieControlsIconView::UpdateImpl() {
@@ -81,6 +114,7 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
               l10n_util::GetStringUTF16(label.value()));
         }
       }
+      RecordShownActionForConfidence(confidence_);
     }
   } else {
     UnpauseAnimation();
@@ -165,6 +199,7 @@ void CookieControlsIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
   bubble_coordinator_->ShowBubble(
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
+  RecordOpenedActionForConfidence(confidence_);
 }
 
 views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {

@@ -46,7 +46,8 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   widget->Show();
 }
 
-CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble() {
+CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble()
+    const {
   return bubble_view_;
 }
 
