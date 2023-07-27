@@ -25,5 +25,4 @@ source_set("tab_grid") {
     "//ios/showcase/common",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

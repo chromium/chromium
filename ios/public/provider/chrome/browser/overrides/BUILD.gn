@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("overrides_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "overrides_api.h" ]
 }

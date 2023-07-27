@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("lottie_animation_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lottie_animation_api.h",
     "lottie_animation_configuration.h",

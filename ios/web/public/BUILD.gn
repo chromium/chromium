@@ -37,8 +37,6 @@ source_set("public") {
     "web_state_observer_bridge.h",
     "web_state_user_data.h",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 # Un-separate this once the things in public/deprecated that need it are
@@ -50,6 +48,4 @@ source_set("web_state_observer") {
     "//url",
   ]
   sources = [ "web_state_observer.h" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -18,6 +18,4 @@ source_set("annotations") {
   ]
 
   frameworks = [ "Foundation.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

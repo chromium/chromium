@@ -37,8 +37,6 @@ source_set("download") {
   ]
 
   frameworks = [ "UIKit.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("download_cookies") {
@@ -56,12 +54,9 @@ source_set("download_cookies") {
   ]
 
   frameworks = [ "Foundation.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("download_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":download_cookies",
@@ -92,7 +87,6 @@ source_set("download_unittests") {
 }
 
 source_set("download_inttests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     "//base/test:test_support",

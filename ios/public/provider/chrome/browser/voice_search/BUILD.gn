@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("voice_search_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "voice_search_api.h",
     "voice_search_controller.h",

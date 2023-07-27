@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("choice_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "choice_api.h" ]
   deps = [
     "//ios/chrome/browser/promos_manager",
@@ -17,14 +16,12 @@ source_set("choice_api") {
 }
 
 source_set("signin_error_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_error_api.h" ]
   deps = []
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("signin_identity_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_identity_api.h" ]
   deps = [ ":signin_sso_api" ]
   public_deps = [ "//ios/chrome/browser/signin:system_identity_manager" ]
@@ -32,21 +29,18 @@ source_set("signin_identity_api") {
 }
 
 source_set("signin_resources_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_resources_api.h" ]
   deps = []
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("signin_sso_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_sso_api.h" ]
   deps = []
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("trusted_vault_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "trusted_vault_api.h" ]
   deps = [ "//ios/chrome/browser/signin:trusted_vault" ]
 }

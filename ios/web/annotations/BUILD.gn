@@ -26,8 +26,6 @@ source_set("annotations") {
     "annotations_text_manager_impl.h",
     "annotations_text_manager_impl.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 compile_ts("compile_ts") {
@@ -59,7 +57,6 @@ optimize_ts("annotations_test_ts") {
 }
 
 source_set("inttests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":annotations",

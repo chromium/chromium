@@ -17,10 +17,7 @@ group("all_tests") {
 # EG2 targets.
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -55,10 +52,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -92,10 +86,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [

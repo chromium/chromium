@@ -6,7 +6,6 @@ import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("context_menu") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":context_menu_all_frames_ts",
     ":context_menu_main_frame_ts",
@@ -55,7 +54,6 @@ optimize_ts("context_menu_main_frame_ts") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [

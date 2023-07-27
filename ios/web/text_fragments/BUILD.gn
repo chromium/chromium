@@ -29,8 +29,6 @@ source_set("text_fragments") {
     "text_fragments_manager_impl.h",
     "text_fragments_manager_impl.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 compile_ts("compile_text_fragments_js") {

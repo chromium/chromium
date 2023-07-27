@@ -28,14 +28,10 @@ source_set("navigation") {
     "web_state_policy_decider.h",
     "web_state_policy_decider_bridge.h",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("referrer") {
   deps = [ "//url" ]
 
   sources = [ "referrer.h" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

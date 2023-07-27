@@ -13,14 +13,10 @@ source_set("discover_feed_preview") {
     "//ios/showcase/common",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "sc_discover_feed_preview_coordinator_egtest.mm" ]
   deps = [

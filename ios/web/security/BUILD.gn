@@ -5,8 +5,6 @@
 import("//ios/build/config.gni")
 
 source_set("security") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/web/common",
@@ -38,7 +36,6 @@ source_set("security") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":security",

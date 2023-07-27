@@ -49,6 +49,4 @@ source_set("webui") {
     "web_ui_messaging_java_script_feature.h",
     "web_ui_messaging_java_script_feature.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

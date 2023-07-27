@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("text_zoom_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "text_zoom_api.h" ]
 }

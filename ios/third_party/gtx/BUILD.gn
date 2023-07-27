@@ -70,7 +70,6 @@ source_set("oop_classes") {
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 ios_framework_bundle("gtx") {
@@ -228,7 +227,6 @@ ios_framework_bundle("gtx") {
     "//build/config/compiler:chromium_code",
   ]
   configs += [
-    "//build/config/compiler:enable_arc",
     "//build/config/gcc:symbol_visibility_default",
     ":disable_deprecated_declarations",
   ]

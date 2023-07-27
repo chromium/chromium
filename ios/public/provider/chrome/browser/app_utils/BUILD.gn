@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("app_utils_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "app_utils_api.h" ]
 }

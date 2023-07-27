@@ -40,7 +40,6 @@ grit("resources") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   # This public_dep is a workaround because there is a circular dependency
@@ -89,7 +88,6 @@ source_set("test_support") {
 }
 
 source_set("js_test_util_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [ "//base/test:test_support" ]

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("session") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":hash_util",
     "//base",
@@ -27,7 +26,6 @@ source_set("session") {
 }
 
 source_set("hash_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [ ":session" ]
   sources = [ "hash_util.h" ]
   deps = [
@@ -37,7 +35,6 @@ source_set("hash_util") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     "//ios/web/public",

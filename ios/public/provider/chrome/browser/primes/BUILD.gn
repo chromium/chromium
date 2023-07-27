@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("primes_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "primes_api.h" ]
   deps = [ "//base" ]
 }

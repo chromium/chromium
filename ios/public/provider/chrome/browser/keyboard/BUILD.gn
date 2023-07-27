@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("keyboard_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "keyboard_api.h" ]
 
   frameworks = [ "UIKit.framework" ]

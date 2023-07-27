@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("modals_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "modals_api.h" ]
 }

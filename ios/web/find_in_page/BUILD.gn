@@ -36,7 +36,6 @@ source_set("find_in_page") {
     "java_script_find_in_page_request.mm",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 compile_ts("compile_ts") {
@@ -92,6 +91,4 @@ source_set("find_in_page_unittests") {
     "java_script_find_in_page_manager_impl_unittest.mm",
     "java_script_find_in_page_request_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

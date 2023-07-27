@@ -17,7 +17,6 @@ source_set("material_sprited_animation_view_ios") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     ":material_sprited_animation_view_ios_config",
-    "//build/config/compiler:enable_arc",
     "//build/config/compiler:no_chromium_code",
   ]
 }

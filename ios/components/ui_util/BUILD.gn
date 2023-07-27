@@ -1,5 +1,4 @@
 source_set("ui_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
@@ -9,7 +8,6 @@ source_set("ui_util") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "dynamic_type_util_unittest.mm" ]
   deps = [

@@ -6,7 +6,6 @@ import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("scroll_helper") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":scroll_helper_js",
     "//base",

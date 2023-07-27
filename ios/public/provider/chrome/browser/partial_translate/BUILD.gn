@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("partial_translate_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "partial_translate_api.h" ]
   deps = [ "//base" ]
 }

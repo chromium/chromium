@@ -12,8 +12,6 @@ ios_app_bundle("ios_web_shell") {
 
   deps = [ ":shell" ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   assert_no_deps = ios_assert_no_deps
 }
 
@@ -74,6 +72,4 @@ source_set("shell") {
     "UIKit.framework",
     "UniformTypeIdentifiers.framework",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

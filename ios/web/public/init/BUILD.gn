@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 source_set("init") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "network_context_owner.h",
     "web_main.h",
@@ -25,8 +23,6 @@ source_set("init") {
 }
 
 source_set("global_state") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "ios_global_state.h",
     "ios_global_state_configuration.h",

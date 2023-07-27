@@ -412,10 +412,7 @@ source_set("web_view_sources") {
 
   public_deps = ios_web_view_deps
 
-  configs += [
-    ":config",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":config" ]
 }
 
 action("web_view_umbrella_header") {
@@ -467,10 +464,7 @@ ios_framework_bundle("web_view") {
     deps += [ "//components/cronet/ios:cronet_sources" ]
   }
 
-  configs += [
-    ":config",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":config" ]
   if (ios_web_view_include_cronet) {
     configs -= [ "//build/config/compiler:default_symbols" ]
     configs += [ "//build/config/compiler:symbols" ]
@@ -561,8 +555,6 @@ test("ios_web_view_unittests") {
     "//third_party/ocmock",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   assert_no_deps = ios_assert_no_deps
 }
 
@@ -572,8 +564,6 @@ test("ios_web_view_inttests") {
   deps = [ "//ios/web_view/test:inttests" ]
 
   bundle_deps = [ ":web_view+bundle" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   assert_no_deps = ios_assert_no_deps
 }

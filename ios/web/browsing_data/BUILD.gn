@@ -19,13 +19,10 @@ source_set("browsing_data") {
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   frameworks = [ "WebKit.framework" ]
 }
 
 source_set("browsing_data_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":browsing_data",

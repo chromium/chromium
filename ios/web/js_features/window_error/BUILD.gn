@@ -6,7 +6,6 @@ import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("window_error") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":error_js",
     "//base",
@@ -29,7 +28,6 @@ optimize_ts("error_js") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [

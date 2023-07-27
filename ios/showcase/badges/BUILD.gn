@@ -22,7 +22,6 @@ source_set("badges") {
     "//ios/showcase/common",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("badges_constants") {
@@ -30,14 +29,10 @@ source_set("badges_constants") {
     "sc_badge_constants.h",
     "sc_badge_constants.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "sc_badge_egtest.mm" ]
   deps = [

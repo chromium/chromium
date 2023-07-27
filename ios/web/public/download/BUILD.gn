@@ -20,6 +20,4 @@ source_set("download") {
   ]
 
   frameworks = [ "Foundation.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

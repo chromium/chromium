@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("omaha_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "omaha_api.h" ]
   public_deps = [
     "//base",

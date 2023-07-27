@@ -4,6 +4,5 @@
 
 source_set("permissions") {
   sources = [ "permissions.h" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
 }

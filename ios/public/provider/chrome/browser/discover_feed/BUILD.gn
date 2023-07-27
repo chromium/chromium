@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("discover_feed_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "discover_feed_api.h" ]
   public_deps = [ "//ios/chrome/browser/discover_feed" ]
 }

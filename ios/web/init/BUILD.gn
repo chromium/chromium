@@ -14,8 +14,6 @@ source_set("init") {
     "web_main_runner_impl.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":global_state",
     "//base",
@@ -46,8 +44,6 @@ source_set("init") {
 
 source_set("global_state") {
   sources = [ "ios_global_state.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",

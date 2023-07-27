@@ -27,5 +27,4 @@ source_set("omnibox_popup") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
