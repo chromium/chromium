@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
@@ -49,10 +50,14 @@ bool IsAndroidGid(uint32_t gid) {
 }
 
 bool IsAndroidProjectId(uint32_t project_id) {
+  uint32_t project_id_for_android_apps_end =
+      GetArcAndroidSdkVersionAsInt() < kArcVersionT
+          ? kProjectIdForAndroidAppsEndBeforeT
+          : kProjectIdForAndroidAppsEndAfterT;
   return (project_id >= kProjectIdForAndroidFilesStart &&
           project_id <= kProjectIdForAndroidFilesEnd) ||
          (project_id >= kProjectIdForAndroidAppsStart &&
-          project_id <= kProjectIdForAndroidAppsEnd);
+          project_id <= project_id_for_android_apps_end);
 }
 
 void IsQuotaSupportedOnArcDiskHome(

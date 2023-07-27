@@ -4,8 +4,11 @@
 
 #include "ash/components/arc/disk_quota/arc_disk_quota_bridge.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -16,6 +19,13 @@
 
 namespace arc {
 namespace {
+
+base::test::ScopedChromeOSVersionInfo SetArcAndroidSdkVersionForTesting(
+    int version) {
+  return base::test::ScopedChromeOSVersionInfo(
+      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d", version),
+      base::Time::Now());
+}
 
 class ArcDiskQuotaBridgeTest : public testing::Test {
  protected:
@@ -126,7 +136,19 @@ TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForGid_InvalidId) {
   EXPECT_EQ(future.Get(), -1);
 }
 
-TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForProjectId_Success) {
+class ArcDiskQuotaBridgeWithArcVersionTest
+    : public ArcDiskQuotaBridgeTest,
+      public ::testing::WithParamInterface<int> {};
+
+TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+       GetQuotaCurrentSpaceForProjectId_Success) {
+  const int arc_sdk_version = GetParam();
+  const auto scoped_version_info =
+      SetArcAndroidSdkVersionForTesting(arc_sdk_version);
+  const uint32_t kProjectIdForAndroidAppsEnd =
+      arc_sdk_version < kArcVersionT ? kProjectIdForAndroidAppsEndBeforeT
+                                     : kProjectIdForAndroidAppsEndAfterT;
+
   const std::vector<std::pair<uint32_t, int64_t>>
       valid_android_project_id_and_expected_space = {
           {kProjectIdForAndroidFilesStart, 100},
@@ -152,7 +174,15 @@ TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForProjectId_Success) {
   }
 }
 
-TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForProjectId_InvalidId) {
+TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+       GetQuotaCurrentSpaceForProjectId_Invalid) {
+  const int arc_sdk_version = GetParam();
+  const auto scoped_version_info =
+      SetArcAndroidSdkVersionForTesting(arc_sdk_version);
+  const uint32_t kProjectIdForAndroidAppsEnd =
+      arc_sdk_version < kArcVersionT ? kProjectIdForAndroidAppsEndBeforeT
+                                     : kProjectIdForAndroidAppsEndAfterT;
+
   const std::vector<uint32_t> invalid_android_project_id = {
       kProjectIdForAndroidFilesStart - 1,
       kProjectIdForAndroidFilesEnd + 1,
@@ -166,6 +196,14 @@ TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForProjectId_InvalidId) {
     EXPECT_EQ(future.Get(), -1);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(ArcDiskQuotaBridgeTestForR,
+                         ArcDiskQuotaBridgeWithArcVersionTest,
+                         testing::Values(kArcVersionR));
+
+INSTANTIATE_TEST_SUITE_P(ArcDiskQuotaBridgeTestForT,
+                         ArcDiskQuotaBridgeWithArcVersionTest,
+                         testing::Values(kArcVersionT));
 
 }  // namespace
 }  // namespace arc
