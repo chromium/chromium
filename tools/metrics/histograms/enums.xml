@@ -83815,6 +83815,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Reallowed"/>
   <int value="2" label="Reset from denied state"/>
   <int value="3" label="Reset from allowed state"/>
+  <int value="4" label="Remember decision checkbox toggled"/>
 </enum>
 
 <enum name="PermissionChangeInfo">

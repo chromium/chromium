@@ -375,8 +375,13 @@ enum class PermissionChangeAction {
   // CONTENT_SETTING_DEFAULT.
   RESET_FROM_DENIED = 3,
 
+  // For one time grantable permissions, the user can toggle a remember checkbox
+  // in the secondary page info page which toggles grants between permanent
+  // grant and one time grant.
+  REMEMBER_CHECKBOX_TOGGLED = 4,
+
   // Always keep at the end.
-  kMaxValue = RESET_FROM_DENIED
+  kMaxValue = REMEMBER_CHECKBOX_TOGGLED
 };
 
 // The reason the permission action `PermissionAction::IGNORED` was triggered.
