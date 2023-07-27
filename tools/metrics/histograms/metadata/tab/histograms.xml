@@ -1921,6 +1921,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.ButtonPressedToNextFramePresented" units="ms"
+    expires_after="2024-07-27">
+  <owner>temao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    This metric is intended to measure the time from when the Tab Search button
+    is pressed to the next visual update of the bubble widget (which may or may
+    not already be visible). It is recorded on successful presentation of the
+    bubble's next compositor frame.
+
+    We also have metrics measuring time for widget construction. Please refer to
+    Tabs.TabSearch.WindowTimeToShowUncachedWebView and
+    Tabs.TabSearch.WindowTimeToShowCachedWebView.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.CloseAction" enum="TabSearchCloseActions"
     expires_after="2023-12-13">
   <owner>tluk@chromium.org</owner>

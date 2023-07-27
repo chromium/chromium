@@ -163,6 +163,18 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
     // Tab Search bubble.
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
                                   GetActionForEvent(event));
+
+    webui_bubble_manager_.GetBubbleWidget()
+        ->GetCompositor()
+        ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+            [](base::TimeTicks button_pressed_time,
+               base::TimeTicks presentation_timestamp) {
+              base::UmaHistogramMediumTimes(
+                  "Tabs.TabSearch."
+                  "ButtonPressedToNextFramePresented",
+                  presentation_timestamp - button_pressed_time);
+            },
+            base::TimeTicks::Now()));
     return;
   }
   CloseTabSearchBubble();
