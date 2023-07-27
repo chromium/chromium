@@ -769,7 +769,7 @@ def _generate_variants_pyl(ctx):
         formatter.close_scope("},")
 
     ctx.output["testing/variants.pyl"] = _PYL_HEADER_FMT.format(
-        star_file = "variants.pyl",
+        star_file = "variants.star",
         entries = formatter.output(),
     )
 

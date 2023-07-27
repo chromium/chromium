@@ -1,6 +1,6 @@
 # THIS IS A GENERATED FILE DO NOT EDIT!!!
 # Instead:
-# 1. Modify //infra/config/targets/variants.pyl
+# 1. Modify //infra/config/targets/variants.star
 # 2. Run //infra/config/main.star
 # 3. Run //infra/config/scripts/sync-py-files.py
 
