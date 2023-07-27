@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/command_line.h",
     "+cc/layers/texture_layer.h",
     "+cc/layers/texture_layer_client.h",
     "+cc/resources/cross_thread_shared_bitmap.h",
@@ -11,6 +12,7 @@ include_rules = [
     "+gpu/command_buffer/client/webgpu_interface.h",
     "+gpu/command_buffer/client/webgpu_interface_stub.h",
     "+gpu/config/gpu_finch_features.h",
+    "+gpu/config/gpu_switches.h",
     "+media/base/video_frame.h",
     "+media/base/video_transformation.h",
     "+media/base/wait_and_replace_sync_token_client.h",
