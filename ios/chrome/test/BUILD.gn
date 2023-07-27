@@ -43,7 +43,6 @@ group("all_fuzzer_tests") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_chrome_scoped_testing_chrome_browser_state_manager.h",
@@ -95,10 +94,7 @@ source_set("test_support") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "scoped_eg_synchronization_disabler.h",
@@ -123,7 +119,6 @@ source_set("block_cleanup_test") {
     "//base",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("ios_chrome_unit_test_suite") {
@@ -151,7 +146,6 @@ source_set("ios_chrome_unit_test_suite") {
     "//ui/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("run_all_unittests") {

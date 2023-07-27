@@ -11,7 +11,6 @@ source_set("colors") {
     "semantic_color_names.mm",
   ]
   deps = [ "resources" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 swift_source_set("swift") {

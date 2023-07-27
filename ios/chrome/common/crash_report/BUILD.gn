@@ -10,8 +10,6 @@ source_set("crash_report") {
     "crash_helper.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/crash/core/app",

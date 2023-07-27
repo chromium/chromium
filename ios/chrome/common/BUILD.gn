@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "channel_info.h",
     "channel_info.mm",
@@ -27,7 +26,6 @@ source_set("common") {
 }
 
 source_set("button_config") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "button_configuration_util.h",
     "button_configuration_util.mm",
@@ -36,7 +34,6 @@ source_set("button_config") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",
@@ -50,7 +47,6 @@ source_set("string_util") {
     "string_util.mm",
   ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -61,8 +57,6 @@ source_set("timing") {
   ]
 
   frameworks = [ "QuartzCore.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -82,7 +76,6 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/util:util",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 buildflag_header("ios_app_bundle_id_prefix_buildflags") {

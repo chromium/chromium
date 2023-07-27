@@ -16,7 +16,6 @@ source_set("table_view") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("cells_constants") {
@@ -25,5 +24,4 @@ source_set("cells_constants") {
     "table_view_cells_constants.mm",
   ]
   deps = [ "//ios/chrome/common/ui/util" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

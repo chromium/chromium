@@ -4,7 +4,6 @@
 
 source_set("voice_search") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "test_voice_search.h",
     "test_voice_search.mm",

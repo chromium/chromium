@@ -4,7 +4,6 @@
 
 source_set("user_feedback") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_user_feedback.mm" ]
   deps = [
     "//base",

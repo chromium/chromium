@@ -33,7 +33,6 @@ source_set("crash_helper") {
 
   deps = [ "//ios/chrome/common/crash_report" ]
   frameworks = [ "Foundation.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 swift_source_set("widget_kit_extension_swift") {
@@ -71,8 +70,6 @@ swift_source_set("widget_kit_extension_swift") {
     "//ios/chrome/common/ntp_tile",
     "//ui/base:base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   # Swift does not have the equivalent of __IPHONE_16_0, so use a
   # custom define instead.

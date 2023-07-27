@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 
 source_set("credential_provider") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "archivable_credential.h",
     "archivable_credential.mm",
@@ -38,7 +37,6 @@ source_set("credential_provider") {
 }
 
 source_set("ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "credential.h",
     "credential_store.h",
@@ -47,7 +45,6 @@ source_set("ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "archivable_credential_store_unittest.mm",

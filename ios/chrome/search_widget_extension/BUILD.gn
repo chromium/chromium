@@ -43,8 +43,6 @@ source_set("search_widget") {
   ]
 
   assert_no_deps = [ "//ios/chrome/browser/*" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 repack_locales("packed_resources") {

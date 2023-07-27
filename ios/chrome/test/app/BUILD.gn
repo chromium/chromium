@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "bookmarks_test_util.h",

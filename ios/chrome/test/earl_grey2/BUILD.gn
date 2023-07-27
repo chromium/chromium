@@ -250,10 +250,7 @@ chrome_ios_eg2_test("ios_chrome_web_eg2tests_module") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [ "smoke_egtest.mm" ]

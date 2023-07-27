@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 executable("generate_localizable_strings") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "generate_localizable_strings.mm" ]
   deps = [
     ":grit_header_parsing",
@@ -14,7 +13,6 @@ executable("generate_localizable_strings") {
 }
 
 executable("substitute_strings_identifier") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "substitute_strings_identifier.mm" ]
   deps = [
     ":grit_header_parsing",
@@ -24,7 +22,6 @@ executable("substitute_strings_identifier") {
 }
 
 source_set("grit_header_parsing") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "grit_header_parsing.cc",
     "grit_header_parsing.h",

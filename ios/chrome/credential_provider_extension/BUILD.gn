@@ -23,7 +23,6 @@ extension_repack_all_locales("packed_resources") {
 }
 
 source_set("credential_provider") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "credential_provider_view_controller.h",
     "credential_provider_view_controller.mm",
@@ -79,7 +78,6 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("reauthentication_handler") {
@@ -87,7 +85,6 @@ source_set("reauthentication_handler") {
     "reauthentication_handler.h",
     "reauthentication_handler.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//ios/chrome/common/app_group",
@@ -106,7 +103,6 @@ source_set("password_util") {
     "password_util.h",
     "password_util.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//ios/chrome/common/app_group",
@@ -121,7 +117,6 @@ source_set("metrics_util") {
     "metrics_util.h",
     "metrics_util.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//ios/chrome/common/app_group",
@@ -133,14 +128,12 @@ source_set("account_verification_provider") {
   public_deps = [ ":account_verification_provider_header" ]
   deps = [ ios_account_verification_provider_target ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("account_verification_provider_header") {
   sources = [ "account_verification_provider.h" ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -148,6 +141,5 @@ source_set("account_verification_provider_implementation") {
   sources = [ "account_verification_provider.mm" ]
   deps = [ ":account_verification_provider_header" ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
 }

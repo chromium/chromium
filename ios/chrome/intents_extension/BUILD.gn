@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("intents") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_intents_handler.h",
     "chrome_intents_handler.mm",

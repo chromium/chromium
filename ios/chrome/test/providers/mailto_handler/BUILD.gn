@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("mailto_handler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_mailto_handler.mm" ]
   deps = [
     "//base",

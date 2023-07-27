@@ -124,7 +124,6 @@ source_set("cwt_constants") {
 
 source_set("app_support") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
     "cwt_stderr_logger.h",
@@ -156,10 +155,7 @@ source_set("app_support") {
 
 source_set("cwt_chromedriver_tests") {
   testonly = true
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
 
   sources = [
     "cwt_chrome_driver.mm",

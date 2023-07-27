@@ -22,7 +22,6 @@ extension_repack_all_locales("packed_resources") {
 }
 
 source_set("share") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "share_extension_view.h",
     "share_extension_view.mm",

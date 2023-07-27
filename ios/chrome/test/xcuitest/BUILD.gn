@@ -26,10 +26,7 @@ ios_xcuitest_test("ios_chrome_device_check_xcuitests_module") {
 
 # This target is only used in routinely device checks.
 source_set("device_check_xcuitests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "device_check_xctest.mm" ]
   deps = [
@@ -41,7 +38,6 @@ source_set("device_check_xcuitests") {
 }
 
 source_set("hooks") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "xcuitests_hook.mm" ]
   deps = [

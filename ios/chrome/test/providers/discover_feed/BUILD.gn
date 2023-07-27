@@ -4,7 +4,6 @@
 
 source_set("discover_feed") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_discover_feed.mm" ]
   deps =
       [ "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api" ]

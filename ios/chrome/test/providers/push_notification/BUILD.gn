@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("push_notification") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_push_notification.mm" ]
   deps = [
     "//base",

@@ -31,11 +31,9 @@ source_set("util") {
     "//ios/chrome/common/ui/colors",
     "//ui/gfx/ios:uikit_util",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("dynamic_type_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
@@ -44,7 +42,6 @@ source_set("dynamic_type_util") {
 }
 
 source_set("image_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "image_util.h",
     "image_util.mm",
@@ -57,7 +54,6 @@ source_set("image_util") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "dynamic_type_util_unittest.mm",

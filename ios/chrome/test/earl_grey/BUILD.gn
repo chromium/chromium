@@ -5,10 +5,7 @@
 # This target is only used in routinely device checks. Thus, the target name is
 # different from other EG2 tests.
 source_set("device_check_eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "device_check_egtest.mm" ]
   deps = [
@@ -23,7 +20,6 @@ source_set("device_check_eg2_tests") {
 }
 
 source_set("hooks") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "eg_tests_hook.mm" ]
   deps = [
@@ -45,10 +41,7 @@ source_set("hooks") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "accessibility_util.h",
@@ -225,10 +218,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -311,7 +301,6 @@ source_set("eg_test_support+eg2") {
 
 source_set("chrome_egtest_bundle_main+eg2") {
   configs += [
-    "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
 
     # Adding this config to exempt from the style check:
@@ -337,8 +326,6 @@ source_set("chrome_egtest_bundle_main+eg2") {
 
 source_set("chrome_egtest_plugin_client") {
   configs += [
-    "//build/config/compiler:enable_arc",
-
     # Adding this config to exempt from the style check:
     # "cannot use 'try' with exceptions disabled". This cannot be fixed because
     # it's part of the gRPC library.
@@ -360,7 +347,6 @@ source_set("chrome_egtest_plugin_client") {
 
 source_set("switches") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "test_switches.h",
     "test_switches.mm",
