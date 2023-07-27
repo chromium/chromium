@@ -808,6 +808,27 @@ TEST_F(SyncPrefsMigrationTest, MigrateAutofillWalletImportEnabledPrefIfUnset) {
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
 }
 
+// Regression test for crbug.com/1467307.
+TEST_F(SyncPrefsMigrationTest,
+       MigrateAutofillWalletImportEnabledPrefIfUnsetWithSyncEverythingOff) {
+  // Mimic an old profile where sync-everything was turned off without
+  // populating kObsoleteAutofillWalletImportEnabled (i.e. before the UI
+  // included the payments toggle).
+  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
+
+  ASSERT_FALSE(
+      pref_service_.GetUserPrefValue(kObsoleteAutofillWalletImportEnabled));
+
+  SyncPrefs::MigrateAutofillWalletImportEnabledPref(&pref_service_);
+
+  SyncPrefs prefs(&pref_service_);
+
+  EXPECT_TRUE(pref_service_.GetUserPrefValue(
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
+  EXPECT_TRUE(pref_service_.GetBoolean(
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
+}
+
 TEST_F(SyncPrefsMigrationTest, SyncToSignin_NoMigrationForSignedOutUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
