@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/http/http_response_headers.h"
@@ -42,19 +41,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
-
-const char kCnameAliasHadAliasesHistogram[] =
-    "SubresourceFilter.CnameAlias.Renderer.HadAliases";
-const char kCnameAliasIsInvalidCountHistogram[] =
-    "SubresourceFilter.CnameAlias.Renderer.InvalidCount";
-const char kCnameAliasIsRedundantCountHistogram[] =
-    "SubresourceFilter.CnameAlias.Renderer.RedundantCount";
-const char kCnameAliasListLengthHistogram[] =
-    "SubresourceFilter.CnameAlias.Renderer.ListLength";
-const char kCnameAliasWasAdTaggedHistogram[] =
-    "SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias";
-const char kCnameAliasWasBlockedHistogram[] =
-    "SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias";
 
 namespace {
 
@@ -620,8 +606,6 @@ class ResourceLoaderSubresourceFilterCnameAliasTest
     ResourceLoaderTest::SetUp();
   }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-
   void SetMockSubresourceFilterBlockLists(Vector<String> blocked_urls,
                                           Vector<String> tagged_urls) {
     blocked_urls_ = blocked_urls;
@@ -669,28 +653,29 @@ class ResourceLoaderSubresourceFilterCnameAliasTest
     ASSERT_EQ(result, MOJO_RESULT_OK);
   }
 
-  void ExpectHistogramsMatching(CnameAliasMetricInfo info) {
-    histogram_tester()->ExpectUniqueSample(kCnameAliasHadAliasesHistogram,
-                                           info.has_aliases, 1);
+  void ExpectCnameAliasInfoMatching(CnameAliasInfoForTesting info,
+                                    ResourceLoader* loader) {
+    EXPECT_EQ(loader->cname_alias_info_for_testing_.has_aliases,
+              info.has_aliases);
 
     if (info.has_aliases) {
-      histogram_tester()->ExpectUniqueSample(kCnameAliasWasAdTaggedHistogram,
-                                             info.was_ad_tagged_based_on_alias,
-                                             1);
-      histogram_tester()->ExpectUniqueSample(
-          kCnameAliasWasBlockedHistogram, info.was_blocked_based_on_alias, 1);
-      histogram_tester()->ExpectUniqueSample(kCnameAliasListLengthHistogram,
-                                             info.list_length, 1);
-      histogram_tester()->ExpectUniqueSample(kCnameAliasIsInvalidCountHistogram,
-                                             info.invalid_count, 1);
-      histogram_tester()->ExpectUniqueSample(
-          kCnameAliasIsRedundantCountHistogram, info.redundant_count, 1);
+      EXPECT_EQ(
+          loader->cname_alias_info_for_testing_.was_ad_tagged_based_on_alias,
+          info.was_ad_tagged_based_on_alias);
+      EXPECT_EQ(
+          loader->cname_alias_info_for_testing_.was_blocked_based_on_alias,
+          info.was_blocked_based_on_alias);
+      EXPECT_EQ(loader->cname_alias_info_for_testing_.list_length,
+                info.list_length);
+      EXPECT_EQ(loader->cname_alias_info_for_testing_.invalid_count,
+                info.invalid_count);
+      EXPECT_EQ(loader->cname_alias_info_for_testing_.redundant_count,
+                info.redundant_count);
     }
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  base::HistogramTester histogram_tester_;
   Vector<String> blocked_urls_;
   Vector<String> tagged_urls_;
 };
@@ -725,14 +710,14 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   // Test the histograms to verify that the CNAME aliases were detected.
   // Expect that the resource was tagged as a ad, due to first alias.
   // Expect that the resource was blocked, due to second alias.
-  CnameAliasMetricInfo info = {.has_aliases = true,
-                               .was_ad_tagged_based_on_alias = true,
-                               .was_blocked_based_on_alias = true,
-                               .list_length = 3,
-                               .invalid_count = 0,
-                               .redundant_count = 0};
+  CnameAliasInfoForTesting info = {.has_aliases = true,
+                                   .was_ad_tagged_based_on_alias = true,
+                                   .was_blocked_based_on_alias = true,
+                                   .list_length = 3,
+                                   .invalid_count = 0,
+                                   .redundant_count = 0};
 
-  ExpectHistogramsMatching(info);
+  ExpectCnameAliasInfoMatching(info, loader);
 }
 
 TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
@@ -764,14 +749,14 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
 
   // Test the histograms to verify that the CNAME aliases were detected.
   // Expect that the resource was blocked, due to second alias.
-  CnameAliasMetricInfo info = {.has_aliases = true,
-                               .was_ad_tagged_based_on_alias = false,
-                               .was_blocked_based_on_alias = true,
-                               .list_length = 3,
-                               .invalid_count = 0,
-                               .redundant_count = 0};
+  CnameAliasInfoForTesting info = {.has_aliases = true,
+                                   .was_ad_tagged_based_on_alias = false,
+                                   .was_blocked_based_on_alias = true,
+                                   .list_length = 3,
+                                   .invalid_count = 0,
+                                   .redundant_count = 0};
 
-  ExpectHistogramsMatching(info);
+  ExpectCnameAliasInfoMatching(info, loader);
 }
 
 TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
@@ -804,14 +789,14 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   // Test the histograms to verify that the CNAME aliases were detected.
   // Expect that the resource was tagged, due to fourth alias.
   // Expect that the invalid empty alias is counted as such.
-  CnameAliasMetricInfo info = {.has_aliases = true,
-                               .was_ad_tagged_based_on_alias = true,
-                               .was_blocked_based_on_alias = false,
-                               .list_length = 4,
-                               .invalid_count = 1,
-                               .redundant_count = 0};
+  CnameAliasInfoForTesting info = {.has_aliases = true,
+                                   .was_ad_tagged_based_on_alias = true,
+                                   .was_blocked_based_on_alias = false,
+                                   .list_length = 4,
+                                   .invalid_count = 1,
+                                   .redundant_count = 0};
 
-  ExpectHistogramsMatching(info);
+  ExpectCnameAliasInfoMatching(info, loader);
 }
 
 TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
@@ -847,14 +832,14 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   // Expect that the invalid alias is counted as such.
   // Expect that the redundant (i.e. matching the request URL) fifth alias to be
   // counted as such.
-  CnameAliasMetricInfo info = {.has_aliases = true,
-                               .was_ad_tagged_based_on_alias = false,
-                               .was_blocked_based_on_alias = false,
-                               .list_length = 5,
-                               .invalid_count = 1,
-                               .redundant_count = 1};
+  CnameAliasInfoForTesting info = {.has_aliases = true,
+                                   .was_ad_tagged_based_on_alias = false,
+                                   .was_blocked_based_on_alias = false,
+                                   .list_length = 5,
+                                   .invalid_count = 1,
+                                   .redundant_count = 1};
 
-  ExpectHistogramsMatching(info);
+  ExpectCnameAliasInfoMatching(info, loader);
 }
 
 TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
@@ -885,9 +870,9 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   GiveResponseToLoader(response, loader);
 
   // Test the histogram to verify that no aliases were detected.
-  CnameAliasMetricInfo info = {.has_aliases = false};
+  CnameAliasInfoForTesting info = {.has_aliases = false};
 
-  ExpectHistogramsMatching(info);
+  ExpectCnameAliasInfoMatching(info, loader);
 }
 
 }  // namespace blink
