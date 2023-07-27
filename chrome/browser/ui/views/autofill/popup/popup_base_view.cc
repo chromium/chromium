@@ -258,7 +258,7 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
 
 void PopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,
                                           const gfx::Rect& new_bounds) {
-  DCHECK(widget == parent_widget_ || widget == GetWidget());
+  CHECK(widget == parent_widget_ || widget == GetWidget());
   if (widget != parent_widget_) {
     return;
   }
@@ -269,7 +269,7 @@ void PopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,
 void PopupBaseView::OnWidgetDestroying(views::Widget* widget) {
   // On Windows, widgets can be destroyed in any order. Regardless of which
   // widget is destroyed first, remove all observers and hide the popup.
-  DCHECK(widget == parent_widget_ || widget == GetWidget());
+  CHECK(widget == parent_widget_ || widget == GetWidget());
 
   // Normally this happens at destruct-time or hide-time, but because it depends
   // on |parent_widget_| (which is about to go away), it needs to happen sooner
