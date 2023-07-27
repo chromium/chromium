@@ -125,6 +125,10 @@ const char kArcErofs[] = "arc-erofs";
 // If set, forces ARC apk cache to be enabled for testing.
 const char kArcForceEnableApkCache[] = "arc-force-enable-apk-cache";
 
+// If set, forces post boot dexopt to run immediately without device idle
+// requirement.
+const char kArcForcePostBootDexOpt[] = "arc-force-post-boot-dex-opt";
+
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
 

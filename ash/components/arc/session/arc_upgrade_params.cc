@@ -43,7 +43,9 @@ UpgradeParams::UpgradeParams()
       priority_app_lmk_delay_second(kPriorityAppLmkDelaySecond.Get()),
       priority_app_lmk_delay_list(kPriorityAppLmkDelayList.Get()),
       enable_lmk_perceptible_min_state_update(
-          base::FeatureList::IsEnabled(kLmkPerceptibleMinStateUpdate)) {}
+          base::FeatureList::IsEnabled(kLmkPerceptibleMinStateUpdate)),
+      force_post_boot_dex_opt(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kArcForcePostBootDexOpt)) {}
 
 UpgradeParams::UpgradeParams(const UpgradeParams& other) = default;
 UpgradeParams::UpgradeParams(UpgradeParams&& other) = default;

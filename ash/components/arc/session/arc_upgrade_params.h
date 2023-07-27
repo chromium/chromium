@@ -109,6 +109,9 @@ struct UpgradeParams {
   // Flag to enable update for minimum Android process state to be considered to
   // be killed under perceptible memory pressure
   bool enable_lmk_perceptible_min_state_update = false;
+
+  // Whether to run post boot dex opt without device idle requirement
+  bool force_post_boot_dex_opt = false;
 };
 
 }  // namespace arc
