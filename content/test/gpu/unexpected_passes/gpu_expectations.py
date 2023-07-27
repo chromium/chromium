@@ -8,7 +8,7 @@ from __future__ import print_function
 import collections
 import logging
 import os
-from typing import FrozenSet, List, Set
+from typing import FrozenSet, List, Optional, Set
 
 import validate_tag_consistency
 
@@ -25,8 +25,8 @@ EXPECTATIONS_DIR = os.path.realpath(
 class GpuExpectations(expectations.Expectations):
   def __init__(self):
     super().__init__()
-    self._known_tags = None
-    self._expectation_files = None
+    self._known_tags: Optional[Set[str]] = None
+    self._expectation_files: Optional[List[str]] = None
 
   def CreateTestExpectationMap(self, *args,
                                **kwargs) -> data_types.TestExpectationMap:

@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import datetime
+from typing import Dict
 import unittest
 from unittest import mock
 
@@ -19,7 +20,7 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
   def setUp(self) -> None:
     self.instance = gpu_expectations.GpuExpectations()
 
-    self._expectation_content = {}
+    self._expectation_content: Dict[str, str] = {}
     self._content_patcher = mock.patch.object(
         self.instance, '_GetNonRecentExpectationContent')
     self._content_mock = self._content_patcher.start()
