@@ -122,6 +122,8 @@
       'android-cronet-marshmallow-arm64-perf-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
       'android-cronet-riscv64-dbg': 'android_cronet_debug_static_bot_riscv64_reclient',
       'android-cronet-riscv64-rel': 'android_cronet_release_bot_minimal_symbols_riscv64_reclient',
+      'android-cronet-x64-dbg': 'android_cronet_debug_static_bot_x64_reclient',
+      'android-cronet-x64-rel': 'android_cronet_release_bot_minimal_symbols_x64_reclient',
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-nougat-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
@@ -1035,9 +1037,12 @@
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
       'android-cronet-riscv64-dbg': 'android_cronet_debug_static_bot_riscv64_reclient',
       'android-cronet-riscv64-rel': 'android_cronet_release_bot_minimal_symbols_riscv64_reclient',
+      'android-cronet-x64-dbg-12-tests': 'android_cronet_debug_static_bot_x64_reclient',
+      'android-cronet-x64-dbg-13-tests': 'android_cronet_debug_static_bot_x64_reclient',
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-dbg-10-tests': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-dbg-11-tests': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-dbg-nougat-tests': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-dbg-oreo-tests': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-dbg-pie-tests': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
@@ -1565,6 +1570,10 @@
       'android', 'cronet_android', 'debug_static_bot_reclient', 'riscv64',
     ],
 
+    'android_cronet_debug_static_bot_x64_reclient': [
+      'android', 'cronet_android', 'debug_static_bot_reclient', 'x64',
+    ],
+
     'android_cronet_debug_static_bot_x86_reclient': [
       'android', 'cronet_android', 'debug_static_bot_reclient', 'x86',
     ],
@@ -1595,6 +1604,11 @@
 
     'android_cronet_release_bot_minimal_symbols_riscv64_reclient': [
       'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'riscv64',
+      'strip_debug_info',
+    ],
+
+    'android_cronet_release_bot_minimal_symbols_x64_reclient': [
+      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'x64',
       'strip_debug_info',
     ],
 

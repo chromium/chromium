@@ -825,6 +825,64 @@
         },
         'os_type': 'android',
       },
+      'android-cronet-x64-dbg': {
+        'additional_compile_targets': [
+          'cronet_package',
+          'cronet_perf_test_apk',
+          'cronet_sample_test_apk',
+          'cronet_smoketests_missing_native_library_instrumentation_apk',
+          'cronet_smoketests_platform_only_instrumentation_apk',
+          'cronet_test_instrumentation_apk',
+          'cronet_tests_android',
+          'cronet_unittests_android',
+          'net_unittests',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'cronet_dbg_isolated_scripts',
+        },
+      },
+      'android-cronet-x64-dbg-12-tests': {
+        'mixins': [
+          '12-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
+      'android-cronet-x64-dbg-13-tests': {
+        'mixins': [
+          '13-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
+      'android-cronet-x64-rel': {
+        'additional_compile_targets': [
+          'cronet_package',
+          'cronet_perf_test_apk',
+          'cronet_sample_test_apk',
+          'cronet_smoketests_missing_native_library_instrumentation_apk',
+          'cronet_smoketests_platform_only_instrumentation_apk',
+          'cronet_test_instrumentation_apk',
+          'cronet_tests_android',
+          'cronet_unittests_android',
+          'net_unittests',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'cronet_rel_isolated_scripts',
+        },
+      },
       'android-cronet-x86-dbg': {
         'additional_compile_targets': [
           'cronet_package',
@@ -883,6 +941,19 @@
       'android-cronet-x86-dbg-marshmallow-tests': {
         'mixins': [
           'marshmallow-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
+      'android-cronet-x86-dbg-nougat-tests': {
+        'mixins': [
+          'nougat-x86-emulator',
           'emulator-4-cores',
           'has_native_resultdb_integration',
           'linux-jammy',
