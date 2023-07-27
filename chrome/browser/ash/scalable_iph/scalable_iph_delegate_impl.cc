@@ -288,6 +288,14 @@ void ScalableIphDelegateImpl::ShowNotification(
   button_info.title = base::UTF8ToUTF16(button_text);
   rich_notification_data.buttons.push_back(button_info);
 
+#if BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+  if (IsWallpaperNotification(params)) {
+    rich_notification_data.image =
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+            IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_1_PNG);
+  }
+#endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           GetNotificationType(params), params.notification_id,
