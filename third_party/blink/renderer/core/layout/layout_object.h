@@ -447,8 +447,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // we should use the faster PaintInvalidatorContext::painting_layer instead.
   PaintLayer* PaintingLayer(int max_depth = -1) const;
 
-  bool IsFixedPositionObjectInPagedMedia() const;
-
   // Convenience function for getting to the nearest enclosing box of a
   // LayoutObject.
   LayoutBox* EnclosingBox() const;

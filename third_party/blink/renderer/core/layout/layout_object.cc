@@ -1152,17 +1152,6 @@ PaintLayer* LayoutObject::PaintingLayer(int max_depth) const {
   return nullptr;
 }
 
-bool LayoutObject::IsFixedPositionObjectInPagedMedia() const {
-  NOT_DESTROYED();
-  if (StyleRef().GetPosition() != EPosition::kFixed)
-    return false;
-  LayoutView* view = View();
-  return Container() == view && view->PageLogicalHeight() &&
-         // TODO(crbug.com/619094): Figure out the correct behaviour for fixed
-         // position objects in paged media with vertical writing modes.
-         view->IsHorizontalWritingMode();
-}
-
 LayoutBox* LayoutObject::EnclosingBox() const {
   NOT_DESTROYED();
   LayoutObject* curr = const_cast<LayoutObject*>(this);

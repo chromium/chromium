@@ -5784,15 +5784,12 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   UpdateAllLifecyclePhasesForTest();
 
   const auto* fixed = GetLayoutObjectByElementId("fixed");
-  EXPECT_FALSE(fixed->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(fixed));
 
   const auto* fixed_child = GetLayoutObjectByElementId("fixed-child");
-  EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(fixed_child));
 
   const auto* normal = GetLayoutObjectByElementId("normal");
-  EXPECT_FALSE(normal->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(normal));
 
   gfx::SizeF page_size(300, 400);
@@ -5803,7 +5800,6 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   normal = GetLayoutObjectByElementId("normal");
 
   // "fixed" should create fragments to repeat in each printed page.
-  EXPECT_TRUE(fixed->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(3u, NumFragments(fixed));
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed, i);
@@ -5815,7 +5811,6 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
     EXPECT_EQ(PhysicalOffset(), fragment.PaintOffset());
   }
 
-  EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(3u, NumFragments(fixed_child));
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed_child, i);
@@ -5823,7 +5818,6 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
               fragment.PaintOffset());
   }
 
-  EXPECT_FALSE(normal->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(3u, NumFragments(normal));
 
   GetFrame().EndPrinting();
@@ -5832,9 +5826,7 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   fixed_child = GetLayoutObjectByElementId("fixed-child");
   normal = GetLayoutObjectByElementId("normal");
   EXPECT_EQ(1u, NumFragments(fixed));
-  EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(fixed_child));
-  EXPECT_FALSE(normal->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(normal));
 }
 
@@ -5851,11 +5843,9 @@ TEST_P(PaintPropertyTreeBuilderTest,
   UpdateAllLifecyclePhasesForTest();
 
   const auto* fixed = GetLayoutObjectByElementId("fixed");
-  EXPECT_FALSE(fixed->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(fixed));
 
   const auto* fixed_child = GetLayoutObjectByElementId("fixed-child");
-  EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(fixed_child));
 
   gfx::SizeF page_size(300, 400);
@@ -5865,7 +5855,6 @@ TEST_P(PaintPropertyTreeBuilderTest,
   fixed_child = GetLayoutObjectByElementId("fixed-child");
 
   // "fixed" should create fragments to repeat in each printed page.
-  EXPECT_TRUE(fixed->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(3u, NumFragments(fixed));
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed, i);
@@ -5879,7 +5868,6 @@ TEST_P(PaintPropertyTreeBuilderTest,
               properties->Transform()->Parent());
   }
 
-  EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed_child, i);
     EXPECT_EQ(PhysicalOffset(0, 10), fragment.PaintOffset());
@@ -5892,7 +5880,6 @@ TEST_P(PaintPropertyTreeBuilderTest,
   fixed = GetLayoutObjectByElementId("fixed");
   fixed_child = GetLayoutObjectByElementId("fixed-child");
   EXPECT_EQ(1u, NumFragments(fixed));
-  EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(fixed_child));
 }
 
