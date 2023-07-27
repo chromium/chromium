@@ -112,10 +112,11 @@ class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
     // NOTE: The `UserEducationHelpBubbleController` exists only when a user
     // education feature is enabled. Controller existence is verified in test
     // coverage for the controller's owner.
+    // TODO(http://b/291970413): Re-add `features::kWelcomeTour` here once "new"
+    // user checks are complete.
     std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.emplace_back(features::kCaptureModeTour);
     enabled_features.emplace_back(features::kHoldingSpaceTour);
-    enabled_features.emplace_back(features::kWelcomeTour);
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
 
