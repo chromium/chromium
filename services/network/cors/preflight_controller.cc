@@ -651,7 +651,8 @@ class PreflightController::PreflightLoader final {
         (*devtools_observer_)
             ->OnCorsPreflightRequestCompleted(
                 *devtools_request_id_,
-                network::URLLoaderCompletionStatus(error));
+                status.has_value() ? *status
+                                   : network::URLLoaderCompletionStatus(error));
       }
       std::move(completion_callback_)
           .Run(error,

@@ -199,6 +199,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
     return response_cookie_partition_key_;
   }
 
+  const absl::optional<network::URLLoaderCompletionStatus>& preflight_status()
+      const {
+    return preflight_status_;
+  }
+
  private:
   net::CookieAndLineAccessResultList raw_response_cookies_;
   base::OnceClosure wait_for_raw_response_;
@@ -209,6 +214,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   absl::optional<std::string> raw_response_headers_;
   std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers_;
   int32_t raw_response_http_status_code_ = -1;
+  absl::optional<network::URLLoaderCompletionStatus> preflight_status_;
 
   bool got_raw_request_ = false;
   net::CookieAccessResultList raw_request_cookies_;

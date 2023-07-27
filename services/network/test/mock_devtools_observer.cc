@@ -95,7 +95,9 @@ void MockDevToolsObserver::OnCorsPreflightResponse(
 
 void MockDevToolsObserver::OnCorsPreflightRequestCompleted(
     const base::UnguessableToken& devtool_request_id,
-    const network::URLLoaderCompletionStatus& status) {}
+    const network::URLLoaderCompletionStatus& status) {
+  preflight_status_ = status;
+}
 
 void MockDevToolsObserver::OnTrustTokenOperationDone(
     const std::string& devtool_request_id,

@@ -1448,6 +1448,12 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
           MakeBucket(mojom::CorsError::kUnexpectedPrivateNetworkAccess, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());
+  const network::URLLoaderCompletionStatus& preflight_status =
+      *devtools_observer.preflight_status();
+  EXPECT_EQ(preflight_status.cors_error_status,
+            CorsErrorStatus(mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+                            mojom::IPAddressSpace::kUnknown,
+                            mojom::IPAddressSpace::kPrivate));
 
   devtools_observer.WaitUntilCorsError();
 
