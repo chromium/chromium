@@ -40,6 +40,7 @@ import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.CursorOffset;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.DragShadowSpec;
 
@@ -208,7 +209,10 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         int type = getDragTargetType(dropData);
         switch (type) {
             case DragTargetType.TEXT:
-                return ClipData.newPlainText(null, dropData.text);
+                return new ClipData(null,
+                        new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN,
+                                MimeTypeUtils.CHROME_MIMETYPE_TEXT},
+                        new Item(dropData.text));
             case DragTargetType.IMAGE:
                 Uri cachedUri = DropDataProviderUtils.cacheImageData(dropData);
                 // If there's no content provider we shouldn't start the drag.
@@ -233,7 +237,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                     if (intent != null) {
                         return new ClipData(null,
                                 new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN,
-                                        ClipDescription.MIMETYPE_TEXT_INTENT},
+                                        ClipDescription.MIMETYPE_TEXT_INTENT,
+                                        MimeTypeUtils.CHROME_MIMETYPE_LINK},
                                 new Item(getTextForLinkData(dropData), intent, null));
                     }
                 }
