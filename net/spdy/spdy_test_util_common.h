@@ -354,34 +354,11 @@ class SpdyTestUtil {
       RequestPriority priority,
       const HostPortPair& host_port_pair);
 
-  // Constructs a PUSH_PROMISE frame and a HEADERS frame on the pushed stream.
-  // |extra_headers| are the extra header-value pairs, which typically
-  // will vary the most between calls.
-  // Returns a spdy::SpdySerializedFrame object with the two frames
-  // concatenated.
-  spdy::SpdySerializedFrame ConstructSpdyPush(const char* const extra_headers[],
-                                              int extra_header_count,
-                                              int stream_id,
-                                              int associated_stream_id,
-                                              const char* url);
-  spdy::SpdySerializedFrame ConstructSpdyPush(const char* const extra_headers[],
-                                              int extra_header_count,
-                                              int stream_id,
-                                              int associated_stream_id,
-                                              const char* url,
-                                              const char* status,
-                                              const char* location);
-
   // Constructs a PUSH_PROMISE frame.
   spdy::SpdySerializedFrame ConstructSpdyPushPromise(
       spdy::SpdyStreamId associated_stream_id,
       spdy::SpdyStreamId stream_id,
       spdy::Http2HeaderBlock headers);
-
-  spdy::SpdySerializedFrame ConstructSpdyPushHeaders(
-      int stream_id,
-      const char* const extra_headers[],
-      int extra_header_count);
 
   // Constructs a HEADERS frame with the request header compression context with
   // END_STREAM flag set to |fin|.

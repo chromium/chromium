@@ -897,8 +897,7 @@ TEST_F(SpdySessionTest, CreateStreamAfterGoAway) {
 // the stream being refused.
 TEST_F(SpdySessionTest, HeadersAfterGoAway) {
   spdy::SpdySerializedFrame goaway_received(spdy_util_.ConstructSpdyGoAway(1));
-  spdy::SpdySerializedFrame push(
-      spdy_util_.ConstructSpdyPush(nullptr, 0, 2, 1, kDefaultUrl));
+  spdy::SpdySerializedFrame push(spdy_util_.ConstructSpdyPushPromise(1, 2, {}));
   MockRead reads[] = {
       MockRead(ASYNC, ERR_IO_PENDING, 1), CreateMockRead(goaway_received, 2),
       MockRead(ASYNC, ERR_IO_PENDING, 3), CreateMockRead(push, 4),
