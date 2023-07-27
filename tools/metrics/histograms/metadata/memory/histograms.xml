@@ -2562,6 +2562,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Total.RendererBlinkGC" units="MB"
+    expires_after="2023-12-31">
+  <owner>fdoray@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Memory from the Blink heap in all renderer processes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Total.RendererBlinkGC.Fragmentation" units="MB"
+    expires_after="2023-12-31">
+  <owner>fdoray@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Memory from the Blink heap which is not used by allocated objects in all
+    renderer processes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Total.RendererMalloc" units="MB"
     expires_after="2022-10-01">
   <owner>keishi@chromium.org</owner>
