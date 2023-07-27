@@ -16,15 +16,28 @@ Part::Part(PartRoot& root, const Vector<String> metadata)
   root.AddPart(*this);
 }
 
+void Part::MoveToRoot(PartRoot* new_root) {
+  if (root_) {
+    root_->RemovePart(*this);
+  }
+  root_ = new_root;
+  if (new_root) {
+    new_root->AddPart(*this);
+  }
+}
+
 void Part::Trace(Visitor* visitor) const {
   visitor->Trace(root_);
   ScriptWrappable::Trace(visitor);
 }
 
 void Part::disconnect() {
-  CHECK(root_) << "disconnect should be overridden";
-  root_->RemovePart(*this);
-  root_ = nullptr;
+  CHECK(!disconnected_) << "disconnect should be overridden";
+  if (root_) {
+    root_->RemovePart(*this);
+    root_ = nullptr;
+  }
+  disconnected_ = true;
 }
 
 }  // namespace blink

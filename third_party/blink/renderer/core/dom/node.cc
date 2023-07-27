@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/child_node_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -2234,12 +2235,44 @@ void Node::InvalidateIfHasEffectiveAppearance() const {
   layout_object->SetSubtreeShouldDoFullPaintInvalidation();
 }
 
-void Node::InvalidateDOMParts() {
+void Node::UpdateForRemovedDOMParts(ContainerNode& insertion_point) {
   if (UNLIKELY(RuntimeEnabledFeatures::DOMPartsAPIEnabled() && HasDOMParts())) {
     for (Part* part : GetDOMParts()) {
       if (part->root()) {
         part->root()->MarkPartsDirty();
+        if (part->root()->IsDocumentPartRoot()) {
+          // If this part's root is the DocumentPartRoot, then disconnect it.
+          part->MoveToRoot(nullptr);
+        }
       }
+    }
+  }
+}
+
+void Node::UpdateForInsertedDOMParts(ContainerNode& insertion_point) {
+  if (UNLIKELY(RuntimeEnabledFeatures::DOMPartsAPIEnabled() && HasDOMParts())) {
+    auto get_new_root = [&insertion_point]() -> PartRoot* {
+      Node* tree_root = &insertion_point.TreeRoot();
+      if (auto* document_fragment = DynamicTo<DocumentFragment>(tree_root)) {
+        return &document_fragment->getPartRoot();
+      } else if (auto* document = DynamicTo<Document>(tree_root)) {
+        return &document->getPartRoot();
+      } else {
+        // Disconnected tree - no part root.
+        return nullptr;
+      }
+    };
+    PartRoot* new_root = nullptr;
+    for (Part* part : GetDOMParts()) {
+      if (!part->root()) {
+        if (!new_root) {
+          // Lazy load the new root, because calling TreeRoot can require a
+          // parent walk.
+          new_root = get_new_root();
+        }
+        part->MoveToRoot(new_root);
+      }
+      part->root()->MarkPartsDirty();
     }
   }
 }
@@ -2256,7 +2289,7 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     insertion_point.GetDocument().IncrementNodeCount();
 #endif
   }
-  InvalidateDOMParts();
+  UpdateForInsertedDOMParts(insertion_point);
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
@@ -2278,7 +2311,7 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
     insertion_point.GetDocument().DecrementNodeCount();
 #endif
   }
-  InvalidateDOMParts();
+  UpdateForRemovedDOMParts(insertion_point);
   if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
     ClearFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {

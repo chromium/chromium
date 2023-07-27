@@ -26,10 +26,11 @@ class CORE_EXPORT Part : public ScriptWrappable {
   ~Part() override = default;
 
   void Trace(Visitor* visitor) const override;
-  virtual bool IsValid() const { return root_; }
+  virtual bool IsValid() const { return root_ && !disconnected_; }
   virtual Node* NodeToSortBy() const = 0;
   virtual Part* ClonePart(NodeCloningData&) const = 0;
   PartRoot* root() const { return root_; }
+  void MoveToRoot(PartRoot* new_root);
   virtual Document& GetDocument() const = 0;
 
   // Part API
@@ -41,6 +42,7 @@ class CORE_EXPORT Part : public ScriptWrappable {
 
  protected:
   Part(PartRoot& root, const Vector<String> metadata);
+  bool disconnected_{false};
 
  private:
   Member<PartRoot> root_;

@@ -19,7 +19,8 @@ void PartRoot::Trace(Visitor* visitor) const {
 }
 
 void PartRoot::AddPart(Part& new_part) {
-  CHECK(!parts_unordered_.Contains(&new_part));
+  // DCHECK because this will be slow.
+  DCHECK(!parts_unordered_.Contains(&new_part));
   parts_unordered_.push_back(new_part);
   MarkPartsDirty();
 }

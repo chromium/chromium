@@ -29,20 +29,20 @@ ChildNodePart::ChildNodePart(PartRoot& root,
     : Part(root, metadata),
       previous_sibling_(previous_sibling),
       next_sibling_(next_sibling) {
-  if (previous_sibling.parentNode()) {
-    previous_sibling.parentNode()->AddDOMPart(*this);
+  if (parentNode()) {
+    parentNode()->AddDOMPart(*this);
   }
   previous_sibling.AddDOMPart(*this);
   next_sibling.AddDOMPart(*this);
 }
 
 void ChildNodePart::disconnect() {
-  if (!root()) {
+  if (disconnected_) {
     CHECK(!previous_sibling_ && !next_sibling_);
     return;
   }
-  if (parentElement()) {
-    parentElement()->RemoveDOMPart(*this);
+  if (parentNode()) {
+    parentNode()->RemoveDOMPart(*this);
   }
   previous_sibling_->RemoveDOMPart(*this);
   next_sibling_->RemoveDOMPart(*this);
@@ -62,12 +62,12 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) const {
         "previous_sibling before next_sibling, and both with the same parent.");
     return nullptr;
   }
-  auto* fragment =
-      To<DocumentFragment>(DocumentFragment::Create(GetDocument()));
+  auto& document = GetDocument();
+  auto* fragment = To<DocumentFragment>(DocumentFragment::Create(document));
   NodeCloningData data{CloneOption::kPreserveDOMParts};
   data.ConnectPartRootToClone(*root(), fragment->getPartRoot());
   ContainerNode* new_parent =
-      To<ContainerNode>(parentElement()->Clone(GetDocument(), data));
+      To<ContainerNode>(parentNode()->Clone(document, data));
   fragment->appendChild(new_parent, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
@@ -75,7 +75,7 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) const {
   data.Put(CloneOption::kIncludeDescendants);
   Node* node = previous_sibling_;
   while (true) {
-    new_parent->appendChild(node->Clone(GetDocument(), data), exception_state);
+    new_parent->appendChild(node->Clone(document, data), exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
@@ -87,6 +87,25 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) const {
   }
   data.Finalize();
   return PartRoot::GetUnionFromPartRoot(data.ClonedPartRootFor(*this));
+}
+
+void ChildNodePart::setNextSibling(Node& next_sibling) {
+  if (next_sibling_ == &next_sibling) {
+    return;
+  }
+  if (previous_sibling_ != next_sibling_) {
+    // Unregister this part from the old |next_sibling_| node, unless previous
+    // and next were the same before.
+    if (next_sibling_ != parentNode()) {
+      // TODO(crbug.com/1453291) It is currently possible to build
+      // ChildNodeParts with `next_sibling === parentNode`. Eventually,
+      // outlaw that in the appropriate place, and CHECK() here that it isn't
+      // true. For now, in that case, don't remove the part.
+      next_sibling_->RemoveDOMPart(*this);
+    }
+  }
+  next_sibling_ = &next_sibling;
+  next_sibling.AddDOMPart(*this);
 }
 
 HeapVector<Member<Node>> ChildNodePart::children() const {
@@ -143,7 +162,7 @@ bool ChildNodePart::IsValid() const {
   if (!previous_sibling_ || !next_sibling_) {
     return false;
   }
-  ContainerNode* parent = parentElement();
+  ContainerNode* parent = parentNode();
   if (!parent) {
     return false;
   }
@@ -168,7 +187,7 @@ Node* ChildNodePart::NodeToSortBy() const {
 }
 
 ContainerNode* ChildNodePart::rootContainer() const {
-  return IsValid() ? parentElement() : nullptr;
+  return IsValid() ? parentNode() : nullptr;
 }
 
 Part* ChildNodePart::ClonePart(NodeCloningData& data) const {

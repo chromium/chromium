@@ -26,7 +26,7 @@ NodePart::NodePart(PartRoot& root, Node& node, const Vector<String> metadata)
 }
 
 void NodePart::disconnect() {
-  if (!root()) {
+  if (disconnected_) {
     CHECK(!node_);
     return;
   }

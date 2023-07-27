@@ -52,28 +52,23 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   Node* NodeToSortBy() const override;
   Part* ClonePart(NodeCloningData&) const override;
   Document& GetDocument() const override;
+  bool IsDocumentPartRoot() const override { return false; }
 
   // ChildNodePart API
   void disconnect() override;
   PartRootUnion* clone(ExceptionState& exception_state) const;
   ContainerNode* rootContainer() const override;
-  ContainerNode* parentElement() const {
-    return previous_sibling_->parentElement();
-  }
+  ContainerNode* parentNode() const { return previous_sibling_->parentNode(); }
   Node* previousSibling() const { return previous_sibling_; }
   Node* nextSibling() const { return next_sibling_; }
-  void setNextSibling(Node& next_sibling) { next_sibling_ = &next_sibling; }
+  void setNextSibling(Node& next_sibling);
   HeapVector<Member<Node>> children() const;
   void replaceChildren(
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
       ExceptionState& exception_state);
 
  protected:
-  const PartRoot* GetParentPartRoot() const override {
-    CHECK(root())
-        << "GetParentPartRoot() must return non-null from a ChildNodePart";
-    return root();
-  }
+  const PartRoot* GetParentPartRoot() const override { return root(); }
 
  private:
   // Checks if this ChildNodePart is valid. This should only be called if the
