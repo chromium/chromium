@@ -178,4 +178,71 @@ base::Value::Dict ConvertButtonRemappingToDict(
   return dict;
 }
 
+mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
+    const base::Value::Dict& dict) {
+  const std::string* name = dict.FindString(prefs::kButtonRemappingName);
+  if (!name) {
+    return nullptr;
+  }
+
+  // button is a union.
+  mojom::ButtonPtr button;
+  const absl::optional<int> customizable_button =
+      dict.FindInt(prefs::kButtonRemappingCustomizableButton);
+  const absl::optional<int> key_code =
+      dict.FindInt(prefs::kButtonRemappingKeyboardCode);
+  // Button can't be both a keyboard key and a customization button.
+  if (customizable_button && key_code) {
+    return nullptr;
+  }
+  // Button must exist.
+  if (!customizable_button && !key_code) {
+    return nullptr;
+  }
+  // Button can be either a keyboard key or a customization button.
+  if (customizable_button) {
+    button = mojom::Button::NewCustomizableButton(
+        static_cast<mojom::CustomizableButton>(*customizable_button));
+  } else {
+    button = mojom::Button::NewVkey(static_cast<::ui::KeyboardCode>(*key_code));
+  }
+
+  // remapping_action is an optional union.
+  mojom::RemappingActionPtr remapping_action;
+  const base::Value::Dict* key_event =
+      dict.FindDict(prefs::kButtonRemappingKeyEvent);
+  const absl::optional<int> action =
+      dict.FindInt(prefs::kButtonRemappingAction);
+  // Remapping action can't be both a key event and an action.
+  if (key_event && action) {
+    return nullptr;
+  }
+  // Remapping action can be either a keyboard event or an action or null.
+  if (key_event) {
+    const absl::optional<int> dom_code =
+        key_event->FindInt(prefs::kButtonRemappingDomCode);
+    const absl::optional<int> vkey =
+        key_event->FindInt(prefs::kButtonRemappingKeyboardCode);
+    const absl::optional<int> dom_key =
+        key_event->FindInt(prefs::kButtonRemappingDomKey);
+    const absl::optional<int> modifiers =
+        key_event->FindInt(prefs::kButtonRemappingModifiers);
+    if (!dom_code || !vkey || !dom_key || !modifiers) {
+      return nullptr;
+    }
+    remapping_action = mojom::RemappingAction::NewKeyEvent(
+        mojom::KeyEvent::New(static_cast<::ui::KeyboardCode>(
+                                 /*vkey=*/*vkey),
+                             /*dom_code=*/*dom_code,
+                             /*dom_key=*/*dom_key,
+                             /*modifiers=*/*modifiers));
+  } else if (action) {
+    remapping_action = mojom::RemappingAction::NewAction(
+        static_cast<ash::AcceleratorAction>(*action));
+  }
+
+  return mojom::ButtonRemapping::New(*name, std::move(button),
+                                     std::move(remapping_action));
+}
+
 }  // namespace ash
