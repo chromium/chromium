@@ -21,8 +21,6 @@ source_set("startup_basic") {
     "setup_debugging.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/component_updater",
@@ -48,7 +46,6 @@ buildflag_header("ios_enable_sandbox_dump_buildflags") {
 
 if (ios_enable_sandbox_dump) {
   source_set("sandbox_dump") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "sandbox_dump.h",
       "sandbox_dump.mm",
@@ -72,8 +69,6 @@ source_set("startup") {
     "provider_registration.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":startup_basic",
     "//base",
@@ -96,7 +91,6 @@ source_set("startup") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "chrome_app_startup_parameters_unittest.mm" ]
   deps = [

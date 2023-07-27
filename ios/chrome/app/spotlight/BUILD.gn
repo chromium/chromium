@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("spotlight") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "actions_spotlight_manager.h",
     "actions_spotlight_manager.mm",
@@ -72,7 +71,6 @@ source_set("spotlight") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "bookmark_spotlight_manager_unittest.mm",
