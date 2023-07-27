@@ -141,9 +141,12 @@ NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
 
+  NSString* skipButtonTitle =
+      self.accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN
+          ? l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP)
+          : l10n_util::GetNSString(IDS_CANCEL);
   UIButton* skipButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [skipButton setTitle:l10n_util::GetNSString(IDS_CLOSE)
-              forState:UIControlStateNormal];
+  [skipButton setTitle:skipButtonTitle forState:UIControlStateNormal];
   skipButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   [skipButton addTarget:self
