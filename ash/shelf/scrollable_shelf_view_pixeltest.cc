@@ -114,7 +114,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_context_menu",
-      /*revision_number=*/4,
+      /*revision_number=*/5,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()
