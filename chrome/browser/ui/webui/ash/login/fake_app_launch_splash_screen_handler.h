@@ -22,7 +22,6 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
                               const std::string& network_name) override {}
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   void ContinueAppLaunch() override {}
-  void SetNetworkRequired() override;
 
   KioskAppLaunchError::Error GetErrorMessageType() const;
   void FinishNetworkConfig();
@@ -35,7 +34,6 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
   KioskAppLaunchError::Error error_message_type_ =
       KioskAppLaunchError::Error::kNone;
   KioskAppManagerBase::App last_app_data_;
-  bool network_required_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 };
 

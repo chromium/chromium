@@ -44,7 +44,7 @@ class AppLaunchSplashScreenView {
   inline constexpr static StaticOobeScreenId kScreenId{"app-launch-splash",
                                                        "AppLaunchSplashScreen"};
 
-  virtual ~AppLaunchSplashScreenView() {}
+  virtual ~AppLaunchSplashScreenView() = default;
 
   // Sets screen controller this view belongs to.
   virtual void SetDelegate(Delegate* delegate) = 0;
@@ -70,9 +70,6 @@ class AppLaunchSplashScreenView {
 
   // Continues app launch after error screen is shown.
   virtual void ContinueAppLaunch() = 0;
-
-  // Tells the splash screen view that network is required.
-  virtual void SetNetworkRequired() = 0;
 };
 
 // A class that handles the WebUI hooks for the app launch splash screen.
@@ -106,7 +103,6 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
                               const std::string& network_name) override;
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   void ContinueAppLaunch() override;
-  void SetNetworkRequired() override;
 
  private:
   void SetLaunchText(const std::string& text);
@@ -116,7 +112,6 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
 
   raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
   bool is_shown_ = false;
-  bool is_network_required_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   raw_ptr<ErrorScreen, DanglingUntriaged | ExperimentalAsh> error_screen_;

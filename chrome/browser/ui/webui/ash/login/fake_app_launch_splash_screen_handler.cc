@@ -20,10 +20,6 @@ void FakeAppLaunchSplashScreenHandler::ShowErrorMessage(
   error_message_type_ = error;
 }
 
-bool FakeAppLaunchSplashScreenHandler::IsNetworkRequired() const {
-  return network_required_;
-}
-
 KioskAppLaunchError::Error
 FakeAppLaunchSplashScreenHandler::GetErrorMessageType() const {
   return error_message_type_;
@@ -33,10 +29,6 @@ void FakeAppLaunchSplashScreenHandler::FinishNetworkConfig() {
   if (delegate_) {
     delegate_->OnNetworkConfigFinished();
   }
-}
-
-void FakeAppLaunchSplashScreenHandler::SetNetworkRequired() {
-  network_required_ = true;
 }
 
 void FakeAppLaunchSplashScreenHandler::UpdateAppLaunchState(

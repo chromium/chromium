@@ -90,10 +90,6 @@ void AppLaunchSplashScreenHandler::Show(KioskAppManagerBase::App app_data) {
   }
 }
 
-void AppLaunchSplashScreenHandler::SetNetworkRequired() {
-  is_network_required_ = true;
-}
-
 void AppLaunchSplashScreenHandler::DeclareJSCallbacks() {
   AddCallback("configureNetwork",
               &AppLaunchSplashScreenHandler::HandleConfigureNetwork);

@@ -121,10 +121,8 @@ void NetworkUiController::InitializeNetwork() {
   network_wait_timer_.Start(FROM_HERE, g_network_wait_time, this,
                             &NetworkUiController::OnNetworkWaitTimeout);
 
-  // When we are asked to initialize network, we should remember that this app
-  // requires network.
+  // Asking to initialize network means the app requires network. Remember that.
   network_required_ = true;
-  splash_screen_view_->SetNetworkRequired();
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork);
