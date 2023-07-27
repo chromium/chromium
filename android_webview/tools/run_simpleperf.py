@@ -13,17 +13,12 @@ Typical Usage:
 """
 
 import argparse
+import html
 import logging
 import os
 import re
 import subprocess
 import sys
-import six
-
-if six.PY2:
-  import cgi as html
-else:
-  import html
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
