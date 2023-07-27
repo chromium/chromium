@@ -836,16 +836,12 @@ void ToolbarView::InitLayout() {
   // TODO(dfried): rename this constant.
   const int location_bar_margin = GetLayoutConstant(TOOLBAR_STANDARD_SPACING);
 
-  const views::FlexSpecification account_container_flex_rule =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(1);
   const views::FlexSpecification location_bar_flex_rule =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded)
-          .WithOrder(2);
-  constexpr int kSidePanelFlexOrder = 3;
-  constexpr int kExtensionsFlexOrder = 4;
+          .WithOrder(1);
+  constexpr int kSidePanelFlexOrder = 2;
+  constexpr int kExtensionsFlexOrder = 3;
 
   layout_manager_ =
       container_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
