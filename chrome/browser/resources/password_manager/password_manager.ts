@@ -37,6 +37,7 @@ export {CheckupSubpage, Page, Route, RouteObserverMixin, RouteObserverMixinInter
 export {SettingsSectionElement} from './settings_section.js';
 export {ShareFlowState, SharePasswordFlowElement} from './sharing/share_password_flow.js';
 export {SharePasswordLoadingDialogElement} from './sharing/share_password_loading_dialog.js';
+export {SharePasswordRecipientElement} from './sharing/share_password_recipient.js';
 export {PasswordManagerSideBarElement} from './side_bar.js';
 export {SiteFaviconElement} from './site_favicon.js';
 export {AccountInfo, SyncBrowserProxy, SyncBrowserProxyImpl, SyncInfo, TrustedVaultBannerState} from './sync_browser_proxy.js';
