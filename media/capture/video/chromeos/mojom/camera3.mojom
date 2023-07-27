@@ -119,6 +119,10 @@ struct CameraBufferHandle {
   [MinVersion=7] uint64 modifier;
 };
 
+// When this is used for |buffer_id| in Camera3StreamBuffer, this indicates that
+// Camera3StreamBuffer does not contain a buffer.
+const uint64 NO_BUFFER_BUFFER_ID = 0xFFFFFFFFFFFFFFFF;
+
 struct Camera3StreamBuffer {
   uint64 stream_id;
   uint64 buffer_id;
@@ -245,7 +249,7 @@ interface Camera3CallbackOps {
   [MinVersion=5]
   RequestStreamBuffers@2(array<Camera3BufferRequest> buffer_reqs) =>
       (Camera3BufferRequestStatus result,
-       array<Camera3StreamBufferRet>? returned_buf_reqs);
+       array<Camera3StreamBufferRet> returned_buf_reqs);
 
   // ReturnStreamBuffers() is called by the camera HAL to return output buffers
   // to the client.
