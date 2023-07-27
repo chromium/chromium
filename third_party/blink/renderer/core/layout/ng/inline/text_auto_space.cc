@@ -131,14 +131,11 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
           }
           if (offset == end_offset) {
             last_type = type;
-          } else {
-            last_type.reset();
-            offset = end_offset;
+            continue;
           }
-        } else {
-          last_type.reset();
-          offset = end_offset;
         }
+        offset = end_offset;
+        last_type.reset();
         continue;
       }
 
