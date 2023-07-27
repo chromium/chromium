@@ -1121,15 +1121,9 @@ class Comparator {
   }
 };
 
-// TODO(crbug.com/1467331): Disable flaky test in Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_EraseIf_Reentrancy DISABLED_EraseIf_Reentrancy
-#else
-#define MAYBE_EraseIf_Reentrancy EraseIf_Reentrancy
-#endif
 // Tests that inserting another element from the destructor of an object removed
 // during EraseIf() doesn't crash.
-TEST(IntrusiveHeapTest, MAYBE_EraseIf_Reentrancy) {
+TEST(IntrusiveHeapTest, EraseIf_Reentrancy) {
   IntrusiveHeap<WithHeapHandle<ScopedClosureRunner>, Comparator> heap;
 
   // The task that will post a new element inside the heap upon destruction of
