@@ -1187,7 +1187,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return;
         }
 
-        if (getActivityTab() == null && !isOverviewVisible) {
+        if (getActivityTab() == null && !isOverviewVisible
+                && ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
             mOverviewShownOnStart = true;
             // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
             // be the first thing shown after startup.
