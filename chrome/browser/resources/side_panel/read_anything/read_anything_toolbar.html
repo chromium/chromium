@@ -11,11 +11,12 @@
   :host-context([chrome-refresh-2023]) cr-icon-button {
     color: var(--color-side-panel-entry-icon);
   }
-  :host-context([chrome-refresh-2023]) .dropdown-item {
-    background: none;
-  }
   :host-context([chrome-refresh-2023]) .dropdown-item:focus {
     background-color: var(--cr-hover-background-color);
+  }
+  .dropdown-item {
+    display: block;
+    padding: 6px 0 6px 16px;
   }
   :host-context([chrome-refresh-2023]) cr-action-menu {
     --cr-menu-background-color: var(--color-side-panel-menu-background);
@@ -24,6 +25,10 @@
   }
   .back, .section {
     font-weight: bold;
+  }
+  .end-image {
+    margin-left: 12px;
+    float: right;
   }
 </style>
 <div>
@@ -41,26 +46,36 @@
       <iron-icon class="button-image" icon="read-anything:font-size">
       </iron-icon>
       $i18n{fontSizeTitle}
+      <iron-icon class="button-image end-image" icon="cr:arrow-right">
+      </iron-icon>
     </button>
     <button class="dropdown-item">
       <iron-icon class="button-image" icon="read-anything:font">
       </iron-icon>
       $i18n{fontNameTitle}
+      <iron-icon class="button-image end-image" icon="cr:arrow-right">
+      </iron-icon>
     </button>
     <button class="dropdown-item" on-click="onShowColorSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:color">
       </iron-icon>
       $i18n{themeTitle}
+      <iron-icon class="button-image end-image" icon="cr:arrow-right">
+      </iron-icon>
     </button>
     <button class="dropdown-item" on-click="onShowLineSpacingSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:line-spacing">
       </iron-icon>
       $i18n{lineSpacingTitle}
+      <iron-icon class="button-image end-image" icon="cr:arrow-right">
+      </iron-icon>
     </button>
     <button class="dropdown-item" on-click="onShowLetterSpacingSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:letter-spacing">
       </iron-icon>
       $i18n{letterSpacingTitle}
+      <iron-icon class="button-image end-image" icon="cr:arrow-right">
+      </iron-icon>
     </button>
   </cr-action-menu>
   <cr-action-menu id="colorSubmenu">
