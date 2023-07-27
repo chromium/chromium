@@ -39,6 +39,9 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -71,6 +74,7 @@ constexpr char kNotificationSourceName[] = "ChromeOS";
 constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
 constexpr char kNotifierId[] = "scalable_iph";
 constexpr char kButtonIndex = 0;
+constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(64, 64);
 
 const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
   static const base::NoDestructor<base::flat_map<ActionType, std::string>>
@@ -257,8 +261,13 @@ void ScalableIphDelegateImpl::ShowBubble(
       base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeDismissed,
                           weak_ptr_factory_.GetWeakPtr(), params.bubble_id);
   if (params.icon != BubbleIcon::kNoIcon) {
-    nudge_data.image_model =
-        ui::ImageModel::FromResourceId(GetResourceId(params.icon));
+    gfx::ImageSkia* image =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            GetResourceId(params.icon));
+    gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        *image, skia::ImageOperations::RESIZE_BEST, kBubbleIconSizeDip);
+    resized_image.EnsureRepsForSupportedScales();
+    nudge_data.image_model = ui::ImageModel::FromImageSkia(resized_image);
   }
   ash::AnchoredNudgeManager::Get()->Show(nudge_data);
 }
