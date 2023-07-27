@@ -712,6 +712,49 @@ TEST_P(PredictionManagerTest, RemoteFetchingPrefDisabled) {
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
 }
 
+TEST_P(PredictionManagerTest, RemoteFetchingPrefEnabledAndThenDisabled) {
+  SetComponentUpdatesPrefEnabled(true);
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+  CreatePredictionModelDownloadManager();
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  SetStoreInitialized();
+
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  model.mutable_model()->set_download_url(FilePathToString(
+      temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
+  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  RunUntilIdle();
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  prediction_model_fetcher()->Reset();
+  observer.Reset();
+
+  // No fetch should happen with the pref disabled. But model is still
+  // delivered.
+  SetComponentUpdatesPrefEnabled(false);
+  prediction_manager()->RemoveObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
+  MoveClockForwardBy(base::Seconds(kUpdateFetchModelAndFeaturesTimeSecs));
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  RunUntilIdle();
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  prediction_model_fetcher()->Reset();
+  observer.Reset();
+}
+
 TEST_P(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   base::HistogramTester histogram_tester;
 

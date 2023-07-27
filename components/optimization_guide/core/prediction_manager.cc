@@ -379,8 +379,10 @@ void PredictionManager::FetchModels(bool is_first_model_fetch) {
   if (switches::IsModelOverridePresent())
     return;
 
-  if (!ShouldFetchModels(off_the_record_, pref_service_))
+  if (!ShouldFetchModels(off_the_record_,
+                         component_updates_enabled_provider_.Run())) {
     return;
+  }
 
   if (is_first_model_fetch) {
     DCHECK(!init_time_.is_null());
