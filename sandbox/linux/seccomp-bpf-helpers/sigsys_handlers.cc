@@ -7,6 +7,7 @@
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 
 #include <fcntl.h>
+#include <linux/net.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -413,6 +414,99 @@ bpf_dsl::ResultExpr RewriteFstatatSIGSYS(int fs_denied_errno) {
   return bpf_dsl::Trap(SIGSYSFstatatHandler,
                        reinterpret_cast<void*>(fs_denied_errno));
 }
+
+#if defined(__NR_socketcall)
+bool CanRewriteSocketcall() {
+  static bool can_rewrite_socketcall = []() {
+    // Call socket(2) with invalid flags and see if it returns ENOSYS.
+    base::ScopedFD socket_fd(
+        syscall(__NR_socket, 0xffffff, 0xffffff, 0xffffff));
+    if (!socket_fd.is_valid() && errno == ENOSYS) {
+      return false;
+    }
+    return true;
+  }();
+  return can_rewrite_socketcall;
+}
+
+intptr_t SIGSYSSocketcallHandler(const struct arch_seccomp_data& args,
+                                 void* aux) {
+  const long kLastSocketcall = SYS_SENDMMSG;
+  // This array is mostly copy and pasted from the Linux kernel (net/socket.c)
+  static const struct {
+    long sysno;
+    size_t num_args;
+    size_t num_zeroes = 0;
+  } socketcall_args[kLastSocketcall + 1] = {
+      {.sysno = -1, .num_args = 0},
+      {.sysno = __NR_socket, .num_args = 3},
+      {.sysno = __NR_bind, .num_args = 3},
+      {.sysno = __NR_connect, .num_args = 3},
+      {.sysno = __NR_listen, .num_args = 2},
+      // SYS_ACCEPT does not always have a corresponding accept() syscall, but
+      // always has an accept4() with flags == 0.
+      {.sysno = __NR_accept4, .num_args = 3, .num_zeroes = 1},
+      {.sysno = __NR_getsockname, .num_args = 3},
+      {.sysno = __NR_getpeername, .num_args = 3},
+      {.sysno = __NR_socketpair, .num_args = 4},
+      // The SYS_SEND and SYS_RECV calls do not have corresponding __NR_send and
+      // __NR_recv syscalls, but are equivalent to sendto() and recvfrom() with
+      // the final arguments as 0.
+      {.sysno = __NR_sendto, .num_args = 4, .num_zeroes = 2},
+      {.sysno = __NR_recvfrom, .num_args = 4, .num_zeroes = 2},
+      {.sysno = __NR_sendto, .num_args = 6},
+      {.sysno = __NR_recvfrom, .num_args = 6},
+      {.sysno = __NR_shutdown, .num_args = 2},
+      {.sysno = __NR_setsockopt, .num_args = 5},
+      {.sysno = __NR_getsockopt, .num_args = 5},
+      {.sysno = __NR_sendmsg, .num_args = 3},
+      {.sysno = __NR_recvmsg, .num_args = 3},
+      {.sysno = __NR_accept4, .num_args = 4},
+      {.sysno = __NR_recvmmsg, .num_args = 5},
+      {.sysno = __NR_sendmmsg, .num_args = 4}};
+  uint64_t call = args.args[0];
+  if (args.nr == __NR_socketcall && 0 < call && call <= kLastSocketcall) {
+    const size_t real_args_arr_len =
+        socketcall_args[call].num_args + socketcall_args[call].num_zeroes;
+    unsigned long real_args_arr[real_args_arr_len];
+    memcpy(real_args_arr, reinterpret_cast<unsigned long*>(args.args[1]),
+           real_args_arr_len * sizeof(unsigned long));
+    memset(real_args_arr + socketcall_args[call].num_args, 0,
+           socketcall_args[call].num_zeroes * sizeof(unsigned long));
+    switch (real_args_arr_len) {
+      case 2:
+        return syscall(socketcall_args[call].sysno, real_args_arr[0],
+                       real_args_arr[1]);
+      case 3:
+        return syscall(socketcall_args[call].sysno, real_args_arr[0],
+                       real_args_arr[1], real_args_arr[2]);
+      case 4:
+        return syscall(socketcall_args[call].sysno, real_args_arr[0],
+                       real_args_arr[1], real_args_arr[2], real_args_arr[3]);
+      case 5:
+        return syscall(socketcall_args[call].sysno, real_args_arr[0],
+                       real_args_arr[1], real_args_arr[2], real_args_arr[3],
+                       real_args_arr[4]);
+      case 6:
+        return syscall(socketcall_args[call].sysno, real_args_arr[0],
+                       real_args_arr[1], real_args_arr[2], real_args_arr[3],
+                       real_args_arr[4], real_args_arr[5]);
+      default:
+        break;
+    }
+  }
+
+  CrashSIGSYS_Handler(args, aux);
+
+  // Should never be reached.
+  RAW_CHECK(false);
+  return -ENOSYS;
+}
+
+bpf_dsl::ResultExpr RewriteSocketcallSIGSYS() {
+  return bpf_dsl::Trap(SIGSYSSocketcallHandler, nullptr);
+}
+#endif  // defined(__NR_socketcall)
 
 void AllocateCrashKeys() {
   if (seccomp_crash_key)

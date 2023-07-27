@@ -282,10 +282,10 @@ ResultExpr NetworkProcessPolicy::EvaluateSyscall(int sysno) const {
 #if defined(__NR_socketcall)
     case __NR_socketcall:
       // Unfortunately there's no easy way to restrict socketcall as it uses a
-      // struct pointer to pass its arguments.
-      // TODO(crbug.com/1429416): consider rewriting socketcall()s into the
-      // direct syscalls if the kernel supports it, and remove this allowance.
-      return Allow();
+      // struct pointer to pass its arguments. So this rewrites socketcall()
+      // calls into direct sockets-API syscalls, which will be filtered like
+      // normal.
+      return CanRewriteSocketcall() ? RewriteSocketcallSIGSYS() : Allow();
 #endif
   }
 
