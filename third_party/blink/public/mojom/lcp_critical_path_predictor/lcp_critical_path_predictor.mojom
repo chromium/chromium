@@ -8,6 +8,9 @@ import "mojo/public/mojom/base/byte_string.mojom";
 
 // Interface for LCP Critical Path Predictor from the renderer process.
 interface LCPCriticalPathPredictorHost {
+  // `lcp_element_locator` is a LCP ElementLocator information
+  // serialized in proto3 binary format.
+  SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator);
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.

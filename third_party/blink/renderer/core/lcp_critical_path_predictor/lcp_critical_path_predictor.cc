@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 
-#include <vector>
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -33,10 +32,10 @@ void LCPCriticalPathPredictor::set_lcp_element_locators(
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     Element* lcp_element) {
-  auto locator = element_locator::OfElement(lcp_element);
-
-  // TODO(crbug.com/1419756): Send `locator` to the
-  // `LCPCriticalPathPredictorHost`.
+  if (lcp_element) {
+    GetHost().SetLcpElementLocator(
+        element_locator::OfElement(lcp_element)->SerializeAsString());
+  }
 }
 
 mojom::blink::LCPCriticalPathPredictorHost&
