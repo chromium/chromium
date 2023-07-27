@@ -3511,6 +3511,9 @@ extern const char kFederatedServiceDescription[];
 extern const char kFileTransferEnterpriseConnectorName[];
 extern const char kFileTransferEnterpriseConnectorDescription[];
 
+extern const char kFileTransferEnterpriseConnectorUIName[];
+extern const char kFileTransferEnterpriseConnectorUIDescription[];
+
 extern const char kFilesAppExperimentalName[];
 extern const char kFilesAppExperimentalDescription[];
 
