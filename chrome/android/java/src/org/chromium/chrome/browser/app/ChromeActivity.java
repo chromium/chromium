@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureControll
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
@@ -403,6 +404,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private boolean mBlockingDrawForAppRestart;
     private Runnable mShowContentRunnable;
     private boolean mIsRecreatingForTabletModeChange;
+    // Handling the dismissal of tab modal dialog.
+    private TabModalLifetimeHandler mTabModalLifetimeHandler;
 
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
@@ -1641,8 +1644,21 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     protected ModalDialogManager createModalDialogManager() {
-        return new ModalDialogManager(
+        var dialogManager = new ModalDialogManager(
                 new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
+        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
+        mTabModalLifetimeHandler = new TabModalLifetimeHandler(this, getLifecycleDispatcher(),
+                dialogManager,
+                ()
+                        -> mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate(),
+                this::getTabObscuringHandler, this::getToolbarManager,
+                getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
+                this::getBrowserControlsManager, this::getFullscreenManager, mBackPressManager);
+        return dialogManager;
+    }
+
+    protected TabModalLifetimeHandler getTabModalLifetimeHandler() {
+        return mTabModalLifetimeHandler;
     }
 
     protected Drawable getBackgroundDrawable() {
