@@ -406,7 +406,7 @@ void CaptureModeMenuGroup::AddOrUpdateExistingOption(
 }
 
 void CaptureModeMenuGroup::RefreshOptionsSelections() {
-  for (auto* option : options_) {
+  for (ash::CaptureModeOption* option : options_) {
     option->SetOptionChecked(delegate_->IsOptionChecked(option->id()));
     option->SetEnabled(delegate_->IsOptionEnabled(option->id()));
   }
@@ -448,12 +448,13 @@ void CaptureModeMenuGroup::AppendHighlightableItems(
 
   if (menu_header_)
     highlightable_items.push_back(menu_header_);
-  for (auto* option : options_) {
+  for (ash::CaptureModeOption* option : options_) {
     if (option->GetEnabled())
       highlightable_items.push_back(option);
   }
-  for (auto* menu_item : menu_items_)
+  for (ash::CaptureModeMenuItem* menu_item : menu_items_) {
     highlightable_items.push_back(menu_item);
+  }
 }
 
 views::View* CaptureModeMenuGroup::GetOptionForTesting(int option_id) {

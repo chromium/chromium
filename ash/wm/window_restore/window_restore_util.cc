@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -48,7 +49,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
     absl::optional<int> activation_index,
     bool for_saved_desks,
-    const std::vector<aura::Window*>& mru_windows) {
+    const std::vector<dangling_raw_ptr<aura::Window>>& mru_windows) {
   auto window_info = std::make_unique<app_restore::WindowInfo>();
   int window_activation_index = -1;
   if (activation_index) {

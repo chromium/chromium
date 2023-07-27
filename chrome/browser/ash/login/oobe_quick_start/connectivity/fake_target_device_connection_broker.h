@@ -33,7 +33,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
 
     // Returns all FakeTargetDeviceConnectionBroker instances created by
     // CreateInstance().
-    const std::vector<FakeTargetDeviceConnectionBroker*>& instances() {
+    const std::vector<dangling_raw_ptr<FakeTargetDeviceConnectionBroker>>&
+    instances() {
       return instances_;
     }
 
@@ -52,7 +53,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
         mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder)
         override;
 
-    std::vector<FakeTargetDeviceConnectionBroker*> instances_;
+    std::vector<dangling_raw_ptr<FakeTargetDeviceConnectionBroker>> instances_;
   };
 
   FakeTargetDeviceConnectionBroker();

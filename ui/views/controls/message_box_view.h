@@ -103,7 +103,7 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
   gfx::Insets GetHorizontalInsets(const LayoutProvider* provider);
 
   // Message for the message box.
-  std::vector<Label*> message_labels_;
+  std::vector<dangling_raw_ptr<Label>> message_labels_;
 
   // Scrolling view containing the message labels.
   raw_ptr<ScrollView> scroll_view_ = nullptr;

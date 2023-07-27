@@ -70,7 +70,7 @@ class UserChooserView : public views::View, public MediaCaptureObserver {
   const char* GetClassName() const override;
 
  private:
-  std::vector<UserItemButton*> user_item_buttons_;
+  std::vector<dangling_raw_ptr<UserItemButton>> user_item_buttons_;
 };
 
 }  // namespace ash

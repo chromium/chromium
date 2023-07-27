@@ -29,7 +29,7 @@ namespace {
 void GetViewsWithAssociatedWindow(
     const aura::Window& parent_window,
     std::map<views::View*, aura::Window*>* hosted_windows) {
-  for (auto* child : parent_window.children()) {
+  for (aura::Window* child : parent_window.children()) {
     View* host_view = child->GetProperty(kHostViewKey);
     if (host_view)
       (*hosted_windows)[host_view] = child;
@@ -129,8 +129,9 @@ WindowReorderer::WindowReorderer(aura::Window* parent_window, View* root_view)
       root_view_(root_view),
       association_observer_(new AssociationObserver(this)) {
   parent_window_->AddObserver(this);
-  for (auto* window : parent_window_->children())
+  for (aura::Window* window : parent_window_->children()) {
     association_observer_->StartObserving(window);
+  }
   ReorderChildWindows();
 }
 

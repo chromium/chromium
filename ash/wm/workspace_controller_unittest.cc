@@ -68,7 +68,8 @@ std::string GetLayerNames(const aura::Window* window) {
   }
 
   std::string result;
-  const std::vector<ui::Layer*>& layers(window->layer()->children());
+  const std::vector<dangling_raw_ptr<ui::Layer>>& layers(
+      window->layer()->children());
   for (size_t i = 0; i < layers.size(); ++i) {
     LayerToWindowNameMap::iterator layer_i = window_names.find(layers[i]);
     if (layer_i != window_names.end()) {

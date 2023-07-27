@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/cdm_context.h"
@@ -76,10 +77,11 @@ void MojoRenderer::InitializeRendererFromStreams(
 
   // Create mojom::DemuxerStream for each demuxer stream and bind its lifetime
   // to the pipe.
-  std::vector<DemuxerStream*> streams = media_resource_->GetAllStreams();
+  std::vector<dangling_raw_ptr<DemuxerStream>> streams =
+      media_resource_->GetAllStreams();
   std::vector<mojo::PendingRemote<mojom::DemuxerStream>> stream_proxies;
 
-  for (auto* stream : streams) {
+  for (media::DemuxerStream* stream : streams) {
     mojo::PendingRemote<mojom::DemuxerStream> stream_proxy;
     auto mojo_stream = std::make_unique<MojoDemuxerStreamImpl>(
         stream, stream_proxy.InitWithNewPipeAndPassReceiver());

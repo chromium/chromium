@@ -168,12 +168,13 @@ void DownloadShelfView::Layout() {
        center_y(close_button_->height())});
 
   if (all_downloads_hidden) {
-    for (auto* view : download_views_)
+    for (DownloadItemView* view : download_views_) {
       view->SetVisible(false);
+    }
     return;
   }
 
-  for (auto* view : base::Reversed(download_views_)) {
+  for (DownloadItemView* view : base::Reversed(download_views_)) {
     gfx::Size view_size = view->GetPreferredSize();
     if (view == download_views_.back()) {
       view_size = gfx::Tween::SizeValueBetween(
@@ -248,10 +249,11 @@ void DownloadShelfView::MouseMovedOutOfHost() {
 }
 
 void DownloadShelfView::AutoClose() {
-  if (base::ranges::all_of(download_views_, [](const auto* view) {
+  if (base::ranges::all_of(download_views_, [](const DownloadItemView* view) {
         return view->model()->GetOpened();
-      }))
+      })) {
     mouse_watcher_.Start(GetWidget()->GetNativeWindow());
+  }
 }
 
 void DownloadShelfView::RemoveDownloadView(View* view) {

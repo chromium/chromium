@@ -56,8 +56,10 @@ void AutomationManagerAura::Enable() {
   // GetTopLevelWindows() returns the correct values when automation is enabled
   // with multiple displays connected.
   if (send_window_state_on_enable_) {
-    for (auto* host : aura::Env::GetInstance()->window_tree_hosts())
+    for (aura::WindowTreeHost* host :
+         aura::Env::GetInstance()->window_tree_hosts()) {
       cache_->OnRootWindowObjCreated(host->window());
+    }
   }
 
   // Send this event immediately to push the initial desktop tree state.
@@ -72,7 +74,8 @@ void AutomationManagerAura::Enable() {
   const display::Display& display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window* root_window = nullptr;
-  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
     if (display.id() == host->GetDisplayId()) {
       root_window = host->window();
       break;
@@ -346,7 +349,8 @@ void AutomationManagerAura::PerformHitTest(
 
   // Require a window in |display|; prefer it also be focused.
   aura::Window* root_window = nullptr;
-  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
     if (display.id() == host->GetDisplayId()) {
       root_window = host->window();
       if (aura::client::GetFocusClient(root_window)->GetFocusedWindow())

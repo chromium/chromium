@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -44,7 +45,7 @@ BookmarkContextMenu::BookmarkContextMenu(
     Profile* profile,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
-    const std::vector<const BookmarkNode*>& selection,
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& selection,
     bool close_on_remove)
     : controller_(new BookmarkContextMenuController(
           parent_widget ? parent_widget->GetNativeWindow() : nullptr,
@@ -128,7 +129,7 @@ void BookmarkContextMenu::CloseMenu() {
 
 void BookmarkContextMenu::WillExecuteCommand(
     int command_id,
-    const std::vector<const BookmarkNode*>& bookmarks) {
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& bookmarks) {
   if (observer_ && IsRemoveBookmarksCommand(command_id))
     observer_->WillRemoveBookmarks(bookmarks);
 }

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -245,9 +246,10 @@ PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
                    FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN;
 }
 
-void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
-                            content::WebContents* web_contents,
-                            const std::string& action) {
+void RecordEngagementMetric(
+    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
+    content::WebContents* web_contents,
+    const std::string& action) {
   RequestTypeForUma type =
       GetUmaValueForRequestType(requests[0]->request_type());
   if (requests.size() > 1)
@@ -682,7 +684,7 @@ void PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
 }
 
 void PermissionUmaUtil::RecordPermissionPromptAttempt(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
     bool IsLocationBarEditingOrEmpty) {
   DCHECK(!requests.empty());
 
@@ -722,7 +724,7 @@ void PermissionUmaUtil::RecordPermissionPromptAttempt(
 }
 
 void PermissionUmaUtil::PermissionPromptShown(
-    const std::vector<PermissionRequest*>& requests) {
+    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests) {
   DCHECK(!requests.empty());
 
   RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
@@ -740,7 +742,7 @@ void PermissionUmaUtil::PermissionPromptShown(
 }
 
 void PermissionUmaUtil::PermissionPromptResolved(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
     content::WebContents* web_contents,
     PermissionAction permission_action,
     base::TimeDelta time_to_decision,
@@ -1164,7 +1166,7 @@ void PermissionUmaUtil::RecordPermissionAction(
 
 // static
 void PermissionUmaUtil::RecordPromptDecided(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
     bool accepted,
     bool is_one_time) {
   DCHECK(!requests.empty());
@@ -1507,7 +1509,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
 
 // static
 void PermissionUmaUtil::RecordIgnoreReason(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
     PermissionPromptDisposition prompt_disposition,
     PermissionIgnoredReason reason) {
   RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;

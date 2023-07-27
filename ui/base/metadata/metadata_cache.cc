@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "ui/base/metadata/metadata_types.h"
 
@@ -28,7 +29,7 @@ void MetaDataCache::AddClassMetaData(
   class_data_cache_.push_back(class_data.release());
 }
 
-std::vector<ClassMetaData*>& MetaDataCache::GetCachedTypes() {
+std::vector<dangling_raw_ptr<ClassMetaData>>& MetaDataCache::GetCachedTypes() {
   return class_data_cache_;
 }
 

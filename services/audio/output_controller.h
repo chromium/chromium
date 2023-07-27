@@ -14,6 +14,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
@@ -334,7 +335,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // The snoopers examining or grabbing a copy of the audio data from the
   // OnMoreData() calls.
   base::Lock snooper_lock_;
-  std::vector<Snooper*> snoopers_;
+  std::vector<dangling_raw_ptr<Snooper>> snoopers_;
 
   // The current volume of the audio stream.
   double volume_;

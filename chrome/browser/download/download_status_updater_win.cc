@@ -35,7 +35,7 @@ void UpdateTaskbarProgressBar(int download_count,
   }
 
   // Iterate through all the browser windows, and draw the progress bar.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     BrowserWindow* window = browser->window();
     if (!window)
       continue;

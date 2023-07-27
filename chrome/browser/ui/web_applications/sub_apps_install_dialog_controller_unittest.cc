@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -41,7 +42,7 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
   EXPECT_TRUE(dialog->owned_by_widget());
 
   // Confirm that all sub app names were added to the view.
-  std::vector<views::View*> views_group;
+  std::vector<dangling_raw_ptr<views::View>> views_group;
   widget->GetContentsView()->GetViewsInGroup(
       base::to_underlying(SubAppsInstallDialogController::
                               DialogViewIDForTesting::SUB_APP_LABEL),
@@ -65,7 +66,7 @@ TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
                    GetContext());
   views::Widget* widget = controller->GetWidgetForTesting();
 
-  std::vector<views::View*> views_group;
+  std::vector<dangling_raw_ptr<views::View>> views_group;
   widget->GetContentsView()->GetViewsInGroup(
       base::to_underlying(SubAppsInstallDialogController::
                               DialogViewIDForTesting::SUB_APP_LABEL),

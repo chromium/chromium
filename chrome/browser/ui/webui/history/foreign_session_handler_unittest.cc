@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/core/session_id.h"
@@ -21,7 +22,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 
   MOCK_METHOD1(
       GetAllForeignSessions,
-      bool(std::vector<const sync_sessions::SyncedSession*>* sessions));
+      bool(std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>*
+               sessions));
 
   MOCK_METHOD3(GetForeignTab,
                bool(const std::string& tag,

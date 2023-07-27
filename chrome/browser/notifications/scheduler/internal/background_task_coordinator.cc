@@ -46,7 +46,7 @@ class BackgroundTaskCoordinatorHelper {
     BackgroundTaskCoordinator::Notifications unthrottled_notifications;
     BackgroundTaskCoordinator::Notifications throttled_notifications;
     for (auto& pair : notifications) {
-      for (auto* notification : pair.second) {
+      for (const notifications::NotificationEntry* notification : pair.second) {
         auto type = pair.first;
         if (notification->schedule_params.priority ==
             ScheduleParams::Priority::kNoThrottle) {
@@ -66,7 +66,7 @@ class BackgroundTaskCoordinatorHelper {
   void ProcessUnthrottledNotifications(
       BackgroundTaskCoordinator::Notifications notifications) {
     for (const auto& pair : notifications) {
-      for (const auto* entry : pair.second) {
+      for (const notifications::NotificationEntry* entry : pair.second) {
         DCHECK_EQ(entry->schedule_params.priority,
                   ScheduleParams::Priority::kNoThrottle);
         if (!entry->schedule_params.deliver_time_start.has_value()) {
@@ -105,7 +105,7 @@ class BackgroundTaskCoordinatorHelper {
           shown_total >= config_->max_daily_shown_all_type;
 
       // Find the eariliest notification to launch the background task.
-      for (const auto* entry : pair.second) {
+      for (const notifications::NotificationEntry* entry : pair.second) {
         DCHECK_NE(entry->schedule_params.priority,
                   ScheduleParams::Priority::kNoThrottle);
         // Currently only support deliver time window.

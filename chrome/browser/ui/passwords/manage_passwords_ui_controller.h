@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
@@ -98,9 +99,10 @@ class ManagePasswordsUIController
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager)
       override;
   void OnPasswordAutofilled(
-      const std::vector<const password_manager::PasswordForm*>& password_forms,
+      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>&
+          password_forms,
       const url::Origin& origin,
-      const std::vector<const password_manager::PasswordForm*>*
+      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>*
           federated_matches) override;
   void OnCredentialLeak(password_manager::CredentialLeakType leak_dialog_type,
                         const GURL& url,

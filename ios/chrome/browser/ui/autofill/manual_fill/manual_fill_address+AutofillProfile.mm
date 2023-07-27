@@ -73,7 +73,7 @@ NSString* FieldValueOfTypeOnProfile(const autofill::AutofillProfile& profile,
 }
 
 + (NSArray<ManualFillAddress*>*)manualFillAddressesFromProfiles:
-    (std::vector<autofill::AutofillProfile*>)profiles {
+    (std::vector<dangling_raw_ptr<autofill::AutofillProfile>>)profiles {
   NSMutableArray<ManualFillAddress*>* manualFillAddresses =
       [[NSMutableArray alloc] initWithCapacity:profiles.size()];
   for (autofill::AutofillProfile* profile : profiles) {

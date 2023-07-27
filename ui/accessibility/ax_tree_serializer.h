@@ -248,7 +248,7 @@ struct AX_EXPORT ClientTreeNode {
   virtual ~ClientTreeNode();
   AXNodeID id;
   raw_ptr<ClientTreeNode, DanglingUntriaged> parent;
-  std::vector<ClientTreeNode*> children;
+  std::vector<dangling_raw_ptr<ClientTreeNode>> children;
   bool ignored;
   // Additional nodes that must be serialized. When a dirty subtree is reached,
   // the entire subtree will be added to the current serialization.
@@ -747,7 +747,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // don't end up children of two different parents in the middle
   // of an update, which can lead to a double-free.
   std::map<AXNodeID, ClientTreeNode*> client_child_id_map;
-  std::vector<ClientTreeNode*> old_children;
+  std::vector<dangling_raw_ptr<ClientTreeNode>> old_children;
   old_children.swap(client_node->children);
   for (size_t i = 0; i < old_children.size(); ++i) {
     ClientTreeNode* old_child = old_children[i];

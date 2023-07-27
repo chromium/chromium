@@ -22,6 +22,7 @@
 
 #include "base/environment.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -107,7 +108,7 @@ class DiscreteTimeSimulation {
   }
 
  private:
-  std::vector<Actor*> actors_;
+  std::vector<dangling_raw_ptr<Actor>> actors_;
 };
 
 // Represents a web server in a simulation of a server under attack by

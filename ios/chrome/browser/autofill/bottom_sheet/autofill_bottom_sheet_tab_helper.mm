@@ -127,7 +127,7 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
 }
 
 void AutofillBottomSheetTabHelper::AttachPaymentsListeners(
-    const std::vector<autofill::FormStructure*>& forms,
+    const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms,
     const std::string& frame_id) {
   // Verify that the payments bottom sheet feature is enabled
   if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {

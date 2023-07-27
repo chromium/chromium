@@ -87,7 +87,7 @@ class PopupTrackerBrowserTest : public InProcessBrowserTest {
     const auto& entries =
         test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, expected_url);
     EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(entry, kUkmEngagementTime));
     return entry;
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
   auto entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Popup_Closed::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  for (auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kUkmSafeBrowsingStatus,
         static_cast<int>(

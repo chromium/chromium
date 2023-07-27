@@ -177,7 +177,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // windows are hidden in overview mode and the visibility of the windows is
   // recovered after overview mode.
   void AddHiddenTransientWindows(
-      const std::vector<aura::Window*>& transient_windows);
+      const std::vector<dangling_raw_ptr<aura::Window>>& transient_windows);
 
   // A weak pointer to the overview item that owns |this|. Guaranteed to be not
   // null for the lifetime of |this|.

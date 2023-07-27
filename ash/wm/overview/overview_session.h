@@ -64,7 +64,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public TabletModeObserver,
                                    public DesksController::Observer {
  public:
-  using WindowList = std::vector<aura::Window*>;
+  using WindowList = std::vector<dangling_raw_ptr<aura::Window>>;
 
   explicit OverviewSession(OverviewDelegate* delegate);
 

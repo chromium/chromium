@@ -328,7 +328,7 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser) {
 }
 
 Browser* FindWebAppBrowser(Profile* profile, const AppId& app_id) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile)
       continue;
 

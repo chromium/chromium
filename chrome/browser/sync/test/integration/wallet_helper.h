@@ -128,8 +128,10 @@ void ExpectDefaultProfileValues(const autofill::AutofillProfile& profile);
 
 // Load current data from the database of profile |profile|.
 std::vector<autofill::AutofillProfile*> GetServerProfiles(int profile);
-std::vector<autofill::AutofillProfile*> GetLocalProfiles(int profile);
-std::vector<autofill::CreditCard*> GetServerCreditCards(int profile);
+std::vector<dangling_raw_ptr<autofill::AutofillProfile>> GetLocalProfiles(
+    int profile);
+std::vector<dangling_raw_ptr<autofill::CreditCard>> GetServerCreditCards(
+    int profile);
 
 }  // namespace wallet_helper
 

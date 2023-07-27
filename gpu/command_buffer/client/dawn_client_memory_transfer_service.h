@@ -53,7 +53,7 @@ class DawnClientMemoryTransferService
   raw_ptr<MappedMemoryManager> mapped_memory_;
   // Pointers to memory allocated by the MappedMemoryManager to free after
   // the next Flush.
-  std::vector<void*> free_blocks_;
+  std::vector<dangling_raw_ptr<void>> free_blocks_;
 
   // If disconnected, new handle creation always returns null.
   bool disconnected_ = false;

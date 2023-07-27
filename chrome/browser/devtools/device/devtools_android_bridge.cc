@@ -272,14 +272,17 @@ void DevToolsAndroidBridge::ReceivedDeviceList(
   }
 
   DeviceListListeners copy(device_list_listeners_);
-  for (auto* listener : copy)
+  for (DevToolsAndroidBridge::DeviceListListener* listener : copy) {
     listener->DeviceListChanged(remote_devices);
+  }
 
   ForwardingStatus status =
       port_forwarding_controller_->DeviceListChanged(complete_devices);
   PortForwardingListeners forwarding_listeners(port_forwarding_listeners_);
-  for (auto* listener : forwarding_listeners)
+  for (DevToolsAndroidBridge::PortForwardingListener* listener :
+       forwarding_listeners) {
     listener->PortStatusChanged(status);
+  }
 }
 
 void DevToolsAndroidBridge::StartDeviceCountPolling() {
@@ -306,8 +309,9 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DeviceCountListeners copy(device_count_listeners_);
-  for (auto* listener : copy)
+  for (DevToolsAndroidBridge::DeviceCountListener* listener : copy) {
     listener->DeviceCountChanged(count);
+  }
 
   if (device_count_listeners_.empty())
     return;

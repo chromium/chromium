@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/optional_trace_event.h"
@@ -137,7 +138,7 @@ void FrameTree::NodeIterator::AdvanceNode() {
 }
 
 FrameTree::NodeIterator::NodeIterator(
-    const std::vector<FrameTreeNode*>& starting_nodes,
+    const std::vector<dangling_raw_ptr<FrameTreeNode>>& starting_nodes,
     const FrameTreeNode* root_of_subtree_to_skip,
     bool should_descend_into_inner_trees,
     bool include_delegate_nodes_for_inner_frame_trees)
@@ -172,7 +173,7 @@ FrameTree::NodeIterator FrameTree::NodeRange::end() {
 }
 
 FrameTree::NodeRange::NodeRange(
-    const std::vector<FrameTreeNode*>& starting_nodes,
+    const std::vector<dangling_raw_ptr<FrameTreeNode>>& starting_nodes,
     const FrameTreeNode* root_of_subtree_to_skip,
     bool should_descend_into_inner_trees,
     bool include_delegate_nodes_for_inner_frame_trees)
@@ -334,7 +335,7 @@ std::vector<FrameTreeNode*> FrameTree::CollectNodesForIsLoading() {
 FrameTree::NodeRange FrameTree::SubtreeAndInnerTreeNodes(
     RenderFrameHostImpl* parent,
     bool include_delegate_nodes_for_inner_frame_trees) {
-  std::vector<FrameTreeNode*> starting_nodes;
+  std::vector<dangling_raw_ptr<FrameTreeNode>> starting_nodes;
   starting_nodes.reserve(parent->child_count());
   for (size_t i = 0; i < parent->child_count(); ++i) {
     FrameTreeNode* child = parent->child_at(i);

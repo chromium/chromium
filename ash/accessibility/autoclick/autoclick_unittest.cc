@@ -300,7 +300,7 @@ TEST_F(AutoclickTest, MovementThreshold) {
     GetAutoclickController()->SetMovementThreshold(movement_threshold);
 
     // Run test for the secondary display too to test fix for crbug.com/449870.
-    for (auto* root_window : root_windows) {
+    for (aura::Window* root_window : root_windows) {
       gfx::Point center = root_window->GetBoundsInScreen().CenterPoint();
 
       GetAutoclickController()->SetEnabled(true,

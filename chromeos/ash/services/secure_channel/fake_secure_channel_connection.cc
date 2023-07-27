@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
@@ -35,8 +36,9 @@ void FakeSecureChannelConnection::ChangeStatus(const Status& new_status) {
   status_ = new_status;
 
   // Copy to prevent channel from being removed during handler.
-  std::vector<Observer*> observers_copy = observers_;
-  for (auto* observer : observers_copy) {
+  std::vector<dangling_raw_ptr<Observer>> observers_copy = observers_;
+  for (ash::secure_channel::SecureChannel::Observer* observer :
+       observers_copy) {
     observer->OnSecureChannelStatusChanged(this, old_status, status_);
   }
 }
@@ -44,17 +46,21 @@ void FakeSecureChannelConnection::ChangeStatus(const Status& new_status) {
 void FakeSecureChannelConnection::ReceiveMessage(const std::string& feature,
                                                  const std::string& payload) {
   // Copy to prevent channel from being removed during handler.
-  std::vector<Observer*> observers_copy = observers_;
-  for (auto* observer : observers_copy)
+  std::vector<dangling_raw_ptr<Observer>> observers_copy = observers_;
+  for (ash::secure_channel::SecureChannel::Observer* observer :
+       observers_copy) {
     observer->OnMessageReceived(this, feature, payload);
+  }
 }
 
 void FakeSecureChannelConnection::CompleteSendingMessage(int sequence_number) {
   DCHECK(next_sequence_number_ > sequence_number);
   // Copy to prevent channel from being removed during handler.
-  std::vector<Observer*> observers_copy = observers_;
-  for (auto* observer : observers_copy)
+  std::vector<dangling_raw_ptr<Observer>> observers_copy = observers_;
+  for (ash::secure_channel::SecureChannel::Observer* observer :
+       observers_copy) {
     observer->OnMessageSent(this, sequence_number);
+  }
 }
 
 void FakeSecureChannelConnection::Initialize() {

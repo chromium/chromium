@@ -111,8 +111,9 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   // Returns the forms in |matches| that should be taken into account for
   // conflict resolution during generation. Will be overridden in subclasses.
-  virtual std::vector<const PasswordForm*> GetRelevantMatchesForGeneration(
-      const std::vector<const PasswordForm*>& matches);
+  virtual std::vector<dangling_raw_ptr<const PasswordForm>>
+  GetRelevantMatchesForGeneration(
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& matches);
 
   virtual void SavePendingToStoreImpl(
       const PasswordForm& parsed_submitted_form);
@@ -151,7 +152,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   };
   static PendingCredentialsStates ComputePendingCredentialsStates(
       const PasswordForm& parsed_submitted_form,
-      const std::vector<const PasswordForm*>& matches,
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
       bool username_updated_in_bubble = false);
 
   std::u16string GetOldPassword(

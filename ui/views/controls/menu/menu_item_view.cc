@@ -689,8 +689,9 @@ void MenuItemView::ChildrenChanged() {
     }
   }
 
-  for (auto* item : removed_items_)
+  for (views::View* item : removed_items_) {
     delete item;
+  }
   removed_items_.clear();
 }
 
@@ -814,8 +815,9 @@ MenuItemView::~MenuItemView() {
   if (GetMenuController())
     GetMenuController()->OnMenuItemDestroying(this);
   delete submenu_;
-  for (auto* item : removed_items_)
+  for (views::View* item : removed_items_) {
     delete item;
+  }
 }
 
 MenuItemView::MenuItemView(MenuItemView* parent,

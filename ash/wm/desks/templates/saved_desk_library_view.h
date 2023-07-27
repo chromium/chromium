@@ -46,7 +46,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   static std::unique_ptr<views::Widget> CreateSavedDeskLibraryWidget(
       aura::Window* root);
 
-  const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
+  const std::vector<dangling_raw_ptr<SavedDeskGridView>>& grid_views() {
+    return grid_views_;
+  }
 
   // Retrieves the item view for a given saved desk, or nullptr.
   SavedDeskItemView* GetItemForUUID(const base::Uuid& uuid);
@@ -56,9 +58,10 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // corresponding entry will be placed first. This will animate the entries to
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
-  void AddOrUpdateEntries(const std::vector<const DeskTemplate*>& entries,
-                          const base::Uuid& order_first_uuid,
-                          bool animate);
+  void AddOrUpdateEntries(
+      const std::vector<dangling_raw_ptr<const DeskTemplate>>& entries,
+      const base::Uuid& order_first_uuid,
+      bool animate);
 
   // Deletes all entries identified by `uuids`. If `delete_animation` is false,
   // then the respective item views will just disappear instead of fading out.
@@ -118,11 +121,11 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   std::unique_ptr<ScrollViewGradientHelper> scroll_view_gradient_helper_;
 
   // Holds the active ones, for convenience.
-  std::vector<SavedDeskGridView*> grid_views_;
+  std::vector<dangling_raw_ptr<SavedDeskGridView>> grid_views_;
 
   // Owned by views hierarchy. Section headers above grids. Will match size and
   // order of items in `grid_views_`.
-  std::vector<views::Label*> grid_labels_;
+  std::vector<dangling_raw_ptr<views::Label>> grid_labels_;
 
   // Label that shows up when the library has no items.
   raw_ptr<views::Label, ExperimentalAsh> no_items_label_ = nullptr;

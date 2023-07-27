@@ -40,7 +40,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
 @implementation ManualFillAddressMediator
 
 - (instancetype)initWithProfiles:
-    (std::vector<autofill::AutofillProfile*>)profiles {
+    (std::vector<dangling_raw_ptr<autofill::AutofillProfile>>)profiles {
   self = [super init];
   if (self) {
     _addresses = [ManualFillAddress manualFillAddressesFromProfiles:profiles];
@@ -57,7 +57,8 @@ NSString* const ManageAddressAccessibilityIdentifier =
   [self postActionsToConsumer];
 }
 
-- (void)reloadWithProfiles:(std::vector<autofill::AutofillProfile*>)profiles {
+- (void)reloadWithProfiles:
+    (std::vector<dangling_raw_ptr<autofill::AutofillProfile>>)profiles {
   self.addresses = [ManualFillAddress manualFillAddressesFromProfiles:profiles];
   if (self.consumer) {
     [self postAddressesToConsumer];

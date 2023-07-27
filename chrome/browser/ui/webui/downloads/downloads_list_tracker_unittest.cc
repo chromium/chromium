@@ -30,7 +30,7 @@
 
 using download::DownloadItem;
 using download::MockDownloadItem;
-using DownloadVector = std::vector<DownloadItem*>;
+using DownloadVector = std::vector<dangling_raw_ptr<DownloadItem>>;
 using testing::_;
 using testing::Return;
 

@@ -72,7 +72,7 @@ class PrefetchPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
         ukm::builders::PrefetchProxy::kEntryName);
     ASSERT_EQ(1U, entries.size());
 
-    const auto* entry = entries.front();
+    const auto* entry = entries.front().get();
 
     ukm_recorder_->ExpectEntrySourceHasUrl(
         entry, embedded_test_server()->GetURL("origin.com", "/index.html"));

@@ -310,7 +310,7 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
                            history::SOURCE_BROWSED);
 
   // Initially there are no UKM entries.
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
       recorder_->GetEntriesByName(ukm::builders::Notification::kEntryName);
   EXPECT_EQ(0u, entries.size());
 
@@ -324,7 +324,7 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   entries =
       recorder_->GetEntriesByName(ukm::builders::Notification::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   recorder_->ExpectEntryMetric(
       entry, kClosedReason,
       static_cast<int>(NotificationDatabaseData::ClosedReason::USER));

@@ -203,7 +203,7 @@ void EditingList::OnActionAdded(Action& action) {
 
 void EditingList::OnActionRemoved(const Action& action) {
   DCHECK(scroll_content_);
-  for (auto* child : scroll_content_->children()) {
+  for (views::View* child : scroll_content_->children()) {
     auto* list_item = static_cast<ActionViewListItem*>(child);
     DCHECK(list_item);
     if (list_item->action() == &action) {
@@ -228,7 +228,7 @@ void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
 
 void EditingList::OnActionInputBindingUpdated(const Action& action) {
   DCHECK(scroll_content_);
-  for (auto* child : scroll_content_->children()) {
+  for (views::View* child : scroll_content_->children()) {
     auto* list_item = static_cast<ActionViewListItem*>(child);
     DCHECK(list_item);
     if (list_item->action() == &action) {
@@ -240,7 +240,7 @@ void EditingList::OnActionInputBindingUpdated(const Action& action) {
 
 void EditingList::OnActionNameUpdated(const Action& action) {
   DCHECK(scroll_content_);
-  for (auto* child : scroll_content_->children()) {
+  for (views::View* child : scroll_content_->children()) {
     auto* list_item = static_cast<ActionViewListItem*>(child);
     DCHECK(list_item);
     if (list_item->action() == &action) {

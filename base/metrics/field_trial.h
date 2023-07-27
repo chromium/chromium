@@ -808,11 +808,12 @@ class BASE_EXPORT FieldTrialList {
 
   // List of observers to be notified when a group is selected for a FieldTrial.
   // Excludes low anonymity field trials.
-  std::vector<Observer*> observers_ GUARDED_BY(lock_);
+  std::vector<dangling_raw_ptr<Observer>> observers_ GUARDED_BY(lock_);
 
   // List of observers to be notified when a group is selected for a FieldTrial.
   // Includes low anonymity field trials.
-  std::vector<Observer*> observers_including_low_anonymity_ GUARDED_BY(lock_);
+  std::vector<dangling_raw_ptr<Observer>> observers_including_low_anonymity_
+      GUARDED_BY(lock_);
 
   // Counts the ongoing calls to
   // FieldTrialList::NotifyFieldTrialGroupSelection(). Used to ensure that

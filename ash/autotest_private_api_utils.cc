@@ -12,6 +12,7 @@
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
@@ -145,7 +146,7 @@ bool WaitForLauncherAnimation(base::OnceClosure closure) {
 
 }  // namespace
 
-std::vector<aura::Window*> GetAppWindowList() {
+std::vector<dangling_raw_ptr<aura::Window>> GetAppWindowList() {
   ScopedSkipUserSessionBlockedCheck skip_session_blocked;
   return Shell::Get()->mru_window_tracker()->BuildAppWindowList(kAllDesks);
 }

@@ -18,7 +18,7 @@ class EventDrivenTelemetryCollectorPool {
   virtual ~EventDrivenTelemetryCollectorPool() = default;
 
   // Get the telemetry collectors associated with `event_type`.
-  virtual std::vector<CollectorBase*> GetTelemetryCollectors(
+  virtual std::vector<dangling_raw_ptr<CollectorBase>> GetTelemetryCollectors(
       MetricEventType event_type) = 0;
 };
 

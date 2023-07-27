@@ -129,7 +129,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
     base::WeakPtr<LoadingView> GetWeakPtr();
 
    private:
-    std::vector<AppLoadingIcon*> app_loading_icons_;
+    std::vector<dangling_raw_ptr<AppLoadingIcon>> app_loading_icons_;
     raw_ptr<PhoneHubMoreAppsButton, ExperimentalAsh> more_apps_button_ =
         nullptr;
     base::WeakPtrFactory<LoadingView> weak_ptr_factory_{this};
@@ -163,7 +163,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
   raw_ptr<RecentAppButtonsView, ExperimentalAsh> recent_app_buttons_view_ =
       nullptr;
-  std::vector<views::View*> recent_app_button_list_;
+  std::vector<dangling_raw_ptr<views::View>> recent_app_button_list_;
   raw_ptr<phonehub::RecentAppsInteractionHandler, ExperimentalAsh>
       recent_apps_interaction_handler_ = nullptr;
   raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry.h"
 #include "chromeos/ash/services/device_sync/remote_device_v2_loader.h"
@@ -78,7 +79,8 @@ class FakeRemoteDeviceV2LoaderFactory
 
   // Returns a vector of all FakeRemoteDeviceV2Loader instances created by
   // CreateInstance().
-  const std::vector<FakeRemoteDeviceV2Loader*>& instances() const {
+  const std::vector<dangling_raw_ptr<FakeRemoteDeviceV2Loader>>& instances()
+      const {
     return instances_;
   }
 
@@ -86,7 +88,7 @@ class FakeRemoteDeviceV2LoaderFactory
   // RemoteDeviceV2LoaderImpl::Factory:
   std::unique_ptr<RemoteDeviceV2Loader> CreateInstance() override;
 
-  std::vector<FakeRemoteDeviceV2Loader*> instances_;
+  std::vector<dangling_raw_ptr<FakeRemoteDeviceV2Loader>> instances_;
 };
 
 }  // namespace device_sync

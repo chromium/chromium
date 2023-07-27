@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -110,7 +111,8 @@ struct BookmarkNodeData {
 
   // Created a BookmarkNodeData populated from the arguments.
   explicit BookmarkNodeData(const BookmarkNode* node);
-  explicit BookmarkNodeData(const std::vector<const BookmarkNode*>& nodes);
+  explicit BookmarkNodeData(
+      const std::vector<dangling_raw_ptr<const BookmarkNode>>& nodes);
 
   ~BookmarkNodeData();
 
@@ -121,7 +123,8 @@ struct BookmarkNodeData {
   static bool ClipboardContainsBookmarks();
 
   // Reads bookmarks from the given vector.
-  bool ReadFromVector(const std::vector<const BookmarkNode*>& nodes);
+  bool ReadFromVector(
+      const std::vector<dangling_raw_ptr<const BookmarkNode>>& nodes);
 
   // Creates a single-bookmark DragData from url/title pair.
   bool ReadFromTuple(const GURL& url, const std::u16string& title);
@@ -159,7 +162,7 @@ struct BookmarkNodeData {
   // created from the same profile then the nodes from the model are returned.
   // If the nodes can't be found (may have been deleted), an empty vector is
   // returned.
-  std::vector<const BookmarkNode*> GetNodes(
+  std::vector<dangling_raw_ptr<const BookmarkNode>> GetNodes(
       BookmarkModel* model,
       const base::FilePath& profile_path) const;
 

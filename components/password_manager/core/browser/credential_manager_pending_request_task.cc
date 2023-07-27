@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
@@ -71,7 +72,7 @@ void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
         return std::make_pair(form->username_value, form->federation_origin);
       });
 
-  std::vector<const PasswordForm*> all_non_federated_forms;
+  std::vector<dangling_raw_ptr<const PasswordForm>> all_non_federated_forms;
   for (auto& form : *forms) {
     if (!form->federation_origin.opaque()) {
       // |forms| contains credentials from both the profile and account stores.
@@ -86,8 +87,8 @@ void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
     }
   }
 
-  std::vector<const PasswordForm*> other_matches;
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> other_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   password_manager_util::FindBestMatches(all_non_federated_forms,
                                          PasswordForm::Scheme::kHtml,
                                          &other_matches, &best_matches);
@@ -270,8 +271,8 @@ void CredentialManagerPendingRequestTask::ProcessForms(
       get_result = metrics_util::CredentialManagerGetResult::kNoneFirstRun;
 
     if (!local_results.empty()) {
-      std::vector<const PasswordForm*> non_federated_matches;
-      std::vector<const PasswordForm*> federated_matches;
+      std::vector<dangling_raw_ptr<const PasswordForm>> non_federated_matches;
+      std::vector<dangling_raw_ptr<const PasswordForm>> federated_matches;
       for (const auto& result : local_results) {
         if (result->IsFederatedCredential()) {
           federated_matches.emplace_back(result.get());

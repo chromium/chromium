@@ -22,8 +22,8 @@ class NativeDisplayObserver;
 struct GammaRampRGBEntry;
 struct DisplayConfigurationParams;
 
-using GetDisplaysCallback =
-    base::OnceCallback<void(const std::vector<DisplaySnapshot*>&)>;
+using GetDisplaysCallback = base::OnceCallback<void(
+    const std::vector<dangling_raw_ptr<DisplaySnapshot>>&)>;
 using ConfigureCallback = base::OnceCallback<void(bool)>;
 using SetHdcpKeyPropCallback = base::OnceCallback<void(bool)>;
 using GetHDCPStateCallback =

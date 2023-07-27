@@ -57,7 +57,7 @@ class PrefetchPageLoadMetricsObserverTest
         ukm::builders::PrefetchProxy::kEntryName);
     ASSERT_EQ(1U, entries.size());
 
-    const auto* entry = entries.front();
+    const auto* entry = entries.front().get();
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           navigation_url_);
 

@@ -172,7 +172,7 @@ void TransientWindowManager::OnWindowHierarchyChanged(
     // (the transient parent) in [2] below, to restack all our descendants. We
     // should pause restacking until we're done with all the reparenting.
     base::AutoReset<bool> reset(&pause_transient_descendants_restacking_, true);
-    for (auto* transient_child : transient_children_) {
+    for (aura::Window* transient_child : transient_children_) {
       if (transient_child->parent() == old_parent) {
         new_parent->AddChild(transient_child);
         should_restack = true;
@@ -262,8 +262,9 @@ void TransientWindowManager::OnWindowDestroying(Window* window) {
   // parent, as destroying an active transient child may otherwise attempt to
   // refocus us.
   Windows transient_children(transient_children_);
-  for (auto* child : transient_children)
+  for (aura::Window* child : transient_children) {
     delete child;
+  }
   DCHECK(transient_children_.empty());
 }
 

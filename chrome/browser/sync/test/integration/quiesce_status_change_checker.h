@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 
 namespace syncer {
@@ -23,7 +24,7 @@ class SyncServiceImpl;
 class QuiesceStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
   explicit QuiesceStatusChangeChecker(
-      std::vector<syncer::SyncServiceImpl*> services);
+      std::vector<dangling_raw_ptr<syncer::SyncServiceImpl>> services);
 
   QuiesceStatusChangeChecker(const QuiesceStatusChangeChecker&) = delete;
   QuiesceStatusChangeChecker& operator=(const QuiesceStatusChangeChecker&) =

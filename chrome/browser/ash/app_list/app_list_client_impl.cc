@@ -835,7 +835,7 @@ void AppListClientImpl::RecordOpenedResultFromSearchBox(
   // Check whether there is any Chrome non-app browser window open and not
   // minimized.
   bool non_app_browser_open_and_not_minimzed = false;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::TYPE_NORMAL ||
         browser->window()->IsMinimized()) {
       // Skip if `browser` is not a normal browser or `browser` is minimized.

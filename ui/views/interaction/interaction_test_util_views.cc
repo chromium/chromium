@@ -237,7 +237,7 @@ class DropdownItemSelector {
   // Searches in-order, depth-first. It is assumed that menu items will appear
   // in search order in the same order they appear visually.
   static MenuItemView* FindMenuItem(View* from, size_t& index) {
-    for (auto* child : from->children()) {
+    for (views::View* child : from->children()) {
       auto* const item = AsViewClass<MenuItemView>(child);
       if (item) {
         if (index == 0U)

@@ -834,7 +834,7 @@ void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
   delegate_->PublishWebApp(
       paused_apps_.CreateAppWithPauseStatus(app_type(), app_id, kPaused));
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!browser->is_type_app()) {
       continue;
     }

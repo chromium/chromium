@@ -73,7 +73,7 @@ using IgnoreUnloadHandlers =
 void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // TODO(beng): Can this use ProfileManager::GetLoadedProfiles instead?
   // TODO(crbug.com/1205798): Unset SaveSessionState if the restart fails.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     browser->profile()->SaveSessionState();
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
     auto* session_data_service =
@@ -287,7 +287,7 @@ void MarkAsCleanShutdown() {
   std::set<Profile*> pending_profiles;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (ExitTypeService* exit_type_service =
             ExitTypeService::GetInstanceForProfile(browser->profile())) {
       exit_type_service->SetCurrentSessionExitType(ExitType::kClean);
@@ -317,7 +317,7 @@ bool AreAllBrowsersCloseable() {
   }
 
   // Check TabsNeedBeforeUnloadFired().
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->TabsNeedBeforeUnloadFired())
       return false;
   }

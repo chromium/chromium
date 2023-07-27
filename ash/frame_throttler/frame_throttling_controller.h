@@ -93,7 +93,7 @@ class ASH_EXPORT FrameThrottlingController final
   // If the |requested_frame_interval| is zero, the default throttled frame rate
   // is used internally.
   void StartThrottling(
-      const std::vector<aura::Window*>& windows,
+      const std::vector<dangling_raw_ptr<aura::Window>>& windows,
       base::TimeDelta requested_frame_interval = base::TimeDelta());
 
   // Ends throttling of all windows specified via StartThrottling(). The

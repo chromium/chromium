@@ -21,7 +21,7 @@ UserOnlineSigninNotifier::~UserOnlineSigninNotifier() = default;
 void UserOnlineSigninNotifier::CheckForPolicyEnforcedOnlineSignin() {
   base::TimeDelta min_delta = base::TimeDelta::Max();
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     const absl::optional<base::TimeDelta> offline_signin_limit =
         known_user.GetOfflineSigninLimit(user->GetAccountId());
     if (!offline_signin_limit) {

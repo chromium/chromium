@@ -172,9 +172,9 @@ class PageInfoMainView : public views::View,
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
   // |Permission| changes.
-  std::vector<PermissionToggleRowView*> toggle_rows_;
+  std::vector<dangling_raw_ptr<PermissionToggleRowView>> toggle_rows_;
 
-  std::vector<ChosenObjectView*> chosen_object_rows_;
+  std::vector<dangling_raw_ptr<ChosenObjectView>> chosen_object_rows_;
 
   raw_ptr<views::Label> title_ = nullptr;
 

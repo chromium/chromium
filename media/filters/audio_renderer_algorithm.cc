@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/base/math_util.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -612,8 +613,8 @@ void AudioRendererAlgorithm::PeekAudioWithZeroPrepend(
 void AudioRendererAlgorithm::CreateSearchWrappers() {
   // WSOLA is quite expensive to run, so if a channel mask exists, use it to
   // reduce the size of our search space.
-  std::vector<float*> active_target_channels;
-  std::vector<float*> active_search_channels;
+  std::vector<dangling_raw_ptr<float>> active_target_channels;
+  std::vector<dangling_raw_ptr<float>> active_search_channels;
   for (int ch = 0; ch < channels_; ++ch) {
     if (channel_mask_[ch]) {
       active_target_channels.push_back(target_block_->channel(ch));

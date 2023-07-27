@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,7 +72,7 @@ bool StyledLabel::StyleRange::operator<(
 
 struct StyledLabel::LayoutViews {
   // All views to be added as children, line by line.
-  std::vector<std::vector<View*>> views_per_line;
+  std::vector<std::vector<dangling_raw_ptr<View>>> views_per_line;
 
   // The subset of |views| that are created by StyledLabel itself.  Basically,
   // this is all non-custom views;  These appear in the same order as |views|.
@@ -252,7 +253,7 @@ void StyledLabel::Layout() {
     for (size_t line = 0; line < layout_views_->views_per_line.size(); ++line) {
       const auto& line_size = layout_size_info_.line_sizes[line];
       int x = StartX(width() - line_size.width());
-      for (auto* view : layout_views_->views_per_line[line]) {
+      for (views::View* view : layout_views_->views_per_line[line]) {
         gfx::Size size = view->GetPreferredSize();
         size.set_width(std::min(size.width(), width() - x));
         // Compute the view y such that the view center y and the line center y

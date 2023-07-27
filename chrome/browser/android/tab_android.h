@@ -13,6 +13,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
@@ -56,7 +57,7 @@ class TabAndroid : public base::SupportsUserData {
 
   // Returns the a vector of native TabAndroid stored in the Java Tab array
   // represented by |obj_array|.
-  static std::vector<TabAndroid*> GetAllNativeTabs(
+  static std::vector<dangling_raw_ptr<TabAndroid>> GetAllNativeTabs(
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobjectArray>& obj_array);
 

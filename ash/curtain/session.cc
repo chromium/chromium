@@ -103,7 +103,7 @@ Session::~Session() {
 }
 
 void Session::CurtainOffAllRootWindows() {
-  for (auto* root_window : shell_->GetAllRootWindows()) {
+  for (aura::Window* root_window : shell_->GetAllRootWindows()) {
     CurtainOffRootWindow(root_window);
   }
 }
@@ -123,7 +123,7 @@ void Session::CurtainOffRootWindow(aura::Window* root_window) {
 }
 
 void Session::RemoveCurtainOfAllRootWindows() {
-  for (auto* root_window : shell_->GetAllRootWindows()) {
+  for (aura::Window* root_window : shell_->GetAllRootWindows()) {
     RemoveCurtainOfRootWindow(root_window);
   }
 }

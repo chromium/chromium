@@ -13,6 +13,7 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -124,7 +125,7 @@ void PostFlushEventQueueTaskIfNecessary() {
 ViewAXPlatformNodeDelegate::ChildWidgetsResult::ChildWidgetsResult() = default;
 
 ViewAXPlatformNodeDelegate::ChildWidgetsResult::ChildWidgetsResult(
-    std::vector<Widget*> child_widgets,
+    std::vector<dangling_raw_ptr<Widget>> child_widgets,
     bool is_tab_modal_showing)
     : child_widgets(child_widgets),
       is_tab_modal_showing(is_tab_modal_showing) {}
@@ -393,7 +394,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
   // widgets in the list of the root view's children because this is the most
   // opportune location in the accessibility tree to expose them.
   const ChildWidgetsResult child_widgets_result = GetChildWidgets();
-  const std::vector<Widget*>& child_widgets =
+  const std::vector<dangling_raw_ptr<Widget>>& child_widgets =
       child_widgets_result.child_widgets;
 
   // If a visible tab modal dialog is present, return the dialog's root view.
@@ -783,7 +784,7 @@ absl::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
   if (data.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet))
     return data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet);
 
-  std::vector<View*> views_in_group;
+  std::vector<dangling_raw_ptr<View>> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
   if (views_in_group.empty())
     return absl::nullopt;
@@ -804,7 +805,7 @@ absl::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
   if (data.HasIntAttribute(ax::mojom::IntAttribute::kSetSize))
     return data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize);
 
-  std::vector<View*> views_in_group;
+  std::vector<dangling_raw_ptr<View>> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
   if (views_in_group.empty())
     return absl::nullopt;
@@ -817,7 +818,7 @@ absl::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
 }
 
 void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
-    std::vector<View*>* views_in_group) const {
+    std::vector<dangling_raw_ptr<View>>* views_in_group) const {
   const int group_id = view()->GetGroup();
   if (group_id < 0)
     return;
@@ -864,7 +865,7 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   std::set<Widget*> owned_widgets;
   Widget::GetAllOwnedWidgets(widget->GetNativeView(), &owned_widgets);
 
-  std::vector<Widget*> visible_widgets;
+  std::vector<dangling_raw_ptr<Widget>> visible_widgets;
   base::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
                         &Widget::IsVisible);
 

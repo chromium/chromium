@@ -54,7 +54,7 @@ constexpr int kNoTab = std::numeric_limits<int>::max();
 BrowserList::BrowserVector GetListOfActiveBrowsers(
     const ash::ShelfModel* model) {
   BrowserList::BrowserVector active_browsers;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     // Only include browsers for the active user.
     if (!multi_user_util::IsProfileFromActiveUser(browser->profile()))
       continue;
@@ -162,7 +162,7 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
   AppMenuItems items;
   bool found_tabbed_browser = false;
   ChromeShelfController* controller = ChromeShelfController::instance();
-  for (auto* browser : GetListOfActiveBrowsers(shelf_model_)) {
+  for (Browser* browser : GetListOfActiveBrowsers(shelf_model_)) {
     if (!filter_predicate.is_null() &&
         !filter_predicate.Run(browser->window()->GetNativeWindow())) {
       continue;
@@ -256,8 +256,9 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
 }
 
 void BrowserShortcutShelfItemController::Close() {
-  for (auto* browser : GetListOfActiveBrowsers(shelf_model_))
+  for (Browser* browser : GetListOfActiveBrowsers(shelf_model_)) {
     browser->window()->Close();
+  }
 }
 
 // static

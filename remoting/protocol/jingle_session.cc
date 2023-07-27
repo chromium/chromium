@@ -797,14 +797,14 @@ void JingleSession::ProcessIncomingPluginMessage(const JingleMessage& message) {
   if (!message.attachments) {
     return;
   }
-  for (auto* plugin : plugins_) {
+  for (remoting::protocol::SessionPlugin* plugin : plugins_) {
     plugin->OnIncomingMessage(*(message.attachments));
   }
 }
 
 void JingleSession::AddPluginAttachments(JingleMessage* message) {
   DCHECK(message);
-  for (auto* plugin : plugins_) {
+  for (remoting::protocol::SessionPlugin* plugin : plugins_) {
     std::unique_ptr<XmlElement> attachment = plugin->GetNextMessage();
     if (attachment) {
       message->AddAttachment(std::move(attachment));

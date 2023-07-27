@@ -107,7 +107,7 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
   void BuildAndUpdateDisplaySnapshots(
       const std::vector<TestSnapshotParams>& snapshot_params) {
     owned_snapshots_.clear();
-    std::vector<display::DisplaySnapshot*> outputs;
+    std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs;
 
     for (const auto& param : snapshot_params) {
       owned_snapshots_.emplace_back(

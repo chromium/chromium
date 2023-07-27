@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/infobars/core/infobar_delegate.h"
 
@@ -119,7 +120,7 @@ class InfoBarManager {
   // infobars directly once they've been added to this; instead, when we're
   // done with an infobar, we instruct it to delete itself and then orphan it.
   // See RemoveInfoBarInternal().
-  typedef std::vector<InfoBar*> InfoBars;
+  typedef std::vector<dangling_raw_ptr<InfoBar>> InfoBars;
 
   void RemoveInfoBarInternal(InfoBar* infobar, bool animate);
 

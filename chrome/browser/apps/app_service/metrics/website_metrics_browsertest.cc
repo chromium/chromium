@@ -234,7 +234,7 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOS.WebsiteUsageTime");
     int count = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       if (src == nullptr || src->url() != url) {
@@ -249,7 +249,7 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOS.WebsiteUsageTime");
     int count = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       if (src == nullptr || src->url() != url) {

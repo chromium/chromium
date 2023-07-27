@@ -25,6 +25,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/wm/features.h"
@@ -201,8 +202,9 @@ class WindowRestoreControllerTest : public AshTestBase,
         /*is_taskless_arc_app=*/false);
   }
 
-  void VerifyStackingOrder(aura::Window* parent,
-                           const std::vector<aura::Window*>& expected_windows) {
+  void VerifyStackingOrder(
+      aura::Window* parent,
+      const std::vector<dangling_raw_ptr<aura::Window>>& expected_windows) {
     auto children = parent->children();
     EXPECT_EQ(children.size(), expected_windows.size());
 
@@ -604,9 +606,9 @@ TEST_F(WindowRestoreControllerTest, StackingMultiDisplay) {
   UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
 
   auto root_windows = Shell::GetAllRootWindows();
-  auto* root_1 = root_windows[0];
-  auto* root_2 = root_windows[1];
-  auto* root_3 = root_windows[2];
+  auto* root_1 = root_windows[0].get();
+  auto* root_2 = root_windows[1].get();
+  auto* root_3 = root_windows[2].get();
 
   auto* desk_container_display_1 =
       desks_util::GetActiveDeskContainerForRoot(root_1);

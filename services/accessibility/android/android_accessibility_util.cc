@@ -4,6 +4,7 @@
 
 #include "services/accessibility/android/android_accessibility_util.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
@@ -256,7 +257,7 @@ AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
       return nullptr;
     }
 
-    std::vector<AccessibilityInfoDataWrapper*> children;
+    std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
     source_node->GetChildren(&children);
     if (index >= static_cast<int>(children.size())) {
       return nullptr;
@@ -269,7 +270,7 @@ AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
   // Find a node with focusable property.
   while (selected_node && !GetBooleanProperty(selected_node->GetNode(),
                                               AXBooleanProperty::FOCUSABLE)) {
-    std::vector<AccessibilityInfoDataWrapper*> children;
+    std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
     selected_node->GetChildren(&children);
     if (children.size() != 1) {
       break;

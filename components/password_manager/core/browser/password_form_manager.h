@@ -149,13 +149,16 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
-  const std::vector<const PasswordForm*>& GetBestMatches() const override;
-  std::vector<const PasswordForm*> GetFederatedMatches() const override;
+  const std::vector<dangling_raw_ptr<const PasswordForm>>& GetBestMatches()
+      const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetFederatedMatches()
+      const override;
   const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetInsecureCredentials()
+      const override;
   bool IsBlocklisted() const override;
   bool WasUnblocklisted() const override;
   bool IsMovableToAccountStore() const override;

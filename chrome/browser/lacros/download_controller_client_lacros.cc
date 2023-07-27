@@ -58,8 +58,10 @@ void DownloadControllerClientLacros::GetAllDownloads(
   std::vector<crosapi::mojom::DownloadItemPtr> downloads;
 
   // Aggregate all downloads.
-  for (auto* download : download_notifier_.GetAllDownloads())
+  for (download::DownloadItem* download :
+       download_notifier_.GetAllDownloads()) {
     downloads.push_back(ConvertToMojoDownloadItem(download));
+  }
 
   // Sort chronologically by start time.
   std::sort(downloads.begin(), downloads.end(),
@@ -111,16 +113,18 @@ void DownloadControllerClientLacros::OnManagerInitialized(
     content::DownloadManager* manager) {
   download::SimpleDownloadManager::DownloadVector downloads;
   manager->GetAllDownloads(&downloads);
-  for (auto* download : downloads)
+  for (download::DownloadItem* download : downloads) {
     OnDownloadCreated(manager, download);
+  }
 }
 
 void DownloadControllerClientLacros::OnManagerGoingDown(
     content::DownloadManager* manager) {
   download::SimpleDownloadManager::DownloadVector downloads;
   manager->GetAllDownloads(&downloads);
-  for (auto* download : downloads)
+  for (download::DownloadItem* download : downloads) {
     OnDownloadDestroyed(manager, download);
+  }
 }
 
 void DownloadControllerClientLacros::OnDownloadCreated(

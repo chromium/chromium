@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,9 +61,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MOCK_METHOD(void,
               PasswordWasAutofilled,
-              (const std::vector<const PasswordForm*>&,
+              (const std::vector<dangling_raw_ptr<const PasswordForm>>&,
                const Origin&,
-               const std::vector<const PasswordForm*>*,
+               const std::vector<dangling_raw_ptr<const PasswordForm>>*,
                bool was_autofilled_on_pageload),
               (override));
   MOCK_METHOD(bool,
@@ -146,13 +147,13 @@ class PasswordFormFillingTest : public testing::Test {
   PasswordForm saved_match_;
   PasswordForm psl_saved_match_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
-  std::vector<const PasswordForm*> federated_matches_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> federated_matches_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
   testing::NiceMock<MockPasswordFeatureManager> feature_manager_;
 };
 
 TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
 
   EXPECT_CALL(driver_, InformNoSavedCredentials(_));
   EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(0);
@@ -165,7 +166,7 @@ TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
 }
 
 TEST_F(PasswordFormFillingTest, Autofill) {
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   best_matches.push_back(&saved_match_);
   PasswordForm another_saved_match = saved_match_;
   another_saved_match.username_value += u"1";
@@ -239,7 +240,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
-    std::vector<const PasswordForm*> best_matches = {&saved_match_};
+    std::vector<dangling_raw_ptr<const PasswordForm>> best_matches = {
+        &saved_match_};
 
     PasswordForm observed_form = observed_form_;
     if (test_case.new_password_present) {
@@ -333,7 +335,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
     PasswordForm preferred_match = saved_match_;
-    std::vector<const PasswordForm*> best_matches = {&preferred_match};
+    std::vector<dangling_raw_ptr<const PasswordForm>> best_matches = {
+        &preferred_match};
 
     PasswordForm observed_form = observed_form_;
     // Set username to match preferred match
@@ -360,7 +363,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
 #endif
 
 TEST_F(PasswordFormFillingTest, AutofillPSLMatch) {
-  std::vector<const PasswordForm*> best_matches = {&psl_saved_match_};
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches = {
+      &psl_saved_match_};
 
   EXPECT_CALL(driver_, InformNoSavedCredentials(_)).Times(0);
   PasswordFormFillData fill_data;
@@ -404,7 +408,8 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
           Return(Origin::Create(GURL(observed_http_form.signon_realm))));
 
   ASSERT_FALSE(GURL(saved_http_match.signon_realm).SchemeIsCryptographic());
-  std::vector<const PasswordForm*> best_matches = {&saved_http_match};
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches = {
+      &saved_http_match};
 
 #if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
   EXPECT_CALL(client_, IsCommittedMainFrameSecure).WillOnce(Return(false));
@@ -418,7 +423,8 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordFormFillingTest, TouchToFill) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match_};
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches = {
+      &saved_match_};
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
@@ -438,7 +444,8 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   affiliated_match.signon_realm = "https://fooo.com/";
   affiliated_match.match_type = PasswordForm::MatchType::kAffiliated;
 
-  std::vector<const PasswordForm*> best_matches = {&affiliated_match};
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches = {
+      &affiliated_match};
 
   EXPECT_CALL(driver_, InformNoSavedCredentials).Times(0);
   PasswordFormFillData fill_data;
@@ -472,7 +479,7 @@ TEST_F(PasswordFormFillingTest,
   ON_CALL(*client_.GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn())
       .WillByDefault(Return(true));
 
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   EXPECT_CALL(driver_, InformNoSavedCredentials(
                            /*should_show_popup_without_passwords=*/true));
   SendFillInformationToRenderer(
@@ -487,7 +494,7 @@ TEST_F(PasswordFormFillingTest,
   ON_CALL(*client_.GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn())
       .WillByDefault(Return(true));
 
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   EXPECT_CALL(driver_, InformNoSavedCredentials(
                            /*should_show_popup_without_passwords=*/false));
   SendFillInformationToRenderer(
@@ -508,8 +515,9 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
       .WillByDefault(
           Return(Origin::Create(GURL("https://another_website.com"))));
 
-  std::vector<const PasswordForm*> best_matches = {&saved_match_};
-  std::vector<const PasswordForm*> federated_matches = {};
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches = {
+      &saved_match_};
+  std::vector<dangling_raw_ptr<const PasswordForm>> federated_matches = {};
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches,
@@ -553,7 +561,7 @@ TEST(PasswordFormFillDataTest, TestSinglePreferredMatch) {
 
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
-  std::vector<const PasswordForm*> matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> matches;
 
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, matches, preferred_match, page_origin, true);
@@ -632,8 +640,8 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
   // Add one exact match and one public suffix match.
-  std::vector<const PasswordForm*> matches = {&exact_match,
-                                              &public_suffix_match};
+  std::vector<dangling_raw_ptr<const PasswordForm>> matches = {
+      &exact_match, &public_suffix_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, matches, preferred_match, page_origin, true);
@@ -706,7 +714,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
   // Add one exact match and one affiliation based match.
-  std::vector<const PasswordForm*> matches = {&exact_match, &affiliated_match};
+  std::vector<dangling_raw_ptr<const PasswordForm>> matches = {
+      &exact_match, &affiliated_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, matches, preferred_match, page_origin, false);
@@ -829,7 +838,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
   // Add one exact match and one affiliation based match.
-  std::vector<const PasswordForm*> matches = {&affiliated_match};
+  std::vector<dangling_raw_ptr<const PasswordForm>> matches = {
+      &affiliated_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, matches, affiliated_match, page_origin, false);
@@ -862,7 +872,8 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   Origin page_origin = Origin::Create(GURL("https://chromium.com/"));
 
   // Add one exact match and one affiliation based match.
-  std::vector<const PasswordForm*> matches = {&additional_match};
+  std::vector<dangling_raw_ptr<const PasswordForm>> matches = {
+      &additional_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, matches, form_on_page, page_origin, false);

@@ -99,7 +99,7 @@ class TemplateURLTableModel : public ui::TableModel,
   raw_ptr<ui::TableModelObserver> observer_;
 
   // The entries.
-  std::vector<TemplateURL*> entries_;
+  std::vector<dangling_raw_ptr<TemplateURL>> entries_;
 
   // The model we're displaying entries from.
   raw_ptr<TemplateURLService> template_url_service_;

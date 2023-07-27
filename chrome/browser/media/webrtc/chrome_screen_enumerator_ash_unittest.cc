@@ -34,10 +34,11 @@ class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
         /*disable_features=*/"");
   }
 
-  std::vector<aura::Window*> GenerateScreensList(size_t number_of_screens) {
+  std::vector<dangling_raw_ptr<aura::Window>> GenerateScreensList(
+      size_t number_of_screens) {
     screens_.clear();
     window_delegates_.clear();
-    std::vector<aura::Window*> screens;
+    std::vector<dangling_raw_ptr<aura::Window>> screens;
     for (size_t i = 0; i < number_of_screens; ++i) {
       auto window_delegate = std::make_unique<aura::test::TestWindowDelegate>();
       auto screen = std::make_unique<aura::Window>(window_delegate.get());

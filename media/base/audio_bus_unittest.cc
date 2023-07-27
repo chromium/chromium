@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -128,7 +129,7 @@ class AudioBusTest : public testing::Test {
   }
 
  protected:
-  std::vector<float*> data_;
+  std::vector<dangling_raw_ptr<float>> data_;
 };
 
 // Verify basic Create(...) method works as advertised.

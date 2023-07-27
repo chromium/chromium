@@ -186,8 +186,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
 
   TableViewModel* model = self.tableViewModel;
-  const std::vector<autofill::AutofillProfile*> autofillProfiles =
-      _personalDataManager->GetProfilesForSettings();
+  const std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
+      autofillProfiles = _personalDataManager->GetProfilesForSettings();
   if (!autofillProfiles.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierProfiles];
     [model setHeader:[self profileSectionHeader]

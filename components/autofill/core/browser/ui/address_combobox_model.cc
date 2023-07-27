@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -28,7 +29,8 @@ AddressComboboxModel::AddressComboboxModel(
     const std::string& app_locale,
     const std::string& default_selected_guid)
     : app_locale_(app_locale), default_selected_guid_(default_selected_guid) {
-  for (const auto* profile : personal_data_manager.GetProfilesToSuggest()) {
+  for (const autofill::AutofillProfile* profile :
+       personal_data_manager.GetProfilesToSuggest()) {
     profiles_cache_.push_back(std::make_unique<AutofillProfile>(*profile));
   }
   UpdateAddresses();
@@ -110,7 +112,7 @@ void AddressComboboxModel::UpdateAddresses() {
   std::vector<std::u16string> labels;
   // CreateDifferentiatingLabels is expecting a pointer vector and we keep
   // profiles as unique_ptr.
-  std::vector<AutofillProfile*> profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles;
   for (const auto& profile : profiles_cache_) {
     profiles.push_back(profile.get());
   }

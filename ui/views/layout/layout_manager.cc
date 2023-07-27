@@ -5,6 +5,7 @@
 #include "ui/views/layout/layout_manager.h"
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -61,7 +62,7 @@ void LayoutManager::SetViewVisibility(View* view, bool visible) {
   view->SetVisible(visible);
 }
 
-std::vector<View*> LayoutManager::GetChildViewsInPaintOrder(
+std::vector<dangling_raw_ptr<View>> LayoutManager::GetChildViewsInPaintOrder(
     const View* host) const {
   return host->children();
 }

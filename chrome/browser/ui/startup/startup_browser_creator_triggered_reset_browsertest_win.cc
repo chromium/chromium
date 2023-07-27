@@ -48,7 +48,7 @@ Browser* FindOneOtherBrowser(Browser* browser) {
   EXPECT_EQ(2u, chrome::GetBrowserCount(browser->profile()));
 
   // Find the new browser.
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b != browser)
       return b;
   }

@@ -94,9 +94,10 @@ class AutofillDownloadManager {
   // Starts a query request to Autofill servers. The observer is called with the
   // list of the fields of all requested forms.
   // |forms| - array of forms aggregated in this request.
-  virtual bool StartQueryRequest(const std::vector<FormStructure*>& forms,
-                                 net::IsolationInfo isolation_info,
-                                 base::WeakPtr<Observer> observer);
+  virtual bool StartQueryRequest(
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms,
+      net::IsolationInfo isolation_info,
+      base::WeakPtr<Observer> observer);
 
   // Starts an upload request for the given |form|.
   // |available_field_types| should contain the types for which we have data

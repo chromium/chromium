@@ -207,7 +207,7 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
   aura::Window* window_to_activate =
       app_window_it == mru_windows.end()
           ? Shell::Get()->app_list_controller()->GetWindow()
-          : *app_window_it;
+          : (*app_window_it).get();
   DCHECK(window_to_activate);
   wm::ActivateWindow(window_to_activate);
 

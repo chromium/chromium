@@ -165,7 +165,7 @@ int UIElement::FindUIElementIdForBackendElement<views::View>(
       UIElement::GetBackingElement<views::View, ViewElement>(this) == element) {
     return node_id_;
   }
-  for (auto* child : children_) {
+  for (ui_devtools::UIElement* child : children_) {
     int ui_element_id = child->FindUIElementIdForBackendElement(element);
     if (ui_element_id)
       return ui_element_id;
@@ -239,7 +239,7 @@ ui::Layer* ViewElement::GetLayer() const {
 
 void ViewElement::RebuildTree() {
   ClearChildren();
-  for (auto* child : view_->children()) {
+  for (views::View* child : view_->children()) {
     AddChild(new ViewElement(child, delegate(), this));
   }
 }

@@ -396,7 +396,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
                       int expected_count) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
     int count = 0;
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
         count += 1;
       }

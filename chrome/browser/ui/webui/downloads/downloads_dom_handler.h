@@ -80,7 +80,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   // Actually remove downloads with an ID in |removals_|. This cannot be undone.
   void FinalizeRemovals();
 
-  using DownloadVector = std::vector<download::DownloadItem*>;
+  using DownloadVector = std::vector<dangling_raw_ptr<download::DownloadItem>>;
 
   // Remove all downloads in |to_remove|. Safe downloads can be revived,
   // dangerous ones are immediately removed. Protected for testing.

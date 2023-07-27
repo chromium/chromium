@@ -225,7 +225,7 @@ BluetoothAdapter::DeviceList BluetoothAdapter::GetDevices() {
   DeviceList devices;
   for (ConstDeviceList::const_iterator i = const_devices.begin();
        i != const_devices.end(); ++i)
-    devices.push_back(const_cast<BluetoothDevice*>(*i));
+    devices.push_back(const_cast<BluetoothDevice*>(i->get()));
 
   return devices;
 }

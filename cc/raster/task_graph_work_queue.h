@@ -55,7 +55,7 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   // Helper classes and static methods used by dependent classes.
   struct TaskNamespace {
-    using Vector = std::vector<TaskNamespace*>;
+    using Vector = std::vector<dangling_raw_ptr<TaskNamespace>>;
     using ReadyTasks = std::map<uint16_t, PrioritizedTask::Vector>;
 
     TaskNamespace();
@@ -173,7 +173,8 @@ class CC_EXPORT TaskGraphWorkQueue {
     if (found == ready_to_run_namespaces_.end())
       return 0;
     size_t count = 0;
-    for (auto* task_namespace_entry : found->second) {
+    for (cc::TaskGraphWorkQueue::TaskNamespace* task_namespace_entry :
+         found->second) {
       DCHECK(
           base::Contains(task_namespace_entry->ready_to_run_tasks, category));
       count += task_namespace_entry->ready_to_run_tasks.at(category).size();

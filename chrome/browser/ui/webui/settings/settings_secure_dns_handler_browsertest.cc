@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
 
   EXPECT_EQ(entries.size() + 1, resolver_list.size());
   EXPECT_TRUE(resolver_list[0].GetDict().FindString("value")->empty());
-  for (const auto* entry : entries) {
+  for (const net::DohProviderEntry* entry : entries) {
     EXPECT_TRUE(FindDropdownItem(resolver_list, entry->ui_name,
                                  entry->doh_server_config.server_template(),
                                  entry->privacy_policy));

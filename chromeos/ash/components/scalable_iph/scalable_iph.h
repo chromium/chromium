@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -98,7 +99,7 @@ class ScalableIph : public KeyedService,
   void PerformActionForIphSession(ActionType action_type) override;
 
   void OverrideFeatureListForTesting(
-      const std::vector<const base::Feature*> features);
+      const std::vector<dangling_raw_ptr<const base::Feature>> features);
   void OverrideTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -124,14 +125,15 @@ class ScalableIph : public KeyedService,
   bool CheckNetworkConnection(const base::Feature& feature);
   bool CheckClientAge(const base::Feature& feature);
 
-  const std::vector<const base::Feature*>& GetFeatureList() const;
+  const std::vector<dangling_raw_ptr<const base::Feature>>& GetFeatureList()
+      const;
 
   raw_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ScalableIphDelegate> delegate_;
   base::RepeatingTimer timer_;
   bool online_ = false;
 
-  std::vector<const base::Feature*> feature_list_for_testing_;
+  std::vector<dangling_raw_ptr<const base::Feature>> feature_list_for_testing_;
 
   base::ScopedObservation<ScalableIphDelegate, ScalableIph>
       delegate_observation_{this};

@@ -38,7 +38,7 @@ void PopulateAdminTemplateMetadata(
     return;
   }
 
-  for (auto* entry : entries_lookup_result.entries) {
+  for (const ash::DeskTemplate* entry : entries_lookup_result.entries) {
     out_metadata->push_back(AdminTemplateMetadata{
         .uuid = entry->uuid(), .name = entry->template_name()});
   }
@@ -165,7 +165,7 @@ void SavedDeskController::AttemptAdminTemplateAutoLaunch() {
   // that are marked for launching on startup.
   auto result = admin_model->GetAllEntries();
   if (result.status == desks_storage::DeskModel::GetAllEntriesStatus::kOk) {
-    for (const auto* admin_template : result.entries) {
+    for (const ash::DeskTemplate* admin_template : result.entries) {
       if (admin_template->should_launch_on_startup()) {
         LaunchAdminTemplateImpl(
             admin_template->Clone(),

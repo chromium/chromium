@@ -79,7 +79,7 @@ class PrivacyScreenFeaturePodControllerTest
 
   // Sets up the internal display to support privacy screen.
   void CreateDisplayWithPrivacyScreen() {
-    std::vector<display::DisplaySnapshot*> outputs;
+    std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs;
     owned_snapshot_ = display::FakeDisplaySnapshot::Builder()
                           .SetId(123u)
                           .SetNativeMode(kDisplaySize)

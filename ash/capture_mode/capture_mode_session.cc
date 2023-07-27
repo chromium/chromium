@@ -472,7 +472,7 @@ void CaptureModeSession::Initialize() {
   if (auto* capture_client = aura::client::GetCaptureClient(current_root_)) {
     input_capture_window_ = capture_client->GetCaptureWindow();
     if (input_capture_window_) {
-      aura::WindowTracker tracker({input_capture_window_});
+      aura::WindowTracker tracker({input_capture_window_.get()});
       capture_client->ReleaseCapture(input_capture_window_);
       if (tracker.windows().empty()) {
         input_capture_window_ = nullptr;

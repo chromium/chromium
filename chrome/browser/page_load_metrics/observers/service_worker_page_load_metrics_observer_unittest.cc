@@ -235,7 +235,7 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorker) {
   const auto& entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_ServiceWorkerControlled::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(
         entry, GURL(kDefaultTestUrl));
   }
@@ -286,7 +286,7 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorkerBackground) {
   const auto& entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_ServiceWorkerControlled::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(
         entry, GURL(kDefaultTestUrl));
   }

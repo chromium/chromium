@@ -103,7 +103,7 @@ class ASH_EXPORT RecentAppsView : public AppListModelObserver,
 
   // The recent app items. Stored here because this view has child views for
   // spacing that are not AppListItemViews.
-  std::vector<AppListItemView*> item_views_;
+  std::vector<dangling_raw_ptr<AppListItemView>> item_views_;
 };
 
 }  // namespace ash

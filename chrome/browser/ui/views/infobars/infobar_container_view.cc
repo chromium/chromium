@@ -77,7 +77,7 @@ InfoBarContainerView::~InfoBarContainerView() {
 }
 
 void InfoBarContainerView::Layout() {
-  const auto set_bounds = [this](int top, auto* child) {
+  const auto set_bounds = [this](int top, View* child) {
     const int height = static_cast<InfoBarView*>(child)->computed_height();
     child->SetBounds(0, top, width(), height);
     return top + height;
@@ -101,7 +101,7 @@ void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::Size InfoBarContainerView::CalculatePreferredSize() const {
-  const auto enlarge_size = [](const gfx::Size& size, const auto* child) {
+  const auto enlarge_size = [](const gfx::Size& size, const View* child) {
     const gfx::Size child_size = child->GetPreferredSize();
     return gfx::Size(std::max(size.width(), child_size.width()),
                      size.height() + child_size.height());

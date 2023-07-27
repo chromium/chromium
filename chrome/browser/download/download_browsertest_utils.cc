@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/download_browsertest_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -183,7 +184,7 @@ void DownloadTestBase::CheckDownloadStatesForBrowser(
     Browser* browser,
     size_t num,
     DownloadItem::DownloadState state) {
-  std::vector<DownloadItem*> download_items;
+  std::vector<dangling_raw_ptr<DownloadItem>> download_items;
   GetDownloads(browser, &download_items);
 
   EXPECT_EQ(num, download_items.size());
@@ -397,7 +398,7 @@ bool DownloadTestBase::RunSizeTest(Browser* browser,
 
 void DownloadTestBase::GetDownloads(
     Browser* browser,
-    std::vector<DownloadItem*>* downloads) const {
+    std::vector<dangling_raw_ptr<DownloadItem>>* downloads) const {
   DCHECK(downloads);
   DownloadManager* manager = DownloadManagerForBrowser(browser);
   manager->GetAllDownloads(downloads);
@@ -450,7 +451,7 @@ bool DownloadTestBase::VerifyFile(const base::FilePath& path,
 void DownloadTestBase::DownloadFilesCheckErrorsSetup() {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  std::vector<DownloadItem*> download_items;
+  std::vector<dangling_raw_ptr<DownloadItem>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -474,7 +475,7 @@ void DownloadTestBase::DownloadFilesCheckErrorsLoopBody(
                << " reason = "
                << DownloadInterruptReasonToString(download_info.reason));
 
-  std::vector<DownloadItem*> download_items;
+  std::vector<dangling_raw_ptr<DownloadItem>> download_items;
   GetDownloads(browser(), &download_items);
   size_t downloads_expected = download_items.size();
 

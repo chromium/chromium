@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -205,7 +206,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
 
  private:
   DeviceResponseParser device_response_parser_;
-  const CBORPathPredicate string_fixup_predicate_;
+  RAW_PTR_EXCLUSION const CBORPathPredicate string_fixup_predicate_;
   base::WeakPtrFactory<Ctap2DeviceOperation> weak_factory_{this};
 };
 

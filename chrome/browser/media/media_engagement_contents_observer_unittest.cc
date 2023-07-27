@@ -292,7 +292,7 @@ class MediaEngagementContentsObserverTest
     auto ukm_entries = test_ukm_recorder_.GetEntriesByName(Entry::kEntryName);
     ASSERT_NE(0u, ukm_entries.size());
 
-    auto* ukm_entry = ukm_entries.back();
+    auto* ukm_entry = ukm_entries.back().get();
     test_ukm_recorder_.ExpectEntrySourceHasUrl(ukm_entry, origin.GetURL());
     EXPECT_EQ(playbacks_total, *test_ukm_recorder_.GetEntryMetric(
                                    ukm_entry, Entry::kPlaybacks_TotalName));

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -399,11 +400,12 @@ void FrameInjectingDemuxer::OnStreamInitializationComplete() {
   std::move(initialized_cb_).Run(media::PIPELINE_OK);
 }
 
-std::vector<media::DemuxerStream*> FrameInjectingDemuxer::GetAllStreams() {
+std::vector<dangling_raw_ptr<media::DemuxerStream>>
+FrameInjectingDemuxer::GetAllStreams() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  std::vector<media::DemuxerStream*> streams;
+  std::vector<dangling_raw_ptr<media::DemuxerStream>> streams;
   if (video_stream_) {
     streams.push_back(video_stream_.get());
   }

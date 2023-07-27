@@ -92,7 +92,7 @@ class MockLayoutManagerBase : public LayoutManagerBase {
       const SizeBounds& size_bounds) const override {
     ProposedLayout layout;
     layout.host_size = {kChildViewPadding, kChildViewPadding};
-    for (auto* it : host_view()->children()) {
+    for (views::View* it : host_view()->children()) {
       if (!IsChildIncludedInLayout(it))
         continue;
       const gfx::Size preferred_size = it->GetPreferredSize();

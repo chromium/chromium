@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -1130,7 +1131,7 @@ void RecordRenderSurfaceReasonsForTracing(
   // kTest is the last value which is not included for tracing.
   constexpr auto kNumReasons = static_cast<size_t>(RenderSurfaceReason::kTest);
   int reason_counts[kNumReasons] = {0};
-  for (const auto* render_surface : *render_surface_list) {
+  for (const cc::RenderSurfaceImpl* render_surface : *render_surface_list) {
     const auto* effect_node =
         property_trees->effect_tree().Node(render_surface->EffectTreeIndex());
     reason_counts[static_cast<size_t>(effect_node->render_surface_reason)]++;
@@ -1388,8 +1389,9 @@ void FindLayersThatNeedUpdates(LayerTreeHost* layer_tree_host,
   }
 }
 
-void FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
-                               std::vector<LayerImpl*>* visible_layer_list) {
+void FindLayersThatNeedUpdates(
+    LayerTreeImpl* layer_tree_impl,
+    std::vector<dangling_raw_ptr<LayerImpl>>* visible_layer_list) {
   const PropertyTrees* property_trees = layer_tree_impl->property_trees();
   const EffectTree& effect_tree = property_trees->effect_tree();
 
@@ -1590,7 +1592,7 @@ bool LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
   std::vector<std::pair<const LayerImpl*, gfx::Rect>> rects;
   rects.reserve(render_surface_list.size());
 
-  for (const auto* render_surface : render_surface_list) {
+  for (const cc::RenderSurfaceImpl* render_surface : render_surface_list) {
     const auto* effect_node =
         property_trees.effect_tree().Node(render_surface->EffectTreeIndex());
     if (NodeMayContainBackdropBlurFilter(*effect_node)) {

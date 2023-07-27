@@ -11,6 +11,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -267,23 +268,28 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
 
     // Create subscriber lists for each telemetry signal type.
     // Map the signal processors to the signals that they consume.
-    std::vector<ExtensionSignalProcessor*> subscribers_for_cookies_get = {
-        signal_processors_[ExtensionSignalType::kCookiesGet].get()};
-    std::vector<ExtensionSignalProcessor*> subscribers_for_cookies_get_all = {
-        signal_processors_[ExtensionSignalType::kCookiesGetAll].get()};
-    std::vector<ExtensionSignalProcessor*>
+    std::vector<dangling_raw_ptr<ExtensionSignalProcessor>>
+        subscribers_for_cookies_get = {
+            signal_processors_[ExtensionSignalType::kCookiesGet].get()};
+    std::vector<dangling_raw_ptr<ExtensionSignalProcessor>>
+        subscribers_for_cookies_get_all = {
+            signal_processors_[ExtensionSignalType::kCookiesGetAll].get()};
+    std::vector<dangling_raw_ptr<ExtensionSignalProcessor>>
         subscribers_for_declarative_net_request = {
             signal_processors_[ExtensionSignalType::kDeclarativeNetRequest]
                 .get()};
-    std::vector<ExtensionSignalProcessor*> subscribers_for_tabs_execute_script =
-        {signal_processors_[ExtensionSignalType::kTabsExecuteScript].get()};
-    std::vector<ExtensionSignalProcessor*>
+    std::vector<dangling_raw_ptr<ExtensionSignalProcessor>>
+        subscribers_for_tabs_execute_script = {
+            signal_processors_[ExtensionSignalType::kTabsExecuteScript].get()};
+    std::vector<dangling_raw_ptr<ExtensionSignalProcessor>>
         subscribers_for_remote_host_contacted = {
             signal_processors_[ExtensionSignalType::kRemoteHostContacted].get(),
             signal_processors_[ExtensionSignalType::kPotentialPasswordTheft]
                 .get()};
-    std::vector<ExtensionSignalProcessor*> subscribers_for_password_reuse = {
-        signal_processors_[ExtensionSignalType::kPotentialPasswordTheft].get()};
+    std::vector<dangling_raw_ptr<ExtensionSignalProcessor>>
+        subscribers_for_password_reuse = {
+            signal_processors_[ExtensionSignalType::kPotentialPasswordTheft]
+                .get()};
 
     signal_subscribers_.emplace(ExtensionSignalType::kCookiesGet,
                                 std::move(subscribers_for_cookies_get));
@@ -431,7 +437,8 @@ void ExtensionTelemetryService::AddSignal(
                              GetExtensionInfoForReport(*extension));
   }
 
-  for (auto* processor : signal_subscribers_[signal_type]) {
+  for (safe_browsing::ExtensionSignalProcessor* processor :
+       signal_subscribers_[signal_type]) {
     // Pass the signal as reference instead of relinquishing ownership to the
     // signal processor.
     processor->ProcessSignal(*signal);

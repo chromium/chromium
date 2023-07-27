@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/observer_list.h"
@@ -34,7 +35,7 @@ class BrowserListObserver;
 class BrowserList {
  public:
   using BrowserSet = base::flat_set<Browser*>;
-  using BrowserVector = std::vector<Browser*>;
+  using BrowserVector = std::vector<dangling_raw_ptr<Browser>>;
   using CloseCallback = base::RepeatingCallback<void(const base::FilePath&)>;
   using const_iterator = BrowserVector::const_iterator;
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;

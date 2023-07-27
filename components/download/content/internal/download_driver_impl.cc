@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -290,10 +291,10 @@ std::set<std::string> DownloadDriverImpl::GetActiveDownloads() {
   if (!download_manager_coordinator_)
     return guids;
 
-  std::vector<DownloadItem*> items;
+  std::vector<dangling_raw_ptr<DownloadItem>> items;
   download_manager_coordinator_->GetAllDownloads(&items);
 
-  for (auto* item : items) {
+  for (download::DownloadItem* item : items) {
     DriverEntry::State state = ToDriverEntryState(item->GetState());
     if (state == DriverEntry::State::IN_PROGRESS)
       guids.insert(item->GetGuid());

@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"

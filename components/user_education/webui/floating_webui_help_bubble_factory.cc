@@ -28,7 +28,7 @@ views::WebView* FindWebViewWithContentsRecursive(
     return web_view;
   }
 
-  for (auto* const child_view : from_view->children()) {
+  for (views::View* const child_view : from_view->children()) {
     auto* const result = FindWebViewWithContentsRecursive(child_view, contents);
     if (result) {
       return result;

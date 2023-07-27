@@ -36,7 +36,7 @@
       chrome_test_util::GetOriginalBrowserState();
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
-  std::vector<TemplateURL*> urls = service->GetTemplateURLs();
+  std::vector<dangling_raw_ptr<TemplateURL>> urls = service->GetTemplateURLs();
 
   for (auto iter = urls.begin(); iter != urls.end(); ++iter) {
     if (defaultSearchEngineString == (*iter)->short_name()) {
@@ -66,7 +66,8 @@
       chrome_test_util::GetOriginalBrowserState();
   TemplateURLService* url_service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
-  std::vector<TemplateURL*> urls = url_service->GetTemplateURLs();
+  std::vector<dangling_raw_ptr<TemplateURL>> urls =
+      url_service->GetTemplateURLs();
   std::u16string utfName = base::SysNSStringToUTF16(name);
 
   for (auto iter = urls.begin(); iter != urls.end(); ++iter) {

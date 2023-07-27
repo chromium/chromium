@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,8 +45,9 @@ class ContentProtectionKeyManagerTest : public testing::Test {
   }
 
   void SetKeyIfRequiredForDisplay(auto on_key_set) {
-    key_manager_.SetKeyIfRequired(std::vector<DisplaySnapshot*>{display_.get()},
-                                  kDisplayId, std::move(on_key_set));
+    key_manager_.SetKeyIfRequired(
+        std::vector<dangling_raw_ptr<DisplaySnapshot>>{display_.get()},
+        kDisplayId, std::move(on_key_set));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -101,8 +103,9 @@ TEST_F(ContentProtectionKeyManagerTest, TestIfKeyNotSetIfFeatureIsDisabled) {
 TEST_F(ContentProtectionKeyManagerTest, TestIfKeyNotSetWhenDisplayIdMismatch) {
   auto on_key_set = base::BindOnce([](bool result) { EXPECT_FALSE(result); });
 
-  key_manager_.SetKeyIfRequired(std::vector<DisplaySnapshot*>{display_.get()},
-                                kDisplayId + 1, std::move(on_key_set));
+  key_manager_.SetKeyIfRequired(
+      std::vector<dangling_raw_ptr<DisplaySnapshot>>{display_.get()},
+      kDisplayId + 1, std::move(on_key_set));
 }
 
 TEST_F(ContentProtectionKeyManagerTest,
@@ -118,8 +121,8 @@ TEST_F(ContentProtectionKeyManagerTest,
 
   SetProvisionedKeyRequest(true);
 
-  auto displays =
-      std::vector<DisplaySnapshot*>{display_.get(), other_display.get()};
+  auto displays = std::vector<dangling_raw_ptr<DisplaySnapshot>>{
+      display_.get(), other_display.get()};
   key_manager_.SetKeyIfRequired(displays, kDisplayId, std::move(on_key_set));
 
   EXPECT_EQ(GetSetHdcpKeyPropAction(kDisplayId, true),
@@ -157,8 +160,9 @@ TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsSetForMultipleDisplays) {
   SetProvisionedKeyRequest(true);
 
   auto on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(result); });
-  key_manager_.SetKeyIfRequired(std::vector<DisplaySnapshot*>{display_.get()},
-                                kDisplayId, std::move(on_key_set));
+  key_manager_.SetKeyIfRequired(
+      std::vector<dangling_raw_ptr<DisplaySnapshot>>{display_.get()},
+      kDisplayId, std::move(on_key_set));
 
   auto other_display = FakeDisplaySnapshot::Builder()
                            .SetId(kDisplayId + 1)
@@ -168,8 +172,8 @@ TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsSetForMultipleDisplays) {
                            .Build();
   on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(result); });
   key_manager_.SetKeyIfRequired(
-      std::vector<DisplaySnapshot*>{other_display.get()}, kDisplayId + 1,
-      std::move(on_key_set));
+      std::vector<dangling_raw_ptr<DisplaySnapshot>>{other_display.get()},
+      kDisplayId + 1, std::move(on_key_set));
 
   EXPECT_EQ(GetSetHdcpKeyPropAction(kDisplayId, true) + "," +
                 GetSetHdcpKeyPropAction(kDisplayId + 1, true),
@@ -194,8 +198,9 @@ TEST_F(ContentProtectionKeyManagerTest,
 
   on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(true); });
 
-  key_manager_.SetKeyIfRequired(std::vector<DisplaySnapshot*>{display_.get()},
-                                kDisplayId + 1, std::move(on_key_set));
+  key_manager_.SetKeyIfRequired(
+      std::vector<dangling_raw_ptr<DisplaySnapshot>>{display_.get()},
+      kDisplayId + 1, std::move(on_key_set));
 }
 
 TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsFetchedAgainIfKeyInvalid) {
@@ -219,8 +224,9 @@ TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsFetchedAgainIfKeyInvalid) {
 
   on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(true); });
 
-  key_manager_.SetKeyIfRequired(std::vector<DisplaySnapshot*>{display_.get()},
-                                kDisplayId + 1, std::move(on_key_set));
+  key_manager_.SetKeyIfRequired(
+      std::vector<dangling_raw_ptr<DisplaySnapshot>>{display_.get()},
+      kDisplayId + 1, std::move(on_key_set));
 }
 
 }  // namespace display::test

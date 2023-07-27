@@ -135,7 +135,7 @@ aura::Window* GetBottomMostSnappedWindowForDeskContainer(
       split_view_controller->InSplitViewMode()) {
     aura::Window* left_window = split_view_controller->primary_window();
     aura::Window* right_window = split_view_controller->secondary_window();
-    for (auto* child : desk_container->children()) {
+    for (aura::Window* child : desk_container->children()) {
       if (child == left_window || child == right_window)
         return child;
     }
@@ -147,7 +147,7 @@ aura::Window* GetBottomMostSnappedWindowForDeskContainer(
   // tracks left/right snapped windows in the active desk only.
   // TODO(afakhry|xdai): SplitViewController should be changed to track snapped
   // windows per desk per display.
-  for (auto* child : desk_container->children()) {
+  for (aura::Window* child : desk_container->children()) {
     if (WindowState::Get(child)->IsSnapped())
       return child;
   }

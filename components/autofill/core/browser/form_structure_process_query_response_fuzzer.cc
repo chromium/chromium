@@ -36,7 +36,7 @@ void AddField(const std::string& label,
 // simplified approach. There is no specific reason to use those two hardcoded
 // forms vectors, so it can be changed if needed.
 DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
-  std::vector<FormStructure*> forms;
+  std::vector<dangling_raw_ptr<FormStructure>> forms;
   FormStructureTestApi::ProcessQueryResponse(
       response, forms, test::GetEncodedSignatures(forms), nullptr);
 

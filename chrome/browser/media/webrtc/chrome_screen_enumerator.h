@@ -41,7 +41,8 @@ class ChromeScreenEnumerator : public media::ScreenEnumerator {
       blink::mojom::MediaStreamRequestResult result)>;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  static void SetRootWindowsForTesting(std::vector<aura::Window*> root_windows);
+  static void SetRootWindowsForTesting(
+      std::vector<dangling_raw_ptr<aura::Window>> root_windows);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
   static void SetDesktopCapturerForTesting(
       std::unique_ptr<webrtc::DesktopCapturer> capturer);

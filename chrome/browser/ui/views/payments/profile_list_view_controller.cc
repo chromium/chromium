@@ -167,7 +167,8 @@ class ShippingProfileViewController : public ProfileListViewController,
     return state()->profile_comparator()->IsShippingComplete(&profile);
   }
 
-  std::vector<autofill::AutofillProfile*> GetProfiles() override {
+  std::vector<dangling_raw_ptr<autofill::AutofillProfile>> GetProfiles()
+      override {
     return state()->shipping_profiles();
   }
 
@@ -289,7 +290,8 @@ class ContactProfileViewController : public ProfileListViewController {
     return state()->profile_comparator()->IsContactInfoComplete(&profile);
   }
 
-  std::vector<autofill::AutofillProfile*> GetProfiles() override {
+  std::vector<dangling_raw_ptr<autofill::AutofillProfile>> GetProfiles()
+      override {
     return state()->contact_profiles();
   }
 
@@ -355,7 +357,7 @@ void ProfileListViewController::PopulateList() {
 
   list_.Clear();
 
-  for (auto* profile : GetProfiles()) {
+  for (autofill::AutofillProfile* profile : GetProfiles()) {
     list_.AddItem(std::make_unique<ProfileItem>(
         profile, spec(), state(), &list_, weak_ptr_factory_.GetWeakPtr(),
         dialog(), profile == selected_profile, IsEnabled(profile)));

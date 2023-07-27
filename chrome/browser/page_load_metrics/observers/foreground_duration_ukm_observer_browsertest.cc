@@ -68,7 +68,7 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
                                const char* metric_name,
                                const int expected_count) {
     int count = 0;
-    for (auto* entry :
+    for (const ukm::mojom::UkmEntry* entry :
          test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)) {
       auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (source && source->url() == url &&

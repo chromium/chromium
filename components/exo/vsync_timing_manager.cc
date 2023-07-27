@@ -38,7 +38,7 @@ void VSyncTimingManager::RemoveObserver(Observer* obs) {
 
 void VSyncTimingManager::OnUpdateVSyncParameters(base::TimeTicks timebase,
                                                  base::TimeDelta interval) {
-  for (auto* observer : observers_) {
+  for (exo::VSyncTimingManager::Observer* observer : observers_) {
     observer->OnUpdateVSyncParameters(timebase, throttled_interval_.is_zero()
                                                     ? interval
                                                     : throttled_interval_);

@@ -48,7 +48,7 @@ class PasswordGenerationFrameHelper {
   // Stores password requirements received from the autofill server for the
   // |forms| and fetches domain-wide requirements.
   void ProcessPasswordRequirements(
-      const std::vector<autofill::FormStructure*>& forms);
+      const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms);
 
   // Determines current state of password generation
   // |log_debug_data| determines whether log entries are sent to the

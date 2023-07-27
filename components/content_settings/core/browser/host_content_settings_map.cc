@@ -286,7 +286,7 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
       prefs_, is_off_the_record_, store_last_modified_, restore_session);
   pref_provider_ = pref_provider_ptr.get();
   content_settings_providers_[PREF_PROVIDER] = std::move(pref_provider_ptr);
-  user_modifiable_providers_.push_back(pref_provider_);
+  user_modifiable_providers_.push_back(pref_provider_.get());
   pref_provider_->AddObserver(this);
 
   auto default_provider = std::make_unique<content_settings::DefaultProvider>(
@@ -621,8 +621,10 @@ base::WeakPtr<HostContentSettingsMap> HostContentSettingsMap::GetWeakPtr() {
 
 void HostContentSettingsMap::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
-  for (auto* provider : user_modifiable_providers_)
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->SetClockForTesting(clock);
+  }
 }
 
 void HostContentSettingsMap::RecordExceptionMetrics() {
@@ -730,7 +732,8 @@ void HostContentSettingsMap::ResetLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type) {
-  for (auto* provider : user_modifiable_providers_) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->ResetLastVisitTime(primary_pattern, secondary_pattern, type);
   }
 }
@@ -739,7 +742,8 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type) {
-  for (auto* provider : user_modifiable_providers_) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->UpdateLastVisitTime(primary_pattern, secondary_pattern, type);
   }
 }
@@ -750,7 +754,8 @@ bool HostContentSettingsMap::RenewContentSetting(
     ContentSettingsType type,
     absl::optional<ContentSetting> setting_to_match) {
   bool any_updated = false;
-  for (auto* provider : user_modifiable_providers_) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     any_updated = provider->RenewContentSetting(primary_url, secondary_url,
                                                 type, setting_to_match) ||
                   any_updated;
@@ -796,7 +801,8 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
   for (const ContentSettingPatternSource& setting :
        GetSettingsForOneType(content_type)) {
     if (predicate(setting)) {
-      for (auto* provider : user_modifiable_providers_) {
+      for (content_settings::UserModifiableProvider* provider :
+           user_modifiable_providers_) {
         provider->SetWebsiteSetting(setting.primary_pattern,
                                     setting.secondary_pattern, content_type,
                                     base::Value(), {});

@@ -54,13 +54,13 @@ class SyncedSessionTracker {
   // Returns vector with all sessions we're tracking. SyncedSession ownership
   // remains within the SyncedSessionTracker. Lookup parameter is used to decide
   // which tabs should be included.
-  std::vector<const SyncedSession*> LookupAllSessions(
+  std::vector<dangling_raw_ptr<const SyncedSession>> LookupAllSessions(
       SessionLookup lookup) const;
 
   // Returns all foreign sessions we're tracking (skips the local session
   // object). SyncedSession ownership remains within the SyncedSessionTracker.
   // Lookup parameter is used to decide which foreign tabs should be include.
-  std::vector<const SyncedSession*> LookupAllForeignSessions(
+  std::vector<dangling_raw_ptr<const SyncedSession>> LookupAllForeignSessions(
       SessionLookup lookup) const;
 
   // Returns the tab node ids (see GetTab) for all the tabs* associated with the
@@ -272,7 +272,7 @@ class SyncedSessionTracker {
   // Creates tracked session if it wasn't known previously. Never returns null.
   TrackedSession* GetTrackedSession(const std::string& session_tag);
 
-  std::vector<const SyncedSession*> LookupSessions(
+  std::vector<dangling_raw_ptr<const SyncedSession>> LookupSessions(
       SessionLookup lookup,
       bool exclude_local_session) const;
 

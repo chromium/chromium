@@ -73,7 +73,7 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
 
   const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
-  std::vector<Observer*> observers_;
+  std::vector<dangling_raw_ptr<Observer>> observers_;
 
   mojo::Receiver<viz::mojom::VSyncParameterObserver> receiver_{this};
 

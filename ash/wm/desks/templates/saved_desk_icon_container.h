@@ -72,7 +72,7 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
   // Given `windows`, determine which icons to show in this and create the
   // according SavedDeskIconView's.
   void PopulateIconContainerFromWindows(
-      const std::vector<aura::Window*>& windows);
+      const std::vector<dangling_raw_ptr<aura::Window>>& windows);
 
  private:
   // Return a copy of child icon views.
@@ -120,7 +120,7 @@ BEGIN_VIEW_BUILDER(/* no export */,
                    views::BoxLayoutView)
 VIEW_BUILDER_METHOD(PopulateIconContainerFromTemplate, const DeskTemplate*)
 VIEW_BUILDER_METHOD(PopulateIconContainerFromWindows,
-                    const std::vector<aura::Window*>&)
+                    const std::vector<dangling_raw_ptr<aura::Window>>&)
 END_VIEW_BUILDER
 
 }  // namespace ash

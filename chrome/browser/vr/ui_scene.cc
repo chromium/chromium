@@ -9,6 +9,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -51,7 +52,8 @@ UiScene::MutableElements GetVisibleElementsWithPredicateMutable(UiElement* root,
   return result;
 }
 
-void GetAllElementsRecursive(std::vector<UiElement*>* elements, UiElement* e) {
+void GetAllElementsRecursive(std::vector<dangling_raw_ptr<UiElement>>* elements,
+                             UiElement* e) {
   e->set_descendants_updated(false);
   elements->push_back(e);
   for (auto& child : e->children())
@@ -141,7 +143,7 @@ bool UiScene::OnBeginFrame(const base::TimeTicks& current_time,
   auto& elements = GetAllElements();
 
   FrameLifecycle::set_phase(kDirty);
-  for (auto* element : elements) {
+  for (vr::UiElement* element : elements) {
     element->set_update_phase(kDirty);
     element->set_last_frame_time(current_time);
   }
@@ -226,7 +228,7 @@ UiElement* UiScene::GetUiElementByName(UiElementName name) const {
           name));
 }
 
-std::vector<UiElement*>& UiScene::GetAllElements() {
+std::vector<dangling_raw_ptr<UiElement>>& UiScene::GetAllElements() {
   if (root_element_->descendants_updated()) {
     all_elements_.clear();
     GetAllElementsRecursive(&all_elements_, root_element_.get());

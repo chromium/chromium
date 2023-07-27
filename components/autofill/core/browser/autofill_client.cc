@@ -203,7 +203,7 @@ void AutofillClient::CloseAutofillProgressDialog(
 
 void AutofillClient::HandleParsedForms(
     AutofillDriver* driver,
-    const std::vector<autofill::FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClientIOS implements this.
 }

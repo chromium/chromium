@@ -130,13 +130,13 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
  private:
   struct ChildWidgetsResult final {
     ChildWidgetsResult();
-    ChildWidgetsResult(std::vector<Widget*> child_widgets,
+    ChildWidgetsResult(std::vector<dangling_raw_ptr<Widget>> child_widgets,
                        bool is_tab_modal_showing);
     ChildWidgetsResult(const ChildWidgetsResult& other);
     virtual ~ChildWidgetsResult();
     ChildWidgetsResult& operator=(const ChildWidgetsResult& other);
 
-    std::vector<Widget*> child_widgets;
+    std::vector<dangling_raw_ptr<Widget>> child_widgets;
 
     // When the focus is within a child widget, |child_widgets| contains only
     // that widget. Otherwise, |child_widgets| contains all child widgets.
@@ -150,7 +150,8 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
 
   // Uses Views::GetViewsInGroup to find nearby Views in the same group.
   // Searches from the View's parent to include siblings within that group.
-  void GetViewsInGroupForSet(std::vector<View*>* views_in_group) const;
+  void GetViewsInGroupForSet(
+      std::vector<dangling_raw_ptr<View>>* views_in_group) const;
 
   // If this delegate is attached to the root view, returns all the child
   // widgets of this view's owning widget.

@@ -8,6 +8,7 @@
 
 #include "base/at_exit.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -60,7 +61,7 @@ static void OnMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks) {
   DVLOG(1) << "Got media tracks info, tracks = " << tracks->tracks().size();
 }
 
-typedef std::vector<media::DemuxerStream*> Streams;
+typedef std::vector<dangling_raw_ptr<media::DemuxerStream>> Streams;
 
 // Simulates playback reading requirements by reading from each stream
 // present in |demuxer| in as-close-to-monotonically-increasing timestamp order.
@@ -100,8 +101,9 @@ class StreamReader {
 
 StreamReader::StreamReader(media::Demuxer* demuxer,
                            bool enable_bitstream_converter) {
-  std::vector<media::DemuxerStream*> streams = demuxer->GetAllStreams();
-  for (auto* stream : streams) {
+  std::vector<dangling_raw_ptr<media::DemuxerStream>> streams =
+      demuxer->GetAllStreams();
+  for (media::DemuxerStream* stream : streams) {
     streams_.push_back(stream);
     end_of_stream_.push_back(false);
     last_read_timestamp_.push_back(media::kNoTimestamp);

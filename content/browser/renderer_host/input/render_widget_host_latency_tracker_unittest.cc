@@ -105,7 +105,7 @@ class RenderWidgetHostLatencyTrackerTest
 
     auto entries = ukm_recoder->GetEntriesByName(event_name);
     EXPECT_EQ(expected_count, entries.size());
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       EXPECT_EQ(source_id, entry->source_id);
       for (const auto& metric_name : metric_names) {
         EXPECT_TRUE(ukm_recoder->EntryHasMetric(entry, metric_name.c_str()));

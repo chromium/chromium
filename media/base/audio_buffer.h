@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -250,7 +251,7 @@ class MEDIA_EXPORT AudioBuffer
   size_t data_size_;
 
   // For planar data, points to each channels data.
-  std::vector<uint8_t*> channel_data_;
+  RAW_PTR_EXCLUSION std::vector<uint8_t*> channel_data_;
 
   // Allows recycling of memory data to avoid repeated allocations.
   scoped_refptr<AudioBufferMemoryPool> pool_;

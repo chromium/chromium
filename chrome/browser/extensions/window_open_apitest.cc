@@ -98,7 +98,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
 
   int num_popups_seen = 0;
   int num_app_popups_seen = 0;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b == browser)
       continue;
 
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, BrowserIsApp) {
 
   EXPECT_TRUE(WaitForTabsPopupsApps(browser(), 0, 0, 2));
 
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b == browser())
       ASSERT_FALSE(b->is_type_app_popup());
     else

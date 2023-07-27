@@ -42,7 +42,7 @@ class HUDTabStripLayout : public views::LayoutManager {
 
 gfx::Size HUDTabStripLayout::GetPreferredSize(const views::View* host) const {
   gfx::Size result;
-  for (const auto* child : host->children()) {
+  for (const views::View* child : host->children()) {
     const gfx::Size child_preferred = child->GetPreferredSize();
     // Tab strip is always horizontal.
     result.set_width(result.width() + child_preferred.width() -
@@ -63,7 +63,7 @@ void HUDTabStripLayout::Layout(views::View* host) {
   // Assume all children have equal left and right border, which is used to
   // overlay the tabs.
   int left_offset = 0;
-  for (auto* child : host->children()) {
+  for (views::View* child : host->children()) {
     const gfx::Size preferred = child->GetPreferredSize();
     const gfx::Size child_size({preferred.width(), host->height()});
     child->SetSize(child_size);
@@ -181,7 +181,7 @@ HUDTabButton* HUDTabStrip::AddTabButton(const HUDDisplayMode display_mode,
       display_mode, label));
   tab_button->SetCallback(base::BindRepeating(
       [](HUDTabButton* sender, HUDTabStrip* tab_strip) {
-        for (const auto* tab : tab_strip->tabs_) {
+        for (const ash::hud_display::HUDTabButton* tab : tab_strip->tabs_) {
           if (tab == sender) {
             tab_strip->hud_->SetDisplayMode(tab->display_mode());
             return;

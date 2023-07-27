@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/web_test/common/web_test.mojom.h"
@@ -568,7 +569,7 @@ class TestRunner {
   std::vector<std::unique_ptr<MainWindowTracker>> main_windows_;
 
   // This is non empty when a load is in progress.
-  std::vector<blink::WebFrame*> loading_frames_;
+  std::vector<dangling_raw_ptr<blink::WebFrame>> loading_frames_;
   // We do not want the test to end until the main frame finishes loading. This
   // starts as true at the beginning of the test, and will be set to false once
   // we run out of frames to load at any time.

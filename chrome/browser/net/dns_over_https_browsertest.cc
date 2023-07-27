@@ -46,7 +46,7 @@ struct DohParameter {
 
 std::vector<DohParameter> GetDohServerTestCases() {
   std::vector<DohParameter> doh_test_cases;
-  for (const auto* entry : net::DohProviderEntry::GetList()) {
+  for (const net::DohProviderEntry* entry : net::DohProviderEntry::GetList()) {
     const bool feature_enabled = base::FeatureList::IsEnabled(entry->feature);
     doh_test_cases.emplace_back(entry->provider, entry->doh_server_config,
                                 /*valid=*/true, feature_enabled);

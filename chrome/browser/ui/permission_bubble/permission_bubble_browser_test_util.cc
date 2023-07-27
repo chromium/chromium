@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/permission_bubble/permission_bubble_browser_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/command_line.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -26,7 +27,7 @@ TestPermissionBubbleViewDelegate::TestPermissionBubbleViewDelegate() = default;
 
 TestPermissionBubbleViewDelegate::~TestPermissionBubbleViewDelegate() = default;
 
-const std::vector<permissions::PermissionRequest*>&
+const std::vector<dangling_raw_ptr<permissions::PermissionRequest>>&
 TestPermissionBubbleViewDelegate::Requests() {
   return requests_;
 }
@@ -82,7 +83,7 @@ void PermissionBubbleBrowserTest::SetUpOnMainThread() {
   requests_.push_back(std::make_unique<permissions::MockPermissionRequest>(
       permissions::RequestType::kNotifications));
 
-  std::vector<permissions::PermissionRequest*> raw_requests;
+  std::vector<dangling_raw_ptr<permissions::PermissionRequest>> raw_requests;
   raw_requests.push_back(requests_[0].get());
   test_delegate_.set_requests(raw_requests);
 }

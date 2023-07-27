@@ -212,10 +212,10 @@ PrefService* GetLastActiveUserPrefService() {
 // Gets the MRU window shown over the applist when in tablet mode.
 // Returns nullptr if no windows are shown over the applist.
 aura::Window* GetTopVisibleWindow() {
-  std::vector<aura::Window*> window_list =
+  std::vector<dangling_raw_ptr<aura::Window>> window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           DesksMruType::kActiveDesk);
-  for (auto* window : window_list) {
+  for (aura::Window* window : window_list) {
     if (!window->TargetVisibility() || WindowState::Get(window)->IsMinimized())
       continue;
 
@@ -597,7 +597,7 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
   // The foreground window or windows (for split mode) - the windows that will
   // not be minimized without animations (instead they will be animated into the
   // home screen).
-  std::vector<aura::Window*> foreground_windows;
+  std::vector<dangling_raw_ptr<aura::Window>> foreground_windows;
   if (split_view_active) {
     foreground_windows = {split_view_controller->primary_window(),
                           split_view_controller->secondary_window()};
@@ -647,7 +647,7 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
     // TODO(https://crbug.com/1019531): This can be removed once transitions
     // between in-app state and home do not cause work area updates.
     std::vector<std::unique_ptr<ScopedAnimationDisabler>> animation_disablers;
-    for (auto* window : foreground_windows) {
+    for (aura::Window* window : foreground_windows) {
       animation_disablers.push_back(
           std::make_unique<ScopedAnimationDisabler>(window));
     }
@@ -664,7 +664,7 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
 
   // Minimize currently active windows, but this time, using animation.
   // Home screen will show when all the windows are done minimizing.
-  for (auto* foreground_window : foreground_windows) {
+  for (aura::Window* foreground_window : foreground_windows) {
     if (::wm::WindowAnimationsDisabled(foreground_window)) {
       WindowState::Get(foreground_window)->Minimize();
       window_transforms_callback.Run();
@@ -1747,7 +1747,7 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
   aura::Window* app_list_window =
       Shell::Get()->app_list_controller()->GetHomeScreenWindow();
   if (app_list_window) {
-    for (auto* child : wm::GetTransientChildren(app_list_window)) {
+    for (aura::Window* child : wm::GetTransientChildren(app_list_window)) {
       if (show_home_launcher)
         child->Show();
       else

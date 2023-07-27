@@ -26,7 +26,8 @@ class WebFrame;
 - (void)fillFormData:(const autofill::FormData&)form
              inFrame:(web::WebFrame*)frame;
 
-- (void)handleParsedForms:(const std::vector<autofill::FormStructure*>&)forms
+- (void)handleParsedForms:
+            (const std::vector<dangling_raw_ptr<autofill::FormStructure>>&)forms
                   inFrame:(web::WebFrame*)frame;
 
 - (void)fillFormDataPredictions:

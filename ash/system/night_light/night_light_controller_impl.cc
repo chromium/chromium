@@ -237,7 +237,7 @@ void UpdateCompositorMatrix(aura::WindowTreeHost* host,
 bool AttemptSettingHardwareCtm(int64_t display_id,
                                const SkM44& linear_gamma_space_matrix,
                                const SkM44& gamma_compressed_matrix) {
-  for (const auto* snapshot :
+  for (const display::DisplaySnapshot* snapshot :
        Shell::Get()->display_configurator()->cached_displays()) {
     if (snapshot->display_id() == display_id &&
         snapshot->has_color_correction_matrix()) {

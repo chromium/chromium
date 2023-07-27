@@ -37,7 +37,7 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
 
     // Returns all FakeNearbyShareContactManager instances created by
     // CreateInstance().
-    std::vector<FakeNearbyShareContactManager*>& instances() {
+    std::vector<dangling_raw_ptr<FakeNearbyShareContactManager>>& instances() {
       return instances_;
     }
 
@@ -64,7 +64,7 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareProfileInfoProvider* profile_info_provider) override;
 
-    std::vector<FakeNearbyShareContactManager*> instances_;
+    std::vector<dangling_raw_ptr<FakeNearbyShareContactManager>> instances_;
     raw_ptr<PrefService, ExperimentalAsh> latest_pref_service_ = nullptr;
     raw_ptr<NearbyShareClientFactory, ExperimentalAsh>
         latest_http_client_factory_ = nullptr;

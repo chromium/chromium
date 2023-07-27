@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -81,13 +82,14 @@ class DeskModel {
 
   // Stores GetAllEntries result.
   struct GetAllEntriesResult {
-    GetAllEntriesResult(GetAllEntriesStatus status,
-                        std::vector<const ash::DeskTemplate*> entries);
+    GetAllEntriesResult(
+        GetAllEntriesStatus status,
+        std::vector<dangling_raw_ptr<const ash::DeskTemplate>> entries);
     GetAllEntriesResult(GetAllEntriesResult& other);
     ~GetAllEntriesResult();
 
     GetAllEntriesStatus status;
-    std::vector<const ash::DeskTemplate*> entries;
+    std::vector<dangling_raw_ptr<const ash::DeskTemplate>> entries;
   };
 
   // Stores GetEntryByUuid result.

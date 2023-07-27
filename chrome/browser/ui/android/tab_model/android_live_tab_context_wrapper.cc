@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context_wrapper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -11,7 +12,7 @@
 
 AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     TabModel* tab_model,
-    std::vector<TabAndroid*>&& closed_tabs,
+    std::vector<dangling_raw_ptr<TabAndroid>>&& closed_tabs,
     std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
     std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
         tab_group_visual_data,
@@ -63,7 +64,7 @@ AndroidLiveTabContextCloseWrapper::GetVisualDataForGroup(
 TabAndroid* AndroidLiveTabContextCloseWrapper::GetTabAt(
     int relative_index) const {
   DCHECK_LT(base::checked_cast<size_t>(relative_index), closed_tabs_.size());
-  auto* tab_android = closed_tabs_[relative_index];
+  auto* tab_android = closed_tabs_[relative_index].get();
   DCHECK(tab_android);
   return tab_android;
 }

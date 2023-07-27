@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -181,7 +182,7 @@ void SearchResultImageListView::AppendShownResultMetadata(
   return;
 }
 
-std::vector<SearchResultImageView*>
+std::vector<dangling_raw_ptr<SearchResultImageView>>
 SearchResultImageListView::GetSearchResultImageViews() {
   return image_views_;
 }
@@ -192,7 +193,7 @@ void SearchResultImageListView::ConfigureLayoutForAvailableWidth(int width) {
                            kSpaceBetweenImages * (image_count - 1);
   const int image_width = std::max(0, (width - margin_space) / image_count);
 
-  for (auto* image_view : image_views_) {
+  for (ash::SearchResultImageView* image_view : image_views_) {
     image_view->ConfigureLayoutForAvailableWidth(image_width);
   }
 }

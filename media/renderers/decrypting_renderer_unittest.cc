@@ -68,8 +68,8 @@ class DecryptingRendererTest : public testing::Test {
     use_aes_decryptor_ = use_aes_decryptor;
   }
 
-  std::vector<DemuxerStream*> GetAllStreams() {
-    std::vector<DemuxerStream*> streams;
+  std::vector<dangling_raw_ptr<DemuxerStream>> GetAllStreams() {
+    std::vector<dangling_raw_ptr<DemuxerStream>> streams;
 
     for (auto& stream : streams_) {
       streams.push_back(stream.get());

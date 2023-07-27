@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 class BrowserPolicyConnectorIOS;
 
 namespace policy {
@@ -58,7 +60,8 @@ class BrowserStatePolicyConnector {
   // use the policies exposed by the PolicyService!
   // The default ConfigurationPolicyProvider::IsInitializationComplete()
   // result is true, so take care if a provider overrides that.
-  std::vector<policy::ConfigurationPolicyProvider*> policy_providers_;
+  std::vector<dangling_raw_ptr<policy::ConfigurationPolicyProvider>>
+      policy_providers_;
 
   // The PolicyService that manages policy for this connector's BrowserState.
   std::unique_ptr<policy::PolicyService> policy_service_;

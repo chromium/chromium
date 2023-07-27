@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
@@ -14,7 +15,7 @@
 
 // static
 download::DownloadItem* DownloadDialogUtils::FindAndRemoveDownload(
-    std::vector<download::DownloadItem*>* downloads,
+    std::vector<dangling_raw_ptr<download::DownloadItem>>* downloads,
     const std::string& download_guid) {
   auto iter = base::ranges::find(*downloads, download_guid,
                                  &download::DownloadItem::GetGuid);

@@ -137,7 +137,7 @@ void TabSlider::OnButtonSelected(TabSliderButton* button) {
   DCHECK(button->selected());
 
   // Deselect all the other buttons.
-  for (auto* b : buttons_) {
+  for (ash::TabSliderButton* b : buttons_) {
     b->SetSelected(b == button);
   }
 
@@ -246,7 +246,7 @@ void TabSlider::OnEnabledStateChanged() {
   // Propagate the enabled state to all slider buttons and the selector view.
   const bool enabled = GetEnabled();
 
-  for (auto* b : buttons_) {
+  for (ash::TabSliderButton* b : buttons_) {
     b->SetEnabled(enabled);
   }
 

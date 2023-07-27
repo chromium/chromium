@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_FRAME_FRAME_INJECTING_DEMUXER_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_FRAME_FRAME_INJECTING_DEMUXER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
 #include "media/base/demuxer.h"
@@ -45,7 +46,7 @@ class FrameInjectingDemuxer final : public media::Demuxer {
   void OnStreamInitializationComplete();
 
   // media::Demuxer implementation.
-  std::vector<media::DemuxerStream*> GetAllStreams() override;
+  std::vector<dangling_raw_ptr<media::DemuxerStream>> GetAllStreams() override;
   std::string GetDisplayName() const override;
   media::DemuxerType GetDemuxerType() const override;
   void Initialize(media::DemuxerHost* host,

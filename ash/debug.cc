@@ -138,7 +138,7 @@ std::vector<std::string> PrintWindowHierarchy(std::ostringstream* out,
 void ToggleShowDebugBorders() {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   std::unique_ptr<cc::DebugBorderTypes> value;
-  for (auto* window : root_windows) {
+  for (aura::Window* window : root_windows) {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())
@@ -152,7 +152,7 @@ void ToggleShowDebugBorders() {
 void ToggleShowFpsCounter() {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   std::unique_ptr<bool> value;
-  for (auto* window : root_windows) {
+  for (aura::Window* window : root_windows) {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())
@@ -165,7 +165,7 @@ void ToggleShowFpsCounter() {
 void ToggleShowPaintRects() {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   std::unique_ptr<bool> value;
-  for (auto* window : root_windows) {
+  for (aura::Window* window : root_windows) {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())

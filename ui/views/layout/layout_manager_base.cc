@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -86,8 +87,8 @@ void LayoutManagerBase::Layout(View* host) {
   LayoutImpl();
 }
 
-std::vector<View*> LayoutManagerBase::GetChildViewsInPaintOrder(
-    const View* host) const {
+std::vector<dangling_raw_ptr<View>>
+LayoutManagerBase::GetChildViewsInPaintOrder(const View* host) const {
   DCHECK_EQ(host_view_, host);
   return LayoutManager::GetChildViewsInPaintOrder(host);
 }
@@ -387,7 +388,7 @@ bool LayoutManagerBase::PropagateViewVisibilitySet(View* host,
 
 void LayoutManagerBase::PropagateInstalled(View* host) {
   host_view_ = host;
-  for (auto* it : host->children()) {
+  for (views::View* it : host->children()) {
     child_infos_.emplace(it, ChildInfo{it->GetVisible(), false});
   }
 

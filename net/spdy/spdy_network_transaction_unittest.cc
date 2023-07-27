@@ -282,7 +282,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
     SpdySessionDependencies* session_deps() { return session_deps_.get(); }
 
    private:
-    typedef std::vector<SocketDataProvider*> DataVector;
+    typedef std::vector<dangling_raw_ptr<SocketDataProvider>> DataVector;
     typedef std::vector<std::unique_ptr<SSLSocketDataProvider>> SSLVector;
     typedef std::vector<std::unique_ptr<SocketDataProvider>> AlternateVector;
     const HttpRequestInfo request_;

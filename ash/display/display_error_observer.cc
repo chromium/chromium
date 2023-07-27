@@ -24,7 +24,7 @@ void DisplayErrorObserver::OnDisplayModeChangeFailed(
     display::MultipleDisplayState new_state) {
   bool internal_display_failed = false;
   LOG(ERROR) << "Failed to configure the following display(s):";
-  for (auto* display : displays) {
+  for (display::DisplaySnapshot* display : displays) {
     const int64_t display_id = display->display_id();
     internal_display_failed |= display::IsInternalDisplayId(display_id);
     LOG(ERROR) << "- Display with ID = " << display_id << ", and EDID = "

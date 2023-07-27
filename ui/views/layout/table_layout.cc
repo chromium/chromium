@@ -195,17 +195,19 @@ class TableLayout::Column : public LayoutElement {
 
     // Accumulate the size first.
     int size = 0;
-    for (auto* column : linked_columns_) {
+    for (views::TableLayout::Column* column : linked_columns_) {
       if (!size_limit || column->size() <= *size_limit)
         size = std::max(size, column->size());
     }
 
     // Then apply it.
-    for (auto* column : linked_columns_)
+    for (views::TableLayout::Column* column : linked_columns_) {
       column->set_size(std::max(size, column->size()));
+    }
   }
 
-  void set_linked_columns(const std::vector<Column*>& linked_columns) {
+  void set_linked_columns(
+      const std::vector<dangling_raw_ptr<Column>>& linked_columns) {
     DCHECK(linked_columns_.empty()) << "Cannot link a column twice";
     linked_columns_ = linked_columns;
   }
@@ -223,7 +225,7 @@ class TableLayout::Column : public LayoutElement {
   int fixed_width_;
   int min_width_;
   bool is_padding_;
-  std::vector<Column*> linked_columns_;
+  std::vector<dangling_raw_ptr<Column>> linked_columns_;
 };
 
 class TableLayout::Row : public LayoutElement {
@@ -351,12 +353,13 @@ TableLayout& TableLayout::LinkColumnSizes(std::vector<size_t> columns) {
     DCHECK_LT(columns.back(), columns_.size())
         << "Cannot link an unspecified column";
 
-    std::vector<Column*> linked_columns;
+    std::vector<dangling_raw_ptr<Column>> linked_columns;
     base::ranges::transform(columns, std::back_inserter(linked_columns),
                             [&](size_t index) { return &columns_[index]; });
 
-    for (auto* column : linked_columns)
+    for (views::TableLayout::Column* column : linked_columns) {
       column->set_linked_columns(linked_columns);
+    }
   }
 
   return *this;
@@ -690,9 +693,9 @@ int TableLayout::LayoutWidth() const {
 
 void TableLayout::CalculateSize(
     SizeCalculationType type,
-    const std::vector<ViewState*>& view_states) const {
+    const std::vector<dangling_raw_ptr<ViewState>>& view_states) const {
   // Reset the size and remaining sizes.
-  for (auto* view_state : view_states) {
+  for (views::TableLayout::ViewState* view_state : view_states) {
     gfx::Size size;
     if (type == SizeCalculationType::kMinimum && CanUseMinimum(*view_state)) {
       // If the min size is bigger than the preferred, use the preferred.
@@ -783,7 +786,7 @@ void TableLayout::ResizeUsingMin(int total_delta) const {
   // modifications to them aren't reflected in the members.
   const size_t num_states = view_states_by_col_span_.size();
   std::vector<ViewState> view_states(num_states);
-  std::vector<ViewState*> view_state_ptrs(num_states);
+  std::vector<dangling_raw_ptr<ViewState>> view_state_ptrs(num_states);
   for (size_t i = 0; i < num_states; ++i) {
     view_states[i] = *view_states_by_col_span_[i];
     view_state_ptrs[i] = &view_states[i];

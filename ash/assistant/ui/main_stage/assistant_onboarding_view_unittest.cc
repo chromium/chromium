@@ -73,8 +73,9 @@ void FindDescendentByClassName(views::View* parent, T** result) {
       return;
     }
 
-    for (auto* child : candidate->children())
+    for (views::View* child : candidate->children()) {
       children.push(child);
+    }
   }
 }
 

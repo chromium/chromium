@@ -57,7 +57,7 @@ class PieSubMenuContainerView : public views::View {
 
   // The buttons on this container, which will be painted as slices of a circle
   // in their same order in this vector.
-  std::vector<PieMenuButton*> buttons_;
+  std::vector<dangling_raw_ptr<PieMenuButton>> buttons_;
 };
 
 // -----------------------------------------------------------------------------

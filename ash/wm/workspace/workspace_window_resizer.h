@@ -44,7 +44,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
   static std::unique_ptr<WorkspaceWindowResizer> Create(
       WindowState* window_state,
-      const std::vector<aura::Window*>& attached_windows);
+      const std::vector<dangling_raw_ptr<aura::Window>>& attached_windows);
 
   // WindowResizer:
   void Drag(const gfx::PointF& location_in_parent, int event_flags) override;
@@ -56,8 +56,9 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   friend class WorkspaceWindowResizerTest;
   FRIEND_TEST_ALL_PREFIXES(HapticsUtilTest, HapticFeedbackForNormalWindowSnap);
 
-  WorkspaceWindowResizer(WindowState* window_state,
-                         const std::vector<aura::Window*>& attached_windows);
+  WorkspaceWindowResizer(
+      WindowState* window_state,
+      const std::vector<dangling_raw_ptr<aura::Window>>& attached_windows);
   WorkspaceWindowResizer(const WorkspaceWindowResizer&) = delete;
   WorkspaceWindowResizer& operator=(const WorkspaceWindowResizer&) = delete;
 
@@ -175,7 +176,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // Returns the currently used instance for test.
   static WorkspaceWindowResizer* GetInstanceForTest();
 
-  const std::vector<aura::Window*> attached_windows_;
+  const std::vector<dangling_raw_ptr<aura::Window>> attached_windows_;
 
   bool did_lock_cursor_ = false;
 

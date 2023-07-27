@@ -469,7 +469,7 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
 
 void ChromeAutofillClientIOS::HandleParsedForms(
     AutofillDriver* driver,
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();
   if (!frame) {
     return;
@@ -486,7 +486,7 @@ void ChromeAutofillClientIOS::HandleParsedForms(
 
 void ChromeAutofillClientIOS::PropagateAutofillPredictions(
     AutofillDriver* driver,
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();
   if (!frame) {
     return;

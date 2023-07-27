@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
@@ -38,7 +39,8 @@ class AutofillProfilesEqualChecker
     : public StatusChangeChecker,
       public autofill::PersonalDataManagerObserver {
  public:
-  explicit AutofillProfilesEqualChecker(std::vector<Profile*> profiles) {
+  explicit AutofillProfilesEqualChecker(
+      std::vector<dangling_raw_ptr<Profile>> profiles) {
     for (Profile* profile : profiles) {
       pdms_.push_back(contact_info_helper::GetPersonalDataManager(profile));
       pdms_.back()->AddObserver(this);
@@ -57,7 +59,7 @@ class AutofillProfilesEqualChecker
       return true;
     }
     // Compare the profiles of `pdms_[0]` with every other PDM's profiles.
-    testing::Matcher<std::vector<AutofillProfile*>> matcher =
+    testing::Matcher<std::vector<dangling_raw_ptr<AutofillProfile>>> matcher =
         testing::UnorderedPointwise(PointeeEquals(), pdms_[0]->GetProfiles());
     for (size_t i = 1; i < pdms_.size(); i++) {
       testing::StringMatchResultListener listener;
@@ -74,7 +76,7 @@ class AutofillProfilesEqualChecker
   void OnPersonalDataChanged() override { CheckExitCondition(); }
 
  private:
-  std::vector<PersonalDataManager*> pdms_;
+  std::vector<dangling_raw_ptr<PersonalDataManager>> pdms_;
 };
 
 class TwoClientContactInfoSyncTest : public SyncTest {

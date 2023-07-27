@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
@@ -176,7 +177,7 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
 
   // Currently open requests that are waiting while loading the system salt or
   // validating the token.
-  std::vector<PendingRequest*> pending_requests_;
+  std::vector<dangling_raw_ptr<PendingRequest>> pending_requests_;
 
   // Callbacks to invoke, if set, for refresh token-related events.
   RefreshTokenAvailableCallback on_refresh_token_available_callback_;

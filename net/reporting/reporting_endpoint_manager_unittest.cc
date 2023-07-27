@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -67,29 +68,33 @@ class TestReportingCache : public ReportingCache {
                  int attempts) override {
     NOTREACHED();
   }
-  void GetReports(
-      std::vector<const ReportingReport*>* reports_out) const override {
+  void GetReports(std::vector<dangling_raw_ptr<const ReportingReport>>*
+                      reports_out) const override {
     NOTREACHED();
   }
   base::Value GetReportsAsValue() const override {
     NOTREACHED();
     return base::Value();
   }
-  std::vector<const ReportingReport*> GetReportsToDeliver() override {
+  std::vector<dangling_raw_ptr<const ReportingReport>> GetReportsToDeliver()
+      override {
     NOTREACHED();
     return {};
   }
-  std::vector<const ReportingReport*> GetReportsToDeliverForSource(
+  std::vector<dangling_raw_ptr<const ReportingReport>>
+  GetReportsToDeliverForSource(
       const base::UnguessableToken& reporting_source) override {
     NOTREACHED();
     return {};
   }
   void ClearReportsPending(
-      const std::vector<const ReportingReport*>& reports) override {
+      const std::vector<dangling_raw_ptr<const ReportingReport>>& reports)
+      override {
     NOTREACHED();
   }
   void IncrementReportsAttempts(
-      const std::vector<const ReportingReport*>& reports) override {
+      const std::vector<dangling_raw_ptr<const ReportingReport>>& reports)
+      override {
     NOTREACHED();
   }
   base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
@@ -112,12 +117,13 @@ class TestReportingCache : public ReportingCache {
     NOTREACHED();
     return expired_sources_;
   }
-  void RemoveReports(
-      const std::vector<const ReportingReport*>& reports) override {
+  void RemoveReports(const std::vector<dangling_raw_ptr<const ReportingReport>>&
+                         reports) override {
     NOTREACHED();
   }
-  void RemoveReports(const std::vector<const ReportingReport*>& reports,
-                     bool delivery_success) override {
+  void RemoveReports(
+      const std::vector<dangling_raw_ptr<const ReportingReport>>& reports,
+      bool delivery_success) override {
     NOTREACHED();
   }
   void RemoveAllReports() override { NOTREACHED(); }

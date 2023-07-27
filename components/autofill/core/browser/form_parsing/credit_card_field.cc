@@ -216,7 +216,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
       }
 
       current_number_field->set_credit_card_number_offset(start_index);
-      credit_card_field->numbers_.push_back(current_number_field);
+      credit_card_field->numbers_.push_back(current_number_field.get());
       nb_unknown_fields = 0;
       continue;
     }
@@ -468,7 +468,7 @@ CreditCardField::~CreditCardField() {}
 
 void CreditCardField::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  for (auto* number : numbers_) {
+  for (autofill::AutofillField* number : numbers_) {
     AddClassification(number, CREDIT_CARD_NUMBER,
                       kBaseCreditCardParserScore, field_candidates);
   }

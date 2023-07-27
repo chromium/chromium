@@ -114,6 +114,9 @@ template <class T, class D>
 size_t EstimateMemoryUsage(const std::unique_ptr<T[], D>& array,
                            size_t array_length);
 
+template <class T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+size_t EstimateMemoryUsage(const raw_ptr<T, Traits>& ptr);
+
 // std::shared_ptr
 
 template <class T>
@@ -383,6 +386,11 @@ size_t EstimateMemoryUsage(const T* array, size_t array_length) {
 
 template <class T, class D>
 size_t EstimateMemoryUsage(const std::unique_ptr<T, D>& ptr) {
+  return ptr ? (sizeof(T) + EstimateItemMemoryUsage(*ptr)) : 0;
+}
+
+template <class T, base::RawPtrTraits Traits>
+size_t EstimateMemoryUsage(const raw_ptr<T, Traits>& ptr) {
   return ptr ? (sizeof(T) + EstimateItemMemoryUsage(*ptr)) : 0;
 }
 

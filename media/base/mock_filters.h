@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -149,7 +150,7 @@ class MockMediaResource : public MediaResource {
 
   // MediaResource implementation.
   MOCK_CONST_METHOD0(GetType, MediaResource::Type());
-  MOCK_METHOD0(GetAllStreams, std::vector<DemuxerStream*>());
+  MOCK_METHOD0(GetAllStreams, std::vector<dangling_raw_ptr<DemuxerStream>>());
   MOCK_METHOD1(GetFirstStream, DemuxerStream*(DemuxerStream::Type type));
   MOCK_CONST_METHOD0(GetMediaUrlParams, const MediaUrlParams&());
 };
@@ -186,7 +187,10 @@ class MockDemuxer : public Demuxer {
               ());
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, AbortPendingReads, (), (override));
-  MOCK_METHOD(std::vector<DemuxerStream*>, GetAllStreams, (), (override));
+  MOCK_METHOD(std::vector<dangling_raw_ptr<DemuxerStream>>,
+              GetAllStreams,
+              (),
+              (override));
 
   MOCK_METHOD(base::TimeDelta, GetStartTime, (), (const, override));
   MOCK_METHOD(base::Time, GetTimelineOffset, (), (const, override));

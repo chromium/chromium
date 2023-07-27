@@ -95,7 +95,7 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
   void ExpectRecordedForReason(SoundContentSettingObserver::MuteReason reason) {
     auto entries = test_ukm_recorder_->GetEntriesByName(kSiteMutedEvent);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kURL1));
       test_ukm_recorder_->ExpectEntryMetric(entry, kSiteMutedReason, reason);
     }

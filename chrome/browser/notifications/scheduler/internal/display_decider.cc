@@ -60,7 +60,7 @@ class DecisionHelper {
         continue;
       }
 
-      for (const auto* notification : pair.second) {
+      for (const notifications::NotificationEntry* notification : pair.second) {
         DCHECK(notification);
         DCHECK_NE(notification->schedule_params.priority,
                   ScheduleParams::Priority::kNoThrottle);
@@ -186,7 +186,7 @@ class DisplayDeciderImpl : public DisplayDecider {
     Notifications throttled_notifications;
     for (const auto& pair : notifications) {
       auto type = pair.first;
-      for (auto* notification : pair.second) {
+      for (const notifications::NotificationEntry* notification : pair.second) {
         // Move unthrottled notifications to results directly.
         if (notification->schedule_params.priority ==
             ScheduleParams::Priority::kNoThrottle) {

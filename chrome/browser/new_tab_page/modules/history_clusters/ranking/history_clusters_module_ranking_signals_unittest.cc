@@ -72,7 +72,7 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorNoCartsNoBoost) {
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::NewTabPage_HistoryClusters::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder.EntryHasMetric(entry,
                                    ukm::builders::NewTabPage_HistoryClusters::
                                        kMinutesSinceMostRecentVisitName);
@@ -146,7 +146,7 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorHasCartsAndBoost) {
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::NewTabPage_HistoryClusters::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder.EntryHasMetric(entry,
                                    ukm::builders::NewTabPage_HistoryClusters::
                                        kMinutesSinceMostRecentVisitName);

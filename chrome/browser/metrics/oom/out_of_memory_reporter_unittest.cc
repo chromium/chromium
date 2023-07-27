@@ -187,7 +187,7 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
     const auto& entries = test_ukm_recorder_->GetEntriesByName(
         ukm::builders::Tab_RendererOOM::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
       test_ukm_recorder_->ExpectEntryMetric(
           entry, ukm::builders::Tab_RendererOOM::kTimeSinceLastNavigationName,

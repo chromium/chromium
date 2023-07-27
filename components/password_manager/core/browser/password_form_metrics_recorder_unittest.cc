@@ -60,7 +60,7 @@ void ExpectUkmValueCount(ukm::TestUkmRecorder* test_ukm_recorder,
                          int64_t expected_count) {
   auto entries = test_ukm_recorder->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
     if (expected_count) {
       test_ukm_recorder->ExpectEntryMetric(entry, metric_name, value);
@@ -331,7 +331,7 @@ TEST(PasswordFormMetricsRecorder, RecordPasswordBubbleShown) {
     // Verify data
     auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       EXPECT_EQ(kTestSourceId, entry->source_id);
 
       if (test.credential_source_type !=
@@ -399,7 +399,7 @@ TEST(PasswordFormMetricsRecorder, RecordUIDismissalReason) {
     // Verify data
     auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       EXPECT_EQ(kTestSourceId, entry->source_id);
       test_ukm_recorder.ExpectEntryMetric(
           entry, test.expected_trigger_metric,
@@ -436,7 +436,7 @@ TEST(PasswordFormMetricsRecorder, SequencesOfBubbles) {
   // Verify recorded UKM data.
   auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
     test_ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kSaving_Prompt_InteractionName,
@@ -476,7 +476,7 @@ TEST(PasswordFormMetricsRecorder, RecordDetailedUserAction) {
   }
   auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
     test_ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kUser_Action_CorrectedUsernameInFormName, 2u);

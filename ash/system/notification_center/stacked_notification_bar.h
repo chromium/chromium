@@ -41,7 +41,8 @@ class StackedNotificationBar : public views::View,
   // has changed.
   bool Update(int total_notification_count,
               int pinned_notification_count,
-              std::vector<message_center::Notification*> stacked_notifications);
+              std::vector<dangling_raw_ptr<message_center::Notification>>
+                  stacked_notifications);
 
   // Sets the current animation state.
   void SetAnimationState(NotificationCenterAnimationState animation_state);
@@ -83,16 +84,19 @@ class StackedNotificationBar : public views::View,
 
   // Move all icons left when notifications are scrolled up.
   void ShiftIconsLeft(
-      std::vector<message_center::Notification*> stacked_notifications);
+      std::vector<dangling_raw_ptr<message_center::Notification>>
+          stacked_notifications);
 
   // Move icons right to make space for additional icons when notifications are
   // scrolled down.
   void ShiftIconsRight(
-      std::vector<message_center::Notification*> stacked_notifications);
+      std::vector<dangling_raw_ptr<message_center::Notification>>
+          stacked_notifications);
 
   // Update state for stacked notification icons and move them as necessary.
   void UpdateStackedNotifications(
-      std::vector<message_center::Notification*> stacked_notifications);
+      std::vector<dangling_raw_ptr<message_center::Notification>>
+          stacked_notifications);
 
   int total_notification_count_ = 0;
   int pinned_notification_count_ = 0;

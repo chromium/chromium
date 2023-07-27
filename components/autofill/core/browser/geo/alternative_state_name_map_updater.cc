@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -87,7 +88,7 @@ void AlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
 void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
     base::OnceClosure callback) {
   DCHECK(personal_data_manager_);
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_manager_->GetProfiles();
 
   CountryToStateNamesListMapping country_to_state_names_map;

@@ -239,7 +239,8 @@ TEST_P(MultiProfileDownloadNotifierManagerInitializationTest,
 
   ON_CALL(*manager(), GetAllDownloads)
       .WillByDefault(
-          [&downloads](std::vector<download::DownloadItem*>* download_ptrs) {
+          [&downloads](std::vector<dangling_raw_ptr<download::DownloadItem>>*
+                           download_ptrs) {
             for (auto& download : downloads)
               download_ptrs->push_back(download.get());
           });

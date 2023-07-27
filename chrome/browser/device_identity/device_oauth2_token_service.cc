@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
@@ -298,9 +299,10 @@ bool DeviceOAuth2TokenService::HandleAccessTokenFetch(
 void DeviceOAuth2TokenService::FlushPendingRequests(
     bool token_is_valid,
     GoogleServiceAuthError::State error) {
-  std::vector<PendingRequest*> requests;
+  std::vector<dangling_raw_ptr<PendingRequest>> requests;
   requests.swap(pending_requests_);
-  for (std::vector<PendingRequest*>::iterator request(requests.begin());
+  for (std::vector<dangling_raw_ptr<PendingRequest>>::iterator request(
+           requests.begin());
        request != requests.end(); ++request) {
     std::unique_ptr<PendingRequest> scoped_request(*request);
     if (!scoped_request->request)

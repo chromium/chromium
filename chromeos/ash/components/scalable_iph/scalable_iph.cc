@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -46,8 +47,10 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
 
 // The list of IPH features `SclableIph` supports. `ScalableIph` checks trigger
 // conditions of all events listed in this list when it receives an `Event`.
-const std::vector<const base::Feature*>& GetFeatureListConstant() {
-  static const base::NoDestructor<std::vector<const base::Feature*>>
+const std::vector<dangling_raw_ptr<const base::Feature>>&
+GetFeatureListConstant() {
+  static const base::NoDestructor<
+      std::vector<dangling_raw_ptr<const base::Feature>>>
       feature_list({
           // This must be sorted from One to Ten. A config expects that IPHs are
           // evaluated in this priority.
@@ -253,7 +256,7 @@ void ScalableIph::PerformActionForIphSession(ActionType action_type) {
 }
 
 void ScalableIph::OverrideFeatureListForTesting(
-    const std::vector<const base::Feature*> feature_list) {
+    const std::vector<dangling_raw_ptr<const base::Feature>> feature_list) {
   CHECK(feature_list_for_testing_.size() == 0)
       << "It's NOT allowed to override feature list twice for testing";
   CHECK(feature_list.size() > 0) << "An empty list is NOT allowed to set.";
@@ -414,7 +417,8 @@ bool ScalableIph::CheckClientAge(const base::Feature& feature) {
   return client_age <= max_client_age;
 }
 
-const std::vector<const base::Feature*>& ScalableIph::GetFeatureList() const {
+const std::vector<dangling_raw_ptr<const base::Feature>>&
+ScalableIph::GetFeatureList() const {
   if (!feature_list_for_testing_.empty()) {
     return feature_list_for_testing_;
   }

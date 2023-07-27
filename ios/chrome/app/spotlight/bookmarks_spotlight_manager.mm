@@ -287,7 +287,7 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 // multiple nodes with same URL and title, they will be merged into a single
 // spotlight item but will have tags from each of the bookmrk nodes.
 - (void)refreshItemWithURL:(const GURL&)URL title:(NSString*)title {
-  std::vector<const bookmarks::BookmarkNode*> nodesMatchingURL;
+  std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodesMatchingURL;
   _bookmarkModel->GetNodesByURL(URL, &nodesMatchingURL);
 
   NSMutableArray* itemKeywords = [[NSMutableArray alloc] init];

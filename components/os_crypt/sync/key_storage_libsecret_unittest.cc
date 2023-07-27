@@ -73,7 +73,7 @@ class MockPasswordStore {
   GObject* password() { return password_; }
 
   std::unordered_map<GObject*, std::string> mapping_;
-  std::vector<GObject*> objects_returned_to_caller_;
+  std::vector<dangling_raw_ptr<GObject>> objects_returned_to_caller_;
   raw_ptr<GObject> password_ = nullptr;
 };
 base::LazyInstance<MockPasswordStore>::Leaky g_password_store =

@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, DISABLED_UKMRecorded) {
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::NoStatePrefetch::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   // FinalStatus must be set to FINAL_STATUS_NOSTATE_PREFETCH_FINISHED.
   ukm_recorder_->ExpectEntryMetric(
       entry,

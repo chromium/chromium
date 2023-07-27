@@ -4,14 +4,16 @@
 
 #include "cc/tiles/tiles_with_resource_iterator.h"
 
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 
 namespace cc {
 
 TilesWithResourceIterator::TilesWithResourceIterator(
-    const std::vector<PictureLayerImpl*>* picture_layers,
-    const std::vector<PictureLayerImpl*>* secondary_picture_layers)
+    const std::vector<dangling_raw_ptr<PictureLayerImpl>>* picture_layers,
+    const std::vector<dangling_raw_ptr<PictureLayerImpl>>*
+        secondary_picture_layers)
     : picture_layers_(picture_layers),
       secondary_picture_layers_(secondary_picture_layers),
       active_layers_(picture_layers) {

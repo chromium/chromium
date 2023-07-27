@@ -1251,7 +1251,8 @@ class NightLightCrtcTest : public NightLightTest {
   // Builds two displays snapshots into |owned_snapshots_| and return a list of
   // unowned pointers to them. |snapshot_params| should contain exactly 2
   // elements that correspond to capabilities of both displays.
-  std::vector<display::DisplaySnapshot*> BuildAndGetDisplaySnapshots(
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>>
+  BuildAndGetDisplaySnapshots(
       const std::vector<TestSnapshotParams>& snapshot_params) {
     DCHECK_EQ(2u, snapshot_params.size());
     owned_snapshots_.clear();
@@ -1276,14 +1277,15 @@ class NightLightCrtcTest : public NightLightTest {
                 snapshot_params[1].correction_in_linear_space)
             .Build());
     owned_snapshots_.back()->set_origin({1030, 0});
-    std::vector<display::DisplaySnapshot*> outputs = {
+    std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs = {
         owned_snapshots_[0].get(), owned_snapshots_[1].get()};
     return outputs;
   }
 
   // Updates the display configurator and display manager with the given list of
   // display snapshots.
-  void UpdateDisplays(const std::vector<display::DisplaySnapshot*>& outputs) {
+  void UpdateDisplays(
+      const std::vector<dangling_raw_ptr<display::DisplaySnapshot>>& outputs) {
     native_display_delegate_->set_outputs(outputs);
     display_manager()->configurator()->OnConfigurationChanged();
     EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
@@ -1340,7 +1342,7 @@ constexpr gfx::Size NightLightCrtcTest::kDisplaySize;
 // All displays support CRTC matrices.
 TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   // Create two displays with both having support for CRTC matrices.
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{true, true}, {true, true}});
   UpdateDisplays(outputs);
 
@@ -1396,7 +1398,7 @@ TEST_F(NightLightCrtcTest,
        TestAllDisplaysSupportCrtcMatrixCompressedGammaSpace) {
   // Create two displays with both having support for CRTC matrices that are
   // applied in the compressed gamma space.
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{true, false}, {true, false}});
   UpdateDisplays(outputs);
 
@@ -1435,7 +1437,7 @@ TEST_F(NightLightCrtcTest,
 
 // One display supports CRTC matrix and the other doesn't.
 TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{true, true}, {false, false}});
   UpdateDisplays(outputs);
 
@@ -1466,7 +1468,7 @@ TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
 
 // All displays don't support CRTC matrices.
 TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{false, false}, {false, false}});
   UpdateDisplays(outputs);
 
@@ -1494,7 +1496,7 @@ TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
 // Tests that switching CRTC matrix support on while Night Light is enabled
 // doesn't result in the matrix being applied twice.
 TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{false, false}, {false, false}});
   UpdateDisplays(outputs);
 
@@ -1528,7 +1530,7 @@ TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
   // compositor matrix. When this happens, we need to assert that the compositor
   // matrix is set to identity, and the cursor compositing is updated correctly.
   // TODO(afakhry): Investigate the root cause of this https://crbug.com/844067.
-  std::vector<display::DisplaySnapshot*> outputs2 =
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs2 =
       BuildAndGetDisplaySnapshots({{true, true}, {true, true}});
   UpdateDisplays(outputs2);
   TestCompositorsTemperature(0.0f);
@@ -1817,7 +1819,7 @@ class AmbientEQTest : public NightLightTest {
                                       .SetOrigin({1030, 0})
                                       .Build());
 
-    std::vector<display::DisplaySnapshot*> outputs = {
+    std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs = {
         owned_snapshots_[0].get(), owned_snapshots_[1].get()};
 
     native_display_delegate_->set_outputs(outputs);

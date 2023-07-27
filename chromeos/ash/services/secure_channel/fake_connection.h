@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
@@ -64,7 +65,9 @@ class FakeConnection : public Connection {
     return reigster_payload_file_requests_;
   }
 
-  std::vector<ConnectionObserver*>& observers() { return observers_; }
+  std::vector<dangling_raw_ptr<ConnectionObserver>>& observers() {
+    return observers_;
+  }
 
   using Connection::SetStatus;
 
@@ -90,7 +93,7 @@ class FakeConnection : public Connection {
 
   std::vector<RegisterPayloadFileRequest> reigster_payload_file_requests_;
 
-  std::vector<ConnectionObserver*> observers_;
+  std::vector<dangling_raw_ptr<ConnectionObserver>> observers_;
 
   absl::optional<int32_t> rssi_to_return_;
   const bool should_auto_connect_;
