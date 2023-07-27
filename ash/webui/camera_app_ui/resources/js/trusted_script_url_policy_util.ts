@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assertExists} from './assert.js';
-import {expandPath} from './util.js';
 
 
 // Trusted script URLs used by the Camera app.
@@ -12,7 +11,7 @@ const ALLOWED_SCRIPT_URLS = new Set([
   '/js/main.js',
   '/js/models/barcode_worker.js',
   '/js/multi_window_manager.js',
-].map(expandPath));
+]);
 
 // Create a TrustedTypes script URL policy from a list of allowed sources.
 const trustedScriptUrlPolicy =
@@ -37,6 +36,6 @@ const trustedScriptUrlPolicy =
  */
 export function getSanitizedScriptUrl(url: string): string {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return assertExists(trustedScriptUrlPolicy)
-             .createScriptURL(expandPath(url)) as unknown as string;
+  return assertExists(trustedScriptUrlPolicy).createScriptURL(url) as unknown as
+      string;
 }

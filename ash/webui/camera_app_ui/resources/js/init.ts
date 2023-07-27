@@ -12,7 +12,6 @@ import {
   setGaHelper,
   setVideoProcessorHelper,
 } from './untrusted_scripts.js';
-import {expandPath} from './util.js';
 
 
 declare global {
@@ -60,11 +59,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     await appWindow.waitUntilReadyOnTastSide();
   }
 
-  setGaHelper(injectUntrustedJSModule(
-      gaHelperIFrame, expandPath('/js/untrusted_ga_helper.js')));
+  setGaHelper(
+      injectUntrustedJSModule(gaHelperIFrame, '/js/untrusted_ga_helper.js'));
   setVideoProcessorHelper(injectUntrustedJSModule(
-      videoProcessorHelperIFrame,
-      expandPath('/js/untrusted_video_processor_helper.js')));
+      videoProcessorHelperIFrame, '/js/untrusted_video_processor_helper.js'));
 
   // Dynamically import the error module here so that the codes can be counted
   // by coverage report.

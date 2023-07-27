@@ -17,16 +17,9 @@ from cca import cli
 from cca import util
 
 
-def _get_root_relative_path(request_path: str) -> str:
-    request_path = os.path.dirname(request_path)
-    return os.path.relpath('/', f'/{request_path}')
-
-
 # Replaces all chrome:// reference to /chrome_stub/
-def _stub_chrome_url(request_path: str, s: str) -> str:
-    return s.replace(
-        'chrome://',
-        os.path.join(_get_root_relative_path(request_path), 'chrome_stub/'))
+def _stub_chrome_url(s: str) -> str:
+    return s.replace("chrome://", "/chrome_stub/")
 
 
 class _Route(NamedTuple):
@@ -75,6 +68,7 @@ class RequestHandler:
         return strings
 
     def _handle_strings_m_js(self, request_path: str) -> bytes:
+        del request_path  # Unused.
         load_time_data = {
             "board_name": "local-dev",
             "browser_version": "unknown",
@@ -88,43 +82,31 @@ class RequestHandler:
             "timeLapse": True,
         }
         load_time_data.update(self._load_grd_strings())
-        relative_path = _get_root_relative_path(request_path)
 
-        return (
-            "import {loadTimeData} from "
-            f"'{relative_path}/chrome_stub/resources/js/load_time_data.js';"
-            f"loadTimeData.data = {json.dumps(load_time_data)}").encode()
+        return ("import {loadTimeData} from "
+                "'/chrome_stub/resources/js/load_time_data.js';"
+                f"loadTimeData.data = {json.dumps(load_time_data)}").encode()
 
     def _handle_preload_images_js(self, request_path: str) -> bytes:
+        del request_path  # Unused.
         # TODO(pihsun): With watch, we can cache the result and only
         # re-generate when any image files are changed.
-        return _stub_chrome_url(request_path,
-                                build.gen_preload_images_js()).encode()
+        return _stub_chrome_url(build.gen_preload_images_js()).encode()
 
-    def _transform_html(self, request_path: str, html: str) -> str:
+    def _transform_main_html(self, html: str) -> str:
         name = self._load_grd_strings()["name"]
 
         html = html.replace("$i18n{name}", name)
-        html = _stub_chrome_url(request_path, html)
-
-        relative_path = _get_root_relative_path(request_path)
-        html = re.sub(r"(href|src)=\"/", f"\\1=\"{relative_path}/", html)
-
+        html = _stub_chrome_url(html)
         return html
 
-    def _transform_init_js(self, request_path: str, js: str) -> str:
+    def _transform_init_js(self, js: str) -> str:
         # Note that this breaks source map, but there's no frequent need to
         # debug init.ts so the impact should be minimal.
-        return self._transform_js(request_path,
-                                  "import './local_dev_overrides.js';\n" + js)
+        return self._transform_js("import './local_dev_overrides.js';\n" + js)
 
-    def _transform_js(self, request_path: str, js: str) -> str:
-        return _stub_chrome_url(request_path, js)
-
-    def _transform_css(self, request_path: str, css: str) -> str:
-        relative_path = _get_root_relative_path(request_path)
-        css = re.sub(r"url\(/", f"url({relative_path}/", css)
-        return css
+    def _transform_js(self, js: str) -> str:
+        return _stub_chrome_url(js)
 
     def _load_camera_app_helper_mojo_enums(self) -> Dict[str, Dict[str, int]]:
         with open(os.path.join(self._cca_root, "../camera_app_helper.mojom"),
@@ -152,8 +134,7 @@ class RequestHandler:
 
         return {name: parse_enum(block) for name, block in enum_blocks}
 
-    def _transform_js_mojo_js(self, request_path: str, ts_src: str) -> str:
-        del request_path  # Unused.
+    def _transform_js_mojo_js(self, ts_src: str) -> str:
         export_blocks = re.findall(r"export \{(.*?)\}", ts_src, re.DOTALL)
         exports = [
             export.strip() for block in export_blocks
@@ -190,7 +171,7 @@ class RequestHandler:
         *,
         root: Optional[str] = None,
         path: Optional[str] = None,
-        transform: Optional[Callable[[str, str], str]] = None,
+        transform: Optional[Callable[[str], str]] = None,
     ) -> bytes:
         root = root or self._cca_root
         path = path or request_path[1:]
@@ -198,7 +179,7 @@ class RequestHandler:
         with open(os.path.join(root, path), "rb") as f:
             content = f.read()
             if transform is not None:
-                content = transform(request_path, content.decode()).encode()
+                content = transform(content.decode()).encode()
             return content
 
     def _build_routes(self) -> List[_Route]:
@@ -242,6 +223,13 @@ class RequestHandler:
             ),
             _Route("/chrome_stub/theme/typography.css",
                    self._handle_theme_typography_css),
+            # main.html, we need to replace references of chrome:// to
+            # /chrome_stub/.
+            _Route(
+                "/views/main.html",
+                functools.partial(self._handle_static_file,
+                                  transform=self._transform_main_html),
+            ),
             # strings are generated dynamically from grd file.
             _Route("/strings.m.js", self._handle_strings_m_js),
             # All mojo imports are stubbed.
@@ -275,20 +263,6 @@ class RequestHandler:
                     self._handle_static_file,
                     root=self._tsc_root,
                     transform=self._transform_js,
-                ),
-            ),
-            # All .html files
-            _Route(
-                re.compile(r"/.*\.html"),
-                functools.partial(self._handle_static_file,
-                                  transform=self._transform_html),
-            ),
-            # All .css files.
-            _Route(
-                re.compile(r"/.*\.css"),
-                functools.partial(
-                    self._handle_static_file,
-                    transform=self._transform_css,
                 ),
             ),
             # All other static files.

@@ -20,7 +20,6 @@ import {
   ToteMetricFormat,
 } from './mojo/type.js';
 import {MimeType} from './type.js';
-import {expandPath} from './util.js';
 
 export class ChromeHelperFake extends ChromeHelper {
   override async initTabletModeMonitor(_onChange: (isTablet: boolean) => void):
@@ -154,10 +153,3 @@ export class ChromeHelperFake extends ChromeHelper {
 }
 
 localDev.setOverride(getInstanceImpl, () => new ChromeHelperFake());
-
-// This file is included from /views/main.html, so remove the last two parts in
-// URL to get the base path.
-const basePath = window.location.pathname.split('/').slice(0, -2).join('/');
-localDev.setOverride(expandPath, (path) => {
-  return basePath + path;
-});

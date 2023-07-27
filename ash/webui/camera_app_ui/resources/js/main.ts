@@ -520,7 +520,7 @@ function preloadImages() {
   imagesContainer.hidden = true;
   for (const imageName of preloadImagesList) {
     const img = document.createElement('img');
-    const url = util.expandPath(`/images/${imageName}`);
+    const url = `/images/${imageName}`;
     img.onerror = () => {
       reportError(
           ErrorType.PRELOAD_IMAGE_FAILURE, ErrorLevel.ERROR,
@@ -549,7 +549,7 @@ async function setupDynamicColor(): Promise<void> {
     ColorChangeUpdater.forDocument().start();
     await loadCSS('chrome://theme/colors.css?sets=ref,sys');
   } else {
-    await loadCSS(util.expandPath('/css/colors_default.css'));
+    await loadCSS('/css/colors_default.css');
   }
 }
 
