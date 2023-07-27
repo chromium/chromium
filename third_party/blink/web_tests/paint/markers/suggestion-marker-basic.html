@@ -23,10 +23,10 @@
     <div contenteditable id="markNothingZero">markNothingZero</div>
     <div contenteditable id="markNothingEnd">markNothingEnd</div>
     <div contenteditable id="markAcrossNodes"><div>mark<span>Across</span></div><div>Nodes</div></div>
-    <div contenteditable id="overridingSpellingMarkerAtBeginning">overridingSpellingMarkerAtBeginning</div>
-    <div contenteditable id="overridingSpellingMarkerAtEnd">overridingSpellingMarkerAtEnd</div>
-    <div contenteditable id="overridingSpellingMarkerIntersectingBeginning">overridingSpellingMarkerIntersectingBeginning</div>
-    <div contenteditable id="overridingSpellingMarkerIntersectingEnd">overridingSpellingMarkerIntersectingEnd</div>
+    <div contenteditable id="drawOverSpellingMarkerAtBeginning">drawOverSpellingMarkerAtBeginning</div>
+    <div contenteditable id="drawOverSpellingMarkerAtEnd">drawOverSpellingMarkerAtEnd</div>
+    <div contenteditable id="drawOverSpellingMarkerIntersectingBeginning">drawOverSpellingMarkerIntersectingBeginning</div>
+    <div contenteditable id="drawOverSpellingMarkerIntersectingEnd">drawOverSpellingMarkerIntersectingEnd</div>
     <div contenteditable id="notOverridingSpellingMarkersTouching">notOverridingSpellingMarkersTouching</div>
     <div contenteditable id="overridingCompositionMarkerAtBeginning">overridingCompositionMarkerAtBeginning</div>
     <div contenteditable id="overridingCompositionMarkerAtEnd">overridingCompositionMarkerAtEnd</div>
@@ -96,17 +96,17 @@ onload = runAfterLayoutAndPaint(function() {
     highlightAcrossNodes(markRtlAcrossNodes.childNodes[0].firstChild, 3,
     markRtlAcrossNodes.childNodes[1].firstChild, 3);
 
-    addSuggestionMarkerSimple(overridingSpellingMarkerAtBeginning, 0, 6);
-    addSpellingMarker(overridingSpellingMarkerAtBeginning, 0, 1);
+    addSuggestionMarkerSimple(drawOverSpellingMarkerAtBeginning, 0, 6);
+    addSpellingMarker(drawOverSpellingMarkerAtBeginning, 0, 1);
 
-    addSuggestionMarkerSimple(overridingSpellingMarkerAtEnd, 0, 6);
-    addSpellingMarker(overridingSpellingMarkerAtEnd, 5, 6);
+    addSuggestionMarkerSimple(drawOverSpellingMarkerAtEnd, 0, 6);
+    addSpellingMarker(drawOverSpellingMarkerAtEnd, 5, 6);
 
-    addSuggestionMarkerSimple(overridingSpellingMarkerIntersectingBeginning, 1, 5);
-    addSpellingMarker(overridingSpellingMarkerIntersectingBeginning, 0, 2);
+    addSuggestionMarkerSimple(drawOverSpellingMarkerIntersectingBeginning, 1, 5);
+    addSpellingMarker(drawOverSpellingMarkerIntersectingBeginning, 0, 2);
 
-    addSuggestionMarkerSimple(overridingSpellingMarkerIntersectingEnd, 1, 5);
-    addSpellingMarker(overridingSpellingMarkerIntersectingEnd, 4, 6);
+    addSuggestionMarkerSimple(drawOverSpellingMarkerIntersectingEnd, 1, 5);
+    addSpellingMarker(drawOverSpellingMarkerIntersectingEnd, 4, 6);
 
     addSuggestionMarkerSimple(notOverridingSpellingMarkersTouching, 1, 5);
     addSpellingMarker(notOverridingSpellingMarkersTouching, 0, 1);
