@@ -244,7 +244,7 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
               l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME_TOOLTIP),
               kTooltipIconSize);
-      cardholder_name_tooltip->set_anchor_point_arrow(
+      cardholder_name_tooltip->SetAnchorPointArrow(
           views::BubbleBorder::Arrow::TOP_LEFT);
       cardholder_name_tooltip->SetID(DialogViewId::CARDHOLDER_NAME_TOOLTIP);
       cardholder_name_label_row->AddChildView(
@@ -394,10 +394,10 @@ SaveCardOfferBubbleViews::CreateUploadExplanationView() {
        !cardholder_name_textfield_->GetText().empty())
           ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_AND_CARDHOLDER_NAME_TOOLTIP
           : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_TOOLTIP));
-  upload_explanation_tooltip->set_bubble_width(
+  upload_explanation_tooltip->SetBubbleWidth(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  upload_explanation_tooltip->set_anchor_point_arrow(
+  upload_explanation_tooltip->SetAnchorPointArrow(
       views::BubbleBorder::Arrow::TOP_RIGHT);
   upload_explanation_tooltip->SetID(DialogViewId::UPLOAD_EXPLANATION_TOOLTIP);
   return upload_explanation_tooltip;

@@ -70,16 +70,6 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   // WidgetObserver:
   void OnWidgetDestroyed(Widget* widget) override;
 
-  // TODO(emiliapaz): Migrate callers to SetBubbleWidth() and delete.
-  void set_bubble_width(int preferred_width) {
-    preferred_width_ = preferred_width;
-  }
-
-  // TODO(emiliapaz): Migrate callers to SetAnchorPointArrow() and delete.
-  void set_anchor_point_arrow(BubbleBorder::Arrow arrow) {
-    anchor_point_arrow_ = arrow;
-  }
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

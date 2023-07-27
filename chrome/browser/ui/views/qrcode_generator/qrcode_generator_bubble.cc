@@ -315,9 +315,9 @@ void QRCodeGeneratorBubble::Init() {
   // "More info" tooltip; looks like (i).
   auto tooltip_icon = std::make_unique<views::TooltipIcon>(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP));
-  tooltip_icon->set_bubble_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+  tooltip_icon->SetBubbleWidth(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  tooltip_icon->set_anchor_point_arrow(views::BubbleBorder::Arrow::TOP_LEFT);
+  tooltip_icon->SetAnchorPointArrow(views::BubbleBorder::Arrow::TOP_LEFT);
   tooltip_icon->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, 0, 0, kPaddingTooltipDownloadButtonPx));
