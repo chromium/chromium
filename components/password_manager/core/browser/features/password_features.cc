@@ -9,14 +9,14 @@ namespace password_manager::features {
 // Enables biometric authentication before form filling.
 BASE_FEATURE(kBiometricAuthenticationForFilling,
              "BiometricAuthenticationForFilling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC)
 // Enables biometric authentication in settings.
 BASE_FEATURE(kBiometricAuthenticationInSettings,
              "BiometricAuthenticationInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
