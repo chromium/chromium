@@ -245,12 +245,12 @@ static_library("test_support") {
 
   if (is_chromeos && is_chromeos_device) {
     sources += [
+      "base/chromeos/crosier/chromeos_integration_test_mixin.cc",
+      "base/chromeos/crosier/chromeos_integration_test_mixin.h",
       "base/chromeos/crosier/chromeos_test_launcher.cc",
       "base/chromeos/crosier/chromeos_test_launcher.h",
       "base/chromeos/crosier/chromeos_test_suite.cc",
       "base/chromeos/crosier/chromeos_test_suite.h",
-      "base/chromeos/crosier/crosier_mixin.cc",
-      "base/chromeos/crosier/crosier_mixin.h",
     ]
   }
 

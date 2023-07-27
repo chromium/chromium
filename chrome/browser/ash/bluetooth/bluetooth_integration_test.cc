@@ -14,11 +14,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "dbus/object_path.h"
@@ -29,6 +31,10 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/interaction/element_tracker_views.h"
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
+#endif
 
 namespace ash {
 namespace {
@@ -82,7 +88,10 @@ ui::ElementContext GetContextForWidget(views::Widget* widget) {
   return ui::ElementContext(widget->GetNativeWindow()->GetRootWindow());
 }
 
-class BluetoothIntegrationTest : public InteractiveBrowserTest {
+using InteractiveMixinBasedBrowserTest =
+    InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+
+class BluetoothIntegrationTest : public InteractiveMixinBasedBrowserTest {
  public:
   BluetoothIntegrationTest() {
     // Use the legacy bluez bluetooth stack.
@@ -100,9 +109,9 @@ class BluetoothIntegrationTest : public InteractiveBrowserTest {
     views::ElementTrackerViews::SetContextOverrideCallback({});
   }
 
-  // InteractiveBrowserTest:
+  // InteractiveMixinBasedBrowserTest:
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveMixinBasedBrowserTest::SetUpOnMainThread();
 
     bluez_dbus_manager_ = BluezDBusManager::Get();
     if (!bluez_dbus_manager_) {
@@ -134,7 +143,7 @@ class BluetoothIntegrationTest : public InteractiveBrowserTest {
     adapter_client_ = nullptr;
     bluez_dbus_manager_ = nullptr;
 
-    InteractiveBrowserTest::TearDownOnMainThread();
+    InteractiveMixinBasedBrowserTest::TearDownOnMainThread();
   }
 
   // Sets up a context widget for Kombucha which is needed because we don't open
@@ -176,6 +185,11 @@ class BluetoothIntegrationTest : public InteractiveBrowserTest {
   }
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
+  // chromeos_integration_tests.
+  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
+#endif
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<BluezDBusManager> bluez_dbus_manager_ = nullptr;
   raw_ptr<BluetoothAdapterClient> adapter_client_ = nullptr;
