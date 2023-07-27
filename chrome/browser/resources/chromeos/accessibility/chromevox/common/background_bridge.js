@@ -13,8 +13,7 @@ import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
 import {Command} from './command_store.js';
 import {EarconId} from './earcon_id.js';
-import {BaseLog, SerializableLog} from './log_types.js';
-import {PanelTabMenuItemData} from './panel_menu_data.js';
+import {SerializableLog} from './log_types.js';
 import {QueueMode, TtsSpeechProperties} from './tts_types.js';
 
 export const BackgroundBridge = {};

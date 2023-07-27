@@ -7,7 +7,7 @@
  *     them with BridgeCallbackIds.
  */
 
-import {BridgeAction, BridgeConstants, BridgeContext, BridgeTarget} from './bridge_constants.js';
+import {BridgeAction, BridgeContext, BridgeTarget} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
 
 /** @type {!BridgeAction} */
