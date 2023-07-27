@@ -1960,6 +1960,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Patchpanel.Tethering.CreateTetheredNetwork"
+    enum="NetworkPatchpanelDownstreamNetworkResult" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Result of creating a DownstreamNetwork tethered to an upstream network when
+    calling the patchpanel DBus API CreateTetheredNetwork.
+  </summary>
+</histogram>
+
+<histogram name="Network.Patchpanel.Tethering.DHCPServer"
+    enum="NetworkPatchpanelDHCPServerEvent" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    DHCP server events happening for the DHCP server set up by the patchpanel
+    DBus API CreateTetheredNetwork.
+  </summary>
+</histogram>
+
 <histogram name="Network.PortalSuspectedToOnlineTime" units="ms"
     expires_after="2024-01-05">
   <owner>stevenjb@chromium.org</owner>

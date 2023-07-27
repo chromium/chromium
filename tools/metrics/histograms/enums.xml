@@ -75695,6 +75695,30 @@ Called by update_net_trust_anchors.py.-->
   <int value="30" label="SetDnsRedirectionRule success"/>
 </enum>
 
+<enum name="NetworkPatchpanelDHCPServerEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="DHCP server start"/>
+  <int value="2" label="DHCP server successful start"/>
+  <int value="3" label="DHCP server stop"/>
+  <int value="4" label="DHCP server successful stop"/>
+  <int value="5" label="DHCP REQUEST received"/>
+  <int value="6" label="DHCP ACK sent"/>
+  <int value="7" label="DHCP NAK sent"/>
+  <int value="8" label="DHCP DECLINE received"/>
+</enum>
+
+<enum name="NetworkPatchpanelDownstreamNetworkResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Internal error"/>
+  <int value="3" label="Invalid request"/>
+  <int value="4" label="Invalid argument"/>
+  <int value="5" label="Downstream network already in use"/>
+  <int value="6" label="Upstream network unknown"/>
+  <int value="7" label="DHCP server setup failure"/>
+  <int value="8" label="Datapath setup error"/>
+</enum>
+
 <enum name="NetworkPhyModeType">
   <int value="0" label="UNDEF"/>
   <int value="1" label="802.11a"/>
