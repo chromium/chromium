@@ -116,8 +116,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   DisableLoginOperationsForTesting();
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   SkipSplashScreenWaitForTesting();
-  [[nodiscard]] static std::unique_ptr<base::AutoReset<base::TimeDelta>>
-  SetNetworkWaitForTesting(base::TimeDelta wait_time);
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   BlockAppLaunchForTesting();
   [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailureForTesting();

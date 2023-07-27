@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -28,8 +27,6 @@ WebKioskBaseTest::WebKioskBaseTest()
   needs_background_networking_ = true;
   skip_splash_wait_override_ =
       KioskLaunchController::SkipSplashScreenWaitForTesting();
-  network_wait_override_ =
-      KioskLaunchController::SetNetworkWaitForTesting(base::Seconds(0));
 }
 
 WebKioskBaseTest::~WebKioskBaseTest() = default;

@@ -172,7 +172,6 @@ class KioskBaseTest : public OobeBaseTest {
   std::unique_ptr<FakeCWS> fake_cws_;
 
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
-  std::unique_ptr<base::AutoReset<base::TimeDelta>> network_wait_override_;
   std::unique_ptr<base::AutoReset<bool>> block_app_launch_override_;
 };
 

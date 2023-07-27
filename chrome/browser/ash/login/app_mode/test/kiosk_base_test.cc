@@ -47,9 +47,6 @@ namespace ash {
 
 namespace {
 
-// Timeout while waiting for network connectivity during tests.
-const int kTestNetworkTimeoutSeconds = 1;
-
 // Helper function for GetConsumerKioskAutoLaunchStatusCallback.
 void ConsumerKioskAutoLaunchStatusCheck(
     KioskAppManager::ConsumerKioskAutoLaunchStatus* out_status,
@@ -160,8 +157,6 @@ void KioskBaseTest::SetUp() {
   ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   skip_splash_wait_override_ =
       KioskLaunchController::SkipSplashScreenWaitForTesting();
-  network_wait_override_ = KioskLaunchController::SetNetworkWaitForTesting(
-      base::Seconds(kTestNetworkTimeoutSeconds));
   OobeBaseTest::SetUp();
 }
 

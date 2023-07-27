@@ -56,11 +56,6 @@
 namespace ash {
 namespace {
 
-// Time of waiting for the network to be ready to start installation. Can be
-// changed in tests.
-constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
-base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
-
 // Whether we should skip the wait for minimum screen show time.
 bool g_skip_splash_wait_for_testing = false;
 bool g_block_app_launch_for_testing = false;
@@ -783,13 +778,6 @@ std::unique_ptr<base::AutoReset<bool>>
 KioskLaunchController::SkipSplashScreenWaitForTesting() {
   return std::make_unique<base::AutoReset<bool>>(
       &g_skip_splash_wait_for_testing, true);
-}
-
-// static
-std::unique_ptr<base::AutoReset<base::TimeDelta>>
-KioskLaunchController::SetNetworkWaitForTesting(base::TimeDelta wait_time) {
-  return std::make_unique<base::AutoReset<base::TimeDelta>>(
-      &g_network_wait_time, wait_time);
 }
 
 // static
