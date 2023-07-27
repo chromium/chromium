@@ -1107,6 +1107,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showClearBrowsingDataSettings {
+  [self stopClearBrowsingDataCoordinator];
   self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
