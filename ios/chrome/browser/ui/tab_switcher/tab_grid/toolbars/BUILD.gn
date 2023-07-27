@@ -9,7 +9,6 @@ source_set("toolbars") {
     "tab_grid_toolbars_mediator.h",
     "tab_grid_toolbars_mediator.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":toolbars_ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -33,7 +32,6 @@ source_set("toolbars_ui") {
     "tab_grid_top_toolbar.h",
     "tab_grid_top_toolbar.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",

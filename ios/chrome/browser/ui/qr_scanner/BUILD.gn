@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("qr_scanner") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "qr_scanner_camera_controller.h",
     "qr_scanner_camera_controller.mm",
@@ -33,7 +32,6 @@ source_set("qr_scanner") {
 }
 
 source_set("coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "qr_scanner_legacy_coordinator.h",
     "qr_scanner_legacy_coordinator.mm",
@@ -51,10 +49,7 @@ source_set("coordinator") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "qr_scanner_view_controller_egtest.mm" ]
   deps = [
@@ -76,10 +71,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "qr_scanner_app_interface.h",
@@ -108,10 +100,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [

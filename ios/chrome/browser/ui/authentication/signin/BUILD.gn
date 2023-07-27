@@ -12,7 +12,6 @@ group("signin") {
 
 # Contains public headers.
 source_set("signin_headers") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_completion_info.h",
     "signin_coordinator.h",
@@ -28,14 +27,12 @@ source_set("signin_headers") {
 }
 
 source_set("signin_protected") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_coordinator+protected.h" ]
   deps = [ ":signin_headers" ]
 }
 
 # Contains sign-in implementation.
 source_set("signin_impl") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_completion_info.mm",
     "signin_coordinator.mm",
@@ -73,7 +70,6 @@ source_set("signin_impl") {
 }
 
 source_set("signin_screen_provider") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_screen_provider.h",
     "signin_screen_provider.mm",
@@ -90,7 +86,6 @@ source_set("signin_screen_provider") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "signin_utils_unittest.mm" ]
   deps = [
@@ -122,7 +117,6 @@ source_set("unit_tests") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_constants.h",
     "signin_constants.mm",
@@ -131,10 +125,7 @@ source_set("constants") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "signin_coordinator_egtest.mm" ]
   deps = [

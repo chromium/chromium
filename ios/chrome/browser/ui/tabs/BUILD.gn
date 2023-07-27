@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "background_tab_animation_view.h",
     "background_tab_animation_view.mm",
@@ -82,7 +81,6 @@ source_set("tabs") {
 }
 
 source_set("coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_strip_legacy_coordinator.h",
     "tab_strip_legacy_coordinator.mm",
@@ -100,7 +98,6 @@ source_set("coordinator") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_strip_constants.h",
     "tab_strip_constants.mm",
@@ -108,7 +105,6 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "tab_strip_controller_unittest.mm" ]
   deps = [
@@ -135,10 +131,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "tab_strip_egtest.mm" ]
   deps = [

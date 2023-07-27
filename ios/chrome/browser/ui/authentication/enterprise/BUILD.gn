@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("enterprise_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "enterprise_utils.h",
     "enterprise_utils.mm",

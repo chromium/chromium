@@ -10,8 +10,6 @@ source_set("interstitials") {
     "interstitial_ui_util.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":constants",
     "//base",
@@ -40,15 +38,10 @@ source_set("constants") {
     "interstitial_ui_constants.h",
     "interstitial_ui_constants.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "interstitial_ui_egtest.mm" ]
   deps = [

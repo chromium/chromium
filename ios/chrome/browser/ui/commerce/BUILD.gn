@@ -23,5 +23,4 @@ source_set("price_card") {
     "//ios/web",
     "//ui/base:base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

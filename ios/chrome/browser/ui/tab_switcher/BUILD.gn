@@ -16,8 +16,6 @@ source_set("tab_switcher") {
     "web_state_tab_switcher_item.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/favicon/ios",
@@ -36,8 +34,6 @@ source_set("tab_utils") {
     "tab_utils.h",
     "tab_utils.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":tab_switcher",

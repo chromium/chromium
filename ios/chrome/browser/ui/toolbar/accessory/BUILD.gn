@@ -20,8 +20,6 @@ source_set("accessory") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -30,6 +28,4 @@ source_set("constants") {
     "toolbar_accessory_constants.h",
     "toolbar_accessory_constants.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

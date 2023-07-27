@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("data") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_activity_file_source.h",
     "chrome_activity_file_source.mm",
@@ -53,7 +52,6 @@ source_set("data") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "chrome_activity_item_thumbnail_generator_unittest.mm",

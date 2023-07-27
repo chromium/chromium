@@ -13,7 +13,6 @@ source_set("menu") {
     "menu_histograms.h",
     "menu_histograms.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//components/open_from_clipboard",
@@ -42,15 +41,12 @@ source_set("menu") {
 }
 
 source_set("tab_context_menu_delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [ "tab_context_menu_delegate.h" ]
 
   deps = [ "//ios/chrome/browser/ui/sharing" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "action_factory_unittest.mm",

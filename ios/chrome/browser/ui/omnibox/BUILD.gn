@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 source_set("omnibox") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "omnibox_controller_delegate.h",
     "omnibox_focus_delegate.h",
@@ -20,7 +18,6 @@ source_set("omnibox") {
 }
 
 source_set("omnibox_popup_shared") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "omnibox_constants.h",
     "omnibox_constants.mm",
@@ -33,8 +30,6 @@ source_set("omnibox_popup_shared") {
 # means that its dependencies should be limited, avoiding
 # components code.
 source_set("omnibox_suggestion_icon_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "omnibox_suggestion_icon_util.h",
     "omnibox_suggestion_icon_util.mm",
@@ -49,8 +44,6 @@ source_set("omnibox_suggestion_icon_util") {
 # See the comment above on omnibox_suggestion_icon_util
 # for why these two targets are separated.
 source_set("omnibox_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "omnibox_metrics_helper.h",
     "omnibox_metrics_helper.mm",
@@ -77,8 +70,6 @@ source_set("omnibox_util") {
 
 # This target can also be used on EG2 tests, so it should only contain constants
 source_set("omnibox_icon_type_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "omnibox_icon_type.h",
     "omnibox_icon_type.mm",
@@ -90,7 +81,6 @@ source_set("omnibox_icon_type_constants") {
 }
 
 source_set("omnibox_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_omnibox_client_ios.h",
     "chrome_omnibox_client_ios.mm",
@@ -207,10 +197,7 @@ source_set("omnibox_internal") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "omnibox_app_interface.h",
@@ -245,10 +232,7 @@ source_set("eg_app_support+eg2") {
   ]
 }
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "omnibox_app_interface.h",
@@ -258,10 +242,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "omnibox_egtest.mm" ]
   deps = [
@@ -283,7 +264,6 @@ source_set("eg2_tests") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_suggestions_database_unittest.cc",
@@ -333,7 +313,6 @@ bundle_data("resources_fake_suggestions_tests") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "omnibox_ui_features.cc",
     "omnibox_ui_features.h",

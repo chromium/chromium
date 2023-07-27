@@ -5,8 +5,6 @@
 # import("//build/config/ios/ios_sdk.gni")
 
 source_set("info_popover_view_controller") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "info_popover_view_controller.h",
     "info_popover_view_controller.mm",
@@ -27,8 +25,6 @@ source_set("info_popover_view_controller") {
 }
 
 source_set("enterprise_info_popover_view_controller") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "enterprise_info_popover_view_controller.h",
     "enterprise_info_popover_view_controller.mm",
@@ -50,7 +46,6 @@ source_set("enterprise_info_popover_view_controller") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "elements_constants.h",
     "elements_constants.mm",

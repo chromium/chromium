@@ -9,8 +9,6 @@ source_set("test") {
     "fake_infobar_banner_consumer.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/ui/infobars/banners",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "feed_metrics_constants.h",
     "feed_metrics_constants.mm",
@@ -42,7 +41,6 @@ source_set("metrics") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "feed_metrics_recorder_unittest.mm",

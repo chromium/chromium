@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("modals") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_edit_address_profile_modal_consumer.h",
     "infobar_edit_address_profile_table_view_controller.h",
@@ -40,7 +39,6 @@ source_set("modals") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "infobar_edit_address_profile_table_view_controller_unittest.mm",

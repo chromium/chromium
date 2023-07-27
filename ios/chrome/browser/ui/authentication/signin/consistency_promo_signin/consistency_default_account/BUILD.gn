@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("consistency_default_account") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "consistency_default_account_consumer.h",
     "consistency_default_account_coordinator.h",

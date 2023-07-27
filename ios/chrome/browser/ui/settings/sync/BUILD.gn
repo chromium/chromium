@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sync") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_create_passphrase_table_view_controller.h",
     "sync_create_passphrase_table_view_controller.mm",
@@ -55,7 +54,6 @@ source_set("sync") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "sync_create_passphrase_table_view_controller_unittest.mm",
@@ -96,10 +94,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "sync_encryption_passphrase_table_view_controller_egtest.mm" ]
   deps = [

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("default_browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_screen_coordinator.h",
     "default_browser_screen_coordinator.mm",
@@ -23,7 +22,6 @@ source_set("default_browser") {
 }
 
 source_set("default_browser_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_screen_view_controller.h",
     "default_browser_screen_view_controller.mm",

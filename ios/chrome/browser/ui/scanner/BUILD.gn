@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("scanner") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "camera_controller.h",
     "camera_controller.mm",

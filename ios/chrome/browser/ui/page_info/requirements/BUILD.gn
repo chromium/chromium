@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("requirements") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "page_info_presentation.h" ]
 }

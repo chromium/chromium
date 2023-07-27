@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("webui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "about_ui.cc",
     "about_ui.h",
@@ -105,7 +104,6 @@ source_set("webui") {
 }
 
 source_set("webui_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_web_ui_ios_controller_factory.h",
     "chrome_web_ui_ios_controller_factory.mm",
@@ -153,10 +151,7 @@ source_set("webui_internal") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "inspect/inspect_ui_egtest.mm",
@@ -182,10 +177,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "web_ui_test_utils.h",

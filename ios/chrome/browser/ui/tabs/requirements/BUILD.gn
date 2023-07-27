@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("requirements") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_strip_constants.h",
     "tab_strip_constants.mm",

@@ -5,7 +5,6 @@
 import("//ios/build/chrome_build.gni")
 
 source_set("default_browser_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_promo_scene_agent.h",
     "default_browser_promo_scene_agent.mm",
@@ -30,7 +29,6 @@ source_set("default_browser_scene_agent") {
 }
 
 source_set("incognito_blocker_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_blocker_scene_agent.h",
     "incognito_blocker_scene_agent.mm",
@@ -43,7 +41,6 @@ source_set("incognito_blocker_scene_agent") {
 }
 
 source_set("scene") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ui_blocker_scene_agent.h",
     "ui_blocker_scene_agent.mm",
@@ -63,7 +60,6 @@ source_set("scene") {
 }
 
 source_set("main") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browser_view_wrangler.h",
     "browser_view_wrangler.mm",
@@ -136,7 +132,6 @@ source_set("main") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browser_view_wrangler_unittest.mm",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("enterprise_prompt") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "enterprise_prompt_coordinator.h",
     "enterprise_prompt_coordinator.mm",

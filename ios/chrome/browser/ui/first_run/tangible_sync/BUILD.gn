@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tangible_sync") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tangible_sync_screen_coordinator.h",
     "tangible_sync_screen_coordinator.mm",

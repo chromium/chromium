@@ -14,8 +14,6 @@ source_set("test") {
     "test_main_content_ui_state.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/main_content:main_content_ui",

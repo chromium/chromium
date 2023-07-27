@@ -9,8 +9,6 @@ source_set("tab_context_menu") {
     "tab_context_menu_provider.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":tab_item",
     "//base",
@@ -38,8 +36,6 @@ source_set("tab_item") {
     "tab_item.h",
     "tab_item.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [ "//url" ]
 }

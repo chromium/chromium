@@ -8,8 +8,6 @@ source_set("save_card") {
     "save_card_infobar_banner_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/autofill/core/browser",
@@ -30,8 +28,6 @@ source_set("save_card") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "save_card_infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":save_card",

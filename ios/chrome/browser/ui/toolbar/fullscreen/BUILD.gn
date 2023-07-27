@@ -13,7 +13,6 @@ source_set("fullscreen") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/web",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -26,11 +25,9 @@ source_set("fullscreen_broadcasting_util") {
     ":fullscreen",
     "//ios/chrome/browser/ui/broadcaster",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "toolbar_ui_broadcasting_util_unittest.mm" ]
   deps = [

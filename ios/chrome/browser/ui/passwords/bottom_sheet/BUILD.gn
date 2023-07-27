@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("bottom_sheet") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_suggestion_bottom_sheet_coordinator.h",
     "password_suggestion_bottom_sheet_coordinator.mm",
@@ -44,7 +43,6 @@ source_set("bottom_sheet") {
 }
 
 source_set("bottom_sheet_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_suggestion_bottom_sheet_consumer.h",
     "password_suggestion_bottom_sheet_delegate.h",
@@ -73,7 +71,6 @@ source_set("bottom_sheet_ui") {
 }
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scoped_password_suggestion_bottom_sheet_reauth_module_override.h",
     "scoped_password_suggestion_bottom_sheet_reauth_module_override.mm",
@@ -85,7 +82,6 @@ source_set("common") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_suggestion_bottom_sheet_constants.h",
     "password_suggestion_bottom_sheet_constants.mm",
@@ -93,10 +89,7 @@ source_set("constants") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
@@ -119,10 +112,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_suggestion_bottom_sheet_app_interface.h",
@@ -140,10 +130,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -157,7 +144,6 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "password_suggestion_bottom_sheet_mediator_unittest.mm" ]
   deps = [

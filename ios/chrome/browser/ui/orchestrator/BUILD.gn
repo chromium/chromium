@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("orchestrator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "edit_view_animatee.h",
     "location_bar_animatee.h",

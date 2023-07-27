@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tracking_price") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tracking_price_coordinator.h",
     "tracking_price_coordinator.mm",
@@ -37,7 +36,6 @@ source_set("tracking_price") {
 }
 
 source_set("tracking_price_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tracking_price_alert_presenter.h",
     "tracking_price_consumer.h",
@@ -57,7 +55,6 @@ source_set("tracking_price_ui") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tracking_price_constants.h",
     "tracking_price_constants.mm",
@@ -65,10 +62,7 @@ source_set("constants") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "tracking_price_egtest.mm" ]
   deps = [

@@ -86,7 +86,6 @@ source_set("reading_list") {
   allow_circular_includes_from = [ "//ios/chrome/browser/ui/side_swipe" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("infobar") {
@@ -94,7 +93,6 @@ source_set("infobar") {
     "ios_add_to_reading_list_infobar_delegate.h",
     "ios_add_to_reading_list_infobar_delegate.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//components/infobars/core",
     "//components/prefs",
@@ -112,11 +110,9 @@ source_set("reading_list_constants") {
     "reading_list_constants.h",
     "reading_list_constants.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("reading_list_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "number_badge_view.h",
     "number_badge_view.mm",
@@ -174,7 +170,6 @@ source_set("reading_list_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "reading_list_list_item_factory_unittest.mm",
@@ -216,10 +211,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "reading_list_account_storage_egtest.mm",
@@ -258,10 +250,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "reading_list_app_interface.h",
@@ -277,10 +266,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "reading_list_app_interface.h",

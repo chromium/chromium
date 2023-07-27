@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password_details") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "add_password_coordinator.h",
     "add_password_coordinator.mm",
@@ -55,7 +54,6 @@ source_set("password_details") {
 }
 
 source_set("password_details_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "add_password_details_consumer.h",
     "add_password_handler.h",
@@ -112,7 +110,6 @@ source_set("password_details_ui") {
 }
 
 source_set("password_details_table_view_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_details_table_view_constants.h",
     "password_details_table_view_constants.mm",
@@ -121,7 +118,6 @@ source_set("password_details_table_view_constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "add_password_view_controller_unittest.mm",

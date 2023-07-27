@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("advanced_settings_signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "advanced_settings_signin_coordinator.h",
     "advanced_settings_signin_coordinator.mm",
@@ -40,7 +39,6 @@ source_set("advanced_settings_signin") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "advanced_settings_signin_constants.h",
     "advanced_settings_signin_constants.mm",
@@ -48,7 +46,6 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "advanced_settings_signin_mediator_unittest.mm" ]
   deps = [
@@ -78,10 +75,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "advanced_settings_signin_egtest.mm" ]
   deps = [

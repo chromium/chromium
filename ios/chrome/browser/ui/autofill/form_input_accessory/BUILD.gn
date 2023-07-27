@@ -5,7 +5,6 @@
 import("//build/config/ios/asset_catalog.gni")
 
 source_set("form_input_accessory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "form_input_accessory_chromium_text_data.h",
     "form_input_accessory_chromium_text_data.mm",
@@ -71,7 +70,6 @@ source_set("form_input_accessory") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "form_input_accessory_mediator_unittest.mm" ]
   deps = [

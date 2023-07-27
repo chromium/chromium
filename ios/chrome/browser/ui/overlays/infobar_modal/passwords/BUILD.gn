@@ -10,8 +10,6 @@ source_set("passwords") {
     "password_infobar_modal_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/app/strings",
@@ -32,8 +30,6 @@ source_set("passwords") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "password_infobar_modal_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":passwords",

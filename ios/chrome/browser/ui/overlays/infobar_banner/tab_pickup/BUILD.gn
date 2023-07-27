@@ -8,8 +8,6 @@ source_set("tab_pickup") {
     "tab_pickup_infobar_banner_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/infobars/core",
@@ -28,8 +26,6 @@ source_set("tab_pickup") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "tab_pickup_infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":tab_pickup",

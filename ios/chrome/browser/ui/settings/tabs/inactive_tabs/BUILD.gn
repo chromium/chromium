@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("inactive_tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_settings_coordinator.h",
     "inactive_tabs_settings_coordinator.mm",
@@ -26,7 +25,6 @@ source_set("inactive_tabs") {
 }
 
 source_set("inactive_tabs_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_settings_consumer.h",
     "inactive_tabs_settings_table_view_controller.h",
@@ -48,10 +46,7 @@ source_set("inactive_tabs_ui") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "inactive_tabs_settings_egtest.mm" ]
   deps = [

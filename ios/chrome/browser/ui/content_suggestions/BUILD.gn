@@ -24,7 +24,6 @@ source_set("start_suggest") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//services/network/public/cpp",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("content_suggestions") {
@@ -137,7 +136,6 @@ source_set("content_suggestions") {
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit:widget_kit_swift" ]
   }
-  configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
@@ -148,7 +146,6 @@ source_set("metrics") {
     "content_suggestions_metrics_recorder.h",
     "content_suggestions_metrics_recorder.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":constants",
     ":content_suggestions_constant",
@@ -177,12 +174,10 @@ source_set("constants") {
     "//base",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("public") {
   sources = [ "content_suggestions_menu_provider.h" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("content_suggestions_ui") {
@@ -225,7 +220,6 @@ source_set("content_suggestions_ui") {
     "//url",
   ]
   public_deps = [ ":content_suggestions_ui_util" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("content_suggestions_constant") {
@@ -234,7 +228,6 @@ source_set("content_suggestions_constant") {
     "ntp_home_constant.mm",
   ]
   deps = [ "//ios/chrome/common/ui/colors" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("content_suggestions_ui_util") {
@@ -266,7 +259,6 @@ source_set("content_suggestions_ui_util") {
     "//ios/web/common",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -333,14 +325,10 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "content_suggestions_egtest.mm",
@@ -393,10 +381,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -408,10 +393,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -450,7 +432,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "content_suggestions_feature.h",
     "content_suggestions_feature.mm",

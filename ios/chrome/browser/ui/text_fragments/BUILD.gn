@@ -22,14 +22,10 @@ source_set("text_fragments") {
     "//ios/web/public/text_fragments",
     "//ui/base:base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "text_fragments_egtest.mm" ]
   deps = [

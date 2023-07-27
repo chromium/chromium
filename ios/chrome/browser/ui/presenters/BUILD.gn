@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("presenters") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "contained_presenter.h",
     "contained_presenter_delegate.h",
@@ -20,7 +19,6 @@ source_set("presenters") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [ "vertical_animation_container_unittest.mm" ]
 

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("default_promo") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_promo_commands.h",
     "default_browser_promo_coordinator.h",
@@ -64,7 +63,6 @@ source_set("default_promo") {
 }
 
 source_set("default_promo_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_promo_non_modal_coordinator.h",
     "default_browser_promo_non_modal_coordinator.mm",
@@ -90,7 +88,6 @@ source_set("default_promo_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "default_browser_string_util_unittest.mm" ]
   deps = [
@@ -120,10 +117,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "default_browser_promo_non_modal_egtest.mm" ]
   deps = [

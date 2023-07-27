@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("add_account_signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "add_account_signin_coordinator.h",
     "add_account_signin_coordinator.mm",
@@ -35,7 +34,6 @@ source_set("add_account_signin") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "add_account_signin_manager_unittest.mm" ]
   deps = [

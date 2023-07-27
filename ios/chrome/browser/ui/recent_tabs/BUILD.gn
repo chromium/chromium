@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("recent_tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "closed_tabs_observer_bridge.h",
     "closed_tabs_observer_bridge.mm",
@@ -48,7 +47,6 @@ source_set("recent_tabs") {
 }
 
 source_set("recent_tabs_ui_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "recent_tabs_constants.h",
     "recent_tabs_constants.mm",
@@ -56,7 +54,6 @@ source_set("recent_tabs_ui_constants") {
 }
 
 source_set("recent_tabs_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "recent_tabs_consumer.h",
     "recent_tabs_menu_provider.h",
@@ -116,7 +113,6 @@ source_set("recent_tabs_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "recent_tabs_coordinator_unittest.mm" ]
   deps = [
@@ -148,10 +144,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "recent_tabs_app_interface.h",
@@ -167,10 +160,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "recent_tabs_app_interface.h",
@@ -183,10 +173,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "recent_tabs_egtest.mm" ]
   deps = [

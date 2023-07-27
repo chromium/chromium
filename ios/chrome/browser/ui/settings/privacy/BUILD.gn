@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("privacy_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "handoff_table_view_controller.h",
     "handoff_table_view_controller.mm",
@@ -77,7 +76,6 @@ source_set("privacy_ui") {
 }
 
 source_set("privacy_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "privacy_constants.h",
     "privacy_constants.mm",
@@ -85,7 +83,6 @@ source_set("privacy_constants") {
 }
 
 source_set("privacy") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "privacy_coordinator.h",
     "privacy_coordinator.mm",
@@ -114,7 +111,6 @@ source_set("privacy") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "privacy_safe_browsing_mediator_unittest.mm",
@@ -163,10 +159,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "privacy_safe_browsing_egtest.mm" ]
   deps = [

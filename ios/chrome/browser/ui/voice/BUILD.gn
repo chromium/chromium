@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("voice") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "text_to_speech_notification_handler.h",
     "text_to_speech_notification_handler.mm",
@@ -31,7 +30,6 @@ source_set("voice") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   sources = [ "text_to_speech_player_unittest.mm" ]

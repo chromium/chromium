@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("whats_new") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "whats_new_coordinator.h",
     "whats_new_coordinator.mm",
@@ -62,7 +61,6 @@ source_set("whats_new") {
 }
 
 source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "whats_new_util.h",
     "whats_new_util.mm",
@@ -80,7 +78,6 @@ source_set("util") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",

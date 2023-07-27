@@ -55,8 +55,6 @@ source_set("cells") {
   ]
 
   public_deps = [ ":clear_browsing_data_constants" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("clear_browsing_data_constants") {
@@ -64,7 +62,6 @@ source_set("clear_browsing_data_constants") {
     "clear_browsing_data_constants.h",
     "clear_browsing_data_constants.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("public") {
@@ -72,7 +69,6 @@ source_set("public") {
     "settings_cells_constants.h",
     "settings_cells_constants.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -105,6 +101,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

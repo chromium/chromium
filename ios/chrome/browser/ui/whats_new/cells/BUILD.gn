@@ -23,7 +23,6 @@ source_set("cells") {
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -40,5 +39,4 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

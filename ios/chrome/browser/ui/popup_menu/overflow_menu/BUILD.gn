@@ -5,7 +5,6 @@
 import("//build/config/ios/swift_source_set.gni")
 
 source_set("overflow_menu_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "overflow_menu_constants.cc",
     "overflow_menu_constants.h",
@@ -14,7 +13,6 @@ source_set("overflow_menu_constants") {
 }
 
 source_set("overflow_menu") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "menu_customization_coordinator.h",
     "menu_customization_coordinator.mm",
@@ -139,7 +137,6 @@ swift_source_set("overflow_menu_swift") {
 }
 
 source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "feature_flags.h",
     "feature_flags.mm",
@@ -208,14 +205,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base:base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "overflow_menu_carousel_egtest.mm" ]
   deps = [

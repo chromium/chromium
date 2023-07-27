@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("grid") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "base_grid_mediator.h",
     "base_grid_mediator.mm",
@@ -54,7 +53,6 @@ source_set("grid") {
 }
 
 source_set("grid_ui_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "grid_constants.h",
     "grid_constants.mm",
@@ -79,8 +77,6 @@ source_set("grid_ui") {
     "grid_view_controller.h",
     "grid_view_controller.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":grid_ui_constants",
@@ -123,8 +119,6 @@ source_set("grid_ui") {
 source_set("grid_mediator_delegate") {
   sources = [ "grid_mediator_delegate.h" ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [ "//base" ]
 }
 
@@ -135,8 +129,6 @@ source_set("unit_tests") {
     "base_grid_mediator_unittest.mm",
     "grid_view_controller_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":grid",

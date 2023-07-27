@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("notifications") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "notifications_coordinator.h",
     "notifications_coordinator.mm",
@@ -33,7 +32,6 @@ source_set("notifications") {
 }
 
 source_set("notifications_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "notifications_consumer.h",
     "notifications_navigation_commands.h",
@@ -52,7 +50,6 @@ source_set("notifications_ui") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "notifications_constants.h",
     "notifications_constants.mm",
@@ -60,7 +57,6 @@ source_set("constants") {
 }
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "notifications_settings_observer.h",
     "notifications_settings_observer.mm",
@@ -80,10 +76,7 @@ source_set("utils") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "notifications_egtest.mm" ]
   deps = [

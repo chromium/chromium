@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("promos") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bannered_promo_view_provider.h",
     "promo_protocol.h",
@@ -27,7 +26,6 @@ source_set("promos") {
 }
 
 source_set("promos_manager_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "promos_manager_scene_agent.h",
     "promos_manager_scene_agent.mm",
@@ -41,7 +39,6 @@ source_set("promos_manager_scene_agent") {
 }
 
 source_set("promos_manager") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "promos_manager_coordinator+internal.h",
     "promos_manager_coordinator.h",
@@ -93,7 +90,6 @@ source_set("promos_manager") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "promos_manager_coordinator_unittest.h",
     "promos_manager_coordinator_unittest.mm",

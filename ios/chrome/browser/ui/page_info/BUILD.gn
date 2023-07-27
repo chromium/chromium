@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("page_info") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "page_info_site_security_description.h",
     "page_info_site_security_description.mm",
@@ -51,7 +50,6 @@ source_set("page_info") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "page_info_constants.h",
     "page_info_constants.mm",
@@ -59,7 +57,6 @@ source_set("constants") {
 }
 
 source_set("coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "page_info_coordinator.h",
     "page_info_coordinator.mm",
@@ -106,7 +103,6 @@ source_set("coordinator") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "page_info_permissions_mediator_unittest.mm" ]
   deps = [
@@ -123,10 +119,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "page_info_egtest.mm" ]
   deps = [

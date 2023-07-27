@@ -8,8 +8,6 @@ source_set("sync_error") {
     "sync_error_infobar_banner_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/infobars/core",
@@ -28,8 +26,6 @@ source_set("sync_error") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "sync_error_infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":sync_error",

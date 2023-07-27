@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("cells") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_promo_view.h",
     "signin_promo_view.mm",
@@ -55,7 +54,6 @@ source_set("cells") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "signin_promo_view_unittest.mm",
@@ -95,7 +93,6 @@ source_set("unit_tests") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_promo_view_constants.h",
     "signin_promo_view_constants.mm",

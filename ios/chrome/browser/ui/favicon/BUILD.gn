@@ -19,5 +19,4 @@ source_set("favicon") {
     "//ios/chrome/common/ui/resources:default_world_favicon",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

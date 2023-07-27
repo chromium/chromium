@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("autofill") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_autofill_client_ios.h",
     "chrome_autofill_client_ios.mm",
@@ -61,7 +60,6 @@ source_set("autofill") {
 }
 
 source_set("bridges") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "card_expiration_date_fix_flow_view_bridge.h",
     "card_expiration_date_fix_flow_view_bridge.mm",
@@ -95,7 +93,6 @@ source_set("bridges") {
 }
 
 source_set("autofill_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "expiration_date_picker.h",
     "expiration_date_picker.mm",
@@ -104,7 +101,6 @@ source_set("autofill_ui") {
 }
 
 source_set("autofill_shared_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_country_selection_table_view_controller.h",
     "autofill_country_selection_table_view_controller.mm",
@@ -143,7 +139,6 @@ source_set("autofill_shared_ui") {
 }
 
 source_set("autofill_ui_type") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_ui_type.h",
     "autofill_ui_type_util.h",
@@ -157,7 +152,6 @@ source_set("autofill_ui_type") {
 }
 
 source_set("autofill_metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "save_card_infobar_metrics_recorder.h",
     "save_card_infobar_metrics_recorder.mm",
@@ -166,10 +160,7 @@ source_set("autofill_metrics") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "save_card_infobar_egtest.mm",
@@ -199,10 +190,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "autofill_app_interface.h",
@@ -230,10 +218,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "autofill_app_interface.h",
@@ -246,7 +231,6 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.cc",
     "features.h",
@@ -284,5 +268,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

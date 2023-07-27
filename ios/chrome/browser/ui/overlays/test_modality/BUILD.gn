@@ -13,8 +13,6 @@ source_set("test_modality") {
     "test_resizing_presented_overlay_coordinator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",
@@ -32,8 +30,6 @@ source_set("unit_tests") {
     "test_presented_overlay_coordinator_unittest.mm",
     "test_resizing_presented_overlay_coordinator_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":test_modality",

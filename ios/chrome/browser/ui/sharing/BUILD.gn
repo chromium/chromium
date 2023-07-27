@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sharing") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sharing_coordinator.h",
     "sharing_params.h",
@@ -19,7 +18,6 @@ source_set("sharing") {
 }
 
 source_set("sharing_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "share_download_overlay_coordinator.h",
     "share_download_overlay_coordinator.mm",
@@ -49,7 +47,6 @@ source_set("sharing_internal") {
 }
 
 source_set("sharing_metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "share_file_download_metrics.h",
     "share_file_download_metrics.mm",
@@ -57,7 +54,6 @@ source_set("sharing_metrics") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "sharing_coordinator_unittest.mm" ]
   deps = [
@@ -89,10 +85,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "share_file_download_egtest.mm" ]
   deps = [

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("user_policy_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_policy_scene_agent.h",
     "signin_policy_scene_agent.mm",

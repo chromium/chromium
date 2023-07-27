@@ -13,7 +13,6 @@ source_set("feed_top_section") {
     "feed_top_section_view_controller.mm",
     "feed_top_section_view_controller_delegate.h",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base:features",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("bottom_sheet") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "payments_suggestion_bottom_sheet_coordinator.h",
     "payments_suggestion_bottom_sheet_coordinator.mm",
@@ -32,7 +31,6 @@ source_set("bottom_sheet") {
 }
 
 source_set("bottom_sheet_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "payments_suggestion_bottom_sheet_consumer.h",
     "payments_suggestion_bottom_sheet_data.h",
@@ -61,7 +59,6 @@ source_set("bottom_sheet_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "payments_suggestion_bottom_sheet_mediator_unittest.mm" ]
   deps = [
@@ -84,10 +81,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "payments_suggestion_bottom_sheet_egtest.mm" ]
   deps = [

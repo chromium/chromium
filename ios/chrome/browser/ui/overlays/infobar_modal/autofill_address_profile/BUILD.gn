@@ -11,8 +11,6 @@ source_set("autofill_address_profile") {
     "save_address_profile_infobar_modal_overlay_mediator_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/autofill/core/browser",
@@ -40,8 +38,6 @@ source_set("unit_tests") {
   testonly = true
   sources =
       [ "save_address_profile_infobar_modal_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":autofill_address_profile",

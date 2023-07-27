@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("bookmarks") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmarks_coordinator.h",
     "bookmarks_coordinator.mm",
@@ -57,7 +56,6 @@ source_set("bookmarks") {
 }
 
 source_set("core") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_mediator.h",
     "bookmark_mediator.mm",
@@ -94,7 +92,6 @@ source_set("core") {
 }
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_utils_ios.h",
     "bookmark_utils_ios.mm",
@@ -130,7 +127,6 @@ source_set("utils") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_ui_constants.h",
     "bookmark_ui_constants.mm",
@@ -139,7 +135,6 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "bookmark_mediator_unittest.mm",
@@ -173,10 +168,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "bookmarks_accessibility_egtest.mm",
@@ -215,10 +207,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "bookmark_earl_grey_app_interface.h",
@@ -250,10 +239,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "bookmark_earl_grey.h",

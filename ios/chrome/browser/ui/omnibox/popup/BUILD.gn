@@ -114,7 +114,6 @@ source_set("popup") {
     "//net",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
@@ -123,7 +122,6 @@ source_set("popup_accessibility_identifier_constants") {
     "omnibox_popup_accessibility_identifier_constants.h",
     "omnibox_popup_accessibility_identifier_constants.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popup_ui") {
@@ -187,7 +185,6 @@ source_set("popup_ui") {
     "//ui/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popup_internal") {
@@ -213,7 +210,6 @@ source_set("popup_internal") {
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popup_ui_protocols") {
@@ -225,11 +221,9 @@ source_set("popup_ui_protocols") {
     "omnibox_pedal.h",
     "popup_match_preview_delegate.h",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "omnibox_pedal_annotator_unittest.mm",
@@ -265,10 +259,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "omnibox_popup_carousel_egtest.mm",

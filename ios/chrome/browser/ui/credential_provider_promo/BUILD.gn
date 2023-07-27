@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("credential_provider_promo") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "credential_provider_promo_coordinator.h",
     "credential_provider_promo_coordinator.mm",
@@ -43,7 +42,6 @@ source_set("credential_provider_promo") {
 }
 
 source_set("credential_provider_promo_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "credential_provider_promo_constants.h",
     "credential_provider_promo_consumer.h",
@@ -76,7 +74,6 @@ source_set("unit_tests") {
     "credential_provider_promo_coordinator_unittest.mm",
     "credential_provider_promo_mediator_unittest.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":credential_provider_promo",
     ":credential_provider_promo_ui",

@@ -8,8 +8,6 @@ source_set("coordinators") {
     "infobar_banner_overlay_coordinator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":mediators",
     "//base",
@@ -45,8 +43,6 @@ source_set("mediators") {
     "infobar_banner_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/infobars/core",
@@ -61,8 +57,6 @@ source_set("mediators") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":mediators",

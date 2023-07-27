@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "query_title_server_util.h",
@@ -20,7 +19,6 @@ source_set("utils") {
 }
 
 source_set("fakes") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_drag_session.h",
     "fake_drag_session.mm",

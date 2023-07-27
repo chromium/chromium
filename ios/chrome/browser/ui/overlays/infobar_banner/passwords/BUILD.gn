@@ -8,8 +8,6 @@ source_set("passwords") {
     "password_infobar_banner_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/password_manager/core/common:features",
@@ -31,8 +29,6 @@ source_set("passwords") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "password_infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":passwords",

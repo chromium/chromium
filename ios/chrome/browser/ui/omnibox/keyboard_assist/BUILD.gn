@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("keyboard_assist") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "omnibox_assistive_keyboard_delegate.h",
     "omnibox_assistive_keyboard_delegate.mm",

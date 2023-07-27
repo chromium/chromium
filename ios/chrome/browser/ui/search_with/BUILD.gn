@@ -19,14 +19,10 @@ source_set("search_with") {
     "//ios/chrome/browser/web_selection",
     "//ios/web/public",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "search_with_mediator_egtest.mm" ]
   deps = [

@@ -22,8 +22,6 @@ source_set("overlays") {
     "overlay_request_ui_state.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   friend = [
     ":unit_tests",
     "//ios/chrome/browser/ui/overlays/web_content_area/java_script_dialogs/test",
@@ -61,8 +59,6 @@ source_set("ui") {
     "overlay_presentation_context_view_controller.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":presentation_controller",
     "//base",
@@ -74,8 +70,6 @@ source_set("presentation_controller") {
     "overlay_presentation_controller.h",
     "overlay_presentation_controller.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("coordinators") {
@@ -88,8 +82,6 @@ source_set("coordinators") {
     "overlay_request_mediator.h",
     "overlay_request_mediator.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
@@ -107,8 +99,6 @@ source_set("util") {
     "overlay_request_mediator_util.h",
     "overlay_request_mediator_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":coordinators",
@@ -132,8 +122,6 @@ source_set("unit_tests") {
     "overlay_request_mediator_util_unittest.mm",
     "overlay_request_ui_state_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":coordinators",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("lockdown_mode") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lockdown_mode_consumer.h",
     "lockdown_mode_coordinator.h",
@@ -36,7 +35,6 @@ source_set("lockdown_mode") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "lockdown_mode_mediator_unittest.mm",
@@ -58,10 +56,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "lockdown_mode_egtest.mm" ]
   deps = [

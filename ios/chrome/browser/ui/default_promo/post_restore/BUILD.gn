@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",
@@ -12,7 +11,6 @@ source_set("features") {
 }
 
 source_set("post_restore_default_browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "metrics.h",
     "metrics.mm",

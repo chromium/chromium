@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("default_browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_settings_table_view_controller.h",
     "default_browser_settings_table_view_controller.mm",
@@ -25,7 +24,6 @@ source_set("default_browser") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "default_browser_settings_table_view_controller_unittest.mm" ]
   deps = [

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("promo_handler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_promo_display_handler.h",
     "default_browser_promo_display_handler.mm",
@@ -70,5 +69,4 @@ source_set("unit_tests") {
     "//ios/web/public/test:test",
     "//third_party/ocmock",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

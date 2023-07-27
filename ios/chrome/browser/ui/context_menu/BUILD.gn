@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("context_menu") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "context_menu_configuration_provider.h",
     "context_menu_configuration_provider.mm",
@@ -49,7 +48,6 @@ source_set("context_menu") {
 }
 
 source_set("context_menu_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "context_menu_utils.h",
     "context_menu_utils.mm",
@@ -66,7 +64,6 @@ source_set("context_menu_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [
@@ -84,10 +81,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "context_menu_egtest.mm" ]
   deps = [

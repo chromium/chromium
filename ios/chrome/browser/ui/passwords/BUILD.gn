@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("passwords") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_breach_consumer.h",
     "password_breach_coordinator.h",
@@ -59,7 +58,6 @@ source_set("passwords") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_constants.h",
     "password_constants.mm",
@@ -67,10 +65,7 @@ source_set("constants") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_breach_app_interface.h",
@@ -86,10 +81,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_breach_app_interface.h",
@@ -103,10 +95,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "password_breach_egtest.mm" ]
   deps = [

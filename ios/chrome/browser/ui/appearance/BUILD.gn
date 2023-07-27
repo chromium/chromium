@@ -15,5 +15,4 @@ source_set("appearance") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/common/ui/colors",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

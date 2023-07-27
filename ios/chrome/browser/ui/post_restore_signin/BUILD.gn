@@ -7,7 +7,6 @@ source_set("post_restore_signin") {
     "post_restore_signin_view_controller.h",
     "post_restore_signin_view_controller.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/ui/promos_manager:promos",
@@ -34,7 +33,6 @@ source_set("post_restore_signin") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "post_restore_signin_provider_unittest.mm",

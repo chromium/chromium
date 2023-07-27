@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("modals") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_modal_delegate.h",
     "infobar_modal_view_controller.h",
@@ -52,7 +51,6 @@ source_set("modals") {
 }
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_modal_constants.h",
     "infobar_modal_constants.mm",

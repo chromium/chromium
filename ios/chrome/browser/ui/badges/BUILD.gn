@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "badge_constants.h",
     "badge_constants.mm",
@@ -16,7 +15,6 @@ source_set("public") {
 }
 
 source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "badge_overflow_menu_util.h",
     "badge_overflow_menu_util.mm",
@@ -36,7 +34,6 @@ source_set("util") {
 }
 
 source_set("badges") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "badge_button.h",
     "badge_button.mm",
@@ -90,7 +87,6 @@ source_set("badges") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "badge_mediator_unittest.mm" ]
   deps = [

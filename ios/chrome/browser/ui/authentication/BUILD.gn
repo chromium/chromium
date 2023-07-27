@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("authentication") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "authentication_flow.h",
     "authentication_flow.mm",
@@ -98,7 +97,6 @@ source_set("authentication") {
 }
 
 source_set("authentication_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "authentication_constants.h",
     "authentication_constants.mm",
@@ -107,12 +105,10 @@ source_set("authentication_constants") {
 }
 
 source_set("signin_presenter") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_presenter.h" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "authentication_flow_performer_unittest.mm",
@@ -173,10 +169,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "signin_earl_grey_app_interface.h",
@@ -219,10 +212,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "signin_earl_grey.h",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "passwords_coordinator.h",
     "passwords_coordinator.mm",
@@ -52,7 +51,6 @@ source_set("password") {
 }
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "account_storage_utils.cc",
     "account_storage_utils.h",
@@ -68,7 +66,6 @@ source_set("common") {
 }
 
 source_set("password_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_exporter.h",
     "password_exporter.mm",
@@ -133,7 +130,6 @@ source_set("password_ui") {
 }
 
 source_set("password_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "passwords_table_view_constants.h",
     "passwords_table_view_constants.mm",
@@ -145,7 +141,6 @@ source_set("password_constants") {
 }
 
 source_set("title_view") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "branded_navigation_item_title_view.h",
     "branded_navigation_item_title_view.mm",
@@ -166,7 +161,6 @@ source_set("title_view") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_manager_ui_features.h",
     "password_manager_ui_features.mm",
@@ -175,14 +169,12 @@ source_set("features") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "password_exporter_for_testing.h" ]
   deps = [ ":password_ui" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "password_exporter_unittest.mm",
@@ -232,10 +224,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_settings_app_interface.h",
@@ -264,10 +253,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -283,10 +269,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_manager_egtest.mm",

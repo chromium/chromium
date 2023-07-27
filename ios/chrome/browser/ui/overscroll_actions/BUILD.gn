@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("overscroll_actions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "overscroll_actions_controller.h",
     "overscroll_actions_controller.mm",

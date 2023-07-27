@@ -5,7 +5,6 @@
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("upgrade") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "upgrade_center_browser_agent.h",
     "upgrade_center_browser_agent.mm",

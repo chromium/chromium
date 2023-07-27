@@ -8,8 +8,6 @@ source_set("incognito") {
     "incognito_grid_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",

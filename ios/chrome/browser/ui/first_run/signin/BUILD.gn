@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_screen_coordinator.h",
     "signin_screen_coordinator.mm",
@@ -38,7 +37,6 @@ source_set("signin") {
 }
 
 source_set("signin_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_screen_consumer.h",
     "signin_screen_view_controller.h",

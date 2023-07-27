@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("editor") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmarks_editor_coordinator.h",
     "bookmarks_editor_coordinator.mm",
@@ -38,7 +37,6 @@ source_set("editor") {
 }
 
 source_set("editor_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmarks_editor_consumer.h",
     "bookmarks_editor_mutator.h",
@@ -77,7 +75,6 @@ source_set("editor_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "bookmarks_editor_view_controller_unittest.mm" ]
   deps = [

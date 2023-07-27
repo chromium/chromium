@@ -5,7 +5,6 @@
 import("//build/config/ios/swift_source_set.gni")
 
 source_set("inactive_tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_coordinator.h",
     "inactive_tabs_coordinator.mm",
@@ -53,7 +52,6 @@ source_set("inactive_tabs") {
 }
 
 source_set("inactive_tabs_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_view_controller.h",
     "inactive_tabs_view_controller.mm",
@@ -69,7 +67,6 @@ source_set("inactive_tabs_ui") {
 }
 
 source_set("inactive_tabs_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_constants.h",
     "inactive_tabs_constants.mm",
@@ -77,7 +74,6 @@ source_set("inactive_tabs_constants") {
 }
 
 source_set("inactive_tabs_button") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_button_mediator.h",
     "inactive_tabs_button_mediator.mm",
@@ -95,7 +91,6 @@ source_set("inactive_tabs_button") {
 }
 
 source_set("inactive_tabs_button_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_info_consumer.h",
     "inactive_tabs_preamble_header.h",
@@ -131,10 +126,7 @@ swift_source_set("inactive_tabs_button_ui_swift") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "inactive_tabs_egtest.mm" ]
   deps = [

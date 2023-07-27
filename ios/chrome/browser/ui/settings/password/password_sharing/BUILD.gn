@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password_sharing") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "family_picker_coordinator.h",
     "family_picker_coordinator.mm",
@@ -17,7 +16,6 @@ source_set("password_sharing") {
 }
 
 source_set("password_sharing_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "family_picker_view_controller.h",
     "family_picker_view_controller.mm",

@@ -10,8 +10,6 @@ source_set("permissions") {
     "permissions_infobar_modal_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/app/strings",
@@ -37,8 +35,6 @@ source_set("permissions") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "permissions_infobar_modal_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":permissions",

@@ -8,10 +8,7 @@ config("disable_deprecated_declarations") {
 }
 
 source_set("sad_tab") {
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":disable_deprecated_declarations" ]
   sources = [
     "sad_tab_view.h",
     "sad_tab_view.mm",
@@ -41,7 +38,6 @@ source_set("sad_tab") {
 }
 
 source_set("coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sad_tab_coordinator.h",
     "sad_tab_coordinator.mm",
@@ -66,10 +62,7 @@ source_set("coordinator") {
 }
 
 source_set("unit_tests") {
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":disable_deprecated_declarations" ]
   testonly = true
   sources = [
     "sad_tab_coordinator_unittest.mm",
@@ -95,10 +88,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "sad_tab_view_egtest.mm" ]
 

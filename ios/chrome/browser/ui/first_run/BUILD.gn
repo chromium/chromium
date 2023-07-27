@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("field_trial") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_first_run_field_trials.cc",
     "ios_first_run_field_trials.h",
@@ -24,7 +23,6 @@ source_set("field_trial") {
 }
 
 source_set("field_trial_ids") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "field_trial_ids.cc",
     "field_trial_ids.h",
@@ -36,7 +34,6 @@ source_set("field_trial_ids") {
 }
 
 source_set("first_run") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_coordinator.h",
     "first_run_coordinator.mm",
@@ -104,7 +101,6 @@ source_set("first_run") {
 }
 
 source_set("first_run_provider") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_screen_provider.h",
     "first_run_screen_provider.mm",
@@ -121,7 +117,6 @@ source_set("first_run_provider") {
 }
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_util.h",
     "first_run_util.mm",
@@ -148,7 +143,6 @@ source_set("utils") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_constants.h",
     "first_run_constants.mm",
@@ -156,12 +150,10 @@ source_set("constants") {
 }
 
 source_set("screen_delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "first_run_screen_delegate.h" ]
 }
 
 source_set("interruptible_chrome_coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "interruptible_chrome_coordinator.h",
     "interruptible_chrome_coordinator.mm",
@@ -175,10 +167,7 @@ source_set("interruptible_chrome_coordinator") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "enterprise_loading_screen_egtest.mm",
@@ -224,10 +213,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "first_run_app_interface.h",
@@ -250,10 +236,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "first_run_app_interface.h",

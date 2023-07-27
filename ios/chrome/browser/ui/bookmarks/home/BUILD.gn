@@ -1,5 +1,4 @@
 source_set("home") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_promo_controller.h",
     "bookmark_promo_controller.mm",
@@ -73,7 +72,6 @@ source_set("home") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "bookmarks_home_view_controller_unittest.mm" ]
   deps = [
@@ -90,10 +88,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "bookmarks_account_storage_promo_egtest.mm",

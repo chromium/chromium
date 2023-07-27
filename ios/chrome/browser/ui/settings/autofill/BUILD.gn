@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("autofill") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_add_credit_card_coordinator.h",
     "autofill_add_credit_card_coordinator.mm",
@@ -72,7 +71,6 @@ source_set("autofill") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_constants.h",
     "autofill_constants.mm",
@@ -80,13 +78,11 @@ source_set("constants") {
 }
 
 source_set("shared_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources =
       [ "autofill_settings_profile_edit_table_view_controller_delegate.h" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "autofill_add_credit_card_mediator_unittest.mm",
@@ -127,10 +123,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "autofill_add_credit_card_egtest.mm",

@@ -8,8 +8,6 @@ source_set("confirm") {
     "confirm_infobar_banner_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",
@@ -24,8 +22,6 @@ source_set("confirm") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "confirm_infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":confirm",

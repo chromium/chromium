@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("cells") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "price_notifications_image_container_view.h",
     "price_notifications_image_container_view.mm",
@@ -40,7 +39,6 @@ source_set("cells") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "price_notifications_table_view_item_unittest.mm" ]
   deps = [

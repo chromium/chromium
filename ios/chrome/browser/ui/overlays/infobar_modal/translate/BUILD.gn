@@ -11,8 +11,6 @@ source_set("translate") {
     "translate_infobar_modal_overlay_mediator_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/metrics",
@@ -42,8 +40,6 @@ source_set("translate") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "translate_infobar_modal_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":translate",

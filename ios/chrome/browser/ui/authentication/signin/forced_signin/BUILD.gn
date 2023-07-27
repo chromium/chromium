@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("forced_signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "forced_signin_coordinator.h",
     "forced_signin_coordinator.mm",
@@ -25,10 +24,7 @@ source_set("forced_signin") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "forced_signin_egtest.mm" ]
   deps = [

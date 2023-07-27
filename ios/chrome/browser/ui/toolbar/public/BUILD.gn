@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fakebox_focuser.h",
     "side_swipe_toolbar_interacting.h",
@@ -28,7 +27,6 @@ source_set("public") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "toolbar_constants.h",
     "toolbar_constants.mm",

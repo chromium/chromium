@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("browser_view") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browser_coordinator+private.h",
     "browser_coordinator.h",
@@ -254,7 +253,6 @@ source_set("browser_view") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browser_coordinator_unittest.mm",
@@ -361,10 +359,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "browser_view_controller_egtest.mm" ]
   deps = [

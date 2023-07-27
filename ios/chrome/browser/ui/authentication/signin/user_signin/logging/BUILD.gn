@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("logging") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_signin_logger.h",
     "first_run_signin_logger.mm",

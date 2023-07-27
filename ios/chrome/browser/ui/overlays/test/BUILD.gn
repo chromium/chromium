@@ -17,8 +17,6 @@ source_set("test") {
     "test_overlay_request_coordinator_factory.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",

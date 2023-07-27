@@ -8,8 +8,6 @@ source_set("coordinators") {
     "translate_infobar_placeholder_overlay_coordinator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/infobar_banner",
@@ -23,8 +21,6 @@ source_set("mediators") {
     "translate_infobar_banner_overlay_mediator.h",
     "translate_infobar_banner_overlay_mediator.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
@@ -46,8 +42,6 @@ source_set("mediators") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "translate_infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":mediators",

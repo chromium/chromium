@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("translate_internals") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_translate_internals_handler.h",
     "ios_translate_internals_handler.mm",

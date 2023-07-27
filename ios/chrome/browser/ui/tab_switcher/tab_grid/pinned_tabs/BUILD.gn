@@ -8,8 +8,6 @@ source_set("pinned_tabs") {
     "pinned_tabs_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":constants",
     ":pinned_tabs_ui",
@@ -34,7 +32,6 @@ source_set("pinned_tabs") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pinned_tabs_constants.h",
     "pinned_tabs_constants.mm",
@@ -43,7 +40,6 @@ source_set("constants") {
 }
 
 source_set("pinned_tabs_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pinned_cell.h",
     "pinned_cell.mm",

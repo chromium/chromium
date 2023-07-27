@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("price_notifications") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "price_notifications_price_tracking_mediator.h",
     "price_notifications_price_tracking_mediator.mm",
@@ -43,7 +42,6 @@ source_set("price_notifications") {
 }
 
 source_set("price_notifications_iph") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "price_notifications_iph_coordinator.h",
     "price_notifications_iph_coordinator.mm",
@@ -58,7 +56,6 @@ source_set("price_notifications_iph") {
 }
 
 source_set("price_notifications_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "price_notifications_alert_presenter.h",
     "price_notifications_consumer.h",
@@ -88,7 +85,6 @@ source_set("price_notifications_ui") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "price_notifications_constants.h",
     "price_notifications_constants.mm",
@@ -98,7 +94,6 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "price_notifications_price_tracking_mediator_unittest.mm",
@@ -135,7 +130,6 @@ source_set("unit_tests") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "test_price_notifications_consumer.h",
     "test_price_notifications_consumer.mm",
@@ -150,10 +144,7 @@ source_set("test_support") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "price_notifications_price_tracking_egtest.mm" ]
   deps = [

@@ -5,7 +5,6 @@
 import("//build/config/ios/swift_source_set.gni")
 
 source_set("safety_check_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "safety_check_bridge.h",
     "safety_check_consumer.h",
@@ -41,7 +40,6 @@ swift_source_set("safety_check_ui_swift") {
 }
 
 source_set("safety_check") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "safety_check_constants.h",
     "safety_check_constants.mm",
@@ -103,7 +101,6 @@ source_set("safety_check") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "safety_check_mediator_unittest.mm" ]
   deps = [

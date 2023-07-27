@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("side_swipe") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",
@@ -54,7 +53,6 @@ source_set("side_swipe") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "side_swipe_mediator_unittest.mm" ]
   deps = [
@@ -76,10 +74,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "side_swipe_egtest.mm" ]
   deps = [

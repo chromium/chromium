@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("language") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "language_settings_mediator.h",
     "language_settings_mediator.mm",
@@ -26,7 +25,6 @@ source_set("language") {
 }
 
 source_set("language_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "add_language_table_view_controller.h",
     "add_language_table_view_controller.mm",
@@ -69,7 +67,6 @@ source_set("language_ui") {
 }
 
 source_set("language_ui_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "language_settings_ui_constants.h",
     "language_settings_ui_constants.mm",
@@ -77,7 +74,6 @@ source_set("language_ui_constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "language_settings_mediator_unittest.mm" ]
   deps = [
@@ -102,7 +98,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "language_settings_app_interface.h",
@@ -118,10 +113,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "language_settings_app_interface.h",
@@ -131,10 +123,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "language_settings_egtest.mm" ]
   deps = [

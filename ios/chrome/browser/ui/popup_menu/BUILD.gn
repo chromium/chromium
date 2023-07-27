@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("popup_menu") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "popup_menu_action_handler.h",
     "popup_menu_action_handler.mm",
@@ -135,7 +134,6 @@ source_set("popup_menu") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "popup_menu_constants.h",
     "popup_menu_constants.mm",
@@ -143,7 +141,6 @@ source_set("constants") {
 }
 
 source_set("metrics_protocols") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "popup_menu_metrics_handler.h" ]
 }
 
@@ -204,14 +201,10 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base:base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "popup_menu_egtest.mm",

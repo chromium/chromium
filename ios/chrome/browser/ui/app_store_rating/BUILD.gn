@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("app_store_rating") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "app_store_rating_display_handler.h",
     "app_store_rating_display_handler.mm",
@@ -34,7 +33,6 @@ source_set("app_store_rating") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",
@@ -48,7 +46,6 @@ source_set("features") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "app_store_rating_scene_agent_unittest.mm" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":app_store_rating",
     ":features",
