@@ -254,6 +254,11 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion83ToCurrent) {
     ASSERT_TRUE(meta_table.Init(&connection, 83, 79));
 
     EXPECT_FALSE(connection.DoesColumnExist("masked_credit_cards", "nickname"));
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
+      INSERT INTO masked_credit_cards (id, status, name_on_card, network,
+      last_four, exp_month, exp_year, bank_name)
+      VALUES ('card_1', 'status', 'bob', 'VISA', '1234', 12, 2050, 'Chase');
+    )"));
   }
 
   DoMigration();
@@ -331,6 +336,20 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion85ToCurrent) {
         connection.DoesColumnExist("unmasked_credit_cards", "use_count"));
     EXPECT_TRUE(
         connection.DoesColumnExist("unmasked_credit_cards", "use_date"));
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
+      INSERT INTO unmasked_credit_cards (id, card_number_encrypted, use_count,
+      use_date, unmask_date)
+      VALUES ('card_1', 'DEADBEEFDEADBEEF', 20, 1588604100, 1588603065);
+      INSERT INTO unmasked_credit_cards (id, card_number_encrypted, use_count,
+      use_date, unmask_date)
+      VALUES ('card_2', 'ABCDABCD12341234', 45, 0, 1398902400);
+      INSERT INTO unmasked_credit_cards (id, card_number_encrypted, use_count,
+      use_date, unmask_date)
+      VALUES ('card_3', 'FEDCBA9876543210', 0, 1398905745, 1398901532);
+      INSERT INTO unmasked_credit_cards (id, card_number_encrypted, use_count,
+      use_date, unmask_date)
+      VALUES ('card_4', '0123456789ABCDEF', 0, 0, 1398901000);
+    )"));
   }
 
   DoMigration();

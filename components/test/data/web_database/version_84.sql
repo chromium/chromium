@@ -15,7 +15,6 @@ CREATE TABLE autofill_profile_emails ( guid VARCHAR, email VARCHAR);
 CREATE TABLE autofill_profile_phones ( guid VARCHAR, number VARCHAR);
 CREATE TABLE autofill_profiles_trash ( guid VARCHAR);
 CREATE TABLE masked_credit_cards (id VARCHAR,status VARCHAR,name_on_card VARCHAR,network VARCHAR,last_four VARCHAR,exp_month INTEGER DEFAULT 0,exp_year INTEGER DEFAULT 0, bank_name VARCHAR, nickname VARCHAR);
-INSERT INTO "masked_credit_cards" VALUES('card_1','status','bob','VISA','1234',12,2050,'Chase','');
 CREATE TABLE unmasked_credit_cards (id VARCHAR,card_number_encrypted VARCHAR, use_count INTEGER NOT NULL DEFAULT 0, use_date INTEGER NOT NULL DEFAULT 0, unmask_date INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE server_card_metadata (id VARCHAR NOT NULL,use_count INTEGER NOT NULL DEFAULT 0, use_date INTEGER NOT NULL DEFAULT 0, billing_address_id VARCHAR);
 CREATE TABLE server_addresses (id VARCHAR,company_name VARCHAR,street_address VARCHAR,address_1 VARCHAR,address_2 VARCHAR,address_3 VARCHAR,address_4 VARCHAR,postal_code VARCHAR,sorting_code VARCHAR,country_code VARCHAR,language_code VARCHAR, recipient_name VARCHAR, phone_number VARCHAR);
