@@ -1704,14 +1704,6 @@
   },
 
   {
-    "prefix": "strict-ipv4-embedded-ipv6",
-    "platforms": ["Linux"],
-    "bases": [ "external/wpt/url", "fast/url"],
-    "args": ["--enable-features=StrictIPv4EmbeddedIPv6AddressParsing"],
-    "expires": "Jul 1, 2023"
-  },
-
-  {
     "prefix": "origin-agent-cluster-default-warning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "wpt_internal/origin-agent-cluster-default-warning" ],
