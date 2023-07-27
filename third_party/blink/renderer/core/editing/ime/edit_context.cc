@@ -570,14 +570,14 @@ bool EditContext::CommitText(const WebString& text,
   }
   new_selection_start = selection_start_;
   new_selection_end = selection_end_;
-  composition_range_start_ = 0;
-  composition_range_end_ = 0;
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
                           new_selection_start, new_selection_end);
   // Fire composition end event.
   if (!text.IsEmpty() && has_composition_)
     DispatchCompositionEndEvent(text);
 
+  composition_range_start_ = 0;
+  composition_range_end_ = 0;
   has_composition_ = false;
   return true;
 }
