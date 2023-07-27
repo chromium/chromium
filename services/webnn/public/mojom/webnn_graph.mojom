@@ -97,6 +97,8 @@ struct Operator {
     kDiv,
     kMax,
     kMin,
+    kAveragePool2d,
+    kMaxPool2d,
     kRelu,
     kReshape,
     kSoftmax,

@@ -590,40 +590,13 @@ XnnPadding2D GetXnnPadding2D(const OptionsType* options,
                              uint32_t stride_width,
                              uint32_t dilation_height,
                              uint32_t dilation_width) {
-  XnnPadding2D xnn_padding;
-  switch (options->autoPad().AsEnum()) {
-    case V8MLAutoPad::Enum::kExplicit: {
-      // Set the XNNPACK padding from WebNN explicit padding that is in
-      // [beginning_height, ending_height, beginning_width, ending_width],
-      // default to 0.
-      const Vector<uint32_t> default_pads({0, 0, 0, 0});
-      xnn_padding.top = options->getPaddingOr(default_pads)[0];
-      xnn_padding.bottom = options->getPaddingOr(default_pads)[1];
-      xnn_padding.left = options->getPaddingOr(default_pads)[2];
-      xnn_padding.right = options->getPaddingOr(default_pads)[3];
-      break;
-    }
-    case V8MLAutoPad::Enum::kSameUpper:
-    case V8MLAutoPad::Enum::kSameLower: {
-      webnn::AutoPad auto_pad =
-          BlinkAutoPadToComponent(options->autoPad().AsEnum());
-      // Calculate the XNNPACK padding based on WebNN auto padding mode and
-      // sizes.
-      auto padding_sizes_height =
-          webnn::CalculateConv2dPadding(auto_pad, input_height, filter_height,
-                                        stride_height, dilation_height);
-      CHECK(padding_sizes_height);
-      xnn_padding.top = padding_sizes_height.value().begin;
-      xnn_padding.bottom = padding_sizes_height.value().end;
-      auto padding_sizes_width = webnn::CalculateConv2dPadding(
-          auto_pad, input_width, filter_width, stride_width, dilation_width);
-      CHECK(padding_sizes_width);
-      xnn_padding.left = padding_sizes_width.value().begin;
-      xnn_padding.right = padding_sizes_width.value().end;
-      break;
-    }
-  }
-  return xnn_padding;
+  auto padding = CalculatePadding2D(
+      options, input_height, input_width, filter_height, filter_width,
+      stride_height, stride_width, dilation_height, dilation_width);
+  return XnnPadding2D{.top = padding.beginning.height,
+                      .bottom = padding.ending.height,
+                      .left = padding.beginning.width,
+                      .right = padding.ending.width};
 }
 
 // Helper to get padding sizes for XNNPACK convTranspose2d Nodes.
