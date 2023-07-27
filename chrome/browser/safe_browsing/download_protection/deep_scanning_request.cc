@@ -567,8 +567,10 @@ void DeepScanningRequest::OnScanComplete(
     base::UmaHistogramEnumeration(
         "SBClientDownload.MalwareDeepScanResult." + GetTriggerName(trigger_),
         download_result);
-    base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent",
-                                  DeepScanEvent::kScanCompleted);
+    if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
+      base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent2",
+                                    DeepScanEvent::kScanCompleted);
+    }
   } else if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT &&
              ResultIsRetriable(result) &&
              MaybeShowDeepScanFailureModalDialog(

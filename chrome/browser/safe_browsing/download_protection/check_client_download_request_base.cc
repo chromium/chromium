@@ -571,7 +571,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     if (should_prompt) {
       result = DownloadCheckResult::PROMPT_FOR_SCANNING;
       reason = DownloadCheckResultReason::REASON_DEEP_SCAN_PROMPT;
-      base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent",
+      base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent2",
                                     DeepScanEvent::kPromptShown);
     }
 

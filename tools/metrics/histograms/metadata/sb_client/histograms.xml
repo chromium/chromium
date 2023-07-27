@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DeepScanEvent" enum="SBDeepScanEvent"
+<histogram name="SBClientDownload.DeepScanEvent2" enum="SBDeepScanEvent"
     expires_after="2024-03-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
     is recorded a few times during the process of each prompt for deep scanning:
     - Once when the prompt is shown. - Once when the prompt is
     accepted/bypassed. - Once when the scan is completed, either through
-    cancelation or completion.
+    cancelation or completion. This is only logged for consumer scans.
   </summary>
 </histogram>
 

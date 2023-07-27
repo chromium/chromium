@@ -831,11 +831,11 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #endif
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         base::UmaHistogramEnumeration(
-            "SBClientDownload.DeepScanEvent",
+            "SBClientDownload.DeepScanEvent2",
             safe_browsing::DeepScanEvent::kScanCanceled);
       } else {
         base::UmaHistogramEnumeration(
-            "SBClientDownload.DeepScanEvent",
+            "SBClientDownload.DeepScanEvent2",
             safe_browsing::DeepScanEvent::kPromptBypassed);
       }
       [[fallthrough]];
@@ -935,7 +935,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
               TRIGGER_CONSUMER_PROMPT,
           safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings));
       base::UmaHistogramEnumeration(
-          "SBClientDownload.DeepScanEvent",
+          "SBClientDownload.DeepScanEvent2",
           safe_browsing::DeepScanEvent::kPromptAccepted);
       break;
     }
