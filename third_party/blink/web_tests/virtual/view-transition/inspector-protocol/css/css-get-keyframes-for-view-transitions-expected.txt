@@ -3,6 +3,13 @@ Dumping animations for : ::view-transition with id undefined
 Dumping CSS keyframed animations: 
 Dumping animations for : ::view-transition-group with id root
 Dumping CSS keyframed animations: 
+@keyframes -ua-view-transition-group-anim-root {
+    0% {
+        transform: matrix(1, 0, 0, 1, 0, 0); @[undefined-undefined]
+        width: 800px; @[undefined-undefined]
+        height: 600px; @[undefined-undefined]
+    }
+}
 Dumping animations for : ::view-transition-image-pair with id root
 Dumping CSS keyframed animations: 
 Dumping animations for : ::view-transition-old with id root
@@ -15,8 +22,28 @@ Dumping CSS keyframed animations:
 }
 Dumping animations for : ::view-transition-new with id root
 Dumping CSS keyframed animations: 
+@keyframes -ua-view-transition-fade-in {
+    0% {
+        opacity: 0; @[undefined-undefined]
+    }
+}
+@keyframes -ua-mix-blend-mode-plus-lighter {
+    0% {
+        mix-blend-mode: plus-lighter; @[undefined-undefined]
+    }
+    100% {
+        mix-blend-mode: plus-lighter; @[undefined-undefined]
+    }
+}
 Dumping animations for : ::view-transition-group with id shared
 Dumping CSS keyframed animations: 
+@keyframes -ua-view-transition-group-anim-shared {
+    0% {
+        transform: matrix(1, 0, 0, 1, 8, 8); @[undefined-undefined]
+        width: 100px; @[undefined-undefined]
+        height: 100px; @[undefined-undefined]
+    }
+}
 Dumping animations for : ::view-transition-image-pair with id shared
 Dumping CSS keyframed animations: 
 Dumping animations for : ::view-transition-old with id shared
@@ -29,4 +56,17 @@ Dumping CSS keyframed animations:
 }
 Dumping animations for : ::view-transition-new with id shared
 Dumping CSS keyframed animations: 
+@keyframes -ua-view-transition-fade-in {
+    0% {
+        opacity: 0; @[undefined-undefined]
+    }
+}
+@keyframes -ua-mix-blend-mode-plus-lighter {
+    0% {
+        mix-blend-mode: plus-lighter; @[undefined-undefined]
+    }
+    100% {
+        mix-blend-mode: plus-lighter; @[undefined-undefined]
+    }
+}
 

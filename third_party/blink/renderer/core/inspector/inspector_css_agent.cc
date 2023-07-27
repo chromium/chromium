@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
+#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
@@ -112,6 +113,7 @@
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -1200,8 +1202,13 @@ InspectorCSSAgent::PositionFallbackRulesForNode(Element* element) {
 
   // Find CSSOM wrapper from internal Style rule.
   CSSPositionFallbackRule* css_position_fallback_rule = nullptr;
-  for (CSSStyleSheet* style_sheet :
-       *document_to_css_style_sheets_.at(&document)) {
+  DocumentStyleSheets::iterator css_style_sheets_for_document_it =
+      document_to_css_style_sheets_.find(&document);
+  if (css_style_sheets_for_document_it == document_to_css_style_sheets_.end()) {
+    return css_position_fallback_rules;
+  }
+
+  for (CSSStyleSheet* style_sheet : *css_style_sheets_for_document_it->value) {
     css_position_fallback_rule =
         FindPositionFallbackRule(style_sheet, position_fallback_rule);
     if (css_position_fallback_rule) {
@@ -1244,6 +1251,78 @@ InspectorCSSAgent::PositionFallbackRulesForNode(Element* element) {
   return css_position_fallback_rules;
 }
 
+CSSKeyframesRule*
+InspectorCSSAgent::FindKeyframesRuleFromUAViewTransitionStylesheet(
+    Element* element,
+    StyleRuleKeyframes* keyframes_style_rule) {
+  // This function should only be called for transition pseudo elements.
+  CHECK(IsTransitionPseudoElement(element->GetPseudoId()));
+  auto* transition =
+      ViewTransitionUtils::GetActiveTransition(element->GetDocument());
+
+  // There must be a transition and an active UAStyleSheet for the
+  // transition when the queried element is a transition pseudo element.
+  CHECK(transition && transition->UAStyleSheet());
+
+  if (!user_agent_view_transition_style_sheet_) {
+    // Save the previous view transition style sheet.
+    user_agent_view_transition_style_sheet_ = transition->UAStyleSheet();
+  } else if (user_agent_view_transition_style_sheet_ !=
+             transition->UAStyleSheet()) {
+    // If the view transition stylesheet is invalidated
+    // unbind the previous inspector stylesheet.
+    user_agent_view_transition_style_sheet_ = transition->UAStyleSheet();
+    auto previous_css_style_sheet_it =
+        css_style_sheet_to_inspector_style_sheet_.find(
+            user_agent_view_transition_style_sheet_);
+    if (previous_css_style_sheet_it !=
+        css_style_sheet_to_inspector_style_sheet_.end()) {
+      UnbindStyleSheet(previous_css_style_sheet_it->value);
+    }
+  }
+
+  for (wtf_size_t i = 0; i < user_agent_view_transition_style_sheet_->length();
+       i++) {
+    CSSKeyframesRule* css_keyframes_rule_from_stylesheet =
+        DynamicTo<CSSKeyframesRule>(
+            user_agent_view_transition_style_sheet_->item(i));
+    if (css_keyframes_rule_from_stylesheet &&
+        css_keyframes_rule_from_stylesheet->name() ==
+            keyframes_style_rule->GetName()) {
+      return css_keyframes_rule_from_stylesheet;
+    }
+  }
+
+  return nullptr;
+}
+
+CSSKeyframesRule* InspectorCSSAgent::FindCSSOMWrapperForKeyframesRule(
+    Element* element,
+    StyleRuleKeyframes* keyframes_style_rule) {
+  Document& document = element->GetDocument();
+  // There might be that there aren't any active stylesheets for the document
+  // which mean the document_to_css_style_sheets_ map won't contain the
+  // entry for the document. So, we first check whether there are registered
+  // stylesheets for the document.
+  if (document_to_css_style_sheets_.Contains(&document)) {
+    for (CSSStyleSheet* style_sheet :
+         *document_to_css_style_sheets_.at(&document)) {
+      CSSKeyframesRule* css_keyframes_rule =
+          FindKeyframesRule(style_sheet, keyframes_style_rule);
+      if (css_keyframes_rule) {
+        return css_keyframes_rule;
+      }
+    }
+  }
+
+  if (IsTransitionPseudoElement(element->GetPseudoId())) {
+    return FindKeyframesRuleFromUAViewTransitionStylesheet(
+        element, keyframes_style_rule);
+  }
+
+  return nullptr;
+}
+
 std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>
 InspectorCSSAgent::AnimationsForNode(Element* element,
                                      Element* animating_element) {
@@ -1264,23 +1343,20 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
     AtomicString animation_name(animation_data->NameList()[i]);
     if (animation_name == CSSAnimationData::InitialName())
       continue;
+
     StyleRuleKeyframes* keyframes_rule =
         style_resolver
             .FindKeyframesRule(element, animating_element, animation_name)
             .rule;
-    if (!keyframes_rule)
+    if (!keyframes_rule) {
       continue;
-
-    // Find CSSOM wrapper.
-    CSSKeyframesRule* css_keyframes_rule = nullptr;
-    for (CSSStyleSheet* style_sheet :
-         *document_to_css_style_sheets_.at(&document)) {
-      css_keyframes_rule = FindKeyframesRule(style_sheet, keyframes_rule);
-      if (css_keyframes_rule)
-        break;
     }
-    if (!css_keyframes_rule)
+
+    CSSKeyframesRule* css_keyframes_rule =
+        FindCSSOMWrapperForKeyframesRule(animating_element, keyframes_rule);
+    if (!css_keyframes_rule) {
       continue;
+    }
 
     auto keyframes =
         std::make_unique<protocol::Array<protocol::CSS::CSSKeyframeRule>>();
@@ -3229,6 +3305,7 @@ void InspectorCSSAgent::Trace(Visitor* visitor) const {
   visitor->Trace(invalidated_documents_);
   visitor->Trace(node_to_inspector_style_sheet_);
   visitor->Trace(inspector_user_agent_style_sheet_);
+  visitor->Trace(user_agent_view_transition_style_sheet_);
   visitor->Trace(tracker_);
   InspectorBaseAgent::Trace(visitor);
 }

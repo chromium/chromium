@@ -7,6 +7,7 @@
 
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
+#include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -123,7 +124,7 @@ class ViewTransitionStyleTracker
   bool RunPostPrePaintSteps();
 
   // Provides a UA stylesheet applied to ::transition* pseudo elements.
-  StyleSheetContents& UAStyleSheet();
+  CSSStyleSheet& UAStyleSheet();
 
   void Trace(Visitor* visitor) const;
 
@@ -346,7 +347,7 @@ class ViewTransitionStyleTracker
 
   // The dynamically generated UA stylesheet for default styles on
   // pseudo-elements.
-  Member<StyleSheetContents> ua_style_sheet_;
+  Member<CSSStyleSheet> ua_style_sheet_;
 
   // The following state is buffered until the capture phase and populated again
   // by script for the start phase.

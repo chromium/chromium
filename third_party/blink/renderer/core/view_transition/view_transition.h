@@ -40,7 +40,6 @@ class LayoutObject;
 class PseudoElement;
 class ScriptPromise;
 class ScriptState;
-class StyleSheetContents;
 
 class CORE_EXPORT ViewTransition : public ScriptWrappable,
                                    public ActiveScriptWrappable<ViewTransition>,
@@ -171,7 +170,7 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
 
   // Returns the UA style sheet for the pseudo element tree generated during a
   // transition.
-  StyleSheetContents* UAStyleSheet() const;
+  CSSStyleSheet* UAStyleSheet() const;
 
   // CommitObserver overrides.
   void WillCommitCompositorFrame() override;

@@ -2230,8 +2230,8 @@ RuleSet* StyleEngine::DefaultViewTransitionStyle() const {
     return nullptr;
   }
 
-  auto* style_sheet_contents = transition->UAStyleSheet();
-  return &style_sheet_contents->EnsureRuleSet(
+  auto* css_style_sheet = transition->UAStyleSheet();
+  return &css_style_sheet->Contents()->EnsureRuleSet(
       CSSDefaultStyleSheets::ScreenEval());
 }
 

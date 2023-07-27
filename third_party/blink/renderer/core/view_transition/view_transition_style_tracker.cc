@@ -1529,7 +1529,7 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
       .NotifyViewTransitionPseudoTreeChanged();
 }
 
-StyleSheetContents& ViewTransitionStyleTracker::UAStyleSheet() {
+CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
   if (ua_style_sheet_)
     return *ua_style_sheet_;
 
@@ -1579,7 +1579,8 @@ StyleSheetContents& ViewTransitionStyleTracker::UAStyleSheet() {
     }
   }
 
-  ua_style_sheet_ = CSSDefaultStyleSheets::ParseUASheet(builder.Build());
+  ua_style_sheet_ = MakeGarbageCollected<CSSStyleSheet>(
+      CSSDefaultStyleSheets::ParseUASheet(builder.Build()));
   return *ua_style_sheet_;
 }
 
