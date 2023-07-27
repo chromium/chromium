@@ -886,4 +886,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         int getPageClassification(long nativeLocationBarModelAndroid, LocationBarModel caller,
                 boolean isFocusedFromFakebox, boolean isPrefetch);
     }
+
+    public void onPageLoadStopped() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onPageLoadStopped();
+        }
+    }
 }

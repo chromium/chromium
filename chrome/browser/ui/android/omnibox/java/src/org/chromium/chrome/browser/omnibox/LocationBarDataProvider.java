@@ -41,6 +41,9 @@ public interface LocationBarDataProvider {
         /** Notifies about possible changes to values affecting the status icon. */
         default void onSecurityStateChanged(){};
 
+        /** Notifies when the page stopped loading. */
+        default void onPageLoadStopped() {}
+
         default void onTitleChanged(){};
         default void onUrlChanged(){};
 

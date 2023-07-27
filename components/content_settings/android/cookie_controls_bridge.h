@@ -33,6 +33,12 @@ class CookieControlsBridge : public OldCookieControlsObserver,
 
   ~CookieControlsBridge() override;
 
+  void UpdateWebContents(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jweb_contents_android,
+      const base::android::JavaParamRef<jobject>&
+          joriginal_browser_context_handle);
+
   // Called by the Java counterpart when it is getting garbage collected.
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 

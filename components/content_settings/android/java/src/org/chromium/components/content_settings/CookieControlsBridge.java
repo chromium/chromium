@@ -34,6 +34,12 @@ public class CookieControlsBridge {
                 CookieControlsBridge.this, webContents, originalBrowserContext);
     }
 
+    public void updateWebContents(
+            WebContents webContents, @Nullable BrowserContextHandle originalBrowserContext) {
+        CookieControlsBridgeJni.get().updateWebContents(
+                mNativeCookieControlsBridge, webContents, originalBrowserContext);
+    }
+
     public void setThirdPartyCookieBlockingEnabledForSite(boolean blockCookies) {
         if (mNativeCookieControlsBridge != 0) {
             CookieControlsBridgeJni.get().setThirdPartyCookieBlockingEnabledForSite(
@@ -91,9 +97,11 @@ public class CookieControlsBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(CookieControlsBridge caller, WebContents webContents,
                 BrowserContextHandle originalContextHandle);
+        void updateWebContents(long nativeCookieControlsBridge, WebContents webContents,
+                @Nullable BrowserContextHandle originalBrowserContext);
         void destroy(long nativeCookieControlsBridge, CookieControlsBridge caller);
         void setThirdPartyCookieBlockingEnabledForSite(
                 long nativeCookieControlsBridge, boolean blockCookies);

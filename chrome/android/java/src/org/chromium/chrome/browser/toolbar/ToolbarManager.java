@@ -798,6 +798,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 onBackPressStateChanged();
                 if (!toDifferentDocument) return;
                 updateTabLoadingState(true);
+                mLocationBarModel.onPageLoadStopped();
             }
 
             @Override

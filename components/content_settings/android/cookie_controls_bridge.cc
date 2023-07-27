@@ -24,16 +24,29 @@ CookieControlsBridge::CookieControlsBridge(
     const base::android::JavaParamRef<jobject>&
         joriginal_browser_context_handle)
     : jobject_(obj) {
+  UpdateWebContents(env, jweb_contents_android,
+                    joriginal_browser_context_handle);
+}
+
+void CookieControlsBridge::UpdateWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents_android,
+    const base::android::JavaParamRef<jobject>&
+        joriginal_browser_context_handle) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents_android);
+
   content::BrowserContext* original_context =
       content::BrowserContextFromJavaHandle(joriginal_browser_context_handle);
+
   auto* permissions_client = permissions::PermissionsClient::Get();
   controller_ = std::make_unique<CookieControlsController>(
       permissions_client->GetCookieSettings(web_contents->GetBrowserContext()),
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr);
+  old_observation_.Reset();
   old_observation_.Observe(controller_.get());
+  observation_.Reset();
   observation_.Observe(controller_.get());
   controller_->Update(web_contents);
 }

@@ -51,6 +51,12 @@ public class StatusProperties {
             mDrawable = drawable;
         }
 
+        /** Constructor for a custom drawable with identifier. */
+        public StatusIconResource(Drawable drawable, String iconIdentifier) {
+            mDrawable = drawable;
+            mIconIdentifier = iconIdentifier;
+        }
+
         /** Constructor for a custom bitmap. */
         public StatusIconResource(String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
             mIconIdentifier = iconIdentifier;
@@ -158,6 +164,11 @@ public class StatusProperties {
 
         PermissionIconResource(Drawable drawable, boolean isIncognito) {
             super(drawable);
+            mIsIncognito = isIncognito;
+        }
+
+        PermissionIconResource(Drawable drawable, boolean isIncognito, String iconIdentifier) {
+            super(drawable, iconIdentifier);
             mIsIncognito = isIncognito;
         }
 

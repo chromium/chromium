@@ -209,10 +209,6 @@ public class PageInfoCookiesController
         }
     }
 
-    // TODO(crbug.com/1446230): Implement.
-    @Override
-    public void onBreakageConfidenceLevelChanged(int level) {}
-
     private boolean isDeletionDisabled() {
         return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
     }

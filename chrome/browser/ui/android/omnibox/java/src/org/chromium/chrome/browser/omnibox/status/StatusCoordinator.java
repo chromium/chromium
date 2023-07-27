@@ -198,6 +198,16 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         updateVerboseStatusVisibility();
     }
 
+    @Override
+    public void onUrlChanged() {
+        mMediator.onUrlChanged();
+    }
+
+    @Override
+    public void onPageLoadStopped() {
+        mMediator.onPageLoadStopped();
+    }
+
     /** Returns the resource identifier of the current security icon drawable. */
     public @DrawableRes int getSecurityIconResource() {
         return mMediator.getSecurityIconResource();
