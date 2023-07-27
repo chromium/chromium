@@ -24,6 +24,8 @@ source_set("download") {
     "radial_progress_view.mm",
     "safari_download_coordinator.h",
     "safari_download_coordinator.mm",
+    "unopened_downloads_tracker.h",
+    "unopened_downloads_tracker.mm",
     "vcard_coordinator.h",
     "vcard_coordinator.mm",
   ]
