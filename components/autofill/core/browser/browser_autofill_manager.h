@@ -787,7 +787,6 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Collected information about the autofill form where a credit card will be
   // filled.
-  mojom::RendererFormDataAction credit_card_action_;
   FormData credit_card_form_;
   FormFieldData credit_card_field_;
   CreditCard credit_card_;

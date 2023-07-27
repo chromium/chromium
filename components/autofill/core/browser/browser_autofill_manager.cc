@@ -1378,7 +1378,6 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(
         credit_card_, *form_structure, sync_state_);
 
-    credit_card_action_ = action;
     credit_card_form_ = form;
     credit_card_field_ = field;
 
@@ -2222,7 +2221,6 @@ void BrowserAutofillManager::Reset() {
   credit_card_form_ = FormData();
   credit_card_field_ = FormFieldData();
   last_unlocked_credit_card_cvc_.clear();
-  credit_card_action_ = mojom::RendererFormDataAction::kPreview;
   initial_interaction_timestamp_ = TimeTicks();
   fetched_credit_card_trigger_source_ = absl::nullopt;
   external_delegate_->Reset();
