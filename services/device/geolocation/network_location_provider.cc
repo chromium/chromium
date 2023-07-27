@@ -92,12 +92,12 @@ void NetworkLocationProvider::FillDiagnostics(
       diagnostics.provider_state =
           mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
     }
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     if (!is_system_permission_granted_) {
       diagnostics.provider_state = mojom::GeolocationDiagnostics::
           ProviderState::kBlockedBySystemPermission;
     }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
   } else {
     diagnostics.provider_state =
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
