@@ -134,12 +134,14 @@ interface RestrictedCookieManager {
   // The number is read from renderers and incremented monotonically from the
   // network process when cookie state changes. It can be null if
   // |get_version_shared_memory| was false or if initialization of the region
-  // failed.
+  // failed. |version| contains the cookie version at the time of returning the
+  // string.
   [Sync]
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
                    url.mojom.Origin top_frame_origin,
                    bool has_storage_access, bool get_version_shared_memory) => (
+                   uint64 version,
                    mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer,
                    string cookies);
 
