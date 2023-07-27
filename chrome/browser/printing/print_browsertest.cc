@@ -559,6 +559,9 @@ void PrintBrowserTest::WaitUntilCallbackReceived() {
 void PrintBrowserTest::CheckForQuit() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (++num_received_messages_ != num_expected_messages_) {
+    // Beware of tests which have more events checking than expected!
+    // Such tests might be exiting too early, and thus be flaky.
+    ASSERT_LT(num_received_messages_, num_expected_messages_);
     return;
   }
   if (quit_callback_) {

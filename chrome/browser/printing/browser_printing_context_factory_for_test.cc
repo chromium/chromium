@@ -71,7 +71,7 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
   if (fail_on_use_default_settings_) {
     context->SetUseDefaultSettingsFails();
   }
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   if (cancel_on_ask_user_for_settings_) {
     context->SetAskUserForSettingsCanceled();
   }

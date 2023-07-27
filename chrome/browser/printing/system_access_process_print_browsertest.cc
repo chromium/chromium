@@ -1886,14 +1886,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartBasicPrintConcurrent) {
   // Linux allows concurrent printing, so regular setup for printing is needed.
-  // It is uninteresting to do a full print in this case, it is better to exit
-  // the print sequence early, but at a known time after when PrintNow() would
-  // fail if concurrent printing isn't allowed.  That can be achieved by just
-  // canceling out from asking for settings.
 #if BUILDFLAG(IS_LINUX)
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
-  PrimeForCancelInAskUserForSettings();
 #endif
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -1913,11 +1908,15 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
 #if BUILDFLAG(IS_LINUX)
   // The expected events for this are:
-  // 1.  Get the default settings.
-  // 2.  Ask the user for settings, which indicates to cancel the print
-  //     request.  No further printing calls are made.
-  // No print job is created because of such an early cancel.
-  SetNumExpectedMessages(/*num=*/2);
+  // 1.  Start the print job.
+  // 2.  Rendering for 1 page of document of content.
+  // 3.  Completes with document done.
+  // 4.  Wait until all processing for DidPrintDocument is known to have
+  //     completed, to ensure printing finished cleanly before completing the
+  //     test.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
+  SetNumExpectedMessages(/*num=*/5);
 #endif
 
   // Now initiate a system print that would exist concurrently with that.
@@ -1967,12 +1966,15 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // Now do a print preview which will try to switch to doing system print.
 #if BUILDFLAG(IS_LINUX)
   // The expected events for this are:
-  // 1.  Start printing.
-  // 2.  The document is rendered.
-  // 3.  Receive document done notification.
-  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  // 1.  Start the print job.
+  // 2.  Rendering for 1 page of document of content.
+  // 3.  Completes with document done.
+  // 4.  Wait until all processing for DidPrintDocument is known to have
+  //     completed, to ensure printing finished cleanly before completing the
+  //     test.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  SetNumExpectedMessages(/*num=*/4);
+  SetNumExpectedMessages(/*num=*/5);
 
   constexpr bool kWaitForCallback = true;
 #else
