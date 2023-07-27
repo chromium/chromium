@@ -41,15 +41,39 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
     return {
       dialogTitle: String,
       members: Array,
+
+      eligibleRecipients_: {
+        type: Array,
+        computed: 'computeEligible_(members)',
+      },
+
+      ineligibleRecipients_: {
+        type: Array,
+        computed: 'computeIneligible_(members)',
+      },
     };
   }
 
   dialogTitle: string;
   members: chrome.passwordsPrivate.RecipientInfo[];
+  private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
+  private ineligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
 
   private onClickCancel_() {
     this.dispatchEvent(
         new CustomEvent('close', {bubbles: true, composed: true}));
+  }
+
+  private computeEligible_(): chrome.passwordsPrivate.RecipientInfo[] {
+    const eligibleMembers = this.members.filter(member => member.isEligible);
+    eligibleMembers.sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
+    return eligibleMembers;
+  }
+
+  private computeIneligible_(): chrome.passwordsPrivate.RecipientInfo[] {
+    const inEligibleMembers = this.members.filter(member => !member.isEligible);
+    inEligibleMembers.sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
+    return inEligibleMembers;
   }
 }
 
