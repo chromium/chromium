@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -44,7 +45,8 @@ class DlpExtractIOTaskObserver;
 // DlpFilesControllerAsh is responsible for deciding whether file transfers are
 // allowed according to the files sources saved in the DLP daemon and the rules
 // of the Data leak prevention policy set by the admin.
-class DlpFilesControllerAsh : public DlpFilesController {
+class DlpFilesControllerAsh : public DlpFilesController,
+                              public file_manager::VolumeManagerObserver {
  public:
   // Returns the instance if it exists.
   static DlpFilesControllerAsh* GetForPrimaryProfile();
@@ -188,6 +190,9 @@ class DlpFilesControllerAsh : public DlpFilesController {
       const std::vector<ui::FileInfo>& dropped_files,
       const ui::DataTransferEndpoint* data_dst,
       CheckIfDlpAllowedCallback result_callback);
+
+  //  VolumeManagerObserver overrides:
+  void OnShutdownStart(file_manager::VolumeManager* volume_manager) override;
 
   DlpFilesEventStorage* GetEventStorageForTesting();
 

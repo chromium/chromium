@@ -337,7 +337,7 @@ void ShowDlpBlockedFiles(
                             action);
 }
 
-file_manager::io_task::IOTaskController* GetIOTaskController() {
+file_manager::VolumeManager* GetVolumeManager() {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   if (!profile) {
     // May not be available in some tests.
@@ -348,11 +348,9 @@ file_manager::io_task::IOTaskController* GetIOTaskController() {
   file_manager::VolumeManager* const volume_manager =
       file_manager::VolumeManager::Get(profile);
   if (!volume_manager) {
-    LOG(ERROR) << "FilesPolicyNotificationManager failed to find "
-                  "file_manager::VolumeManager";
     return nullptr;
   }
-  return volume_manager->io_task_controller();
+  return volume_manager;
 }
 
 }  // namespace
@@ -395,7 +393,16 @@ DlpFilesControllerAsh::DlpFilesControllerAsh(
     : DlpFilesController(rules_manager),
       event_storage_(std::make_unique<DlpFilesEventStorage>(kCooldownTimeout,
                                                             kEntriesLimit)) {
-  auto* io_task_controller = GetIOTaskController();
+  auto* volume_manager = GetVolumeManager();
+  if (!volume_manager) {
+    LOG(ERROR)
+        << "DlpFilesControllerAsh failed to find file_manager::VolumeManager";
+    return;
+  }
+
+  volume_manager->AddObserver(this);
+
+  auto* io_task_controller = volume_manager->io_task_controller();
   if (!io_task_controller) {
     LOG(ERROR) << "DlpFilesControllerAsh failed to find "
                   "file_manager::io_task::IOTaskController";
@@ -405,7 +412,16 @@ DlpFilesControllerAsh::DlpFilesControllerAsh(
       std::make_unique<DlpExtractIOTaskObserver>(*io_task_controller);
 }
 
-DlpFilesControllerAsh::~DlpFilesControllerAsh() = default;
+DlpFilesControllerAsh::~DlpFilesControllerAsh() {
+  if (extract_io_task_observer_) {
+    // If `extract_io_task_observer_` is still alive, it means we are deleting
+    // FilesController before VolumeManager, otherwise we would have been
+    // notified in `OnShutdownStart`.
+    auto* volume_manager = GetVolumeManager();
+    CHECK(volume_manager);
+    volume_manager->RemoveObserver(this);
+  }
+}
 
 void DlpFilesControllerAsh::CheckIfTransferAllowed(
     absl::optional<file_manager::io_task::IOTaskId> task_id,
@@ -901,6 +917,14 @@ void DlpFilesControllerAsh::CheckIfDropAllowed(
                      // base::Unretained() is safe since |recursion_delegate|
                      // will delete itself after all the files list if ready.
                      base::Unretained(roots_recursion_delegate)));
+}
+
+void DlpFilesControllerAsh::OnShutdownStart(
+    file_manager::VolumeManager* volume_manager) {
+  volume_manager->RemoveObserver(this);
+  // IOTaskController is destroyed at VolumeManager deletion. Delete the
+  // observer since it depends on IOTaskController.
+  extract_io_task_observer_.reset();
 }
 
 DlpFilesEventStorage* DlpFilesControllerAsh::GetEventStorageForTesting() {
