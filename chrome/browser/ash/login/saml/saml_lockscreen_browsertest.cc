@@ -25,8 +25,10 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -37,7 +39,9 @@
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -48,6 +52,7 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
@@ -63,6 +68,11 @@ constexpr char kEthServicePath[] = "/service/eth1";
 constexpr char kSAMLIdPCookieName[] = "saml";
 constexpr char kSAMLIdPCookieValue[] = "value";
 constexpr base::StringPiece kAffiliationID = "test id";
+
+constexpr char kSAMLLink[] = "link";
+constexpr char kSAMLLinkedPageURLPattern[] =
+    "*"
+    "/linked";
 
 void ErrorCallbackFunction(base::OnceClosure run_loop_quit_closure,
                            const std::string& error_name,
@@ -751,6 +761,43 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_LoadAbort) {
 
   // Close dialog at the end of the test - otherwise test will crash on exit
   reauth_dialog_helper->ClickCloseNetworkButton();
+}
+
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SAMLBlocklistNavigationDisallowed) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_link.html");
+
+  Login();
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
+
+  ASSERT_TRUE(reauth_dialog_helper);
+
+  // TODO(https://issuetracker.google.com/290830337): Make this test class
+  // support propagating device policies to prefs with the logic in
+  // `LoginProfilePolicyProvider`, and instead of setting prefs here directly,
+  // just set the right device policies using
+  // `DeviceStateMixin::RequestDevicePolicyUpdate`.
+  // TODO(https://issuetracker.google.com/290821299): Add browser tests for
+  // allowlisting.
+  Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetLockScreenBrowserContext())
+      ->GetPrefs()
+      ->SetList(policy::policy_prefs::kUrlBlocklist,
+                base::Value::List().Append(kSAMLLinkedPageURLPattern));
+
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+  signin_frame_js.CreateVisibilityWaiter(true, kSAMLLink)->Wait();
+  signin_frame_js.TapOn(kSAMLLink);
+  WaitForLoadStop(signin_frame_js.web_contents());
+
+  signin_frame_js
+      .CreateElementTextContentWaiter(
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR),
+          {"main-frame-error"})
+      ->Wait();
 }
 
 // Sets up proxy server which requires authentication.

@@ -1734,7 +1734,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLBlocklistNavigationDisallowed) {
   // just set the right device policies using
   // `DeviceStateMixin::RequestDevicePolicyUpdate`.
   // TODO(https://issuetracker.google.com/290821299): Add browser tests for
-  // allowlisting and for the lock screen.
+  // allowlisting.
   Profile::FromBrowserContext(
       BrowserContextHelper::Get()->GetSigninBrowserContext())
       ->GetPrefs()
