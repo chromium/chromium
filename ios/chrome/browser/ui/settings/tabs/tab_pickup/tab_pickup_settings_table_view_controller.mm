@@ -11,12 +11,14 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -32,12 +34,20 @@ namespace {
 // Sections identifier.
 enum SectionIdentifier {
   kOptions = kSectionIdentifierEnumZero,
+  kPrivacy,
 };
 
 // Item types to enumerate the table items.
 enum ItemType {
   kSwitch = kItemTypeEnumZero,
+  kFeatureInformation,
+  kPrivacyInformation,
 };
+
+// Used to open the Sync and Google services settings.
+// These links should not be dispatched.
+const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
+const char kSyncSettingsURL[] = "settings://open_sync";
 
 }  // namespace.
 
@@ -71,9 +81,16 @@ enum ItemType {
 - (void)loadModel {
   [super loadModel];
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
+
   [model addSectionWithIdentifier:SectionIdentifier::kOptions];
+  [model addSectionWithIdentifier:SectionIdentifier::kPrivacy];
+
   [model addItem:self.tabPickupSwitchItem
       toSectionWithIdentifier:SectionIdentifier::kOptions];
+  [model setFooter:[self featureInformationItem]
+      forSectionWithIdentifier:SectionIdentifier::kOptions];
+  [model setHeader:[self privacyInformationItem]
+      forSectionWithIdentifier:SectionIdentifier::kPrivacy];
 }
 
 #pragma mark - TabPickupSettingsConsumer
@@ -119,6 +136,20 @@ enum ItemType {
   return cell;
 }
 
+#pragma mark - UITableViewDelegate
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  UIView* headerView = [super tableView:tableView
+                 viewForHeaderInSection:section];
+  TableViewLinkHeaderFooterView* header =
+      base::mac::ObjCCast<TableViewLinkHeaderFooterView>(headerView);
+  if (header) {
+    header.delegate = self;
+  }
+  return headerView;
+}
+
 #pragma mark - Private
 
 // Updates the switch item value and informs the model.
@@ -126,6 +157,47 @@ enum ItemType {
   self.tabPickupSwitchItem.on = switchView.isOn;
   [self.delegate tabPickupSettingsTableViewController:self
                                    didEnableTabPickup:switchView.isOn];
+}
+
+// Creates a TableViewHeaderFooterItem that shows informations about tab
+// pickup.
+- (TableViewHeaderFooterItem*)featureInformationItem {
+  TableViewLinkHeaderFooterItem* featureInformationItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemType::kFeatureInformation];
+  featureInformationItem.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_FOOTER);
+  return featureInformationItem;
+}
+
+// Creates a TableViewHeaderFooterItem that shows a link to open the Sync
+// and Google Services settings.
+- (TableViewHeaderFooterItem*)privacyInformationItem {
+  TableViewLinkHeaderFooterItem* privacyInformationItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemType::kPrivacyInformation];
+
+  NSString* privacyFooterText =
+      l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
+
+  NSMutableArray* URLs = [[NSMutableArray alloc] init];
+  [URLs addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
+  [URLs
+      addObject:[[CrURL alloc] initWithGURL:GURL(kGoogleServicesSettingsURL)]];
+
+  privacyInformationItem.text = privacyFooterText;
+  privacyInformationItem.urls = URLs;
+  return privacyInformationItem;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  if (URL.gurl == GURL(kGoogleServicesSettingsURL)) {
+    [self.dispatcher showGoogleServicesSettingsFromViewController:self];
+  } else if (URL.gurl == GURL(kSyncSettingsURL)) {
+    [self.dispatcher showSyncSettingsFromViewController:self];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol

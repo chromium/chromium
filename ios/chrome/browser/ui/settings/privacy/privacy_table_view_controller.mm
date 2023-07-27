@@ -86,8 +86,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeLockdownMode,
 };
 
-// Only used in this class to openn the Sync and Google services settings.
-// This link should not be dispatched.
+// Used to open the Sync and Google Services settings.
+// These links should not be dispatched.
 const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
 const char kSyncSettingsURL[] = "settings://open_sync";
 

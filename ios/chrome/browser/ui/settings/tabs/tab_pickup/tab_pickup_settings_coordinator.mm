@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_table_view_controller.h"
 
@@ -37,6 +39,9 @@
       initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
                           consumer:_viewController];
   _viewController.delegate = _mediator;
+  _viewController.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
+      self.browser->GetCommandDispatcher());
 
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
