@@ -891,6 +891,35 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_DeviceInfoMapping) {
   EXPECT_EQ("Atmel maXTouch Touchscreen", touchscreen->name);
 }
 
+TEST_F(InputDataProviderTest, GetConnectedDevices_HasInternalKeyboard) {
+  // Initialize one internal keyboard in DeviceDataManager.
+  std::vector<ui::KeyboardDevice> keyboard_devices;
+  keyboard_devices.push_back(
+      ui::KeyboardDevice(kDeviceId1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                         "Internal Keyboard"));
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  // The return values are supposed to be not ready since GetConnectedDevices()
+  // function will wait for the internal keyboard to be added.
+  ASSERT_FALSE(future.IsReady());
+
+  // Add an internal keyboard.
+  ui::DeviceEvent event(ui::DeviceEvent::DeviceType::INPUT,
+                        ui::DeviceEvent::ActionType::ADD,
+                        base::FilePath("/dev/input/event5"));
+  provider_->OnDeviceEvent(event);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(future.IsReady());
+  const auto& keyboards = future.Get<0>();
+  ASSERT_EQ(1ul, keyboards.size());
+}
+
 TEST_F(InputDataProviderTest, GetConnectedDevices_AddEventAfterFirstCall) {
   {
     base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,

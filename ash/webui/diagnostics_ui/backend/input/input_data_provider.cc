@@ -151,6 +151,31 @@ void InputDataProvider::BindInterface(
 
 void InputDataProvider::GetConnectedDevices(
     GetConnectedDevicesCallback callback) {
+  bool has_internal_keyboard = false;
+  for (const ui::KeyboardDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (keyboard.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+      has_internal_keyboard = true;
+      break;
+    }
+  }
+
+  // If there is an internal keyboard and keyboards_ size is zero (meaning the
+  // app hasn't added it yet but will), do not execute the callback, instead,
+  // save it to an internal variable and execute until the internal keyboard has
+  // been added.
+  if (has_internal_keyboard && keyboards_.empty()) {
+    get_connected_devices_callback_ =
+        base::BindOnce(&InputDataProvider::GetConnectedDevicesHelper,
+                       weak_factory_.GetWeakPtr(), std::move(callback));
+    return;
+  }
+
+  GetConnectedDevicesHelper(std::move(callback));
+}
+
+void InputDataProvider::GetConnectedDevicesHelper(
+    GetConnectedDevicesCallback callback) {
   std::vector<mojom::KeyboardInfoPtr> keyboard_vector;
   keyboard_vector.reserve(keyboards_.size());
   for (auto& keyboard_info : keyboards_) {
@@ -558,8 +583,10 @@ void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
 
   mojom::KeyboardInfoPtr keyboard =
       keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
+  const bool is_internal_keyboard =
+      keyboard->connection_type == mojom::ConnectionType::kInternal;
   if (!features::IsExternalKeyboardInDiagnosticsAppEnabled() &&
-      keyboard->connection_type != mojom::ConnectionType::kInternal) {
+      !is_internal_keyboard) {
     return;
   }
   keyboards_[device_info->evdev_id] = std::move(keyboard);
@@ -577,6 +604,11 @@ void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
 
   for (const auto& observer : connected_devices_observers_) {
     observer->OnKeyboardConnected(keyboards_[device_info->evdev_id]->Clone());
+  }
+
+  // Check if get_connected_devices_callback_ needs to be executed.
+  if (is_internal_keyboard && !get_connected_devices_callback_.is_null()) {
+    std::move(get_connected_devices_callback_).Run();
   }
 }
 

@@ -135,6 +135,8 @@ class InputDataProvider : public mojom::InputDataProvider,
  private:
   void Initialize(aura::Window* window);
 
+  void GetConnectedDevicesHelper(GetConnectedDevicesCallback callback);
+
   void ProcessDeviceInfo(std::unique_ptr<InputDeviceInformation> device_info);
 
   void AddTouchDevice(const InputDeviceInformation* device_info);
@@ -222,6 +224,8 @@ class InputDataProvider : public mojom::InputDataProvider,
   raw_ptr<ui::EventRewriterAsh::Delegate> event_rewriter_delegate_;
 
   HealthdEventReporter healthd_event_reporter_;
+
+  base::OnceCallback<void()> get_connected_devices_callback_;
 
   base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };
