@@ -127,6 +127,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/live_caption/live_caption_controller.h"
+#else
+#include "chrome/browser/profiles/profile_manager_android.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -388,6 +390,8 @@ ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
   closing_all_browsers_subscription_ = chrome::AddClosingAllBrowsersCallback(
       base::BindRepeating(&ProfileManager::OnClosingAllBrowsersChanged,
                           base::Unretained(this)));
+#else
+  profile_manager_android_ = std::make_unique<ProfileManagerAndroid>(this);
 #endif
 
   if (ProfileShortcutManager::IsFeatureEnabled() && !user_data_dir_.empty())

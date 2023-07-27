@@ -39,6 +39,10 @@
 class AccountProfileMapper;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+class ProfileManagerAndroid;
+#endif
+
 class DeleteProfileHelper;
 class ProfileAttributesStorage;
 enum class ProfileKeepAliveOrigin;
@@ -538,6 +542,11 @@ class ProfileManager : public Profile::Delegate {
   // |profiles_info_| because ~ProfileInfo can trigger a chain of events leading
   // to an access to this member.
   std::unique_ptr<ProfileAttributesStorage> profile_attributes_storage_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Handles the communication with the Java ProfileManager.
+  std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Object that maintains a mapping between accounts known to the OS and Chrome

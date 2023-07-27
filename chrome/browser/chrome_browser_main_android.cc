@@ -17,8 +17,6 @@
 #include "chrome/browser/android/seccomp_support_detector.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_saver/data_saver.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_manager_android.h"
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
@@ -90,13 +88,6 @@ int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {
   CHECK(base::CurrentThread::IsSet());
 
   return ChromeBrowserMainParts::PreEarlyInitialization();
-}
-
-void ChromeBrowserMainPartsAndroid::PostEarlyInitialization() {
-  profile_manager_android_ = std::make_unique<ProfileManagerAndroid>();
-  g_browser_process->profile_manager()->AddObserver(
-      profile_manager_android_.get());
-  ChromeBrowserMainParts::PostEarlyInitialization();
 }
 
 void ChromeBrowserMainPartsAndroid::PostBrowserStart() {

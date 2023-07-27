@@ -17,8 +17,6 @@ namespace crash_reporter {
 class ChildExitObserver;
 }
 
-class ProfileManagerAndroid;
-
 class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
   ChromeBrowserMainPartsAndroid(bool is_integration_test,
@@ -34,7 +32,6 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
   int PreCreateThreads() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   int PreEarlyInitialization() override;
-  void PostEarlyInitialization() override;
 
   // ChromeBrowserMainParts overrides.
   void PostBrowserStart() override;
@@ -43,7 +40,6 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  private:
   std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
   std::unique_ptr<android::ChromeBackupWatcher> backup_watcher_;
-  std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_
