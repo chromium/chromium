@@ -7,6 +7,6 @@ PASS protocols should be required to be a list
 FAIL constructing with a valid URL should work promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
 FAIL setting a protocol in the constructor should work promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
 PASS connection failure should reject the promises
-FAIL wss.connection should resolve to the right types promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+FAIL wss.opened should resolve to the right types promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
 Harness: the test ran to completion.
 

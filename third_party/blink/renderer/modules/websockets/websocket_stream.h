@@ -59,7 +59,7 @@ class MODULES_EXPORT WebSocketStream final
 
   // IDL properties
   const KURL& url() const { return common_.Url(); }
-  ScriptPromise connection(ScriptState*) const;
+  ScriptPromise opened(ScriptState*) const;
   ScriptPromise closed(ScriptState*) const;
 
   // IDL functions
@@ -114,13 +114,13 @@ class MODULES_EXPORT WebSocketStream final
   static WebSocketCloseInfo* MakeCloseInfo(uint16_t code, const String& reason);
 
   const Member<ScriptState> script_state_;
-  const Member<ScriptPromiseResolver> connection_resolver_;
+  const Member<ScriptPromiseResolver> opened_resolver_;
   const Member<ScriptPromiseResolver> closed_resolver_;
 
   // These need to be cached because the Promise() method on
   // ScriptPromiseResolver doesn't work any more once the promise is resolved or
   // rejected.
-  const TraceWrapperV8Reference<v8::Promise> connection_;
+  const TraceWrapperV8Reference<v8::Promise> opened_;
   const TraceWrapperV8Reference<v8::Promise> closed_;
 
   Member<WebSocketChannel> channel_;
@@ -133,7 +133,7 @@ class MODULES_EXPORT WebSocketStream final
   WebSocketCommon common_;
 
   // We need to distinguish between "closing during handshake" and "closing
-  // after handshake" in order to reject the |connection_resolver_| correctly.
+  // after handshake" in order to reject the |opened_resolver_| correctly.
   bool was_ever_connected_ = false;
 };
 

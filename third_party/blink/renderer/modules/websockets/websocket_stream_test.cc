@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_close_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream_options.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/websockets/mock_websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
@@ -24,12 +26,14 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
 namespace {
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::InSequence;
 using ::testing::Return;
 
@@ -136,7 +140,7 @@ TEST_F(WebSocketStreamTest, Connect) {
   auto* stream = Create(scope.GetScriptState(), "ws://example.com/hoge",
                         ASSERT_NO_EXCEPTION);
 
-  EXPECT_TRUE(stream);
+  ASSERT_TRUE(stream);
   EXPECT_EQ(KURL("ws://example.com/hoge"), stream->url());
 }
 
@@ -156,7 +160,7 @@ TEST_F(WebSocketStreamTest, ConnectWithProtocols) {
   auto* stream = Create(scope.GetScriptState(), "ws://example.com/chat",
                         options, ASSERT_NO_EXCEPTION);
 
-  EXPECT_TRUE(stream);
+  ASSERT_TRUE(stream);
   EXPECT_EQ(KURL("ws://example.com/chat"), stream->url());
 }
 
@@ -175,22 +179,21 @@ TEST_F(WebSocketStreamTest, ConnectWithFailedHandshake) {
   auto* stream =
       Create(script_state, "ws://example.com/chat", ASSERT_NO_EXCEPTION);
 
-  EXPECT_TRUE(stream);
+  ASSERT_TRUE(stream);
   EXPECT_EQ(KURL("ws://example.com/chat"), stream->url());
 
-  ScriptPromiseTester connection_tester(script_state,
-                                        stream->connection(script_state));
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
   ScriptPromiseTester closed_tester(script_state, stream->closed(script_state));
 
   stream->DidError();
   stream->DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete,
                    WebSocketChannel::kCloseEventCodeAbnormalClosure, String());
 
-  connection_tester.WaitUntilSettled();
+  opened_tester.WaitUntilSettled();
   closed_tester.WaitUntilSettled();
 
-  EXPECT_TRUE(connection_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(script_state, connection_tester.Value(),
+  EXPECT_TRUE(opened_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
                              DOMExceptionCode::kNetworkError));
   EXPECT_TRUE(closed_tester.IsRejected());
   EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
@@ -214,18 +217,17 @@ TEST_F(WebSocketStreamTest, ConnectWithSuccessfulHandshake) {
   auto* stream = Create(script_state, "ws://example.com/chat", options,
                         ASSERT_NO_EXCEPTION);
 
-  EXPECT_TRUE(stream);
+  ASSERT_TRUE(stream);
   EXPECT_EQ(KURL("ws://example.com/chat"), stream->url());
 
-  ScriptPromiseTester connection_tester(script_state,
-                                        stream->connection(script_state));
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
 
   stream->DidConnect("chat", "permessage-deflate");
 
-  connection_tester.WaitUntilSettled();
+  opened_tester.WaitUntilSettled();
 
-  EXPECT_TRUE(connection_tester.IsFulfilled());
-  v8::Local<v8::Value> value = connection_tester.Value().V8Value();
+  EXPECT_TRUE(opened_tester.IsFulfilled());
+  v8::Local<v8::Value> value = opened_tester.Value().V8Value();
   ASSERT_FALSE(value.IsEmpty());
   ASSERT_TRUE(value->IsObject());
   EXPECT_EQ(PropertyAsString(script_state, value, "readable"),
@@ -253,7 +255,7 @@ TEST_F(WebSocketStreamTest, ConnectThenCloseCleanly) {
   auto* stream =
       Create(script_state, "ws://example.com/echo", ASSERT_NO_EXCEPTION);
 
-  EXPECT_TRUE(stream);
+  ASSERT_TRUE(stream);
 
   stream->DidConnect("", "");
 
@@ -291,13 +293,12 @@ TEST_F(WebSocketStreamTest, CloseDuringHandshake) {
   }
 
   auto* script_state = scope.GetScriptState();
-  auto* stream = Create(scope.GetScriptState(), "ws://example.com/echo",
-                        ASSERT_NO_EXCEPTION);
+  auto* stream =
+      Create(script_state, "ws://example.com/echo", ASSERT_NO_EXCEPTION);
 
-  EXPECT_TRUE(stream);
+  ASSERT_TRUE(stream);
 
-  ScriptPromiseTester connection_tester(script_state,
-                                        stream->connection(script_state));
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
   ScriptPromiseTester closed_tester(script_state, stream->closed(script_state));
 
   stream->close(MakeGarbageCollected<WebSocketCloseInfo>(),
@@ -305,15 +306,123 @@ TEST_F(WebSocketStreamTest, CloseDuringHandshake) {
   stream->DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete, 1006,
                    "");
 
-  connection_tester.WaitUntilSettled();
+  opened_tester.WaitUntilSettled();
   closed_tester.WaitUntilSettled();
 
-  EXPECT_TRUE(connection_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(script_state, connection_tester.Value(),
+  EXPECT_TRUE(opened_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
                              DOMExceptionCode::kNetworkError));
   EXPECT_TRUE(closed_tester.IsRejected());
   EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
                              DOMExceptionCode::kNetworkError));
+}
+
+TEST_F(WebSocketStreamTest, AbortBeforeHandshake) {
+  V8TestingScope scope;
+
+  // ApplyBackpressure() is currently called in this case but doesn't have to
+  // be.
+  EXPECT_CALL(Channel(), ApplyBackpressure()).Times(AnyNumber());
+
+  auto* script_state = scope.GetScriptState();
+
+  auto* options = WebSocketStreamOptions::Create();
+  options->setSignal(AbortSignal::abort(script_state));
+
+  auto* stream = Create(script_state, "ws://example.com/echo", options,
+                        ASSERT_NO_EXCEPTION);
+
+  ASSERT_TRUE(stream);
+
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
+  ScriptPromiseTester closed_tester(script_state, stream->closed(script_state));
+
+  opened_tester.WaitUntilSettled();
+  closed_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(opened_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+  EXPECT_TRUE(closed_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+}
+
+TEST_F(WebSocketStreamTest, AbortDuringHandshake) {
+  V8TestingScope scope;
+
+  {
+    InSequence s;
+    EXPECT_CALL(Channel(), ApplyBackpressure());
+    EXPECT_CALL(Channel(), Connect(KURL("ws://example.com/echo"), String()))
+        .WillOnce(Return(true));
+    EXPECT_CALL(Channel(), CancelHandshake());
+  }
+
+  auto* script_state = scope.GetScriptState();
+
+  auto* controller = AbortController::Create(script_state);
+  auto* options = WebSocketStreamOptions::Create();
+  options->setSignal(controller->signal());
+
+  auto* stream = Create(script_state, "ws://example.com/echo", options,
+                        ASSERT_NO_EXCEPTION);
+
+  ASSERT_TRUE(stream);
+
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
+  ScriptPromiseTester closed_tester(script_state, stream->closed(script_state));
+
+  controller->abort(script_state);
+
+  opened_tester.WaitUntilSettled();
+  closed_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(opened_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+  EXPECT_TRUE(closed_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+}
+
+// Aborting after the handshake is complete does nothing.
+TEST_F(WebSocketStreamTest, AbortAfterHandshake) {
+  V8TestingScope scope;
+
+  {
+    InSequence s;
+    EXPECT_CALL(Channel(), ApplyBackpressure());
+    EXPECT_CALL(Channel(), Connect(KURL("ws://example.com/echo"), String()))
+        .WillOnce(Return(true));
+  }
+
+  auto* script_state = scope.GetScriptState();
+
+  auto* controller = AbortController::Create(script_state);
+  auto* options = WebSocketStreamOptions::Create();
+  options->setSignal(controller->signal());
+
+  auto* stream = Create(script_state, "ws://example.com/echo", options,
+                        ASSERT_NO_EXCEPTION);
+
+  ASSERT_TRUE(stream);
+
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
+  ScriptPromiseTester closed_tester(script_state, stream->closed(script_state));
+
+  stream->DidConnect("", "permessage-deflate");
+
+  opened_tester.WaitUntilSettled();
+  EXPECT_TRUE(opened_tester.IsFulfilled());
+
+  // This should do nothing.
+  controller->abort(script_state);
+
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(closed_tester.IsFulfilled());
+  EXPECT_FALSE(closed_tester.IsRejected());
 }
 
 }  // namespace
