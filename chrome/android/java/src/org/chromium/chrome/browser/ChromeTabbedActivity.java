@@ -978,11 +978,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
             }
 
-            if (mReturnToChromeBackPressHandler == null && !isTablet()) {
-                if (mIsHandleTabSwitcherShownEnabled == null) {
-                    mIsHandleTabSwitcherShownEnabled = isStartSurfaceRefactorEnabled()
-                            && ReturnToChromeUtil.isStartSurfaceEnabled(this);
-                }
+            if (mIsHandleTabSwitcherShownEnabled == null) {
+                mIsHandleTabSwitcherShownEnabled = !isTablet() && isStartSurfaceRefactorEnabled()
+                        && ReturnToChromeUtil.isStartSurfaceEnabled(this);
             }
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());

@@ -55,6 +55,8 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -893,6 +895,26 @@ public class ReturnToChromeUtilUnitTest {
                             .build();
         ReturnToChromeUtil.showHomeSurfaceUiOnNtp(mNtpTab, mTab1, mHomeSurfaceTracker);
         histogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldHandleTabSwitcherShown() {
+        LayoutStateProvider layoutStateProvider = Mockito.mock(LayoutStateProvider.class);
+
+        // Verifies ReturnToChromeUtil.shouldHandleTabSwitcherShown() returns false in all invalid
+        // cases.
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldHandleTabSwitcherShown(false, layoutStateProvider));
+        Assert.assertFalse(ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, null));
+        doReturn(false).when(layoutStateProvider).isLayoutVisible(eq(LayoutType.TAB_SWITCHER));
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, layoutStateProvider));
+
+        // Verifies ReturnToChromeUtil.shouldHandleTabSwitcherShown() returns true.
+        doReturn(true).when(layoutStateProvider).isLayoutVisible(eq(LayoutType.TAB_SWITCHER));
+        Assert.assertTrue(
+                ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, layoutStateProvider));
     }
 
     private Intent createMainIntentFromLauncher() {
