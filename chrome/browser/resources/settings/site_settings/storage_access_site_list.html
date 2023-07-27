@@ -1,0 +1,20 @@
+<style include="cr-shared-style settings-shared"></style>
+<div class="cr-row first">
+  <h2 class="cr-secondary-text">[[categoryHeader]]</h2>
+</div>
+<div class="list-frame"
+    hidden$="[[hasExceptions_(storageAccessExceptions_.*)]]">
+  <div class="list-item cr-secondary-text">$i18n{noSitesAdded}</div>
+</div>
+<div class="list-frame" hidden$=
+    "[[!showNoSearchResults_(searchFilter, storageAccessExceptions_.*)]]">
+  <div class="list-item cr-secondary-text">$i18n{searchNoResults}</div>
+</div>
+<div class="list-frame vertical-list" id="listContainer" hidden$=
+    "[[!hasExceptions_(storageAccessExceptions_.*)]]">
+  <template is="dom-repeat" items=
+      "[[getFilteredExceptions_(searchFilter, storageAccessExceptions_.*)]]">
+    <storage-access-site-list-entry model="[[item]]">
+    </storage-access-site-list-entry>
+  </template>
+</div>

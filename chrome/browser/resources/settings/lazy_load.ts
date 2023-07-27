@@ -222,7 +222,9 @@ export {SiteDetailsPermissionDeviceEntryElement} from './site_settings/site_deta
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
-export {ChooserException, ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {ChooserException, ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {StorageAccessSiteListElement} from './site_settings/storage_access_site_list.js';
+export {StorageAccessSiteListEntryElement} from './site_settings/storage_access_site_list_entry.js';
 export {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';

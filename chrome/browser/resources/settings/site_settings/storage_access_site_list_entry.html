@@ -1,0 +1,98 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    padding-inline-end: 4px;
+    display: block;
+  }
+
+  .row-aligned {
+    align-items: center;
+    display: flex;
+  }
+
+  .site-representation {
+    display: flex;
+  }
+
+  .list-frame {
+    padding-inline-end: 0;
+  }
+
+  .settings-row {
+    flex: 1;
+  }
+
+  cr-expand-button {
+    width: 100%;
+    --cr-section-vertical-padding: 0;
+  }
+</style>
+<div id="collapseParent" focus-row-container>
+  <div class="list-item">
+    <!-- Top row of the collapsible component that represents an origin. -->
+    <cr-expand-button id="expandIcon" no-hover expanded="{{expanded_}}"
+        focus-row-control focus-type="embedded-site">
+      <div class="settings-row">
+        <site-favicon url="[[model.origin]]"></site-favicon>
+        <div class="middle" id="displayName">
+          <div class="site-representation url-directionality text-elide">
+            [[model.displayName]]
+          </div>
+          <div class="second-line cr-secondary-text">
+            [[model.description]]
+          </div>
+        </div>
+      </div>
+    </cr-expand-button>
+    <!-- Trash can icon. -->
+    <div class="row-aligned">
+      <div class="separator"></div>
+      <cr-icon-button id="resetAllButton" class="icon-delete-gray"
+          on-click="onResetAllButtonClick_"
+          focus-row-control focus-type="reset-all">
+      </cr-icon-button>
+    </div>
+  </div>
+  <cr-lazy-render id="originList">
+    <template>
+      <iron-collapse opened="[[expanded_]]" no-animation>
+        <div class="list-frame">
+          <template is="dom-repeat" items="[[model.exceptions]]">
+            <!-- Nested row that represents an embedding origin. -->
+            <div class="list-item hr">
+              <div class="settings-row">
+                <site-favicon url="[[item.embeddingOrigin]]"></site-favicon>
+                <div class="middle">
+                  <div
+                      class="site-representation url-directionality text-elide">
+                    [[item.embeddingDisplayName]]
+                  </div>
+                  <div class="second-line cr-secondary-text">
+                    [[item.description]]
+                  </div>
+                </div>
+              </div>
+              <!-- Incognito icon. -->
+              <template is="dom-if" if="[[item.incognito]]">
+                <cr-tooltip-icon id="incognitoTooltip[[index]]"
+                    icon-aria-label="$i18n{incognitoSiteExceptionDesc}"
+                    icon-class="settings20:incognito"
+                    focus-type="incognito"
+                    tooltip-text="$i18n{incognitoSiteExceptionDesc}"
+                    focus-row-control focus-type="incognito">
+                </cr-tooltip-icon>
+              </template>
+              <!-- Trash can icon. -->
+              <div class="row-aligned">
+                <div class="separator"></div>
+                <cr-icon-button id="resetButton[[index]]"
+                    class="icon-delete-gray" on-click="onResetButtonClick_"
+                    focus-row-control focus-type="reset">
+                </cr-icon-button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </iron-collapse>
+    </template>
+  </cr-lazy-render>
+</div>

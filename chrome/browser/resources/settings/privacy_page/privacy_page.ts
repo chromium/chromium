@@ -38,7 +38,7 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} 
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
-import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
@@ -251,6 +251,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
+      },
+
+      /**
+       * Expose ContentSetting enum to HTML bindings.
+       */
+      contentSettingEnum_: {
+        type: Object,
+        value: ContentSetting,
       },
 
       /**

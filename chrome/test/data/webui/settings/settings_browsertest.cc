@@ -356,6 +356,13 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, StartupUrlsPage) {
   RunTest("settings/startup_urls_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, StorageAccessSiteListEntry) {
+  RunTest("settings/storage_access_site_list_entry_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, StorageAccessSiteList) {
+  RunTest("settings/storage_access_site_list_test.js", "mocha.run()");
+}
 // Flaky on all OSes. TODO(crbug.com/1302405): Enable the test.
 IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_Subpage) {
   RunTest("settings/settings_subpage_test.js", "mocha.run()");

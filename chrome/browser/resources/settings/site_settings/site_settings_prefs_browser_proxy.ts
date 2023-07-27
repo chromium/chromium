@@ -109,6 +109,29 @@ export interface SiteException {
 }
 
 /**
+ * A group of storage access site exceptions with the same origin for UI use.
+ * See also: StorageAccessEmbeddingException.
+ */
+export interface StorageAccessSiteException {
+  origin: string;
+  displayName: string;
+  description: string;
+  setting: ContentSetting;
+  exceptions: StorageAccessEmbeddingException[];
+}
+
+/**
+ * A storage access site exception for UI use. To be always used within
+ * StorageAccessSiteException.
+ */
+export interface StorageAccessEmbeddingException {
+  embeddingOrigin: string;
+  embeddingDisplayName: string;
+  description: string;  // includes case for embargoed exception.
+  incognito: boolean;
+}
+
+/**
  * Represents a list of exceptions recently configured for a site, where recent
  * is defined by the maximum number of sources parameter passed to
  * GetRecentSitePermissions.
@@ -251,6 +274,9 @@ export interface SiteSettingsPrefsBrowserProxy {
    */
   getExceptionList(contentType: ContentSettingsTypes):
       Promise<RawSiteException[]>;
+
+  getStorageAccessExceptionList(categorySubtype: ContentSetting):
+      Promise<StorageAccessSiteException[]>;
 
   /**
    * Gets the File System Access permission grants, grouped by origin.
@@ -520,6 +546,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getExceptionList(contentType: ContentSettingsTypes) {
     return sendWithPromise('getExceptionList', contentType);
+  }
+
+  getStorageAccessExceptionList(categorySubtype: ContentSetting) {
+    return sendWithPromise('getStorageAccessExceptionList', categorySubtype);
   }
 
   getFileSystemGrants() {

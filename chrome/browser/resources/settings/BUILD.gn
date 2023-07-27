@@ -202,6 +202,8 @@ build_webui("build") {
     "site_settings/site_entry.ts",
     "site_settings/site_list_entry.ts",
     "site_settings/site_list.ts",
+    "site_settings/storage_access_site_list_entry.ts",
+    "site_settings/storage_access_site_list.ts",
     "site_settings/zoom_levels.ts",
   ]
 

@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, ContentSetting, ContentSettingsTypes, CookieControlsMode, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SettingsPrefsElement, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -222,6 +222,23 @@ suite('PrivacyPage', function() {
     assertEquals(
         settingsSubpage.learnMoreUrl,
         'https://support.google.com/chrome?p=webusb&hl=en-US');
+  });
+
+  test('StorageAccessPage', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_STORAGE_ACCESS);
+    await flushTasks();
+
+    const categorySettingExceptions =
+        page.shadowRoot!.querySelectorAll('storage-access-site-list')!;
+
+    assertEquals(2, categorySettingExceptions.length);
+    assertTrue(isVisible(categorySettingExceptions[0]!));
+    assertEquals(
+        ContentSetting.BLOCK, categorySettingExceptions[0]!.categorySubtype);
+
+    assertTrue(isVisible(categorySettingExceptions[1]!));
+    assertEquals(
+        ContentSetting.ALLOW, categorySettingExceptions[1]!.categorySubtype);
   });
 });
 

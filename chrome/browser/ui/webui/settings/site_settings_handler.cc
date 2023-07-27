@@ -801,6 +801,11 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleGetExceptionList,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getStorageAccessExceptionList",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleGetStorageAccessExceptionList,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "getFileSystemGrants",
       base::BindRepeating(&SiteSettingsHandler::HandleGetFileSystemGrants,
                           base::Unretained(this)));

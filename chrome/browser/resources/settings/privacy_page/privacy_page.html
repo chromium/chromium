@@ -1127,13 +1127,23 @@
                 block-option-label="$i18n{storageAccessBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
-                block-header="$i18n{storageAccessBlockedExceptions}"
-                allow-header="$i18n{storageAccessAllowedExceptions}"
-                search-filter="[[searchFilter_]]"
-                read-only-list>
-            </category-setting-exceptions>
+            <!-- Exceptions section. -->
+            <div class="content-settings-header">
+              <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+              <div class="cr-secondary-text">
+                $i18n{siteSettingsCustomizedBehaviorsDescription}
+              </div>
+            </div>
+            <storage-access-site-list
+                category-subtype="[[contentSettingEnum_.BLOCK]]"
+                category-header="$i18n{storageAccessBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </storage-access-site-list>
+            <storage-access-site-list
+                category-subtype="[[contentSettingEnum_.ALLOW]]"
+                category-header="$i18n{storageAccessAllowedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </storage-access-site-list>
           </settings-subpage>
         </template>
       </template>
