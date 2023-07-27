@@ -34,6 +34,7 @@
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_test_util.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
@@ -11116,27 +11117,100 @@ TEST_P(DeskButtonTest, DeskButtonPressMetrics) {
   histogram_tester.ExpectTotalCount(kDeskButtonPressesHistogramName, 2);
 }
 
-// Tests that the desk button shows up in the correct position in RTL.
-TEST_P(DeskButtonTest, PositionInRTL) {
-  // Set the display size since this test tests the location of elements in the
-  // display.
-  UpdateDisplay("1200x800");
-
+// Tests that the desk button shows up in the correct position and layout
+// in RTL. The desk bar is laid out LTR in RTL mode so the desk button should be
+// too, ensuring that pressing the left chevron button moves activation to the
+// desk to the left in the desk bar.
+TEST_P(DeskButtonTest, LayoutInRTL) {
   // Turn on RTL mode.
   const bool default_rtl = base::i18n::IsRTL();
   base::i18n::SetRTLForTesting(true);
   EXPECT_TRUE(base::i18n::IsRTL());
 
-  auto* desk_button = GetDeskButton();
-  ASSERT_TRUE(desk_button);
+  // The test doesn't start in RTL so we need to tell the widget to swap the
+  // desk switch buttons because RTL was disabled in the constructor.
+  GetDeskButtonWidget()->HandleLocaleChange();
+  GetPrimaryShelf()->shelf_layout_manager()->LayoutShelf();
 
-  if (GetParam().alignment == ShelfAlignment::kBottom) {
-    EXPECT_EQ(gfx::Rect(494, 758, 96, 36), desk_button->GetBoundsInScreen());
-  } else if (GetParam().alignment == ShelfAlignment::kLeft) {
-    EXPECT_EQ(gfx::Rect(6, 354, 36, 36), desk_button->GetBoundsInScreen());
-  } else if (GetParam().alignment == ShelfAlignment::kRight) {
-    EXPECT_EQ(gfx::Rect(1158, 354, 36, 36), desk_button->GetBoundsInScreen());
+  // Set the display size since this test tests the location of elements in the
+  // display.
+  UpdateDisplay("1200x800");
+
+  // Add an app icon to the shelf.
+  SkBitmap app_bitmap;
+  app_bitmap.allocN32Pixels(1, 1);
+  app_bitmap.eraseColor(SK_ColorRED);
+  ShelfTestUtil::AddAppShortcutWithIcon(
+      "0", TYPE_PINNED_APP, gfx::ImageSkia::CreateFrom1xBitmap(app_bitmap));
+
+  // Navigate to the 2nd of 3 desks so both buttons should be visible.
+  NewDesk();
+  NewDesk();
+  ClickDeskSwitchButton(/*next=*/true);
+
+  auto* desk_button = GetDeskButton();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(600, 400));
+  ASSERT_TRUE(desk_button);
+  ASSERT_EQ(desk_button->is_expanded_for_test(),
+            GetParam().alignment == ShelfAlignment::kBottom);
+  ASSERT_FALSE(desk_button->is_hovered());
+  ASSERT_FALSE(desk_button->is_activated());
+
+  // The desk button should show up to the right of the shelf apps in horizontal
+  // and on top in vertical.
+  const gfx::Rect desk_button_bounds = desk_button->GetBoundsInScreen();
+  const gfx::Rect app_icon_bounds = GetPrimaryShelf()
+                                        ->hotseat_widget()
+                                        ->GetShelfView()
+                                        ->first_visible_button_for_testing()
+                                        ->GetBoundsInScreen();
+
+  switch (GetParam().alignment) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      EXPECT_EQ(gfx::Rect(634, 758, 96, 36), desk_button_bounds);
+      EXPECT_LT(app_icon_bounds.x(), desk_button_bounds.x());
+      break;
+    case ShelfAlignment::kLeft:
+      EXPECT_EQ(gfx::Rect(6, 330, 36, 36), desk_button_bounds);
+      EXPECT_LT(desk_button_bounds.y(), app_icon_bounds.y());
+      break;
+    case ShelfAlignment::kRight:
+      EXPECT_EQ(gfx::Rect(1158, 330, 36, 36), desk_button_bounds);
+      EXPECT_LT(desk_button_bounds.y(), app_icon_bounds.y());
+      break;
   }
+
+  // Hover over the button to show the desk switch buttons.
+  event_generator->MoveMouseTo(desk_button_bounds.CenterPoint());
+  ASSERT_TRUE(desk_button->is_hovered());
+  auto* prev_desk_button = GetPrevDeskButton();
+  auto* next_desk_button = GetNextDeskButton();
+  ASSERT_TRUE(prev_desk_button->GetEnabled());
+  ASSERT_TRUE(next_desk_button->GetEnabled());
+
+  // The previous desk button should be to the left of the next desk button.
+  EXPECT_LT(prev_desk_button->GetBoundsInScreen().CenterPoint().x(),
+            next_desk_button->GetBoundsInScreen().CenterPoint().x());
+
+  // The previous desk button should be to the left of the desk button label,
+  // and the next desk button should be to the right of it.
+  gfx::Rect desk_name_label_bounds =
+      GetDeskButton()->desk_name_label_for_test()->GetBoundsInScreen();
+  EXPECT_LT(prev_desk_button->GetBoundsInScreen().CenterPoint().x(),
+            desk_name_label_bounds.CenterPoint().x());
+  EXPECT_LT(desk_name_label_bounds.CenterPoint().x(),
+            next_desk_button->GetBoundsInScreen().CenterPoint().x());
+
+  // Clicking the previous desk button should take us to desk 1, and clicking
+  // the next desk button twice should take us to desk 3.
+  auto* desks_controller = DesksController::Get();
+  ClickDeskSwitchButton(/*next=*/false);
+  EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
+  ClickDeskSwitchButton(/*next=*/true);
+  ClickDeskSwitchButton(/*next=*/true);
+  EXPECT_EQ(2, desks_controller->GetActiveDeskIndex());
 
   // Recover to default RTL mode.
   base::i18n::SetRTLForTesting(default_rtl);

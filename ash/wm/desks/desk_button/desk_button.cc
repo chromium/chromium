@@ -141,6 +141,14 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
 
   SetupFocus(this);
 
+  // The previous desk button should always be on the left and the next desk
+  // button on the right even in RTL mode to respect the direction of the desk
+  // bar, which does not change in RTL either.
+  if (base::i18n::IsRTL()) {
+    ReorderChildView(prev_desk_button_, 3);
+    ReorderChildView(next_desk_button_, 1);
+  }
+
   prev_desk_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(kChevronSmallLeftIcon));
@@ -493,6 +501,7 @@ void DeskButton::SetupFocus(views::Button* view) {
   views::FocusRing::Get(view)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
       view, gfx::Insets(kFocusRingHaloInset), kButtonCornerRadius);
+  view->SetFlipCanvasOnPaintForRTLUI(false);
 }
 
 BEGIN_METADATA(DeskButton, Button)

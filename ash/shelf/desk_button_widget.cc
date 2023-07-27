@@ -157,6 +157,13 @@ void DeskButtonWidget::MaybeFocusOut(bool reverse) {
   // desk button.
   views::View* views[] = {GetDeskButton()->prev_desk_button(), GetDeskButton(),
                           GetDeskButton()->next_desk_button()};
+
+  // The desk button will still be drawn in LTR, with the previous desk button
+  // on the left, when in RTL mode.
+  if (base::i18n::IsRTL()) {
+    std::swap(views[0], views[2]);
+  }
+
   views::View* focused_view = GetFocusManager()->GetFocusedView();
 
   const int count = std::size(views);
@@ -278,7 +285,13 @@ void DeskButtonWidget::UpdateTargetBoundsForGesture(int shelf_position) {
   }
 }
 
-void DeskButtonWidget::HandleLocaleChange() {}
+void DeskButtonWidget::HandleLocaleChange() {
+  // The desk button be laid out LTR even in RTL mode.
+  GetDeskButton()->ReorderChildView(GetDeskButton()->prev_desk_button(),
+                                    base::i18n::IsRTL() ? 3 : 1);
+  GetDeskButton()->ReorderChildView(GetDeskButton()->next_desk_button(),
+                                    base::i18n::IsRTL() ? 1 : 3);
+}
 
 void DeskButtonWidget::Initialize(aura::Window* container) {
   CHECK(container);
@@ -338,11 +351,19 @@ bool DeskButtonWidget::OnNativeWidgetActivationChanged(bool active) {
   if (!Widget::OnNativeWidgetActivationChanged(active)) {
     return false;
   }
+
+  // The next desk button will always be on the right, even in RTL, so it should
+  // default focus if `default_last_focusable_child_` is true (meaning we are
+  // reverse tab cycling) or we are in RTL. If both are true or neither are true
+  // then the previous desk button should default focus.
+  const bool default_focus_right =
+      default_last_focusable_child_ != base::i18n::IsRTL();
+
   if (active) {
-    if (default_last_focusable_child_ &&
+    if (default_focus_right &&
         GetDeskButton()->next_desk_button()->GetEnabled()) {
       GetDeskButton()->next_desk_button()->RequestFocus();
-    } else if (!default_last_focusable_child_ &&
+    } else if (!default_focus_right &&
                GetDeskButton()->prev_desk_button()->GetEnabled()) {
       GetDeskButton()->prev_desk_button()->RequestFocus();
     } else {
