@@ -149,6 +149,7 @@ public class BookmarkFolderPickerRenderTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Setup BookmarkModel
+        doReturn(true).when(mBookmarkModel).isFolderVisible(any());
         doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
         doReturn(mRootFolderItem).when(mBookmarkModel).getBookmarkById(mRootFolderId);
         // Reading list folder
@@ -249,7 +250,7 @@ public class BookmarkFolderPickerRenderTest {
     public void testMoveBookmarkFromRoot() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mCoordinator.openFolderForTesting(mRootFolderId); });
-        CriteriaHelper.pollUiThread(() -> mRecyclerView.getAdapter().getItemCount() == 2);
+        CriteriaHelper.pollUiThread(() -> mRecyclerView.getAdapter().getItemCount() == 4);
         onView(withText(mBookmarkBarFolderItem.getTitle()));
         onView(withText(mReadingListFolderItem.getTitle()));
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);

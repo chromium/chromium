@@ -14,6 +14,9 @@ import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_B;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_D;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_E;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_F;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_G;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_H;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,9 +61,12 @@ public class BasicBookmarkQueryHandlerTest {
     public void testBuildBookmarkListForParent_nonRootFolder() {
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(MOBILE_BOOKMARK_ID);
 
-        assertEquals(2, result.size());
+        assertEquals(5, result.size());
         assertEquals(FOLDER_BOOKMARK_ID_A, result.get(0).getBookmarkItem().getId());
         assertEquals(URL_BOOKMARK_ID_A, result.get(1).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_F, result.get(2).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_G, result.get(3).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_H, result.get(4).getBookmarkItem().getId());
     }
 
     @Test

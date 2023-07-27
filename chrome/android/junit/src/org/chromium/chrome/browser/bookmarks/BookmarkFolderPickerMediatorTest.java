@@ -130,6 +130,10 @@ public class BookmarkFolderPickerMediatorTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Setup BookmarkModel.
+        doReturn(true).when(mBookmarkModel).isFolderVisible(any());
+        doReturn(Arrays.asList(mReadingListFolderId))
+                .when(mBookmarkModel)
+                .getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
         doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
         doReturn(mRootFolderItem).when(mBookmarkModel).getBookmarkById(mRootFolderId);
         // Reading list folder
@@ -239,7 +243,7 @@ public class BookmarkFolderPickerMediatorTest {
     @Test
     public void testRootFolder() {
         mMediator.populateFoldersForParentId(mRootFolderId);
-        assertEquals(2, mModelList.size());
+        assertEquals(4, mModelList.size());
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertEquals(false, mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }

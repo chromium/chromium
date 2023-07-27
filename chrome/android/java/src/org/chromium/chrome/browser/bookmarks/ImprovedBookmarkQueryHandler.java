@@ -11,6 +11,7 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -79,14 +80,21 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     private List<BookmarkListEntry> buildBookmarkListForRootView() {
+        List<BookmarkId> foldersExpandedInRootView = Arrays.asList(
+                mBookmarkModel.getOtherFolderId(), mBookmarkModel.getMobileFolderId());
         List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId topLevelId : BookmarkUtils.populateTopLevelFolders(mBookmarkModel)) {
+            // Don't expand the children from folders that are already included in the view.
+            if (!foldersExpandedInRootView.contains(topLevelId)) {
+                bookmarkListEntries.add(listEntryFromIdForRootView(topLevelId));
+                continue;
+            }
+
             for (BookmarkId childId : mBookmarkModel.getChildIds(topLevelId)) {
                 bookmarkListEntries.add(listEntryFromIdForRootView(childId));
             }
         }
-        bookmarkListEntries.add(listEntryFromIdForRootView(mBookmarkModel.getReadingListFolder()));
-        bookmarkListEntries.add(listEntryFromIdForRootView(mBookmarkModel.getDesktopFolderId()));
+
         return bookmarkListEntries;
     }
 

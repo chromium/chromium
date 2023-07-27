@@ -36,6 +36,9 @@ public class SharedBookmarkModelMocks {
     static final BookmarkId URL_BOOKMARK_ID_C = new BookmarkId(sId++, BookmarkType.NORMAL);
     static final BookmarkId URL_BOOKMARK_ID_D = new BookmarkId(sId++, BookmarkType.READING_LIST);
     static final BookmarkId URL_BOOKMARK_ID_E = new BookmarkId(sId++, BookmarkType.READING_LIST);
+    static final BookmarkId URL_BOOKMARK_ID_F = new BookmarkId(sId++, BookmarkType.NORMAL);
+    static final BookmarkId URL_BOOKMARK_ID_G = new BookmarkId(sId++, BookmarkType.NORMAL);
+    static final BookmarkId URL_BOOKMARK_ID_H = new BookmarkId(sId++, BookmarkType.NORMAL);
 
     static final GURL URL_A = new GURL(JUnitTestGURLs.RED_1);
     static final GURL URL_B = new GURL(JUnitTestGURLs.RED_2);
@@ -65,6 +68,12 @@ public class SharedBookmarkModelMocks {
             makeUrlItemWithRead(URL_BOOKMARK_ID_D, "Url D", URL_D, READING_LIST_BOOKMARK_ID, true);
     static final BookmarkItem URL_ITEM_E =
             makeUrlItem(URL_BOOKMARK_ID_E, "Url E", URL_E, READING_LIST_BOOKMARK_ID);
+    static final BookmarkItem URL_ITEM_F =
+            makeUrlItem(URL_BOOKMARK_ID_F, "Url F", URL_A, MOBILE_BOOKMARK_ID);
+    static final BookmarkItem URL_ITEM_G =
+            makeUrlItem(URL_BOOKMARK_ID_G, "Url G", URL_A, MOBILE_BOOKMARK_ID);
+    static final BookmarkItem URL_ITEM_H =
+            makeUrlItem(URL_BOOKMARK_ID_H, "Url H", URL_A, MOBILE_BOOKMARK_ID);
 
     public static void initMocks(BookmarkModel bookmarkModel) {
         doReturn(ROOT_BOOKMARK_ID).when(bookmarkModel).getRootFolderId();
@@ -88,11 +97,15 @@ public class SharedBookmarkModelMocks {
         doReturn(URL_ITEM_C).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_C);
         doReturn(URL_ITEM_D).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_D);
         doReturn(URL_ITEM_E).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_E);
+        doReturn(URL_ITEM_F).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_F);
+        doReturn(URL_ITEM_G).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_G);
+        doReturn(URL_ITEM_H).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_H);
 
         doReturn(true).when(bookmarkModel).isFolderVisible(DESKTOP_BOOKMARK_ID);
         doReturn(false).when(bookmarkModel).isFolderVisible(OTHER_BOOKMARK_ID);
         doReturn(true).when(bookmarkModel).isFolderVisible(MOBILE_BOOKMARK_ID);
-        doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A))
+        doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A, URL_BOOKMARK_ID_F,
+                         URL_BOOKMARK_ID_G, URL_BOOKMARK_ID_H))
                 .when(bookmarkModel)
                 .getChildIds(MOBILE_BOOKMARK_ID);
         doReturn(Arrays.asList(URL_BOOKMARK_ID_B, URL_BOOKMARK_ID_C))

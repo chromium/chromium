@@ -235,6 +235,9 @@ public class BookmarkManagerMediatorTest {
         mActivityScenarioRule.getScenario().onActivity((activity) -> {
             mActivity = spy(activity);
 
+            // Setup Profile.
+            Profile.setLastUsedProfileForTesting(mProfile);
+
             // Setup UrlFormatter.
             mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
             doAnswer(invocation -> {
@@ -275,6 +278,10 @@ public class BookmarkManagerMediatorTest {
                     .when(mBookmarkModel)
                     .getBookmarkById(mReadingListFolderId);
             doReturn(mReadingListItem).when(mBookmarkModel).getBookmarkById(mReadingListId);
+            doReturn(true).when(mBookmarkModel).isFolderVisible(any());
+            doReturn(Arrays.asList(mReadingListFolderId))
+                    .when(mBookmarkModel)
+                    .getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
 
             // Setup SelectableListLayout.
             doReturn(mActivity).when(mSelectableListLayout).getContext();
