@@ -99,7 +99,7 @@ class WebStateList;
 @property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
 
 // Recorder for content suggestions metrics.
-@property(nonatomic, assign)
+@property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Disconnects the mediator.

@@ -41,7 +41,7 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
 
 // Recorder for content suggestions metrics.
-@property(nonatomic, assign)
+@property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Delegate for SetUpListView events.
