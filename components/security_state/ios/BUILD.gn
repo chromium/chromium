@@ -5,7 +5,6 @@
 import("//build/config/features.gni")
 
 component("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "security_state_utils.h",
     "security_state_utils.mm",
@@ -22,7 +21,6 @@ component("ios") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "security_state_utils_unittest.mm" ]
   deps = [

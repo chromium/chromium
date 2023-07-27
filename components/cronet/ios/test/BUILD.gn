@@ -43,5 +43,4 @@ test("cronet_test") {
   defines = [ "CRONET_TESTS_IMPLEMENTATION" ]
 
   bundle_deps = [ "//components/cronet/ios:cronet_framework+bundle" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

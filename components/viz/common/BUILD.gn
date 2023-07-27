@@ -79,8 +79,6 @@ if (skia_use_metal) {
       "//ui/gl",
     ]
 
-    viz_add_configs += [ "//build/config/compiler:enable_arc" ]
-
     frameworks = [
       "Metal.framework",
       "Foundation.framework",

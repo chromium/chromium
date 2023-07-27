@@ -22,6 +22,4 @@ static_library("browser") {
   ]
 
   public_deps = [ "//components/commerce/core/internals" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -87,10 +87,7 @@ source_set("cronet_sources") {
     deps += [ "//base:i18n" ]
   }
 
-  configs += [
-    ":disable_deprecated_errors",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":disable_deprecated_errors" ]
 }
 
 source_set("cronet_sources_with_global_state") {
@@ -168,8 +165,6 @@ static_library("cronet_static") {
   sources = _cronet_sources + [ "ios_global_state_configuration.cc" ]
   public_configs = [ ":cronet_include_config" ]
   public_deps = [ "//components/grpc_support" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 # A static library which contains all dependencies of :cronet_static.

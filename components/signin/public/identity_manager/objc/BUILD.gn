@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("objc") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "identity_manager_observer_bridge.h",
     "identity_manager_observer_bridge.mm",
@@ -14,8 +13,6 @@ source_set("objc") {
 
 source_set("unit_tests") {
   testonly = true
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [ "identity_manager_observer_bridge_unittest.mm" ]
 

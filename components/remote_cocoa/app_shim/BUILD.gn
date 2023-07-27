@@ -79,7 +79,6 @@ component("app_shim") {
     "//ui/gfx/geometry",
     "//ui/strings:ui_strings_grit",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [
     "Cocoa.framework",
     "QuartzCore.framework",

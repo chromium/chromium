@@ -11,10 +11,7 @@ source_set("password_protection") {
     "request_canceler_ios.mm",
   ]
 
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",

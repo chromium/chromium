@@ -8,10 +8,7 @@ source_set("allow_list") {
     "safe_browsing_url_allow_list.mm",
   ]
 
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
@@ -44,6 +41,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

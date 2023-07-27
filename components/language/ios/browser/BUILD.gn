@@ -5,7 +5,6 @@
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_language_detection_tab_helper.h",
     "ios_language_detection_tab_helper.mm",
@@ -44,7 +43,6 @@ optimize_ts("language_detection_js") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_language_detection_tab_helper_observer_bridge_unittest.mm",

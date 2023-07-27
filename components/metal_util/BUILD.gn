@@ -36,8 +36,6 @@ component("metal_util") {
     "MetalKit.framework",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   if (is_mac) {
     sources += [
       "device_removal.h",

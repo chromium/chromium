@@ -6,8 +6,6 @@ import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
 component("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   public_deps = [ ":password_manager_feature_header" ]
 
   deps = [
@@ -62,8 +60,6 @@ component("ios") {
 }
 
 source_set("password_manager_feature_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/autofill/core/common",
@@ -109,7 +105,6 @@ static_library("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "account_select_fill_data_unittest.cc",
@@ -154,7 +149,6 @@ source_set("unit_tests") {
 }
 
 source_set("fake_bulk_leak_check_service") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_bulk_leak_check_service.h",

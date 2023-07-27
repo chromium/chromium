@@ -30,7 +30,6 @@ static_library("open_from_clipboard") {
       "clipboard_recent_content_ios.h",
       "clipboard_recent_content_ios.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 
@@ -55,7 +54,6 @@ source_set("open_from_clipboard_impl") {
       "clipboard_recent_content_impl_ios.h",
       "clipboard_recent_content_impl_ios.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "MobileCoreServices.framework" ]
   }
 }
@@ -99,6 +97,5 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [ "clipboard_recent_content_ios_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }

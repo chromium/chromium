@@ -44,7 +44,6 @@ static_library("test") {
 
   if (is_ios) {
     sources += [ "thumbnail_ios.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   } else {
     sources += [ "thumbnail.cc" ]
   }

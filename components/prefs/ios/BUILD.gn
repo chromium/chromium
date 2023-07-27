@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pref_observer_bridge.h",
     "pref_observer_bridge.mm",

@@ -11,7 +11,6 @@ group("ios") {
 }
 
 source_set("ukm_url_recorder") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ukm_url_recorder.h",
     "ukm_url_recorder.mm",
@@ -25,7 +24,6 @@ source_set("ukm_url_recorder") {
 }
 
 source_set("ukm_reporting_ios_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [ "//base" ]
 
   sources = [
@@ -35,7 +33,6 @@ source_set("ukm_reporting_ios_util") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "ukm_url_recorder_unittest.mm" ]
   deps = [

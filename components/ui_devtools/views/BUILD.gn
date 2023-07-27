@@ -53,7 +53,6 @@ source_set("views") {
       "overlay_agent_mac.h",
       "overlay_agent_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 
