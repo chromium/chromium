@@ -10,10 +10,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/unexportable_keys/background_task_impl.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unexportable_keys {
@@ -28,11 +30,13 @@ struct BackgroundThreadData {
 class FakeTask : public internal::BackgroundTaskImpl<size_t> {
  public:
   explicit FakeTask(BackgroundThreadData& background_data,
+                    BackgroundTaskPriority priority,
                     base::OnceCallback<void(size_t)> callback)
       : internal::BackgroundTaskImpl<size_t>(
             base::BindLambdaForTesting(
                 [&background_data]() { return ++background_data.task_count; }),
-            std::move(callback)) {}
+            std::move(callback),
+            priority) {}
 };
 
 class BackgroundLongTaskSchedulerTest : public testing::Test {
@@ -60,9 +64,9 @@ class BackgroundLongTaskSchedulerTest : public testing::Test {
 
 TEST_F(BackgroundLongTaskSchedulerTest, PostTask) {
   base::test::TestFuture<size_t> future;
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback()));
   EXPECT_FALSE(future.IsReady());
 
   RunAllBackgroundTasks();
@@ -75,12 +79,12 @@ TEST_F(BackgroundLongTaskSchedulerTest, PostTwoTasks) {
   base::test::TestFuture<size_t> future;
   base::test::TestFuture<size_t> future2;
   // The first task gets scheduled on the background thread immediately.
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future2.GetCallback()),
-      BackgroundTaskPriority::kUserBlocking);
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback()));
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserBlocking,
+      future2.GetCallback()));
 
   RunAllBackgroundTasks();
 
@@ -90,16 +94,16 @@ TEST_F(BackgroundLongTaskSchedulerTest, PostTwoTasks) {
 
 TEST_F(BackgroundLongTaskSchedulerTest, PostTwoTasks_Sequentially) {
   base::test::TestFuture<size_t> future;
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback()));
   RunAllBackgroundTasks();
   EXPECT_EQ(future.Get(), 1U);
 
   base::test::TestFuture<size_t> future2;
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future2.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future2.GetCallback()));
   RunAllBackgroundTasks();
   EXPECT_EQ(future2.Get(), 2U);
 }
@@ -109,17 +113,17 @@ TEST_F(BackgroundLongTaskSchedulerTest, TaskPriority) {
   base::test::TestFuture<size_t> future2;
   base::test::TestFuture<size_t> future3;
   // The first task gets scheduled on the background thread immediately.
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future2.GetCallback()),
-      BackgroundTaskPriority::kUserVisible);
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback()));
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserVisible,
+      future2.GetCallback()));
   // `future3` has higher priority than `future2` and should run before, even
   // though it was scheduled after.
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future3.GetCallback()),
-      BackgroundTaskPriority::kUserBlocking);
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserBlocking,
+      future3.GetCallback()));
 
   RunAllBackgroundTasks();
 
@@ -135,15 +139,15 @@ TEST_F(BackgroundLongTaskSchedulerTest, CancelPendingTask) {
       future2.GetCallback());
   base::test::TestFuture<size_t> future3;
   // The first task gets scheduled on the background thread immediately.
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
   scheduler().PostTask(std::make_unique<FakeTask>(
-                           background_data(), cancelable_wrapper2.callback()),
-                       BackgroundTaskPriority::kBestEffort);
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future3.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback()));
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      cancelable_wrapper2.callback()));
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future3.GetCallback()));
 
   cancelable_wrapper2.Cancel();
   RunAllBackgroundTasks();
@@ -158,8 +162,8 @@ TEST_F(BackgroundLongTaskSchedulerTest, CancelRunningTask) {
   base::CancelableOnceCallback<void(size_t)> cancelable_wrapper(
       future.GetCallback());
   scheduler().PostTask(std::make_unique<FakeTask>(
-                           background_data(), cancelable_wrapper.callback()),
-                       BackgroundTaskPriority::kBestEffort);
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      cancelable_wrapper.callback()));
 
   cancelable_wrapper.Cancel();
   RunAllBackgroundTasks();
@@ -171,11 +175,90 @@ TEST_F(BackgroundLongTaskSchedulerTest, CancelRunningTask) {
   // Check that the background count has been incremented by posting another
   // task.
   base::test::TestFuture<size_t> future2;
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), future2.GetCallback()),
-      BackgroundTaskPriority::kBestEffort);
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future2.GetCallback()));
   RunAllBackgroundTasks();
   EXPECT_EQ(future2.Get(), 2U);
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, DurationHistogram) {
+  const std::string kBaseHistogramName =
+      "Crypto.UnexportableKeys.BackgroundTaskDuration";
+  base::HistogramTester histogram_tester;
+  base::HistogramTester::CountsMap expected_counts;
+
+  // Execute a `BackgroundTaskPriority::kBestEffort` task.
+  base::test::TestFuture<size_t> future;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback()));
+  RunAllBackgroundTasks();
+  EXPECT_TRUE(future.Wait());
+
+  expected_counts[kBaseHistogramName] = 1;
+  expected_counts[kBaseHistogramName + ".BestEffort"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kBaseHistogramName),
+              testing::ContainerEq(expected_counts));
+
+  // Execute a `BackgroundTaskPriority::kUserVisible` task.
+  base::test::TestFuture<size_t> future2;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserVisible,
+      future2.GetCallback()));
+  RunAllBackgroundTasks();
+  EXPECT_TRUE(future2.Wait());
+
+  expected_counts[kBaseHistogramName] = 2;
+  expected_counts[kBaseHistogramName + ".UserVisible"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kBaseHistogramName),
+              testing::ContainerEq(expected_counts));
+
+  // Execute a `BackgroundTaskPriority::kUserBlocking` task.
+  base::test::TestFuture<size_t> future3;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserBlocking,
+      future3.GetCallback()));
+  RunAllBackgroundTasks();
+  EXPECT_TRUE(future3.Wait());
+
+  expected_counts[kBaseHistogramName] = 3;
+  expected_counts[kBaseHistogramName + ".UserBlocking"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kBaseHistogramName),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, DurationHistogramWithCanceledTasks) {
+  base::HistogramTester histogram_tester;
+
+  // The first task gets scheduled on the background thread immediately.
+  base::test::TestFuture<size_t> future;
+  base::CancelableOnceCallback<void(size_t)> cancelable_wrapper(
+      future.GetCallback());
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      cancelable_wrapper.callback()));
+
+  // The second task gets put into a task queue.
+  base::test::TestFuture<size_t> future2;
+  base::CancelableOnceCallback<void(size_t)> cancelable_wrapper2(
+      future.GetCallback());
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserVisible,
+      cancelable_wrapper.callback()));
+
+  cancelable_wrapper.Cancel();
+  cancelable_wrapper2.Cancel();
+  RunAllBackgroundTasks();
+
+  // The first task still ran, so it will be recorded.
+  // The second task didn't run and it will not be recorded.
+  base::HistogramTester::CountsMap expected_counts = {
+      {"Crypto.UnexportableKeys.BackgroundTaskDuration", 1},
+      {"Crypto.UnexportableKeys.BackgroundTaskDuration.BestEffort", 1}};
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Crypto.UnexportableKeys.BackgroundTaskDuration"),
+              testing::ContainerEq(expected_counts));
 }
 
 }  // namespace unexportable_keys

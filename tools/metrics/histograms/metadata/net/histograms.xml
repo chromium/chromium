@@ -216,6 +216,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Crypto.UnexportableKeys.BackgroundTaskDuration{Priority}"
+    units="ms" expires_after="2024-01-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>kristianm@chromium.org</owner>
+  <summary>
+    Records the time that passed between starting a TPM operation on an
+    unexportable_keys::UnexportableKeyService and completing the operation
+    (either successfully or not).
+
+    Includes operations that were scheduled with {Priority}.
+
+    Recorded right after a TPM operation completes.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="all priorities"/>
+    <variant name=".BestEffort" summary="the BestEffort priority"/>
+    <variant name=".UserBlocking" summary="the UserBlocking priority"/>
+    <variant name=".UserVisible" summary="the UserVisible priority"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.VirtualKeySupport" enum="TPMSupport"
     expires_after="2024-03-01">
   <owner>kristianm@chromium.org</owner>

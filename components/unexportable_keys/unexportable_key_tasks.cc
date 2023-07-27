@@ -27,6 +27,7 @@ GenerateKeyTask::GenerateKeyTask(
     std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
+    BackgroundTaskPriority priority,
     base::OnceCallback<void(GenerateKeyTask::ReturnType)> callback)
     : internal::BackgroundTaskImpl<GenerateKeyTask::ReturnType>(
           base::BindOnce(
@@ -35,26 +36,31 @@ GenerateKeyTask::GenerateKeyTask(
               std::vector<crypto::SignatureVerifier::SignatureAlgorithm>(
                   acceptable_algorithms.begin(),
                   acceptable_algorithms.end())),
-          std::move(callback)) {}
+          std::move(callback),
+          priority) {}
 
 FromWrappedKeyTask::FromWrappedKeyTask(
     std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
     base::span<const uint8_t> wrapped_key,
+    BackgroundTaskPriority priority,
     base::OnceCallback<void(FromWrappedKeyTask::ReturnType)> callback)
     : internal::BackgroundTaskImpl<FromWrappedKeyTask::ReturnType>(
           base::BindOnce(
               &crypto::UnexportableKeyProvider::FromWrappedSigningKeySlowly,
               std::move(key_provider),
               std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end())),
-          std::move(callback)) {}
+          std::move(callback),
+          priority) {}
 
 SignTask::SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
                    base::span<const uint8_t> data,
+                   BackgroundTaskPriority priority,
                    base::OnceCallback<void(SignTask::ReturnType)> callback)
     : internal::BackgroundTaskImpl<SignTask::ReturnType>(
           base::BindOnce(&SignSlowlyWithRefCountedKey,
                          std::move(signing_key),
                          std::vector<uint8_t>(data.begin(), data.end())),
-          std::move(callback)) {}
+          std::move(callback),
+          priority) {}
 
 }  // namespace unexportable_keys

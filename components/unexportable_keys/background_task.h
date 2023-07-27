@@ -7,6 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
+#include "components/unexportable_keys/background_task_priority.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -35,6 +37,12 @@ class BackgroundTask {
 
   // Returns the current status of the task.
   virtual Status GetStatus() const = 0;
+
+  // Returns the current priority of the task.
+  virtual BackgroundTaskPriority GetPriority() const = 0;
+
+  // Returns the elapsed time since the task creation.
+  virtual base::TimeDelta GetElapsedTimeSinceCreation() const = 0;
 };
 
 }  // namespace unexportable_keys
