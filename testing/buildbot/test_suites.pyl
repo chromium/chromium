@@ -6039,7 +6039,6 @@
       'chromeos_browser_all_tast_tests',
       'chromeos_browser_integration_tests',
       'chromeos_system_friendly_gtests',
-      'chromeos_integration_tests',
     ],
 
     'chromium_android_gtests': [

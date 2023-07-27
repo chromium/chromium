@@ -1741,17 +1741,6 @@
       'Win10 Tests x64 (dbg)',
     ],
   },
-  'chromeos_integration_tests': {
-    'modifications': {
-      # TODO(crbug.com/1464750) Integrate stop ui in the framework and
-      # enable all tests.
-      'chromeos-amd64-generic-rel': {
-        'args': [
-          '--stop-ui',
-          '--gtest_filter=DemoIntegrationTest*'],
-      },
-    },
-  },
   'components_browsertests': {
     'modifications': {
       'Linux TSan Tests': {
