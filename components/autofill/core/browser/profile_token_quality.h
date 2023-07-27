@@ -15,7 +15,6 @@
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -130,8 +129,8 @@ class ProfileTokenQuality {
       ServerFieldType type) const;
 
   // Returns true if `a` and `b` are within Levenshtein distance `k`.
-  static bool IsWithinLevenshteinDistanceForTesting(base::StringPiece16 a,
-                                                    base::StringPiece16 b,
+  static bool IsWithinLevenshteinDistanceForTesting(std::u16string_view a,
+                                                    std::u16string_view b,
                                                     size_t k);
 
   void disable_randomization_for_testing() {

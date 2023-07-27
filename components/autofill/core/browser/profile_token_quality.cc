@@ -16,7 +16,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -71,8 +70,8 @@ ServerFieldType GetStoredTypeOf(ServerFieldType type) {
 // Returns true if `a` and `b` differ by Levenshtein distance of at most `k`.
 // Edits, inserts and removes each count as one step.
 // Runs in O(|a| * k) time and O(k) memory.
-bool IsWithinLevenshteinDistance(base::StringPiece16 a,
-                                 base::StringPiece16 b,
+bool IsWithinLevenshteinDistance(std::u16string_view a,
+                                 std::u16string_view b,
                                  size_t k) {
   // If the string's lengths differ by more than `k`, so does their
   // Levenshtein distance.
@@ -261,8 +260,8 @@ ProfileTokenQuality::GetObservationTypesForFieldType(
 
 // static
 bool ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(
-    base::StringPiece16 a,
-    base::StringPiece16 b,
+    std::u16string_view a,
+    std::u16string_view b,
     size_t k) {
   return IsWithinLevenshteinDistance(a, b, k);
 }

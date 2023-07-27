@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -238,8 +238,8 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
 TEST_F(ProfileTokenQualityTest, IsWithinLevenshteinDistance) {
   // Checks if the Levenshtein distance between `a` and `b` is exactly `k`, by
   // checking that it is <= `k` but not <= `k-1`.
-  auto has_levenshtein_distance = [](base::StringPiece16 a,
-                                     base::StringPiece16 b, size_t k) {
+  auto has_levenshtein_distance = [](std::u16string_view a,
+                                     std::u16string_view b, size_t k) {
     return ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(a, b,
                                                                       k) &&
            (k == 0 ||
