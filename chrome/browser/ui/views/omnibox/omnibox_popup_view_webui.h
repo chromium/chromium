@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -57,6 +58,9 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   RealboxHandler* handler() const;
 
  private:
+  // Time when this instance was constructed, or null after use for histogram.
+  base::TimeTicks construction_time_;
+
   // The edit view that invokes us. May be nullptr in tests.
   raw_ptr<OmniboxViewViews> omnibox_view_;
 

@@ -2439,6 +2439,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.WebUI.FirstUpdate" units="ms"
+    expires_after="2024-08-01">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the number of milliseconds between the webui omnibox popup
+    construction and its first UpdatePopupAppearance call. This measures how
+    long the popup existed before first use. Since the webui begins the
+    asynchronous process of initialization and remote binding immediately on
+    construction, this metric can be seen as a time budget for handler
+    preparation. See also Omnibox.WebUI.HandlerReady.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.WebUI.HandlerReady" enum="Boolean"
+    expires_after="2024-08-01">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the ready state of the webui handler when first waiting for it to
+    initialize. This is expected to be true in nearly all cases, but when this
+    is false, Omnibox.WebUI.HandlerWait will be recorded to measure wait
+    duration. See also Omnibox.WebUI.FirstUpdate.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.WebUI.HandlerWait" units="ms"
+    expires_after="2024-08-01">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the number of milliseconds spent waiting for the webui handler to
+    fully initialize. This wait duration is recorded only when
+    Omnibox.WebUI.HandlerReady records false.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ZeroPrefixFocusType" enum="OmniboxFocusType"
     expires_after="2024-02-28">
   <owner>pnoland@google.com</owner>

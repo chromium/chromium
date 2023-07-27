@@ -12,6 +12,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -85,6 +86,8 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
   }
 
   void SetUp() override;
+
+  void WaitForHandler() { popup_view()->presenter_->WaitForHandler(); }
 
  private:
   OmniboxTriggeredFeatureService triggered_feature_service_;

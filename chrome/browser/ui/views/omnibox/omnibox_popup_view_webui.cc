@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -43,16 +44,12 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
                                              OmniboxController* controller,
                                              LocationBarView* location_bar_view)
     : OmniboxPopupView(controller),
+      construction_time_(base::TimeTicks::Now()),
       omnibox_view_(omnibox_view),
       location_bar_view_(location_bar_view),
       presenter_(std::make_unique<OmniboxPopupPresenter>(location_bar_view,
                                                          controller)) {
   model()->set_popup_view(this);
-
-  // This must be the last thing to happen after full initialization because
-  // the LocationBarView accesses the popup view while waiting for handler.
-  // Such is why the method must be called from here instead of presenter ctor.
-  presenter_->WaitForHandler();
 }
 
 OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
@@ -72,6 +69,13 @@ void OmniboxPopupViewWebUI::OnSelectionChanged(
 }
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
+  // Measure time since construction just once.
+  if (!construction_time_.is_null()) {
+    base::TimeDelta delta = base::TimeTicks::Now() - construction_time_;
+    construction_time_ = base::TimeTicks();
+    base::UmaHistogramTimes("Omnibox.WebUI.FirstUpdate", delta);
+  }
+
   if (controller()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
     presenter_->Hide();
   } else {

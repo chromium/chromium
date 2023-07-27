@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -21,7 +24,8 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                              OmniboxController* controller)
     : views::WebView(location_bar_view->profile()),
       location_bar_view_(location_bar_view),
-      widget_(nullptr) {
+      widget_(nullptr),
+      waited_for_handler_(false) {
   set_owned_by_client();
 
   // Prepare for instantiation of a `RealboxHandler` that will connect with
@@ -80,6 +84,10 @@ bool OmniboxPopupPresenter::IsShown() const {
 }
 
 RealboxHandler* OmniboxPopupPresenter::GetHandler() {
+  if (!waited_for_handler_) {
+    waited_for_handler_ = true;
+    WaitForHandler();
+  }
   OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
       GetWebContents()->GetWebUI()->GetController());
   CHECK(IsHandlerReady());
@@ -119,26 +127,28 @@ gfx::Rect OmniboxPopupPresenter::GetTargetBounds() const {
 }
 
 void OmniboxPopupPresenter::WaitForHandler() {
-  if (IsHandlerReady()) {
-    return;
+  bool ready = IsHandlerReady();
+  base::UmaHistogramBoolean("Omnibox.WebUI.HandlerReady", ready);
+  if (!ready) {
+    SCOPED_UMA_HISTOGRAM_TIMER("Omnibox.WebUI.HandlerWait");
+    base::RunLoop loop;
+    auto quit = loop.QuitClosure();
+    auto runner = base::ThreadPool::CreateTaskRunner(base::TaskTraits());
+    runner->PostTask(FROM_HERE,
+                     base::BindOnce(
+                         [](OmniboxPopupPresenter* presenter,
+                            base::RepeatingClosure* closure) {
+                           while (!presenter->IsHandlerReady()) {
+                             base::PlatformThread::Sleep(base::Milliseconds(1));
+                           }
+                           closure->Run();
+                         },
+                         base::Unretained(this), &quit));
+    // base::Unretained is safe here because this is not currently destructing
+    // and we are blocking until quit closure is run.
+    loop.Run();
+    CHECK(IsHandlerReady());
   }
-  base::RunLoop loop;
-  auto quit = loop.QuitClosure();
-  auto runner = base::ThreadPool::CreateTaskRunner(base::TaskTraits());
-  runner->PostTask(FROM_HERE,
-                   base::BindOnce(
-                       [](OmniboxPopupPresenter* presenter,
-                          base::RepeatingClosure* closure) {
-                         while (!presenter->IsHandlerReady()) {
-                           base::PlatformThread::Sleep(base::Milliseconds(1));
-                         }
-                         closure->Run();
-                       },
-                       base::Unretained(this), &quit));
-  // base::Unretained is safe here because this is not currently destructing and
-  // we are blocking until quit closure is run.
-  loop.Run();
-  CHECK(IsHandlerReady());
 }
 
 bool OmniboxPopupPresenter::IsHandlerReady() {

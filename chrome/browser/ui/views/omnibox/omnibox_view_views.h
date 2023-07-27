@@ -321,10 +321,6 @@ class OmniboxViewViews
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
 
-  // When true, the `popup_view_` is a WebUI implementation; when false,
-  // it is a Views implementation.
-  bool popup_is_webui_;
-
   // Owns either an OmniboxPopupViewViews or an OmniboxPopupViewWebUI.
   std::unique_ptr<OmniboxPopupView> popup_view_;
 

@@ -48,12 +48,13 @@ class OmniboxPopupPresenter : public views::WebView,
   // of |location_bar_view_|.
   gfx::Rect GetTargetBounds() const;
 
+ private:
+  friend class OmniboxPopupViewWebUITest;
+
   // Block until handler is ready.
   void WaitForHandler();
 
- private:
   // Tells whether the WebUI handler is loaded and ready to receive calls.
-  // This must return true before any calls to GetHandler are made.
   bool IsHandlerReady();
 
   // Remove observation and reset widget, optionally requesting it to close.
@@ -64,6 +65,9 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Created by this, closed by this; owned and destroyed by OS.
   base::raw_ptr<views::Widget> widget_;
+
+  // Flags whether this waited for the handler and recorded associated metrics.
+  bool waited_for_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
