@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -20,10 +21,13 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
@@ -55,6 +59,119 @@ class GLTextureImageRepresentationImpl : public GLTextureImageRepresentation {
   void EndAccess() override {}
 
   std::vector<raw_ptr<gles2::Texture>> textures_;
+};
+
+// Skia representation.
+class SkiaGaneshImageRepresentationImpl : public SkiaGaneshImageRepresentation {
+ public:
+  SkiaGaneshImageRepresentationImpl(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      scoped_refptr<SharedContextState> context_state,
+      std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
+      MemoryTypeTracker* tracker)
+      : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                      manager,
+                                      backing,
+                                      tracker),
+        context_state_(std::move(context_state)),
+        promise_textures_(std::move(promise_textures)) {
+    DCHECK_EQ(promise_textures_.size(), NumPlanesExpected());
+#if DCHECK_IS_ON()
+    if (context_state_->GrContextIsGL()) {
+      context_ = gl::GLContext::GetCurrent();
+    }
+#endif
+  }
+  ~SkiaGaneshImageRepresentationImpl() override {
+    DCHECK(write_surfaces_.empty());
+  }
+
+ private:
+  // SkiaImageRepresentation:
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
+      int final_msaa_count,
+      const SkSurfaceProps& surface_props,
+      const gfx::Rect& update_rect,
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+    CheckContext();
+
+    if (!write_surfaces_.empty()) {
+      // Write access is already in progress.
+      return {};
+    }
+
+    for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
+      SkColorType sk_color_type = viz::ToClosestSkColorType(
+          /*gpu_compositing=*/true, format(), plane);
+      // Gray is not a renderable single channel format, but alpha is.
+      if (sk_color_type == kGray_8_SkColorType) {
+        sk_color_type = kAlpha_8_SkColorType;
+      }
+      auto surface = SkSurfaces::WrapBackendTexture(
+          context_state_->gr_context(),
+          promise_textures_[plane]->backendTexture(), surface_origin(),
+          final_msaa_count, sk_color_type,
+          backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
+          &surface_props);
+      if (!surface) {
+        write_surfaces_.clear();
+        return {};
+      }
+      write_surfaces_.push_back(std::move(surface));
+    }
+
+    return write_surfaces_;
+  }
+
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphore,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+    CheckContext();
+
+    return promise_textures_;
+  }
+
+  void EndWriteAccess() override {
+    if (!write_surfaces_.empty()) {
+#if DCHECK_IS_ON()
+      for (auto& write_surface : write_surfaces_) {
+        DCHECK(write_surface->unique());
+      }
+      CheckContext();
+#endif
+      write_surfaces_.clear();
+    }
+  }
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+    CheckContext();
+    return promise_textures_;
+  }
+
+  void EndReadAccess() override {}
+
+  bool SupportsMultipleConcurrentReadAccess() override { return true; }
+
+  void CheckContext() {
+#if DCHECK_IS_ON()
+    if (!context_state_->context_lost() && context_) {
+      DCHECK(gl::GLContext::GetCurrent() == context_);
+    }
+#endif
+  }
+
+  scoped_refptr<SharedContextState> context_state_;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
+  std::vector<sk_sp<SkSurface>> write_surfaces_;
+#if DCHECK_IS_ON()
+  raw_ptr<gl::GLContext> context_ = nullptr;
+#endif
 };
 
 }  // namespace
@@ -240,7 +357,7 @@ GLTextureImageBacking::ProduceSkiaGanesh(
     }
   }
 
-  return std::make_unique<SkiaGLCommonRepresentation>(
+  return std::make_unique<SkiaGaneshImageRepresentationImpl>(
       manager, this, std::move(context_state), cached_promise_textures_,
       tracker);
 }

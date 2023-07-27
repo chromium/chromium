@@ -50,51 +50,6 @@ class GLTexturePassthroughGLCommonRepresentation
   GLenum mode_ = 0;
 };
 
-// Skia representation for both GLTextureImageBackingHelper.
-class SkiaGLCommonRepresentation : public SkiaGaneshImageRepresentation {
- public:
-  SkiaGLCommonRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      scoped_refptr<SharedContextState> context_state,
-      std::vector<sk_sp<GrPromiseImageTexture>> promise_texture,
-      MemoryTypeTracker* tracker);
-  ~SkiaGLCommonRepresentation() override;
-
-  void SetBeginReadAccessCallback(
-      base::RepeatingClosure begin_read_access_callback);
-
- private:
-  // SkiaImageRepresentation:
-  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
-      int final_msaa_count,
-      const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect,
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphore,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  void EndWriteAccess() override;
-  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  void EndReadAccess() override;
-  bool SupportsMultipleConcurrentReadAccess() override;
-
-  void CheckContext();
-
-  scoped_refptr<SharedContextState> context_state_;
-  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
-  std::vector<sk_sp<SkSurface>> write_surfaces_;
-#if DCHECK_IS_ON()
-  raw_ptr<gl::GLContext> context_ = nullptr;
-#endif
-};
-
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_COMMON_REPRESENTATIONS_H_
