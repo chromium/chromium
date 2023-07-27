@@ -82,47 +82,6 @@ DXGI_FORMAT GetDXGITypelessFormat(viz::SharedImageFormat format) {
   return DXGI_FORMAT_UNKNOWN;
 }
 
-scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
-    DXGISharedHandleManager* dxgi_shared_handle_manager,
-    gfx::GpuMemoryBufferHandle handle,
-    viz::SharedImageFormat format,
-    const gfx::Size& size) {
-  if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
-    LOG(ERROR) << "Invalid handle with type: " << handle.type;
-    return nullptr;
-  }
-
-  if (!handle.dxgi_token.has_value()) {
-    LOG(ERROR) << "Missing token for DXGI handle";
-    return nullptr;
-  }
-
-  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
-      dxgi_shared_handle_manager->GetOrCreateSharedHandleState(
-          std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle));
-  if (!dxgi_shared_handle_state) {
-    LOG(ERROR) << "Failed to open DXGI shared handle";
-    return nullptr;
-  }
-
-  D3D11_TEXTURE2D_DESC desc = {};
-  dxgi_shared_handle_state->d3d11_texture()->GetDesc(&desc);
-
-  // TODO: Add checks for device specific limits.
-  if (desc.Width != static_cast<UINT>(size.width()) ||
-      desc.Height != static_cast<UINT>(size.height())) {
-    LOG(ERROR) << "Size must match texture being opened";
-    return nullptr;
-  }
-
-  if ((desc.Format != GetDXGIFormatForGMB(format)) &&
-      (desc.Format != GetDXGITypelessFormat(format))) {
-    LOG(ERROR) << "Format must match texture being opened";
-    return nullptr;
-  }
-
-  return dxgi_shared_handle_state;
-}
 constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -619,18 +578,50 @@ D3DImageBackingFactory::CreateSharedImageGMBs(
     return nullptr;
   }
 
-  DCHECK_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
-  DCHECK(plane == gfx::BufferPlane::DEFAULT || plane == gfx::BufferPlane::Y ||
-         plane == gfx::BufferPlane::UV);
-
-  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
-      ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
-                                  std::move(handle), format, size);
-  if (!dxgi_shared_handle_state) {
+  if (plane != gfx::BufferPlane::DEFAULT && plane != gfx::BufferPlane::Y &&
+      plane != gfx::BufferPlane::UV) {
+    LOG(ERROR) << "Invalid buffer plane " << gfx::BufferPlaneToString(plane);
     return nullptr;
   }
 
-  auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
+  if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
+    LOG(ERROR) << "Invalid handle with type: " << handle.type;
+    return nullptr;
+  }
+
+  if (!handle.dxgi_token.has_value()) {
+    LOG(ERROR) << "Missing token for DXGI handle";
+    return nullptr;
+  }
+
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
+          std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle),
+          d3d11_device_);
+  if (!dxgi_shared_handle_state) {
+    LOG(ERROR) << "Failed to retrieve matching DXGI shared handle state";
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture =
+      dxgi_shared_handle_state->GetOrCreateD3D11Texture(d3d11_device_);
+  CHECK(d3d11_texture);
+
+  D3D11_TEXTURE2D_DESC d3d11_texture_desc = {};
+  d3d11_texture->GetDesc(&d3d11_texture_desc);
+
+  // TODO: Add checks for device specific limits.
+  if (d3d11_texture_desc.Width != static_cast<UINT>(size.width()) ||
+      d3d11_texture_desc.Height != static_cast<UINT>(size.height())) {
+    LOG(ERROR) << "Size must match texture being opened";
+    return nullptr;
+  }
+
+  if ((d3d11_texture_desc.Format != GetDXGIFormatForGMB(format)) &&
+      (d3d11_texture_desc.Format != GetDXGITypelessFormat(format))) {
+    LOG(ERROR) << "Format must match texture being opened";
+    return nullptr;
+  }
 
   const GLenum texture_target = GL_TEXTURE_2D;
   std::unique_ptr<D3DImageBacking> backing;

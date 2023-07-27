@@ -80,17 +80,17 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
 
 SharedImageManager::SharedImageManager(bool thread_safe,
                                        bool display_context_on_another_thread)
-    : display_context_on_another_thread_(display_context_on_another_thread) {
-  DCHECK(!display_context_on_another_thread || thread_safe);
-  if (thread_safe)
-    lock_.emplace();
+    : display_context_on_another_thread_(display_context_on_another_thread)
 #if BUILDFLAG(IS_WIN)
-  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  if (d3d11_device) {
-    dxgi_shared_handle_manager_ =
-        base::MakeRefCounted<DXGISharedHandleManager>(std::move(d3d11_device));
-  }
+      ,
+      dxgi_shared_handle_manager_(
+          base::MakeRefCounted<DXGISharedHandleManager>())
 #endif
+{
+  DCHECK(!display_context_on_another_thread || thread_safe);
+  if (thread_safe) {
+    lock_.emplace();
+  }
   CALLED_ON_VALID_THREAD();
 
   // In tests there might not be a SingleThreadTaskRunner for this thread.

@@ -796,7 +796,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(const wgpu::Device& device,
   // D3D12 access is only allowed with shared handle. Note that BeginAccessD3D12
   // is a no-op if fences are used instead of keyed mutex.
   if (!dxgi_shared_handle_state_ ||
-      !dxgi_shared_handle_state_->BeginAccessD3D12()) {
+      !dxgi_shared_handle_state_->BeginAccessDawn()) {
     DLOG(ERROR) << "Missing shared handle state or BeginAccessD3D12 failed";
     return nullptr;
   }
@@ -857,7 +857,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(const wgpu::Device& device,
       wgpu::Texture::Acquire(external_image->BeginAccess(&descriptor));
   if (!texture) {
     DLOG(ERROR) << "Failed to begin access and produce WGPUTexture";
-    dxgi_shared_handle_state_->EndAccessD3D12();
+    dxgi_shared_handle_state_->EndAccessDawn();
     return nullptr;
   }
 
@@ -919,7 +919,7 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
   }
 
   if (dxgi_shared_handle_state_)
-    dxgi_shared_handle_state_->EndAccessD3D12();
+    dxgi_shared_handle_state_->EndAccessDawn();
 }
 #endif
 
@@ -955,7 +955,7 @@ bool D3DImageBacking::BeginAccessD3D11(
   }
 
   if (dxgi_shared_handle_state_)
-    return dxgi_shared_handle_state_->BeginAccessD3D11();
+    return dxgi_shared_handle_state_->BeginAccessD3D11(d3d11_device);
   // D3D11 access is allowed without shared handle.
   return true;
 }
@@ -973,7 +973,7 @@ void D3DImageBacking::EndAccessD3D11(
   EndAccessCommon(std::move(signaled_fence));
 
   if (dxgi_shared_handle_state_)
-    dxgi_shared_handle_state_->EndAccessD3D11();
+    dxgi_shared_handle_state_->EndAccessD3D11(d3d11_device);
 }
 
 bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
@@ -1058,6 +1058,19 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
   // Lazily create a GL texture if it wasn't provided on initialization.
   auto gl_texture_holders = gl_texture_holders_;
   if (gl_texture_holders.empty()) {
+    // If DXGI shared handle is present, the |d3d11_texture_| might belong to a
+    // different device with Graphite so retrieve the ANGLE specific D3D11
+    // texture from the |dxgi_shared_handle_state_|.
+    const bool is_angle_texture = texture_d3d11_device_ == angle_d3d11_device_;
+    CHECK(is_angle_texture || dxgi_shared_handle_state_);
+    auto d3d11_texture =
+        is_angle_texture ? d3d11_texture_
+                         : dxgi_shared_handle_state_->GetOrCreateD3D11Texture(
+                               angle_d3d11_device_);
+    if (!d3d11_texture) {
+      LOG(ERROR) << "Failed to open DXGI shared handle";
+      return nullptr;
+    }
     for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
       gfx::Size plane_size = format().GetPlaneSize(plane, size());
       // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
@@ -1067,7 +1080,7 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       // Creating the GL texture doesn't require exclusive access to the
       // underlying D3D11 texture.
       scoped_refptr<GLTextureHolder> gl_texture_holder =
-          CreateGLTexture(format(), plane_size, color_space(), d3d11_texture_,
+          CreateGLTexture(format(), plane_size, color_space(), d3d11_texture,
                           texture_target_, array_slice_, plane_id, swap_chain_);
       if (!gl_texture_holder) {
         LOG(ERROR) << "Failed to create GL texture.";
@@ -1131,6 +1144,7 @@ D3DImageBacking::GetDCLayerOverlayImage() {
     return absl::make_optional<gl::DCLayerOverlayImage>(size(), swap_chain_);
   }
   // Set only if access isn't synchronized using the shared handle state.
+  // TODO(sunnyps): Now that DXVA decoder is gone, this shouldn't be needed.
   Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
   if (!dxgi_shared_handle_state_) {
     d3d11_texture_.As(&keyed_mutex);
