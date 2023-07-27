@@ -1,4 +1,7 @@
 {
+    "global-allow-text-messages": {
+         "AllowTextMessages": "Invalid"
+    },
     "global-disabled-technologies": {
          "DisableNetworkTypes": ["Cellular"]
     },

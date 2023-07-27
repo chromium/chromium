@@ -195,6 +195,18 @@ warns admins of the implications of mis-using this policy for Chrome OS.
       enabled and a network scan shows a new policy managed network, the device
       will automatically switch to the managed network.
 
+* **AllowTextMessages**
+    * (optional, defaults to Unset) - **string**
+    * When this field is present and set to Allow text message notifications
+     will be shown. When this field is set to Suppress, no text message
+     notifications will be shown and text messages will be dropped forever.
+     When this field is Unset, text messages notifications will be shown by
+     default and will allow user configuration for suppressing text messages.
+     * Allowed values are:
+        * *Allow*
+        * *Suppress*
+        * *Unset*
+
 * **BlacklistedHexSSIDs** <!--- nocheck -->
     * DEPRECATED, use **BlockedHexSSIDs** instead.<br/>
     * (optional) - **array of string**

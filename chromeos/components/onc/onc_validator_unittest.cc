@@ -189,6 +189,11 @@ INSTANTIATE_TEST_SUITE_P(
                   &kToplevelConfigurationSignature,
                   true,
                   ::onc::ONC_SOURCE_DEVICE_POLICY),
+        // AllowTextMessages is only allowed for device policies.
+        OncParams("managed_toplevel_with_cellular_text_messages.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         OncParams("managed_toplevel_l2tpipsec.onc",
                   &kToplevelConfigurationSignature,
                   true),
@@ -549,6 +554,11 @@ INSTANTIATE_TEST_SUITE_P(
     StrictAndLiberalInvalid,
     ONCValidatorTestRepairable,
     ::testing::Values(
+        std::make_pair(OncParams("global-allow-text-messages",
+                                 &kGlobalNetworkConfigurationSignature,
+                                 true,
+                                 ::onc::ONC_SOURCE_DEVICE_POLICY),
+                       ExpectBothNotValid("", "")),
         std::make_pair(OncParams("global-disabled-technologies",
                                  &kGlobalNetworkConfigurationSignature,
                                  false),

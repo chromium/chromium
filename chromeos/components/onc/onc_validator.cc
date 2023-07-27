@@ -1081,10 +1081,13 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
     }
   }
 
-  // Validate that kAllowCellularSimLock, kDisableNetworkTypes,
-  // kAllowOnlyPolicyWiFiToConnect, kAllowOnlyPolicyCellularNetworks and
-  // kBlockedHexSSIDs are only allowed in device policy.
+  // Validate that kAllowTextMessages, kAllowCellularSimLock,
+  // kDisableNetworkTypes, kAllowOnlyPolicyWiFiToConnect,
+  // kAllowOnlyPolicyCellularNetworks and kBlockedHexSSIDs are only allowed in
+  // device policy.
   if (!IsInDevicePolicy(result,
+                        ::onc ::global_network_config::kAllowTextMessages) ||
+      !IsInDevicePolicy(result,
                         ::onc ::global_network_config::kAllowCellularSimLock) ||
       !IsInDevicePolicy(result,
                         ::onc::global_network_config::kDisableNetworkTypes) ||
@@ -1112,6 +1115,18 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
           valid_network_type_values)) {
     return false;
   }
+
+  // Ensure that AllowTextMessages contains valid types
+  const std::vector<const char*> valid_allow_text_messages_types = {
+      ::onc::cellular::kTextMessagesAllow,
+      ::onc::cellular::kTextMessagesSuppress,
+      ::onc::cellular::kTextMessagesUnset};
+  if (FieldExistsAndHasNoValidValue(
+          *result, ::onc::global_network_config::kAllowTextMessages,
+          valid_allow_text_messages_types)) {
+    return false;
+  }
+
   return true;
 }
 

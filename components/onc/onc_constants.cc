@@ -152,6 +152,9 @@ const char kTechnologyLte[] = "LTE";
 const char kTechnologyLteAdvanced[] = "LTEAdvanced";
 const char kTechnologyUmts[] = "UMTS";
 const char kTechnology5gNr[] = "5GNR";
+const char kTextMessagesAllow[] = "Allow";
+const char kTextMessagesSuppress[] = "Suppress";
+const char kTextMessagesUnset[] = "Unset";
 }  // namespace cellular
 
 namespace cellular_provider {
@@ -545,6 +548,7 @@ const char* const kAllowOnlyPolicyWiFiToConnect =
     kAllowOnlyPolicyNetworksToConnect;
 const char* const kAllowOnlyPolicyWiFiToConnectIfAvailable =
     kAllowOnlyPolicyNetworksToConnectIfAvailable;
+const char* const kAllowTextMessages = "AllowTextMessages";
 
 const char kBlacklistedHexSSIDs[] = "BlacklistedHexSSIDs";  // Deprecated
 const char kBlockedHexSSIDs[] = "BlockedHexSSIDs";

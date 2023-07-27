@@ -1,0 +1,15 @@
+{
+  "GlobalNetworkConfiguration":{
+    "AllowTextMessages": "Allow",
+  },
+  "NetworkConfigurations":[
+    {
+      "Ethernet":{
+        "Authentication":"None"
+      },
+      "GUID":"guid",
+      "Name":"name",
+      "Type":"Ethernet"
+    }
+  ]
+}
