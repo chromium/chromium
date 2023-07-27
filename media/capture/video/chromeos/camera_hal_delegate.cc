@@ -308,11 +308,12 @@ void CameraHalDelegate::SetCameraModule(
 }
 
 void CameraHalDelegate::Reset() {
-  ipc_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                     base::Unretained(this)));
-
+  if (ipc_task_runner_) {
+    ipc_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
+                       base::Unretained(this)));
+  }
   std::vector<CameraClientObserver*> observers;
   for (auto& client_observer : local_client_observers_) {
     observers.emplace_back(client_observer.get());

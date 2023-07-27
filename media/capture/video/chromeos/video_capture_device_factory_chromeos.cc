@@ -29,9 +29,10 @@ VideoCaptureDeviceFactoryChromeOS::~VideoCaptureDeviceFactoryChromeOS() {
   auto* camera_app_device_bridge = CameraAppDeviceBridgeImpl::GetInstance();
   camera_app_device_bridge->UnsetCameraInfoGetter();
   camera_app_device_bridge->UnsetVirtualDeviceController();
-
-  camera_hal_delegate_->Reset();
-  camera_hal_delegate_.reset();
+  if (camera_hal_delegate_) {
+    camera_hal_delegate_->Reset();
+    camera_hal_delegate_.reset();
+  }
 }
 
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryChromeOS::CreateDevice(
