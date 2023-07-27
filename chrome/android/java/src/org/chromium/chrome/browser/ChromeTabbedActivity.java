@@ -2289,11 +2289,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             QuickDeleteMetricsDelegate.recordHistogram(
                     QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED);
 
-            ViewStub animationStub = findViewById(R.id.quick_delete_animation_stub);
             new QuickDeleteController(this, new QuickDeleteDelegateImpl(), getModalDialogManager(),
-                    getSnackbarManager(), getLayoutManager(), mTabModelSelector,
-                    animationStub != null ? animationStub.inflate()
-                                          : findViewById(R.id.quick_delete_animation_layout));
+                    getSnackbarManager(), getLayoutManager(), mTabModelSelector);
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }

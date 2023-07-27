@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.quick_delete;
 
 import android.content.Context;
-import android.graphics.drawable.Animatable2;
-import android.graphics.drawable.AnimatedVectorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -43,7 +40,6 @@ public class QuickDeleteController {
     private final @NonNull QuickDeleteTabsFilter mDeleteTabsFilter;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull LayoutManager mLayoutManager;
-    private final @NonNull View mAnimationView;
     private final QuickDeleteBridge mQuickDeleteBridge;
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
@@ -59,18 +55,15 @@ public class QuickDeleteController {
      * @param layoutManager      {@link LayoutManager} to use for showing the regular overview mode.
      * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
      *                           history disambiguation notice.
-     * @param animationView      The {@link View} to use to show the quick delete animation.
      */
     public QuickDeleteController(@NonNull Context context, @NonNull QuickDeleteDelegate delegate,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull SnackbarManager snackbarManager, @NonNull LayoutManager layoutManager,
-            @NonNull TabModelSelector tabModelSelector, @NonNull View animationView) {
+            @NonNull TabModelSelector tabModelSelector) {
         mContext = context;
         mDelegate = delegate;
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
-        mAnimationView = animationView;
-        mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);
 
         mDeleteTabsFilter =
                 new QuickDeleteTabsFilter(tabModelSelector.getModel(/*incognito=*/false));
@@ -133,7 +126,7 @@ public class QuickDeleteController {
     private void onQuickDeleteFinished() {
         navigateToTabSwitcher();
         triggerHapticFeedback();
-        showDeleteAnimation(this::showSnackbar);
+        showSnackbar();
     }
 
     /**
@@ -164,21 +157,5 @@ public class QuickDeleteController {
                 /*controller= */ null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_QUICK_DELETE);
 
         mSnackbarManager.showSnackbar(snackbar);
-    }
-
-    private void showDeleteAnimation(@NonNull Runnable onAnimationEnd) {
-        AnimatedVectorDrawable deleteAnimation =
-                (AnimatedVectorDrawable) mAnimationView.getBackground();
-        mAnimationView.setVisibility(View.VISIBLE);
-        deleteAnimation.registerAnimationCallback(new Animatable2.AnimationCallback() {
-            @Override
-            public void onAnimationEnd(Drawable drawable) {
-                super.onAnimationEnd(drawable);
-                ((AnimatedVectorDrawable) drawable).unregisterAnimationCallback(this);
-                mAnimationView.setVisibility(View.GONE);
-                onAnimationEnd.run();
-            }
-        });
-        deleteAnimation.start();
     }
 }
