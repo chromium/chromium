@@ -88,6 +88,7 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
@@ -1246,12 +1247,15 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     locationBarTranslationY);
             float urlExpansionFractionComplement = 1.f - mUrlExpansionFraction;
             int verticalInset;
-            if (StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE.getValue()) {
-                verticalInset = (int) ((getResources().getDimensionPixelSize(
-                                                R.dimen.modern_toolbar_background_size)
-                                               - getResources().getDimensionPixelSize(
-                                                       R.dimen.ntp_search_box_height_polish))
-                        / 2 * urlExpansionFractionComplement);
+            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                    && ChromeFeatureList.sSurfacePolish.isEnabled()
+                    && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE.getValue()) {
+                verticalInset = (int) (((float) (getResources().getDimensionPixelSize(
+                                                         R.dimen.modern_toolbar_background_size)
+                                                - getResources().getDimensionPixelSize(
+                                                        R.dimen.ntp_search_box_height_polish))
+                                               / 2)
+                        * urlExpansionFractionComplement);
             } else {
                 verticalInset = (int) (getResources().getDimensionPixelSize(
                                                R.dimen.ntp_search_box_bounds_vertical_inset_modern)
