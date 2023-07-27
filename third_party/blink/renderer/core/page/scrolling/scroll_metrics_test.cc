@@ -305,44 +305,22 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
 
   Scroll(box, WebGestureDevice::kTouchpad);
 
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // The gesture latches to #inner, which is composited.
-    EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
-    EXPECT_WHEEL_TOTAL(1);
+  // The gesture latches to #inner, which is composited.
+  EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
+  EXPECT_WHEEL_TOTAL(1);
 
-    histogram_tester.emplace();
-    box->scrollBy(0, 1000);
-    Compositor().BeginFrame();
-    Scroll(box, WebGestureDevice::kTouchpad);
+  histogram_tester.emplace();
+  box->scrollBy(0, 1000);
+  Compositor().BeginFrame();
+  Scroll(box, WebGestureDevice::kTouchpad);
 
-    // The second scroll latches to the non-composited parent.
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_WHEEL_TOTAL(2);
-  } else {
-    // Scrolling the inner box will gather reasons from the scrolling chain. The
-    // inner box itself has no reason because it's composited. Other scrollable
-    // areas from the chain have corresponding reasons.
-    //
-    // cc reports the following reasons:
-    //   kNoScrollingLayer (because the parent is not composited)
-    //   kScrollingOnMainForAnyReason
-    //
-    // Then main reports these reasons when handling the forwarded event:
-    //   kNotOpaqueForTextAndLCDText (because ancestors are not composited)
-    //
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_WHEEL_TOTAL(3);
-  }
+  // The second scroll latches to the non-composited parent.
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+      1);
+  EXPECT_WHEEL_BUCKET(
+      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+  EXPECT_WHEEL_TOTAL(2);
 }
 
 }  // namespace

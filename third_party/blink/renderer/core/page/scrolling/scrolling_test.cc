@@ -2143,11 +2143,6 @@ INSTANTIATE_PAINT_TEST_SUITE_P(UnifiedScrollingSimTest);
 // noncomposited reasons set. It then removes the box-shadow property and
 // ensures the compositor node updates accordingly.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // This test requires scroll unification.
-    return;
-  }
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2202,11 +2197,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
 // IsComposited state updated accordingly.
 TEST_P(UnifiedScrollingSimTest,
        ScrollNodeForCompositedToNonCompositedScroller) {
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // This test requires scroll unification.
-    return;
-  }
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2261,11 +2251,6 @@ TEST_P(UnifiedScrollingSimTest,
 // scroller with an inset box shadow, and ensuring that scroller generates a
 // compositor scroll node with the proper noncomposited reasons set.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // This test requires scroll unification.
-    return;
-  }
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2340,10 +2325,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
 // Similar to the above test, but for deeper nesting iframes to ensure we
 // generate scroll nodes that are deeper than the main frame's children.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   SimRequest request("https://example.com/test.html", "text/html");
   SimRequest child_request_1("https://example.com/child1.html", "text/html");
   SimRequest child_request_2("https://example.com/child2.html", "text/html");
@@ -2430,10 +2411,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
 // is no scroll node for a display:none scroller, as there is no scrollable
 // area.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2489,10 +2466,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
 // Tests that the compositor gets a scroll node for a non-composited (due to
 // non-opaque background) scrollable input box.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2514,17 +2487,11 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   EXPECT_FALSE(scroll_node->is_composited);
 }
 
-class ScrollingSimTest : public SimTest,
-                         public testing::WithParamInterface<bool> {
+class ScrollingSimTest : public SimTest {
  public:
   ScrollingSimTest() = default;
 
   void SetUp() override {
-    if (GetParam())
-      feature_list_.InitAndEnableFeature(::features::kScrollUnification);
-    else
-      feature_list_.InitAndDisableFeature(::features::kScrollUnification);
-
     was_threaded_animation_enabled_ =
         content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
 
@@ -2592,9 +2559,7 @@ class ScrollingSimTest : public SimTest,
   bool was_threaded_animation_enabled_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, ScrollingSimTest, testing::Bool());
-
-TEST_P(ScrollingSimTest, BasicScroll) {
+TEST_F(ScrollingSimTest, BasicScroll) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -2625,7 +2590,7 @@ TEST_P(ScrollingSimTest, BasicScroll) {
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
 }
 
-TEST_P(ScrollingSimTest, ImmediateCompositedScroll) {
+TEST_F(ScrollingSimTest, ImmediateCompositedScroll) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -2675,7 +2640,7 @@ TEST_P(ScrollingSimTest, ImmediateCompositedScroll) {
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
 }
 
-TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
+TEST_F(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
   ScopedScrollTimelineForTest scroll_timeline_enabled(true);
 
   String kUrl = "https://example.com/test.html";
@@ -2743,9 +2708,7 @@ TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
 }
 
-TEST_P(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
+TEST_F(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
   SetPreferCompositingToLCDText(false);
 
   String kUrl = "https://example.com/test.html";
@@ -2832,7 +2795,7 @@ TEST_P(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
   EXPECT_EQ(50, transform_node->to_parent.To2dTranslation().x());
 }
 
-TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
+TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -2921,10 +2884,8 @@ TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   EXPECT_TRUE(keyframe_model_impl->HasActiveTime(base::TimeTicks()));
 }
 
-// Pre-scroll-unification, ensures that ScrollBegin and ScrollUpdate cause
-// layout and ScrollEnd does not. Post unification, Blink will not handle these
-// events but ensure that a unification main-thread-hit-test does cause layout.
-TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
+// Ensure that a main thread hit test for ScrollBegin does cause layout.
+TEST_F(ScrollingSimTest, ScrollLayoutTriggers) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2943,62 +2904,21 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
   ASSERT_EQ(0u, NumObjectsNeedingLayout());
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // Dirty the layout
-    box->setAttribute(html_names::kStyleAttr, AtomicString("height: 10px"));
-    GetDocument().UpdateStyleAndLayoutTree();
-    ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
-    // The hit test (which may be performed by a scroll begin) should cause a
-    // layout to occur.
-    WebView().MainFrameWidget()->HitTestResultAt(gfx::PointF(10, 10));
-    EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
+  // Dirty the layout
+  box->setAttribute(html_names::kStyleAttr, AtomicString("height: 10px"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
-  } else {
-    // ScrollBegin should trigger a layout.
-    {
-      // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, AtomicString("height: 10px"));
-      GetDocument().UpdateStyleAndLayoutTree();
-      ASSERT_NE(NumObjectsNeedingLayout(), 0u);
-
-      WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateCoalescedGestureEvent(
-              WebInputEvent::Type::kGestureScrollBegin, 0, 10));
-      EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
-    }
-
-    // ScrollUpdate should trigger a layout.
-    {
-      // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, AtomicString("height: 11px"));
-      GetDocument().UpdateStyleAndLayoutTree();
-      ASSERT_NE(NumObjectsNeedingLayout(), 0u);
-
-      WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateCoalescedGestureEvent(
-              WebInputEvent::Type::kGestureScrollUpdate, 0, 10));
-      EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
-    }
-
-    // ScrollEnd shouldn't trigger a layout.
-    {
-      // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, AtomicString("height: 12px"));
-      GetDocument().UpdateStyleAndLayoutTree();
-      ASSERT_NE(NumObjectsNeedingLayout(), 0u);
-
-      WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateCoalescedGestureEvent(WebInputEvent::Type::kGestureScrollEnd,
-                                        0, 0));
-      EXPECT_NE(NumObjectsNeedingLayout(), 0u);
-    }
-  }
+  // The hit test (which may be performed by a scroll begin) should cause a
+  // layout to occur.
+  WebView().MainFrameWidget()->HitTestResultAt(gfx::PointF(10, 10));
+  EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
 }
 
 // Verifies that a composited scrollbar scroll uses the target scroller
 // specified by the widget input handler and does not bubble up.
-TEST_P(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
+TEST_F(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -3039,10 +2959,8 @@ TEST_P(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
   // Location outside the scrolling div; input manager should accept the
   // targeted element without performing a hit test.
   scroll_begin.SetPositionInWidget(gfx::PointF(150, 150));
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    scroll_begin.data.scroll_begin.main_thread_hit_tested_reasons =
-        cc::MainThreadScrollingReason::kScrollbarScrolling;
-  }
+  scroll_begin.data.scroll_begin.main_thread_hit_tested_reasons =
+      cc::MainThreadScrollingReason::kScrollbarScrolling;
   scroll_begin.data.scroll_begin.scrollable_area_element_id =
       CompositorElementIdFromUniqueObjectId(
           scroller->GetLayoutObject()->UniqueId(),

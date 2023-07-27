@@ -89,18 +89,10 @@ void ScrollSnapTest::GestureScroll(double x,
   ScrollEnd(x + delta_x, y + delta_y);
 
   // Wait for animation to finish.
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification) ||
-      composited) {
-    // Pass raster = true to reach LayerTreeHostImpl::UpdateAnimationState,
-    // which will set start time and transition to KeyframeModel::RUNNING.
-    Compositor().BeginFrame(0.016, true);
-    Compositor().BeginFrame(0.3);
-  } else {
-    // ScrollAnimatorCompositorCoordinator drives the snap animation.
-    Compositor().BeginFrame();  // update run_state_.
-    Compositor().BeginFrame();  // Set start_time = now.
-    Compositor().BeginFrame(0.3);
-  }
+  // Pass raster = true to reach LayerTreeHostImpl::UpdateAnimationState,
+  // which will set start time and transition to KeyframeModel::RUNNING.
+  Compositor().BeginFrame(0.016, true);
+  Compositor().BeginFrame(0.3);
 }
 
 void ScrollSnapTest::ScrollBegin(double x,

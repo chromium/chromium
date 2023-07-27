@@ -2088,11 +2088,7 @@ TEST_P(CompositingSimTest, BuildTreeSetsScaleOnTransformTree) {
   EXPECT_EQ(gfx::Vector2dF(2, 2), scale_node->local.To2dScale());
 }
 
-TEST_P(CompositingSimTest, UnifiedScrollWithMainThreadReasonsNeedsCommit) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
+TEST_P(CompositingSimTest, ScrollWithMainThreadReasonsNeedsCommit) {
   InitializeWithHTML(R"HTML(
     <style>
       body { height: 2500px; }

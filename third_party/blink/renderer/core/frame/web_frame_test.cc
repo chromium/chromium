@@ -11054,10 +11054,6 @@ TEST_P(WebFrameOverscrollTest, OverscrollBehaviorGoesToCompositor) {
 }
 
 TEST_P(WebFrameOverscrollTest, SubframeOverscrollBehaviorPreventsChaining) {
-  // This test fails without scroll unification (crbug.com/1222427).
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   RegisterMockedHttpURLLoad("overscroll/iframe-overscroll.html");
   RegisterMockedHttpURLLoad("overscroll/scrollable-iframe.html");
   frame_test_helpers::WebViewHelper web_view_helper;
