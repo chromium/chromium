@@ -113,13 +113,11 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
   raw_ptr<Profile> profile_;
 
-  const raw_ref<Delegate> delegate_;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AppManagementShelfDelegate shelf_delegate_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  const raw_ref<apps::PreferredAppsListHandle> preferred_apps_list_handle_;
+  const raw_ref<Delegate> delegate_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
