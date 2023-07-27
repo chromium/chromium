@@ -558,8 +558,14 @@ void SidePanelCoordinator::PopulateSidePanel(
   // the currently hosted SidePanelEntry.
   DCHECK(content_wrapper->children().size() <= 1);
 
+  // Side panel is opened when the `content_container` is made visible for the
+  // first time. The subsequent calls of `PopulateSidePanel()` that have visible
+  // `content_container` is to update the content of the side panel.
+  const bool opening_side_panel = !content_container->GetVisible();
+
   content_wrapper->SetVisible(true);
   content_container->SetVisible(true);
+
   if (current_entry_ && content_wrapper->children().size()) {
     auto current_entry_view =
         content_wrapper->RemoveChildViewT(content_wrapper->children().front());
@@ -583,6 +589,14 @@ void SidePanelCoordinator::PopulateSidePanel(
           browser_view_->toolbar()->side_panel_container()) {
     UpdateHeaderPinButtonState();
     side_panel_container->UpdateSidePanelContainerButtonsState();
+  }
+
+  // Notify the observers if the side panel is opened (made visible).
+  if (opening_side_panel) {
+    for (SidePanelViewStateObserver& view_state_observer :
+         view_state_observers_) {
+      view_state_observer.OnSidePanelDidOpen();
+    }
   }
 }
 
