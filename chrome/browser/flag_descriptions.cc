@@ -5400,8 +5400,8 @@ const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "
     "audio quality and may fix audio stutter.";
 
-const char kBluetoothTelephonyName[] = "Bluetooth Telephony";
-const char kBluetoothTelephonyDescription[] =
+const char kBluetoothFlossTelephonyName[] = "Bluetooth Floss Telephony";
+const char kBluetoothFlossTelephonyDescription[] =
     "Enable Floss to create a Bluetooth HID device that allows applications to "
     "access Bluetooth telephony functions through WebHID.";
 

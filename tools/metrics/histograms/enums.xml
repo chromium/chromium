@@ -63754,6 +63754,7 @@ from previous Chrome versions.
   <int value="-64747770" label="IncognitoDownloadsWarning:disabled"/>
   <int value="-64293934" label="AccessibilityAXModes:disabled"/>
   <int value="-63207112" label="NtpSingleRowShortcuts:disabled"/>
+  <int value="-60219461" label="BluetoothFlossTelephony:enabled"/>
   <int value="-59530055" label="ChromeVoxArcSupport:enabled"/>
   <int value="-59401847" label="ContentSuggestionsLargeThumbnail:disabled"/>
   <int value="-58338160" label="ChromeShareLongScreenshot:enabled"/>
@@ -65527,6 +65528,7 @@ from previous Chrome versions.
   <int value="844587371"
       label="DesktopPWAsLocalUpdatingThrottlePersistence:disabled"/>
   <int value="845659238" label="DevicePosture:enabled"/>
+  <int value="846887449" label="BluetoothFlossTelephony:disabled"/>
   <int value="846951416" label="CopylessPaste:enabled"/>
   <int value="848005486" label="WebViewLegacyTlsSupport:disabled"/>
   <int value="848324390" label="enable-lock-screen-apps"/>

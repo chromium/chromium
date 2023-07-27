@@ -4097,9 +4097,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrasSplitAlsaUsbInternalName,
      flag_descriptions::kCrasSplitAlsaUsbInternalDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrasSplitAlsaUSBInternal")},
-    {"bluetooth-telephony", flag_descriptions::kBluetoothTelephonyName,
-     flag_descriptions::kBluetoothTelephonyDescription, kOsCrOS,
-     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootBluetoothTelephony")},
     {"disable-explicit-dma-fences",
      flag_descriptions::kDisableExplicitDmaFencesName,
      flag_descriptions::kDisableExplicitDmaFencesDescription, kOsCrOS,
@@ -4165,6 +4162,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBluetoothFlossCoredumpDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::bluetooth::features::kBluetoothFlossCoredump)},
+    {"bluetooth-floss-telephony",
+     flag_descriptions::kBluetoothFlossTelephonyName,
+     flag_descriptions::kBluetoothFlossTelephonyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::bluetooth::features::kBluetoothFlossTelephony)},
     {kBluetoothUseFlossInternalName, flag_descriptions::kBluetoothUseFlossName,
      flag_descriptions::kBluetoothUseFlossDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(floss::features::kFlossEnabled)},

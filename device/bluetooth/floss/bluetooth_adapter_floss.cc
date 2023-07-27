@@ -280,6 +280,10 @@ void BluetoothAdapterFloss::Init() {
 
   VLOG(1) << "BluetoothAdapterFloss::Init completed. Calling init callback.";
   initialized_ = true;
+
+  // TODO(b/289773128) Ask btmanagerd to write kBluetoothFlossTelephony feature
+  // flag in sysprog here.
+
   std::move(init_callback_).Run();
 }
 

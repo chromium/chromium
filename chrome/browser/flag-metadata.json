@@ -842,6 +842,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "bluetooth-floss-telephony",
+    "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "bluetooth-long-autosuspend",
     "owners": ["abhishekpandit", "chromeos-bt-champs@google.com"],
     "expiry_milestone": 120
@@ -855,11 +860,6 @@
     "name": "bluetooth-sessionized-metrics",
     "owners": [ "yudiliu", "chromeos-bt-champs@google.com" ],
     "expiry_milestone": 100
-  },
-  {
-    "name": "bluetooth-telephony",
-    "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
-    "expiry_milestone": 130
   },
   {
     "name": "bluetooth-use-floss",

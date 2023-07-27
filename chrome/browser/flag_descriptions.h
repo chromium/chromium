@@ -3122,8 +3122,8 @@ extern const char kAvatarsCloudMigrationDescription[];
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 
-extern const char kBluetoothTelephonyName[];
-extern const char kBluetoothTelephonyDescription[];
+extern const char kBluetoothFlossTelephonyName[];
+extern const char kBluetoothFlossTelephonyDescription[];
 
 extern const char kBluetoothQualityReportName[];
 extern const char kBluetoothQualityReportDescription[];
