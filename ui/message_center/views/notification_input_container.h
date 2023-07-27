@@ -93,6 +93,9 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   // Gets the id for the default placeholder string for `textfield_`.
   virtual int GetDefaultPlaceholderStringId() const;
 
+  // Gets the id for the default accessible name string for `button_`.
+  virtual int GetDefaultAccessibleNameStringId() const;
+
   // Sets the visible background of `textfield_`.
   virtual void StyleTextfield();
 

@@ -847,6 +847,9 @@ need to be translated for each locale.-->
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The default placeholder text for notification inline reply.">
         Send message
       </message>
+      <message name="IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_ACCESSIBLE_NAME" desc="The default accessible name for notification inline reply button.">
+        Send reply
+      </message>
       <message name="IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST" desc="A string denoting the current point in time that should be as short as possible. Should be same as AndroidPlatform msgId 8912796667087856402. (frameworks/base/core/res/res/values/strings.xml:string:now_string_shortest)">
         now
       </message>
