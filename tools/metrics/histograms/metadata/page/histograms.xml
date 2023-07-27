@@ -1349,9 +1349,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.{Origin}.FirstContentfulPaint" units="ms"
     expires_after="2023-10-01">
-  <owner>ksakamoto@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but recorded only for
     {Origin} navigations.
@@ -1364,9 +1363,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.{Origin}.InteractiveTiming.FirstInputDelay"
     units="ms" expires_after="2023-10-01">
-  <owner>ksakamoto@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     PageLoad.InteractiveTiming.FirstInputDelay4, but recorded only for {Origin}
     navigations.
@@ -1379,9 +1377,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Clients.{Origin}.LargestContentfulPaint" units="ms"
     expires_after="2023-10-01">
-  <owner>ksakamoto@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but recorded only
     for {Origin} navigations.
@@ -1395,9 +1392,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.Clients.{Origin}.LayoutInstability.CumulativeShiftScore"
     units="ms" expires_after="2023-10-01">
-  <owner>ksakamoto@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     PageLoad.LayoutInstability.CumulativeShiftScore, but recorded only for
     {Origin} navigations.
@@ -1411,9 +1407,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.Clients.{Origin}.LayoutInstability.CumulativeShiftScore.MainFrame"
     units="ms" expires_after="2023-10-01">
-  <owner>ksakamoto@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame, but recorded only
     for {Origin} navigations.
