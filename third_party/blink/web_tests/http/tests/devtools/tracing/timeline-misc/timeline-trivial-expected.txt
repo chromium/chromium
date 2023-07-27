@@ -1,4 +1,0 @@
-Trivial use of inspector frontend tests
-
-Timeline started
-

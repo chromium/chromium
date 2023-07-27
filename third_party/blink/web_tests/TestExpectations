@@ -1709,8 +1709,6 @@ crbug.com/1465321 [ Mac ] external/wpt/html/semantics/popovers/popover-focus-2.h
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
 
-crbug.com/498539 http/tests/devtools/tracing/timeline-misc/timeline-bound-function.js [ Failure Pass ]
-
 crbug.com/889952 fast/selectors/selection-window-inactive.html [ Failure Pass ]
 
 crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pass Timeout ]
@@ -3854,7 +3852,6 @@ crbug.com/922951 http/tests/history/back-to-post.html [ Crash Failure Pass Timeo
 crbug.com/922951 http/tests/webaudio/autoplay-crossorigin.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 [ Release Win ] media/controls/overflow-menu-hide-on-click-outside-stoppropagation.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/frame-model-instrumentation.js [ Crash Failure Pass Timeout ]
-crbug.com/922951 [ Release Win ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-record-reload.js [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass Timeout ]
 
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Crash Failure Pass Timeout ]
@@ -4090,9 +4087,6 @@ crbug.com/834302 external/wpt/permissions-policy/permissions-policy-opaque-origi
 
 # Temporary suppression to allow devtools-frontend changes
 crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js [ Failure Pass ]
-
-# Sheriff 2019-12-16
-crbug.com/1034374 http/tests/devtools/tracing/timeline-worker-events.js [ Failure Pass ]
 
 # Sheriff 2019-12-23
 crbug.com/1036626 http/tests/devtools/tracing/tracing-record-input-events.js [ Failure Pass ]

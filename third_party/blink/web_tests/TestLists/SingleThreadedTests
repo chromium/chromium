@@ -1148,7 +1148,6 @@ http/tests/devtools/tracing/anonymous-image-object.js
 http/tests/devtools/tracing/category-filter.js
 http/tests/devtools/tracing/frame-model-instrumentation.js
 http/tests/devtools/tracing/frame-model.js
-http/tests/devtools/tracing/timeline-js/timeline-has-cpu-profile-events.js
 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js
 http/tests/devtools/tracing/timeline-js/timeline-open-function-call.js
 http/tests/devtools/tracing/timeline-js/timeline-runtime-stats.js
@@ -1156,7 +1155,6 @@ http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.j
 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js
 http/tests/devtools/tracing/timeline-misc/timeline-crypto.js
 http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js
-http/tests/devtools/tracing/timeline-misc/timeline-model.js
 http/tests/devtools/tracing/timeline-misc/timeline-scheduler-posttask.js
 http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js
 http/tests/devtools/tracing/timeline-paint/layer-tree.js
@@ -1977,7 +1975,6 @@ virtual/plz-dedicated-worker/http/tests/devtools/stylesheet-source-mapping.js
 virtual/plz-dedicated-worker/http/tests/devtools/template-content-inspect-crash.js
 virtual/plz-dedicated-worker/http/tests/devtools/tracing/timeline-js/cpu-profile-unsorted-timestamps.js
 virtual/plz-dedicated-worker/http/tests/devtools/tracing/timeline-misc/timeline-filtering-self-time.js
-virtual/plz-dedicated-worker/http/tests/devtools/tracing/timeline-misc/timeline-load-event.js
 virtual/plz-dedicated-worker/http/tests/devtools/tracing/timeline-misc/timeline-range-stats.js
 virtual/plz-dedicated-worker/http/tests/devtools/unit/datagrid-items-attached-to-dom.js
 virtual/plz-dedicated-worker/http/tests/devtools/unit/filtered-list-widget-providers.js

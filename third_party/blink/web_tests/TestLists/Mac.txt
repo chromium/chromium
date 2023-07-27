@@ -925,7 +925,6 @@ http/tests/devtools/elements/node-xpath.js
 http/tests/devtools/indexeddb/live-update-indexeddb-list.js
 http/tests/devtools/service-workers/sw-navigate-useragent.js
 http/tests/devtools/tracing/frame-model-instrumentation.js
-http/tests/devtools/tracing/timeline-js/timeline-gc-event.js
 http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js
 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js
 http/tests/dom/raf-throttling-out-of-view-cross-origin-page.html
