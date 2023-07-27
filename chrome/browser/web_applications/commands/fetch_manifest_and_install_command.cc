@@ -33,7 +33,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
@@ -160,12 +159,9 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/false,
                                install_surface_) {
-  Observe(web_contents_.get());
   debug_log_.Set("visible_url", web_contents_->GetVisibleURL().spec());
   debug_log_.Set("last_committed_url",
                  web_contents_->GetLastCommittedURL().spec());
-  debug_log_.Set("initial_visibility",
-                 static_cast<int>(web_contents()->GetVisibility()));
 }
 
 FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
@@ -188,15 +184,7 @@ void FetchManifestAndInstallCommand::StartWithLock(
     return;
   }
 
-  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
-    Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-    return;
-  }
-
-  if (did_navigation_occur_before_start_) {
-    Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-    return;
-  }
+  Observe(web_contents_.get());
 
   // This metric is recorded regardless of the installation result.
   if (webapps::InstallableMetrics::IsReportableInstallSource(
@@ -247,31 +235,7 @@ void FetchManifestAndInstallCommand::DidFinishNavigation(
     return;
   }
 
-  if (!IsStarted()) {
-    did_navigation_occur_before_start_ = true;
-    return;
-  }
-
   Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-}
-
-void FetchManifestAndInstallCommand::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility == content::Visibility::VISIBLE) {
-    return;
-  }
-  if (!IsStarted()) {
-    did_navigation_occur_before_start_ = true;
-    return;
-  }
-  Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-}
-
-void FetchManifestAndInstallCommand::WebContentsDestroyed() {
-  Observe(nullptr);
-  // No need to abort - web content destruction is handled in the beginning of
-  // each method. However, this needs to be here in case the web contents is
-  // destroyed before the command is started.
 }
 
 void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code) {
@@ -577,9 +541,6 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
     Abort(code);
     return;
   }
-
-  // Stop observing the web contents to prevent cancellation when reparenting.
-  Observe(nullptr);
 
   RecordWebAppInstallationTimestamp(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
