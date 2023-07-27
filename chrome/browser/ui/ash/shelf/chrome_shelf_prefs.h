@@ -159,25 +159,6 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   std::string GetShelfId(const std::string& sync_id);
   std::string GetSyncId(const std::string& shelf_id);
 
- protected:
-  // Starts observing the sync service if not already doing so.
-  void ObserveSyncService();
-
-  // Virtual for testing. The migration to use a standalone browser (lacros) to
-  // publish chrome apps is incomplete. In the interim, this class uses some
-  // workarounds to ensure that sync does not end up in an inconsistent state.
-  virtual bool IsStandaloneBrowserPublishingChromeApps();
-
-  // Virtual for testing. Returns the app type associated with an app id.
-  virtual apps::AppType GetAppType(const std::string& app_id);
-
-  // Virtual for testing. Returns whether this app_id corresponds to an ash
-  // extension-based platform app.
-  virtual bool IsAshExtensionApp(const std::string& app_id);
-
-  // Virtual for testing. There's a small set of apps that always run in Ash.
-  virtual bool IsAshKeepListApp(const std::string& app_id);
-
  private:
   // app_list::AppListSyncableService::Observer:
   void OnSyncModelUpdated() override;

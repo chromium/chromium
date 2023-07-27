@@ -124,14 +124,6 @@ void EnsurePinnedOrMakeFirst(
 
 constexpr char kDefaultPinnedAppsKey[] = "default";
 
-// This is the default prefix for a chrome app loaded in the primary profile in
-// Lacros. Note that "Default" is the name of the directory for the main profile
-// in Lacros's --user-data-dir. This is fragile, but is hopefully only needed
-// for a brief time while transitioning from ash chrome apps to Lacros chrome
-// apps. Note that to support multi-profile chrome apps, we're going to need a
-// profile-stable identifier anyways, in the near future.
-constexpr char kLacrosChromeAppPrefix[] = "Default###";
-
 bool skip_pinned_apps_from_sync_for_test = false;
 
 std::vector<ash::ShelfID> AppIdsToShelfIDs(
@@ -376,7 +368,10 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     return std::vector<ash::ShelfID>();
   }
 
-  ObserveSyncService();
+  if (!sync_service_observer_.IsObserving()) {
+    sync_service_observer_.Observe(
+        app_list::AppListSyncableServiceFactory::GetForProfile(profile_));
+  }
 
   if (ShouldPerformConsistencyMigrations()) {
     needs_consistency_migrations_ = false;
@@ -505,9 +500,6 @@ void ChromeShelfPrefs::SetPinPosition(
     const std::vector<ash::ShelfID>& shelf_ids_after,
     bool pinned_by_policy) {
   const std::string app_id = GetSyncId(shelf_id.app_id);
-
-  // No sync ids should begin with the lacros prefix, as it isn't stable.
-  DCHECK(!base::StartsWith(app_id, kLacrosChromeAppPrefix));
 
   if (!shelf_id.launch_id.empty()) {
     VLOG(2) << "Syncing set pin for '" << app_id
@@ -665,38 +657,6 @@ bool ChromeShelfPrefs::ShouldPerformConsistencyMigrations() const {
   return needs_consistency_migrations_;
 }
 
-void ChromeShelfPrefs::ObserveSyncService() {
-  if (!sync_service_observer_.IsObserving()) {
-    sync_service_observer_.Observe(
-        app_list::AppListSyncableServiceFactory::GetForProfile(profile_));
-  }
-}
-
-bool ChromeShelfPrefs::IsStandaloneBrowserPublishingChromeApps() {
-  return crosapi::browser_util::IsLacrosChromeAppsEnabled();
-}
-
-apps::AppType ChromeShelfPrefs::GetAppType(const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
-  return proxy->AppRegistryCache().GetAppType(app_id);
-}
-
-bool ChromeShelfPrefs::IsAshExtensionApp(const std::string& app_id) {
-  bool should_run_in_lacros = false;
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [&should_run_in_lacros](const apps::AppUpdate& update) {
-        should_run_in_lacros = update.IsPlatformApp().value_or(false);
-      });
-  return should_run_in_lacros;
-}
-
-bool ChromeShelfPrefs::IsAshKeepListApp(const std::string& app_id) {
-  return extensions::ExtensionAppRunsInOS(app_id);
-}
-
 std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
   // If it is ash-debug browser, it was replaced from kChromeAppId.
   if (ash::switches::IsAshDebugBrowserEnabled() &&
@@ -712,40 +672,6 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
     return app_constants::kLacrosAppId;
   }
 
-  // No sync ids should begin with the lacros prefix, as it isn't stable.
-  DCHECK(!base::StartsWith(sync_id, kLacrosChromeAppPrefix));
-
-  // No muxing is necessary.
-  if (!apps::ShouldMuxExtensionIds()) {
-    return sync_id;
-  }
-
-  // If Lacros is not publishing chrome apps, no transformation is necessary.
-  if (!IsStandaloneBrowserPublishingChromeApps())
-    return sync_id;
-
-  // If this app is on the ash keep list, immediately return it. Even if there's
-  // a lacros chrome app that matches this id, we still want to use the ash
-  // version.
-  if (extensions::ExtensionAppRunsInOS(sync_id))
-    return sync_id;
-
-  // All the muxing code can be removed once Ash is past M104.
-  std::string transformed_app_id = kLacrosChromeAppPrefix + sync_id;
-
-  // If this is an ash extension app, we add a fixed prefix. This is based on
-  // the logic in lacros_extensions_util and is not version-skew stable.
-  if (IsAshExtensionApp(sync_id)) {
-    return transformed_app_id;
-  }
-
-  // Now we have to check if the sync id corresponds to a lacros extension app.
-  if (GetAppType(transformed_app_id) ==
-      apps::AppType::kStandaloneBrowserChromeApp) {
-    return transformed_app_id;
-  }
-
-  // This is not an extension app for either ash or Lacros.
   return sync_id;
 }
 
@@ -764,33 +690,6 @@ std::string ChromeShelfPrefs::GetSyncId(const std::string& shelf_id) {
     return app_constants::kChromeAppId;
   }
 
-  // No muxing is necessary.
-  if (!apps::ShouldMuxExtensionIds()) {
-    return shelf_id;
-  }
-
-  // All the muxing code can be removed once Ash is past M104.
-  // If Lacros is not publishing chrome apps, no transformation is necessary.
-  if (!IsStandaloneBrowserPublishingChromeApps())
-    return shelf_id;
-
-  // If this is a lacros chrome app, then we must remove the prefix.
-  std::string prefix_removed = shelf_id;
-  base::ReplaceFirstSubstringAfterOffset(&prefix_removed, /*start_offset=*/0,
-                                         kLacrosChromeAppPrefix, "");
-  apps::AppType type = GetAppType(shelf_id);
-  if (type == apps::AppType::kStandaloneBrowserChromeApp) {
-    return prefix_removed;
-  }
-
-  // If removing the prefix turns this into an ash chrome app, then we must
-  // remove the prefix.
-  type = GetAppType(prefix_removed);
-  if (type == apps::AppType::kChromeApp) {
-    return prefix_removed;
-  }
-
-  // Do not remove the prefix otherwise.
   return shelf_id;
 }
 
