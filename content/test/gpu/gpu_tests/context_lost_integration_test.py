@@ -120,6 +120,10 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return 'context_lost'
 
   @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
+    return True
+
+  @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
     """Adds default arguments to |additional_args|.
 

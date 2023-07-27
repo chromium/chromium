@@ -3224,6 +3224,7 @@
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -3433,6 +3434,7 @@
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'mixins': [
           'has_native_resultdb_integration',
