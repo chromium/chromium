@@ -169,7 +169,6 @@ class EnrollmentStateFetcherTest : public testing::Test {
     DeviceCloudPolicyManagerAsh::RegisterPrefs(local_state_.registry());
     EnrollmentStateFetcher::RegisterPrefs(local_state_.registry());
 
-    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     statistics_provider_.SetMachineStatistic(
         ash::system::kSerialNumberKeyForTest, kTestSerialNumber);
     statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -241,7 +240,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
   base::test::ScopedCommandLine command_line_;
   TestingPrefServiceSimple local_state_;
   ash::FakeSystemClockClient system_clock_;
-  ash::system::FakeStatisticsProvider statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   ash::ScopedStubInstallAttributes install_attributes_;
   MockStateKeyBroker state_key_broker_;
   MockDeviceSettingsService device_settings_service_;
