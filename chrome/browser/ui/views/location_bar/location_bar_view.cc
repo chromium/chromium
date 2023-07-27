@@ -890,7 +890,8 @@ void LocationBarView::Update(WebContents* contents) {
   RefreshContentSettingViews();
 
   RefreshPageActionIconViews();
-  location_icon_view_->Update(/*suppress_animations=*/contents);
+  location_icon_view_->Update(/*suppress_animations=*/contents,
+                              omnibox_view_->model()->PopupIsOpen());
 
   if (intent_chip_)
     intent_chip_->Update();
@@ -1389,7 +1390,8 @@ void LocationBarView::OnChildViewRemoved(View* observed_view, View* child) {
 void LocationBarView::OnChanged() {
   // Ensure that background colors get updated on tab-switch.
   RefreshBackground();
-  location_icon_view_->Update(/*suppress_animations=*/false);
+  location_icon_view_->Update(/*suppress_animations=*/false,
+                              omnibox_view_->model()->PopupIsOpen());
   clear_all_button_->SetVisible(
       omnibox_view_ && omnibox_view_->model()->user_input_in_progress() &&
       !omnibox_view_->GetText().empty() &&
@@ -1471,7 +1473,8 @@ void LocationBarView::OnTouchUiChanged() {
   for (ContentSettingImageView* view : content_setting_views_)
     view->SetFontList(font_list);
   page_action_icon_controller_->SetFontList(font_list);
-  location_icon_view_->Update(/*suppress_animations=*/false);
+  location_icon_view_->Update(/*suppress_animations=*/false,
+                              omnibox_view_->model()->PopupIsOpen());
   PreferredSizeChanged();
 }
 
