@@ -423,8 +423,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return fenced_frame_mode_;
   }
 
-  V8CrowdsourcedCompileHintsProducer& GetV8CrowdsourcedCompileHintsProducer() {
-    return *v8_compile_hints_;
+  v8_compile_hints::V8CrowdsourcedCompileHintsProducer&
+  GetV8CrowdsourcedCompileHintsProducer() {
+    return *v8_compile_hints_producer_;
   }
 
   // Returns the token uniquely identifying the browsing context group this page
@@ -590,7 +591,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   WebScopedVirtualTimePauser history_navigation_virtual_time_pauser_;
 
-  Member<V8CrowdsourcedCompileHintsProducer> v8_compile_hints_;
+  Member<v8_compile_hints::V8CrowdsourcedCompileHintsProducer>
+      v8_compile_hints_producer_;
 
   // The information determining the browsing context group this page lives in.
   BrowsingContextGroupInfo browsing_context_group_info_;

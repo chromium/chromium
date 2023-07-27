@@ -573,6 +573,7 @@ _CONFIG = [
             'trace_event::.+',
             'unicode::.+',
             'vector_math::.+',
+            'v8_compile_hints::.+',
             'web_core_test_support::.+',
             'worker_pool::.+',
             'xpath::.+',

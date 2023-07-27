@@ -6,11 +6,11 @@
 
 #if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
 
-#include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_hashing.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -20,7 +20,8 @@
 
 #include <limits>
 
-namespace blink {
+
+namespace blink::v8_compile_hints {
 
 namespace {
 constexpr int kBloomFilterInt32Count = 2048;
@@ -60,30 +61,8 @@ void V8CrowdsourcedCompileHintsProducer::RecordScript(
 
   v8::Isolate* isolate = execution_context->GetIsolate();
   v8::Local<v8::Context> context = script_state->GetContext();
-
-  v8::Local<v8::Value> name_value = script->GetResourceName();
-  v8::Local<v8::String> name_string;
-  if (!name_value->ToString(context).ToLocal(&name_string)) {
-    return;
-  }
-  auto name_length = name_string->Utf8Length(isolate);
-  if (name_length == 0) {
-    return;
-  }
-
-  // Speed up computing the hashes by hashing the script name only once, and
-  // using the hash as "script identifier", then hash "script identifier +
-  // function position" pairs. This way retrieving data from the Bloom filter is
-  // also fast; we first compute the script name hash, and retrieve data for its
-  // functions as we encounter them.
-
-  // We need the hash function to be stable across computers, thus using
-  // PersistentHash.
-  std::string name_std_string(name_length + 1, '\0');
-  name_string->WriteUtf8(isolate, &name_std_string[0]);
-
   uint32_t script_name_hash =
-      base::PersistentHash(name_std_string.c_str(), name_length);
+      ScriptNameHash(script->GetResourceName(), context, isolate);
 
   scripts_.emplace_back(v8::TracedReference<v8::Script>(isolate, script));
   script_name_hashes_.emplace_back(script_name_hash);
@@ -180,18 +159,11 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   WTF::BloomFilter<kBloomFilterKeySize> bloom;
 
   for (wtf_size_t script_ix = 0; script_ix < scripts_.size(); ++script_ix) {
-    uint32_t function_position_data[2];
-    function_position_data[0] = script_name_hashes_[script_ix];
-
     v8::Local<v8::Script> script = scripts_[script_ix].Get(isolate);
-
     std::vector<int> compile_hints = script->GetProducedCompileHints();
     for (int function_position : compile_hints) {
-      function_position_data[1] = function_position;
-      // We need the hash function to be stable across computers, thus using
-      // PersistentHash.
       uint32_t hash =
-          base::PersistentHash(function_position_data, 2 * sizeof(int32_t));
+          CombineHash(script_name_hashes_[script_ix], function_position);
       bloom.Add(hash);
       ++total_funcs;
     }
@@ -1280,6 +1252,7 @@ void V8CrowdsourcedCompileHintsProducer::AddNoise(unsigned* data) {
   *data = *data ^ mask;
 }
 
-}  // namespace blink
+} // namespace blink::v8_compile_hints
+
 
 #endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)

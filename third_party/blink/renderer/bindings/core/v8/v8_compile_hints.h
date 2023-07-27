@@ -23,6 +23,8 @@ class Frame;
 class Page;
 class ScriptState;
 
+namespace v8_compile_hints {
+
 /*
 V8CrowdsourcedCompileHintsProducer gathers data about which JavaScript functions
 are compiled and uploads it to UKM. On the server side, we construct a model
@@ -85,6 +87,7 @@ class V8CrowdsourcedCompileHintsProducer
   Member<Page> page_;
 };
 
+}  // namespace v8_compile_hints
 }  // namespace blink
 
 #else
@@ -92,6 +95,8 @@ class V8CrowdsourcedCompileHintsProducer
 namespace blink {
 
 class Page;
+
+namespace v8_compile_hints {
 
 // A minimal implementation for platforms which don't enable compile hints.
 class V8CrowdsourcedCompileHintsProducer
@@ -113,6 +118,7 @@ class V8CrowdsourcedCompileHintsProducer
   void ClearData() {}
 };
 
+}  // namespace v8_compile_hints
 }  // namespace blink
 
 #endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)

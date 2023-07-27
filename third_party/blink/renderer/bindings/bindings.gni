@@ -134,6 +134,8 @@ blink_core_sources_bindings =
                     "core/v8/v8_custom_element_constructor_hash.h",
                     "core/v8/v8_code_cache.cc",
                     "core/v8/v8_code_cache.h",
+                    "core/v8/v8_compile_hints_hashing.cc",
+                    "core/v8/v8_compile_hints_hashing.h",
                     "core/v8/v8_compile_hints.cc",
                     "core/v8/v8_compile_hints.h",
                     "core/v8/v8_context_snapshot.cc",

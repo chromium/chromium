@@ -220,8 +220,9 @@ Page::Page(base::PassKey<Page>,
       prev_related_page_(this),
       autoplay_flags_(0),
       web_text_autosizer_page_info_({0, 0, 1.f}),
-      v8_compile_hints_(
-          MakeGarbageCollected<V8CrowdsourcedCompileHintsProducer>(this)),
+      v8_compile_hints_producer_(
+          MakeGarbageCollected<
+              v8_compile_hints::V8CrowdsourcedCompileHintsProducer>(this)),
       browsing_context_group_info_(browsing_context_group_info) {
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
@@ -952,7 +953,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(next_related_page_);
   visitor->Trace(prev_related_page_);
   visitor->Trace(agent_group_scheduler_);
-  visitor->Trace(v8_compile_hints_);
+  visitor->Trace(v8_compile_hints_producer_);
   Supplementable<Page>::Trace(visitor);
 }
 
@@ -1169,9 +1170,9 @@ void Page::PrepareForLeakDetection() {
   for (Page* page : OrdinaryPages()) {
     page->RemoveSupplement<InternalSettingsPageSupplementBase>();
 
-    // V8CompileHintsProducer keeps v8::Script objects alive until the page
-    // becomes interactive. Give it a chance to clean up.
-    page->v8_compile_hints_->ClearData();
+    // V8CrowdsourcedCompileHintsProducer keeps v8::Script objects alive until
+    // the page becomes interactive. Give it a chance to clean up.
+    page->v8_compile_hints_producer_->ClearData();
   }
 }
 
