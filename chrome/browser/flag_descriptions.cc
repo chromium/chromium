@@ -211,6 +211,12 @@ const char kDIPSDescription[] =
     "sites that appear to be performing cross-site tracking using the bounce "
     "tracking technique.";
 
+const char kDigestAuthEnableSecureAlgorithmsName[] =
+    "Enable Secure Algorithms for HTTP DIgest Auth";
+const char kDigestAuthEnableSecureAlgorithmsDescription[] =
+    "This flag controls whether HTTP Digest auth handler should respond to "
+    "challenges that use SHA-256. It also enables username hashing support.";
+
 const char kDocumentPictureInPictureApiName[] =
     "Document Picture-in-Picture API";
 const char kDocumentPictureInPictureApiDescription[] =

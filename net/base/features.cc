@@ -419,4 +419,8 @@ BASE_FEATURE(kClearSiteDataWildcardSupport,
              "ClearSiteDataWildcardSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDigestAuthEnableSecureAlgorithms,
+             "DigestAuthEnableSecureAlgorithms",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

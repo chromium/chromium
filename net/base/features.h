@@ -422,6 +422,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 // targets as "*" rather than requiring all targets be listed out.
 NET_EXPORT BASE_DECLARE_FEATURE(kClearSiteDataWildcardSupport);
 
+// Enables SHA-256 and username hashing support for HTTP Digest auth.
+NET_EXPORT BASE_DECLARE_FEATURE(kDigestAuthEnableSecureAlgorithms);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
