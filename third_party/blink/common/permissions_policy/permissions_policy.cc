@@ -359,13 +359,6 @@ void PermissionsPolicy::OverwriteHeaderPolicyForClientHints(
   }
 }
 
-PermissionsPolicyFeatureState PermissionsPolicy::GetFeatureState() const {
-  PermissionsPolicyFeatureState feature_state;
-  for (const auto& pair : GetPermissionsPolicyFeatureList())
-    feature_state[pair.first] = GetFeatureValueForOrigin(pair.first, origin_);
-  return feature_state;
-}
-
 const mojom::PermissionsPolicyFeature
     PermissionsPolicy::defined_opt_in_features_[] = {
         mojom::PermissionsPolicyFeature::kBrowsingTopics,
