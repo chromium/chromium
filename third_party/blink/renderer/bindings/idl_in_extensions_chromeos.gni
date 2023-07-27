@@ -4,20 +4,15 @@
 
 # Statically-defined (not build-time-generated) IDL files in 'extensions_*'
 # components for production.
-#
-# CAUTION: static_idl_files_in_extensions_* is used only by a new V8 bindings
-# generator, which is under development.
-static_idl_files_in_extensions_chromeos = get_path_info(
-        [
-          "//third_party/blink/renderer/extensions/chromeos/chromeos.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/hid/cros_hid.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_accelerator_event.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_accelerator_event_init.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_screen.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_event.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_event_init.idl",
-          "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.idl",
-        ],
-        "abspath")
+static_idl_files_in_extensions_chromeos = [
+  "//third_party/blink/renderer/extensions/chromeos/chromeos.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/hid/cros_hid.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_accelerator_event.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_accelerator_event_init.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_screen.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_event.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_event_init.idl",
+  "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.idl",
+]
