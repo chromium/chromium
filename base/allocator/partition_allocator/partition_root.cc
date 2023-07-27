@@ -963,7 +963,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
     settings.quarantine_mode =
 #if BUILDFLAG(USE_STARSCAN)
-        (opts.quarantine == PartitionOptions::Quarantine::kDisallowed
+        (opts.star_scan_quarantine ==
+                 PartitionOptions::StarScanQuarantine::kDisallowed
              ? QuarantineMode::kAlwaysDisabled
              : QuarantineMode::kDisabledByDefault);
 #else

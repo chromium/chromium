@@ -66,7 +66,7 @@ std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         .thread_cache = PartitionOptions::ThreadCache::kEnabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        .quarantine = PartitionOptions::Quarantine::kAllowed,
+        .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
       });
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
 
@@ -273,7 +273,7 @@ TEST_P(PartitionAllocThreadCacheTest, Purge) {
 TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
   PartitionAllocatorForTesting allocator(PartitionOptions{
       .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
-      .quarantine = PartitionOptions::Quarantine::kAllowed,
+      .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
   });
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);

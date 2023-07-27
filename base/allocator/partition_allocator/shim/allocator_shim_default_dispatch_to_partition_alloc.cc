@@ -159,8 +159,8 @@ class MainPartitionConstructor {
             .aligned_alloc =
                 partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
             .thread_cache = thread_cache,
-            .quarantine =
-                partition_alloc::PartitionOptions::Quarantine::kAllowed,
+            .star_scan_quarantine =
+                partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
             .backup_ref_ptr =
                 partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         });
@@ -602,7 +602,8 @@ void ConfigurePartitions(
                         kDisallowed,
           .thread_cache =
               partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-          .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+          .star_scan_quarantine =
+              partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
           .backup_ref_ptr =
               enable_brp
                   ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
@@ -626,8 +627,8 @@ void ConfigurePartitions(
                 partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
             .thread_cache =
                 partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-            .quarantine =
-                partition_alloc::PartitionOptions::Quarantine::kAllowed,
+            .star_scan_quarantine =
+                partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
             .backup_ref_ptr =
                 partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         });

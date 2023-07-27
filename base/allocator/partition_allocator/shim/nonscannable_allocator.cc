@@ -65,10 +65,11 @@ void NonScannableAllocatorImpl<quarantinable>::NotifyPCScanEnabled() {
   allocator_.reset(partition_alloc::internal::MakePCScanMetadata<
                    partition_alloc::PartitionAllocator>(
       partition_alloc::PartitionOptions{
-          .quarantine =
-              quarantinable
-                  ? partition_alloc::PartitionOptions::Quarantine::kAllowed
-                  : partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+          .star_scan_quarantine = quarantinable
+                                      ? partition_alloc::PartitionOptions::
+                                            StarScanQuarantine::kAllowed
+                                      : partition_alloc::PartitionOptions::
+                                            StarScanQuarantine::kDisallowed,
           .backup_ref_ptr =
               partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
       }));

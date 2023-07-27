@@ -161,7 +161,7 @@ struct PartitionOptions {
     kEnabled,
   };
 
-  enum class Quarantine : uint8_t {
+  enum class StarScanQuarantine : uint8_t {
     kDisallowed,
     kAllowed,
   };
@@ -188,7 +188,7 @@ struct PartitionOptions {
 
   AlignedAlloc aligned_alloc = AlignedAlloc::kDisallowed;
   ThreadCache thread_cache = ThreadCache::kDisabled;
-  Quarantine quarantine = Quarantine::kDisallowed;
+  StarScanQuarantine star_scan_quarantine = StarScanQuarantine::kDisallowed;
   Cookie cookie = Cookie::kAllowed;
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;

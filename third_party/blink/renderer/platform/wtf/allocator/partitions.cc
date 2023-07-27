@@ -110,7 +110,7 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   // be handled in ReconfigureAfterFeatureListInit().
 
   return PartitionOptions{
-      .quarantine = PartitionOptions::Quarantine::kAllowed,
+      .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
       .backup_ref_ptr = brp_setting,
       .memory_tagging = memory_tagging,
   };
@@ -190,7 +190,8 @@ void Partitions::InitializeArrayBufferPartition() {
   // aligned as required by ArrayBufferContents.
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       array_buffer_allocator(partition_alloc::PartitionOptions{
-          .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+          .star_scan_quarantine =
+              partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
           .backup_ref_ptr =
               partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
           // When the V8 virtual memory cage is enabled, the ArrayBuffer
