@@ -1353,6 +1353,52 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithPWA) {
   EXPECT_EQ(*app_name, *new_app_name);
 }
 
+// Tests that launching a template that contains a PWA on a device that does not
+// contain the PWA does not open the PWA.
+IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithMissingPWA) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  Browser* pwa_browser =
+      InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
+  ASSERT_TRUE(pwa_browser->is_type_app());
+  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  const gfx::Rect pwa_bounds(50, 50, 500, 500);
+  pwa_window->SetBounds(pwa_bounds);
+  const int32_t pwa_window_id =
+      pwa_window->GetProperty(app_restore::kWindowIdKey);
+  const std::string* app_name =
+      pwa_window->GetProperty(app_restore::kBrowserAppNameKey);
+  ASSERT_TRUE(app_name);
+
+  // Capture the active desk, which contains the PWA.
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
+
+  // Find |pwa_browser| window's app restore data.
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, pwa_window_id);
+  ASSERT_TRUE(data);
+
+  // Verify window info are correctly captured.
+  EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
+  EXPECT_THAT(data->app_type_browser, Optional(true));
+  EXPECT_THAT(data->app_name, Optional(*app_name));
+  const std::vector<GURL> urls = GetURLsForBrowserWindow(pwa_browser);
+
+  // Set the template and launch it.
+  base::Uuid uuid = desk_template->uuid();
+  SetTemplate(std::move(desk_template));
+
+  views::Widget::GetWidgetForNativeWindow(pwa_window)->CloseNow();
+  ASSERT_FALSE(FindLaunchedBrowserByURLs(urls));
+  web_app::test::UninstallAllWebApps(profile());
+
+  LaunchTemplate(uuid);
+  // Verify that the PWA was not launched.
+  Browser* new_pwa_browser = FindLaunchedBrowserByURLs(urls);
+  EXPECT_FALSE(new_pwa_browser);
+}
+
 // Tests that PWAs with out of scope urls are saved and launched correctly.
 // Regression test for b/248645623.
 IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
