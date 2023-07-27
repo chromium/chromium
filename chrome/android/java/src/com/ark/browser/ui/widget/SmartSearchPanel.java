@@ -642,11 +642,14 @@ public class SmartSearchPanel extends FrameLayout {
     private ITabGroup getFloatTabList() {
         if (mFloatTabGroup == null) {
 
-            mFloatTabGroup = new TabGroupImpl("group_smart_search", false) {
+            TabInfo info = TabInfo.create(-103, -1, true);
+            info.setLocked(true);
+            info.setIncognito(false);
+            mFloatTabGroup = new TabGroupImpl("group_smart_search", info) {
 
                 @Override
                 public void onIndexChanged(int index) {
-                    this.mIndex = index;
+                    mTabInfo.setIndex(index);
                 }
 
             };

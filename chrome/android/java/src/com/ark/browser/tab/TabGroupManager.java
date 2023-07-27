@@ -1,5 +1,7 @@
 package com.ark.browser.tab;
 
+import android.util.SparseArray;
+
 import androidx.annotation.NonNull;
 
 import com.ark.browser.core.ArkWebContents;
@@ -28,7 +30,7 @@ public class TabGroupManager {
 
     private static final String TAG = "TabGroupManager";
 
-    private static final Map<String, ITabGroup> TAB_GROUP_MAP = new HashMap<>();
+    private static final SparseArray<ITabGroup> TAB_GROUP_MAP = new SparseArray<>();
 
     private TabGroupManager() {
 
@@ -39,15 +41,20 @@ public class TabGroupManager {
     }
 
     public static List<ITabGroup> getTabGroups() {
-        return new ArrayList<>(TAB_GROUP_MAP.values());
+        List<ITabGroup> list = new ArrayList<>();
+        for (int i = 0; i < TAB_GROUP_MAP.size(); i++) {
+            list.add(TAB_GROUP_MAP.valueAt(i));
+        }
+        return list;
     }
 
-    public static ITabGroup getTabGroup(String groupId) {
+    public static ITabGroup getTabGroupById(int groupId) {
         return TAB_GROUP_MAP.get(groupId);
     }
 
     public static ITabGroup getTabGroup(int tabId) {
-        for (ITabGroup group : TAB_GROUP_MAP.values()) {
+        // TODO getTabGroups()
+        for (ITabGroup group : getTabGroups()) {
             if (group.getTabById(tabId) != null) {
                 return group;
             }
@@ -56,7 +63,8 @@ public class TabGroupManager {
     }
 
     public static ITab getTabById(int tabId) {
-        for (ITabGroup group : TAB_GROUP_MAP.values()) {
+        // TODO getTabGroups()
+        for (ITabGroup group : getTabGroups()) {
             ITab tab = group.getTabById(tabId);
             if (tab != null) {
                 return tab;
@@ -68,7 +76,8 @@ public class TabGroupManager {
 
     public static PageInfo findPageInfoById(int id) {
         if (id != Tab.INVALID_PAGE_ID) {
-            for (ITabGroup group : TAB_GROUP_MAP.values()) {
+            // TODO getTabGroups()
+            for (ITabGroup group : getTabGroups()) {
                 PageInfo pageInfo = group.getPageInfoById(id);
                 if (pageInfo != null) {
                     return pageInfo;
@@ -80,7 +89,8 @@ public class TabGroupManager {
 
     public static IPage findPageById(int pageId) {
         if (pageId != Tab.INVALID_PAGE_ID) {
-            for (ITabGroup group : TAB_GROUP_MAP.values()) {
+            // TODO getTabGroups()
+            for (ITabGroup group : getTabGroups()) {
                 IPage page = group.getPageById(pageId);
                 if (page != null) {
                     return page;
@@ -90,23 +100,22 @@ public class TabGroupManager {
         return null;
     }
 
-    public static int getTotalTabCount() {
-        int count = 0;
-        for (ITabGroup tabList : getTabGroups()) {
-            count += tabList.getCount();
-        }
-        return count;
-    }
+//    public static int getTotalTabCount() {
+//        int count = 0;
+//        for (ITabGroup tabList : getTabGroups()) {
+//            count += tabList.getCount();
+//        }
+//        return count;
+//    }
 
     public static ITab cloneTab(ITab tab) {
-        return getTabGroup(tab.getGroupId())
-                .cloneTab(tab);
+        return getTabGroupById(tab.getParentId()).cloneTab(tab);
     }
 
     public static boolean moveToNewTab(PageInfo page) {
         ITab tab = getTabById(page.getTabId());
         if (tab != null) {
-            ITabGroup group = getTabGroup(tab.getGroupId());
+            ITabGroup group = getTabGroupById(tab.getParentId());
             return group.moveToNewTab(group.getPageById(page.getId()));
         }
         return false;
@@ -195,8 +204,7 @@ public class TabGroupManager {
 
         private boolean mLoaded = false;
 
-        public BaseSelector(ITabGroup group, ITabGroup... groups) {
-            tabGroups.add(group);
+        public BaseSelector(ITabGroup... groups) {
             if (groups != null) {
                 tabGroups.addAll(Arrays.asList(groups));
             }
@@ -267,11 +275,21 @@ public class TabGroupManager {
         public static final String GROUP_DEFAULT = "group_default";
         public static final String GROUP_INCOGNITO = "group_incognito";
 
+        public static final int ID_DEFAULT = -100;
+        public static final int ID_INCOGNITO = -101;
+
         private int mCurrentIndex = 0;
 
         private GlobalSelector() {
-            super(new TabGroupImpl(GROUP_DEFAULT, false),
-                    new TabGroupImpl(GROUP_INCOGNITO, true));
+            TabInfo info = TabInfo.create(ID_DEFAULT, -1, true);
+            info.setLocked(true);
+            info.setIncognito(false);
+            tabGroups.add(new TabGroupImpl(GROUP_DEFAULT, info));
+
+            info = TabInfo.create(ID_INCOGNITO, -1, true);
+            info.setLocked(true);
+            info.setIncognito(true);
+            tabGroups.add(new TabGroupImpl(GROUP_INCOGNITO, info));
         }
 
         public static GlobalSelector getInstance() {
@@ -290,8 +308,7 @@ public class TabGroupManager {
         }
 
         public ITabGroup getTabGroup(boolean incognito) {
-            return TabGroupManager.getTabGroup(
-                    incognito ? GROUP_INCOGNITO : GROUP_DEFAULT);
+            return TabGroupManager.getTabGroupById(incognito ? ID_INCOGNITO : ID_DEFAULT);
         }
 
         public void selectTabGroup(boolean incognito) {

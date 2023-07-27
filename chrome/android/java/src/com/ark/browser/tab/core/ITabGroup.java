@@ -31,11 +31,9 @@ import java.util.List;
 
 public interface ITabGroup {
 
-
     void init();
 
-    @NonNull
-    String getId();
+    int getId();
 
     boolean isIncognito();
 
@@ -468,50 +466,52 @@ public interface ITabGroup {
 
     void onIndexChanged(int index);
 
-    default void saveGroupFile() {
-        ArkLogger.e(this, "saveGroupFile");
-        try {
-            if (getTabList().isEmpty()) {
-                return;
-            }
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            DataOutputStream os = new DataOutputStream(stream);
-            int version = 1;
-            os.writeInt(version);
-            os.writeInt(getIndex());
-            os.writeBoolean(isIncognito());
-            os.writeInt(getCount());
-            for (ITab tab : getTabList()) {
-                os.writeInt(tab.getId());
-            }
-            os.close();
+    void saveGroupFile();
 
-            ArkLogger.e(this, "saveGroupFile index=" + getIndex()
-                    + " count=" + getCount() + " tabList=" + getTabList());
-
-            byte[] bytes = stream.toByteArray();
-
-            ThreadPool.executeIO(new Runnable() {
-                @Override
-                public void run() {
-                    File groupFile = ArkTabDao.getGroupFile(getId());
-                    AtomicFile file = new AtomicFile(groupFile);
-                    FileOutputStream fos = null;
-                    try {
-                        fos = file.startWrite();
-                        fos.write(bytes, 0, bytes.length);
-                        file.finishWrite(fos);
-                        ArkLogger.e(this, "saveGroupFile success!");
-                    } catch (IOException e) {
-                        if (fos != null) file.failWrite(fos);
-                        ArkLogger.e(this, "saveGroupFile Failed to write file: " + file.getBaseFile().getAbsolutePath());
-                    }
-                }
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    default void saveGroupFile() {
+//        ArkLogger.e(this, "saveGroupFile");
+//        try {
+//            if (getTabList().isEmpty()) {
+//                return;
+//            }
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            DataOutputStream os = new DataOutputStream(stream);
+//            int version = 1;
+//            os.writeInt(version);
+//            os.writeInt(getIndex());
+//            os.writeBoolean(isIncognito());
+//            os.writeInt(getCount());
+//            for (ITab tab : getTabList()) {
+//                os.writeInt(tab.getId());
+//            }
+//            os.close();
+//
+//            ArkLogger.e(this, "saveGroupFile index=" + getIndex()
+//                    + " count=" + getCount() + " tabList=" + getTabList());
+//
+//            byte[] bytes = stream.toByteArray();
+//
+//            ThreadPool.executeIO(new Runnable() {
+//                @Override
+//                public void run() {
+//                    File groupFile = ArkTabDao.getGroupFile(getId());
+//                    AtomicFile file = new AtomicFile(groupFile);
+//                    FileOutputStream fos = null;
+//                    try {
+//                        fos = file.startWrite();
+//                        fos.write(bytes, 0, bytes.length);
+//                        file.finishWrite(fos);
+//                        ArkLogger.e(this, "saveGroupFile success!");
+//                    } catch (IOException e) {
+//                        if (fos != null) file.failWrite(fos);
+//                        ArkLogger.e(this, "saveGroupFile Failed to write file: " + file.getBaseFile().getAbsolutePath());
+//                    }
+//                }
+//            });
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

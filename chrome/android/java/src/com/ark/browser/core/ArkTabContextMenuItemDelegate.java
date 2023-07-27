@@ -359,7 +359,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public boolean canMoveTab() {
-        return mTab.getTabInfo().getPages().size() > 1;
+        return mTab.getTab().getPages().size() > 1;
     }
 
     @Override

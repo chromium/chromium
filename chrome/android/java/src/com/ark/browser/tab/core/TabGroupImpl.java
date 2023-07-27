@@ -1,5 +1,7 @@
 package com.ark.browser.tab.core;
 
+import androidx.core.util.AtomicFile;
+
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
@@ -15,8 +17,11 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,105 +29,68 @@ import java.util.List;
 
 public class TabGroupImpl implements ITabGroup {
 
+    public interface TabStore {
+
+        // TODO
+
+    }
+
     private static final String TAG = "TabGroupImpl";
 
-    private final List<ITab> mTabList = new ArrayList<>();
+    protected final TabInfo mTabInfo;
+    private final List<ITab> mTabList;
 
     private final ObserverList<TabInfoObserver> mObservers;
 
-    private final String mId;
-    private final boolean mIncognito;
-
     private final Runnable mSaveRunnable = this::saveGroupFile;
-
-    protected int mIndex = ITab.INVALID_TAB_INDEX;
 
     private AsyncTask<DataInputStream> mPrefetchTabGroupTask;
 
-    public TabGroupImpl(String id, boolean incognito) {
-        mId = id;
+    public TabGroupImpl(String name, TabInfo tabInfo) {
         this.mObservers = new ObserverList<>();
-        this.mIncognito = incognito;
-        File groupFile = ArkTabDao.getGroupFile(id);
+        mTabInfo = tabInfo;
+        mTabList = new ArrayList<>();
+        File groupFile = ArkTabDao.getGroupFile(tabInfo.getId());
+        if (!groupFile.exists()) {
+            groupFile = ArkTabDao.getGroupFile(name);
+        }
         if (groupFile.exists()) {
             mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
         }
     }
 
-    public TabGroupImpl(String id, boolean incognito, File groupFile) {
-        this(id, incognito);
-        mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
+    public TabGroupImpl(TabInfo tabInfo, List<ITab> tabs) {
+        this.mObservers = new ObserverList<>();
+        mTabInfo = tabInfo;
+        mTabList = tabs;
     }
 
-    //    private void saveGroupFile() {
-//
-//
-//        try {
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            DataOutputStream os = new DataOutputStream(stream);
-//            int version = 1;
-//            os.writeInt(version);
-//            os.writeInt(TabGroupImpl.this.index);
-//            os.writeBoolean(incognito);
-//            os.writeInt(mTabList.size());
-//            for (ITab tab : mTabList) {
-//                os.writeInt(tab.getId());
-//            }
-//            os.close();
-//
-//            byte[] bytes = stream.toByteArray();
-//
-//            int id = incognito ? 1 : 0;
-//
-//            ThreadPool.executeIO(new Runnable() {
-//                @Override
-//                public void run() {
-//                    File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
-//                    AtomicFile file = new AtomicFile(groupFile);
-//                    FileOutputStream fos = null;
-//                    try {
-//                        fos = file.startWrite();
-//                        fos.write(bytes, 0, bytes.length);
-//                        file.finishWrite(fos);
-//                    } catch (IOException e) {
-//                        if (fos != null) file.failWrite(fos);
-//                        ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
-//                    }
-//                }
-//            });
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
+//    public TabGroupImpl(String id, TabInfo tabInfo) {
+//        this.mObservers = new ObserverList<>();
+//        mTabInfo = tabInfo;
+//        File groupFile = ArkTabDao.getGroupFile(id);
+//        if (groupFile.exists()) {
+//            mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
 //        }
-//
-//
-//
-//
-//
-////        int id = incognito ? 1 : 0;
-////        File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
-////        try (DataOutputStream os = new DataOutputStream(
-////                new BufferedOutputStream(new FileOutputStream(groupFile)))) {
-////            int version = 1;
-////            os.writeInt(version);
-////            os.writeInt(TabGroupImpl.this.index);
-////            os.writeBoolean(incognito);
-////            os.writeInt(mTabList.size());
-////            for (ITab tab : mTabList) {
-////                os.writeInt(tab.getId());
-////            }
-////            os.flush();
-////        } catch (IOException e) {
-////            e.printStackTrace();
-////        }
 //    }
 
-    public int[] readGroupFile(DataInputStream stream) {
-        try {
-            final int version = stream.readInt();
+//    public TabGroupImpl(String id, boolean incognito, File groupFile) {
+//        this(id, incognito);
+//        mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
+//    }
 
-            mIndex = stream.readInt();
-            final boolean isIncognito = stream.readBoolean();
+    public void readGroupFile(DataInputStream stream) {
+        try {
+            mTabInfo.setIndex(stream.readInt());
+            mTabInfo.setIncognito(stream.readBoolean());
+            mTabInfo.setParentId(-100);
+            mTabInfo.setIsGroup(true);
+            mTabInfo.setLocked(true);
+            mTabInfo.setCreateTime(System.currentTimeMillis());
+
+            mTabInfo.setCurrentPageId(-1);
+            mTabInfo.setPosition(0);
+            mTabInfo.setAccessTime(System.currentTimeMillis());
 
             final int count = stream.readInt();
 
@@ -132,34 +100,66 @@ public class TabGroupImpl implements ITabGroup {
                 tabIds[i] = tabId;
             }
             ArkLogger.e(TAG, "readGroupFile count=" + count + " tabIds=" + Arrays.toString(tabIds));
-            return tabIds;
+
+            ArkLogger.e(TAG, "from tabInfo tabIds=" + Arrays.toString(tabIds));
+            for (int id : tabIds) {
+                File tabFile = ArkTabDao.getTabFile(id);
+                ArkLogger.e(TAG, "from tabInfo tabFile=" + tabFile);
+                ITab newTab = ITab.from(tabFile);
+                ArkLogger.e(TAG, "from tabInfo=" + newTab.getTabInfo());
+                mTabList.add(newTab);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new int[0];
 
+    }
+
+    public void readGroupFile5(DataInputStream is, int version) {
+        try {
+            mTabInfo.setId(is.readInt());
+            mTabInfo.setParentId(is.readInt());
+            mTabInfo.setIsGroup(is.readBoolean());
+            mTabInfo.setLaunchType(is.readInt());
+            mTabInfo.setCreateTime(is.readLong());
+            mTabInfo.setIncognito(is.readBoolean());
+            mTabInfo.setLocked(is.readBoolean());
+            mTabInfo.setIndex(is.readInt());
+            mTabInfo.setCurrentPageId(is.readInt());
+            mTabInfo.setPosition(is.readInt());
+            mTabInfo.setAccessTime(is.readLong());
+
+            int count = is.readInt();
+            ArkLogger.e(TabInfo.class, "readGroupFile5 id="
+                    + mTabInfo.getId() + " count=" + count);
+            for (int i = 0; i < count; i++) {
+                int id = is.readInt();
+                File tabFile = ArkTabDao.getTabFile(id);
+                ArkLogger.e(TAG, "readGroupFile5 tabInfo tabFile=" + tabFile);
+                ITab newTab = ITab.from(tabFile);
+                ArkLogger.e(TAG, "readGroupFile5 tabInfo=" + newTab.getTabInfo());
+                mTabList.add(newTab);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void init() {
         long start = System.currentTimeMillis();
-        this.mIndex = ITab.INVALID_TAB_INDEX;
         this.mTabList.clear();
 //        this.mObservers.clear();
 
-
         if (mPrefetchTabGroupTask != null) {
             try (DataInputStream stream = mPrefetchTabGroupTask.get()) {
-                int[] tabIds = readGroupFile(stream);
-                ArkLogger.e(TAG, "from tabInfo tabIds=" + Arrays.toString(tabIds));
-                for (int id : tabIds) {
-                    File tabFile = ArkTabDao.getTabFile(id);
-                    ArkLogger.e(TAG, "from tabInfo tabFile=" + tabFile);
-                    TabInfo tabInfo = TabInfo.from(tabFile);
-                    tabInfo.setId(id);
-                    tabInfo.setGroupId(getId());
-                    ArkLogger.e(TAG, "from tabInfo=" + tabInfo);
-                    mTabList.add(new TabImpl(tabInfo));
+                int version = stream.readInt();
+                ArkLogger.e(this, "init version=" + version);
+                if (version < 5) {
+                    readGroupFile(stream);
+                } else {
+                    readGroupFile5(stream, version);
                 }
             } catch (Exception e) {
                 ArkLogger.e(this, "init failed!", e);
@@ -171,18 +171,18 @@ public class TabGroupImpl implements ITabGroup {
     }
 
     @Override
-    public String getId() {
-        return mId;
+    public int getId() {
+        return mTabInfo.getId();
     }
 
     @Override
     public boolean isIncognito() {
-        return mIncognito;
+        return mTabInfo.isIncognito();
     }
 
     @Override
     public int getIndex() {
-        return mIndex;
+        return mTabInfo.getIndex();
     }
 
     @Override
@@ -382,17 +382,15 @@ public class TabGroupImpl implements ITabGroup {
             }
             this.mTabList.clear();
         }
-        this.mIndex = ITab.INVALID_TAB_INDEX;
     }
 
     @Override
     public void onIndexChanged(int index) {
         ArkLogger.e(TAG, "onIndexChanged index=" + index);
-        if (this.mIndex == index) {
+        if (getIndex() == index) {
             return;
         }
-        this.mIndex = index;
-        PrefsHelper.with().applyInt("tab_index", index);
+        mTabInfo.setIndex(index);
         save();
     }
 
@@ -454,6 +452,111 @@ public class TabGroupImpl implements ITabGroup {
                 + " saveTabInfo deltaTime=" + (System.currentTimeMillis() - start));
 
 
+    }
+
+//    static TabGroupImpl from(DataInputStream is) throws IOException {
+//        TabInfo newTabInfo = new TabInfo();
+//        List<ITab> tabs = new ArrayList<>();
+//        int version = is.readInt();
+//        newTabInfo.setId(is.readInt());
+//        if (version >= 3) {
+//            if (version >= 5) {
+//                newTabInfo.setParentId(is.readInt());
+//            } else {
+//                String name = is.readUTF();
+//                if ("group_incognito".equals(name)) {
+//                    newTabInfo.setParentId(-101);
+//                } else if ("group_default".equals(name)) {
+//                    newTabInfo.setParentId(-100);
+//                } else {
+//                    newTabInfo.setParentId(-1);
+//                }
+//            }
+//
+//        }
+//        if (version >= 4) {
+//            newTabInfo.setIsGroup(is.readBoolean());
+//        } else {
+//            newTabInfo.setIsGroup(false);
+//        }
+//        if (version >= 2) {
+//            newTabInfo.setLaunchType(is.readInt());
+//        }
+//        newTabInfo.setCreateTime(is.readLong());
+//        newTabInfo.setIncognito(is.readBoolean());
+//        newTabInfo.setLocked(is.readBoolean());
+//
+//        newTabInfo.setPageIndex(is.readInt());
+//        newTabInfo.setCurrentPageId(is.readInt());
+//        newTabInfo.setPosition(is.readInt());
+//        newTabInfo.setAccessTime(is.readLong());
+//
+//        int count = is.readInt();
+//        ArkLogger.e(TabInfo.class, "TabInfo.from id=" + newTabInfo.getId() + " count=" + count);
+//        for (int i = 0; i < count; i++) {
+//            int id = is.readInt();
+//            File tabFile = ArkTabDao.getTabFile(id);
+//            ArkLogger.e(TAG, "from tabInfo tabFile=" + tabFile);
+//            ITab newTab = ITab.from(tabFile);
+//            ArkLogger.e(TAG, "from tabInfo=" + newTab.getTabInfo());
+//            tabs.add(newTab);
+//        }
+//
+//        return new TabGroupImpl(newTabInfo, tabs);
+//    }
+
+    @Override
+    public void saveGroupFile() {
+        try {
+            TabInfo tabInfo = mTabInfo;
+            long time = System.currentTimeMillis();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            DataOutputStream os = new DataOutputStream(stream);
+            int version = 5;
+            os.writeInt(version);
+            os.writeInt(tabInfo.getId());
+            os.writeInt(tabInfo.getParentId());
+            os.writeBoolean(tabInfo.isGroup());
+            os.writeInt(tabInfo.getLaunchType());
+            os.writeLong(tabInfo.getCreateTime());
+            os.writeBoolean(tabInfo.isIncognito());
+            os.writeBoolean(tabInfo.isLocked());
+            os.writeInt(tabInfo.getPageIndex());
+            os.writeInt(tabInfo.getCurrentPageId());
+            os.writeInt(tabInfo.getPosition());
+            os.writeLong(tabInfo.getAccessTime());
+            os.writeInt(getCount());
+
+            ArkLogger.e(this, "saveGroupFile info=" + tabInfo
+                    + " getTabList=" + getTabList());
+            for (ITab tab : getTabList()) {
+                os.writeInt(tab.getId());
+            }
+            os.close();
+
+            ArkLogger.e(this, "saveGroupFile to byte deltaTime="
+                    + (System.currentTimeMillis() - time));
+
+            ThreadPool.executeIO(() -> {
+                long time1 = System.currentTimeMillis();
+                byte[] bytes = stream.toByteArray();
+                File tabFile = ArkTabDao.getGroupFile(getId());
+                android.util.AtomicFile file = new android.util.AtomicFile(tabFile);
+                FileOutputStream fos = null;
+                try {
+                    fos = file.startWrite();
+                    fos.write(bytes, 0, bytes.length);
+                    file.finishWrite(fos);
+                } catch (IOException e) {
+                    if (fos != null) file.failWrite(fos);
+                    ArkLogger.e(TabGroupImpl.this, "saveGroupFile Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                }
+                ArkLogger.e(TabGroupImpl.this, "saveGroupFile deltaTime="
+                        + (System.currentTimeMillis() - time1));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

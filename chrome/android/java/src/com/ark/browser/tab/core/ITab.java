@@ -1,7 +1,7 @@
 package com.ark.browser.tab.core;
 
-import com.ark.browser.core.ArkWebContents;
-import com.ark.browser.core.ArkWebManager;
+import android.util.AtomicFile;
+
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
@@ -9,34 +9,41 @@ import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.dao.ArkTabDao;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
-import com.zpj.utils.FileUtils;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabStateExtractor;
-import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ITab {
 
     int INVALID_TAB_INDEX = -1;
 
+    IPage openNewPage();
+
+
+
+
     default int getId() {
         return getTabInfo().getId();
     }
 
-    default String getGroupId() {
-        return getTabInfo().getGroupId();
+    default int getParentId() {
+        return getTabInfo().getParentId();
     }
 
     TabInfo getTabInfo();
 
-    default List<IPage> getPages() {
-        return getTabInfo().getPages();
-    }
+    List<IPage> getPages();
 
     default int getPageSize() {
         return getPages().size();
@@ -65,13 +72,13 @@ public interface ITab {
         return getPageInfoAt(getPageIndex());
     }
 
-    default PageInfo getPreviousPageInfo() {
-        return getPageInfoAt(getPageIndex() - 1);
-    }
-
-    default PageInfo getNextPageInfo() {
-        return getPageInfoAt(getPageIndex() + 1);
-    }
+//    default PageInfo getPreviousPageInfo() {
+//        return getPageInfoAt(getPageIndex() - 1);
+//    }
+//
+//    default PageInfo getNextPageInfo() {
+//        return getPageInfoAt(getPageIndex() + 1);
+//    }
 
     default IPage getCurrentPage() {
         return getPageAt(getPageIndex());
@@ -127,116 +134,16 @@ public interface ITab {
         return indexOfPage(page.getId());
     }
 
-    default PageInfo getPageInfoById(int pageId) {
-        IPage page = getPageById(pageId);
-        if (page == null) {
-            return null;
-        }
-        return page.getPageInfo();
-    }
+    PageInfo getPageInfoById(int pageId);
 
-    default IPage getPageById(int pageId) {
-        if (getCurrentPageId() == pageId) {
-            return getCurrentPage();
-        }
-
-        for (IPage page : getPages()) {
-            if (page.getId() == pageId) {
-                return page;
-            }
-        }
-        return null;
-    }
+    IPage getPageById(int pageId);
 
 
 
-    default ITab cloneTab() {
-
-        TabInfo newTabInfo = getTabInfo().cloneTabInfo();
-
-        boolean encrypted = newTabInfo.isIncognito();
-        for (int i = 0; i < getPageSize(); i++) {
-            IPage page = getPageAt(i);
-            IPage newPage = page.clone(newTabInfo.getId());
-            newTabInfo.getPages().add(newPage);
-            newPage.savePageInfo();
-
-            ArkWebContents arkWeb = ArkWebManager.get(page.getId());
-            TabState tabState = null;
-            if (arkWeb != null && !arkWeb.isDestroyed()) {
-                tabState = TabStateExtractor.from(arkWeb.getWebContents());
-            }
-            TabState finalTabState = tabState;
-            ThreadPool.executeIO(() -> {
-                File newPageFile = ArkTabDao.getTabStateFile(newPage.getId(), encrypted);
-                if (finalTabState == null) {
-                    File pageFile = ArkTabDao.getTabStateFile(page.getId(), encrypted);
-                    if (pageFile.exists()) {
-                        FileUtils.copyFileFast(pageFile, newPageFile);
-                    }
-                } else {
-                    TabStateFileManager.saveState(newPageFile, finalTabState, encrypted);
-                }
-            });
-            if (getPageIndex() == i) {
-                newTabInfo.setPageIndex(i);
-                PageSnapshotManager.getInstance().copySnapshot(getCurrentPageId(), newPage.getId());
-            }
-        }
-
-        return new TabImpl(newTabInfo);
-    }
-
-//    default IPage createPage(Tab parent, LoadUrlParams params, @TabLaunchType int type) {
-//        int parentId = parent.getId();
-//        int index = indexOfPage(parentId);
-//        ArkLogger.d(this, "openNewPage index=" + index);
-//        if (index == ITab.INVALID_TAB_INDEX) {
-//            return null;
-//        }
-//
-//        PageInfo parentPageInfo = getPageInfoAt(index);
-//        ArkLogger.d(this, "openNewPage parentPageInfo=" + parentPageInfo);
-//        if (parentPageInfo == null) {
-//            return null;
-//        }
-//
-//        int pageIndex = parentPageInfo.getOriginalIndex() + 1;
-////        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(this, params, type);
-//
-//        PageInfo pageInfo = PageInfo.from(getTabInfo().getId(), pageIndex,
-//                getTabInfo().isIncognito());
-//        IPage page = new PageImpl(pageInfo);
-//        IPageGroup pageInfoList = getPageGroup();
-//
-//        pageInfoList.getPageInfoList().add(++index, page);
-//
-//        ArkLogger.d(this, "openNewPage params=" + params);
-////        tab.loadUrl(params);
-//
-//        if (++index < pageInfoList.getCount()) {
-//            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
-//                    .subList(index, pageInfoList.getCount());
-//
-//            List<IPage> tempPages = new ArrayList<>(pageRemoved);
-//            ThreadPool.postOnUIThread(() -> {
-//                long start = System.currentTimeMillis();
-//                ArkLogger.d(ITab.this, "openNewPage pageRemovedCount=" + tempPages.size());
-//
-//                for (IPage info : tempPages) {
-//                    info.remove();
-//                }
-//
-//                ArkLogger.d(ITab.this, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
-//            });
-//            pageRemoved.clear();
-//        }
-//
-//        return page;
-//    }
+    ITab cloneTab();
 
     default ITabGroup getTabGroup() {
-        return TabGroupManager.getTabGroup(getGroupId());
+        return TabGroupManager.getTabGroupById(getParentId());
     }
 
     default void selectTab() {
@@ -273,15 +180,9 @@ public interface ITab {
     }
 
 
-    default void destroy() {
-        TabCacheManager.getInstance().removeTab(getId());
-        for (IPage page : getPages()) {
-            ArkWebManager.remove(page.getId());
-        }
-        getPages().clear();
-    }
+    void destroy();
 
-    public void exitFloatingTabInfo();
+    void exitFloatingTabInfo();
 
     default void remove() {
         deleteTabInfo();
@@ -298,7 +199,118 @@ public interface ITab {
     }
 
     default void saveTabInfo() {
-        getTabInfo().save();
+        ThreadUtils.checkUiThread();
+        try {
+            TabInfo tabInfo = getTabInfo();
+            long time = System.currentTimeMillis();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            DataOutputStream os = new DataOutputStream(stream);
+            int version = 5;
+            os.writeInt(version);
+            os.writeInt(tabInfo.getId());
+            os.writeInt(tabInfo.getParentId());
+            os.writeBoolean(tabInfo.isGroup());
+            os.writeInt(tabInfo.getLaunchType());
+            os.writeLong(tabInfo.getCreateTime());
+            os.writeBoolean(tabInfo.isIncognito());
+            os.writeBoolean(tabInfo.isLocked());
+            os.writeInt(tabInfo.getPageIndex());
+            os.writeInt(tabInfo.getCurrentPageId());
+            os.writeInt(tabInfo.getPosition());
+            os.writeLong(tabInfo.getAccessTime());
+            os.writeInt(getPages().size());
+
+            ArkLogger.e(this, "saveTabInfo info=" + tabInfo
+                    + " mPages=" + getPages());
+            for (IPage page : getPages()) {
+                os.writeInt(page.getId());
+            }
+            os.close();
+
+            byte[] bytes = stream.toByteArray();
+
+            ArkLogger.e(this, "saveTabInfo to byte deltaTime="
+                    + (System.currentTimeMillis() - time));
+
+            ThreadPool.executeIO(() -> {
+                long time1 = System.currentTimeMillis();
+                File tabFile = ArkTabDao.getTabFile(getId());
+                AtomicFile file = new AtomicFile(tabFile);
+                FileOutputStream fos = null;
+                try {
+                    fos = file.startWrite();
+                    fos.write(bytes, 0, bytes.length);
+                    file.finishWrite(fos);
+                } catch (IOException e) {
+                    if (fos != null) file.failWrite(fos);
+                    ArkLogger.e(ITab.this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                }
+                ArkLogger.e(ITab.this, "saveTabInfo deltaTime="
+                        + (System.currentTimeMillis() - time1));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static TabImpl from(File tabFile) {
+        try (DataInputStream stream = ArkTabDao.readFile(tabFile)) {
+            if (stream == null) {
+                throw new IOException("tab file stream is null!");
+            }
+            return from(stream);
+        } catch (Exception e) {
+            ArkLogger.e(TabInfo.class, "read info failed!", e);
+            return new TabImpl(new TabInfo());
+        }
+    }
+
+    static TabImpl from(DataInputStream is) throws IOException {
+        TabInfo newTabInfo = new TabInfo();
+        List<IPage> pages = new ArrayList<>();
+        int version = is.readInt();
+        newTabInfo.setId(is.readInt());
+        if (version >= 3) {
+            if (version >= 5) {
+                newTabInfo.setParentId(is.readInt());
+            } else {
+                String name = is.readUTF();
+                if ("group_incognito".equals(name)) {
+                    newTabInfo.setParentId(-101);
+                } else {
+                    newTabInfo.setParentId(-100);
+                }
+            }
+        }
+        ArkLogger.e(TabImpl.class, "from version=" + version + " parentId=" + newTabInfo.getParentId());
+        if (version >= 4) {
+            newTabInfo.setIsGroup(is.readBoolean());
+        } else {
+            newTabInfo.setIsGroup(false);
+        }
+        if (version >= 2) {
+            newTabInfo.setLaunchType(is.readInt());
+        }
+        newTabInfo.setCreateTime(is.readLong());
+        newTabInfo.setIncognito(is.readBoolean());
+        newTabInfo.setLocked(is.readBoolean());
+
+        newTabInfo.setPageIndex(is.readInt());
+        newTabInfo.setCurrentPageId(is.readInt());
+        newTabInfo.setPosition(is.readInt());
+        newTabInfo.setAccessTime(is.readLong());
+
+        int count = is.readInt();
+        ArkLogger.e(TabInfo.class, "TabInfo.from id=" + newTabInfo.getId() + " count=" + count);
+        File pagesDir = ArkTabDao.getPagesDir(newTabInfo.getId());
+        for (int i = 0; i < count; i++) {
+            int pageId = is.readInt();
+            File file = new File(pagesDir, String.valueOf(pageId));
+            PageInfo pageInfo = PageInfo.from(file);
+            ArkLogger.e(TabInfo.class, "TabInfo.from pageId=" + pageId + " pageInfo=" + pageInfo);
+            pages.add(new PageImpl(pageInfo));
+        }
+        return new TabImpl(newTabInfo, pages);
     }
 
 }

@@ -1,39 +1,25 @@
 package com.ark.browser.tab;
 
-import android.util.AtomicFile;
-
 import androidx.annotation.Keep;
 
 import com.ark.browser.core.utils.ArkIdManager;
-import com.ark.browser.tab.core.IPage;
-import com.ark.browser.tab.core.PageImpl;
-import com.ark.browser.tab.dao.ArkTabDao;
-import com.ark.browser.utils.ArkLogger;
-import com.ark.browser.utils.ThreadPool;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Keep
 public class TabInfo {
 
     private int tabId;
 
+    // TODO
+    private int mParentId;
+
     private long createTime;
 
-    protected int pageIndex = Tab.INVALID_PAGE_ID;
+    protected int childIndex = Tab.INVALID_PAGE_ID;
 
-    protected int currentPageId = Tab.INVALID_PAGE_ID;
+    protected int currentChildId = Tab.INVALID_PAGE_ID;
 
     protected int position = 0;
 
@@ -43,17 +29,29 @@ public class TabInfo {
 
     protected long accessTime;
 
-    protected int parentId = Tab.INVALID_TAB_ID;
+    protected int fromId = Tab.INVALID_TAB_ID;
 
     @TabLaunchType
     protected int mLaunchType;
 
-    protected String mGroupId;
+    protected boolean mIsGroup;
 
-    protected transient final List<IPage> mPages = new ArrayList<>(0);
+    protected String title;
+
+    public int getId() {
+        return tabId;
+    }
 
     public void setId(int tabId) {
         this.tabId = tabId;
+    }
+
+    public int getParentId() {
+        return mParentId;
+    }
+
+    public void setParentId(int parentId) {
+        mParentId = parentId;
     }
 
     public void setCreateTime(long createTime) {
@@ -61,28 +59,28 @@ public class TabInfo {
     }
 
     public int getPageIndex() {
-        return pageIndex;
+        return childIndex;
     }
 
     public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
+        this.childIndex = pageIndex;
     }
 
     public int getCurrentPageId() {
-        return currentPageId;
+        return currentChildId;
     }
 
     public TabInfo cloneTabInfo() {
-        TabInfo newTabInfo = TabInfo.create(mGroupId);
+        TabInfo newTabInfo = TabInfo.create(mParentId);
         newTabInfo.createTime = createTime;
-        newTabInfo.pageIndex = pageIndex;
-        newTabInfo.currentPageId = Tab.INVALID_PAGE_ID;
+        newTabInfo.childIndex = childIndex;
+        newTabInfo.currentChildId = Tab.INVALID_PAGE_ID;
         newTabInfo.position = position;
         newTabInfo.isLocked = isLocked;
         newTabInfo.incognito = incognito;
         newTabInfo.accessTime = accessTime;
         newTabInfo.mLaunchType = mLaunchType;
-        newTabInfo.parentId = parentId;
+        newTabInfo.fromId = fromId;
         return newTabInfo;
     }
 
@@ -100,19 +98,15 @@ public class TabInfo {
     }
 
     public int getIndex() {
-        return pageIndex;
+        return childIndex;
     }
 
     public void setIndex(int index) {
-        this.pageIndex = index;
+        this.childIndex = index;
     }
 
     public void setCurrentPageId(int currentPageId) {
-        this.currentPageId = currentPageId;
-    }
-
-    public int getId() {
-        return tabId;
+        this.currentChildId = currentPageId;
     }
 
     public void setPosition(int position) {
@@ -139,12 +133,12 @@ public class TabInfo {
         this.accessTime = accessTime;
     }
 
-    public int getParentId() {
-        return parentId;
+    public int getFromId() {
+        return fromId;
     }
 
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
     }
 
     public int getLaunchType() {
@@ -155,71 +149,55 @@ public class TabInfo {
         this.mLaunchType = launchType;
     }
 
-    public String getGroupId() {
-        return mGroupId;
+    public boolean isGroup() {
+        return mIsGroup;
     }
 
-    public void setGroupId(String groupId) {
-        mGroupId = groupId;
+    public void setIsGroup(boolean isGroup) {
+        mIsGroup = isGroup;
     }
 
-    public List<IPage> getPages() {
-        return mPages;
-    }
+//    public static TabInfo create(String groupId) {
+//        return create(groupId, System.currentTimeMillis());
+//    }
 
-    public static TabInfo create(String groupId) {
-        return create(groupId, System.currentTimeMillis());
-    }
-
-    public static TabInfo create(String groupId, long createTime) {
+    public static TabInfo create(int id, int parentId, boolean isGroup) {
         TabInfo manager = new TabInfo();
-        manager.createTime = createTime;
-        manager.tabId = ArkIdManager.generateTabId();
-        manager.mGroupId = groupId;
+        manager.createTime = System.currentTimeMillis();
+        manager.tabId = id;
+        manager.mParentId = parentId;
+        manager.mIsGroup = isGroup;
         return manager;
     }
 
-    public static TabInfo from(File tabFile) {
-        try (DataInputStream stream = ArkTabDao.readFile(tabFile)) {
-            if (stream == null) {
-                throw new IOException("tab file stream is null!");
-            }
-            return from(stream);
-        } catch (Exception e) {
-            ArkLogger.e(TabInfo.class, "read info failed!", e);
-            return new TabInfo();
-        }
+    public static TabInfo create(int parentId) {
+        return create(parentId, System.currentTimeMillis());
     }
 
-    public static TabInfo from(DataInputStream is) throws IOException {
-        TabInfo newTabInfo = new TabInfo();
-        int version = is.readInt();
-        newTabInfo.tabId = is.readInt();
-        if (version >= 3) {
-            newTabInfo.mGroupId = is.readUTF();
-        }
-        if (version >= 2) {
-            newTabInfo.mLaunchType = is.readInt();
-        }
-        newTabInfo.createTime = is.readLong();
-        newTabInfo.incognito = is.readBoolean();
-        newTabInfo.isLocked = is.readBoolean();
+    public static TabInfo create(int parentId, long createTime) {
+        return create(parentId, false, createTime);
+    }
 
-        newTabInfo.pageIndex = is.readInt();
-        newTabInfo.currentPageId = is.readInt();
-        newTabInfo.position = is.readInt();
-        newTabInfo.accessTime = is.readLong();
-        int count = is.readInt();
-        ArkLogger.e(TabInfo.class, "TabInfo.from id=" + newTabInfo.getId() + " count=" + count);
-        File pagesDir = ArkTabDao.getPagesDir(newTabInfo.getId());
-        for (int i = 0; i < count; i++) {
-            int pageId = is.readInt();
-            File file = new File(pagesDir, String.valueOf(pageId));
-            PageInfo pageInfo = PageInfo.from(file);
-            ArkLogger.e(TabInfo.class, "TabInfo.from pageId=" + pageId + " pageInfo=" + pageInfo);
-            newTabInfo.mPages.add(new PageImpl(pageInfo));
-        }
-        return newTabInfo;
+//    public static TabInfo create(String parentId, long createTime) {
+//        return create(parentId, false, createTime);
+//    }
+
+//    public static TabInfo create(String groupId, boolean isGroup, long createTime) {
+//        TabInfo manager = new TabInfo();
+//        manager.createTime = createTime;
+//        manager.tabId = ArkIdManager.generateTabId();
+//        manager.mParentId = groupId;
+//        manager.mIsGroup = isGroup;
+//        return manager;
+//    }
+
+    public static TabInfo create(int parentId, boolean isGroup, long createTime) {
+        TabInfo manager = new TabInfo();
+        manager.createTime = createTime;
+        manager.tabId = ArkIdManager.generateTabId();
+        manager.mParentId = parentId;
+        manager.mIsGroup = isGroup;
+        return manager;
     }
 
     @Override
@@ -227,69 +205,15 @@ public class TabInfo {
         return "TabInfo{" +
                 "tabId=" + tabId +
                 ", createTime=" + createTime +
-                ", pageIndex=" + pageIndex +
-                ", currentPageId=" + currentPageId +
+                ", pageIndex=" + childIndex +
+                ", currentPageId=" + currentChildId +
                 ", position=" + position +
                 ", isLocked=" + isLocked +
                 ", incognito=" + incognito +
                 ", accessTime=" + accessTime +
-                ", parentId=" + parentId +
+                ", parentId=" + fromId +
                 ", mLaunchType=" + mLaunchType +
-                ", mPages=" + mPages +
                 '}';
-    }
-
-    public void save() {
-        ThreadUtils.checkUiThread();
-        try {
-            long time = System.currentTimeMillis();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            DataOutputStream os = new DataOutputStream(stream);
-            int version = 3;
-            os.writeInt(version);
-            os.writeInt(tabId);
-            os.writeUTF(mGroupId);
-            os.writeInt(mLaunchType);
-            os.writeLong(createTime);
-            os.writeBoolean(incognito);
-            os.writeBoolean(isLocked);
-            os.writeInt(pageIndex);
-            os.writeInt(currentPageId);
-            os.writeInt(position);
-            os.writeLong(accessTime);
-            os.writeInt(mPages.size());
-
-            ArkLogger.e(this, "saveTabInfo info=" + this
-                    + " mPages=" + mPages);
-            for (IPage page : mPages) {
-                os.writeInt(page.getId());
-            }
-            os.close();
-
-            byte[] bytes = stream.toByteArray();
-
-            ArkLogger.e(this, "saveTabInfo to byte deltaTime="
-                    + (System.currentTimeMillis() - time));
-
-            ThreadPool.executeIO(() -> {
-                long time1 = System.currentTimeMillis();
-                File tabFile = ArkTabDao.getTabFile(tabId);
-                AtomicFile file = new AtomicFile(tabFile);
-                FileOutputStream fos = null;
-                try {
-                    fos = file.startWrite();
-                    fos.write(bytes, 0, bytes.length);
-                    file.finishWrite(fos);
-                } catch (IOException e) {
-                    if (fos != null) file.failWrite(fos);
-                    ArkLogger.e(TabInfo.this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
-                }
-                ArkLogger.e(TabInfo.this, "saveTabInfo deltaTime="
-                        + (System.currentTimeMillis() - time1));
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }
