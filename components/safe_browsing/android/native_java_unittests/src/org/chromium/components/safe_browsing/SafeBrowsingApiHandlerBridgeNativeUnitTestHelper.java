@@ -30,11 +30,9 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         private static final long DEFAULT_CHECK_DELTA_MS = 10;
         // See safe_browsing_handler_util.h --> JavaThreatTypes
         private static final int THREAT_TYPE_CSD_ALLOWLIST = 16;
-        private static final int THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST = 17;
 
         // Maps to store preset values, keyed by uri.
         private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
-        private static final Map<String, Boolean> sHighConfidenceAllowlistMap = new HashMap<>();
         private static final Map<String, int[]> sThreatsOfInterestMap = new HashMap<>();
         private static final Map<String, String> sMetadataMap = new HashMap<>();
 
@@ -63,12 +61,8 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         @Override
         public boolean startAllowlistLookup(final String uri, int threatType) {
-            Assert.assertTrue(threatType == THREAT_TYPE_CSD_ALLOWLIST
-                    || threatType == THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
-            if (threatType == THREAT_TYPE_CSD_ALLOWLIST) {
-                return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
-            }
-            return Boolean.TRUE.equals(sHighConfidenceAllowlistMap.get(uri));
+            Assert.assertTrue(threatType == THREAT_TYPE_CSD_ALLOWLIST);
+            return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
         }
 
         public static void setExpectedThreatsOfInterest(String uri, int[] threatOfInterests) {
@@ -81,10 +75,6 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         public static void setCsdAllowlistMatch(String uri, boolean match) {
             sCsdAllowlistMap.put(uri, match);
-        }
-
-        public static void setHighConfidenceAllowlistMatch(String uri, boolean match) {
-            sHighConfidenceAllowlistMap.put(uri, match);
         }
 
         public static void setResult(int result) {
@@ -115,11 +105,6 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     @CalledByNative
     static void setCsdAllowlistMatch(String uri, boolean match) {
         MockSafetyNetApiHandler.setCsdAllowlistMatch(uri, match);
-    }
-
-    @CalledByNative
-    static void setHighConfidenceAllowlistMatch(String uri, boolean match) {
-        MockSafetyNetApiHandler.setHighConfidenceAllowlistMatch(uri, match);
     }
 
     @CalledByNative

@@ -46,9 +46,6 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // the client_side_detection_type field
 BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 
-// Enables serving the Android Protego allowlist through the component updater.
-BASE_DECLARE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist);
-
 // Controls whether new deep scanning UX is enabled or not.
 BASE_DECLARE_FEATURE(kDeepScanningUpdatedUX);
 

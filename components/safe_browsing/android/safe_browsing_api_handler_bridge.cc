@@ -66,8 +66,6 @@ int SBThreatTypeToJavaThreatType(const SBThreatType& sb_threat_type) {
       return safe_browsing::JAVA_THREAT_TYPE_UNWANTED_SOFTWARE;
     case SB_THREAT_TYPE_CSD_ALLOWLIST:
       return safe_browsing::JAVA_THREAT_TYPE_CSD_ALLOWLIST;
-    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-      return safe_browsing::JAVA_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST;
     default:
       NOTREACHED();
       return 0;
@@ -106,14 +104,13 @@ PendingCallbacksMap& GetPendingCallbacksMapOnSBThread() {
   return *pending_callbacks;
 }
 
-absl::optional<bool> StartAllowlistCheck(const GURL& url,
-                                         const SBThreatType& sb_threat_type) {
+bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                           ? content::BrowserThread::UI
                           : content::BrowserThread::IO);
   JNIEnv* env = AttachCurrentThread();
   if (!Java_SafeBrowsingApiBridge_ensureInitialized(env)) {
-    return absl::nullopt;
+    return false;
   }
 
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
@@ -256,17 +253,7 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
   if (interceptor_for_testing_)
     return false;
-  return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST)
-      .value_or(false);
-}
-
-absl::optional<bool>
-SafeBrowsingApiHandlerBridge::StartHighConfidenceAllowlistCheck(
-    const GURL& url) {
-  if (interceptor_for_testing_)
-    return false;
-  return StartAllowlistCheck(
-      url, safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
+  return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST);
 }
 
 }  // namespace safe_browsing

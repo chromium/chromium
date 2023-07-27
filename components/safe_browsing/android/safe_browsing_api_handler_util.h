@@ -31,7 +31,6 @@ enum JavaThreatTypes {
   // TODO(crbug.com/999344): temp magic number, update once GMSCore is
   // available.
   JAVA_THREAT_TYPE_CSD_ALLOWLIST = 16,
-  JAVA_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST = 17,
   JAVA_THREAT_TYPE_MAX_VALUE
 };
 

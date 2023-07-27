@@ -90,8 +90,6 @@ int GetThreatSeverity(JavaThreatTypes threat_type) {
       return 4;
     case JAVA_THREAT_TYPE_CSD_ALLOWLIST:
       return 5;
-    case JAVA_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-      return 6;
     case JAVA_THREAT_TYPE_MAX_VALUE:
       return std::numeric_limits<int>::max();
   }

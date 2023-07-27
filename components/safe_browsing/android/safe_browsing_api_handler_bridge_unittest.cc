@@ -239,43 +239,17 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, UrlCheck_Timeout) {
   CheckHistogramValues(/*expected_result=*/UMA_STATUS_TIMEOUT);
 }
 
-TEST_F(SafeBrowsingApiHandlerBridgeTest, AllowlistCheck) {
-  // Csd allowlist
+TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {
   GURL url("https://example.com");
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env_, url.spec());
   Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setCsdAllowlistMatch(
       env_, j_url, true);
   EXPECT_TRUE(
       SafeBrowsingApiHandlerBridge::GetInstance().StartCSDAllowlistCheck(url));
-  EXPECT_FALSE(SafeBrowsingApiHandlerBridge::GetInstance()
-                   .StartHighConfidenceAllowlistCheck(url)
-                   .value());
   Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setCsdAllowlistMatch(
       env_, j_url, false);
   EXPECT_FALSE(
       SafeBrowsingApiHandlerBridge::GetInstance().StartCSDAllowlistCheck(url));
-
-  // High confidence allowlist
-  GURL url2("https://example2.com");
-  ScopedJavaLocalRef<jstring> j_url2 =
-      ConvertUTF8ToJavaString(env_, url2.spec());
-  Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setHighConfidenceAllowlistMatch(
-      env_, j_url2, true);
-  EXPECT_TRUE(SafeBrowsingApiHandlerBridge::GetInstance()
-                  .StartHighConfidenceAllowlistCheck(url2));
-  EXPECT_FALSE(
-      SafeBrowsingApiHandlerBridge::GetInstance().StartCSDAllowlistCheck(url2));
-  Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setHighConfidenceAllowlistMatch(
-      env_, j_url2, false);
-  absl::optional<bool> result = SafeBrowsingApiHandlerBridge::GetInstance()
-                                    .StartHighConfidenceAllowlistCheck(url2);
-  EXPECT_TRUE(result.has_value());
-  EXPECT_FALSE(result.value());
-  // Uninitialized
-  Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_tearDown(env_);
-  result = SafeBrowsingApiHandlerBridge::GetInstance()
-               .StartHighConfidenceAllowlistCheck(url2);
-  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace safe_browsing
