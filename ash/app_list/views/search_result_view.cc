@@ -519,6 +519,10 @@ SearchResultView::SearchResultView(
       views::LayoutAlignment::kStretch);
   system_details_container_->SetOrientation(
       views::LayoutOrientation::kHorizontal);
+  system_details_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
 
   left_details_container_ = system_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -528,10 +532,11 @@ SearchResultView::SearchResultView(
       views::LayoutOrientation::kHorizontal);
   left_details_container_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred)
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(TitleDetailContainerOrder)
           .WithWeight(1));
+  left_details_container_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
 
   right_details_container_ = system_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -540,10 +545,11 @@ SearchResultView::SearchResultView(
   right_details_container_->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
   right_details_container_->SetOrientation(
       views::LayoutOrientation::kHorizontal);
+
   right_details_container_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred)
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(TitleDetailContainerOrder)
           .WithWeight(1));
 
