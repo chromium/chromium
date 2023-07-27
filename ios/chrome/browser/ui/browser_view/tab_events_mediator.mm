@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -26,10 +25,6 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,15 +53,12 @@
 
   WebStateList* _webStateList;
   __weak NewTabPageCoordinator* _ntpCoordinator;
-  SessionRestorationBrowserAgent* _sessionRestorationBrowserAgent;
   UrlLoadingNotifierBrowserAgent* _loadingNotifier;
   ChromeBrowserState* _browserState;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                       ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator
-                    restorationAgent:(SessionRestorationBrowserAgent*)
-                                         sessionRestorationBrowserAgent
                         browserState:(ChromeBrowserState*)browserState
                      loadingNotifier:
                          (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier {
@@ -75,7 +67,6 @@
     // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator and remove
     // this dependency.
     _ntpCoordinator = ntpCoordinator;
-    _sessionRestorationBrowserAgent = sessionRestorationBrowserAgent;
     _browserState = browserState;
 
     _webStateObserverBridge =
@@ -237,7 +228,9 @@
       // NTPCoordinator to know about the new web state
       // (via the call to `-didNavigateToNTPInWebState:` above) before this is
       // called.
-      [self didInsertActiveWebState:newWebState];
+      if (!webStateList->IsBatchInProgress()) {
+        [self didInsertActiveWebState:newWebState];
+      }
     }
 
     [self.consumer webStateSelected];
@@ -266,10 +259,6 @@
 
 - (void)didInsertActiveWebState:(web::WebState*)newWebState {
   DCHECK(newWebState);
-  if (web::features::UseSessionSerializationOptimizations() ||
-      _sessionRestorationBrowserAgent->IsRestoringSession()) {
-    return;
-  }
   auto* animationTabHelper =
       NewTabAnimationTabHelper::FromWebState(newWebState);
   BOOL animated =

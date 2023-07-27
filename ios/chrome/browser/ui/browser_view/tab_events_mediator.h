@@ -9,7 +9,6 @@
 
 class ChromeBrowserState;
 @class NewTabPageCoordinator;
-class SessionRestorationBrowserAgent;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabConsumer;
 class UrlLoadingNotifierBrowserAgent;
@@ -37,8 +36,6 @@ class WebStateList;
 // browserState.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                       ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator
-                    restorationAgent:(SessionRestorationBrowserAgent*)
-                                         sessionRestorationBrowserAgent
                         browserState:(ChromeBrowserState*)browserState
                      loadingNotifier:
                          (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier;

@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -208,10 +207,6 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -1304,17 +1299,11 @@ enum class ToolbarKind {
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   BrowserViewController* browserViewController = self.viewController;
-  SessionRestorationBrowserAgent* sessionRestorationBrowserAgent = nullptr;
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    sessionRestorationBrowserAgent =
-        SessionRestorationBrowserAgent::FromBrowser(self.browser);
-  }
 
   DCHECK(self.browserContainerCoordinator.viewController);
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
             ntpCoordinator:_NTPCoordinator
-          restorationAgent:sessionRestorationBrowserAgent
               browserState:browserState
            loadingNotifier:_urlLoadingNotifierBrowserAgent];
   self.tabEventsMediator.toolbarSnapshotProvider = _toolbarCoordinator;

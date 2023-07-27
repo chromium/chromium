@@ -323,13 +323,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     id mockReauthHandler = OCMProtocolMock(@protocol(IncognitoReauthCommands));
     bvc_.reauthHandler = mockReauthHandler;
 
-    SessionRestorationBrowserAgent* sessionRestorationBrowserAgent_ =
-        SessionRestorationBrowserAgent::FromBrowser(browser_.get());
-
     tab_events_mediator_ = [[TabEventsMediator alloc]
         initWithWebStateList:browser_.get()->GetWebStateList()
               ntpCoordinator:NTPCoordinator_
-            restorationAgent:sessionRestorationBrowserAgent_
                 browserState:chrome_browser_state_.get()
              loadingNotifier:urlLoadingNotifier_];
     tab_events_mediator_.consumer = bvc_;
