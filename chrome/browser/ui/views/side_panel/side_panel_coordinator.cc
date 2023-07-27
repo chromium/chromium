@@ -43,6 +43,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -98,13 +99,19 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
+  const gfx::VectorIcon& pin_icon = features::IsChromeRefresh2023()
+                                        ? kKeepPinChromeRefreshIcon
+                                        : views::kPinIcon;
+  const gfx::VectorIcon& unpin_icon = features::IsChromeRefresh2023()
+                                          ? kKeepPinFilledChromeRefreshIcon
+                                          : views::kUnpinIcon;
   views::SetImageFromVectorIconWithColorId(
-      button.get(), views::kPinIcon, kColorSidePanelHeaderButtonIcon,
+      button.get(), pin_icon, kColorSidePanelHeaderButtonIcon,
       kColorSidePanelHeaderButtonIconDisabled, dip_size);
   const ui::ImageModel& normal_image = ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, kColorSidePanelHeaderButtonIcon, dip_size);
+      unpin_icon, kColorSidePanelHeaderButtonIcon, dip_size);
   const ui::ImageModel& disabled_image = ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, kColorSidePanelHeaderButtonIconDisabled, dip_size);
+      unpin_icon, kColorSidePanelHeaderButtonIconDisabled, dip_size);
   button->SetToggledImageModel(views::Button::STATE_NORMAL, normal_image);
   button->SetToggledImageModel(views::Button::STATE_DISABLED, disabled_image);
   return button;
