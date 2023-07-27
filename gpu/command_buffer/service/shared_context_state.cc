@@ -41,6 +41,7 @@
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
+#include "gpu/vulkan/vulkan_util.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -540,38 +541,22 @@ bool SharedContextState::InitializeGL(
         vk_context_provider_->GetVulkanImplementation()->use_swiftshader()
             ? gpu::VulkanImplementationName::kSwiftshader
             : gpu::VulkanImplementationName::kNative;
-    const auto& extensions =
-        vk_context_provider_->GetDeviceQueue()->enabled_extensions();
+    auto* device_queue = vk_context_provider_->GetDeviceQueue();
 #if BUILDFLAG(IS_WIN)
     vk_supports_external_memory =
-        gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME) &&
-        gfx::HasExtension(extensions,
+        gfx::HasExtension(device_queue->enabled_extensions(),
                           VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME);
-    vk_supports_external_semaphore =
-        gfx::HasExtension(extensions,
-                          VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME) &&
-        gfx::HasExtension(extensions,
-                          VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME);
 #elif BUILDFLAG(IS_FUCHSIA)
     vk_supports_external_memory =
-        gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME) &&
-        gfx::HasExtension(extensions,
+        gfx::HasExtension(device_queue->enabled_extensions(),
                           VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME);
-    vk_supports_external_semaphore =
-        gfx::HasExtension(extensions,
-                          VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME) &&
-        gfx::HasExtension(extensions,
-                          VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME);
 #else
     vk_supports_external_memory =
-        gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME) &&
-        gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME);
-    vk_supports_external_semaphore =
-        gfx::HasExtension(extensions,
-                          VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME) &&
-        gfx::HasExtension(extensions,
-                          VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
+        gfx::HasExtension(device_queue->enabled_extensions(),
+                          VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME);
 #endif
+    vk_supports_external_semaphore =
+        IsVkOpaqueExternalSemaphoreSupported(device_queue);
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
