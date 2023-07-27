@@ -770,7 +770,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // This fails on ChromeOS because kRestoreOnStartup is ignored and the startup
 // preference is always "continue where I left off.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Verify that cookies can be allowed and set using exceptions for particular
 // website(s) only for a session when all others are blocked.

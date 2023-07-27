@@ -2,5 +2,4 @@
 # Following tests were flaky. We disable them first until we have time to investigate.
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
--ContentSettingsTest.AllowCookiesForASessionUsingExceptions
 -CustomTabBarViewBrowserTest.BackToAppButtonIsNotVisibleInOutOfScopePopups
