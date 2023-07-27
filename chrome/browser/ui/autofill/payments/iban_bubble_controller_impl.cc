@@ -138,14 +138,6 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
   }
 }
 
-void IbanBubbleControllerImpl::OnCancelButton() {
-  if (current_bubble_type_ == IbanBubbleType::kLocalSave) {
-    std::move(local_save_iban_prompt_callback_)
-        .Run(AutofillClient::SaveIBANOfferUserDecision::kDeclined,
-             absl::nullopt);
-  }
-}
-
 void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
   DCHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban);
   chrome::ShowSettingsSubPage(
@@ -156,6 +148,18 @@ void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
 
 void IbanBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
+  if (current_bubble_type_ == IbanBubbleType::kLocalSave) {
+    if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
+      std::move(local_save_iban_prompt_callback_)
+          .Run(AutofillClient::SaveIBANOfferUserDecision::kDeclined,
+               absl::nullopt);
+    } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
+      std::move(local_save_iban_prompt_callback_)
+          .Run(AutofillClient::SaveIBANOfferUserDecision::kIgnored,
+               absl::nullopt);
+    }
+  }
+
   set_bubble_view(nullptr);
 
   // Log save IBAN prompt result according to the closed reason.

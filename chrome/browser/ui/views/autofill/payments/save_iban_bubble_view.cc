@@ -38,8 +38,6 @@ SaveIbanBubbleView::SaveIbanBubbleView(views::View* anchor_view,
   DCHECK(controller);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetDeclineButtonText());
-  SetCancelCallback(base::BindOnce(&SaveIbanBubbleView::OnDialogCancelled,
-                                   base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(&SaveIbanBubbleView::OnDialogAccepted,
                                    base::Unretained(this)));
 
@@ -217,12 +215,6 @@ void SaveIbanBubbleView::OnDialogAccepted() {
   if (controller_) {
     DCHECK(nickname_textfield_);
     controller_->OnAcceptButton(nickname_textfield_->GetText());
-  }
-}
-
-void SaveIbanBubbleView::OnDialogCancelled() {
-  if (controller_) {
-    controller_->OnCancelButton();
   }
 }
 

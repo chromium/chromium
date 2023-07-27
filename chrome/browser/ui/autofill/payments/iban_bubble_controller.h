@@ -46,7 +46,6 @@ class IbanBubbleController {
 
   // Interaction.
   virtual void OnAcceptButton(const std::u16string& nickname) = 0;
-  virtual void OnCancelButton() = 0;
   virtual void OnManageSavedIbanExtraButtonClicked() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
 
