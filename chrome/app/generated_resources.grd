@@ -3062,7 +3062,7 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING"
         desc="Subpage summary when download deep scanning is in progress">
-        This file might be a virus or malware
+        This file might be a virus or malware.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_SECONDARY"
         desc="Subpage secondary text when download deep scanning is in progress">
