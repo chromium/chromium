@@ -47,6 +47,8 @@ class MODULES_EXPORT VideoEncoderTraits {
     String codec_string;
     absl::optional<gfx::Size> display_size;
 
+    absl::optional<String> not_supported_error_message;
+
     void Trace(Visitor*) const {}
   };
 

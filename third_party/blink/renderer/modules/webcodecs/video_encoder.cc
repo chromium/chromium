@@ -223,37 +223,22 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     ExceptionState& exception_state) {
   auto* result = MakeGarbageCollected<VideoEncoderTraits::ParsedConfig>();
 
-  result->options.frame_size.set_height(config->height());
-  if (config->height() == 0 ||
-      config->height() > media::limits::kMaxDimension) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid height; expected range from %d to %d, received %d.", 1,
-        media::limits::kMaxDimension, config->height()));
+  if (config->codec().LengthWithStrippedWhiteSpace() == 0) {
+    exception_state.ThrowTypeError("Invalid codec; codec is required.");
     return nullptr;
   }
 
-  result->options.frame_size.set_width(config->width());
-  if (config->width() == 0 || config->width() > media::limits::kMaxDimension) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid width; expected range from %d to %d, received %d.", 1,
-        media::limits::kMaxDimension, config->width()));
+  if (config->height() == 0 || config->width() == 0) {
+    exception_state.ThrowTypeError(
+        "Invalid size; height and width must be greater than zero.");
     return nullptr;
   }
-
-  if (config->width() * config->height() > media::limits::kMaxCanvas) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid resolution; expected range from %d to %d, received %d (%d * "
-        "%d).",
-        1, media::limits::kMaxCanvas, config->width() * config->height(),
-        config->width(), config->height()));
-    return nullptr;
-  }
+  result->options.frame_size.SetSize(config->width(), config->height());
 
   if (config->alpha() == "keep") {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Alpha encoding is not currently supported.");
-    return nullptr;
+    result->not_supported_error_message =
+        "Alpha encoding is not currently supported.";
+    return result;
   }
 
   result->options.latency_mode =
@@ -266,8 +251,9 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   } else if (config->hasBitrate()) {
     uint32_t bps = base::saturated_cast<uint32_t>(config->bitrate());
     if (bps == 0) {
-      exception_state.ThrowTypeError("Zero is not a valid bitrate.");
-      return nullptr;
+      result->not_supported_error_message =
+          String::Format("Unsupported bitrate: %u", bps);
+      return result;
     }
     if (config->hasBitrateMode() && config->bitrateMode() == "constant") {
       result->options.bitrate = media::Bitrate::ConstantBitrate(bps);
@@ -282,8 +268,17 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   }
 
   if (config->hasDisplayWidth() && config->hasDisplayHeight()) {
+    if (config->displayHeight() == 0 || config->displayWidth() == 0) {
+      exception_state.ThrowTypeError(
+          "Invalid display size; height and width must be greater than zero.");
+      return nullptr;
+    }
     result->display_size.emplace(config->displayWidth(),
                                  config->displayHeight());
+  } else if (config->hasDisplayWidth() || config->hasDisplayHeight()) {
+    exception_state.ThrowTypeError(
+        "Invalid display size; both height and width must be set together.");
+    return nullptr;
   }
 
   if (config->hasFramerate()) {
@@ -292,10 +287,10 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     if (std::isnan(config->framerate()) ||
         config->framerate() < kMinFramerate ||
         config->framerate() > kMaxFramerate) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid framerate; expected range from %f to %f, received %f.",
-          kMinFramerate, kMaxFramerate, config->framerate()));
-      return nullptr;
+      result->not_supported_error_message = String::Format(
+          "Unsupported framerate; expected range from %f to %f, received %f.",
+          kMinFramerate, kMaxFramerate, config->framerate());
+      return result;
     }
     result->options.framerate = config->framerate();
   } else {
@@ -312,8 +307,10 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     } else if (config->scalabilityMode() == "L1T3") {
       result->options.scalability_mode = media::SVCScalabilityMode::kL1T3;
     } else {
-      exception_state.ThrowTypeError("Unsupported scalabilityMode.");
-      return nullptr;
+      result->not_supported_error_message =
+          String::Format("Unsupported scalabilityMode: %s",
+                         config->scalabilityMode().Utf8().c_str());
+      return result;
     }
   }
 
@@ -340,8 +337,8 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
       &result->profile, &result->level, &codec_string_color_space);
 
   if (!parse_succeeded || is_codec_ambiguous) {
-    exception_state.ThrowTypeError("Unknown codec.");
-    return nullptr;
+    result->codec = media::VideoCodec::kUnknown;
+    return result;
   }
 
   // We are done with the parsing.
@@ -381,6 +378,48 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
 
 bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
+  if (config->not_supported_error_message) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                         *config->not_supported_error_message);
+    }
+    return false;
+  }
+
+  const auto& frame_size = config->options.frame_size;
+  if (frame_size.height() > media::limits::kMaxDimension) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          String::Format(
+              "Invalid height; expected range from %d to %d, received %d.", 1,
+              media::limits::kMaxDimension, frame_size.height()));
+    }
+    return false;
+  }
+  if (frame_size.width() > media::limits::kMaxDimension) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          String::Format(
+              "Invalid width; expected range from %d to %d, received %d.", 1,
+              media::limits::kMaxDimension, frame_size.width()));
+    }
+    return false;
+  }
+  if (frame_size.Area64() > media::limits::kMaxCanvas) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          String::Format("Invalid resolution; expected range from %d to %d, "
+                         "received %" PRIu64 " (%d * "
+                         "%d).",
+                         1, media::limits::kMaxCanvas, frame_size.Area64(),
+                         frame_size.width(), frame_size.height()));
+    }
+    return false;
+  }
+
   switch (config->codec) {
     case media::VideoCodec::kAV1:
     case media::VideoCodec::kVP8:
