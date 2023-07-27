@@ -3536,8 +3536,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
                 ->GetProcess());
 }
 
+// TODO(crbug.com/1468206): The test is failing on multiple builders.
 IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
-                       DontReuseProcess) {
+                       DISABLED_DontReuseProcess) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   DevToolsWindow* window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(main_web_contents(), true);
