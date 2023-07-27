@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("upgrade") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "upgrade_center.h",
     "upgrade_center.mm",
@@ -34,7 +33,6 @@ source_set("upgrade") {
 }
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "upgrade_constants.h",
     "upgrade_constants.mm",
@@ -45,7 +43,6 @@ source_set("public") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "upgrade_center_browser_agent_unittest.mm",

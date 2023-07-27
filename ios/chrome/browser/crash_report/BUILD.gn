@@ -24,8 +24,6 @@ source_set("crash_report") {
     "main_thread_freeze_detector.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//build:branding_buildflags",
@@ -49,7 +47,6 @@ source_set("crash_report") {
 }
 
 source_set("crash_report_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "crash_report_helper.h",
     "crash_report_helper.mm",
@@ -83,7 +80,6 @@ source_set("crash_report_internal") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "crash_helper_unittest.mm",

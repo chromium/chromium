@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_keyboard") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_keyboard.mm" ]
   deps = [
     "//base",

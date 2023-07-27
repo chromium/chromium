@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("browser_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   public = [ "infobar_overlay_browser_agent.h" ]
   sources = [ "infobar_overlay_browser_agent.mm" ]
   deps = [
@@ -23,7 +22,6 @@ source_set("browser_agent") {
 }
 
 source_set("browser_agent_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_overlay_browser_agent_util.h",
     "infobar_overlay_browser_agent_util.mm",
@@ -40,7 +38,6 @@ source_set("browser_agent_util") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "infobar_overlay_browser_agent_unittest.mm" ]
   deps = [

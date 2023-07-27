@@ -10,7 +10,6 @@ source_set("ntp") {
     "new_tab_page_tab_helper.mm",
     "new_tab_page_tab_helper_delegate.h",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":features",
     "//base:base",
@@ -32,7 +31,6 @@ source_set("ntp") {
 }
 
 source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "new_tab_page_util.h",
     "new_tab_page_util.mm",
@@ -49,7 +47,6 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//components/variations/service",
@@ -69,7 +66,6 @@ source_set("set_up_list") {
     "set_up_list_item.h",
     "set_up_list_item.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":features",
     ":set_up_list_item_type",
@@ -86,7 +82,6 @@ source_set("set_up_list") {
 
 source_set("set_up_list_item_type") {
   sources = [ "set_up_list_item_type.h" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("set_up_list_metrics") {
@@ -94,7 +89,6 @@ source_set("set_up_list_metrics") {
     "set_up_list_metrics.h",
     "set_up_list_metrics.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":set_up_list_item_type",
     "//base",
@@ -106,7 +100,6 @@ source_set("set_up_list_prefs") {
     "set_up_list_prefs.h",
     "set_up_list_prefs.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":set_up_list_item_type",
     ":set_up_list_metrics",
@@ -117,7 +110,6 @@ source_set("set_up_list_prefs") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browser_policy_new_tab_page_rewriter_unittest.mm",

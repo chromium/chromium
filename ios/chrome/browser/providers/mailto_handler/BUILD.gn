@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_mailto_handler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_mailto_handler.mm" ]
   deps = [
     "//base",

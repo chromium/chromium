@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("glue") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_start_util.h",
     "sync_start_util.mm",

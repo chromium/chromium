@@ -12,8 +12,6 @@ source_set("feature_engagement") {
     "tracker_util.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/feature_engagement",
@@ -31,10 +29,7 @@ source_set("feature_engagement") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "feature_engagement_egtest.mm" ]
   deps = [
@@ -58,7 +53,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "feature_engagement_unittest.mm" ]
   frameworks = [ "Foundation.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//base/test:test_support",

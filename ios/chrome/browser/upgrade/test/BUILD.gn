@@ -9,8 +9,6 @@ source_set("test") {
     "fake_upgrade_center.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/upgrade",

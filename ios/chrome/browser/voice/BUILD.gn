@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("voice") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "speech_input_locale.h",
     "speech_input_locale_config.h",
@@ -28,7 +27,6 @@ source_set("voice") {
 }
 
 source_set("voice_search_language") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "voice_search_language.h",
     "voice_search_language.mm",
@@ -50,7 +48,6 @@ source_set("prefs") {
 }
 
 source_set("tts") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "text_to_speech_listener.h",
     "text_to_speech_listener.mm",
@@ -75,7 +72,6 @@ source_set("tts") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   sources = [

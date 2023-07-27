@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("invalidation") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_profile_invalidation_provider_factory.h",
     "ios_chrome_profile_invalidation_provider_factory.mm",

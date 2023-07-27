@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("favicon") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "favicon_client_impl.h",
     "favicon_client_impl.mm",
@@ -47,7 +46,6 @@ source_set("favicon") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "favicon_loader_unittest.mm",
     "large_icon_cache_unittest.cc",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("url") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "url_util.h",
     "url_util.mm",
@@ -21,7 +20,6 @@ source_set("url") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_url_constants.cc",
     "chrome_url_constants.h",
@@ -36,7 +34,6 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "url_util_unittest.mm" ]
   deps = [

@@ -9,8 +9,6 @@ source_set("test") {
     "mock_sync_error_infobar_delegate.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//ios/chrome/browser/settings/sync/utils",
     "//testing/gmock",

@@ -19,7 +19,6 @@ buildflag_header("buildflags") {
 }
 
 source_set("icons") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_icon.h",
     "chrome_icon.mm",
@@ -41,7 +40,6 @@ source_set("icons") {
 }
 
 source_set("symbols") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   public = [ "symbols.h" ]
   sources = [
     "symbol_configurations.h",
@@ -101,7 +99,6 @@ source_set("symbols") {
 }
 
 source_set("symbols_views") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "colorful_background_symbol_view.h",
     "colorful_background_symbol_view.mm",
@@ -123,7 +120,6 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 # TODO(crbug.com/734054): remove this target when the downstream repository

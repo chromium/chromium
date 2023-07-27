@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "about_signin_internals_factory.cc",
     "about_signin_internals_factory.h",
@@ -119,7 +118,6 @@ source_set("signin") {
 }
 
 source_set("signin_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_util.h",
     "signin_util.mm",
@@ -139,7 +137,6 @@ source_set("signin_util") {
 }
 
 source_set("capabilities_types") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "capabilities_dict.h",
     "capabilities_types.h",
@@ -148,7 +145,6 @@ source_set("capabilities_types") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",
@@ -157,7 +153,6 @@ source_set("constants") {
 }
 
 source_set("signin_util_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_util_internal.h",
     "signin_util_internal.mm",
@@ -174,13 +169,11 @@ source_set("signin_util_internal") {
 }
 
 source_set("system_identity") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "system_identity.h" ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("system_identity_manager") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "refresh_access_token_error.h",
     "system_identity_interaction_manager.h",
@@ -202,7 +195,6 @@ source_set("system_identity_manager") {
 
 source_set("fake_system_identity_manager") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_refresh_access_token_error.h",
     "fake_refresh_access_token_error.mm",
@@ -239,7 +231,6 @@ source_set("fake_system_identity_manager") {
 source_set("fake_account_details_view_controller") {
   testonly = true
   visibility = [ ":fake_system_identity_manager" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_account_details_view_controller.h",
     "fake_account_details_view_controller.mm",
@@ -250,7 +241,6 @@ source_set("fake_account_details_view_controller") {
 
 source_set("fake_system_identity") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_system_identity.h",
     "fake_system_identity.mm",
@@ -263,7 +253,6 @@ source_set("fake_system_identity") {
 }
 
 source_set("trusted_vault") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "trusted_vault_client_backend.h",
     "trusted_vault_client_backend.mm",
@@ -283,7 +272,6 @@ source_set("trusted_vault") {
 }
 
 source_set("trusted_vault_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "trusted_vault_client_backend_factory.h",
     "trusted_vault_client_backend_factory.mm",
@@ -300,7 +288,6 @@ source_set("trusted_vault_factory") {
 }
 
 source_set("test_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "test_constants.h",
@@ -310,7 +297,6 @@ source_set("test_constants") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_authentication_service_delegate.h",
@@ -334,7 +320,6 @@ source_set("test_support") {
 }
 
 source_set("signin_util_internal_unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "signin_util_internal_unittest.mm" ]
   deps = [
@@ -346,7 +331,6 @@ source_set("signin_util_internal_unit_tests") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "account_capabilities_fetcher_ios_unittest.mm",
@@ -412,10 +396,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "authentication_service_egtest.mm" ]
   deps = [

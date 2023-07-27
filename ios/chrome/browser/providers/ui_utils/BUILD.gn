@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_ui_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_ui_utils.mm" ]
   deps = [
     ":chromium_logo_controller",
@@ -13,7 +12,6 @@ source_set("chromium_ui_utils") {
 }
 
 source_set("chromium_logo_controller") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chromium_logo_controller.h",
     "chromium_logo_controller.mm",

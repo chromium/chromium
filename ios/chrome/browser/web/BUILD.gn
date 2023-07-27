@@ -7,7 +7,6 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 source_set("web") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "blocked_popup_tab_helper.h",
     "blocked_popup_tab_helper.mm",
@@ -80,7 +79,6 @@ source_set("web") {
 }
 
 source_set("delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "web_state_delegate_browser_agent.h",
     "web_state_delegate_browser_agent.mm",
@@ -114,7 +112,6 @@ source_set("delegate") {
 }
 
 source_set("page_placeholder") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "page_placeholder_browser_agent.h",
     "page_placeholder_browser_agent.mm",
@@ -135,7 +132,6 @@ source_set("page_placeholder") {
 }
 
 source_set("tab_helper_delegates") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "repost_form_tab_helper_delegate.h",
     "sad_tab_tab_helper_delegate.h",
@@ -145,7 +141,6 @@ source_set("tab_helper_delegates") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "certificate_policy_app_agent_unittest.mm",
@@ -208,7 +203,6 @@ source_set("unit_tests") {
 }
 
 source_set("web_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browser_about_rewriter.cc",
     "browser_about_rewriter.h",
@@ -340,7 +334,6 @@ source_set("web_internal") {
 }
 
 source_set("unit_tests_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "blocked_popup_tab_helper_unittest.mm",
@@ -394,7 +387,6 @@ source_set("unit_tests_internal") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lookalike_url_constants.h",
     "lookalike_url_constants.mm",
@@ -402,10 +394,7 @@ source_set("constants") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -422,10 +411,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -452,10 +438,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -516,7 +499,6 @@ source_set("eg2_tests") {
 }
 
 source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.cc",
     "features.h",

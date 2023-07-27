@@ -8,8 +8,6 @@ source_set("infobars") {
     "infobar_overlay_request_config.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   public_deps = [ "//base" ]
 
   deps = [

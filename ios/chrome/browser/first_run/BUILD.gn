@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("first_run") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run.h",
     "first_run.mm",

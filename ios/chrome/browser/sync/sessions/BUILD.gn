@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sessions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_local_session_event_router.h",
     "ios_chrome_local_session_event_router.mm",

@@ -15,8 +15,6 @@ source_set("test") {
     "mock_save_address_profile_modal_infobar_interaction_handler.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/autofill/core/browser",

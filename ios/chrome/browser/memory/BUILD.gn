@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("memory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "memory_debugger.h",
     "memory_debugger.mm",

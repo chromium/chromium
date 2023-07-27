@@ -21,11 +21,9 @@ source_set("web_selection") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "web_selection_java_script_feature_unittest.mm",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_font") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_font.mm" ]
   deps = [ "//ios/public/provider/chrome/browser/font:font_api" ]
 }

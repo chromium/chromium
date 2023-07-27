@@ -12,5 +12,4 @@ source_set("test_support") {
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -5,7 +5,6 @@
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("java_script_console") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "java_script_console_feature.h",
     "java_script_console_feature.mm",
@@ -39,7 +38,6 @@ optimize_ts("console_js") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "java_script_console_feature_unittest.mm" ]
   deps = [

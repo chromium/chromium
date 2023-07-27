@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("safety_check") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_safety_check_manager.h",
     "ios_chrome_safety_check_manager.mm",
@@ -26,7 +25,6 @@ source_set("safety_check") {
 }
 
 source_set("factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_safety_check_manager_factory.h",
     "ios_chrome_safety_check_manager_factory.mm",
@@ -46,13 +44,11 @@ source_set("factory") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "ios_chrome_safety_check_manager_constants.h" ]
   public_deps = [ "//base" ]
 }
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_safety_check_manager_utils.h",
     "ios_chrome_safety_check_manager_utils.mm",
@@ -68,7 +64,6 @@ source_set("utils") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "ios_chrome_safety_check_manager_unittest.mm" ]
   deps = [

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_voice_search") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_voice_search.mm" ]
   deps = [
     "//ios/chrome/browser/voice:voice_search_language",

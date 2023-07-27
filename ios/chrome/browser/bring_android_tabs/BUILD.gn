@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("bring_android_tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bring_android_tabs_to_ios_service.h",
     "bring_android_tabs_to_ios_service.mm",
@@ -33,7 +32,6 @@ source_set("bring_android_tabs") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",
@@ -42,7 +40,6 @@ source_set("features") {
 }
 
 source_set("metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "metrics.h",
     "metrics.mm",
@@ -51,7 +48,6 @@ source_set("metrics") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_bring_android_tabs_to_ios_service.h",
@@ -67,7 +63,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "bring_android_tabs_to_ios_service_unittest.mm" ]
   deps = [

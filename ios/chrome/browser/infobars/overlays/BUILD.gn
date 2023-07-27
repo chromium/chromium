@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("overlays") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_infobar_overlay_request_factory.h",
     "default_infobar_overlay_request_factory.mm",
@@ -46,12 +45,10 @@ source_set("overlays") {
 }
 
 source_set("overlay_type") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "infobar_overlay_type.h" ]
 }
 
 source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_overlay_util.h",
     "infobar_overlay_util.mm",
@@ -67,7 +64,6 @@ source_set("util") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_infobar_overlay_request_factory.h",
@@ -85,7 +81,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "default_infobar_overlay_request_factory_unittest.mm",

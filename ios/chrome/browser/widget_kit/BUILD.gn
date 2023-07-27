@@ -14,7 +14,6 @@ buildflag_header("features") {
 
 if (ios_enable_widget_kit_extension) {
   source_set("widget_kit") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "widget_metrics_util.h",
       "widget_metrics_util.mm",
@@ -28,7 +27,6 @@ if (ios_enable_widget_kit_extension) {
   }
 
   swift_source_set("widget_kit_swift") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "user_defaults_widget_store.swift",
       "widget_metrics_logger.swift",
@@ -42,7 +40,6 @@ if (ios_enable_widget_kit_extension) {
   }
 
   source_set("unit_tests") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     testonly = true
     sources = []
     deps = [

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("trusted_vault") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_trusted_vault_client.h",
     "ios_trusted_vault_client.mm",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("iph_for_new_chrome_user") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sessions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_session_tab_helper.h",
     "ios_chrome_session_tab_helper.mm",
@@ -38,7 +37,6 @@ source_set("sessions") {
 }
 
 source_set("scene_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scene_util.h",
     "scene_util.mm",
@@ -52,7 +50,6 @@ source_set("scene_util") {
 
 source_set("scene_util_test_support") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scene_util_test_support.h",
     "scene_util_test_support.mm",
@@ -63,7 +60,6 @@ source_set("scene_util_test_support") {
 source_set("restoration_observer") {
   sources = [ "session_restoration_observer.h" ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("restoration_agent") {
@@ -89,7 +85,6 @@ source_set("restoration_agent") {
     "//ios/web/public/security",
     "//ios/web/public/session",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("session_service") {
@@ -108,7 +103,6 @@ source_set("session_service") {
     "//ios/web/public",
     "//ios/web/public/session",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("serialisation") {
@@ -129,7 +123,6 @@ source_set("serialisation") {
     "//ios/web",
     "//ios/web/public/session",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("session_saving") {
@@ -147,7 +140,6 @@ source_set("session_saving") {
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
     "//ios/web/common:features",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("session_restoration_service") {
@@ -174,7 +166,6 @@ source_set("session_restoration_service_factory") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "test_session_service.h",
@@ -188,7 +179,6 @@ source_set("test_support") {
 }
 
 source_set("fake") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_tab_restore_service.h",
@@ -198,7 +188,6 @@ source_set("fake") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "scene_util_unittest.mm",

@@ -42,7 +42,6 @@ source_set("optimization_guide") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "UIKit.framework" ]
   public_deps = [
     ":download_client_header",
@@ -51,7 +50,6 @@ source_set("optimization_guide") {
 }
 
 source_set("download_client_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "prediction_model_download_client.h" ]
   deps = [
     "//base",
@@ -60,7 +58,6 @@ source_set("download_client_header") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "optimization_guide_push_notification_client_unittest.mm",
@@ -107,10 +104,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "optimization_guide_test_app_interface.h",
@@ -128,10 +122,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "optimization_guide_test_app_interface.h",
@@ -144,10 +135,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "hints_fetcher_egtest.mm" ]
   deps = [

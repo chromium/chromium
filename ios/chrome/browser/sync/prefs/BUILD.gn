@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("prefs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_syncable_prefs_database.cc",
     "ios_chrome_syncable_prefs_database.h",

@@ -54,8 +54,6 @@ source_set("overlays") {
     "overlay_response_support.cc",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   friend = [ ":unit_tests" ]
 
   deps = [
@@ -85,8 +83,6 @@ source_set("unit_tests") {
     "overlay_response_support_unittest.cc",
     "overlay_response_unittest.cc",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":overlays",

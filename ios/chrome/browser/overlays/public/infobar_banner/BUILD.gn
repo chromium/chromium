@@ -16,8 +16,6 @@ source_set("infobar_banner") {
     "save_address_profile_infobar_banner_overlay_request_config.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/autofill/core/browser",
@@ -43,7 +41,6 @@ source_set("infobar_banner") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "confirm_infobar_banner_overlay_request_config_unittest.mm" ]
   deps = [

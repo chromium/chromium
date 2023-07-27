@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",
@@ -13,7 +12,6 @@ source_set("features") {
 }
 
 source_set("system_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "system_flags.h",
     "system_flags.mm",

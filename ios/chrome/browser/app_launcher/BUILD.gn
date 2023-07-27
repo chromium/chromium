@@ -5,7 +5,6 @@
 import("//build/config/ios/rules.gni")
 
 source_set("app_launcher") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "app_launcher_abuse_detector.h",
     "app_launcher_abuse_detector.mm",
@@ -40,7 +39,6 @@ source_set("app_launcher") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_app_launcher_abuse_detector.h",
@@ -53,7 +51,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "app_launcher_abuse_detector_unittest.mm",

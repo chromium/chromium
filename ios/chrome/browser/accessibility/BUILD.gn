@@ -16,6 +16,4 @@ source_set("accessibility") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -36,6 +36,4 @@ source_set("annotations") {
     "annotations_util.h",
     "annotations_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

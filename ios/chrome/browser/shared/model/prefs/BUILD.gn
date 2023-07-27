@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("pref_names") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pref_names.cc",
     "pref_names.h",
@@ -11,7 +10,6 @@ source_set("pref_names") {
 }
 
 source_set("browser_prefs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browser_prefs.h",
     "browser_prefs.mm",

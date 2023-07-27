@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("text_selection") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "text_classifier_model_service.h",
     "text_classifier_model_service.mm",
@@ -22,7 +21,6 @@ source_set("text_selection") {
 }
 
 source_set("text_selection_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "text_selection_util.h",
     "text_selection_util.mm",
@@ -31,7 +29,6 @@ source_set("text_selection_utils") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "text_classifier_model_service_fake.h",

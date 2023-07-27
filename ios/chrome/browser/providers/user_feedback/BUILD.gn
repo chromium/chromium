@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_user_feedback") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_user_feedback.mm" ]
   deps = [
     "//base",

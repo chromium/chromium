@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chrome_browser_state_client") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_browser_state_client.h",
     "chrome_browser_state_client.mm",
@@ -19,7 +18,6 @@ source_set("chrome_browser_state_client") {
 }
 
 source_set("accessor") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_metrics_service_accessor.h",
     "ios_chrome_metrics_service_accessor.mm",
@@ -34,7 +32,6 @@ source_set("accessor") {
 }
 
 source_set("google_groups_updater") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "google_groups_updater_service_factory.h",
     "google_groups_updater_service_factory.mm",
@@ -49,7 +46,6 @@ source_set("google_groups_updater") {
 }
 
 source_set("metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_usage_app_state_agent.h",
     "incognito_usage_app_state_agent.mm",
@@ -144,7 +140,6 @@ source_set("metrics") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "chrome_browser_state_client_unittest.mm",
@@ -201,7 +196,6 @@ source_set("unit_tests") {
 }
 
 source_set("metrics_browser_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_usage_recorder_browser_agent.h",
     "tab_usage_recorder_browser_agent.mm",
@@ -233,7 +227,6 @@ source_set("metrics_browser_agent") {
 }
 
 source_set("metrics_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_user_action_recorder.cc",
     "first_user_action_recorder.h",
@@ -259,7 +252,6 @@ source_set("metrics_internal") {
 }
 
 source_set("tab_usage_recorder_metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_usage_recorder_metrics.h",
     "tab_usage_recorder_metrics.mm",
@@ -268,7 +260,6 @@ source_set("tab_usage_recorder_metrics") {
 }
 
 source_set("unit_tests_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "first_user_action_recorder_unittest.cc",
@@ -294,10 +285,7 @@ source_set("unit_tests_internal") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "demographics_egtest.mm",
@@ -333,10 +321,7 @@ generate_expired_histograms_array("expired_histograms_array") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "metrics_app_interface.h",
@@ -364,10 +349,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "metrics_app_interface.h",

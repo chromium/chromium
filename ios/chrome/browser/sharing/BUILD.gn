@@ -5,7 +5,6 @@
 import("//build/config/ios/rules.gni")
 
 source_set("sharing") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "share_file_download_tab_helper.h",
     "share_file_download_tab_helper.mm",

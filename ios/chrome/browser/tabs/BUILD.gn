@@ -26,7 +26,6 @@ source_set("tabs") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("tabs_internal") {
@@ -140,7 +139,6 @@ source_set("tabs_internal") {
     "Foundation.framework",
     "UIKit.framework",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -174,11 +172,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",

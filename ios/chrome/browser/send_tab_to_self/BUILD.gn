@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("send_tab_to_self") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_send_tab_to_self_infobar_delegate.h",
     "ios_send_tab_to_self_infobar_delegate.mm",
@@ -38,7 +37,6 @@ source_set("send_tab_to_self") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "send_tab_to_self_browser_agent_unittest.mm" ]
   deps = [

@@ -30,12 +30,9 @@ static_library("push_notification") {
   ]
 
   frameworks = [ "UserNotifications.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "commerce_push_notification_client_unittest.mm" ]
   deps = [

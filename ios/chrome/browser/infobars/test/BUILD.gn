@@ -13,8 +13,6 @@ source_set("test") {
     "mock_infobar_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/infobars/core",

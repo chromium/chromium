@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("main") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browser_agent_util.h",
     "browser_agent_util.mm",
@@ -79,5 +78,4 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

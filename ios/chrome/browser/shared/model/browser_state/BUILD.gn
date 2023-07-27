@@ -36,8 +36,6 @@ source_set("browser_state") {
     "//ios/components/webui:url_constants",
     "//ios/web/public/webui",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -54,7 +52,6 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("test_support") {
@@ -93,6 +90,4 @@ source_set("test_support") {
     "//ios/web",
     "//net:test_support",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

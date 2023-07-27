@@ -5,7 +5,6 @@
 import("//ios/build/chrome_build.gni")
 
 source_set("flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "about_flags.h",
     "about_flags.mm",
@@ -104,7 +103,6 @@ source_set("flags") {
 }
 
 source_set("system_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_switches.cc",
     "chrome_switches.h",
@@ -112,7 +110,6 @@ source_set("system_flags") {
 }
 
 source_set("client_side") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_field_trials.h",
     "ios_chrome_field_trials.mm",
@@ -132,7 +129,6 @@ source_set("client_side") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "about_flags_unittest.mm" ]
   deps = [
     ":flags",

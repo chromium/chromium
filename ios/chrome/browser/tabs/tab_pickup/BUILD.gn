@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tab_pickup") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_pickup_browser_agent.h",
     "tab_pickup_browser_agent.mm",
@@ -24,7 +23,6 @@ source_set("tab_pickup") {
 }
 
 source_set("infobar_delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_pickup_infobar_delegate.h",
     "tab_pickup_infobar_delegate.mm",
@@ -49,7 +47,6 @@ source_set("infobar_delegate") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",

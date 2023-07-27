@@ -8,8 +8,6 @@ source_set("common") {
     "placeholder_request_config.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",

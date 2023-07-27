@@ -5,7 +5,6 @@
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_error_infobar_delegate.h",
     "sync_error_infobar_delegate.mm",
@@ -34,7 +33,6 @@ source_set("utils") {
 }
 
 source_set("identity_error_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "account_error_ui_info.h",
     "account_error_ui_info.mm",
@@ -54,7 +52,6 @@ source_set("identity_error_util") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "sync_error_infobar_delegate_unittest.mm" ]
   deps = [
@@ -77,10 +74,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "sync_fake_server_egtest.mm" ]
   deps = [

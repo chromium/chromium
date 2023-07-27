@@ -42,12 +42,10 @@ source_set("segmentation_platform") {
   if (build_with_tflite_lib) {
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "otr_web_state_observer_unittest.mm",

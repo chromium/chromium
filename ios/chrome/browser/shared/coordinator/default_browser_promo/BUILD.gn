@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("default_browser_promo") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "base_default_browser_promo_scene_agent.h",
     "base_default_browser_promo_scene_agent.mm",
@@ -27,7 +26,6 @@ source_set("default_browser_promo") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources =
       [ "non_modal_default_browser_promo_scheduler_scene_agent_unittest.mm" ]

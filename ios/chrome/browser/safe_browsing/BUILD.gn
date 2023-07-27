@@ -78,8 +78,6 @@ source_set("safe_browsing") {
     "//net",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 optimize_ts("password_protection_ts") {
@@ -99,15 +97,10 @@ source_set("features") {
     "//base",
     "//components/password_manager/core/common:features",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_protection_egtest.mm",
@@ -186,6 +179,4 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

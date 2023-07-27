@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("google") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "google_brand.h",
     "google_brand.mm",
@@ -11,7 +10,6 @@ source_set("google") {
 }
 
 source_set("google_logo") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "google_logo_service.h",
     "google_logo_service.mm",

@@ -16,8 +16,6 @@ source_set("test") {
     "overlay_test_macros.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",

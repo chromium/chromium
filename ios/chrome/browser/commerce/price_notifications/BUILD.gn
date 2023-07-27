@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("price_notifications") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "price_notifications_iph_presenter.h",
     "price_notifications_tab_helper.h",

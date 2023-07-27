@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("infobar_delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "permissions_infobar_delegate.h",
     "permissions_infobar_delegate.mm",
@@ -12,7 +11,6 @@ source_set("infobar_delegate") {
 }
 
 source_set("tab_helper") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "permissions_tab_helper.h",
     "permissions_tab_helper.mm",
@@ -32,7 +30,6 @@ source_set("tab_helper") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "permissions_tab_helper_unittest.mm" ]
   deps = [

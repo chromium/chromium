@@ -12,8 +12,6 @@ source_set("infobar_modal") {
     "save_address_profile_infobar_modal_overlay_responses.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/autofill/core/browser",

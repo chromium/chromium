@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ntp_tiles") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_most_visited_sites_factory.cc",
     "ios_most_visited_sites_factory.h",
@@ -32,10 +31,7 @@ source_set("ntp_tiles") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "ntp_tiles_egtest.mm" ]
   deps = [

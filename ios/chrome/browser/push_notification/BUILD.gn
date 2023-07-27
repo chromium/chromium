@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("push_notification_browser_state_service") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "push_notification_browser_state_service.h",
     "push_notification_browser_state_service.mm",
@@ -23,7 +22,6 @@ source_set("push_notification_browser_state_service") {
 }
 
 source_set("push_notification_browser_state_service_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "push_notification_browser_state_service_factory.h",
     "push_notification_browser_state_service_factory.mm",
@@ -42,7 +40,6 @@ source_set("push_notification_browser_state_service_factory") {
 }
 
 source_set("push_notification_service") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "push_notification_account_context_manager.h",
     "push_notification_account_context_manager.mm",
@@ -72,7 +69,6 @@ source_set("push_notification_service") {
 }
 
 source_set("push_notification_client") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "push_notification_client.h",
     "push_notification_client.mm",
@@ -82,7 +78,6 @@ source_set("push_notification_client") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "push_notification_account_context_manager+testing.h",
@@ -104,7 +99,6 @@ source_set("unit_tests") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "test_push_notification_client.h",
     "test_push_notification_client.mm",

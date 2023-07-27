@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "notification_observer_bridge.h",
     "notification_observer_bridge.mm",

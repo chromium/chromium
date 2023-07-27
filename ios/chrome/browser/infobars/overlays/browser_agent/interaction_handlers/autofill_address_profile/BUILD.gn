@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("autofill_address_profile") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "save_address_profile_infobar_banner_interaction_handler.h",
     "save_address_profile_infobar_banner_interaction_handler.mm",
@@ -31,7 +30,6 @@ source_set("autofill_address_profile") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "save_address_profile_infobar_banner_interaction_handler_unittest.mm",

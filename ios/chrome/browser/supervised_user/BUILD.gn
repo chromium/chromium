@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("supervised_user") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "child_account_service_factory.h",
     "child_account_service_factory.mm",
@@ -51,7 +50,6 @@ source_set("supervised_user") {
 }
 
 source_set("sync_settings_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "supervised_user_settings_service_factory.h",
     "supervised_user_settings_service_factory.mm",
@@ -65,7 +63,6 @@ source_set("sync_settings_factory") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "child_account_service_factory_unittest.mm",
@@ -102,10 +99,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "supervised_user_incognito_mode_egtest.mm",

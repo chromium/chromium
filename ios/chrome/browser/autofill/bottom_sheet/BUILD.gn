@@ -5,7 +5,6 @@
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("bottom_sheet") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_bottom_sheet_java_script_feature.h",
     "autofill_bottom_sheet_java_script_feature.mm",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("discover_feed") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "discover_feed_configuration.h",
     "discover_feed_configuration.mm",
@@ -41,7 +40,6 @@ source_set("discover_feed") {
 # provides an implementation). Using separate targets prevents circular
 # dependencies.
 source_set("discover_feed_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "discover_feed_service_factory.h",
     "discover_feed_service_factory.mm",
@@ -61,7 +59,6 @@ source_set("discover_feed_factory") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "feed_constants.h",
     "feed_constants.mm",

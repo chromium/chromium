@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_text_zoom") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_text_zoom.mm" ]
   deps = [
     "//ios/chrome/browser/web:feature_flags",

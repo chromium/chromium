@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("reading_list") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "favicon_web_state_dispatcher_impl.h",
     "favicon_web_state_dispatcher_impl.mm",
@@ -81,7 +80,6 @@ source_set("reading_list") {
 }
 
 source_set("reading_list_remover") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "reading_list_remover_helper.h",
     "reading_list_remover_helper.mm",
@@ -106,7 +104,6 @@ source_set("constants") {
     "reading_list_constants.h",
     "reading_list_constants.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("test_support") {
@@ -128,7 +125,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "favicon_web_state_dispatcher_impl_unittest.mm",

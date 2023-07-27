@@ -47,11 +47,9 @@ source_set("bookmarks") {
     "//ios/chrome/browser/history",
     ":bookmarks_utils",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("bookmarks_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_remover_helper.cc",
     "bookmark_remover_helper.h",
@@ -68,7 +66,6 @@ source_set("bookmarks_utils") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "bookmark_ios_unit_test_support.h",
@@ -90,7 +87,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "bookmark_model_bridge_observer_unittest.mm",

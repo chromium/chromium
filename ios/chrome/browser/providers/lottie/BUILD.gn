@@ -5,7 +5,6 @@
 import("//build/config/ios/ios_sdk.gni")
 
 source_set("chromium_lottie_animation") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_lottie_animation.mm" ]
   deps = [
     "//base",

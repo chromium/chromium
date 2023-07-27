@@ -6,7 +6,6 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("image_fetch") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "image_fetch_java_script_feature.h",
     "image_fetch_java_script_feature.mm",
@@ -39,7 +38,6 @@ optimize_ts("image_fetch_js") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "image_fetch_java_script_feature_unittest.mm",
@@ -61,10 +59,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("image_fetch_java_script_feature_fuzzer") {
-  additional_configs = [
-    "//build/config/compiler:enable_arc",
-    "//testing/libfuzzer:build_for_ios_clusterfuzz_job",
-  ]
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
 
   sources = [ "image_fetch_java_script_feature_fuzzer.mm" ]
   deps = [

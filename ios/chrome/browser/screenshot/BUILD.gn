@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("screenshot") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "screenshot_delegate.h",
     "screenshot_delegate.mm",
@@ -20,7 +19,6 @@ source_set("screenshot") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "screenshot_delegate_unittest.mm",

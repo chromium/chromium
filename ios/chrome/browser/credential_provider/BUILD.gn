@@ -15,7 +15,6 @@ buildflag_header("buildflags") {
 
 if (ios_enable_credential_provider_extension) {
   source_set("credential_provider") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
@@ -64,7 +63,6 @@ if (ios_enable_credential_provider_extension) {
   }
 
   source_set("unit_tests") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     testonly = true
     sources = [
       "archivable_credential+password_form_unittest.mm",

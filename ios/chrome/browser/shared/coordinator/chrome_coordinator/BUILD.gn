@@ -8,8 +8,6 @@ source_set("chrome_coordinator") {
     "chrome_coordinator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/shared/model/browser",

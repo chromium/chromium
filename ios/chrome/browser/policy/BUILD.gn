@@ -102,12 +102,9 @@ source_set("policy") {
   ]
 
   public_deps = [ "//components/policy/core/browser" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("policy_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "policy_util.h",
     "policy_util.mm",
@@ -121,7 +118,6 @@ source_set("policy_util") {
 }
 
 source_set("policy_earl_grey_matchers") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "policy_earl_grey_matchers.h",
@@ -134,7 +130,6 @@ source_set("policy_earl_grey_matchers") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "cloud/user_policy_constants.h",
     "cloud/user_policy_constants.mm",
@@ -171,8 +166,6 @@ source_set("test_support") {
     "//components/policy/core/common:test_support",
     "//testing/gmock",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 bundle_data("test_resources") {
@@ -188,7 +181,6 @@ bundle_data("test_resources") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browser_dm_token_storage_ios_unittest.mm",
@@ -254,10 +246,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -320,7 +309,6 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "policy_app_interface.h",
@@ -344,10 +332,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "policy_app_interface.h",

@@ -5,7 +5,6 @@
 import("//ios/build/chrome_build.gni")
 
 source_set("ios_thread") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
@@ -45,8 +44,6 @@ source_set("browser_state") {
     "off_the_record_chrome_browser_state_io_data.h",
     "off_the_record_chrome_browser_state_io_data.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":constants",
@@ -177,7 +174,6 @@ source_set("browser_state") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.cc",
     "constants.h",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_push_notification") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_push_notification.mm" ]
   deps = [
     "//base",

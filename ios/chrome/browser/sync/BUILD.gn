@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sync") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "device_info_sync_service_factory.h",
     "device_info_sync_service_factory.mm",
@@ -107,7 +106,6 @@ source_set("sync") {
 }
 
 source_set("model_type_store_service_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "model_type_store_service_factory.cc",
     "model_type_store_service_factory.h",
@@ -121,7 +119,6 @@ source_set("model_type_store_service_factory") {
 }
 
 source_set("sync_error_browser_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_error_browser_agent.h",
     "sync_error_browser_agent.mm",
@@ -165,7 +162,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_chrome_synced_tab_delegate_unittest.mm",

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_banner_interaction_handler.h",
     "infobar_banner_interaction_handler.mm",
@@ -29,7 +28,6 @@ source_set("common") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "infobar_banner_interaction_handler_unittest.mm",

@@ -8,8 +8,6 @@ source_set("confirmation") {
     "confirmation_overlay_response.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",
@@ -22,8 +20,6 @@ source_set("util") {
     "confirmation_overlay_response_util.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":confirmation",
     "//base",
@@ -35,8 +31,6 @@ source_set("util") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "confirmation_overlay_response_util_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":confirmation",

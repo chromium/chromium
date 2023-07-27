@@ -7,7 +7,6 @@ import("//build/config/ios/swift_source_set.gni")
 import("//ios/build/chrome_build.gni")
 
 source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "accessibility_close_menu_button.h",
     "accessibility_close_menu_button.mm",
@@ -92,7 +91,6 @@ swift_source_set("util_swiftui") {
 }
 
 source_set("terms_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "terms_util.h",
     "terms_util.mm",
@@ -109,7 +107,6 @@ source_set("terms_util") {
 }
 
 source_set("url_with_title") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "url_with_title.h",
     "url_with_title.mm",
@@ -118,7 +115,6 @@ source_set("url_with_title") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "frame_layout_guide_unittest.mm",
@@ -146,10 +142,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "keyboard_observer_helper_app_interface.h",
@@ -164,10 +157,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "keyboard_observer_helper_app_interface.h" ]
   deps = [

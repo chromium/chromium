@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("mailto_handler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "mailto_handler_configuration.h",
     "mailto_handler_configuration.mm",
@@ -23,7 +22,6 @@ source_set("mailto_handler") {
 # provides an implementation). Using separate targets prevents circular
 # dependencies.
 source_set("mailto_handler_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "mailto_handler_service_factory.h",
     "mailto_handler_service_factory.mm",

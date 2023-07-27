@@ -21,5 +21,4 @@ source_set("test_support") {
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

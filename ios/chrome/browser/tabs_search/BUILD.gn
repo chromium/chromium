@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tabs_search") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tabs_search_service.h",
     "tabs_search_service.mm",
@@ -25,7 +24,6 @@ source_set("tabs_search") {
 }
 
 source_set("tabs_search_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tabs_search_service_factory.h",
     "tabs_search_service_factory.mm",
@@ -47,7 +45,6 @@ source_set("tabs_search_factory") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "tabs_search_service_unittest.mm" ]
   deps = [
     ":tabs_search",

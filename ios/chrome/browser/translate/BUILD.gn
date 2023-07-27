@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "translate_constants.h",
     "translate_constants.mm",
@@ -17,7 +16,6 @@ source_set("public") {
 }
 
 source_set("translate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_ios_translate_client.h",
     "chrome_ios_translate_client.mm",
@@ -72,7 +70,6 @@ source_set("translate") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "chrome_ios_translate_client_unittest.mm",
@@ -125,14 +122,10 @@ source_set("test_support") {
     "//testing/gmock",
     "//third_party/metrics_proto",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "translate_app_interface.h",
@@ -153,10 +146,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "translate_app_interface.h",

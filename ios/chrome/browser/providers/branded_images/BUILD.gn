@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_branded_images") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_branded_images.mm" ]
   deps = [
     "resources:chromium_ios_made",

@@ -18,11 +18,9 @@ source_set("manual_fill") {
     "//ios/chrome/browser/shared/model/browser_state",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "passwords_fetcher_unittest.mm" ]
   deps = [

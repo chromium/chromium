@@ -26,5 +26,4 @@ source_set("share_extension") {
     "//net",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -5,7 +5,6 @@
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("safe_mode") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "safe_mode_crashing_modules_config.h",
     "safe_mode_crashing_modules_config.mm",
@@ -29,7 +28,6 @@ bundle_data("resources") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "safe_mode_util_unittest.cc" ]
   deps = [

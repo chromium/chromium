@@ -22,8 +22,6 @@ source_set("web_content_area") {
     "permissions_dialog_overlay.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":constants",
     "//base",
@@ -40,7 +38,6 @@ source_set("web_content_area") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "alert_constants.h",
     "alert_constants.mm",
@@ -58,8 +55,6 @@ source_set("unit_tests") {
     "java_script_prompt_dialog_overlay_unittest.mm",
     "permissions_dialog_overlay_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":constants",

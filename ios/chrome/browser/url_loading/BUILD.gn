@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("url_loading") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "image_search_param_generator.h",
     "image_search_param_generator.mm",
@@ -55,7 +54,6 @@ source_set("url_loading") {
 }
 
 source_set("url_loading_params_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "url_loading_params.h" ]
   deps = [
     "//ios/chrome/browser/shared/public/commands",
@@ -65,7 +63,6 @@ source_set("url_loading_params_header") {
 }
 
 source_set("new_tab_animation_tab_helper") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "new_tab_animation_tab_helper.h",
     "new_tab_animation_tab_helper.mm",
@@ -77,7 +74,6 @@ source_set("new_tab_animation_tab_helper") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_url_loading_browser_agent.h",
@@ -87,7 +83,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "image_search_param_generator_unittest.mm",

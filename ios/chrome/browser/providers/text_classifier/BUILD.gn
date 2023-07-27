@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_text_classifier") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_text_classifier.mm" ]
   deps = [
     "//ios/public/provider/chrome/browser/text_classifier:text_classifier_api",

@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 source_set("commands") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "activity_service_commands.h",
     "application_commands.h",
@@ -81,7 +79,6 @@ source_set("commands") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "command_dispatcher_unittest.mm" ]
   deps = [
     ":commands",

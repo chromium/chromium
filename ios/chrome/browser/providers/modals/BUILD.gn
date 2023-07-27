@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_modals") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_modals.mm" ]
   deps = [ "//ios/public/provider/chrome/browser/modals:modals_api" ]
 }

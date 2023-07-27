@@ -64,8 +64,6 @@ source_set("download") {
     "QuartzCore.framework",
     "QuickLook.framework",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("mime_types") {
@@ -77,12 +75,9 @@ source_set("mime_types") {
   ]
 
   deps = [ "//base" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ar_quick_look_tab_helper_unittest.mm",
@@ -115,7 +110,6 @@ source_set("unit_tests") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "download_test_util.cc",

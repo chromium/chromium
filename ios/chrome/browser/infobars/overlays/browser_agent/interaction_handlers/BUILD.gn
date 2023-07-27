@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("interaction_handlers") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   friend = [ ":unit_tests" ]
   sources = [
     "infobar_interaction_handler.h",

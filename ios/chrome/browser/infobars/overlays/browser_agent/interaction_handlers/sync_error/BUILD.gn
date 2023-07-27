@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sync_error") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_error_infobar_banner_interaction_handler.h",
     "sync_error_infobar_banner_interaction_handler.mm",
@@ -21,7 +20,6 @@ source_set("sync_error") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "sync_error_infobar_banner_interaction_handler_unittest.mm" ]
   deps = [

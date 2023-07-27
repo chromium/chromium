@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_app_distribution") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_app_distribution.cc" ]
   deps = [ "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api" ]
 }

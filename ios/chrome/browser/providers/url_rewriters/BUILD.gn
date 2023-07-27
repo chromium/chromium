@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_url_rewriters") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_url_rewriters.cc" ]
   deps =
       [ "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api" ]

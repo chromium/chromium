@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("bottom_sheet") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "table_view_bottom_sheet_view_controller.h",
     "table_view_bottom_sheet_view_controller.mm",

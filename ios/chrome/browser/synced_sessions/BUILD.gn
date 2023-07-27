@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("synced_sessions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "distant_session.h",
     "distant_session.mm",

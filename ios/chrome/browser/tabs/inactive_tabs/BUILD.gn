@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("inactive_tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "metrics.h",
     "metrics.mm",
@@ -21,7 +20,6 @@ source_set("inactive_tabs") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",
@@ -36,7 +34,6 @@ source_set("features") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "utils_unittest.mm" ]
   deps = [

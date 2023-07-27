@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("language") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "accept_languages_service_factory.cc",
     "accept_languages_service_factory.h",
@@ -27,7 +26,6 @@ source_set("language") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "language_model_manager_factory_unittest.cc",
