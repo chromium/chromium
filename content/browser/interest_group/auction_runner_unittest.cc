@@ -17022,14 +17022,23 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   // bidders, while the top-level seller favors higher bidders.
   EXPECT_EQ(GURL("https://bidder9.ad.test/"), result_.ad_descriptor->url);
 
-  // Top seller doesn't report a loss, since it never saw the bid from the
-  // second bidder.
+  // Only the bidder that wins the overall auction gets win report. All other
+  // bidders get loss reports, even the component auction winners.
+  EXPECT_THAT(
+      result_.debug_win_report_urls,
+      testing::UnorderedElementsAre(
+          GURL("https://bidder9.test/win/"), GURL("https://seller3.test/win/9"),
+          GURL(SellerCurrencyOn() ? "https://seller0.test/win/90"
+                                  : "https://seller0.test/win/9")));
+
+  // Top-level seller doesn't report a loss for losing bidders of component
+  // auctions, since the top-level seller never saw them.
   EXPECT_THAT(result_.debug_loss_report_urls,
               testing::UnorderedElementsAre(
                   // kComponentSeller1's bidders. The first makes it to the
                   // top-level auction, the others do not.
                   //
-                  // Note that seller 0 here is the top-level, so it gets
+                  // Note that seller 0 here is the top-level seller, so it gets
                   // currency adjusted (*10) numbers if SellerCurrencyOn
                   GURL("https://bidder1.test/loss/"),
                   GURL("https://seller1.test/loss/1"),
@@ -17067,13 +17076,6 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   GURL("https://seller3.test/loss/14"),
                   GURL("https://bidder15.test/loss/"),
                   GURL("https://seller3.test/loss/15")));
-
-  EXPECT_THAT(
-      result_.debug_win_report_urls,
-      testing::UnorderedElementsAre(
-          GURL("https://bidder9.test/win/"), GURL("https://seller3.test/win/9"),
-          GURL(SellerCurrencyOn() ? "https://seller0.test/win/90"
-                                  : "https://seller0.test/win/9")));
 }
 
 // Reject reason returned by scoreAd() for a rejected bid can be reported to the

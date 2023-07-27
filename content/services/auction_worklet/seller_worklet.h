@@ -159,7 +159,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     absl::optional<blink::AdCurrency> component_expect_bid_currency;
     url::Origin browser_signal_interest_group_owner;
     GURL browser_signal_render_url;
-    // While these are URLs, it's more concenient to store these as strings
+    // While these are URLs, it's more convenient to store these as strings
     // rather than GURLs, both for creating a v8 array from, and for sharing
     // ScoringSignals code with BidderWorklets.
     std::vector<std::string> browser_signal_ad_components;

@@ -317,7 +317,7 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
 
   v8::Local<v8::Object> out = v8::Object::New(v8_helper->isolate());
 
-  // Create renderURL sub-object, and add it to to `out`.
+  // Create renderURL sub-object, and add it to `out`.
   v8::Local<v8::Object> render_url_v8_object =
       CreateObjectFromMap(std::vector<std::string>{render_url.spec()},
                           *render_url_data_, v8_helper, context);

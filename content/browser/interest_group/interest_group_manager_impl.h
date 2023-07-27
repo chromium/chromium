@@ -115,7 +115,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // `url_loader_factory`.
   //
   // `url_loader_factory` is the factory for renderer frame where
-  // navigator.joinInterestGroup() was invoked, and will be used for the
+  // navigator.joinAdInterestGroup() was invoked, and will be used for the
   // .well-known fetch if one is needed.
   //
   // `report_result_only`, if true, results in calling `callback` with the

@@ -620,7 +620,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   }
 
   DCHECK(reporter);
-  // Should always be present with a ad_descriptor->url.
+  // Should always be present with an ad_descriptor->url.
   DCHECK(winning_group_key);
   DCHECK(blink::IsValidFencedFrameURL(ad_descriptor->url));
   DCHECK(urn_uuid.is_valid());

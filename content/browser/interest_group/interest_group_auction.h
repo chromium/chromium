@@ -690,7 +690,7 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // The highest scoring bid so far. Null if no bid has been accepted yet.
     std::unique_ptr<ScoredBid> top_bid;
-    // Number of bidders with the same score as `top_bidder`.
+    // Number of bidders with the same score as `top_bid`.
     size_t num_top_bids = 0;
     // Number of bidders with the same score as `second_highest_score`. If the
     // second highest score matches the highest score, this does not include the
