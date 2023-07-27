@@ -91,6 +91,28 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
+                       ToggleFocusForAccessibilityStartsFocused) {
+  auto params = GetDefaultHelpBubbleParams();
+  user_education::HelpBubbleButtonParams button_params;
+  button_params.text = u"Button";
+  button_params.is_default = true;
+  params.buttons.emplace_back(std::move(button_params));
+
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      // A help bubble with a button should start focused.
+      CreateHelpBubble(kAppMenuButtonElementId, std::move(params)),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(help_bubble_native_view_)),
+      // Toggle focus to the anchor view.
+      Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(browser_native_view_)),
+      CheckViewProperty(kAppMenuButtonElementId, &views::View::HasFocus, true),
+      CloseHelpBubble());
+}
+
+IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                        ToggleFocusViaAccelerator) {
   ui::Accelerator next_pane;
   ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(

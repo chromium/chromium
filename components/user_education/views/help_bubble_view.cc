@@ -868,13 +868,23 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
 
   SizeToContents();
 
-  widget->ShowInactive();
+  // Most help bubbles with buttons take focus when they show.
+  bool show_active = !params.buttons.empty();
   if (auto* const anchor_bubble =
           anchor_widget()->widget_delegate()->AsBubbleDialogDelegate()) {
+    // Make sure that if the help bubble is attaching to a dialog, the dialog
+    // does not immediately dismiss when the help bubble is shown or focused.
     anchor_pin_ = anchor_bubble->PreventCloseOnDeactivate();
   } else if (auto* const menu_item = GetAnchorAsMenuItem(this)) {
+    // Should not steal focus when attaching to a menu.
+    show_active = false;
     menu_event_monitor_ =
         std::make_unique<internal::MenuEventMonitor>(this, menu_item);
+  }
+  if (show_active) {
+    widget->Show();
+  } else {
+    widget->ShowInactive();
   }
   MaybeStartAutoCloseTimer();
 }
