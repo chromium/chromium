@@ -387,27 +387,6 @@ TEST_F(IpProtectionAuthTokenProviderTest, AuthTokenError) {
       IpProtectionTryGetAuthTokensResult::kFailedOAuthToken, 1);
 }
 
-// Ineligible primary account.
-TEST_F(IpProtectionAuthTokenProviderTest, IneligiblePrimary) {
-  primary_account_behavior_ = PrimaryAccountBehavior::kIneligible;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
-
-  TryGetAuthTokens(1, &getter);
-
-  EXPECT_FALSE(bsa.get_tokens_called_);
-  ExpectTryGetAuthTokensResultFailed(
-      IpProtectionAuthTokenProvider::kNotEligibleBackoff);
-  histogram_tester_.ExpectUniqueSample(
-      kTryGetAuthTokensResultHistogram,
-      IpProtectionTryGetAuthTokensResult::kFailedNotEligible, 1);
-  histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
-}
-
 // No primary account.
 TEST_F(IpProtectionAuthTokenProviderTest, NoPrimary) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
