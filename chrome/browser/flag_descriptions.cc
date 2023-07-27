@@ -7399,6 +7399,13 @@ const char kEnableAudioFocusEnforcementDescription[] =
     "any one time. Requires #enable-media-session-service to be enabled too.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const char kThirdPartyProfileManagementName[] =
+    "Third party profile management";
+const char kThirdPartyProfileManagementDescription[] =
+    "Enables profile management triggered by third-party sign-ins.";
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

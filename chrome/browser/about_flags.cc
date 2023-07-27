@@ -335,6 +335,10 @@
 #include "chrome/browser/win/titlebar_config.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 #if defined(TOOLKIT_VIEWS)
 #include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
@@ -10728,6 +10732,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDigestAuthEnableSecureAlgorithmsName,
      flag_descriptions::kDigestAuthEnableSecureAlgorithmsDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kDigestAuthEnableSecureAlgorithms)},
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    {"third-party-profile-management",
+     flag_descriptions::kThirdPartyProfileManagementName,
+     flag_descriptions::kThirdPartyProfileManagementDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         profile_management::features::kThirdPartyProfileManagement)},
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
