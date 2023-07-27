@@ -2619,8 +2619,9 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
           : PageActionIconType::kQRCodeGenerator;
 
   auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
-      toolbar_button_provider()->GetAnchorView(icon_type), contents,
-      std::move(on_closing), std::move(on_back_button_pressed), url);
+      toolbar_button_provider()->GetAnchorView(icon_type),
+      contents->GetWeakPtr(), std::move(on_closing),
+      std::move(on_back_button_pressed), url);
 
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(icon_type);

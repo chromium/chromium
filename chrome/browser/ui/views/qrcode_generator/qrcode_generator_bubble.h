@@ -42,7 +42,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
  public:
   METADATA_HEADER(QRCodeGeneratorBubble);
   QRCodeGeneratorBubble(views::View* anchor_view,
-                        content::WebContents* web_contents,
+                        base::WeakPtr<content::WebContents> web_contents,
                         base::OnceClosure on_closing,
                         base::OnceClosure on_back_button_pressed,
                         const GURL& url);
@@ -159,8 +159,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   base::OnceClosure on_closing_;
   base::OnceClosure on_back_button_pressed_;
-  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
-      web_contents_;  // weak.
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace qrcode_generator

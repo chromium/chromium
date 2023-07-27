@@ -84,7 +84,7 @@ namespace qrcode_generator {
 
 QRCodeGeneratorBubble::QRCodeGeneratorBubble(
     views::View* anchor_view,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     base::OnceClosure on_closing,
     base::OnceClosure on_back_button_pressed,
     const GURL& url)
@@ -452,7 +452,9 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
   const SkBitmap& bitmap = GetBitmap();
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  CHECK(web_contents_);
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_.get());
   content::DownloadManager* download_manager =
       browser->profile()->GetDownloadManager();
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -481,7 +483,7 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
       })");
   std::unique_ptr<download::DownloadUrlParameters> params =
       content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
-          web_contents_, data_url, traffic_annotation);
+          web_contents_.get(), data_url, traffic_annotation);
   // Suggest a name incorporating the hostname. Protocol, TLD, etc are
   // not taken into consideration. Duplicate names get automatic suffixes.
   params->set_suggested_name(GetQRCodeFilenameForURL(url_));
