@@ -7,7 +7,14 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace ash::shimless_rma {
 
@@ -31,6 +38,25 @@ class ShimlessRmaDelegate {
   virtual void GenerateQrCode(
       const std::string& url,
       base::OnceCallback<void(const std::string& qr_code_image)> callback) = 0;
+
+  // Prepare the browser context to show the 3p diagnostics app. A 3p
+  // diagnostics app consists of a ChromeOS system extension and a isolated web
+  // app (IWA).
+  // This configures the browser context, installs the extension (crx file) and
+  // the IWA (swbn file) from the specific path. The callback returns a result
+  // object or an error message. This method is also responsible to check if the
+  // extension and the IWA are allowed by the system.
+  struct PrepareDiagnosticsAppBrowserContextResult {
+    base::raw_ptr<content::BrowserContext> context;
+    std::string extension_id;
+    web_package::SignedWebBundleId iwa_id;
+  };
+  using PrepareDiagnosticsAppBrowserContextCallback = base::OnceCallback<void(
+      base::expected<PrepareDiagnosticsAppBrowserContextResult, std::string>)>;
+  virtual void PrepareDiagnosticsAppBrowserContext(
+      const base::FilePath& crx_path,
+      const base::FilePath& swbn_path,
+      PrepareDiagnosticsAppBrowserContextCallback callback) = 0;
 };
 
 }  // namespace ash::shimless_rma

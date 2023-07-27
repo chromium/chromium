@@ -125,6 +125,10 @@ class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
                           callback) override {
     std::move(callback).Run(url);
   }
+  void PrepareDiagnosticsAppBrowserContext(
+      const base::FilePath& crx_path,
+      const base::FilePath& swbn_path,
+      PrepareDiagnosticsAppBrowserContextCallback callback) override {}
 };
 
 // A fake DiagnosticsBrowserDelegate.
