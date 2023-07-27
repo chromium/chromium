@@ -361,17 +361,20 @@ public class BookmarkToolbarMediatorTest {
     public void testAddNewFolder() {
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
         assertTrue(mMediator.onMenuIdClick(R.id.create_new_folder_menu_id));
         verify(mBookmarkAddNewFolderCoordinator).show(any());
 
         doReturn(mBookmarkId).when(mBookmarkModel).getReadingListFolder();
         mMediator.onFolderStateSet(mBookmarkId);
-        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
 
         doReturn(null).when(mBookmarkModel).getReadingListFolder();
         doReturn(mBookmarkId).when(mBookmarkModel).getPartnerFolderId();
         mMediator.onFolderStateSet(mBookmarkId);
-        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
     }
 
     @Test

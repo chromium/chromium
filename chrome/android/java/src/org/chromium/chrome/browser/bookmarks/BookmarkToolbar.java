@@ -48,6 +48,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mSearchButtonVisible;
     private boolean mEditButtonVisible;
     private boolean mNewFolderButtonVisible;
+    private boolean mNewFolderButtonEnabled;
 
     private Runnable mNavigateBackRunnable;
     private Function<Integer, Boolean> mMenuIdClickedFunction;
@@ -128,8 +129,17 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void setNewFolderButtonVisible(boolean visible) {
+        // The new folder button is only visible when improved bookmarks is enabled.
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
         mNewFolderButtonVisible = visible;
         getMenu().findItem(R.id.create_new_folder_menu_id).setVisible(visible);
+    }
+
+    void setNewFolderButtonEnabled(boolean enabled) {
+        // The new folder button is only visible when improved bookmarks is enabled.
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
+        mNewFolderButtonEnabled = enabled;
+        getMenu().findItem(R.id.create_new_folder_menu_id).setEnabled(enabled);
     }
 
     void setNavigationButtonState(@NavigationButton int navigationButtonState) {
@@ -188,6 +198,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         // SelectableListToolbar will show/hide the entire group.
         setSearchButtonVisible(mSearchButtonVisible);
         setEditButtonVisible(mEditButtonVisible);
+        setNewFolderButtonVisible(mNewFolderButtonVisible);
+        setNewFolderButtonEnabled(mNewFolderButtonEnabled);
     }
 
     @Override
