@@ -116,7 +116,7 @@
   "android-cronet-mainline-clang-arm-dbg": {
     "gn_args": {
       "arm_use_neon": false,
-      "clang_base_path": "//third_party/mainline_clang/linux-amd64",
+      "clang_base_path": "//third_party/cronet_android_mainline_clang/linux-amd64",
       "clang_use_chrome_plugins": false,
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,

@@ -656,11 +656,11 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/mainline_clang/linux-amd64': {
+  'src/third_party/cronet_android_mainline_clang/linux-amd64': {
       'packages': [
           {
-              'package': 'chromium/third_party/mainline_clang/linux-amd64',
-              'version': '-MHcIYwDDRyZ2HMefnWEkV-_R5A8I7HS1jxDfGXoE4MC',
+              'package': 'chromium/third_party/cronet_android_mainline_clang/linux-amd64',
+              'version': 'cOWHyVbQYOA9ATyuUaYmOE6YLer1h1JFFa6KRS3_hjIC',
           },
       ],
       'condition': 'checkout_android and host_os == "linux"',
