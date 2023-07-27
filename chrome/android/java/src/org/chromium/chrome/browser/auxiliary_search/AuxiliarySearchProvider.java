@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import android.text.TextUtils;
+
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
@@ -13,6 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.url.GURL;
 
 /**
  * This class provides information for the auxiliary search.
@@ -53,9 +56,12 @@ public class AuxiliarySearchProvider {
         int end = tabList.getCount() - 1;
         for (int i = firstTabIndex; i <= end; i++) {
             Tab tab = tabList.getTabAt(i);
-            var tabBuilder = AuxiliarySearchEntry.newBuilder()
-                                     .setTitle(tab.getTitle())
-                                     .setUrl(tab.getUrl().getSpec());
+            String title = tab.getTitle();
+            GURL url = tab.getUrl();
+            if (TextUtils.isEmpty(title) || url == null || !url.isValid()) continue;
+
+            var tabBuilder =
+                    AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url.getSpec());
             final long lastAccessTime = CriticalPersistedTabData.from(tab).getTimestampMillis();
             if (lastAccessTime != CriticalPersistedTabData.INVALID_TIMESTAMP) {
                 tabBuilder.setLastAccessTimestamp(lastAccessTime);
