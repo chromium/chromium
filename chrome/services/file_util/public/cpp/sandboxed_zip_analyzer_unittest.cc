@@ -93,14 +93,21 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   // |results|.
   void RunAnalyzer(const base::FilePath& file_path,
                    safe_browsing::ArchiveAnalyzerResults* results) {
+    RunAnalyzer(file_path, /*password=*/"", results);
+  }
+
+  void RunAnalyzer(const base::FilePath& file_path,
+                   const std::string& password,
+                   safe_browsing::ArchiveAnalyzerResults* results) {
     DCHECK(results);
     mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
     std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-        SandboxedZipAnalyzer::CreateAnalyzer(
-            file_path, results_getter.GetCallback(), std::move(remote));
+        SandboxedZipAnalyzer::CreateAnalyzer(file_path, password,
+                                             results_getter.GetCallback(),
+                                             std::move(remote));
     analyzer->Start();
     run_loop.Run();
   }
@@ -408,6 +415,35 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedJSEFile) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
+TEST_F(SandboxedZipAnalyzerTest, EncryptedZip) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(dir_test_data_.AppendASCII("download_protection/encrypted.zip"),
+              /*password=*/"12345", &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+  ExpectBinary(kSignedExe, results.archived_binary.Get(0));
+}
+
+TEST_F(SandboxedZipAnalyzerTest, EncryptedZipWrongPassword) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(dir_test_data_.AppendASCII("download_protection/encrypted.zip"),
+              /*password=*/"67890", &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+
+  const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary =
+      results.archived_binary.Get(0);
+  EXPECT_EQ("signed.exe", binary.file_path());
+  EXPECT_EQ(safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
+            binary.download_type());
+  EXPECT_FALSE(binary.has_digests());
+  EXPECT_FALSE(binary.has_length());
+}
+
 #if BUILDFLAG(IS_MAC)
 TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   base::HistogramTester histograms;
@@ -461,8 +497,9 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
   base::RunLoop run_loop;
 
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
-  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeZipFile(_, _, _))
+  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeZipFile(_, _, _, _))
       .WillOnce([&](base::File zip_file,
+                    const absl::optional<std::string>& password,
                     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
                         temp_file_getter,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeZipFileCallback
@@ -472,8 +509,8 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
         run_loop.Quit();
       });
   std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-      SandboxedZipAnalyzer::CreateAnalyzer(temp_path, base::DoNothing(),
-                                           std::move(remote));
+      SandboxedZipAnalyzer::CreateAnalyzer(
+          temp_path, /*password=*/"", base::DoNothing(), std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

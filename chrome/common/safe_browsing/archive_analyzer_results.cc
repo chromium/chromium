@@ -62,6 +62,7 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           int file_length,
                                           bool is_encrypted,
                                           bool is_directory,
+                                          bool contents_valid,
                                           ArchiveAnalyzerResults* results) {
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor(
       new BinaryFeatureExtractor());
@@ -114,7 +115,7 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
     archived_archive->set_is_encrypted(is_encrypted);
     archived_archive->set_is_archive(true);
     SetNameForContainedFile(path, archived_archive);
-    if (!is_encrypted) {
+    if (contents_valid) {
       SetLengthAndDigestForContainedFile(file, file_length, archived_archive);
     }
   } else {
@@ -135,7 +136,7 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
           download_type_util::GetDownloadType(path));
       archived_binary->set_is_executable(current_entry_is_executable);
       SetNameForContainedFile(path, archived_binary);
-      if (!is_encrypted) {
+      if (contents_valid) {
         SetLengthAndDigestForContainedFile(file, file_length, archived_binary);
       }
       if (current_entry_is_executable) {

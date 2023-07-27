@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -38,6 +39,7 @@ class MockSafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       void,
       AnalyzeZipFile,
       (base::File zip_file,
+       const absl::optional<std::string>& password,
        mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
        AnalyzeZipFileCallback callback),
       (override));

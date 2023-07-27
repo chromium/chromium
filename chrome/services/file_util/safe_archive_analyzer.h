@@ -11,6 +11,7 @@
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
 #include "chrome/utility/safe_browsing/zip_analyzer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/utility/safe_browsing/mac/dmg_analyzer.h"
@@ -36,6 +37,7 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
   // chrome::mojom::SafeArchiveAnalyzer:
   void AnalyzeZipFile(
       base::File zip_file,
+      const absl::optional<std::string>& password,
       mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
       AnalyzeZipFileCallback callback) override;
   void AnalyzeDmgFile(

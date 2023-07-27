@@ -226,6 +226,7 @@ void FileAnalysisRequest::OnGotFileData(
   if (IsZipFile(ext, mime_type)) {
     zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
         path_,
+        /*password=*/"",
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
                        weakptr_factory_.GetWeakPtr(),
                        std::move(result_and_data.second)),

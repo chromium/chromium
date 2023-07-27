@@ -48,14 +48,16 @@ bool ZipAnalyzer::ResumeExtraction() {
       PLOG(WARNING) << "Failed truncate";
     }
     zip::FileWriterDelegate writer(&temp_file_);
-    reader_.ExtractCurrentEntry(&writer, std::numeric_limits<uint64_t>::max());
+    bool extract_success = reader_.ExtractCurrentEntry(
+        &writer, std::numeric_limits<uint64_t>::max());
 
     has_encrypted_ |= entry->is_encrypted;
     has_aes_encrypted_ |= entry->uses_aes_encryption;
 
-    if (!UpdateResultsForEntry(
-            temp_file_.Duplicate(), GetRootPath().Append(entry->path),
-            writer.file_length(), entry->is_encrypted, entry->is_directory)) {
+    if (!UpdateResultsForEntry(temp_file_.Duplicate(),
+                               GetRootPath().Append(entry->path),
+                               writer.file_length(), entry->is_encrypted,
+                               entry->is_directory, extract_success)) {
       return false;
     }
   }
@@ -97,6 +99,10 @@ void ZipAnalyzer::OnGetTempFile(base::File temp_file) {
     return;
   }
   temp_file_ = std::move(temp_file);
+
+  if (password().has_value()) {
+    reader_.SetPassword(*password());
+  }
 
   InitComplete(ArchiveAnalysisResult::kValid);
 }

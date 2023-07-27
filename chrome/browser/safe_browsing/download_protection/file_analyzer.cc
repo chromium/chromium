@@ -131,6 +131,8 @@ void FileAnalyzer::StartExtractZipFeatures() {
   // We give the zip analyzer a weak pointer to this object.
   zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
       tmp_path_,
+      // TODO(crbug/1466284): Provide the password from the user here.
+      /*password=*/"",
       base::BindOnce(&FileAnalyzer::OnZipAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),
       LaunchFileUtilService());
