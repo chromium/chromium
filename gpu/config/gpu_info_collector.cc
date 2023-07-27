@@ -781,6 +781,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
   if (collect_metrics) {
     ReportWebGPUSupportMetrics(instance.get());
+    return;
   }
 
   // Enumerate adapters with default toggles

@@ -234,7 +234,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void RequestDxDiagNodeData();
   void RequestGpuSupportedDx12Version(bool delayed);
   void RequestGpuSupportedVulkanVersion(bool delayed);
-  void RequestDawnInfo(bool delayed);
+  void RequestDawnInfo(bool delayed, bool collect_metrics);
   void RequestMojoMediaVideoCapabilities();
 
   void RecordCompositingMode();
@@ -254,7 +254,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool gpu_info_vulkan_requested_ = false;
   bool gpu_info_vulkan_request_failed_ = false;
 #endif
-  bool gpu_info_dawn_info_requested_ = false;
   // The Dawn info queried from the GPU process.
   std::vector<std::string> dawn_info_list_;
 

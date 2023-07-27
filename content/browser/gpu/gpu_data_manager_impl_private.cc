@@ -660,7 +660,7 @@ void GpuDataManagerImplPrivate::RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
     RequestGpuSupportedVulkanVersion(delayed);
 
   if (request & GpuDataManagerImpl::kGpuInfoRequestDawnInfo)
-    RequestDawnInfo(delayed);
+    RequestDawnInfo(delayed, /*collect_metrics=*/false);
 
   if (request & GpuDataManagerImpl::kGpuInfoRequestVideo) {
     DCHECK(!delayed) << "|delayed| is not supported for Mojo Media requests";
@@ -824,16 +824,12 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedVulkanVersion(bool delayed) {
 #endif
 }
 
-void GpuDataManagerImplPrivate::RequestDawnInfo(bool delayed) {
+void GpuDataManagerImplPrivate::RequestDawnInfo(bool delayed,
+                                                bool collect_metrics) {
   base::TimeDelta delta;
   if (delayed) {
     delta = base::Seconds(120);
   }
-
-  // Only collect metrics on the first request to avoid skewing data if
-  // the request occurs multiple times.
-  bool collect_metrics = !gpu_info_dawn_info_requested_;
-  gpu_info_dawn_info_requested_ = true;
 
   base::OnceClosure task = base::BindOnce(
       [](bool collect_metrics) {
@@ -845,10 +841,18 @@ void GpuDataManagerImplPrivate::RequestDawnInfo(bool delayed) {
 
         host->gpu_service()->GetDawnInfo(
             collect_metrics,
-            base::BindOnce([](const std::vector<std::string>& dawn_info_list) {
-              GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
-              manager->UpdateDawnInfo(dawn_info_list);
-            }));
+            base::BindOnce(
+                [](bool collect_metrics,
+                   const std::vector<std::string>& dawn_info_list) {
+                  if (collect_metrics) {
+                    // Metrics collection does not populate the info list.
+                    return;
+                  }
+                  GpuDataManagerImpl* manager =
+                      GpuDataManagerImpl::GetInstance();
+                  manager->UpdateDawnInfo(dawn_info_list);
+                },
+                collect_metrics));
       },
       collect_metrics);
 
@@ -1204,7 +1208,7 @@ void GpuDataManagerImplPrivate::PostCreateThreads() {
   // Launch the info collection GPU process to collect Dawn info.
   // Not to affect Chrome startup, this is done in a delayed mode, i.e., 120
   // seconds after Chrome startup.
-  RequestDawnInfo(/*delayed=*/true);
+  RequestDawnInfo(/*delayed=*/true, /*collect_metrics=*/true);
 #endif
 
 #if BUILDFLAG(IS_WIN)
