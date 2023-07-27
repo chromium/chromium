@@ -1593,7 +1593,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.ActivationNavigationParamsMatch{PrerenderTriggerType}"
-    enum="PrerenderActivationNavigationParamsMatch" expires_after="2023-09-03">
+    enum="PrerenderActivationNavigationParamsMatch" expires_after="2023-12-03">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
