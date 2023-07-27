@@ -35,3 +35,31 @@ bool PrerenderWebContentsDelegateImpl::ShouldSuppressDialogs(
   // prerendered page.
   NOTREACHED_NORETURN();
 }
+
+void PrerenderWebContentsDelegateImpl::PortalWebContentsCreated(
+    content::WebContents* portal_web_contents) {
+  // Portal is not available on a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::WebContentsBecamePortal(
+    content::WebContents* portal_web_contents) {
+  // Portal is not available on a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+std::unique_ptr<content::WebContents>
+PrerenderWebContentsDelegateImpl::ActivatePortalWebContents(
+    content::WebContents* predecessor_contents,
+    std::unique_ptr<content::WebContents> portal_contents) {
+  // Portal is not available on a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::UpdateInspectedWebContentsIfNecessary(
+    content::WebContents* old_contents,
+    content::WebContents* new_contents,
+    base::OnceCallback<void()> callback) {
+  // This is called only for Portal that is not available on a prerendered page.
+  NOTREACHED_NORETURN();
+}

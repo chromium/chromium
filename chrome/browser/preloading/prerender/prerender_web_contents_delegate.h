@@ -27,6 +27,17 @@ class PrerenderWebContentsDelegateImpl
                       bool* was_blocked) override;
   void ActivateContents(content::WebContents* contents) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
+  void PortalWebContentsCreated(
+      content::WebContents* portal_web_contents) override;
+  void WebContentsBecamePortal(
+      content::WebContents* portal_web_contents) override;
+  std::unique_ptr<content::WebContents> ActivatePortalWebContents(
+      content::WebContents* predecessor_contents,
+      std::unique_ptr<content::WebContents> portal_contents) override;
+  void UpdateInspectedWebContentsIfNecessary(
+      content::WebContents* old_contents,
+      content::WebContents* new_contents,
+      base::OnceCallback<void()> callback) override;
 
   // TODO(crbug.com/1350676): Investigate if we have to override other
   // functions on WebContentsDelegate.
