@@ -53,9 +53,10 @@ config("crashpad_fuzzer_flags") {
 
 if (crashpad_is_apple) {
   group("apple_enable_arc") {
-    if (crashpad_is_in_chromium) {
-      public_configs = [ "//build/config/compiler:enable_arc" ]
-    } else if (crashpad_is_standalone) {
+    # If `crashpad_is_in_chromium`, then because Chromium enables ARC
+    # compilation by default, no special configuration is needed.
+
+    if (crashpad_is_standalone) {
       public_configs = [ "//third_party/mini_chromium/mini_chromium/build/config:apple_enable_arc" ]
     }
   }
