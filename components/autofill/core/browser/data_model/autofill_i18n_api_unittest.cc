@@ -1,0 +1,99 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
+
+#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+namespace {
+
+// Checks that the AddressComponent graph has no cycles.
+bool IsTree(AddressComponent* node, ServerFieldTypeSet* visited_types) {
+  if (visited_types->contains(node->GetStorageType()) ||
+      visited_types->contains_any(node->GetAdditionalSupportedFieldTypes())) {
+    // Repeated types exist in the tree.
+    return false;
+  }
+  visited_types->insert(node->GetStorageType());
+  visited_types->insert_all(node->GetAdditionalSupportedFieldTypes());
+  if (node->Subcomponents().empty()) {
+    return true;
+  }
+  return base::ranges::all_of(node->Subcomponents(),
+                              [&visited_types](AddressComponent* child) {
+                                return IsTree(child, visited_types);
+                              });
+}
+}  // namespace
+
+TEST(AutofillI18nApi, GetAddressComponentModel_ReturnsNonEmptyModel) {
+  for (const auto& [country_code, properties] :
+       i18n_model_definition::kAutofillModelRules) {
+    for (AutofillModelType model_type :
+         {AutofillModelType::kAddressModel, AutofillModelType::kNameModel}) {
+      // Make sure that the process of building the model finishes and returns a
+      // non empty hierarchy.
+      std::unique_ptr<I18nAddressComponent> model =
+          CreateAddressComponentModel(model_type, country_code);
+
+      ASSERT_TRUE(model);
+      ServerFieldTypeSet field_type_set;
+      model->GetSupportedTypes(&field_type_set);
+      EXPECT_FALSE(field_type_set.empty());
+      EXPECT_FALSE(field_type_set.contains_any(
+          {NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}));
+
+      // Assert root nodes.
+      switch (model_type) {
+        case AutofillModelType::kAddressModel:
+          EXPECT_EQ(model->GetRootNodeForTesting().GetStorageType(),
+                    ADDRESS_HOME_ADDRESS);
+          break;
+        case AutofillModelType::kNameModel:
+          EXPECT_EQ(model->GetRootNodeForTesting().GetStorageType(), NAME_FULL);
+          break;
+      }
+    }
+  }
+}
+
+TEST(AutofillI18nApi, GetAddressComponentModel_ReturnedModelIsTree) {
+  for (const auto& [country_code, tree_def] :
+       i18n_model_definition::kAutofillModelRules) {
+    // Currently, the model for kAddressModel should comprise all the nodes in
+    // the rules.
+    std::unique_ptr<I18nAddressComponent> root = CreateAddressComponentModel(
+        AutofillModelType::kAddressModel, country_code);
+
+    ServerFieldTypeSet supported_types;
+    EXPECT_TRUE(IsTree(root.get(), &supported_types));
+
+    // Test that all field types in the country rules are accessible through the
+    // root (i.e. the tree is connected).
+    for (const auto& [node_type, children_types] : tree_def) {
+      EXPECT_TRUE(root->GetNodeForTypeForTesting(node_type));
+
+      for (ServerFieldType child_type : children_types) {
+        EXPECT_TRUE(root->GetNodeForTypeForTesting(child_type));
+      }
+    }
+  }
+}
+
+TEST(AutofillI18nApi, GetAddressComponentModel_CountryNodeHasValue) {
+  for (const auto& [country_code, tree_def] :
+       i18n_model_definition::kAutofillModelRules) {
+    std::unique_ptr<I18nAddressComponent> model = CreateAddressComponentModel(
+        AutofillModelType::kAddressModel, country_code);
+    EXPECT_EQ(model->GetValueForType(ADDRESS_HOME_COUNTRY),
+              base::UTF8ToUTF16(country_code));
+  }
+}
+
+}  // namespace autofill

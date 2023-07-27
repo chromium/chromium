@@ -373,6 +373,10 @@ class AddressComponent {
       const AddressComponent& other) const {
     return GetValueForComparison(other);
   }
+
+  AddressComponent* GetNodeForTypeForTesting(ServerFieldType field_type) {
+    return GetNodeForType(field_type);
+  }
 #endif
 
  protected:
@@ -386,6 +390,9 @@ class AddressComponent {
   // Returns a vector containing the |storage_types_| of all direct
   // subcomponents.
   std::vector<ServerFieldType> GetSubcomponentTypes() const;
+
+  // Setter for the component's parent.
+  void SetParent(AddressComponent* parent) { parent_ = parent; }
 
   // Heuristic method to get the best suited format string.
   // This method is virtual and can be reimplemented for each type.
@@ -489,6 +496,10 @@ class AddressComponent {
   // from the component to a leaf node.
   int MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() const;
 
+  // Function to be called by child nodes on construction to register
+  // themselves as child nodes.
+  void RegisterChildNode(AddressComponent* child);
+
  private:
   // Returns the node in the tree that supports `field_type`. This node, if it
   // exists, is unique by definition. Returns nullptr if no such node exists.
@@ -496,10 +507,6 @@ class AddressComponent {
 
   // const version of GetNodeForType.
   const AddressComponent* GetNodeForType(ServerFieldType field_type) const;
-
-  // Function to be called by child nodes on construction to register
-  // themselves as child nodes.
-  void RegisterChildNode(AddressComponent* child);
 
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
@@ -579,7 +586,7 @@ class AddressComponent {
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.
-  const raw_ptr<AddressComponent> parent_;
+  raw_ptr<AddressComponent> parent_;
 
   // Defines if and how two components can be merged.
   int merge_mode_;
