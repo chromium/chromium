@@ -213,6 +213,9 @@ struct MediaSessionInfo {
 
   // Stores the Media metadata used for Remote Playback.
   [MinVersion=15] RemotePlaybackMetadata? remote_playback_metadata;
+
+  // If true then media metadata will be hidden from the OS' media controllers.
+  [MinVersion=16] bool hide_metadata;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed

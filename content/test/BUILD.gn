@@ -310,6 +310,8 @@ static_library("test_support") {
     "../public/test/test_host_resolver.h",
     "../public/test/test_launcher.cc",
     "../public/test/test_launcher.h",
+    "../public/test/test_media_session_client.cc",
+    "../public/test/test_media_session_client.h",
     "../public/test/test_navigation_observer.cc",
     "../public/test/test_navigation_observer.h",
     "../public/test/test_navigation_throttle.cc",

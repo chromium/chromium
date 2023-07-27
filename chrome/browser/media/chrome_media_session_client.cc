@@ -7,6 +7,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/display/display.h"
@@ -22,7 +23,8 @@ ChromeMediaSessionClient* ChromeMediaSessionClient::GetInstance() {
 
 bool ChromeMediaSessionClient::ShouldHideMetadata(
     content::BrowserContext* browser_context) const {
-  return Profile::FromBrowserContext(browser_context)->IsIncognitoProfile();
+  return base::FeatureList::IsEnabled(media::kHideIncognitoMediaMetadata) &&
+         Profile::FromBrowserContext(browser_context)->IsIncognitoProfile();
 }
 
 std::u16string ChromeMediaSessionClient::GetTitlePlaceholder() const {

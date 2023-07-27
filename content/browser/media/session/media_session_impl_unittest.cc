@@ -17,6 +17,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_media_session_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
@@ -807,6 +808,29 @@ TEST_F(MediaSessionImplTest,
   EXPECT_TRUE(base::Contains(
       observer.actions(),
       media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture));
+}
+
+TEST_F(MediaSessionImplTest, SessionInfoDontHideMetadataByDefault) {
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->hide_metadata);
+}
+
+class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
+ protected:
+  TestMediaSessionClient client_;
+};
+
+TEST_F(MediaSessionImplWithMediaSessionClientTest,
+       SessionInfoDontHideMetadata) {
+  client_.SetShouldHideMetadata(false);
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->hide_metadata);
+}
+
+TEST_F(MediaSessionImplWithMediaSessionClientTest, SessionInfoHideMetadata) {
+  client_.SetShouldHideMetadata(true);
+  EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                  ->hide_metadata);
 }
 
 // Tests for throttling duration updates.

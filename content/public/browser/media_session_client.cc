@@ -23,13 +23,7 @@ MediaSessionClient::~MediaSessionClient() {
 
 // static
 MediaSessionClient* MediaSessionClient::Get() {
-  CHECK(g_client);
   return g_client;
-}
-
-bool MediaSessionClient::ShouldHideMetadata(
-    BrowserContext* browser_context) const {
-  return false;
 }
 
 }  // namespace content

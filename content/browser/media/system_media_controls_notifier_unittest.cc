@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/system_media_controls/mock_system_media_controls.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_media_session_client.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +19,13 @@
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/idle/scoped_set_idle_state.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+namespace {
+std::u16string hidden_metadata_placeholder_title = u"placeholder_title";
+std::u16string hidden_metadata_placeholder_artist = u"placeholder_artist";
+std::u16string hidden_metadata_placeholder_album = u"placeholder_album";
+int hidden_metadata_placeholder_thumbnail_size = 42;
+}  // namespace
 
 namespace content {
 
@@ -44,6 +52,7 @@ class SystemMediaControlsNotifierTest : public testing::Test {
   void SetUp() override {
     notifier_ = std::make_unique<SystemMediaControlsNotifier>(
         &mock_system_media_controls_);
+    SetupMediaSessionClient();
   }
 
  protected:
@@ -70,6 +79,12 @@ class SystemMediaControlsNotifierTest : public testing::Test {
     metadata.album = album;
     notifier_->MediaSessionMetadataChanged(
         absl::optional<media_session::MediaMetadata>(metadata));
+  }
+
+  void SimulateHidden() {
+    MediaSessionInfoPtr session_info(MediaSessionInfo::New());
+    session_info->hide_metadata = true;
+    notifier_->MediaSessionInfoChanged(std::move(session_info));
   }
 
   void SimulateEmptyMetadata() {
@@ -102,6 +117,18 @@ class SystemMediaControlsNotifierTest : public testing::Test {
     }
 
     notifier_->MediaSessionActionsChanged(actions);
+  }
+
+  void SetupMediaSessionClient() {
+    client_.SetTitlePlaceholder(hidden_metadata_placeholder_title);
+    client_.SetArtistPlaceholder(hidden_metadata_placeholder_artist);
+    client_.SetAlbumPlaceholder(hidden_metadata_placeholder_album);
+
+    SkBitmap placeholder_bitmap;
+    placeholder_bitmap.allocN32Pixels(
+        hidden_metadata_placeholder_thumbnail_size,
+        hidden_metadata_placeholder_thumbnail_size);
+    client_.SetThumbnailPlaceholder(placeholder_bitmap);
   }
 
   SystemMediaControlsNotifier& notifier() { return *notifier_; }
@@ -138,6 +165,8 @@ class SystemMediaControlsNotifierTest : public testing::Test {
 
   base::OneShotTimer& hide_smtc_timer() { return notifier_->hide_smtc_timer_; }
 #endif  // BUILDFLAG(IS_WIN)
+
+  TestMediaSessionClient client_;
 
  private:
   BrowserTaskEnvironment task_environment_;
@@ -411,6 +440,59 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesID) {
   // null.
   EXPECT_CALL(mock_system_media_controls(), SetID(nullptr));
   notifier().MediaSessionChanged(absl::nullopt);
+}
+
+TEST_F(SystemMediaControlsNotifierTest, DontHideMediaMetadataIfNotNeeded) {
+  std::u16string title = u"original_title";
+  std::u16string artist = u"original_artist";
+  std::u16string album = u"original_album";
+  int thumbnail_size = 1;
+
+  EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
+      .WillOnce(testing::Invoke([thumbnail_size](const SkBitmap& bitmap) {
+        EXPECT_EQ(bitmap.width(), thumbnail_size);
+        EXPECT_EQ(bitmap.height(), thumbnail_size);
+      }));
+
+  EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
+  EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));
+  EXPECT_CALL(mock_system_media_controls(), SetAlbum(album));
+
+  // NOTE: As we don't call SimulateHidden(), the MediaSessionInfo's
+  // `hide_metadata` field will be false, and hence the updated metadata
+  // shouldn't be modified.
+
+  SimulateMetadataChanged(title, artist, album);
+  SimulateImageChanged(thumbnail_size);
+  metadata_update_timer().FireNow();
+  icon_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, HideMediaMetadataIfNeeded) {
+  std::u16string title = u"original_title";
+  std::u16string artist = u"original_artist";
+  std::u16string album = u"original_album";
+  int thumbnail_size = 1;
+
+  EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
+      .WillOnce(testing::Invoke([this](const SkBitmap& bitmap) {
+        SkBitmap placeholder_bitmap = client_.GetThumbnailPlaceholder();
+        EXPECT_EQ(bitmap.width(), placeholder_bitmap.width());
+        EXPECT_EQ(bitmap.height(), placeholder_bitmap.height());
+      }));
+
+  EXPECT_CALL(mock_system_media_controls(),
+              SetTitle(client_.GetTitlePlaceholder()));
+  EXPECT_CALL(mock_system_media_controls(),
+              SetArtist(client_.GetArtistPlaceholder()));
+  EXPECT_CALL(mock_system_media_controls(),
+              SetAlbum(client_.GetAlbumPlaceholder()));
+
+  SimulateHidden();
+  SimulateMetadataChanged(title, artist, album);
+  SimulateImageChanged(thumbnail_size);
+  metadata_update_timer().FireNow();
+  icon_update_timer().FireNow();
 }
 
 #if BUILDFLAG(IS_WIN)

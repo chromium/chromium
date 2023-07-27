@@ -33,7 +33,7 @@ class CONTENT_EXPORT MediaSessionClient {
   // Return the Media Session client.
   static MediaSessionClient* Get();
 
-  virtual bool ShouldHideMetadata(BrowserContext* browser_context) const;
+  virtual bool ShouldHideMetadata(BrowserContext* browser_context) const = 0;
 
   virtual std::u16string GetTitlePlaceholder() const = 0;
   virtual std::u16string GetArtistPlaceholder() const = 0;
