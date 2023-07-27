@@ -238,11 +238,12 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       const dismissEvent: DismissModuleEvent = await waitForDismissEvent;
       assertEquals(
           `${sampleCluster.label!} hidden`, dismissEvent.detail.message);
-      const visits = await handler.whenCalled('dismissCluster');
+      const [visits, clusterId] = await handler.whenCalled('dismissCluster');
       assertEquals(3, visits.length);
       visits.forEach((visit: URLVisit, index: number) => {
         assertEquals(index, Number(visit.visitId));
       });
+      assertEquals(BigInt(111), clusterId);
     });
   });
 

@@ -286,7 +286,8 @@ void HistoryClustersPageHandler::OpenUrlsInTabGroup(
 }
 
 void HistoryClustersPageHandler::DismissCluster(
-    const std::vector<history_clusters::mojom::URLVisitPtr> visits) {
+    const std::vector<history_clusters::mojom::URLVisitPtr> visits,
+    int64_t cluster_id) {
   if (visits.empty()) {
     return;
   }
@@ -300,6 +301,7 @@ void HistoryClustersPageHandler::DismissCluster(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   history_service->HideVisits(visit_ids, base::BindOnce([]() {}),
                               &hide_visits_task_tracker_);
+  ranking_metrics_logger_->SetDismissed(cluster_id);
 }
 
 void HistoryClustersPageHandler::RecordClick(int64_t cluster_id) {

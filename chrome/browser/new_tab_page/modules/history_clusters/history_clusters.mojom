@@ -34,8 +34,10 @@ interface PageHandler {
   // group has an optional name `tab_group_name`.
   OpenUrlsInTabGroup(array<url.mojom.Url> urls, string? tab_group_name);
 
-  // Dismisses a cluster by marking its associated visits as not relevant.
-  DismissCluster(array<history_clusters.mojom.URLVisit> visits);
+  // Dismisses the cluster with `cluster_id` by marking its associated visits as
+  // not relevant.
+  DismissCluster(array<history_clusters.mojom.URLVisit> visits,
+    int64 cluster_id);
 
   // Records that the cluster with `cluster_id` was clicked.
   RecordClick(int64 cluster_id);
