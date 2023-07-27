@@ -553,11 +553,6 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
                             base::Unretained(this)));
   }
 
-  void TearDownOnMainThread() override {
-    files_controller_ = nullptr;
-    FilesAppBrowserTest::TearDownOnMainThread();
-  }
-
   bool HandleDlpCommands(const std::string& name,
                          const base::Value::Dict& value,
                          std::string* output) override {

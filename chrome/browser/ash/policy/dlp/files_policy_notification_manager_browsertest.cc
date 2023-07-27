@@ -603,11 +603,6 @@ class IOTaskBrowserTest
     ASSERT_TRUE(fpnm_);
   }
 
-  void TearDownOnMainThread() override {
-    files_controller_.reset();
-    OnNotificationClickedTest::TearDownOnMainThread();
-  }
-
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
