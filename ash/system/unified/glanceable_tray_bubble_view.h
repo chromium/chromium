@@ -25,9 +25,16 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   GlanceableTrayBubbleView& operator=(const GlanceableTrayBubbleView&) = delete;
   ~GlanceableTrayBubbleView() override;
 
-  void UpdateBubble();
+  void InitializeContents();
 
-  TasksBubbleView* GetTasksView() const { return tasks_bubble_view_; }
+  TasksBubbleView* GetTasksView() { return tasks_bubble_view_; }
+  ClassroomBubbleTeacherView* GetClassroomTeacherView() {
+    return classroom_bubble_teacher_view_;
+  }
+  ClassroomBubbleStudentView* GetClassroomStudentView() {
+    return classroom_bubble_student_view_;
+  }
+  CalendarView* GetCalendarView() { return calendar_view_; }
 
   // TrayBubbleView:
   bool CanActivate() const override;
@@ -38,7 +45,11 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   // NOTE: in the rare case, when a single user has both student and teacher
   // roles in different courses, the order of the two bubbles is not guaranteed.
   template <typename T>
-  void AddClassroomBubbleViewIfNeeded(T* view, bool is_role_active);
+  void AddClassroomBubbleViewIfNeeded(raw_ptr<T, ExperimentalAsh>* view,
+                                      bool is_role_active);
+
+  void OnGlanceablesContainerPreferredSizeChanged();
+  void OnGlanceablesContainerHeightChanged(int height_delta);
 
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;

@@ -170,6 +170,7 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
 
 void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
                                       ui::ListModel<GlanceablesTask>* tasks) {
+  const int old_tasks_shown = num_tasks_shown_;
   num_tasks_shown_ = 0;
   int num_tasks_ = 0;
   for (const auto& task : *tasks) {
@@ -188,6 +189,10 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
   }
 
   list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks_);
+
+  if (old_tasks_shown != num_tasks_shown_) {
+    PreferredSizeChanged();
+  }
 }
 
 BEGIN_METADATA(TasksBubbleView, views::View)

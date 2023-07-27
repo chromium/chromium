@@ -23,6 +23,11 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
   init_params.transparent = true;
   init_params.has_shadow = false;
   init_params.translucent = false;
+  // Adjust default bubble insets for the default margin added to insividual
+  // glanceable bubble views.
+  if (init_params.insets) {
+    *init_params.insets -= gfx::Insets::VH(8, 0);
+  }
 
   bubble_view_ = new GlanceableTrayBubbleView(init_params, tray_->shelf());
 
@@ -30,10 +35,10 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
+  bubble_view_->InitializeContents();
   bubble_view_->InitializeAndShowBubble();
 
   tray->tray_event_filter()->AddBubble(this);
-  bubble_view_->UpdateBubble();
 }
 
 GlanceableTrayBubble::~GlanceableTrayBubble() {
@@ -68,8 +73,20 @@ views::Widget* GlanceableTrayBubble::GetBubbleWidget() const {
   return bubble_widget_;
 }
 
-TasksBubbleView* GlanceableTrayBubble::GetTasksView() const {
+TasksBubbleView* GlanceableTrayBubble::GetTasksView() {
   return bubble_view_->GetTasksView();
+}
+
+ClassroomBubbleTeacherView* GlanceableTrayBubble::GetClassroomTeacherView() {
+  return bubble_view_->GetClassroomTeacherView();
+}
+
+ClassroomBubbleStudentView* GlanceableTrayBubble::GetClassroomStudentView() {
+  return bubble_view_->GetClassroomStudentView();
+}
+
+CalendarView* GlanceableTrayBubble::GetCalendarView() {
+  return bubble_view_->GetCalendarView();
 }
 
 bool GlanceableTrayBubble::IsBubbleActive() const {

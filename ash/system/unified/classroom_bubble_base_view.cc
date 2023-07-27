@@ -115,6 +115,7 @@ void ClassroomBubbleBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void ClassroomBubbleBaseView::OnGetAssignments(
     std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
+  const size_t old_item_count = list_container_view_->children().size();
   list_container_view_->RemoveAllChildViews();
 
   for (const auto& assignment : assignments) {
@@ -128,10 +129,11 @@ void ClassroomBubbleBaseView::OnGetAssignments(
       break;
     }
   }
-  list_container_view_->InvalidateLayout();
-
   list_footer_view_->UpdateItemsCount(list_container_view_->children().size(),
                                       assignments.size());
+  if (list_container_view_->children().size() != old_item_count) {
+    PreferredSizeChanged();
+  }
 }
 
 void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {
