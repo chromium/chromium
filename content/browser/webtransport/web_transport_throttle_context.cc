@@ -6,11 +6,23 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "components/network_session_configurator/common/network_switches.h"
 
 namespace content {
+
+namespace {
+
+bool ShouldQueueHandshakeFailurePenalty() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return !command_line ||
+         !command_line->HasSwitch(switches::kWebTransportDeveloperMode);
+}
+
+}  // namespace
 
 WebTransportThrottleContext::Tracker::Tracker(
     base::WeakPtr<WebTransportThrottleContext> throttle_context)
@@ -25,7 +37,7 @@ WebTransportThrottleContext::Tracker::Tracker(
 
 WebTransportThrottleContext::Tracker::~Tracker() {
   if (throttle_context_) {
-    throttle_context_->QueuePending(base::Minutes(5));
+    throttle_context_->MaybeQueueHandshakeFailurePenalty();
   }
 }
 
@@ -52,12 +64,14 @@ void WebTransportThrottleContext::Tracker::OnHandshakeFailed() {
 
   DVLOG(1) << "    pending_handshakes_= "
            << throttle_context_->pending_handshakes_;
-  DCHECK_GT(throttle_context_->pending_handshakes_, 0);
-  throttle_context_->QueuePending(base::Minutes(5));
+  throttle_context_->MaybeQueueHandshakeFailurePenalty();
   throttle_context_ = nullptr;
 }
 
-WebTransportThrottleContext::WebTransportThrottleContext() = default;
+WebTransportThrottleContext::WebTransportThrottleContext()
+    : should_queue_handshake_failure_penalty_(
+          ShouldQueueHandshakeFailurePenalty()) {}
+
 WebTransportThrottleContext::~WebTransportThrottleContext() = default;
 
 WebTransportThrottleContext::ThrottleResult
@@ -90,6 +104,15 @@ WebTransportThrottleContext::PerformThrottle(
   }
 
   return ThrottleResult::kOk;
+}
+
+void WebTransportThrottleContext::MaybeQueueHandshakeFailurePenalty() {
+  if (should_queue_handshake_failure_penalty_) {
+    QueuePending(base::Minutes(5));
+    return;
+  }
+  CHECK_GE(pending_handshakes_, 0);
+  --pending_handshakes_;
 }
 
 base::WeakPtr<WebTransportThrottleContext>
