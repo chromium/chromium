@@ -386,19 +386,18 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   // Create URLLoader related assets to handle the request triggered by
   // RaceNetworkRequset.
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
-  forwarded_race_network_request_url_loader_factory_ = std::make_unique<
-      ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>(
+  forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
       resource_request_.url);
-  auto race_network_request_url_loader_client = std::make_unique<
-      ServiceWorkerRaceNetworkRequestURLLoaderClient>(
+  CHECK(!race_network_request_url_loader_client_);
+  race_network_request_url_loader_client_.emplace(
       resource_request_, AsWeakPtr(), std::move(forwarding_client),
       network::features::GetDataPipeDefaultAllocationSize(
           network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.
-  if (race_network_request_url_loader_client->state() !=
+  if (race_network_request_url_loader_client_->state() !=
       ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody) {
     return false;
   }
@@ -412,14 +411,15 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
       std::move(remote_factory));
 
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
-  race_network_request_url_loader_client->Bind(&client_to_pass);
-  scoped_refptr<network::SharedURLLoaderFactory> factory =
+  race_network_request_url_loader_client_->Bind(&client_to_pass);
+  CHECK(!race_network_request_url_loader_factory_);
+  race_network_request_url_loader_factory_ =
       ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
           context, frame_tree_node_id_);
 
   // Perform fetch
   CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
-  factory->CreateLoaderAndStart(
+  race_network_request_url_loader_factory_->CreateLoaderAndStart(
       forwarded_race_network_request_url_loader_factory_
           ->InitURLLoaderNewPipeAndPassReceiver(),
       GlobalRequestID::MakeBrowserInitiated().request_id,
@@ -428,14 +428,6 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
       net::MutableNetworkTrafficAnnotationTag(
           ServiceWorkerRaceNetworkRequestURLLoaderClient::
               NetworkTrafficAnnotationTag()));
-
-  // Keep the URL loader related assets alive while the FetchEvent is ongoing in
-  // the service worker.
-  DCHECK(!race_network_request_url_loader_factory_);
-  DCHECK(!race_network_request_loader_client_);
-  race_network_request_url_loader_factory_ = std::move(factory);
-  race_network_request_loader_client_ =
-      std::move(race_network_request_url_loader_client);
 
   return true;
 }
@@ -831,7 +823,7 @@ void ServiceWorkerMainResourceLoader::
 
 void ServiceWorkerMainResourceLoader::
     RecordTimingMetricsForRaceNetworkRequestCase() {
-  DCHECK(race_network_request_loader_client_);
+  DCHECK(race_network_request_url_loader_client_);
   if (!IsEligibleForRecordingTimingMetrics()) {
     return;
   }
@@ -840,7 +832,8 @@ void ServiceWorkerMainResourceLoader::
   RecordFindRegistrationToRequestStartTiming();
   RecordFindRegistrationToCompletedTiming();
   RecordRequestStartToCompletedTiming(
-      race_network_request_loader_client_->GetLoadTimingInfo().request_start);
+      race_network_request_url_loader_client_->GetLoadTimingInfo()
+          .request_start);
 }
 
 bool ServiceWorkerMainResourceLoader::IsEligibleForRecordingTimingMetrics() {

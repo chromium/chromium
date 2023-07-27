@@ -218,8 +218,7 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // Create URLLoader related assets to handle the request triggered by
   // RaceNetworkRequset.
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
-  forwarded_race_network_request_url_loader_factory_ = std::make_unique<
-      ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>(
+  forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
       resource_request_.url);
 

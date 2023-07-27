@@ -279,7 +279,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       race_network_request_url_loader_factory_;
   absl::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       race_network_request_loader_client_;
-  std::unique_ptr<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
+  absl::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
       forwarded_race_network_request_url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       remote_forwarded_race_network_request_url_loader_factory_;

@@ -273,9 +273,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   scoped_refptr<network::SharedURLLoaderFactory>
       race_network_request_url_loader_factory_;
-  std::unique_ptr<ServiceWorkerRaceNetworkRequestURLLoaderClient>
-      race_network_request_loader_client_;
-  std::unique_ptr<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
+  absl::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
+      race_network_request_url_loader_client_;
+  absl::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
       forwarded_race_network_request_url_loader_factory_;
 
   base::TimeTicks find_registration_start_time_;
