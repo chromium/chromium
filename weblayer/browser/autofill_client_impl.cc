@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -358,7 +357,7 @@ bool AutofillClientImpl::IsPasswordManagerEnabled() {
 
 void AutofillClientImpl::PropagateAutofillPredictions(
     autofill::AutofillDriver* driver,
-    const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms) {
+    const std::vector<autofill::FormStructure*>& forms) {
   NOTREACHED();
 }
 

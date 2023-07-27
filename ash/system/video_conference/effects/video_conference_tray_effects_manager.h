@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -88,7 +87,7 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   EffectDataVector GetTotalToggleEffectButtons();
 
   // This list of registered effect delegates, unowned.
-  std::vector<dangling_raw_ptr<VcEffectsDelegate>> effect_delegates_;
+  std::vector<VcEffectsDelegate*> effect_delegates_;
 
   base::ObserverList<Observer> observers_;
 };

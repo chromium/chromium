@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -65,7 +64,7 @@ class MockAudioLogFactory : public media::mojom::AudioLogFactory {
                           audio_log_receiver) override {
     MockCreateAudioLog(component, component_id);
     mojo::MakeSelfOwnedReceiver(
-        base::WrapUnique(mock_logs_[current_mock_log_++].get()),
+        base::WrapUnique(mock_logs_[current_mock_log_++]),
         std::move(audio_log_receiver));
   }
 
@@ -74,7 +73,7 @@ class MockAudioLogFactory : public media::mojom::AudioLogFactory {
  private:
   mojo::Receiver<media::mojom::AudioLogFactory> receiver_;
   size_t current_mock_log_ = 0;
-  std::vector<dangling_raw_ptr<MockAudioLog>> mock_logs_;
+  std::vector<MockAudioLog*> mock_logs_;
 };
 
 }  // namespace

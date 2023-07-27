@@ -221,7 +221,7 @@ void ProfilePolicyConnector::Init(
 
   if (connector->local_test_policy_provider()) {
     local_test_policy_provider_ = connector->local_test_policy_provider();
-    policy_providers_.push_back(local_test_policy_provider_.get());
+    policy_providers_.push_back(local_test_policy_provider_);
   }
 
   if (configuration_policy_provider) {
@@ -515,7 +515,7 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
 }
 
 void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
-  for (policy::ConfigurationPolicyProvider* provider : policy_providers_) {
+  for (auto* provider : policy_providers_) {
     provider->set_active(false);
   }
 
@@ -526,7 +526,7 @@ void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
 }
 
 void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
-  for (policy::ConfigurationPolicyProvider* provider : policy_providers_) {
+  for (auto* provider : policy_providers_) {
     provider->set_active(true);
   }
 
@@ -539,8 +539,7 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<PolicyService>
 ProfilePolicyConnector::CreatePolicyServiceWithInitializationThrottled(
-    const std::vector<dangling_raw_ptr<ConfigurationPolicyProvider>>&
-        policy_providers,
+    const std::vector<ConfigurationPolicyProvider*>& policy_providers,
     std::vector<std::unique_ptr<PolicyMigrator>> migrators,
     ConfigurationPolicyProvider* user_policy_delegate) {
   DCHECK(user_policy_delegate);

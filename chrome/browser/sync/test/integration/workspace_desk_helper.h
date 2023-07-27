@@ -37,8 +37,7 @@ class DeskUuidChecker : public StatusChangeChecker,
   // DeskModelObserver implementation.
   void DeskModelLoaded() override;
   void EntriesAddedOrUpdatedRemotely(
-      const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>& new_entries)
-      override;
+      const std::vector<const ash::DeskTemplate*>& new_entries) override;
   void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override;
 
  private:
@@ -65,8 +64,7 @@ class DeskUuidDeletedChecker : public StatusChangeChecker,
   // DeskModelObserver implementation.
   void DeskModelLoaded() override;
   void EntriesAddedOrUpdatedRemotely(
-      const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>& new_entries)
-      override;
+      const std::vector<const ash::DeskTemplate*>& new_entries) override;
   void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override;
 
  private:
@@ -91,8 +89,7 @@ class DeskModelReadyChecker : public StatusChangeChecker,
   // DeskModelObserver implementation.
   void DeskModelLoaded() override;
   void EntriesAddedOrUpdatedRemotely(
-      const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>& new_entries)
-      override;
+      const std::vector<const ash::DeskTemplate*>& new_entries) override;
   void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override;
 
  private:

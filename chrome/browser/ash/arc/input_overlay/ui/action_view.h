@@ -114,9 +114,7 @@ class ActionView : public views::View {
   void AddedToWidget() override;
 
   Action* action() { return action_; }
-  const std::vector<dangling_raw_ptr<ActionLabel>>& labels() const {
-    return labels_;
-  }
+  const std::vector<ActionLabel*>& labels() const { return labels_; }
   TouchPoint* touch_point() { return touch_point_; }
   DisplayOverlayController* display_overlay_controller() {
     return display_overlay_controller_;
@@ -140,7 +138,7 @@ class ActionView : public views::View {
   // Reference to the owner class.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
   // Labels for mapping hints.
-  std::vector<dangling_raw_ptr<ActionLabel>> labels_;
+  std::vector<ActionLabel*> labels_;
   // Current display mode.
   DisplayMode current_display_mode_ = DisplayMode::kNone;
   // Local center position of the touch point view.

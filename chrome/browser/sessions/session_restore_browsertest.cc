@@ -2146,7 +2146,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TabWithDownloadDoesNotGetRestored) {
     // the new one that we initiated. This would be true iff the DownloadManager
     // has exactly two downloads and they correspond to |first_download_url| and
     // |second_download_url|.
-    std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
+    std::vector<download::DownloadItem*> downloads;
     download_manager->GetAllDownloads(&downloads);
     ASSERT_EQ(2u, downloads.size());
     std::set<GURL> download_urls{downloads[0]->GetURL(),
@@ -2178,7 +2178,7 @@ class MultiBrowserObserver : public BrowserListObserver {
 
   // Note that the returned pointers might no longer be valid (because the
   // Browser objects were closed).
-  std::vector<dangling_raw_ptr<Browser>> Wait() {
+  std::vector<Browser*> Wait() {
     run_loop_.Run();
     return browsers_;
   }
@@ -2202,7 +2202,7 @@ class MultiBrowserObserver : public BrowserListObserver {
  private:
   size_t num_expected_;
   Event event_;
-  std::vector<dangling_raw_ptr<Browser>> browsers_;
+  std::vector<Browser*> browsers_;
   base::RunLoop run_loop_;
 };
 
@@ -2264,7 +2264,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   // Reopen the second profile and trigger session restore.
   MultiBrowserObserver added_observer(2, MultiBrowserObserver::Event::kAdded);
   profiles::SwitchToProfile(second_profile_path, false, {});
-  std::vector<dangling_raw_ptr<Browser>> browsers = added_observer.Wait();
+  std::vector<Browser*> browsers = added_observer.Wait();
 
   // Verify that the correct URLs where restored.
   std::set<GURL> expected_urls;
@@ -2303,8 +2303,7 @@ class LoadOrderObserver : public BrowserListObserver,
 
   void WaitForAllTabsToStartLoading() { run_loop_.Run(); }
 
-  const std::vector<dangling_raw_ptr<content::WebContents>>& web_contents()
-      const {
+  const std::vector<content::WebContents*>& web_contents() const {
     return web_contents_;
   }
 
@@ -2346,7 +2345,7 @@ class LoadOrderObserver : public BrowserListObserver,
   base::RunLoop run_loop_;
   WebContentsCollection web_contents_collection_{this};
   // Ordered by load start order.
-  std::vector<dangling_raw_ptr<content::WebContents>> web_contents_;
+  std::vector<content::WebContents*> web_contents_;
 };
 
 // PRE_CorrectLoadingOrder is flaky on ChromeOS MSAN and Mac.

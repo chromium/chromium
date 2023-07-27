@@ -4,10 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 
-#include "base/memory/raw_ptr.h"
-
 MultiClientStatusChangeChecker::MultiClientStatusChangeChecker(
-    std::vector<dangling_raw_ptr<syncer::SyncServiceImpl>> services)
+    std::vector<syncer::SyncServiceImpl*> services)
     : services_(services) {
   for (syncer::SyncServiceImpl* service : services) {
     scoped_observations_.AddObservation(service);

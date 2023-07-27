@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -56,8 +55,7 @@ class PermissionPrompt {
 
     // These pointers should not be stored as the actual request objects may be
     // deleted upon navigation and so on.
-    virtual const std::vector<dangling_raw_ptr<PermissionRequest>>&
-    Requests() = 0;
+    virtual const std::vector<PermissionRequest*>& Requests() = 0;
 
     // Get the single origin for the current set of requests.
     virtual GURL GetRequestingOrigin() const = 0;

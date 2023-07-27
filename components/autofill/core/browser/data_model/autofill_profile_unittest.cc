@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/format_macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -38,7 +37,7 @@ constexpr VerificationStatus kObserved = VerificationStatus::kObserved;
 namespace {
 
 std::u16string GetSuggestionLabel(AutofillProfile* profile) {
-  std::vector<dangling_raw_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile*> profiles;
   profiles.push_back(profile);
   std::vector<std::u16string> labels;
   AutofillProfile::CreateDifferentiatingLabels(profiles, "en-US", &labels);
@@ -52,9 +51,9 @@ void SetupTestProfile(AutofillProfile& profile) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
 }
 
-std::vector<dangling_raw_ptr<AutofillProfile>> ToRawPointerVector(
+std::vector<AutofillProfile*> ToRawPointerVector(
     const std::vector<std::unique_ptr<AutofillProfile>>& list) {
-  std::vector<dangling_raw_ptr<AutofillProfile>> result;
+  std::vector<AutofillProfile*> result;
   for (const auto& item : list)
     result.push_back(item.get());
   return result;
@@ -150,7 +149,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile7a, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "16505678910");
-  std::vector<dangling_raw_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile*> profiles;
   profiles.push_back(&profile7);
   profiles.push_back(&profile7a);
   std::vector<std::u16string> labels;

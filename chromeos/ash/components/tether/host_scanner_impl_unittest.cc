@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -96,8 +95,7 @@ class FakeHostScannerOperationFactory : public HostScannerOperation::Factory {
       : expected_devices_(test_devices) {}
   ~FakeHostScannerOperationFactory() override = default;
 
-  std::vector<dangling_raw_ptr<FakeHostScannerOperation>>&
-  created_operations() {
+  std::vector<FakeHostScannerOperation*>& created_operations() {
     return created_operations_;
   }
 
@@ -122,7 +120,7 @@ class FakeHostScannerOperationFactory : public HostScannerOperation::Factory {
  private:
   const raw_ref<const multidevice::RemoteDeviceRefList, ExperimentalAsh>
       expected_devices_;
-  std::vector<dangling_raw_ptr<FakeHostScannerOperation>> created_operations_;
+  std::vector<FakeHostScannerOperation*> created_operations_;
 };
 
 std::string GenerateCellProviderForDevice(

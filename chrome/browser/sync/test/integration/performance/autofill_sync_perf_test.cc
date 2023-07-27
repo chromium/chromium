@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,7 +100,7 @@ class AutofillProfileSyncPerfTest : public SyncTest {
 };
 
 void AutofillProfileSyncPerfTest::AddProfiles(int profile, int num_profiles) {
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& all_profiles =
+  const std::vector<AutofillProfile*>& all_profiles =
       GetAllAutoFillProfiles(profile);
   std::vector<AutofillProfile> autofill_profiles;
   for (AutofillProfile* autofill_profile : all_profiles) {
@@ -114,7 +113,7 @@ void AutofillProfileSyncPerfTest::AddProfiles(int profile, int num_profiles) {
 }
 
 void AutofillProfileSyncPerfTest::UpdateProfiles(int profile) {
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& all_profiles =
+  const std::vector<AutofillProfile*>& all_profiles =
       GetAllAutoFillProfiles(profile);
   std::vector<AutofillProfile> autofill_profiles;
   for (AutofillProfile* autofill_profile : all_profiles) {

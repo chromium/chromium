@@ -30,7 +30,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
@@ -594,8 +593,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingChromevox) {
 // Tests that tabbing with desk items and multiple displays works as expected.
 TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   UpdateDisplay("600x400,600x400,600x400");
-  std::vector<dangling_raw_ptr<aura::Window>> roots =
-      Shell::GetAllRootWindows();
+  std::vector<aura::Window*> roots = Shell::GetAllRootWindows();
   ASSERT_EQ(3u, roots.size());
 
   // Create two windows on the first display, and one each on the second and
@@ -760,7 +758,7 @@ TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
-  auto* mini_view2 = desk_bar_view->mini_views()[1].get();
+  auto* mini_view2 = desk_bar_view->mini_views()[1];
 
   // Use keyboard to navigate to the miniview associated with desk 2.
   SendKey(ui::VKEY_TAB);
@@ -929,7 +927,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
 
   // Remove one desk to enter zero state desks bar.
   auto* event_generator = GetEventGenerator();
-  auto* mini_view = desks_bar_view->mini_views()[1].get();
+  auto* mini_view = desks_bar_view->mini_views()[1];
   event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
   event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
@@ -1035,7 +1033,7 @@ TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
 
   // Remove one desk to have only one desk left.
   auto* event_generator = GetEventGenerator();
-  auto* mini_view = desks_bar_view->mini_views()[1].get();
+  auto* mini_view = desks_bar_view->mini_views()[1];
   event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
   event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)

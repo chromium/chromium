@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -413,7 +412,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   }
 
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
+  std::vector<const sync_sessions::SyncedSession*> sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
     if (!features::IsChromeRefresh2023()) {
       AddSeparator(ui::NORMAL_SEPARATOR);

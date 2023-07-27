@@ -220,7 +220,7 @@ class AXTreeSourceAndroid
   // AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
 
-  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>& GetChildren(
+  std::vector<AccessibilityInfoDataWrapper*>& GetChildren(
       AccessibilityInfoDataWrapper* info_data) const;
 
   void ComputeAndCacheChildren(AccessibilityInfoDataWrapper* info_data) const;

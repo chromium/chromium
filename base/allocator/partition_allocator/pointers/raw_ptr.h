@@ -981,12 +981,6 @@ constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
 using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
 
-// Temporary introduced alias in the context of rewriting std::vector<T*> into
-// std::vector<raw_ptr<T>> to study the performance impact of BackupRefPtr and
-// not worrying about dangling pointer detection.
-template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-using dangling_raw_ptr = raw_ptr<T, Traits | DanglingUntriaged>;
-
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows

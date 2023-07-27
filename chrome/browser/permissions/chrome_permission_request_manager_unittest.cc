@@ -372,7 +372,7 @@ TEST_F(ChromePermissionRequestManagerTest,
   }
   auto entries = ukm_recorder.GetEntriesByName("Permission");
   ASSERT_EQ(4u, entries.size());
-  auto* entry = entries.back().get();
+  auto* entry = entries.back();
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "SatisfiedAdaptiveTriggers"),
             1);
 

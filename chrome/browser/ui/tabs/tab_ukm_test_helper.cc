@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tabs/tab_ukm_test_helper.h"
-#include "base/memory/raw_ptr.h"
 
 #include <sstream>
 
@@ -53,14 +52,12 @@ bool EntryContainsMetrics(const ukm::mojom::UkmEntry* entry,
 
 // Returns an iterator to an entry whose metrics match |expected_metrics|,
 // or end() if not found.
-std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>>::const_iterator
-FindMatchingEntry(
-    const std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>>& entries,
+std::vector<const ukm::mojom::UkmEntry*>::const_iterator FindMatchingEntry(
+    const std::vector<const ukm::mojom::UkmEntry*>& entries,
     const UkmMetricMap& expected_metrics) {
-  return base::ranges::find_if(
-      entries, [&expected_metrics](const ukm::mojom::UkmEntry* entry) {
-        return EntryContainsMetrics(entry, expected_metrics);
-      });
+  return base::ranges::find_if(entries, [&expected_metrics](const auto* entry) {
+    return EntryContainsMetrics(entry, expected_metrics);
+  });
 }
 
 }  // namespace
@@ -94,7 +91,7 @@ void UkmEntryChecker::ExpectNewEntry(const std::string& entry_name,
                                      const UkmMetricMap& expected_metrics) {
   // There should be at least one new entry, which is the one we're checking.
   num_entries_[entry_name]++;
-  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
+  std::vector<const ukm::mojom::UkmEntry*> entries =
       ukm_recorder_.GetEntriesByName(entry_name);
   ASSERT_LE(num_entries_[entry_name], entries.size())
       << "Expected at least " << num_entries_[entry_name] << " entries, found "
@@ -111,7 +108,7 @@ void UkmEntryChecker::ExpectNewEntry(const std::string& entry_name,
 void UkmEntryChecker::ExpectNewEntries(
     const std::string& entry_name,
     const std::vector<UkmMetricMap>& expected_entries) {
-  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
+  std::vector<const ukm::mojom::UkmEntry*> entries =
       ukm_recorder_.GetEntriesByName(entry_name);
 
   const size_t num_new_entries = expected_entries.size();
@@ -137,7 +134,7 @@ void UkmEntryChecker::ExpectNewEntries(
 void UkmEntryChecker::ExpectNewEntriesBySource(
     const std::string& entry_name,
     const SourceUkmMetricMap& expected_data) {
-  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
+  std::vector<const ukm::mojom::UkmEntry*> entries =
       ukm_recorder_.GetEntriesByName(entry_name);
 
   const size_t num_new_entries = expected_data.size();
@@ -189,7 +186,7 @@ size_t UkmEntryChecker::NumEntries(const std::string& entry_name) const {
 
 const ukm::mojom::UkmEntry* UkmEntryChecker::LastUkmEntry(
     const std::string& entry_name) const {
-  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
+  std::vector<const ukm::mojom::UkmEntry*> entries =
       ukm_recorder_.GetEntriesByName(entry_name);
   CHECK(!entries.empty());
   return entries.back();

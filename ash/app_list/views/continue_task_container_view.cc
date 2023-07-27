@@ -15,7 +15,6 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -379,7 +378,7 @@ void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
   animation_builder.GetCurrentSequence().At(delay).SetDuration(
       base::Milliseconds(300));
 
-  for (ash::ContinueTaskView* view : suggestion_tasks_views_) {
+  for (auto* view : suggestion_tasks_views_) {
     const std::string& result_id = view->result()->id();
     // If view remained in place, it does not need to be animated in.
     auto view_remaining_in_place_it = views_remaining_in_place.find(result_id);
@@ -404,9 +403,8 @@ void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
 }
 
 void ContinueTaskContainerView::AbortTasksUpdateAnimations() {
-  for (ash::ContinueTaskView* view : suggestion_tasks_views_) {
+  for (auto* view : suggestion_tasks_views_)
     view->layer()->GetAnimator()->StopAnimating();
-  }
   ClearAnimatingViews();
 }
 
@@ -415,11 +413,10 @@ void ContinueTaskContainerView::ClearAnimatingViews() {
   // case view removal causes an aborted view animation that calls back into
   // `ClearAnimatingViews()`. Clearing `views_to_remove_after_animation_` mid
   // iteraion over the vector would not be safe.
-  std::vector<dangling_raw_ptr<ContinueTaskView>> views_to_remove;
+  std::vector<ContinueTaskView*> views_to_remove;
   views_to_remove_after_animation_.swap(views_to_remove);
-  for (ash::ContinueTaskView* view : views_to_remove) {
+  for (auto* view : views_to_remove)
     RemoveChildViewT(view);
-  }
 
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
 }
@@ -472,7 +469,7 @@ void ContinueTaskContainerView::AnimateSlideInSuggestions(
   views::AnimationBuilder animation_builder;
   animation_builder.Once().SetDuration(duration);
 
-  for (ash::ContinueTaskView* view : suggestion_tasks_views_) {
+  for (auto* view : suggestion_tasks_views_) {
     animation_builder.GetCurrentSequence()
         .SetTransform(view, gfx::Transform(), tween)
         .SetOpacity(view, 1.0f, tween);

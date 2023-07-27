@@ -87,8 +87,7 @@ class FakeCryptAuthFeatureStatusSetterFactory
 
   ~FakeCryptAuthFeatureStatusSetterFactory() override;
 
-  const std::vector<dangling_raw_ptr<FakeCryptAuthFeatureStatusSetter>>&
-  instances() const {
+  const std::vector<FakeCryptAuthFeatureStatusSetter*>& instances() const {
     return instances_;
   }
 
@@ -110,7 +109,7 @@ class FakeCryptAuthFeatureStatusSetterFactory
       CryptAuthClientFactory* client_factory,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<dangling_raw_ptr<FakeCryptAuthFeatureStatusSetter>> instances_;
+  std::vector<FakeCryptAuthFeatureStatusSetter*> instances_;
   std::string last_instance_id_;
   std::string last_instance_id_token_;
   raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =

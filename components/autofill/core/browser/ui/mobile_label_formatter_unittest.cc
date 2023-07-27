@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -84,7 +83,7 @@ AutofillProfile GetProfileB() {
 }
 
 TEST(MobileLabelFormatterTest, GetLabelsWithMissingProfiles) {
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{};
+  const std::vector<AutofillProfile*> profiles{};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", NAME_FIRST, {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS});
   EXPECT_TRUE(formatter->GetLabels().empty());
@@ -104,8 +103,7 @@ TEST(MobileLabelFormatterTest, GetLabelsForUnfocusedAddress_ShowOne) {
   AutofillProfile profileC;
   test::SetProfileInfo(&profileC, "firstC", "middleC", "lastC", "", "", "", "",
                        "", "", "", "US", "");
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
-      &profileA, &profileB, &profileC};
+  const std::vector<AutofillProfile*> profiles{&profileA, &profileB, &profileC};
 
   // Tests that the street address is shown when the form contains a street
   // address field and the user is not focused on it.
@@ -154,7 +152,7 @@ TEST(MobileLabelFormatterTest,
   // Tests that a street is shown when a form contains an unfocused street
   // address and a focused non street address.
   AutofillProfile profileB = GetProfileB();
-  std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profileA, &profileB};
+  std::vector<AutofillProfile*> profiles{&profileA, &profileB};
 
   std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_ZIP, GetAddressPlusContactFieldTypes());
@@ -253,7 +251,7 @@ TEST(MobileLabelFormatterTest,
       features::kAutofillUseMobileLabelDisambiguation, parameters);
 
   AutofillProfile profileA = GetProfileA();
-  std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profileA};
+  std::vector<AutofillProfile*> profiles{&profileA};
 
   // Tests that the second most important piece of data, phone, is shown when
   // the form has an unfocused form field corresponding to this data and the
@@ -291,8 +289,7 @@ TEST(MobileLabelFormatterTest, GetLabels_DistinctProfiles_ShowAll) {
   AutofillProfile profileC;
   test::SetProfileInfo(&profileC, "firstC", "middleC", "lastC", "", "", "", "",
                        "", "", "", "US", "");
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
-      &profileA, &profileB, &profileC};
+  const std::vector<AutofillProfile*> profiles{&profileA, &profileB, &profileC};
 
   // Tests that unfocused data that is not the same across profiles is shown in
   // the label for forms with addresses.
@@ -355,7 +352,7 @@ TEST(MobileLabelFormatterTest, GetDefaultLabel_ShowAll) {
       features::kAutofillUseMobileLabelDisambiguation, parameters);
 
   AutofillProfile profileA = GetProfileA();
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profileA};
+  const std::vector<AutofillProfile*> profiles{&profileA};
 
   // Tests that the most important piece of data, address, is shown when the
   // form has an unfocused form field corresponding to this data.

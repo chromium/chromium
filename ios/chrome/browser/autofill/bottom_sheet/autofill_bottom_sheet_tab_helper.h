@@ -51,7 +51,7 @@ class AutofillBottomSheetTabHelper
 
   // Prepare bottom sheet using data from the credit card form prediction.
   void AttachPaymentsListeners(
-      const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms,
+      const std::vector<autofill::FormStructure*>& forms,
       const std::string& frame_id);
 
   // Detach the password listeners, which will deactivate the password bottom

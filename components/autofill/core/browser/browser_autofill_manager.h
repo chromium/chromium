@@ -253,8 +253,7 @@ class BrowserAutofillManager : public AutofillManager,
   void DidSuppressPopup(const FormData& form, const FormFieldData& field);
 
   // Handle the parsed forms for the given web frame.
-  void HandleParsedForms(
-      const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms);
+  void HandleParsedForms(const std::vector<autofill::FormStructure*>& forms);
 
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
@@ -276,7 +275,7 @@ class BrowserAutofillManager : public AutofillManager,
       const FormFieldData& field,
       const std::u16string& old_value) override;
   void PropagateAutofillPredictions(
-      const std::vector<dangling_raw_ptr<FormStructure>>& forms) override;
+      const std::vector<FormStructure*>& forms) override;
   void Reset() override;
   void OnContextMenuShownInField(const FormGlobalId& form_global_id,
                                  const FieldGlobalId& field_global_id) override;

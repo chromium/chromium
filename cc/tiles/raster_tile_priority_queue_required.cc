@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "cc/tiles/tiling_set_raster_queue_required.h"
 
 namespace cc {
@@ -14,9 +13,9 @@ namespace cc {
 namespace {
 
 void AppendTilingSetRequiredQueues(
-    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& layers,
+    const std::vector<PictureLayerImpl*>& layers,
     std::vector<std::unique_ptr<TilingSetRasterQueueRequired>>* queues) {
-  for (cc::PictureLayerImpl* layer : layers) {
+  for (auto* layer : layers) {
     if (!layer->HasValidTilePriorities())
       continue;
 
@@ -36,8 +35,8 @@ RasterTilePriorityQueueRequired::RasterTilePriorityQueueRequired() = default;
 RasterTilePriorityQueueRequired::~RasterTilePriorityQueueRequired() = default;
 
 void RasterTilePriorityQueueRequired::Build(
-    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& active_layers,
-    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& pending_layers,
+    const std::vector<PictureLayerImpl*>& active_layers,
+    const std::vector<PictureLayerImpl*>& pending_layers,
     Type type) {
   DCHECK_NE(static_cast<int>(type), static_cast<int>(Type::ALL));
   if (type == Type::REQUIRED_FOR_DRAW)
@@ -47,8 +46,8 @@ void RasterTilePriorityQueueRequired::Build(
 }
 
 void RasterTilePriorityQueueRequired::BuildRequiredForDraw(
-    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& active_layers) {
-  for (cc::PictureLayerImpl* layer : active_layers) {
+    const std::vector<PictureLayerImpl*>& active_layers) {
+  for (auto* layer : active_layers) {
     if (!layer->HasValidTilePriorities())
       continue;
 
@@ -61,8 +60,8 @@ void RasterTilePriorityQueueRequired::BuildRequiredForDraw(
 }
 
 void RasterTilePriorityQueueRequired::BuildRequiredForActivation(
-    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& active_layers,
-    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& pending_layers) {
+    const std::vector<PictureLayerImpl*>& active_layers,
+    const std::vector<PictureLayerImpl*>& pending_layers) {
   AppendTilingSetRequiredQueues(active_layers, &tiling_set_queues_);
   AppendTilingSetRequiredQueues(pending_layers, &tiling_set_queues_);
 }

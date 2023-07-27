@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -125,12 +124,12 @@ class TestWidgetDelegate : public WidgetDelegate {
     base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
   }
 
-  void SetAccessiblePanes(const std::vector<dangling_raw_ptr<View>>& panes) {
+  void SetAccessiblePanes(const std::vector<View*>& panes) {
     accessible_panes_ = panes;
   }
 
  private:
-  std::vector<dangling_raw_ptr<View>> accessible_panes_;
+  std::vector<View*> accessible_panes_;
 };
 
 TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
@@ -165,7 +164,7 @@ TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
   v4->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   pane2->AddChildView(v4);
 
-  std::vector<dangling_raw_ptr<views::View>> panes;
+  std::vector<views::View*> panes;
   panes.push_back(pane1);
   panes.push_back(pane2);
   delegate.SetAccessiblePanes(panes);

@@ -130,7 +130,7 @@ class CreditCardField : public FormField {
   raw_ptr<AutofillField> cardholder_last_;
 
   raw_ptr<AutofillField> type_;          // Optional.
-  std::vector<dangling_raw_ptr<AutofillField>> numbers_;  // Required.
+  std::vector<AutofillField*> numbers_;  // Required.
 
   // The 3-digit card verification number; we don't currently fill this.
   raw_ptr<AutofillField> verification_;

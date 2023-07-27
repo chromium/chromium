@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -69,14 +68,13 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 }
 #endif
 
-void Autofill(
-    PasswordManagerClient* client,
-    PasswordManagerDriver* driver,
-    const PasswordForm& form_for_autofill,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& federated_matches,
-    absl::optional<PasswordForm> preferred_match,
-    bool wait_for_username) {
+void Autofill(PasswordManagerClient* client,
+              PasswordManagerDriver* driver,
+              const PasswordForm& form_for_autofill,
+              const std::vector<const PasswordForm*>& best_matches,
+              const std::vector<const PasswordForm*>& federated_matches,
+              absl::optional<PasswordForm> preferred_match,
+              bool wait_for_username) {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
@@ -123,8 +121,8 @@ LikelyFormFilling SendFillInformationToRenderer(
     PasswordManagerClient* client,
     PasswordManagerDriver* driver,
     const PasswordForm& observed_form,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& federated_matches,
+    const std::vector<const PasswordForm*>& best_matches,
+    const std::vector<const PasswordForm*>& federated_matches,
     const PasswordForm* preferred_match,
     bool blocked_by_user,
     PasswordFormMetricsRecorder* metrics_recorder,
@@ -284,7 +282,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 
 PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
+    const std::vector<const PasswordForm*>& matches,
     absl::optional<PasswordForm> preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username) {

@@ -5,7 +5,6 @@
 #include "base/scoped_multi_source_observation.h"
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation_traits.h"
 #include "base/test/gtest_util.h"
@@ -25,7 +24,7 @@ class TestSource {
   size_t num_observers() const { return observers_.size(); }
 
  private:
-  std::vector<dangling_raw_ptr<TestSourceObserver>> observers_;
+  std::vector<TestSourceObserver*> observers_;
 };
 
 void TestSource::AddObserver(TestSourceObserver* observer) {

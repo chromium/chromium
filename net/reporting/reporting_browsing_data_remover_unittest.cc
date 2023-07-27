@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
@@ -61,7 +60,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   }
 
   size_t report_count() {
-    std::vector<dangling_raw_ptr<const ReportingReport>> reports;
+    std::vector<const ReportingReport*> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }
@@ -139,7 +138,7 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeReports) {
                      /* host= */ kUrl1_.host());
   EXPECT_EQ(2u, cache()->GetEndpointCount());
 
-  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
+  std::vector<const ReportingReport*> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl2_, reports[0]->url);

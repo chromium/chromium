@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -339,7 +338,7 @@ views::View* WebAppFrameToolbarView::GetContentSettingContainerForTesting() {
   return right_container_->content_settings_container();
 }
 
-const std::vector<dangling_raw_ptr<ContentSettingImageView>>&
+const std::vector<ContentSettingImageView*>&
 WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
   return right_container_->content_settings_container()
       ->get_content_setting_views();

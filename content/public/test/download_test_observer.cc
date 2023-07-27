@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/public/test/download_test_observer.h"
-#include "base/memory/raw_ptr.h"
 
 #include <vector>
 
@@ -83,10 +82,9 @@ DownloadTestObserver::~DownloadTestObserver() {
 
 void DownloadTestObserver::Init() {
   download_manager_->AddObserver(this);
-  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
+  std::vector<download::DownloadItem*> downloads;
   download_manager_->GetAllDownloads(&downloads);
-  for (std::vector<dangling_raw_ptr<download::DownloadItem>>::iterator it =
-           downloads.begin();
+  for (std::vector<download::DownloadItem*>::iterator it = downloads.begin();
        it != downloads.end(); ++it) {
     OnDownloadCreated(download_manager_, *it);
   }
@@ -386,10 +384,9 @@ void DownloadTestFlushObserver::CheckDownloadsInProgress(
   if (waiting_for_zero_inprogress_) {
     int count = 0;
 
-    std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
+    std::vector<download::DownloadItem*> downloads;
     download_manager_->GetAllDownloads(&downloads);
-    for (std::vector<dangling_raw_ptr<download::DownloadItem>>::iterator it =
-             downloads.begin();
+    for (std::vector<download::DownloadItem*>::iterator it = downloads.begin();
          it != downloads.end(); ++it) {
       if ((*it)->GetState() == download::DownloadItem::IN_PROGRESS)
         count++;

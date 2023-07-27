@@ -297,9 +297,8 @@ LogSource::EntryDetailsList
 BackgroundDownloadServiceImpl::GetServiceDownloads() {
   EntryDetailsList list;
   auto entries = model_->PeekEntries();
-  for (download::Entry* entry : entries) {
+  for (auto* entry : entries)
     list.push_back(std::make_pair(entry, absl::nullopt));
-  }
   return list;
 }
 

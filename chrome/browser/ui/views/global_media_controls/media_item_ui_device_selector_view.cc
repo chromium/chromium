@@ -419,7 +419,7 @@ void MediaItemUIDeviceSelectorView::UpdateIsAudioDeviceSwitchingEnabled(
 void MediaItemUIDeviceSelectorView::RemoveDevicesOfType(
     DeviceEntryUIType type) {
   std::vector<views::View*> views_to_remove;
-  for (views::View* view : device_entry_views_container_->children()) {
+  for (auto* view : device_entry_views_container_->children()) {
     if (GetDeviceEntryUI(view)->GetType() == type) {
       views_to_remove.push_back(view);
     }
@@ -536,7 +536,7 @@ bool MediaItemUIDeviceSelectorView::GetDeviceEntryViewVisibilityForTesting() {
 std::vector<CastDeviceEntryView*>
 MediaItemUIDeviceSelectorView::GetCastDeviceEntryViewsForTesting() {
   std::vector<CastDeviceEntryView*> buttons;
-  for (views::View* view : device_entry_views_container_->children()) {
+  for (auto* view : device_entry_views_container_->children()) {
     if (GetDeviceEntryUI(view)->GetType() == DeviceEntryUIType::kCast) {
       buttons.push_back(static_cast<CastDeviceEntryView*>(view));
     }

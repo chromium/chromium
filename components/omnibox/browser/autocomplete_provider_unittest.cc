@@ -218,7 +218,7 @@ void TestProvider::StartPrefetch(const AutocompleteInput& input) {
 void TestProvider::OnPrefetchRequestDone() {
   AddResults(0, kResultsPerProvider);
   prefetch_done_ = true;
-  for (AutocompleteProviderListener* listener : listeners_) {
+  for (auto* listener : listeners_) {
     static_cast<TestAutocompleteProviderListener*>(listener)
         ->OnProviderFinishedPrefetch();
   }

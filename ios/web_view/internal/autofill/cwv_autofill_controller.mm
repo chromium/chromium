@@ -404,7 +404,7 @@ using UserDecision =
 }
 
 - (void)propagateAutofillPredictionsForForms:
-            (const std::vector<dangling_raw_ptr<autofill::FormStructure>>&)forms
+            (const std::vector<autofill::FormStructure*>&)forms
                                      inFrame:(web::WebFrame*)frame {
   IOSPasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
@@ -464,8 +464,7 @@ using UserDecision =
   [_autofillAgent fillFormData:form inFrame:frame];
 }
 
-- (void)handleParsedForms:
-            (const std::vector<dangling_raw_ptr<autofill::FormStructure>>&)forms
+- (void)handleParsedForms:(const std::vector<autofill::FormStructure*>&)forms
                   inFrame:(web::WebFrame*)frame {
   if (![_delegate respondsToSelector:@selector(autofillController:
                                                      didFindForms:frameID:)]) {

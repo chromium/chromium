@@ -73,7 +73,7 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
   void NotifyObservers();
   void OnDisplaysAcquired(
       bool force_initial_configure,
-      const std::vector<dangling_raw_ptr<display::DisplaySnapshot>>& displays);
+      const std::vector<display::DisplaySnapshot*>& displays);
   void OnDisplayConfigured(display::DisplaySnapshot* display,
                            const display::DisplayMode* mode,
                            const gfx::Point& origin,

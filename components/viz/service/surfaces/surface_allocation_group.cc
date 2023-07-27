@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -192,7 +191,7 @@ void SurfaceAllocationGroup::AckLastestActiveUnAckedFrame() {
     lastest_active->SendAckToClient();
 }
 
-std::vector<dangling_raw_ptr<Surface>>::const_iterator
+std::vector<Surface*>::const_iterator
 SurfaceAllocationGroup::FindLatestSurfaceUpTo(
     const SurfaceId& surface_id) const {
   DCHECK_EQ(submitter_, surface_id.frame_sink_id());
@@ -223,7 +222,7 @@ SurfaceAllocationGroup::FindLatestSurfaceUpTo(
   return surfaces_.begin() + begin;
 }
 
-std::vector<dangling_raw_ptr<Surface>>::const_iterator
+std::vector<Surface*>::const_iterator
 SurfaceAllocationGroup::FindLatestActiveSurfaceUpTo(
     const SurfaceId& surface_id) const {
   // Start from the last older or equal surface and keep iterating back until we

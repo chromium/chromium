@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "net/socket/socket_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include <inttypes.h>  // For SCNx64
 #include <stdint.h>
@@ -1793,7 +1792,7 @@ void MockUDPClientSocket::RunCallback(CompletionOnceCallback callback,
 }
 
 TestSocketRequest::TestSocketRequest(
-    std::vector<dangling_raw_ptr<TestSocketRequest>>* request_order,
+    std::vector<TestSocketRequest*>* request_order,
     size_t* completion_count)
     : request_order_(request_order), completion_count_(completion_count) {
   DCHECK(request_order);

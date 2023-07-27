@@ -180,14 +180,14 @@ class ScrollContentsView : public views::View {
           clip_insets, paint_info.paint_recording_scale_x(),
           paint_info.paint_recording_scale_y()));
       clip_recorder.ClipRect(clip_rect);
-      for (views::View* child : children()) {
+      for (auto* child : children()) {
         if (child->GetID() != VIEW_ID_STICKY_HEADER && !child->layer()) {
           child->Paint(paint_info);
         }
       }
     }
     // Paint sticky headers.
-    for (views::View* child : children()) {
+    for (auto* child : children()) {
       if (child->GetID() == VIEW_ID_STICKY_HEADER && !child->layer()) {
         child->Paint(paint_info);
       }
@@ -219,7 +219,7 @@ class ScrollContentsView : public views::View {
     }
 
     headers_.clear();
-    for (views::View* child : children()) {
+    for (auto* child : children()) {
       if (child->GetID() == VIEW_ID_STICKY_HEADER) {
         headers_.emplace_back(child);
       }
@@ -444,10 +444,9 @@ void TrayDetailedView::CreateTitleRow(int string_id, bool create_back_button) {
   // so the header text will be in the center of the `QuickSettingsView`
   // horizontally.
   auto* start_view =
-      tri_view_->children()[static_cast<size_t>(TriView::Container::START)]
-          .get();
+      tri_view_->children()[static_cast<size_t>(TriView::Container::START)];
   auto* end_view =
-      tri_view_->children()[static_cast<size_t>(TriView::Container::END)].get();
+      tri_view_->children()[static_cast<size_t>(TriView::Container::END)];
   int start_width = start_view->GetPreferredSize().width();
   int end_width = end_view->GetPreferredSize().width();
   if (start_width < end_width) {

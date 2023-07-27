@@ -163,7 +163,7 @@ bool IsPwaUiOpenAndSecure(content::BrowserContext* context,
   const auto* externally_connectable_info =
       extensions::ExternallyConnectableInfo::Get(extension);
 
-  for (Browser* target_browser : *BrowserList::GetInstance()) {
+  for (auto* target_browser : *BrowserList::GetInstance()) {
     // Ignore incognito.
     if (target_browser->profile() != profile) {
       continue;

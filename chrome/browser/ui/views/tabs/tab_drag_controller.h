@@ -104,7 +104,7 @@ class TabDragController : public views::WidgetObserver,
   // dragging set.
   void Init(TabDragContext* source_context,
             TabSlotView* source_view,
-            const std::vector<dangling_raw_ptr<TabSlotView>>& dragging_views,
+            const std::vector<TabSlotView*>& dragging_views,
             const gfx::Point& mouse_offset,
             int source_view_offset,
             ui::ListSelectionModel initial_selection_model,
@@ -432,7 +432,7 @@ class TabDragController : public views::WidgetObserver,
   // Finds the TabSlotViews within the specified TabDragContext that
   // corresponds to the WebContents of the dragged views. Also finds the group
   // header if it is dragging. Returns an empty vector if not attached.
-  std::vector<dangling_raw_ptr<TabSlotView>> GetViewsMatchingDraggedContents(
+  std::vector<TabSlotView*> GetViewsMatchingDraggedContents(
       TabDragContext* context);
 
   // Does the work for EndDrag(). If we actually started a drag and |how_end| is
@@ -654,7 +654,7 @@ class TabDragController : public views::WidgetObserver,
   size_t source_view_index_;
 
   // The attached views. Also found in |drag_data_|, but cached for convenience.
-  std::vector<dangling_raw_ptr<TabSlotView>> attached_views_;
+  std::vector<TabSlotView*> attached_views_;
 
   // Whether the drag originated from a group header.
   bool header_drag_;

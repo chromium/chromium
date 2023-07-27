@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -237,8 +236,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   }
   LoggerImpl* logger() { return logger_.get(); }
 
-  const std::vector<dangling_raw_ptr<MediaSinksObserver>>
-  media_sink_observers() {
+  const std::vector<MediaSinksObserver*> media_sink_observers() {
     return media_sinks_observers_;
   }
 
@@ -417,7 +415,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::unique_ptr<LoggerImpl> logger_;
-  std::vector<dangling_raw_ptr<MediaSinksObserver>> media_sinks_observers_;
+  std::vector<MediaSinksObserver*> media_sinks_observers_;
 
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
 

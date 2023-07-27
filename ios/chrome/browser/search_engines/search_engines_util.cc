@@ -27,8 +27,7 @@ static const int kGoogleEnginePrepopulatedId = 1;
 void UpdateSearchEngine(TemplateURLService* service) {
   DCHECK(service);
   DCHECK(service->loaded());
-  std::vector<dangling_raw_ptr<TemplateURL>> old_engines =
-      service->GetTemplateURLs();
+  std::vector<TemplateURL*> old_engines = service->GetTemplateURLs();
   size_t default_engine_index;
   std::vector<std::unique_ptr<TemplateURLData>> new_engines =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(nullptr,
@@ -44,14 +43,14 @@ void UpdateSearchEngine(TemplateURLService* service) {
   // third pass, it will add all new engines except Google.
   const TemplateURL* default_engine = service->GetDefaultSearchProvider();
   if (default_engine->prepopulate_id() > kGoogleEnginePrepopulatedId) {
-    for (TemplateURL* engine : old_engines) {
+    for (auto* engine : old_engines) {
       if (engine->prepopulate_id() == kGoogleEnginePrepopulatedId) {
         service->SetUserSelectedDefaultSearchProvider(engine);
         break;
       }
     }
   }
-  for (TemplateURL* engine : old_engines) {
+  for (auto* engine : old_engines) {
     if (engine->prepopulate_id() > kGoogleEnginePrepopulatedId)
       service->Remove(engine);
   }

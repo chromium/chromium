@@ -9,8 +9,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-
 namespace autofill {
 class AutofillProfile;
 }
@@ -25,7 +23,7 @@ class AutofillProfile;
 // Converts a list of `autofill::AutofillProfile` into a list of
 // `ManualFillAddress`.
 + (NSArray<ManualFillAddress*>*)manualFillAddressesFromProfiles:
-    (std::vector<dangling_raw_ptr<autofill::AutofillProfile>>)profiles;
+    (std::vector<autofill::AutofillProfile*>)profiles;
 
 @end
 

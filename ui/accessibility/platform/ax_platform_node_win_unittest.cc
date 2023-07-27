@@ -4557,7 +4557,7 @@ TEST_F(AXPlatformNodeWinTest, UIAItemStatusPropertyId) {
 
   Init(root, row1, header1, header2, header3, header4);
 
-  auto* row_node = GetRoot()->children()[0].get();
+  auto* row_node = GetRoot()->children()[0];
 
   EXPECT_UIA_BSTR_EQ(QueryInterfaceFromNode<IRawElementProviderSimple>(
                          row_node->children()[0]),
@@ -7282,7 +7282,7 @@ TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderGrid) {
 
   Init(root, row1, cell1);
 
-  const auto* row = GetRoot()->children()[0].get();
+  const auto* row = GetRoot()->children()[0];
   ComPtr<IRawElementProviderSimple> raw_element_provider_simple =
       QueryInterfaceFromNode<IRawElementProviderSimple>(row->children()[0]);
 
@@ -7352,7 +7352,7 @@ TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderGetSelectionContainer) {
   ComPtr<IRawElementProviderSimple> container_provider =
       GetRootIRawElementProviderSimple();
 
-  const auto* row = GetRoot()->children()[0].get();
+  const auto* row = GetRoot()->children()[0];
   ComPtr<ISelectionItemProvider> item_provider =
       QueryInterfaceFromNode<ISelectionItemProvider>(row->children()[0]);
 
@@ -7376,7 +7376,7 @@ TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderSelectFollowFocus) {
 
   Init(root, tab1);
 
-  auto* tab1_node = GetRoot()->children()[0].get();
+  auto* tab1_node = GetRoot()->children()[0];
   ComPtr<IRawElementProviderSimple> tab1_raw_element_provider_simple =
       QueryInterfaceFromNode<IRawElementProviderSimple>(tab1_node);
   ASSERT_NE(nullptr, tab1_raw_element_provider_simple.Get());

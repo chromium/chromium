@@ -175,9 +175,8 @@ void MediaItemUIFooterView::SetDelegate(Delegate* delegate) {
 }
 
 void MediaItemUIFooterView::UpdateButtonsColor() {
-  for (views::View* view : children()) {
+  for (auto* view : children())
     static_cast<DeviceEntryButton*>(view)->UpdateColor(foreground_color_);
-  }
 }
 
 void MediaItemUIFooterView::OnDeviceSelected(int tag) {

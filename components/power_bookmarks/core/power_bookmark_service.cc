@@ -189,8 +189,7 @@ void PowerBookmarkService::BookmarkNodeAdded(BookmarkModel* model,
   std::unique_ptr<PowerBookmarkMeta> meta =
       std::make_unique<PowerBookmarkMeta>();
 
-  for (power_bookmarks::PowerBookmarkDataProvider* data_provider :
-       data_providers_) {
+  for (auto* data_provider : data_providers_) {
     data_provider->AttachMetadataForNewBookmark(node, meta.get());
   }
 

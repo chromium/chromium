@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/aura_export.h"
 
 namespace aura {
@@ -32,8 +31,7 @@ class AURA_EXPORT TransientWindowClient {
   virtual void RemoveTransientChild(Window* parent, Window* child) = 0;
   virtual Window* GetTransientParent(Window* window) = 0;
   virtual const Window* GetTransientParent(const Window* window) = 0;
-  virtual std::vector<dangling_raw_ptr<Window>> GetTransientChildren(
-      const Window* parent) = 0;
+  virtual std::vector<Window*> GetTransientChildren(const Window* parent) = 0;
   virtual void AddObserver(TransientWindowClientObserver* observer) = 0;
   virtual void RemoveObserver(TransientWindowClientObserver* observer) = 0;
 

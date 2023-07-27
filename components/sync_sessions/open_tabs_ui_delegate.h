@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/session_id.h"
@@ -24,7 +23,7 @@ class OpenTabsUIDelegate {
   // recent. Caller does NOT own SyncedSession objects.
   // Returns true if foreign sessions were found, false otherwise.
   virtual bool GetAllForeignSessions(
-      std::vector<dangling_raw_ptr<const SyncedSession>>* sessions) = 0;
+      std::vector<const SyncedSession*>* sessions) = 0;
 
   // Looks up the foreign tab identified by |tab_id| and belonging to foreign
   // session |tag|. Caller does NOT own the SessionTab object.

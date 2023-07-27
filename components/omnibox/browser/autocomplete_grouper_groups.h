@@ -8,11 +8,10 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
-using PMatches = std::vector<dangling_raw_ptr<AutocompleteMatch>>;
+using PMatches = std::vector<AutocompleteMatch*>;
 
 // `Group` class and subclasses used to compose `Section`s.
 

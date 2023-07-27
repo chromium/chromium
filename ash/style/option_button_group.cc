@@ -49,7 +49,7 @@ void OptionButtonGroup::SelectButtonAtIndex(size_t index) {
 std::vector<OptionButtonBase*> OptionButtonGroup::GetSelectedButtons() {
   std::vector<OptionButtonBase*> selected_buttons;
 
-  for (ash::OptionButtonBase* button : buttons_) {
+  for (auto* button : buttons_) {
     if (button->selected())
       selected_buttons.push_back(button);
   }
@@ -60,9 +60,8 @@ std::vector<OptionButtonBase*> OptionButtonGroup::GetSelectedButtons() {
 void OptionButtonGroup::OnEnableChanged() {
   const bool enabled = GetEnabled();
 
-  for (ash::OptionButtonBase* button : buttons_) {
+  for (auto* button : buttons_)
     button->SetEnabled(enabled);
-  }
 }
 
 BEGIN_METADATA(OptionButtonGroup, views::View)

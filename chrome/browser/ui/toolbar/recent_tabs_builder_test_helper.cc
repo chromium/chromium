@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/toolbar/recent_tabs_builder_test_helper.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -216,7 +215,7 @@ void RecentTabsBuilderTestHelper::VerifyExport(
     sync_sessions::OpenTabsUIDelegate* delegate) {
   DCHECK(delegate);
   // Make sure data is populated correctly in SessionModelAssociator.
-  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
+  std::vector<const sync_sessions::SyncedSession*> sessions;
   ASSERT_TRUE(delegate->GetAllForeignSessions(&sessions));
   ASSERT_EQ(GetSessionCount(), static_cast<int>(sessions.size()));
   for (int s = 0; s < GetSessionCount(); ++s) {

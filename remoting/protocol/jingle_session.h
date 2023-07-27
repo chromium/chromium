@@ -180,7 +180,7 @@ class JingleSession : public Session {
   std::vector<PendingMessage> pending_transport_info_;
 
   // The SessionPlugins attached to this session.
-  std::vector<dangling_raw_ptr<SessionPlugin>> plugins_;
+  std::vector<SessionPlugin*> plugins_;
 
   THREAD_CHECKER(thread_checker_);
 

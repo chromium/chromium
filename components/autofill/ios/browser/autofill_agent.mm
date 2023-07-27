@@ -589,8 +589,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         form, autofill::AutofillTickClock::NowTicks());
 }
 
-- (void)handleParsedForms:
-            (const std::vector<dangling_raw_ptr<autofill::FormStructure>>&)forms
+- (void)handleParsedForms:(const std::vector<autofill::FormStructure*>&)forms
                   inFrame:(web::WebFrame*)frame {
   autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:_webState webFrame:frame];

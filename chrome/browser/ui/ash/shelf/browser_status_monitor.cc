@@ -39,7 +39,7 @@ bool IsAppBrowser(const Browser* browser) {
 }
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model() == tab_strip_model)
       return browser;
   }
@@ -89,9 +89,8 @@ BrowserStatusMonitor::~BrowserStatusMonitor() {
   BrowserList::RemoveObserver(this);
 
   // Simulate OnBrowserRemoved() for all Browsers.
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance())
     OnBrowserRemoved(browser);
-  }
 }
 
 void BrowserStatusMonitor::Initialize() {
@@ -99,9 +98,8 @@ void BrowserStatusMonitor::Initialize() {
   initialized_ = true;
 
   // Simulate OnBrowserAdded() for all existing Browsers.
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance())
     OnBrowserAdded(browser);
-  }
 
   // BrowserList::AddObserver() comes before BrowserTabStripTracker::Init() to
   // ensure that OnBrowserAdded() is always invoked before

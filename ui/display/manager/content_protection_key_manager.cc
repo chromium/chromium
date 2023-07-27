@@ -5,7 +5,6 @@
 #include "ui/display/manager/content_protection_key_manager.h"
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/display/display_features.h"
 #include "ui/display/manager/util/display_manager_util.h"
 
@@ -18,8 +17,7 @@ namespace {
 constexpr size_t kHdcpKeySize = 285;
 
 display::DisplaySnapshot* GetDisplayWithIdIfHdcpCapableAndKeyNeeded(
-    const std::vector<dangling_raw_ptr<display::DisplaySnapshot>>&
-        displays_states,
+    const std::vector<display::DisplaySnapshot*>& displays_states,
     int64_t display_id) {
   for (display::DisplaySnapshot* display : displays_states) {
     if (display->display_id() == display_id) {
@@ -43,7 +41,7 @@ ContentProtectionKeyManager::ContentProtectionKeyManager() = default;
 ContentProtectionKeyManager::~ContentProtectionKeyManager() = default;
 
 void ContentProtectionKeyManager::SetKeyIfRequired(
-    const std::vector<dangling_raw_ptr<DisplaySnapshot>>& displays_states,
+    const std::vector<DisplaySnapshot*>& displays_states,
     int64_t display_id,
     KeySetCallback on_key_set) {
   DCHECK(!on_key_set.is_null());

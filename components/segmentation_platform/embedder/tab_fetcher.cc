@@ -4,7 +4,6 @@
 
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -14,11 +13,10 @@ namespace segmentation_platform {
 namespace {
 
 void FillTabsFromSessionsAfterTime(
-    const std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>
-        sessions,
+    const std::vector<const sync_sessions::SyncedSession*> sessions,
     std::vector<TabFetcher::TabEntry>& tabs,
     base::Time tabs_loaded_after_timestamp) {
-  for (const sync_sessions::SyncedSession* session : sessions) {
+  for (const auto* session : sessions) {
     for (const auto& session_and_window : session->windows) {
       const auto& window = session_and_window.second->wrapped_window;
       for (const auto& tab : window.tabs) {
@@ -50,7 +48,7 @@ bool TabFetcher::FillAllRemoteTabs(std::vector<TabEntry>& tabs) {
   if (!open_ui_delegate) {
     return false;
   }
-  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
+  std::vector<const sync_sessions::SyncedSession*> sessions;
   open_ui_delegate->GetAllForeignSessions(&sessions);
   FillTabsFromSessionsAfterTime(sessions, tabs, base::Time());
   return true;
@@ -63,7 +61,7 @@ bool TabFetcher::FillAllRemoteTabsAfterTime(
   if (!open_ui_delegate) {
     return false;
   }
-  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
+  std::vector<const sync_sessions::SyncedSession*> sessions;
   open_ui_delegate->GetAllForeignSessions(&sessions);
   FillTabsFromSessionsAfterTime(sessions, tabs, tabs_loaded_after_timestamp);
   return true;
@@ -134,7 +132,7 @@ absl::optional<base::Time> TabFetcher::GetLatestRemoteSessionModifiedTime() {
   if (!open_ui_delegate) {
     return absl::nullopt;
   }
-  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
+  std::vector<const sync_sessions::SyncedSession*> sessions;
   open_ui_delegate->GetAllForeignSessions(&sessions);
   if (sessions.empty()) {
     return absl::nullopt;

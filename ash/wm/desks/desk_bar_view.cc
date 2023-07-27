@@ -21,7 +21,7 @@ gfx::Size DeskBarView::CalculatePreferredSize() const {
   // the preferred width (summation of all child elements and paddings) and
   // use the full available width as the upper limit.
   int width = 0;
-  for (views::View* child : scroll_view_contents_->children()) {
+  for (auto* child : scroll_view_contents_->children()) {
     if (!child->GetVisible()) {
       continue;
     }

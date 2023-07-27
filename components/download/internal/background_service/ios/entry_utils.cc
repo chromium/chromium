@@ -15,7 +15,7 @@ MapEntriesToMetadataForClients(const std::set<DownloadClient>& clients,
                                const std::vector<Entry*>& entries) {
   std::map<DownloadClient, std::vector<DownloadMetaData>> categorized;
 
-  for (Entry* entry : entries) {
+  for (auto* entry : entries) {
     DownloadClient client = entry->client;
     if (clients.find(client) == clients.end())
       continue;

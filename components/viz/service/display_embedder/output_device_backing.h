@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -59,7 +58,7 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
   size_t GetMaxViewportBytes();
 
  private:
-  std::vector<dangling_raw_ptr<Client>> clients_;
+  std::vector<Client*> clients_;
   base::UnsafeSharedMemoryRegion region_;
   size_t created_shm_bytes_ = 0;
 };

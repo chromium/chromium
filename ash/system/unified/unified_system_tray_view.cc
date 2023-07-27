@@ -56,7 +56,7 @@ class DetailedViewContainer : public views::View {
 
   // views::View:
   void Layout() override {
-    for (views::View* child : children()) {
+    for (auto* child : children()) {
       child->SetBoundsRect(GetContentsBounds());
     }
     views::View::Layout();
@@ -106,15 +106,14 @@ void UnifiedSlidersContainerView::SetExpandedAmount(double expanded_amount) {
 
 int UnifiedSlidersContainerView::GetExpandedHeight() const {
   return std::accumulate(
-      children().cbegin(), children().cend(), 0,
-      [](int height, const views::View* v) {
+      children().cbegin(), children().cend(), 0, [](int height, const auto* v) {
         return height + v->GetHeightForWidth(kTrayMenuWidth) + kSlidersPadding;
       });
 }
 
 void UnifiedSlidersContainerView::Layout() {
   int y = 0;
-  for (views::View* child : children()) {
+  for (auto* child : children()) {
     int height = child->GetHeightForWidth(kTrayMenuWidth);
     child->SetBounds(0, y, kTrayMenuWidth, height);
     y += height + kSlidersPadding;
@@ -131,7 +130,7 @@ const char* UnifiedSlidersContainerView::GetClassName() const {
 
 void UnifiedSlidersContainerView::UpdateOpacity() {
   const int height = GetPreferredSize().height();
-  for (views::View* child : children()) {
+  for (auto* child : children()) {
     double opacity = 1.0;
     if (child->y() > height) {
       opacity = 0.0;

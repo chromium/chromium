@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,12 +14,12 @@ namespace autofill {
 namespace {
 
 TEST(LabelFormatterTest, CreateWithMissingFieldTypes) {
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{};
+  const std::vector<AutofillProfile*> profiles{};
   EXPECT_EQ(LabelFormatter::Create(profiles, "en-US", NAME_FIRST, {}), nullptr);
 }
 
 TEST(LabelFormatterTest, CreateWithUnsupportedFieldTypes) {
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{};
+  const std::vector<AutofillProfile*> profiles{};
   EXPECT_EQ(
       LabelFormatter::Create(profiles, "en-US", USERNAME, {USERNAME, PASSWORD}),
       nullptr);

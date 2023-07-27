@@ -647,7 +647,7 @@ bool CanToggleOverview() {
   auto windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   // Do not toggle overview if there is a window being dragged.
-  for (aura::Window* window : windows) {
+  for (auto* window : windows) {
     if (WindowState::Get(window)->is_dragged())
       return false;
   }
@@ -725,9 +725,8 @@ void ActivateDeskAtIndex(AcceleratorAction action) {
         desks[target_index].get(),
         DesksSwitchSource::kIndexedDeskSwitchShortcut);
   } else {
-    for (aura::Window* root : Shell::GetAllRootWindows()) {
+    for (auto* root : Shell::GetAllRootWindows())
       desks_animations::PerformHitTheWallAnimation(root, /*going_left=*/false);
-    }
   }
 }
 

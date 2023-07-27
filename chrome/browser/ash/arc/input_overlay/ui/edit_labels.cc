@@ -55,7 +55,7 @@ void EditLabels::Init() {
 }
 
 void EditLabels::OnActionInputBindingUpdated() {
-  for (arc::input_overlay::EditLabel* label : labels_) {
+  for (auto* label : labels_) {
     label->OnActionInputBindingUpdated();
   }
 
@@ -133,7 +133,7 @@ void EditLabels::UpdateNameTag() {
   // If at least one label is unassigned, it needs to show error state.
   missing_assign_ = false;
   DCHECK_GE(labels_.size(), 1u);
-  for (arc::input_overlay::EditLabel* label : labels_) {
+  for (auto* label : labels_) {
     key_string.append(label->GetText());
     key_string.append(u", ");
     if (label->IsInputUnbound()) {

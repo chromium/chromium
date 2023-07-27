@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/personal_data_manager_cleaner.h"
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -154,7 +153,7 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
     return false;
   }
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles =
+  const std::vector<AutofillProfile*>& profiles =
       base::FeatureList::IsEnabled(
           features::kAutofillAccountProfilesUnionView) &&
               base::FeatureList::IsEnabled(
@@ -363,7 +362,7 @@ void PersonalDataManagerCleaner::UpdateCardsBillingAddressReference(
 }
 
 bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles =
+  const std::vector<AutofillProfile*>& profiles =
       personal_data_manager_->GetProfilesFromSource(
           AutofillProfile::Source::kLocalOrSyncable);
 

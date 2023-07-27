@@ -666,8 +666,7 @@ class AccessibilityWinBrowserTest::AccessibleChecker {
   void SetExpectedState(LONG expected_state);
 
  private:
-  typedef std::vector<dangling_raw_ptr<AccessibleChecker>>
-      AccessibleCheckerVector;
+  typedef std::vector<AccessibleChecker*> AccessibleCheckerVector;
 
   void CheckAccessibleName(IAccessible* accessible);
   void CheckAccessibleRole(IAccessible* accessible);

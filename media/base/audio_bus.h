@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/raw_ptr.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/media_shmem_export.h"
 
@@ -47,7 +46,7 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // the returned AudioBus.  Each channel must be aligned by kChannelAlignment.
   static std::unique_ptr<AudioBus> WrapVector(
       int frames,
-      const std::vector<dangling_raw_ptr<float>>& channel_data);
+      const std::vector<float*>& channel_data);
 
   // Creates a new AudioBus by wrapping an existing block of memory.  Block must
   // be at least CalculateMemorySize() bytes in size.  |data| must outlive the
@@ -190,8 +189,7 @@ class MEDIA_SHMEM_EXPORT AudioBus {
  protected:
   AudioBus(int channels, int frames);
   AudioBus(int channels, int frames, float* data);
-  AudioBus(int frames,
-           const std::vector<dangling_raw_ptr<float>>& channel_data);
+  AudioBus(int frames, const std::vector<float*>& channel_data);
   explicit AudioBus(int channels);
 
  private:
@@ -229,7 +227,7 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // that channel. If the memory is owned by this instance, this will
   // point to the memory in |data_|. Otherwise, it may point to memory provided
   // by the client.
-  std::vector<dangling_raw_ptr<float>> channel_data_;
+  std::vector<float*> channel_data_;
   int frames_;
 
   // Protect SetChannelData(), set_frames() and SetWrappedDataDeleter() for use

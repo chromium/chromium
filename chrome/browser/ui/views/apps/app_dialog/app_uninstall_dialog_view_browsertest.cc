@@ -365,11 +365,11 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
 
   std::unordered_set<std::u16string> sub_apps_actual;
   views::View* view = ActiveView()->GetWidget()->GetContentsView();
-  std::vector<dangling_raw_ptr<views::View>> views_group;
+  std::vector<views::View*> views_group;
   view->GetViewsInGroup(
       static_cast<int>(AppUninstallDialogView::DialogViewID::SUB_APP_LABEL),
       &views_group);
-  for (views::View* label : views_group) {
+  for (auto* label : views_group) {
     sub_apps_actual.emplace(static_cast<views::Label*>(label)->GetText());
   }
   EXPECT_EQ(sub_apps_actual, sub_apps_expected);

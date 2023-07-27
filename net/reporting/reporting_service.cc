@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -164,9 +163,8 @@ class ReportingServiceImpl : public ReportingService {
     return base::Value(std::move(dict));
   }
 
-  std::vector<dangling_raw_ptr<const ReportingReport>> GetReports()
-      const override {
-    std::vector<dangling_raw_ptr<const net::ReportingReport>> reports;
+  std::vector<const ReportingReport*> GetReports() const override {
+    std::vector<const net::ReportingReport*> reports;
     context_->cache()->GetReports(&reports);
     return reports;
   }

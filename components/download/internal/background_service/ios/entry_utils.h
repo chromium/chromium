@@ -9,8 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-
 #include "components/download/public/background_service/clients.h"
 
 namespace download {

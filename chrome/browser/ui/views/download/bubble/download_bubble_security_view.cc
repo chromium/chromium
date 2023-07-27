@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
@@ -200,7 +199,7 @@ class ParagraphsView : public views::View {
   int default_text_style_ = views::style::STYLE_PRIMARY;
   int after_paragraph_ = 0;
   int fixed_width_ = 0;
-  std::vector<dangling_raw_ptr<views::StyledLabel>> paragraphs_;
+  std::vector<views::StyledLabel*> paragraphs_;
 };
 
 BEGIN_METADATA(ParagraphsView, View)

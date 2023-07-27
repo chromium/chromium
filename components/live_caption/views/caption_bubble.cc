@@ -250,7 +250,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
  public:
   METADATA_HEADER(CaptionBubbleFrameView);
   explicit CaptionBubbleFrameView(
-      std::vector<dangling_raw_ptr<views::View>> buttons,
+      std::vector<views::View*> buttons,
       ResetInactivityTimerCallback reset_inactivity_timer_cb)
       : views::BubbleFrameView(gfx::Insets(), gfx::Insets()),
         buttons_(buttons),
@@ -302,7 +302,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   }
 
  private:
-  std::vector<dangling_raw_ptr<views::View>> buttons_;
+  std::vector<views::View*> buttons_;
   ResetInactivityTimerCallback reset_inactivity_timer_cb_;
 };
 
@@ -755,8 +755,8 @@ void CaptionBubble::Init() {
   AddChildView(std::move(content_container));
 
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    std::vector<dangling_raw_ptr<views::View>> buttons = GetButtons();
-    for (views::View* button : buttons) {
+    std::vector<views::View*> buttons = GetButtons();
+    for (auto* button : buttons) {
       button->SetPaintToLayer();
       button->layer()->SetFillsBoundsOpaquely(false);
       button->layer()->SetOpacity(0);
@@ -786,9 +786,9 @@ bool CaptionBubble::ShouldShowCloseButton() const {
 
 std::unique_ptr<views::NonClientFrameView>
 CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
-  std::vector<dangling_raw_ptr<views::View>> buttons = GetButtons();
+  std::vector<views::View*> buttons = GetButtons();
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    buttons.push_back(caption_settings_button_.get());
+    buttons.push_back(caption_settings_button_);
     caption_bubble_event_observer_ =
         std::make_unique<CaptionBubbleEventObserver>(this, widget);
   }
@@ -942,8 +942,8 @@ void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
     return;
   }
 
-  std::vector<dangling_raw_ptr<views::View>> buttons = GetButtons();
-  for (views::View* button : buttons) {
+  std::vector<views::View*> buttons = GetButtons();
+  for (auto* button : buttons) {
     button->layer()->SetOpacity(animation->GetCurrentValue());
   }
 
@@ -1504,13 +1504,13 @@ void CaptionBubble::LogSessionEvent(SessionEvent event) {
   }
 }
 
-std::vector<dangling_raw_ptr<views::View>> CaptionBubble::GetButtons() {
-  std::vector<dangling_raw_ptr<views::View>> buttons = {
-      back_to_tab_button_.get(), close_button_.get(), expand_button_.get(),
-      collapse_button_.get(),    pin_button_.get(),   unpin_button_.get()};
+std::vector<views::View*> CaptionBubble::GetButtons() {
+  std::vector<views::View*> buttons = {back_to_tab_button_, close_button_,
+                                       expand_button_,      collapse_button_,
+                                       pin_button_,         unpin_button_};
 
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    buttons.push_back(caption_settings_button_.get());
+    buttons.push_back(caption_settings_button_);
   }
 
   return buttons;

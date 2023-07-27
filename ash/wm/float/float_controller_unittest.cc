@@ -641,7 +641,7 @@ TEST_F(WindowFloatTest, MoveFloatWindowBetweenDesks) {
   EXPECT_EQ(1u, grid->size());
   // Get position of `desk_2`'s desk mini view on the secondary display.
   const auto* desks_bar_view = grid->desks_bar_view();
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   gfx::Point desk_2_mini_view_center =
       desk_2_mini_view->GetBoundsInScreen().CenterPoint();
 
@@ -694,7 +694,7 @@ TEST_F(WindowFloatTest, MoveFloatWindowBetweenDesksOnDifferentDisplay) {
 
   // Get position of `desk_2`'s desk mini view on the secondary display.
   const auto* desks_bar_view = grid2->desks_bar_view();
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   gfx::Point desk_2_mini_view_center =
       desk_2_mini_view->GetBoundsInScreen().CenterPoint();
 

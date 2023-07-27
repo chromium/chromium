@@ -5,7 +5,6 @@
 #include "net/reporting/reporting_network_change_observer.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/unguessable_token.h"
@@ -40,7 +39,7 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
   }
 
   size_t report_count() {
-    std::vector<dangling_raw_ptr<const ReportingReport>> reports;
+    std::vector<const ReportingReport*> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }

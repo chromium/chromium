@@ -31,8 +31,7 @@ class FastCheckoutViewImpl : public FastCheckoutView {
   void OpenCreditCardSettings(JNIEnv* env);
 
   // FastCheckoutView:
-  void Show(const std::vector<dangling_raw_ptr<autofill::AutofillProfile>>&
-                autofill_profiles,
+  void Show(const std::vector<autofill::AutofillProfile*>& autofill_profiles,
             const std::vector<autofill::CreditCard*>& credit_cards) override;
 
  private:

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/grit/generated_resources.h"
@@ -300,7 +299,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
 
   std::string text;
   GetProperty(AXStringProperty::TEXT, &text);
-  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
+  std::vector<AccessibilityInfoDataWrapper*> children;
   GetChildren(&children);
   if (!text.empty() && children.empty()) {
     out_data->role = ax::mojom::Role::kStaticText;
@@ -644,8 +643,7 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
 }
 
 void AccessibilityNodeInfoDataWrapper::GetChildren(
-    std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>* children)
-    const {
+    std::vector<AccessibilityInfoDataWrapper*>* children) const {
   if (!node_ptr_->int_list_properties) {
     return;
   }
@@ -801,7 +799,7 @@ bool AccessibilityNodeInfoDataWrapper::HasAccessibilityFocusableText() const {
 
 void AccessibilityNodeInfoDataWrapper::ComputeNameFromContents(
     std::vector<std::string>* names) const {
-  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
+  std::vector<AccessibilityInfoDataWrapper*> children;
   GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {
     static_cast<AccessibilityNodeInfoDataWrapper*>(child)
@@ -839,7 +837,7 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
   }
 
   // Otherwise, continue looking for a name in this subtree.
-  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
+  std::vector<AccessibilityInfoDataWrapper*> children;
   GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {
     static_cast<AccessibilityNodeInfoDataWrapper*>(child)
@@ -927,7 +925,7 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
   }
 
   // Check if any ancestor has an important property.
-  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
+  std::vector<AccessibilityInfoDataWrapper*> children;
   GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {
     if (static_cast<AccessibilityNodeInfoDataWrapper*>(child)

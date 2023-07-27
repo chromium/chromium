@@ -68,7 +68,7 @@ void BuiltinProvider::DoStarterPackAutocompletion(const std::u16string& text) {
   if (starts_with_starter_pack_symbol) {
     TemplateURLService::TemplateURLVector matches;
     template_url_service_->AddMatchingKeywords(text, false, &matches);
-    for (TemplateURL* match : matches) {
+    for (auto* match : matches) {
       if (match->starter_pack_id() > 0 &&
           match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
         AddStarterPackMatch(*match);

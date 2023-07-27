@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -23,9 +22,8 @@ class ScopedOverviewHideWindows : public aura::WindowObserver {
   // |windows| the list of windows to hide in overview mode. If |force_hidden|
   // is true, the hidden windows may have their visibility altered during
   // overview, but we want to keep them hidden.
-  ScopedOverviewHideWindows(
-      const std::vector<dangling_raw_ptr<aura::Window>>& windows,
-      bool force_hidden);
+  ScopedOverviewHideWindows(const std::vector<aura::Window*>& windows,
+                            bool force_hidden);
   ScopedOverviewHideWindows(const ScopedOverviewHideWindows&) = delete;
   ScopedOverviewHideWindows& operator=(const ScopedOverviewHideWindows&) =
       delete;

@@ -17,7 +17,7 @@ FakeEventDrivenTelemetryCollectorPool::FakeEventDrivenTelemetryCollectorPool() =
 FakeEventDrivenTelemetryCollectorPool::
     ~FakeEventDrivenTelemetryCollectorPool() = default;
 
-std::vector<dangling_raw_ptr<CollectorBase>>
+std::vector<CollectorBase*>
 FakeEventDrivenTelemetryCollectorPool::GetTelemetryCollectors(
     MetricEventType event_type) {
   return event_telemetry_map_.at(event_type);

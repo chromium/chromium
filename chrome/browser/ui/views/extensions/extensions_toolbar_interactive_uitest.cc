@@ -162,7 +162,7 @@ std::vector<ToolbarActionView*>
 ExtensionsToolbarUITest::GetToolbarActionViewsForBrowser(
     Browser* browser) const {
   std::vector<ToolbarActionView*> views;
-  for (views::View* view :
+  for (auto* view :
        GetExtensionsToolbarContainerForBrowser(browser)->children()) {
     if (views::IsViewClass<ToolbarActionView>(view))
       views.push_back(static_cast<ToolbarActionView*>(view));

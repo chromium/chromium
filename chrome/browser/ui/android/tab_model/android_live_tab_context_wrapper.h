@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/historical_tab_saver.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
@@ -35,7 +34,7 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   //   `id_to_tab_group`. If the title is null in Java use "".
   AndroidLiveTabContextCloseWrapper(
       TabModel* tab_model,
-      std::vector<dangling_raw_ptr<TabAndroid>>&& closed_tabs,
+      std::vector<TabAndroid*>&& closed_tabs,
       std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
       std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
           tab_group_visual_data,
@@ -76,7 +75,7 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
 
   // List of indices to close for using BrowserClosing to proxy bulk
   // closure.
-  std::vector<dangling_raw_ptr<TabAndroid>> closed_tabs_;
+  std::vector<TabAndroid*> closed_tabs_;
 
   // Maps tab IDs to tab groups.
   std::map<int, tab_groups::TabGroupId> tab_id_to_tab_group_;

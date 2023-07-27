@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -639,8 +638,8 @@ void StreamProvider::CompleteInitialize() {
   std::move(init_done_callback_).Run(PIPELINE_OK);
 }
 
-std::vector<dangling_raw_ptr<DemuxerStream>> StreamProvider::GetAllStreams() {
-  std::vector<dangling_raw_ptr<DemuxerStream>> streams;
+std::vector<DemuxerStream*> StreamProvider::GetAllStreams() {
+  std::vector<DemuxerStream*> streams;
   if (audio_stream_)
     streams.push_back(audio_stream_.get());
   if (video_stream_)

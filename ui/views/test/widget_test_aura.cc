@@ -4,7 +4,6 @@
 
 #include "ui/views/test/widget_test.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -30,7 +29,7 @@ namespace {
 // When a layer is found, it is set to null. Returns once |second| is found, or
 // when there are no children left.
 // Note that ui::Layer children are bottom-to-top stacking order.
-bool FindLayersInOrder(const std::vector<dangling_raw_ptr<ui::Layer>>& children,
+bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
                        const ui::Layer** first,
                        const ui::Layer** second) {
   for (const ui::Layer* child : children) {

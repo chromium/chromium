@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -119,9 +118,9 @@ std::vector<AutofillEntry> GetAllAutofillEntries(AutofillWebDataService* wds) {
 bool ProfilesMatchImpl(
     const absl::optional<unsigned int>& expected_count,
     int profile_a,
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& autofill_profiles_a,
+    const std::vector<AutofillProfile*>& autofill_profiles_a,
     int profile_b,
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& autofill_profiles_b) {
+    const std::vector<AutofillProfile*>& autofill_profiles_b) {
   if (expected_count.has_value() &&
       autofill_profiles_a.size() != *expected_count) {
     DVLOG(1) << "Profile " << profile_a
@@ -333,8 +332,7 @@ void UpdateProfile(int profile,
   autofill_helper::SetProfiles(profile, &profiles);
 }
 
-std::vector<dangling_raw_ptr<AutofillProfile>> GetAllAutoFillProfiles(
-    int profile) {
+std::vector<AutofillProfile*> GetAllAutoFillProfiles(int profile) {
   PersonalDataLoadedObserverMock personal_data_observer;
   base::RunLoop run_loop;
 
@@ -376,9 +374,9 @@ size_t GetKeyCount(int profile) {
 }
 
 bool ProfilesMatch(int profile_a, int profile_b) {
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& autofill_profiles_a =
+  const std::vector<AutofillProfile*>& autofill_profiles_a =
       GetAllAutoFillProfiles(profile_a);
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& autofill_profiles_b =
+  const std::vector<AutofillProfile*>& autofill_profiles_b =
       GetAllAutoFillProfiles(profile_b);
   return ProfilesMatchImpl(absl::nullopt, profile_a, autofill_profiles_a,
                            profile_b, autofill_profiles_b);
@@ -453,9 +451,9 @@ bool AutofillProfileChecker::Wait() {
 
 bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for matching autofill profiles";
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& autofill_profiles_a =
+  const std::vector<AutofillProfile*>& autofill_profiles_a =
       autofill_helper::GetPersonalDataManager(profile_a_)->GetProfiles();
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& autofill_profiles_b =
+  const std::vector<AutofillProfile*>& autofill_profiles_b =
       autofill_helper::GetPersonalDataManager(profile_b_)->GetProfiles();
   return ProfilesMatchImpl(expected_count_, profile_a_, autofill_profiles_a,
                            profile_b_, autofill_profiles_b);

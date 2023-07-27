@@ -7,7 +7,6 @@
 #include <iterator>
 #include <set>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -33,12 +32,11 @@ using data_util::bit_field_type_groups::kEmail;
 using data_util::bit_field_type_groups::kName;
 using data_util::bit_field_type_groups::kPhone;
 
-LabelFormatter::LabelFormatter(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
-    const std::string& app_locale,
-    ServerFieldType focused_field_type,
-    uint32_t groups,
-    const ServerFieldTypeSet& field_types)
+LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
+                               const std::string& app_locale,
+                               ServerFieldType focused_field_type,
+                               uint32_t groups,
+                               const ServerFieldTypeSet& field_types)
     : profiles_(profiles),
       app_locale_(app_locale),
       focused_field_type_(focused_field_type),
@@ -84,7 +82,7 @@ std::vector<std::u16string> LabelFormatter::GetLabels() const {
 
 // static
 std::unique_ptr<LabelFormatter> LabelFormatter::Create(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     const ServerFieldTypeSet& field_types) {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/identity.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
@@ -46,7 +45,7 @@ std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state);
 // |state|.  If |display_power| is non-NULL, it is updated to contain the
 // on/off state of each corresponding entry in |displays|.
 DISPLAY_MANAGER_EXPORT int GetDisplayPower(
-    const std::vector<dangling_raw_ptr<DisplaySnapshot>>& displays,
+    const std::vector<DisplaySnapshot*>& displays,
     chromeos::DisplayPowerState state,
     std::vector<bool>* display_power);
 

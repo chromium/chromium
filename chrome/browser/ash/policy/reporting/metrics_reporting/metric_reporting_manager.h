@@ -85,7 +85,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void DeviceSettingsUpdated() override;
 
   // EventDrivenTelemetryCollectorPool:
-  std::vector<dangling_raw_ptr<CollectorBase>> GetTelemetryCollectors(
+  std::vector<CollectorBase*> GetTelemetryCollectors(
       MetricEventType event_type) override;
 
  private:
@@ -274,8 +274,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   base::TimeDelta GetUploadDelay() const;
 
-  std::vector<dangling_raw_ptr<CollectorBase>>
-  GetTelemetryCollectorsFromSetting(std::string_view setting_name);
+  std::vector<CollectorBase*> GetTelemetryCollectorsFromSetting(
+      std::string_view setting_name);
 
   CrosReportingSettings reporting_settings_;
   std::unique_ptr<UserReportingSettings> user_reporting_settings_;

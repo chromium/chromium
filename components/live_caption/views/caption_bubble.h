@@ -233,7 +233,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   void LogSessionEvent(SessionEvent event);
 
-  std::vector<dangling_raw_ptr<views::View>> GetButtons();
+  std::vector<views::View*> GetButtons();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

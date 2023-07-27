@@ -52,15 +52,13 @@ WebAppContentSettingsContainer::WebAppContentSettingsContainer(
 WebAppContentSettingsContainer::~WebAppContentSettingsContainer() = default;
 
 void WebAppContentSettingsContainer::UpdateContentSettingViewsVisibility() {
-  for (ContentSettingImageView* v : content_setting_views_) {
+  for (auto* v : content_setting_views_)
     v->Update();
-  }
 }
 
 void WebAppContentSettingsContainer::SetIconColor(SkColor icon_color) {
-  for (ContentSettingImageView* v : content_setting_views_) {
+  for (auto* v : content_setting_views_)
     v->SetIconColor(icon_color);
-  }
 }
 
 void WebAppContentSettingsContainer::SetUpForFadeIn() {

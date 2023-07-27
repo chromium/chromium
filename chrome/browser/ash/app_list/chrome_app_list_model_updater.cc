@@ -17,7 +17,6 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_sync_model_sanitizer.h"
@@ -328,17 +327,16 @@ void ChromeAppListModelUpdater::OnFeatureEngagementTrackerInitialized(
 }
 
 void ChromeAppListModelUpdater::PublishSearchResults(
-    const std::vector<dangling_raw_ptr<ChromeSearchResult>>& results,
+    const std::vector<ChromeSearchResult*>& results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {
   published_results_ = results;
 
-  for (ChromeSearchResult* const result : results) {
+  for (auto* const result : results)
     result->set_model_updater(this);
-  }
 
   std::vector<std::unique_ptr<ash::SearchResult>> ash_results;
   std::vector<std::unique_ptr<ash::SearchResultMetadata>> result_data;
-  for (ChromeSearchResult* result : results) {
+  for (auto* result : results) {
     auto ash_result = std::make_unique<ash::SearchResult>();
     ash_result->SetMetadata(result->CloneMetadata());
     ash_results.push_back(std::move(ash_result));
@@ -351,7 +349,7 @@ void ChromeAppListModelUpdater::ClearSearchResults() {
   search_model_.DeleteAllResults();
 }
 
-std::vector<dangling_raw_ptr<ChromeSearchResult>>
+std::vector<ChromeSearchResult*>
 ChromeAppListModelUpdater::GetPublishedSearchResultsForTest() {
   return published_results_;
 }

@@ -240,8 +240,7 @@ class LocationBarView : public LocationBar,
       security_state::SecurityLevel security_level) const override;
   ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
                                      on_icon_fetched) const override;
-  std::vector<dangling_raw_ptr<ContentSettingImageView>>&
-  GetContentSettingViewsForTest() {
+  std::vector<ContentSettingImageView*>& GetContentSettingViewsForTest() {
     return content_setting_views_;
   }
 
@@ -261,8 +260,7 @@ class LocationBarView : public LocationBar,
                            OmniboxViewViewsSize);
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,
                            IMEInlineAutocompletePosition);
-  using ContentSettingViews =
-      std::vector<dangling_raw_ptr<ContentSettingImageView>>;
+  using ContentSettingViews = std::vector<ContentSettingImageView*>;
 
 #if BUILDFLAG(IS_MAC)
   // Manage a subscription to GeolocationManager, which may

@@ -297,9 +297,7 @@ DictationHintView::DictationHintView() {
     // should use the primary text color.
     ui::ColorId color_id =
         i == 0 ? kColorAshTextColorSecondary : kColorAshTextColorPrimary;
-    auto* label = labels_[i].get();
-    AddChildView(CreateLabelView(&label, std::u16string(), color_id));
-    labels_[i] = label;
+    AddChildView(CreateLabelView(&labels_[i], std::u16string(), color_id));
   }
 }
 

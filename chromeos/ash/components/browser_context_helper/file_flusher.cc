@@ -166,7 +166,7 @@ void FileFlusher::Job::FinishOnUIThread() {
 FileFlusher::FileFlusher() = default;
 
 FileFlusher::~FileFlusher() {
-  for (ash::FileFlusher::Job* job : jobs_) {
+  for (auto* job : jobs_) {
     job->Cancel();
   }
 }
@@ -174,7 +174,7 @@ FileFlusher::~FileFlusher() {
 void FileFlusher::RequestFlush(const base::FilePath& path,
                                bool recursive,
                                base::OnceClosure callback) {
-  for (ash::FileFlusher::Job* job : jobs_) {
+  for (auto* job : jobs_) {
     if (path == job->path() || path.IsParent(job->path())) {
       job->Cancel();
     }
@@ -201,7 +201,7 @@ void FileFlusher::ScheduleJob() {
     return;
   }
 
-  auto* job = jobs_.front().get();
+  auto* job = jobs_.front();
   if (!job->started()) {
     job->Start();
   }

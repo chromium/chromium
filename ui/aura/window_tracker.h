@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window_observer.h"
 
@@ -19,7 +18,7 @@ class AURA_EXPORT WindowTracker : public WindowObserver {
  public:
   // A vector is used for tracking the windows (instead of a set) as some places
   // care about ordering.
-  using WindowList = std::vector<dangling_raw_ptr<Window>>;
+  using WindowList = std::vector<Window*>;
 
   explicit WindowTracker(const WindowList& windows);
   WindowTracker();

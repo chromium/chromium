@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -91,10 +90,9 @@ const std::vector<base::FilePath> GetTestFiles() {
 }
 
 // Serializes the |profiles| into a string.
-std::string SerializeProfiles(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles) {
+std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
   std::string result;
-  for (autofill::AutofillProfile* profile : profiles) {
+  for (auto* profile : profiles) {
     result += kProfileSeparator;
     result += "\n";
     for (const ServerFieldType& type : kProfileFieldTypes) {
@@ -253,7 +251,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
     }
   }
 
-  std::vector<dangling_raw_ptr<AutofillProfile>> imported_profiles =
+  std::vector<AutofillProfile*> imported_profiles =
       personal_data_.GetProfiles();
   // To ensure a consistent order with the output files, sort the profiles by
   // modification date. This corresponds to the order in which the profiles

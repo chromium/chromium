@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
@@ -100,8 +99,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
   ASSERT_TRUE(SetupSyncAndInitialize());
 
   // Grab the current card on the first client.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1u, credit_cards.size());
   CreditCard card = *credit_cards[0];
 
@@ -137,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   fake_server::FakeServerHttpPostProvider::DisableNetwork();
 
   // Grab the current card on the first client.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1u, credit_cards.size());
   CreditCard card = *credit_cards[0];
 
@@ -180,8 +177,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
 
   // Increase use stats on both clients, make use count higher on the first
   // client and use date higher on the second client.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1u, credit_cards.size());
   CreditCard card = *credit_cards[0];
   ASSERT_EQ(1u, card.use_count());
@@ -346,8 +342,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   ASSERT_TRUE(SetupSyncAndInitialize());
 
   // Grab the current card on the first client.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1U, credit_cards.size());
   CreditCard card = *credit_cards[0];
   ASSERT_TRUE(card.billing_address_id().empty());
@@ -376,8 +371,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   ASSERT_TRUE(SetupSyncAndInitialize());
 
   // Grab the current card on the first client.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1U, credit_cards.size());
   CreditCard card = *credit_cards[0];
 
@@ -407,8 +401,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupSyncAndInitialize());
 
   // Grab the current card on the first client.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1U, credit_cards.size());
   CreditCard card = *credit_cards[0];
   ASSERT_EQ(kDefaultBillingAddressID, card.billing_address_id());
@@ -442,8 +435,7 @@ IN_PROC_BROWSER_TEST_F(
   fake_server::FakeServerHttpPostProvider::DisableNetwork();
 
   // Update the billing address id on both clients to different local ids.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1u, credit_cards.size());
   CreditCard card = *credit_cards[0];
   ASSERT_EQ(kDefaultBillingAddressID, card.billing_address_id());
@@ -507,14 +499,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
   EXPECT_TRUE(server_addresses[0]->has_converted());
 
   // Make sure they have the same local profile.
-  std::vector<dangling_raw_ptr<AutofillProfile>> local_addresses_0 =
-      GetLocalProfiles(0);
+  std::vector<AutofillProfile*> local_addresses_0 = GetLocalProfiles(0);
   ASSERT_EQ(1u, local_addresses_0.size());
   // Make a copy in case it gets freed later.
   AutofillProfile local_address_0 = *local_addresses_0[0];
 
-  std::vector<dangling_raw_ptr<AutofillProfile>> local_addresses_1 =
-      GetLocalProfiles(1);
+  std::vector<AutofillProfile*> local_addresses_1 = GetLocalProfiles(1);
   ASSERT_EQ(1u, local_addresses_1.size());
   EXPECT_TRUE(local_address_0.EqualsForSyncPurposes(*local_addresses_1[0]));
 }
@@ -589,8 +579,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
   ASSERT_TRUE(AwaitQuiescence());
 
   // Grab the current card on the first client.
-  std::vector<dangling_raw_ptr<CreditCard>> credit_cards =
-      GetServerCreditCards(0);
+  std::vector<CreditCard*> credit_cards = GetServerCreditCards(0);
   ASSERT_EQ(1u, credit_cards.size());
   CreditCard card = *credit_cards[0];
 

@@ -41,12 +41,9 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
 
   ~TestNativeDisplayDelegate() override;
 
-  const std::vector<dangling_raw_ptr<DisplaySnapshot>>& outputs() const {
-    return outputs_;
-  }
+  const std::vector<DisplaySnapshot*>& outputs() const { return outputs_; }
 
-  void set_outputs(
-      const std::vector<dangling_raw_ptr<DisplaySnapshot>>& outputs) {
+  void set_outputs(const std::vector<DisplaySnapshot*>& outputs) {
     outputs_ = outputs;
   }
 
@@ -125,7 +122,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
       const std::vector<display::DisplayConfigurationParams>& config_requests);
 
   // Outputs to be returned by GetDisplays().
-  std::vector<dangling_raw_ptr<DisplaySnapshot>> outputs_;
+  std::vector<DisplaySnapshot*> outputs_;
 
   // |max_configurable_pixels_| represents the maximum number of pixels that
   // Configure will support.  Tests can use this to force Configure

@@ -78,7 +78,7 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
       source == DesksSwitchSource::kDeskSwitchTouchpad) {
     type = DeskSwitchAnimationType::kContinuousAnimation;
   }
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
+  for (auto* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
             root, type, starting_desk_index, ending_desk_index, this,
@@ -325,7 +325,7 @@ DeskRemovalAnimation::DeskRemovalAnimation(DesksController* controller,
   DCHECK_EQ(controller_->active_desk(),
             controller_->desks()[desk_to_remove_index_].get());
 
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
+  for (auto* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
             root, DeskSwitchAnimationType::kQuickAnimation,

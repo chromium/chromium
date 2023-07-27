@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,9 +73,9 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
 
   // |filter_predicate| is used to filter out the app webcontents and app
   // browsers results based on their corresponding windows.
-  std::vector<dangling_raw_ptr<content::WebContents>> GetAppWebContents(
+  std::vector<content::WebContents*> GetAppWebContents(
       const ItemFilterPredicate& filter_predicate);
-  std::vector<dangling_raw_ptr<Browser>> GetAppBrowsers(
+  std::vector<Browser*> GetAppBrowsers(
       const ItemFilterPredicate& filter_predicate);
 
   // If an owned item is already active, this function advances to the next item
@@ -107,8 +106,8 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   // The cached lists of open app shown in an application menu. We either cache
   // by the web contents or by the browsers, and this is indicated by the value
   // of |app_menu_cached_by_browsers_|.
-  std::vector<dangling_raw_ptr<content::WebContents>> app_menu_web_contents_;
-  std::vector<dangling_raw_ptr<Browser>> app_menu_browsers_;
+  std::vector<content::WebContents*> app_menu_web_contents_;
+  std::vector<Browser*> app_menu_browsers_;
   bool app_menu_cached_by_browsers_ = false;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;

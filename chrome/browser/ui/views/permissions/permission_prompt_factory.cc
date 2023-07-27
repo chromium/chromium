@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -79,8 +78,7 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
   if (!permissions::PermissionUtil::HasUserGesture(delegate))
     return false;
 
-  std::vector<dangling_raw_ptr<permissions::PermissionRequest>> requests =
-      delegate->Requests();
+  std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request
@@ -102,8 +100,7 @@ bool ShouldCurrentRequestUseQuietChip(
     return false;
   }
 
-  std::vector<dangling_raw_ptr<permissions::PermissionRequest>> requests =
-      delegate->Requests();
+  std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request->request_type() ==

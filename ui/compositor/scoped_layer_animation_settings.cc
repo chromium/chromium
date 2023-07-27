@@ -105,9 +105,8 @@ void AddScopedDeferredPaintingObserverRecursive(
     ui::ScopedLayerAnimationSettings* settings) {
   auto observer = std::make_unique<ScopedDeferredPainting>(layer);
   AddObserverToSettings(settings, std::move(observer));
-  for (ui::Layer* child : layer->children()) {
+  for (auto* child : layer->children())
     AddScopedDeferredPaintingObserverRecursive(child, settings);
-  }
 }
 
 }  // namespace

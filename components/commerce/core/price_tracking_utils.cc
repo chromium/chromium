@@ -303,7 +303,7 @@ void GetAllPriceTrackedBookmarks(
             }
 
             std::vector<const bookmarks::BookmarkNode*> tracked_bookmarks;
-            for (const bookmarks::BookmarkNode* node : shopping_bookmarks) {
+            for (const auto* node : shopping_bookmarks) {
               std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
                   power_bookmarks::GetNodePowerBookmarkMeta(model.get(), node);
 

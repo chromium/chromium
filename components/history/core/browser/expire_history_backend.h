@@ -44,8 +44,7 @@ class ExpiringVisitsReader {
                     VisitVector* visits, int max_visits) const = 0;
 };
 
-typedef std::vector<dangling_raw_ptr<const ExpiringVisitsReader>>
-    ExpiringVisitsReaders;
+typedef std::vector<const ExpiringVisitsReader*> ExpiringVisitsReaders;
 
 namespace internal {
 // The minimum number of days since last use for an icon to be considered old.

@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -56,9 +55,8 @@ void RecordResetPending(bool value, Profile* profile) {
   prefs->SetBoolean(prefs::kChromeCleanerResetPending, value);
 }
 
-bool CopyProfilesToReset(
-    const std::vector<Profile*>& profiles,
-    std::vector<dangling_raw_ptr<Profile>>* profiles_to_reset) {
+bool CopyProfilesToReset(const std::vector<Profile*>& profiles,
+                         std::vector<Profile*>* profiles_to_reset) {
   base::ranges::copy_if(profiles, std::back_inserter(*profiles_to_reset),
                         &ResetPending);
   return !profiles_to_reset->empty();
@@ -70,7 +68,7 @@ bool CopyProfilesToReset(
 class SettingsResetter : public base::RefCounted<SettingsResetter> {
  public:
   SettingsResetter(
-      std::vector<dangling_raw_ptr<Profile>> profiles_to_reset,
+      std::vector<Profile*> profiles_to_reset,
       std::unique_ptr<PostCleanupSettingsResetter::Delegate> delegate,
       base::OnceClosure done_callback);
 
@@ -99,7 +97,7 @@ class SettingsResetter : public base::RefCounted<SettingsResetter> {
   void OnResetCompleted(Profile* profile);
 
   // The profiles to be reset.
-  std::vector<dangling_raw_ptr<Profile>> profiles_to_reset_;
+  std::vector<Profile*> profiles_to_reset_;
 
   // The ProfileResetter objects that are used to reset each profile. We need to
   // hold on to these until each reset operation has been completed.
@@ -119,7 +117,7 @@ class SettingsResetter : public base::RefCounted<SettingsResetter> {
 };
 
 SettingsResetter::SettingsResetter(
-    std::vector<dangling_raw_ptr<Profile>> profiles_to_reset,
+    std::vector<Profile*> profiles_to_reset,
     std::unique_ptr<PostCleanupSettingsResetter::Delegate> delegate,
     base::OnceClosure done_callback)
     : profiles_to_reset_(std::move(profiles_to_reset)),
@@ -231,7 +229,7 @@ void PostCleanupSettingsResetter::ResetTaggedProfiles(
   DCHECK(IsEnabled());
   DCHECK(delegate);
 
-  std::vector<dangling_raw_ptr<Profile>> profiles_to_reset;
+  std::vector<Profile*> profiles_to_reset;
   if (!CopyProfilesToReset(profiles, &profiles_to_reset) ||
       !CleanupCompletedFromRegistry()) {
     std::move(done_callback).Run();

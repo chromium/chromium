@@ -42,16 +42,15 @@ using DoBookmarkDragCallback =
                             int operation)>;
 
 struct BookmarkDragParams {
-  BookmarkDragParams(
-      std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodes,
-      int drag_node_index,
-      content::WebContents* web_contents,
-      ui::mojom::DragEventSource source,
-      gfx::Point start_point);
+  BookmarkDragParams(std::vector<const bookmarks::BookmarkNode*> nodes,
+                     int drag_node_index,
+                     content::WebContents* web_contents,
+                     ui::mojom::DragEventSource source,
+                     gfx::Point start_point);
   ~BookmarkDragParams();
 
   // The bookmark nodes to be dragged.
-  std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodes;
+  std::vector<const bookmarks::BookmarkNode*> nodes;
 
   // The index of the main dragged node.
   int drag_node_index;

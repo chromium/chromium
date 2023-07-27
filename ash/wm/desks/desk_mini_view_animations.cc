@@ -18,7 +18,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -118,9 +117,9 @@ void FadeInView(views::View* view,
 }
 
 // See details at AnimateView.
-void AnimateMiniViews(std::vector<dangling_raw_ptr<DeskMiniView>> mini_views,
+void AnimateMiniViews(std::vector<DeskMiniView*> mini_views,
                       const gfx::Transform& begin_transform) {
-  for (ash::DeskMiniView* mini_view : mini_views) {
+  for (auto* mini_view : mini_views) {
     AnimateView(mini_view, begin_transform);
   }
 }
@@ -384,8 +383,8 @@ void AnimateCrOSNextDeskIconButtonScale(CrOSNextDeskIconButton* button,
 void PerformNewDeskMiniViewAnimation(
     DeskBarViewBase* bar_view,
     std::vector<DeskMiniView*> new_mini_views,
-    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_left,
-    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_right,
+    std::vector<DeskMiniView*> mini_views_left,
+    std::vector<DeskMiniView*> mini_views_right,
     int shift_x) {
   if (chromeos::features::IsJellyrollEnabled()) {
     DCHECK(bar_view->new_desk_button());
@@ -450,8 +449,8 @@ void PerformNewDeskMiniViewAnimation(
 void PerformRemoveDeskMiniViewAnimation(
     DeskBarViewBase* bar_view,
     DeskMiniView* removed_mini_view,
-    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_left,
-    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_right,
+    std::vector<DeskMiniView*> mini_views_left,
+    std::vector<DeskMiniView*> mini_views_right,
     int shift_x) {
   gfx::Transform mini_views_left_begin_transform;
   mini_views_left_begin_transform.Translate(shift_x, 0);
@@ -491,9 +490,8 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(
     DeskBarViewBase* bar_view) {
   AnimateDeskBarBounds(bar_view, /*to_zero_state=*/false);
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
-  for (ash::DeskMiniView* mini_view : bar_view->mini_views()) {
+  for (auto* mini_view : bar_view->mini_views())
     ScaleUpAndFadeInView(mini_view, bar_x_center);
-  }
 
   ScaleUpAndFadeInView(bar_view->expanded_state_new_desk_button(),
                        bar_x_center);
@@ -524,7 +522,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
   AnimateDeskBarBounds(bar_view, /*to_zero_state=*/false);
 
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
-  for (ash::DeskMiniView* mini_view : bar_view->mini_views()) {
+  for (auto* mini_view : bar_view->mini_views()) {
     ScaleUpAndFadeInView(mini_view, bar_x_center);
   }
 
@@ -545,8 +543,8 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
 
 void PerformExpandedStateToZeroStateMiniViewAnimation(
     DeskBarViewBase* bar_view,
-    std::vector<dangling_raw_ptr<DeskMiniView>> removed_mini_views) {
-  for (ash::DeskMiniView* mini_view : removed_mini_views) {
+    std::vector<DeskMiniView*> removed_mini_views) {
+  for (auto* mini_view : removed_mini_views) {
     AnimateDeskMiniViewRemove(mini_view, /*to_zero_state=*/true);
   }
   AnimateDeskBarBounds(bar_view, /*to_zero_state=*/true);
@@ -565,7 +563,7 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
 void PerformReorderDeskMiniViewAnimation(
     int old_index,
     int new_index,
-    const std::vector<dangling_raw_ptr<DeskMiniView>>& mini_views) {
+    const std::vector<DeskMiniView*>& mini_views) {
   const int views_size = static_cast<int>(mini_views.size());
 
   DCHECK_GE(old_index, 0);
@@ -592,12 +590,12 @@ void PerformReorderDeskMiniViewAnimation(
   desks_transform.Translate(shift_x, 0);
 
   auto start_iter = mini_views.begin();
-  AnimateMiniViews(std::vector<dangling_raw_ptr<DeskMiniView>>(
-                       start_iter + start_index, start_iter + end_index),
+  AnimateMiniViews(std::vector<DeskMiniView*>(start_iter + start_index,
+                                              start_iter + end_index),
                    desks_transform);
 
   // Animate the mini view being reordered if it is visible.
-  auto* reorder_view = mini_views[new_index].get();
+  auto* reorder_view = mini_views[new_index];
   ui::Layer* layer = reorder_view->layer();
   if (layer->opacity() == 0.0f)
     return;
@@ -617,7 +615,7 @@ void PerformReorderDeskMiniViewAnimation(
 }
 
 void PerformLibraryButtonVisibilityAnimation(
-    const std::vector<dangling_raw_ptr<DeskMiniView>>& mini_views,
+    const std::vector<DeskMiniView*>& mini_views,
     views::View* new_desk_button,
     int shift_x) {
   gfx::Transform translation;

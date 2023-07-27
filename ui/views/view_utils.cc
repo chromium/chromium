@@ -60,9 +60,8 @@ bool ViewDebugWrapperImpl::GetEnabled() {
 
 std::vector<debug::ViewDebugWrapper*> ViewDebugWrapperImpl::GetChildren() {
   children_.clear();
-  for (views::View* child : view_->children()) {
+  for (auto* child : view_->children())
     children_.push_back(std::make_unique<ViewDebugWrapperImpl>(child));
-  }
 
   std::vector<debug::ViewDebugWrapper*> child_ptrs;
   for (auto& child : children_)

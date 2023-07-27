@@ -35,9 +35,8 @@ int CountOffscreenButtons(const ui::AXTree* tree, const ui::AXNode* node) {
       count++;
   }
 
-  for (const ui::AXNode* child : node->children()) {
+  for (const auto* child : node->children())
     count += CountOffscreenButtons(tree, child);
-  }
 
   return count;
 }

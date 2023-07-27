@@ -388,9 +388,8 @@ DownloadMetadataManager::ManagerContext::ManagerContext(
   // Observe all pre-existing items in the manager.
   content::DownloadManager::DownloadVector items;
   download_manager->GetAllDownloads(&items);
-  for (download::DownloadItem* download_item : items) {
+  for (auto* download_item : items)
     download_item->AddObserver(this);
-  }
 
   // Start the asynchronous task to read the persistent metadata.
   ReadMetadata();
@@ -401,9 +400,8 @@ void DownloadMetadataManager::ManagerContext::Detach(
   // Stop observing all items belonging to the manager.
   content::DownloadManager::DownloadVector items;
   download_manager->GetAllDownloads(&items);
-  for (download::DownloadItem* download_item : items) {
+  for (auto* download_item : items)
     download_item->RemoveObserver(this);
-  }
 
   // Delete the instance immediately if there's no work to process after a
   // pending read completes.

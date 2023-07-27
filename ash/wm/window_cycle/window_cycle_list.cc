@@ -89,9 +89,8 @@ WindowCycleList::WindowCycleList(const WindowList& windows, bool same_app_only)
     MakeSameAppOnly();
   }
 
-  for (aura::Window* window : windows_) {
+  for (auto* window : windows_)
     window->AddObserver(this);
-  }
 
   if (ShouldShowUi()) {
     // Disable the tab scrubber so three finger scrolling doesn't scrub tabs as
@@ -113,9 +112,8 @@ WindowCycleList::~WindowCycleList() {
 
   Shell::Get()->shell_delegate()->SetTabScrubberChromeOSEnabled(true);
 
-  for (aura::Window* window : windows_) {
+  for (auto* window : windows_)
     window->RemoveObserver(this);
-  }
 
   if (cycle_ui_widget_)
     cycle_ui_widget_->Close();
@@ -158,9 +156,8 @@ void WindowCycleList::ReplaceWindows(const WindowList& windows) {
     MakeSameAppOnly();
   }
 
-  for (aura::Window* new_window : windows_) {
+  for (auto* new_window : windows_)
     new_window->AddObserver(this);
-  }
 
   if (cycle_view_)
     cycle_view_->UpdateWindows(windows_);
@@ -294,7 +291,7 @@ void WindowCycleList::OnWindowDestroying(aura::Window* window) {
 
   if (cycle_view_) {
     auto* new_target_window =
-        windows_.empty() ? nullptr : windows_[current_index_].get();
+        windows_.empty() ? nullptr : windows_[current_index_];
     cycle_view_->HandleWindowDestruction(window, new_target_window);
 
     if (windows_.empty()) {
@@ -320,7 +317,7 @@ void WindowCycleList::OnDisplayMetricsChanged(const display::Display& display,
 }
 
 void WindowCycleList::RemoveAllWindows() {
-  for (aura::Window* window : windows_) {
+  for (auto* window : windows_) {
     window->RemoveObserver(this);
 
     if (cycle_view_)

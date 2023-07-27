@@ -12,7 +12,6 @@
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/bad_message.h"
@@ -255,7 +254,7 @@ void ContentAutofillDriver::UndoAutofill(
 }
 
 void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
-    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
+    const std::vector<FormStructure*>& forms) {
   std::vector<FormDataPredictions> type_predictions =
       FormStructure::GetFieldTypePredictions(forms);
   // TODO(crbug.com/1185232) Send the FormDataPredictions object only if the

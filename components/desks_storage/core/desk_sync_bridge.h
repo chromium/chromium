@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -107,8 +106,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // Notify all observers of any `new_entries` when they are added/updated
   // via sync.
   void NotifyRemoteDeskTemplateAddedOrUpdated(
-      const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>&
-          new_entries);
+      const std::vector<const ash::DeskTemplate*>& new_entries);
 
   // Notify all observers when the entries with `uuids` have been removed via
   // sync or disabling sync locally.

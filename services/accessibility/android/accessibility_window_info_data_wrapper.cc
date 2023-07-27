@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/notreached.h"
 #include "chrome/grit/generated_resources.h"
@@ -161,8 +160,7 @@ std::string AccessibilityWindowInfoDataWrapper::ComputeAXName(
 }
 
 void AccessibilityWindowInfoDataWrapper::GetChildren(
-    std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>* children)
-    const {
+    std::vector<AccessibilityInfoDataWrapper*>* children) const {
   // Populate the children vector by combining the child window IDs with the
   // root node ID.
   if (window_ptr_->int_list_properties) {

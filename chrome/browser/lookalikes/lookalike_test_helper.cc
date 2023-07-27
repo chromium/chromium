@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
-#include "base/memory/raw_ptr.h"
 
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
@@ -46,7 +45,7 @@ void LookalikeTestHelper::TearDownLookalikeTestParams() {
 
 void LookalikeTestHelper::CheckSafetyTipUkmCount(
     size_t expected_event_count) const {
-  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
+  std::vector<const ukm::mojom::UkmEntry*> entries =
       ukm_recorder_->GetEntriesByName(
           ukm::builders::Security_SafetyTip::kEntryName);
   ASSERT_EQ(expected_event_count, entries.size());
@@ -54,7 +53,7 @@ void LookalikeTestHelper::CheckSafetyTipUkmCount(
 
 void LookalikeTestHelper::CheckInterstitialUkmCount(
     size_t expected_event_count) const {
-  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
+  std::vector<const ukm::mojom::UkmEntry*> entries =
       ukm_recorder_->GetEntriesByName(
           ukm::builders::LookalikeUrl_NavigationSuggestion::kEntryName);
   ASSERT_EQ(expected_event_count, entries.size());

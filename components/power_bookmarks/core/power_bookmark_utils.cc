@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/i18n/string_search.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -208,8 +207,7 @@ void GetBookmarksMatchingProperties(
   if (query.url) {
     // Shortcut into the BookmarkModel if searching for URL.
     GURL url(*query.url);
-    std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>>
-        url_matched_nodes;
+    std::vector<const bookmarks::BookmarkNode*> url_matched_nodes;
     if (url.is_valid())
       model->GetNodesByURL(url, &url_matched_nodes);
     bookmarks::VectorIterator iterator(&url_matched_nodes);

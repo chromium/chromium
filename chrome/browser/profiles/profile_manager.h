@@ -577,7 +577,7 @@ class ProfileManager : public Profile::Delegate {
   std::map<Profile*, int> browser_counts_;
   // On startup we launch the active profiles in the order they became active
   // during the last run. This is why they are kept in a list, not in a set.
-  std::vector<dangling_raw_ptr<Profile>> active_profiles_;
+  std::vector<Profile*> active_profiles_;
   bool closing_all_browsers_ = false;
 
   // Tracks whether the the list of last opened Profiles has been updated for

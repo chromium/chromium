@@ -90,7 +90,7 @@ class RefreshRateThrottleControllerTest : public AshTestBase {
  protected:
   void SetUpDisplays(
       const std::vector<std::unique_ptr<DisplaySnapshot>>& snapshots) {
-    std::vector<dangling_raw_ptr<DisplaySnapshot>> outputs;
+    std::vector<DisplaySnapshot*> outputs;
     for (const std::unique_ptr<DisplaySnapshot>& snapshot : snapshots)
       outputs.push_back(snapshot.get());
 

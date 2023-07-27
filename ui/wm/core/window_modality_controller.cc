@@ -228,9 +228,8 @@ void WindowModalityController::CancelTouchesOnTransientWindowTree(
     aura::Window* parent = que.front();
     que.pop();
     blocked_consumers.emplace_back(parent);
-    for (aura::Window* w : wm::GetTransientChildren(parent)) {
+    for (auto* w : wm::GetTransientChildren(parent))
       que.emplace(w);
-    }
   }
 
   // Cancel touches on all the transient windows.

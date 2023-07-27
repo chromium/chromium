@@ -76,8 +76,7 @@ class DecryptingMediaResourceTest : public testing::Test {
   }
 
   bool HasEncryptedStream() {
-    for (media::DemuxerStream* stream :
-         decrypting_media_resource_->GetAllStreams()) {
+    for (auto* stream : decrypting_media_resource_->GetAllStreams()) {
       if ((stream->type() == DemuxerStream::AUDIO &&
            stream->audio_decoder_config().is_encrypted()) ||
           (stream->type() == DemuxerStream::VIDEO &&
@@ -92,8 +91,8 @@ class DecryptingMediaResourceTest : public testing::Test {
     streams_.push_back(CreateMockDemuxerStream(type, encrypted));
   }
 
-  std::vector<dangling_raw_ptr<DemuxerStream>> GetAllStreams() {
-    std::vector<dangling_raw_ptr<DemuxerStream>> streams;
+  std::vector<DemuxerStream*> GetAllStreams() {
+    std::vector<DemuxerStream*> streams;
 
     for (auto& stream : streams_) {
       streams.push_back(stream.get());

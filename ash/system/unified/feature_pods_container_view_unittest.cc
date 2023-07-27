@@ -13,7 +13,6 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -92,7 +91,7 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
     return preferred_size_changed_count_;
   }
 
-  std::vector<dangling_raw_ptr<FeaturePodButton>> buttons_;
+  std::vector<FeaturePodButton*> buttons_;
 
  private:
   std::unique_ptr<FeaturePodsContainerView> container_;
@@ -115,9 +114,8 @@ TEST_F(FeaturePodsContainerViewTest, ExpandedAndCollapsed) {
   EXPECT_EQ(buttons_[0]->x(), buttons_[kUnifiedFeaturePodItemsInRow]->x());
   EXPECT_LT(buttons_[0]->y(), buttons_[kUnifiedFeaturePodItemsInRow]->y());
   // All buttons are visible.
-  for (ash::FeaturePodButton* button : buttons_) {
+  for (auto* button : buttons_)
     EXPECT_TRUE(button->GetVisible());
-  }
 
   container()->SetExpandedAmount(0.0);
 

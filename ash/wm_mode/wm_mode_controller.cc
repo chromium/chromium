@@ -135,9 +135,8 @@ void WmModeController::UpdateDimmers() {
     return;
   }
 
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
+  for (auto* root : Shell::GetAllRootWindows())
     dimmers_[root] = CreateDimmerForRoot(root);
-  }
 }
 
 void WmModeController::UpdateTrayButtons() {

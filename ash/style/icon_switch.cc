@@ -80,10 +80,9 @@ void IconSwitch::OnButtonToggled(IconButton* button) {
   if (!button->toggled())
     return;
 
-  for (ash::IconButton* b : buttons_) {
+  for (auto* b : buttons_)
     if (b != button)
       b->SetToggled(false);
-  }
 }
 
 void IconSwitch::OnButtonClicked(IconButton* button) {
@@ -93,9 +92,8 @@ void IconSwitch::OnButtonClicked(IconButton* button) {
 void IconSwitch::OnEnableChanged() {
   const bool enabled = GetEnabled();
 
-  for (ash::IconButton* button : buttons_) {
+  for (auto* button : buttons_)
     button->SetEnabled(enabled);
-  }
 
   if (auto* background = GetBackground())
     background->SetNativeControlColor(GetBackgroundColor());

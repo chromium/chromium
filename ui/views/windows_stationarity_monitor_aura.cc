@@ -16,14 +16,13 @@ namespace views {
 
 WindowsStationarityMonitorAura::WindowsStationarityMonitorAura() {
   aura::Env::GetInstance()->AddObserver(this);
-  for (aura::WindowTreeHost* window_tree_host :
-       aura::Env::GetInstance()->window_tree_hosts()) {
+  for (auto* window_tree_host : aura::Env::GetInstance()->window_tree_hosts()) {
     OnHostInitialized(window_tree_host);
   }
 }
 
 WindowsStationarityMonitorAura::~WindowsStationarityMonitorAura() {
-  for (aura::Window* window : tracked_windows_) {
+  for (auto* window : tracked_windows_) {
     window->RemoveObserver(this);
   }
   aura::Env::GetInstance()->RemoveObserver(this);

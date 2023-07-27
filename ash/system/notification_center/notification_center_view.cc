@@ -22,7 +22,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -486,7 +485,7 @@ void NotificationCenterView::ScrollToTarget() {
       scroll_bar_->GetMaxPosition() - scroller_->GetVisibleRect().y();
 }
 
-std::vector<dangling_raw_ptr<message_center::Notification>>
+std::vector<message_center::Notification*>
 NotificationCenterView::GetStackedNotifications() const {
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.

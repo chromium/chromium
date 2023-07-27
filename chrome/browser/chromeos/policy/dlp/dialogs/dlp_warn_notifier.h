@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
@@ -79,7 +78,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
 
   // List of active widgets. Used in tests to verify that the dialog has or
   // hasn't been shown.
-  std::vector<dangling_raw_ptr<views::Widget>> widgets_;
+  std::vector<views::Widget*> widgets_;
 };
 
 }  // namespace policy

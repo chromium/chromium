@@ -18,8 +18,7 @@ std::ostream& operator<<(std::ostream& out, const AddressComponent& component) {
       << ", value=" << base::UTF16ToUTF8(component.GetValue())
       << ", status=" << static_cast<int>(component.GetVerificationStatus())
       << std::endl;
-  for (const autofill::AddressComponent* sub_component :
-       component.Subcomponents()) {
+  for (const auto* sub_component : component.Subcomponents()) {
     out << "\t" << *sub_component;
   }
   return out;

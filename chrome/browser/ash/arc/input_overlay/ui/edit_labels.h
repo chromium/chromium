@@ -71,7 +71,7 @@ class EditLabels : public views::View {
   // Displays the content in |labels_|.
   raw_ptr<NameTag, DanglingUntriaged> name_tag_ = nullptr;
 
-  std::vector<dangling_raw_ptr<EditLabel>> labels_;
+  std::vector<EditLabel*> labels_;
 
   // It is true that at least one of |labels_| is unassigned.
   bool missing_assign_ = false;

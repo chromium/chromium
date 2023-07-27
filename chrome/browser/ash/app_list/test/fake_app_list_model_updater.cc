@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "extensions/common/constants.h"
@@ -193,7 +192,7 @@ bool FakeAppListModelUpdater::SearchEngineIsGoogle() {
 void FakeAppListModelUpdater::RecalculateWouldTriggerLauncherSearchIph() {}
 
 void FakeAppListModelUpdater::PublishSearchResults(
-    const std::vector<dangling_raw_ptr<ChromeSearchResult>>& results,
+    const std::vector<ChromeSearchResult*>& results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {
   search_results_ = results;
 }

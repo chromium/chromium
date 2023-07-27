@@ -49,7 +49,7 @@ class DynamicRowView : public views::View {
   // views::View:
   void ChildVisibilityChanged(views::View* child) override {
     bool any_visible = false;
-    for (views::View* view : children()) {
+    for (auto* view : children()) {
       any_visible |= view->GetVisible();
     }
     SetVisible(any_visible);

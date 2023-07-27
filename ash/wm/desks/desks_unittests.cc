@@ -281,9 +281,7 @@ class TestObserver : public DesksController::Observer {
 
   ~TestObserver() override = default;
 
-  const std::vector<dangling_raw_ptr<const Desk>>& desks() const {
-    return desks_;
-  }
+  const std::vector<const Desk*>& desks() const { return desks_; }
   int desk_name_changed_notify_counts() const {
     return desk_name_changed_notify_counts_;
   }
@@ -315,7 +313,7 @@ class TestObserver : public DesksController::Observer {
   }
 
  private:
-  std::vector<dangling_raw_ptr<const Desk>> desks_;
+  std::vector<const Desk*> desks_;
 
   int desk_name_changed_notify_counts_ = 0;
 };
@@ -671,7 +669,7 @@ TEST_P(DesksTest, DesksBarViewDeskCreation) {
 
   // Hover over one of the mini_views, and expect that the desk action interface
   // becomes visible.
-  const auto* mini_view = desks_bar_view->mini_views().back().get();
+  const auto* mini_view = desks_bar_view->mini_views().back();
   EXPECT_FALSE(GetDeskActionVisibilityForMiniView(mini_view));
   const gfx::Point mini_view_center =
       mini_view->GetBoundsInScreen().CenterPoint();
@@ -725,7 +723,7 @@ TEST_P(DesksTest, RemoveDeskWithEmptyName) {
   EXPECT_EQ(2u, controller->desks().size());
 
   // Close the newly created desk with the close button.
-  auto* mini_view = desks_bar_view->mini_views().back().get();
+  auto* mini_view = desks_bar_view->mini_views().back();
   CloseDeskFromMiniView(mini_view, event_generator);
   EXPECT_EQ(1u, controller->desks().size());
 }
@@ -1040,7 +1038,7 @@ TEST_P(DesksTest, WindowStackingAfterWindowMoveToAnotherDesk) {
 
   // The global MRU order should be {win0, win3, win2, win1}.
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
+  EXPECT_EQ(std::vector<aura::Window*>(
                 {win0.get(), win3.get(), win2.get(), win1.get()}),
             mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
 
@@ -1048,7 +1046,7 @@ TEST_P(DesksTest, WindowStackingAfterWindowMoveToAnotherDesk) {
   // stacking should match their order in the MRU.
   ActivateDesk(desk_2);
   // The global MRU order is updated to be {win3, win0, win2, win1}.
-  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
+  EXPECT_EQ(std::vector<aura::Window*>(
                 {win3.get(), win0.get(), win2.get(), win1.get()}),
             mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
 
@@ -1242,7 +1240,7 @@ TEST_P(DesksTest, ActivateDeskFromOverview) {
     // Activate desk_4 (last one on the right) by clicking on its mini view.
     const Desk* desk_4 = controller->GetDeskAtIndex(3);
     EXPECT_EQ(0, controller->GetActiveDeskIndex());
-    auto* mini_view = desks_bar_view->mini_views().back().get();
+    auto* mini_view = desks_bar_view->mini_views().back();
     EXPECT_EQ(desk_4, mini_view->desk());
     EXPECT_FALSE(GetDeskActionVisibilityForMiniView(mini_view));
     DeskSwitchAnimationWaiter waiter;
@@ -1335,7 +1333,7 @@ TEST_P(DesksTest, ActivateDeskFromOverviewDualDisplay) {
   // Activate desk_4 (last one on the right) by clicking on its mini view.
   const Desk* desk_4 = controller->GetDeskAtIndex(3);
   EXPECT_FALSE(desk_4->is_active());
-  const auto* mini_view = desks_bar_view->mini_views().back().get();
+  const auto* mini_view = desks_bar_view->mini_views().back();
   const gfx::Point mini_view_center =
       mini_view->GetBoundsInScreen().CenterPoint();
   auto* event_generator = GetEventGenerator();
@@ -1366,8 +1364,7 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
 
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
-                {win0.get(), win2.get(), win1.get()}),
+  EXPECT_EQ(std::vector<aura::Window*>({win0.get(), win2.get(), win1.get()}),
             mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
 
   // Active desk_4 and enter overview mode, and add a single window.
@@ -1389,7 +1386,7 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(4u, desks_bar_view->mini_views().size());
   Desk* desk_1 = controller->GetDeskAtIndex(0);
-  auto* mini_view = desks_bar_view->mini_views().front().get();
+  auto* mini_view = desks_bar_view->mini_views().front();
   EXPECT_EQ(desk_1, mini_view->desk());
 
   // Setup observers of both the active and inactive desks to make sure
@@ -1442,10 +1439,10 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
 
   // Verify that the stacking order is correct (top-most comes last, and
   // top-most is the same as MRU).
-  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
+  EXPECT_EQ(std::vector<aura::Window*>(
                 {win3.get(), win0.get(), win2.get(), win1.get()}),
             mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
-  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
+  EXPECT_EQ(std::vector<aura::Window*>(
                 {win1.get(), win2.get(), win0.get(), win3.get()}),
             desk_4->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow())
                 ->children());
@@ -1475,7 +1472,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
 
   // The MRU across all desks is now {win2, win3, win0, win1}.
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
+  EXPECT_EQ(std::vector<aura::Window*>(
                 {win2.get(), win3.get(), win0.get(), win1.get()}),
             mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
 
@@ -1489,7 +1486,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
-  auto* mini_view = desks_bar_view->mini_views().back().get();
+  auto* mini_view = desks_bar_view->mini_views().back();
   EXPECT_EQ(desk_2, mini_view->desk());
 
   // Setup observers of both the active and inactive desks to make sure
@@ -1530,7 +1527,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win3.get()));
 
   // The new MRU order is {win0, win1, win2, win3}.
-  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
+  EXPECT_EQ(std::vector<aura::Window*>(
                 {win0.get(), win1.get(), win2.get(), win3.get()}),
             mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win0.get()),
@@ -1614,7 +1611,7 @@ TEST_P(DesksTest, ActivateActiveDeskFromOverview) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   const Desk* desk_1 = controller->GetDeskAtIndex(0);
-  const auto* mini_view = desks_bar_view->mini_views().front().get();
+  const auto* mini_view = desks_bar_view->mini_views().front();
   ClickOnView(mini_view, GetEventGenerator());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(desk_1->is_active());
@@ -1736,7 +1733,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
-  auto* desk_1_mini_view = desks_bar_view->mini_views()[0].get();
+  auto* desk_1_mini_view = desks_bar_view->mini_views()[0];
   EXPECT_EQ(desk_1, desk_1_mini_view->desk());
   // Drag it and drop it on its same desk's mini_view. Nothing happens, it
   // should be returned back to its original target bounds.
@@ -1751,7 +1748,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
 
   // Now drag it to desk_2's mini_view. The overview grid should now have only
   // `win2`, and `win1` should move to desk_2.
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   EXPECT_EQ(desk_2, desk_2_mini_view->desk());
   DragItemToPoint(overview_item,
                   desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
@@ -1848,7 +1845,7 @@ TEST_P(DesksTest, DragMinimizedWindowToDesk) {
   // Drag the window to desk_2's mini_view and activate desk_2. Expect that the
   // window will be in an unminimized state and all its visibility and layer
   // opacity attributes are correct.
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   EXPECT_EQ(desk_2, desk_2_mini_view->desk());
   DragItemToPoint(overview_item,
                   desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
@@ -2640,7 +2637,7 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnSameDeskInOtherDisplay) {
   const auto* desks_bar_view = grid2->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
-  auto* desk_1_mini_view = desks_bar_view->mini_views()[0].get();
+  auto* desk_1_mini_view = desks_bar_view->mini_views()[0];
   auto* event_generator = GetEventGenerator();
   DragItemToPoint(overview_item,
                   desk_1_mini_view->GetBoundsInScreen().CenterPoint(),
@@ -2677,7 +2674,7 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnOtherDeskInOtherDisplay) {
   EXPECT_EQ(0u, grid2->size());
 
   const auto* desks_bar_view = grid2->desks_bar_view();
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   gfx::Point desk_2_mini_view_center =
       desk_2_mini_view->GetBoundsInScreen().CenterPoint();
   // When |chromeos::wm::features::kVerticalSnap| is enabled, one of two drag
@@ -2783,7 +2780,7 @@ TEST_F(DesksWithMultiDisplayOverview, CloseDeskBeforeAnimationFinishes) {
   // To prevent flakiness in this test, we wait until `desks_bar_view_2` is
   // initialized and shown before we check the state.
   DesksBarVisibilityObserver desks_bar_2_observer(root_windows[1]);
-  auto* desk_1_mini_view = desks_bar_view_1->mini_views()[0].get();
+  auto* desk_1_mini_view = desks_bar_view_1->mini_views()[0];
   CloseDeskFromMiniView(desk_1_mini_view, GetEventGenerator());
   desks_bar_2_observer.Wait();
 
@@ -3225,7 +3222,7 @@ TEST_P(TabletModeDesksTest, Backdrops) {
   // Now drag it to desk_2's mini_view, so that it moves to desk_2. Expect that
   // desk_1's backdrop is destroyed, while created (but still hidden) for
   // desk_2.
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   EXPECT_EQ(desk_2, desk_2_mini_view->desk());
   DragItemToPoint(overview_item,
                   desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
@@ -3292,7 +3289,7 @@ TEST_P(TabletModeDesksTest,
   ASSERT_TRUE(overview_item);
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
 
   // Observe how many times a drag and drop operation updates the mini views.
   TestDeskObserver observer1;
@@ -3467,7 +3464,7 @@ TEST_P(TabletModeDesksTest, SnappedStateRetainedOnSwitchingDesksFromOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   auto* desks_bar_view = overview_grid->desks_bar_view();
-  auto* mini_view = desks_bar_view->mini_views()[1].get();
+  auto* mini_view = desks_bar_view->mini_views()[1];
   Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   EXPECT_EQ(desk_2, mini_view->desk());
   {
@@ -3542,7 +3539,7 @@ TEST_P(
   ASSERT_TRUE(overview_controller->InOverviewSession());
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   auto* desks_bar_view = overview_grid->desks_bar_view();
-  auto* mini_view = desks_bar_view->mini_views()[1].get();
+  auto* mini_view = desks_bar_view->mini_views()[1];
   Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   EXPECT_EQ(desk_2, mini_view->desk());
   {
@@ -3769,7 +3766,7 @@ TEST_P(TabletModeDesksTest, HotSeatStateAfterMovingAWindowToAnotherDesk) {
     const auto* desks_bar_view = overview_grid->desks_bar_view();
     ASSERT_TRUE(desks_bar_view);
     ASSERT_EQ(2u, desks_bar_view->mini_views().size());
-    auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+    auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
     auto* desk_2 = controller->GetDeskAtIndex(1);
     EXPECT_EQ(desk_2, desk_2_mini_view->desk());
     auto* event_generator = GetEventGenerator();
@@ -3856,9 +3853,9 @@ TEST_P(DesksTest, MiniViewsTouchGestures) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
-  auto* desk_1_mini_view = desks_bar_view->mini_views()[0].get();
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
-  auto* desk_3_mini_view = desks_bar_view->mini_views()[2].get();
+  auto* desk_1_mini_view = desks_bar_view->mini_views()[0];
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
+  auto* desk_3_mini_view = desks_bar_view->mini_views()[2];
 
   // Long gesture tapping on one desk preview shows its desk action interface,
   // and hides those of other mini views.
@@ -4008,7 +4005,7 @@ TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
 
   // Drag it to desk_2's mini_view. The overview grid should now show the
   // "no-windows" widget, and the window should move to desk_2.
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   DragItemToPoint(overview_item,
                   desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
                   GetEventGenerator(),
@@ -4266,7 +4263,7 @@ class DesksPerDeskZOrderTest : public AshTestBase {
             const ui::LayerTreeOwner* layer_tree_owner =
                 DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(root,
                                                                          desk);
-            const std::vector<dangling_raw_ptr<ui::Layer>> mirrored_layers =
+            const std::vector<ui::Layer*> mirrored_layers =
                 layer_tree_owner->root()->children().front()->children();
 
             // Tests that `mirrored_layers` and `expected_windows` are sync'ed.
@@ -6455,7 +6452,7 @@ TEST_P(DesksTest, ActiveDeskMiniViewIsVisible) {
     EnterOverview();
     auto* desks_bar =
         GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
-    for (ash::DeskMiniView* mini_view : desks_bar->mini_views()) {
+    for (auto* mini_view : desks_bar->mini_views()) {
       if (mini_view->desk()->is_active()) {
         EXPECT_EQ(mini_view->size(), mini_view->GetVisibleBounds().size());
       }
@@ -6871,7 +6868,7 @@ TEST_P(DesksTest, DesksBarButtonVisibility) {
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
 
   // Close a desk and check that the desks bar switches into zero state.
-  auto* mini_view = desks_bar_view->mini_views().front().get();
+  auto* mini_view = desks_bar_view->mini_views().front();
   CloseDeskFromMiniView(mini_view, GetEventGenerator());
   ASSERT_EQ(1u, controller->desks().size());
   if (GetParam().enable_jellyroll) {
@@ -6917,7 +6914,7 @@ TEST_P(DesksTest, NewDeskButton) {
     ClickOnView(new_desk_button, event_generator);
 
     // When a new desk is created, ensure its desk mini view fully visible.
-    auto* mini_view = desks_bar_view->mini_views().back().get();
+    auto* mini_view = desks_bar_view->mini_views().back();
     EXPECT_EQ(mini_view->size(), mini_view->GetVisibleBounds().size());
 
     // TODO(b/277081702): When desk order is adjusted for RTL, remove the check
@@ -7031,8 +7028,7 @@ TEST_P(DesksTest, ReorderDesksByMouse) {
   NewDesk();
 
   // Cache the mini view and corresponding desks.
-  std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
-      desks_bar_view->mini_views();
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
   DeskMiniView* mini_view_1 = mini_views[1];
@@ -7102,8 +7098,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   NewDesk();
 
   // Cache the mini view and corresponding desks.
-  std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
-      desks_bar_view->mini_views();
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
   DeskMiniView* mini_view_1 = mini_views[1];
@@ -7188,8 +7183,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   overview_grid->CommitNameChanges();
 
   // Cache the mini view and corresponding desks.
-  std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
-      desks_bar_view->mini_views();
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
   DeskMiniView* mini_view_1 = mini_views[1];
@@ -7274,8 +7268,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   NewDesk();
 
   // Cache the mini view and corresponding desks.
-  std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
-      desks_bar_view->mini_views();
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
   DeskMiniView* mini_view_1 = mini_views[1];
@@ -7577,8 +7570,7 @@ TEST_P(DesksTest, RemoveDeskWhileDragging) {
   NewDesk();
 
   // Cache the mini views.
-  const std::vector<dangling_raw_ptr<DeskMiniView>>& mini_views =
-      desks_bar_view->mini_views();
+  const std::vector<DeskMiniView*>& mini_views = desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   DeskMiniView* mini_view_1 = mini_views[1];
   DeskMiniView* mini_view_2 = mini_views[2];
@@ -7663,7 +7655,7 @@ TEST_P(DesksTest, DragMiniViewWhileRemoving) {
   auto* event_generator = GetEventGenerator();
 
   // Cache the center point of the desk preview that is about to be removed.
-  auto* mini_view = desks_bar_view->mini_views().back().get();
+  auto* mini_view = desks_bar_view->mini_views().back();
   const gfx::Point desk_preview_center =
       mini_view->GetPreviewBoundsInScreen().CenterPoint();
 
@@ -8470,7 +8462,7 @@ TEST_P(DesksCloseAllTest, ShortcutCloseAll) {
 
   auto* desks_bar =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
-  auto* mini_view = desks_bar->mini_views()[0].get();
+  auto* mini_view = desks_bar->mini_views()[0];
 
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
@@ -9116,8 +9108,7 @@ TEST_P(DesksTest, DeskGuidsReorder) {
   EnterOverview();
   const auto* desks_bar_view =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
-  std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
-      desks_bar_view->mini_views();
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
   auto* event_generator = GetEventGenerator();
 
   StartDragDeskPreview(mini_views[1], event_generator);
@@ -9393,7 +9384,7 @@ class DeskBarTest
     } else {
       const auto* desk_bar_view = GetDeskBarView(root, bar_type);
       ASSERT_LT(index, desk_bar_view->mini_views().size());
-      auto* target_mini_view = desk_bar_view->mini_views()[index].get();
+      auto* target_mini_view = desk_bar_view->mini_views()[index];
       auto* event_generator = GetEventGenerator();
       event_generator->MoveMouseTo(
           target_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
@@ -9699,7 +9690,7 @@ TEST_P(DeskBarTest, HoverBasic) {
 
   for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
     auto* event_generator = GetEventGenerator();
-    auto* mini_view = GetDeskBarView()->mini_views()[i].get();
+    auto* mini_view = GetDeskBarView()->mini_views()[i];
 
     EXPECT_FALSE(DesksTestApi::IsDeskShortcutViewVisible(mini_view));
     event_generator->MoveMouseTo(
@@ -10143,7 +10134,7 @@ TEST_P(DeskBarTest, ForwardTabbing) {
 
   // Tab through all desks.
   for (int i = 0; i < desk_controller->GetNumberOfDesks(); i++) {
-    auto* mini_view = desk_bar_view->mini_views()[i].get();
+    auto* mini_view = desk_bar_view->mini_views()[i];
 
     SendKey(ui::VKEY_TAB);
     CheckHighlight(mini_view->desk_preview(), true);
@@ -10258,7 +10249,7 @@ TEST_P(DeskBarTest, ReverseTabbing) {
 
   // Tab through all desks.
   for (int i = desk_controller->GetNumberOfDesks() - 1; i >= 0; i--) {
-    auto* mini_view = desk_bar_view->mini_views()[i].get();
+    auto* mini_view = desk_bar_view->mini_views()[i];
 
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     CheckHighlight(mini_view->desk_name_view(), true);

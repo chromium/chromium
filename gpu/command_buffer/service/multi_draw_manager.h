@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "gpu/gpu_gles2_export.h"
 
 // Forwardly declare a few GL types to avoid including GL header files.
@@ -38,8 +37,7 @@ class GPU_GLES2_EXPORT MultiDrawManager {
     std::vector<GLint> firsts;
     std::vector<GLsizei> counts;
     std::vector<GLsizei> offsets;
-    // Excluded field as it used as buffer. glMultiDrawElementsANGLEFn
-    RAW_PTR_EXCLUSION std::vector<const void*> indices;
+    std::vector<const void*> indices;
     std::vector<GLsizei> instance_counts;
     std::vector<GLint> basevertices;
     std::vector<GLuint> baseinstances;

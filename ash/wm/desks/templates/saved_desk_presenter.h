@@ -87,8 +87,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void DeskModelLoaded() override {}
   void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
-      const std::vector<dangling_raw_ptr<const DeskTemplate>>& new_entries)
-      override;
+      const std::vector<const DeskTemplate*>& new_entries) override;
   void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override;
 
  private:
@@ -117,7 +116,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
 
   // Helper functions for updating the UI.
   void AddOrUpdateUIEntries(
-      const std::vector<dangling_raw_ptr<const DeskTemplate>>& new_entries);
+      const std::vector<const DeskTemplate*>& new_entries);
   void RemoveUIEntries(const std::vector<base::Uuid>& uuids);
 
   // Returns a copy of a duplicated name to be stored.  This function works by

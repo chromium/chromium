@@ -994,7 +994,7 @@ Browser::DownloadCloseType Browser::OkToCloseWithInProgressDownloads(
   // profile, that are relevant for the ok-to-close decision.
   int profile_window_count = 0;
   int total_window_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     // Don't count this browser window or any other in the process of closing.
     // Window closing may be delayed, and windows that are in the process of
     // closing don't count against our totals.

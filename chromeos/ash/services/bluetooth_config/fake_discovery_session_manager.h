@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DISCOVERY_SESSION_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DISCOVERY_SESSION_MANAGER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/discovered_devices_provider.h"
 #include "chromeos/ash/services/bluetooth_config/discovery_session_manager.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_pairing_handler.h"
@@ -26,8 +25,7 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
 
   using DiscoverySessionManager::HasAtLeastOneDiscoveryClient;
 
-  std::vector<dangling_raw_ptr<FakeDevicePairingHandler>>&
-  device_pairing_handlers() {
+  std::vector<FakeDevicePairingHandler*>& device_pairing_handlers() {
     return device_pairing_handlers_;
   }
 
@@ -40,8 +38,7 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
 
   bool is_discovery_session_active_ = false;
 
-  std::vector<dangling_raw_ptr<FakeDevicePairingHandler>>
-      device_pairing_handlers_;
+  std::vector<FakeDevicePairingHandler*> device_pairing_handlers_;
 };
 
 }  // namespace ash::bluetooth_config

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/TabModelObserverJniBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -81,7 +80,7 @@ void TabModelObserverJniBridge::OnFinishingMultipleTabClosure(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobj,
     const base::android::JavaParamRef<jobjectArray>& jtabs) {
-  std::vector<dangling_raw_ptr<TabAndroid>> tabs =
+  std::vector<TabAndroid*> tabs =
       TabAndroid::GetAllNativeTabs(env, ScopedJavaLocalRef(jtabs));
   for (auto& observer : observers_)
     observer.OnFinishingMultipleTabClosure(tabs);
@@ -154,7 +153,7 @@ void TabModelObserverJniBridge::AllTabsPendingClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobjectArray>& jtabs) {
-  std::vector<dangling_raw_ptr<TabAndroid>> tabs =
+  std::vector<TabAndroid*> tabs =
       TabAndroid::GetAllNativeTabs(env, ScopedJavaLocalRef(jtabs));
   for (auto& observer : observers_)
     observer.AllTabsPendingClosure(tabs);

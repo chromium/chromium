@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
@@ -41,15 +40,14 @@ void SanitizeFormData(FormData* form) {
 }
 
 // Do the clean up of |matches| after |pending| was just pushed to the store.
-void PostProcessMatches(
-    const PasswordForm& pending,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
-    const std::u16string& old_password,
-    PasswordStoreInterface* store) {
+void PostProcessMatches(const PasswordForm& pending,
+                        const std::vector<const PasswordForm*>& matches,
+                        const std::u16string& old_password,
+                        PasswordStoreInterface* store) {
   DCHECK(!pending.blocked_by_user);
 
   // Update existing matches in the password store.
-  for (const password_manager::PasswordForm* match : matches) {
+  for (const auto* match : matches) {
     if (match->IsFederatedCredential() ||
         ArePasswordFormUniqueKeysEqual(pending, *match))
       continue;
@@ -105,10 +103,9 @@ void FormSaverImpl::Unblocklist(const PasswordFormDigest& digest) {
   store_->Unblocklist(digest);
 }
 
-void FormSaverImpl::Save(
-    PasswordForm pending,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
-    const std::u16string& old_password) {
+void FormSaverImpl::Save(PasswordForm pending,
+                         const std::vector<const PasswordForm*>& matches,
+                         const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
   pending.date_password_modified = base::Time::Now();
   store_->AddLogin(pending);
@@ -116,10 +113,9 @@ void FormSaverImpl::Save(
   PostProcessMatches(pending, matches, old_password, store_);
 }
 
-void FormSaverImpl::Update(
-    PasswordForm pending,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
-    const std::u16string& old_password) {
+void FormSaverImpl::Update(PasswordForm pending,
+                           const std::vector<const PasswordForm*>& matches,
+                           const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
   if (old_password != pending.password_value)
     pending.date_password_modified = base::Time::Now();
@@ -130,7 +126,7 @@ void FormSaverImpl::Update(
 
 void FormSaverImpl::UpdateReplace(
     PasswordForm pending,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
+    const std::vector<const PasswordForm*>& matches,
     const std::u16string& old_password,
     const PasswordForm& old_unique_key) {
   SanitizeFormData(&pending.form_data);

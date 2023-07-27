@@ -36,9 +36,8 @@ DuplicateDownloadDialogBridgeDelegate::DuplicateDownloadDialogBridgeDelegate() =
 
 DuplicateDownloadDialogBridgeDelegate::
     ~DuplicateDownloadDialogBridgeDelegate() {
-  for (download::DownloadItem* download_item : download_items_) {
+  for (auto* download_item : download_items_)
     download_item->RemoveObserver(this);
-  }
 }
 
 void DuplicateDownloadDialogBridgeDelegate::CreateDialog(

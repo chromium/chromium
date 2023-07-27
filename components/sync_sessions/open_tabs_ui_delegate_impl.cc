@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
@@ -24,7 +23,7 @@ OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
 OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() = default;
 
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
-    std::vector<dangling_raw_ptr<const SyncedSession>>* sessions) {
+    std::vector<const SyncedSession*>* sessions) {
   *sessions = session_tracker_->LookupAllForeignSessions(
       SyncedSessionTracker::PRESENTABLE);
   base::ranges::sort(

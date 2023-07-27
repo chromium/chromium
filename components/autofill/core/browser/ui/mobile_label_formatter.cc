@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -26,7 +25,7 @@ using data_util::bit_field_type_groups::kName;
 using data_util::bit_field_type_groups::kPhone;
 
 MobileLabelFormatter::MobileLabelFormatter(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     uint32_t groups,

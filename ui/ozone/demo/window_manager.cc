@@ -77,11 +77,11 @@ void WindowManager::OnConfigurationChanged() {
 void WindowManager::OnDisplaySnapshotsInvalidated() {}
 
 void WindowManager::OnDisplaysAcquired(
-    const std::vector<dangling_raw_ptr<display::DisplaySnapshot>>& displays) {
+    const std::vector<display::DisplaySnapshot*>& displays) {
   windows_.clear();
 
   gfx::Point origin;
-  for (display::DisplaySnapshot* display : displays) {
+  for (auto* display : displays) {
     if (!display->native_mode()) {
       LOG(ERROR) << "Display " << display->display_id()
                  << " doesn't have a native mode";

@@ -14,7 +14,6 @@
 #include "base/base64url.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -76,9 +75,9 @@ const int METHOD_POST = 1;
 const int CACHE_MISS = 0;
 const int CACHE_HIT = 1;
 
-std::vector<dangling_raw_ptr<FormStructure>> ToRawPointerVector(
+std::vector<FormStructure*> ToRawPointerVector(
     const std::vector<std::unique_ptr<FormStructure>>& list) {
-  std::vector<dangling_raw_ptr<FormStructure>> result;
+  std::vector<FormStructure*> result;
   for (const auto& item : list)
     result.push_back(item.get());
   return result;

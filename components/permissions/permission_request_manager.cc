@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -392,7 +391,7 @@ void PermissionRequestManager::QueueRequest(
 
 void PermissionRequestManager::PreemptAndRequeueCurrentRequest() {
   ResetViewStateForCurrentRequest();
-  for (permissions::PermissionRequest* current_request : requests_) {
+  for (auto* current_request : requests_) {
     pending_permission_requests_.Push(current_request);
   }
 
@@ -535,8 +534,7 @@ void PermissionRequestManager::OnVisibilityChanged(
   }
 }
 
-const std::vector<dangling_raw_ptr<PermissionRequest>>&
-PermissionRequestManager::Requests() {
+const std::vector<PermissionRequest*>& PermissionRequestManager::Requests() {
   return requests_;
 }
 
@@ -544,9 +542,8 @@ GURL PermissionRequestManager::GetRequestingOrigin() const {
   CHECK(!requests_.empty());
   GURL origin = requests_.front()->requesting_origin();
   if (DCHECK_IS_ON()) {
-    for (permissions::PermissionRequest* request : requests_) {
+    for (auto* request : requests_)
       DCHECK_EQ(origin, request->requesting_origin());
-    }
   }
   return origin;
 }
@@ -564,7 +561,7 @@ void PermissionRequestManager::Accept() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
-  std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+  std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
@@ -593,7 +590,7 @@ void PermissionRequestManager::AcceptThisTime() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
-  std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+  std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
@@ -624,7 +621,7 @@ void PermissionRequestManager::Deny() {
     is_notification_prompt_cooldown_active_ = true;
   }
 
-  std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+  std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
@@ -641,7 +638,7 @@ void PermissionRequestManager::Dismiss() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
-  std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+  std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
@@ -658,7 +655,7 @@ void PermissionRequestManager::Ignore() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
-  std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+  std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
@@ -702,7 +699,7 @@ void PermissionRequestManager::PreIgnoreQuietPromptInternal() {
     return;
   }
 
-  std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+  std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     CancelledIncludingDuplicates(*requests_iter, /*is_final_decision=*/false);
@@ -1058,7 +1055,7 @@ void PermissionRequestManager::FinalizeCurrentRequests(
     PermissionUmaUtil::RecordEmbargoStatus(embargo_status);
   }
   ResetViewStateForCurrentRequest();
-  std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+  std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     RequestFinishedIncludingDuplicates(*requests_iter);
@@ -1093,7 +1090,7 @@ void PermissionRequestManager::CleanUpRequests() {
   }
 
   if (IsRequestInProgress()) {
-    std::vector<dangling_raw_ptr<PermissionRequest>>::iterator requests_iter;
+    std::vector<PermissionRequest*>::iterator requests_iter;
     for (requests_iter = requests_.begin(); requests_iter != requests_.end();
          requests_iter++) {
       CancelledIncludingDuplicates(*requests_iter);

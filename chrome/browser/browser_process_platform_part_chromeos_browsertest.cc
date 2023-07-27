@@ -47,7 +47,7 @@ namespace {
 
 Browser* FindOneOtherBrowserForProfile(Profile* profile,
                                        Browser* not_this_browser) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     if (browser != not_this_browser && browser->profile() == profile)
       return browser;
   }

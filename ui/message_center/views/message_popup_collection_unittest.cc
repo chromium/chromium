@@ -62,9 +62,7 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
     new_popup_height_ = new_popup_height;
   }
 
-  std::vector<dangling_raw_ptr<MockMessagePopupView>>& popups() {
-    return popups_;
-  }
+  std::vector<MockMessagePopupView*>& popups() { return popups_; }
 
   bool popup_timer_started() const { return popup_timer_started_; }
 
@@ -108,7 +106,7 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
  private:
   gfx::NativeWindow context_;
 
-  std::vector<dangling_raw_ptr<MockMessagePopupView>> popups_;
+  std::vector<MockMessagePopupView*> popups_;
 
   bool popup_timer_started_ = false;
   bool is_primary_display_ = true;
@@ -296,7 +294,7 @@ class MessagePopupCollectionTest : public views::ViewsTestBase,
   }
 
   MockMessagePopupView* GetPopup(const std::string& id) {
-    for (MockMessagePopupView* popup : popup_collection_->popups()) {
+    for (auto* popup : popup_collection_->popups()) {
       if (popup->id() == id)
         return popup;
     }

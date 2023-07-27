@@ -151,11 +151,6 @@ const T& Deref(T* x) {
   return *x;
 }
 
-template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-const T& Deref(const raw_ptr<T, Traits>& x) {
-  return *x;
-}
-
 template <typename T>
 const T& Deref(const std::unique_ptr<T>& x) {
   return *x;
@@ -210,7 +205,7 @@ static bool CompareVotes(const std::pair<std::string, int>& a,
 }
 
 // Orders all `profiles` by the specified `order` rule.
-void OrderProfiles(std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+void OrderProfiles(std::vector<AutofillProfile*>& profiles,
                    PersonalDataManager::ProfileOrder order) {
   switch (order) {
     case PersonalDataManager::ProfileOrder::kNone:
@@ -869,7 +864,7 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 AutofillProfile* PersonalDataManager::GetProfileByGUID(
     const std::string& guid) const {
   // GUIDs are unique among profile sources.
-  std::vector<dangling_raw_ptr<AutofillProfile>> profiles = GetProfiles();
+  std::vector<AutofillProfile*> profiles = GetProfiles();
   auto iter = FindElementByGUID(profiles, guid);
   return iter != profiles.end() ? *iter : nullptr;
 }
@@ -1303,8 +1298,7 @@ CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
 
 CreditCard* PersonalDataManager::GetCreditCardByServerId(
     const std::string& server_id) {
-  const std::vector<dangling_raw_ptr<CreditCard>> server_credit_cards =
-      GetServerCreditCards();
+  const std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
   for (CreditCard* credit_card : server_credit_cards) {
     if (credit_card->server_id() == server_id)
       return credit_card;
@@ -1324,11 +1318,11 @@ bool PersonalDataManager::IsDataLoaded() const {
   return is_data_loaded_;
 }
 
-std::vector<dangling_raw_ptr<AutofillProfile>> PersonalDataManager::GetProfiles(
+std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
     ProfileOrder order) const {
-  std::vector<dangling_raw_ptr<AutofillProfile>> a = GetProfilesFromSource(
+  std::vector<AutofillProfile*> a = GetProfilesFromSource(
       AutofillProfile::Source::kLocalOrSyncable, ProfileOrder::kNone);
-  std::vector<dangling_raw_ptr<AutofillProfile>> b = GetProfilesFromSource(
+  std::vector<AutofillProfile*> b = GetProfilesFromSource(
       AutofillProfile::Source::kAccount, ProfileOrder::kNone);
   a.reserve(a.size() + b.size());
   base::ranges::move(b, std::back_inserter(a));
@@ -1336,13 +1330,12 @@ std::vector<dangling_raw_ptr<AutofillProfile>> PersonalDataManager::GetProfiles(
   return a;
 }
 
-std::vector<dangling_raw_ptr<AutofillProfile>>
-PersonalDataManager::GetProfilesFromSource(
+std::vector<AutofillProfile*> PersonalDataManager::GetProfilesFromSource(
     AutofillProfile::Source profile_source,
     ProfileOrder order) const {
   const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
       GetProfileStorage(profile_source);
-  std::vector<dangling_raw_ptr<AutofillProfile>> result;
+  std::vector<AutofillProfile*> result;
   result.reserve(profiles.size());
   for (const auto& profile : profiles)
     result.push_back(profile.get());
@@ -1368,9 +1361,8 @@ std::vector<CreditCard*> PersonalDataManager::GetLocalCreditCards() const {
   return result;
 }
 
-std::vector<dangling_raw_ptr<CreditCard>>
-PersonalDataManager::GetServerCreditCards() const {
-  std::vector<dangling_raw_ptr<CreditCard>> result;
+std::vector<CreditCard*> PersonalDataManager::GetServerCreditCards() const {
+  std::vector<CreditCard*> result;
   if (!IsAutofillWalletImportEnabled())
     return result;
 
@@ -1524,15 +1516,15 @@ void PersonalDataManager::Refresh() {
   LoadVirtualCardUsageData();
 }
 
-std::vector<dangling_raw_ptr<AutofillProfile>>
-PersonalDataManager::GetProfilesToSuggest() const {
+std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
+    const {
   return IsAutofillProfileEnabled()
              ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
-             : std::vector<dangling_raw_ptr<AutofillProfile>>{};
+             : std::vector<AutofillProfile*>{};
 }
 
-std::vector<dangling_raw_ptr<AutofillProfile>>
-PersonalDataManager::GetProfilesForSettings() const {
+std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
+    const {
   return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
@@ -1549,8 +1541,7 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
           field_contents, type.GetStorableType());
 
   // Get the profiles to suggest, which are already sorted.
-  std::vector<dangling_raw_ptr<AutofillProfile>> sorted_profiles =
-      GetProfilesToSuggest();
+  std::vector<AutofillProfile*> sorted_profiles = GetProfilesToSuggest();
 
   // When suggesting with no prefix to match, suppress disused address
   // suggestions as well as those based on invalid profile data.
@@ -1570,7 +1561,7 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   const AutofillProfileComparator comparator(app_locale_);
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
-  std::vector<dangling_raw_ptr<AutofillProfile>> unique_matched_profiles;
+  std::vector<AutofillProfile*> unique_matched_profiles;
   std::vector<Suggestion> unique_suggestions =
       suggestion_selection::GetUniqueSuggestions(
           field_types, comparator, app_locale_, matched_profiles, suggestions,
@@ -1851,8 +1842,7 @@ const CreditCard* PersonalDataManager::GetServerCardForLocalCard(
     return nullptr;
   }
 
-  std::vector<dangling_raw_ptr<CreditCard>> server_cards =
-      GetServerCreditCards();
+  std::vector<CreditCard*> server_cards = GetServerCreditCards();
   auto it =
       base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
         return local_card->IsLocalOrServerDuplicateOf(*server_card);
@@ -2349,7 +2339,7 @@ void PersonalDataManager::LogStoredDataMetrics() const {
   // Only log this info once per Chrome user profile load.
   has_logged_stored_data_metrics_ = true;
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles = GetProfiles();
+  const std::vector<AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
   if (base::FeatureList::IsEnabled(
           features::kAutofillAccountProfilesUnionView) &&
@@ -2374,11 +2364,10 @@ std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {
 
   // Count up country codes from existing profiles.
   std::map<std::string, int> votes;
-  const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles =
-      GetProfiles();
+  const std::vector<AutofillProfile*>& profiles = GetProfiles();
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
-  for (autofill::AutofillProfile* profile : profiles) {
+  for (auto* profile : profiles) {
     std::string country_code = base::ToUpperASCII(
         base::UTF16ToASCII(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
     if (base::Contains(country_codes, country_code)) {
@@ -2433,8 +2422,7 @@ bool PersonalDataManager::IsServerCard(const CreditCard* credit_card) const {
   if (credit_card->record_type() != CreditCard::LOCAL_CARD)
     return true;
 
-  std::vector<dangling_raw_ptr<CreditCard>> server_credit_cards =
-      GetServerCreditCards();
+  std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
   // Check whether the current card is already uploaded.
   for (const CreditCard* server_card : server_credit_cards) {
     if (credit_card->MatchingCardDetails(*server_card)) {

@@ -11,7 +11,6 @@
 
 #include "base/check_is_test.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -156,7 +155,7 @@ class PermissionRequestManager
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   // PermissionPrompt::Delegate:
-  const std::vector<dangling_raw_ptr<PermissionRequest>>& Requests() override;
+  const std::vector<PermissionRequest*>& Requests() override;
   GURL GetRequestingOrigin() const override;
   GURL GetEmbeddingOrigin() const override;
   void Accept() override;
@@ -417,7 +416,7 @@ class PermissionRequestManager
   // The request (or requests) that the user is currently being prompted for.
   // When this is non-empty, the |view_| is generally non-null as long as the
   // tab is visible.
-  std::vector<dangling_raw_ptr<PermissionRequest>> requests_;
+  std::vector<PermissionRequest*> requests_;
 
   struct PermissionRequestSource {
     content::GlobalRenderFrameHostId requesting_frame_id;

@@ -99,8 +99,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   std::unique_ptr<VideoEncodeAccelerator> CreateVideoEncodeAccelerator()
       override;
 
-  const std::vector<dangling_raw_ptr<gfx::GpuMemoryBuffer>>&
-  created_memory_buffers() {
+  const std::vector<gfx::GpuMemoryBuffer*>& created_memory_buffers() {
     return created_memory_buffers_;
   }
 
@@ -114,7 +113,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   raw_ptr<gpu::SharedImageInterface> sii_;
 
-  std::vector<dangling_raw_ptr<gfx::GpuMemoryBuffer>> created_memory_buffers_;
+  std::vector<gfx::GpuMemoryBuffer*> created_memory_buffers_;
 };
 
 }  // namespace media
