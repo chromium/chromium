@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"  // nogncheck
+#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
