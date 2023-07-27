@@ -39,7 +39,7 @@ constexpr char kBootTimes[] = "BootTimes";
 #define FPL(value) FILE_PATH_LITERAL(value)
 
 // Dir uptime & disk logs are located in.
-constexpr const base::FilePath::CharType kLogPath[] = FPL("/tmp");
+constexpr const base::FilePath::CharType kLogPath[] = FPL("/run/bootstat");
 
 // Dir log{in,out} logs are located in.
 constexpr base::FilePath::CharType kLoginLogPath[] = FPL("/home/chronos/user");

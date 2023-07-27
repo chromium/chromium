@@ -190,7 +190,7 @@ void BootTimesRecorder::OnChromeProcessStart() {
     return;
   }
 
-  // Write /tmp/uptime-logout-started as well.
+  // Write /run/bootstat/uptime-logout-started as well.
   constexpr char kLogoutStarted[] = "logout-started";
   logout_started_last_stats.RecordStatsWithCallback(
       kLogoutStarted, /*write_flag_file=*/true,

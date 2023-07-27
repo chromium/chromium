@@ -70,8 +70,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
     bool UptimeDouble(double* result) const;
 
     // Stores stats to 'type-name' file with the given |name|.
-    // I.e. '/tmp/uptime-logout-started' and '/tmp/disk-logout-started' for
-    // name='logout-started'.
+    // I.e. '/run/bootstat/uptime-logout-started' and
+    // '/run/bootstat/disk-logout-started' for name='logout-started'.
     //
     // When |write_flag_file| is true, also creates 'stats-name.written' flag
     // file to signal that stats were appended.
