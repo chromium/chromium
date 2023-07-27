@@ -45,7 +45,6 @@ class CC_EXPORT RasterTilePriorityQueueAll : public RasterTilePriorityQueue {
   std::vector<std::unique_ptr<TilingSetRasterQueueAll>> active_queues_;
   std::vector<std::unique_ptr<TilingSetRasterQueueAll>> pending_queues_;
   TreePriority tree_priority_;
-  const bool fix_raster_tile_priority_queue_for_smoothness_;
 };
 
 }  // namespace cc

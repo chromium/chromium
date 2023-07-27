@@ -82,10 +82,6 @@ BASE_FEATURE(kUpdateBrowserControlsWithoutProxy,
              "UpdateBrowserControlsWithoutProxy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRasterTilePriorityQueue,
-             "RasterTilePriorityQueue",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUIEnableSharedImageCacheForGpu,
              "UIEnableSharedImageCacheForGpu",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

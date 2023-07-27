@@ -68,12 +68,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 // compositor thread. Previously this proxied through the renderer main thread.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUpdateBrowserControlsWithoutProxy);
 
-// Fix the SMOOTHNESS_TAKES_PRIORITY queue priorities used in
-// RasterTilePriorityQueueAll::GetNextQueues(). By fixing the bug which fails to
-// schedule raster tasks for Pending SOON tiles, it reduces checkerboarding and
-// improves the rendering.desktop tough_scrolling benchmark.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRasterTilePriorityQueue);
-
 // Enables shared image cache for gpu used by CC instances instantiated for UI.
 // TODO(https://crbug.com/c/1378251): this shall also be possible to use by
 // renderers.

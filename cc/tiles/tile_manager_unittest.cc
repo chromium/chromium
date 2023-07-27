@@ -385,9 +385,6 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
 
 TEST_F(TileManagerTilePriorityQueueTest,
        RasterTilePriorityQueueAll_GetNextQueues) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kRasterTilePriorityQueue);
-
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   gfx::Size layer_bounds(1000, 1000);
   SetupDefaultTrees(layer_bounds);
