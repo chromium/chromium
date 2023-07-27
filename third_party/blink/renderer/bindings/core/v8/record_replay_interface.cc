@@ -2474,6 +2474,13 @@ StackingContext.prototype = {
       return;
     }
 
+    // See #RUN-2401 (https://linear.app/replay/issue/RUN-2401)
+    // Ignore nodes with opacity 0.  This is a bit of a hack to get better
+    // behaviour while fixing the z-index processing of elements.
+    if (style.getPropertyValue("opacity") === "0") {
+      return;
+    }
+
     const position = style.getPropertyValue("position");
     let clipBounds;
     if (position == "absolute") {
