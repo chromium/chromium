@@ -41,6 +41,7 @@ extern const base::FeatureParam<base::TimeDelta>
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 BASE_DECLARE_FEATURE(kWebApkInstallFailureRetry);
 BASE_DECLARE_FEATURE(kBlockInstallPromptIfIgnoreRecently);
+BASE_DECLARE_FEATURE(kUniversalInstallIcon);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);

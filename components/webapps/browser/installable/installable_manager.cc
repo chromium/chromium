@@ -7,12 +7,17 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/core/large_icon_worker.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -34,6 +39,7 @@
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/origin.h"
@@ -100,6 +106,25 @@ int GetMinimumPrimaryIconSizeInPx(IconPurpose purpose) {
 #if BUILDFLAG(IS_ANDROID)
     return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
 #else
+    return kMinimumPrimaryIconSizeInPx;
+#endif
+  }
+}
+
+// On Android, |LargeIconWorker::GetLargeIconRawBitmap| will try to find the
+// largest icon that is also larger than the minimum size from database, and
+// scale to the ideal size. However it doesn't work on desktop as Chrome stores
+// icons scaled to 16x16 and 32x32 in the database. We need to find other way to
+// fetch favicon on desktop.
+int GetMinimumFaviconForPrimaryIconSizeInPx() {
+  if (test::g_minimum_favicon_size_for_testing) {
+    CHECK_IS_TEST();
+    return test::g_minimum_favicon_size_for_testing;
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
+#else
+    NOTREACHED();
     return kMinimumPrimaryIconSizeInPx;
 #endif
   }
@@ -195,6 +220,10 @@ void OnDidCompleteGetPrimaryIcon(
 }
 
 }  // namespace
+
+namespace test {
+int g_minimum_favicon_size_for_testing = 0;
+}
 
 InstallableManager::EligiblityProperty::EligiblityProperty() = default;
 
@@ -350,7 +379,9 @@ std::vector<InstallableStatusCode> InstallableManager::GetErrors(
     errors.push_back(worker_->error);
 
   if (params.valid_primary_icon && primary_icon_->error != NO_ERROR_DETECTED) {
-    errors.push_back(primary_icon_->error);
+    if (!params.fetch_favicon || favicon_fetched_) {
+      errors.push_back(primary_icon_->error);
+    }
   }
 
   return errors;
@@ -409,7 +440,8 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
          (!params.valid_manifest || valid_manifest_->fetched) &&
          (!params.has_worker || worker_->fetched) &&
          (!params.fetch_screenshots || is_screenshots_fetch_complete_) &&
-         (!params.valid_primary_icon || primary_icon_->fetched);
+         (!params.valid_primary_icon || primary_icon_->fetched) &&
+         (!params.fetch_favicon || favicon_fetched_);
 }
 
 void InstallableManager::Reset(InstallableStatusCode error) {
@@ -420,6 +452,8 @@ void InstallableManager::Reset(InstallableStatusCode error) {
   screenshots_.clear();
   screenshots_downloading_ = 0;
   is_screenshots_fetch_complete_ = false;
+  favicon_fetched_ = false;
+  favicon_task_tracker_.TryCancelAll();
 
   // If we have paused tasks, we are waiting for a service worker. Execute the
   // callbacks with the status_code being passed for the paused tasks.
@@ -511,6 +545,8 @@ void InstallableManager::WorkOnTask() {
     CheckManifestValid(params.check_webapp_manifest_display);
   } else if (params.valid_primary_icon && !primary_icon_->fetched) {
     CheckAndFetchBestPrimaryIcon(params.prefer_maskable_icon);
+  } else if (params.fetch_favicon && !favicon_fetched_) {
+    FetchFavicon();
   } else if (params.fetch_screenshots && !screenshots_downloading_ &&
              !is_screenshots_fetch_complete_) {
     CheckAndFetchScreenshots();
@@ -804,6 +840,48 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
   primary_icon_->purpose = purpose;
   primary_icon_->icon = std::make_unique<SkBitmap>(bitmap);
   primary_icon_->error = NO_ERROR_DETECTED;
+  WorkOnTask();
+}
+
+void InstallableManager::FetchFavicon() {
+  favicon_fetched_ = true;
+
+  // If primary icon is already successfully fetched, don't fetch favicon.
+  if (primary_icon_->fetched && primary_icon_->error == NO_ERROR_DETECTED) {
+    WorkOnTask();
+    return;
+  }
+
+  favicon::LargeFaviconProvider* favicon_provider =
+      favicon::GetLargeFaviconProvider(GetWebContents()->GetBrowserContext());
+  if (!favicon_provider) {
+    WorkOnTask();
+    return;
+  }
+
+  favicon::LargeIconWorker::GetLargeIconRawBitmap(
+      favicon_provider, GetWebContents()->GetLastCommittedURL(),
+      GetMinimumFaviconForPrimaryIconSizeInPx(),
+      GetIdealPrimaryIconSizeInPx(IconPurpose::ANY), {},
+      base::BindOnce(&InstallableManager::OnFaviconFetched,
+                     weak_factory_.GetWeakPtr()),
+      &favicon_task_tracker_);
+}
+
+void InstallableManager::OnFaviconFetched(
+    const favicon_base::LargeIconImageResult& image_result) {
+  if (!GetWebContents()) {
+    return;
+  }
+  // TODO(crbug.com/1462726): add histogram to record fetched favicon size.
+  if (!image_result.image.IsEmpty()) {
+    primary_icon_->url = image_result.icon_url;
+    primary_icon_->icon =
+        std::make_unique<SkBitmap>(*image_result.image.ToSkBitmap());
+    primary_icon_->purpose = IconPurpose::ANY;
+    primary_icon_->error = NO_ERROR_DETECTED;
+  }
+
   WorkOnTask();
 }
 

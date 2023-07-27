@@ -1,6 +1,9 @@
 include_rules = [
   "+components/back_forward_cache",
   "+components/content_settings",
+  "+components/favicon/content",
+  "+components/favicon/core",
+  "+components/favicon_base",
   "+components/infobars",
   "+components/messages",
   "+components/password_manager",

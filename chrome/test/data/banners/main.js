@@ -159,7 +159,11 @@ function removeAllManifestTags() {
 
 function initialize() {
   const url = new URL(window.location.href);
-  const action = url.searchParams.get('action');
+  initializeActions(url.searchParams.get('action'));
+  addOtherLinkTags(url);
+}
+
+function initializeActions(action) {
   if (!action) {
     return;
   }
@@ -209,4 +213,17 @@ function initializeWithWorker(worker) {
 function changeManifestUrl(newManifestUrl) {
   var linkTag = document.getElementById("manifest");
   linkTag.href = newManifestUrl;
+}
+
+function addOtherLinkTags(url) {
+  for (const [key, value] of url.searchParams) {
+    if (key === "manifest" || key === "action" || !value) {
+      continue;
+    }
+    var linkTag = document.createElement("link");
+    linkTag.id = key
+    linkTag.rel = key;
+    linkTag.href = value;
+    document.head.append(linkTag);
+  }
 }

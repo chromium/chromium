@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -31,7 +32,15 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
+namespace favicon_base {
+struct LargeIconImageResult;
+}
+
 namespace webapps {
+
+namespace test {
+extern int g_minimum_favicon_size_for_testing;
+}  // namespace test
 
 // This class is responsible for fetching the resources required to check and
 // install a site.
@@ -244,6 +253,10 @@ class InstallableManager
                      const IconPurpose purpose,
                      const SkBitmap& bitmap);
 
+  void FetchFavicon();
+  void OnFaviconFetched(
+      const favicon_base::LargeIconImageResult& bitmap_result);
+
   void CheckAndFetchScreenshots();
 
   void OnScreenshotFetched(GURL screenshot_url, const SkBitmap& bitmap);
@@ -286,6 +299,9 @@ class InstallableManager
 
   // Whether all screenshots have been fetched.
   bool is_screenshots_fetch_complete_ = false;
+
+  bool favicon_fetched_ = false;
+  base::CancelableTaskTracker favicon_task_tracker_;
 
   // Owned by the storage partition attached to the content::WebContents which
   // this object is scoped to.

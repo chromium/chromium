@@ -31,6 +31,10 @@ struct InstallableParams {
   // An icon with purpose 'any' is still required for a valid manifest.
   bool prefer_maskable_icon = false;
 
+  // Whether to fetch favicon for the primary icon if no manifest icon is
+  // available.
+  bool fetch_favicon = false;
+
   // Check whether the site has a manifest valid for a web app.
   bool valid_manifest = false;
 

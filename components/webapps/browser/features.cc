@@ -74,6 +74,11 @@ BASE_FEATURE(kWebApkInstallFailureRetry,
 BASE_FEATURE(kBlockInstallPromptIfIgnoreRecently,
              "BlockInstallPromptIfIgnoreRecently",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allows installing a web app when no icon provided by the manifest.
+BASE_FEATURE(kUniversalInstallIcon,
+             "UniversalInstallIcon",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When the user clicks "Create Shortcut" in the dot menu, the current page is
