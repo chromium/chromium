@@ -39,6 +39,7 @@ class GM2TabStyle : public TabStyle {
   int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
   gfx::Insets GetSeparatorMargins() const override;
+  int GetSeparatorCornerRadius() const override;
   int GetDragHandleExtension(int height) const override;
   gfx::Size GetPreviewImageSize() const override;
   int GetTopCornerRadius() const override;
@@ -59,6 +60,7 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
   gfx::Insets GetSeparatorMargins() const override;
+  int GetSeparatorCornerRadius() const override;
   int GetDragHandleExtension(int height) const override;
   SkColor GetTabBackgroundColor(
       TabSelectionState state,
@@ -140,6 +142,10 @@ gfx::Insets GM2TabStyle::GetSeparatorMargins() const {
   // the separator is rendered inside of the tab content.
   return gfx::Insets::TLBR(0, GetSeparatorSize().width() * -1, 0,
                            GetSeparatorSize().width() * -1);
+}
+
+int GM2TabStyle::GetSeparatorCornerRadius() const {
+  return 0;
 }
 
 gfx::Size GM2TabStyle::GetPreviewImageSize() const {
@@ -228,6 +234,10 @@ gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets() const {
 gfx::Insets ChromeRefresh2023TabStyle::GetSeparatorMargins() const {
   return gfx::Insets::TLBR(0, kChromeRefreshSeparatorHorizontalMargin, 6,
                            kChromeRefreshSeparatorHorizontalMargin);
+}
+
+int ChromeRefresh2023TabStyle::GetSeparatorCornerRadius() const {
+  return GetSeparatorSize().width() / 2;
 }
 
 int ChromeRefresh2023TabStyle::GetDragHandleExtension(int height) const {

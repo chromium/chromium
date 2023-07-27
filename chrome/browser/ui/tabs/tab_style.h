@@ -140,6 +140,9 @@ class TabStyle {
   // Gets the distance between the separator and tab, if any.
   virtual gfx::Insets GetSeparatorMargins() const = 0;
 
+  // Gets the radius of the rounded rect used to draw the separator.
+  virtual int GetSeparatorCornerRadius() const = 0;
+
   // Returns, for a tab of height |height|, how far the window top drag handle
   // can extend down into inactive tabs or the new tab button. This behavior
   // is not used in all cases.

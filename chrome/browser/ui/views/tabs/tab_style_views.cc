@@ -1032,9 +1032,11 @@ void GM2TabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(separator_color(separator_opacities.left));
-  canvas->DrawRect(separator_bounds.leading, flags);
+  canvas->DrawRoundRect(separator_bounds.leading,
+                        tab_style()->GetSeparatorCornerRadius() * scale, flags);
   flags.setColor(separator_color(separator_opacities.right));
-  canvas->DrawRect(separator_bounds.trailing, flags);
+  canvas->DrawRoundRect(separator_bounds.trailing,
+                        tab_style()->GetSeparatorCornerRadius() * scale, flags);
 }
 
 float GM2TabStyleViews::GetTopCornerRadiusForWidth(int width) const {
