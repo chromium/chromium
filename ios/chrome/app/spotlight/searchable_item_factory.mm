@@ -94,12 +94,14 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 
 - (instancetype)initWithLargeIconService:
                     (favicon::LargeIconService*)largeIconService
-                                  domain:(spotlight::Domain)domain {
+                                  domain:(spotlight::Domain)domain
+                   useTitleInIdentifiers:(BOOL)useTitleInIdentifiers {
   self = [super init];
   if (self) {
     _largeIconService = largeIconService;
     _spotlightDomain = domain;
     _largeIconTaskTracker = std::make_unique<base::CancelableTaskTracker>();
+    _useTitleInIdentifiers = useTitleInIdentifiers;
   }
   return self;
 }
@@ -248,7 +250,10 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   [attributeSet setContentDescription:base::SysUTF8ToNSString(description)];
   [attributeSet setThumbnailData:UIImagePNGRepresentation(favicon)];
 
-  NSString* itemID = [self spotlightIDForURL:indexedURL title:defaultTitle];
+  NSString* itemID = self.useTitleInIdentifiers
+                         ? [self spotlightIDForURL:indexedURL
+                                             title:defaultTitle]
+                         : [self spotlightIDForURL:indexedURL];
   return [self spotlightItemWithItemID:itemID attributeSet:attributeSet];
 }
 

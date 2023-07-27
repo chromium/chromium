@@ -136,7 +136,8 @@ BOOL SetStartupParametersForSpotlightAction(
            searchableItemFactory:
                [[SearchableItemFactory alloc]
                    initWithLargeIconService:nil
-                                     domain:spotlight::DOMAIN_ACTIONS]];
+                                     domain:spotlight::DOMAIN_ACTIONS
+                      useTitleInIdentifiers:YES]];
 }
 
 #pragma mark public methods

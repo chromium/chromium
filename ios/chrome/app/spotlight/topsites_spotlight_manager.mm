@@ -130,7 +130,8 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
          searchableItemFactory:
              [[SearchableItemFactory alloc]
                  initWithLargeIconService:largeIconService
-                                   domain:spotlight::DOMAIN_TOPSITES]];
+                                   domain:spotlight::DOMAIN_TOPSITES
+                    useTitleInIdentifiers:YES]];
 }
 
 - (instancetype)

@@ -65,7 +65,8 @@ using web::WebState;
       IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
   SearchableItemFactory* searchableItemFactory = [[SearchableItemFactory alloc]
       initWithLargeIconService:largeIconService
-                        domain:spotlight::DOMAIN_OPEN_TABS];
+                        domain:spotlight::DOMAIN_OPEN_TABS
+         useTitleInIdentifiers:NO];
 
   return [[OpenTabsSpotlightManager alloc]
       initWithLargeIconService:largeIconService
@@ -278,8 +279,7 @@ using web::WebState;
       // The URL doesn't correspond to any open tab anymore, remove it from the
       // index.
       [self.spotlightInterface deleteSearchableItemsWithIdentifiers:@[
-        // In Open Tabs model, URLs are unique keys. Titles are ignored.
-        [self.searchableItemFactory spotlightIDForURL:lastKnownURL title:@""]
+        [self.searchableItemFactory spotlightIDForURL:lastKnownURL]
       ]
                                                   completionHandler:nil];
     }

@@ -56,7 +56,8 @@
          searchableItemFactory:
              [[SearchableItemFactory alloc]
                  initWithLargeIconService:largeIconService
-                                   domain:spotlight::DOMAIN_READING_LIST]];
+                                   domain:spotlight::DOMAIN_READING_LIST
+                    useTitleInIdentifiers:NO]];
 }
 
 - (instancetype)

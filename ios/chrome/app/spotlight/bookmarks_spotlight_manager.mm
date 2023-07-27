@@ -164,7 +164,8 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
          searchableItemFactory:
              [[SearchableItemFactory alloc]
                  initWithLargeIconService:largeIconService
-                                   domain:spotlight::DOMAIN_BOOKMARKS]];
+                                   domain:spotlight::DOMAIN_BOOKMARKS
+                    useTitleInIdentifiers:YES]];
 }
 
 - (instancetype)
