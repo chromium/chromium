@@ -26,9 +26,11 @@
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   self = [super init];
   if (self) {
+    CHECK(browserState);
     _browserState = browserState;
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(_browserState);
+    CHECK(_faviconLoader);
   }
   return self;
 }
