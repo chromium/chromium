@@ -73,10 +73,12 @@ TEST_F(
       runMochaSuite('ClearBrowsingDataDesktop');
     });
 GEN('#endif');
+
+// TODO(crbug.com/1468253): Test is failing consistently on all platforms.
 TEST_F(
-    'CrSettingsClearBrowsingDataTest', 'ClearBrowsingDataForSupervisedUsers',
-    function() {
-      runMochaSuite('ClearBrowsingDataDesktop');
+    'CrSettingsClearBrowsingDataTest',
+    'DISABLED_ClearBrowsingDataForSupervisedUsers', function() {
+      runMochaSuite('ClearBrowsingDataForSupervisedUsers');
     });
 
 var CrSettingsAutofillSectionCompanyEnabledTest =
