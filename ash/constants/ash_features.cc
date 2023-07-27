@@ -1971,6 +1971,11 @@ BASE_FEATURE(kPipDoubleTapToResize,
              "PipDoubleTapToResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables pinch to resize feature for Picture in Picture.
+BASE_FEATURE(kPipPinchToResize,
+             "PipPinchToResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether policy provided trust anchors are allowed at the lock
 // screen.
 BASE_FEATURE(kPolicyProvidedTrustAnchorsAllowedAtLockScreen,
@@ -3621,6 +3626,10 @@ bool IsPinAutosubmitFeatureEnabled() {
 
 bool IsPipDoubleTapToResizeEnabled() {
   return base::FeatureList::IsEnabled(kPipDoubleTapToResize);
+}
+
+bool IsPipPinchToResizeEnabled() {
+  return base::FeatureList::IsEnabled(kPipPinchToResize);
 }
 
 bool IsPrinterSettingsPrinterStatusEnabled() {

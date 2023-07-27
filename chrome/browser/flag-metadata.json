@@ -3200,6 +3200,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-pip-pinch-to-resize",
+    "owners": [ "massan", "takise" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
     "expiry_milestone": 116

@@ -63088,6 +63088,7 @@ from previous Chrome versions.
   <int value="-403701720" label="DirectActions:enabled"/>
   <int value="-403649153" label="WebViewBrotliSupport:disabled"/>
   <int value="-403473326" label="VCLightIntensity:disabled"/>
+  <int value="-402656913" label="PipPinchToResize:enabled"/>
   <int value="-402038055"
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:enabled"/>
   <int value="-401170566"
@@ -66802,6 +66803,7 @@ from previous Chrome versions.
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
   <int value="1502417134" label="BulkTabRestore:disabled"/>
+  <int value="1504223335" label="PipPinchToResize:disabled"/>
   <int value="1504393761" label="AutofillEnableCardProductName:enabled"/>
   <int value="1505194447" label="disable-transition-compositing"/>
   <int value="1506372577" label="NearbySharingSelfShare:disabled"/>
