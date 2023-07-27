@@ -60,6 +60,10 @@ constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 56;
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kAdaptiveToolbarSegmentationKey;
   config->segmentation_uma_name = kAdaptiveToolbarUmaName;

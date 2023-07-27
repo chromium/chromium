@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/containers/cxx20_erase_vector.h"
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
@@ -45,7 +46,12 @@ constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
 constexpr int kSearchUserSegmentSelectionTTLDays = 7;
 constexpr int kSearchUserSegmentUnknownSelectionTTLDays = 7;
 
+// TODO(b/293368255) : Replace these config code with GetConfig().
 std::unique_ptr<Config> GetConfigForFeedSegments() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformFeedSegmentFeature)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kFeedUserSegmentationKey;
   config->segmentation_uma_name = kFeedUserSegmentUmaName;
@@ -63,6 +69,10 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
 }
 
 std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformCrossDeviceUser)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kCrossDeviceUserKey;
   config->segmentation_uma_name = kCrossDeviceUserUmaName;
@@ -85,6 +95,10 @@ std::unique_ptr<DefaultModelProvider> GetSearchUserDefaultModel() {
 }
 
 std::unique_ptr<Config> GetConfigForSearchUserModel() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformSearchUser)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kSearchUserKey;
   config->segmentation_uma_name = kSearchUserUmaName;
@@ -127,7 +141,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   configs.emplace_back(ShoppingUserModel::GetConfig());
 
   // Add new configs here.
-
+  base::EraseIf(configs, [](const auto& config) { return !config.get(); });
   return configs;
 }
 

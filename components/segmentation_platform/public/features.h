@@ -67,6 +67,18 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformTabletProductivityUser);
 
 // Feature flag for enabling model execution report sampling.
 BASE_DECLARE_FEATURE(kSegmentationPlatformModelExecutionSampling);
+
+// Feature flag for enabling cross device user segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatformCrossDeviceUser);
+
+// Feature flag for enabling intentional user segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatformIntentionalUser);
+
+// Feature flag for enabling password manager user segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatformPasswordManagerUser);
+
+// Feature flag for enabling tab resumption ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformTabResumptionRanker);
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

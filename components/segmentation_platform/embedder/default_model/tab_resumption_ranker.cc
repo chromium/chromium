@@ -8,6 +8,7 @@
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
@@ -22,6 +23,10 @@ constexpr uint64_t kTabResumptionRankerVersion = 1;
 
 // static
 std::unique_ptr<Config> TabResumptionRanker::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformTabResumptionRanker)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kTabResumptionClassifierKey;
   config->segmentation_uma_name = kTabResumptionClassifierUmaName;

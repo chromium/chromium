@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -109,6 +110,10 @@ std::string CrossDeviceUserSubsegmentToString(
 
 // static
 std::unique_ptr<Config> CrossDeviceUserSegment::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformCrossDeviceUser)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kCrossDeviceUserKey;
   config->segmentation_uma_name = kCrossDeviceUserUmaName;

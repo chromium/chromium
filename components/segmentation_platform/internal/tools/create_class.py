@@ -103,10 +103,15 @@ _MODEL_HEADER_TEMPLATE = """// Copyright {year} The Chromium Authors
 
 #include <memory>
 
+#include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace {namespace} {{
+
+// Feature flag for enabling {clas} segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatform{clas});
 
 // Model to predict whether the user belongs to {clas} segment.
 class {clas} : public DefaultModelProvider {{
@@ -146,6 +151,10 @@ _MODEL_CC_TEMPLATE = """// Copyright {year} The Chromium Authors
 
 
 namespace {namespace} {{
+
+BASE_FEATURE(kSegmentationPlatform{clas},
+             "SegmentationPlatform{clas}",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {{
 using proto::SegmentId;
@@ -190,6 +199,10 @@ constexpr std::array<MetadataWriter::UMAFeature, 3> kUMAFeatures = {{
 
 // static
 std::unique_ptr<Config> {clas}::GetConfig() {{
+  if (!base::FeatureList::IsEnabled(
+          kSegmentationPlatform{clas})) {{
+    return nullptr;
+  }}
   auto config = std::make_unique<Config>();
   config->segmentation_key = k{clas}Key;
   config->segmentation_uma_name = k{clas}UmaName;

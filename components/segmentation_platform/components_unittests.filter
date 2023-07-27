@@ -29,6 +29,7 @@ ModelExecutorTest.*
 ModelManagerTest.*
 ModelProviderFactoryImplTest.*
 OptimizationGuideSegmentationModelProviderTest.*
+PasswordManagerUserModelTest.*
 PostProcessorTest.*
 PowerUserModelTest.*
 PrefsMigratorTest.*

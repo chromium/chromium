@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -56,6 +57,10 @@ constexpr int64_t kDeviceSwitcherMinSignalCollectionLength = 0;
 
 // static
 std::unique_ptr<Config> DeviceSwitcherModel::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformDeviceSwitcher)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kDeviceSwitcherKey;
   config->segmentation_uma_name = kDeviceSwitcherUmaName;

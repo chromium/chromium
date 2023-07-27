@@ -87,4 +87,20 @@ BASE_FEATURE(kSegmentationPlatformTabletProductivityUser,
 BASE_FEATURE(kSegmentationPlatformModelExecutionSampling,
              "SegmentationPlatformModelExecutionSampling",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformCrossDeviceUser,
+             "SegmentationPlatformCrossDeviceUser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformIntentionalUser,
+             "SegmentationPlatformIntentionalUser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformPasswordManagerUser,
+             "SegmentationPlatformPasswordManagerUser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformTabResumptionRanker,
+             "SegmentationPlatformTabResumptionRanker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace segmentation_platform::features
