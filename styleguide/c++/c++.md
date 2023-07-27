@@ -255,8 +255,10 @@ you need a sequence-local variable, see
 
 If you truly need a thread-local variable, then you can use a `thread_local`, as
 long as it complies with the following requirements:
-  * Its type must satisfy `std::is_trivially_desructible_v<T>`, due to past
-    problems with "spooky action at a distance" during destruction.
+  * Its type must satisfy `std::is_trivially_destructible_v<T>`, due to past
+    problems with "spooky action at a distance" during destruction. Note that
+    `raw_ptr<T>` is not a trivially-destructible type and may not be contained
+    in `thread_locals`.
   * It must not be exported (e.g. via `COMPONENT_EXPORT`), since this may result
     in codegen bugs on Mac; and at least on Windows, this probably won't compile
     in the component build anyway. As a workaround, create an exported getter

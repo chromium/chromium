@@ -176,12 +176,12 @@ to maintain BackupRefPtr's ref-count.
 
 ### Unsupported cases leading to compile errors
 
-Using raw_ptr<T> in the following scenarios will lead to build errors.
-Continue to use raw C++ pointers in those cases:
+Continue to use raw C++ pointers in the following cases, which may otherwise
+result in compile errors:
 - Function pointers
 - Pointers to Objective-C objects
-- Pointer fields in classes/structs that are used as global or static variables
-  (see more details in the
+- Pointer fields in classes/structs that are used as global, static, or
+  `thread_local` variables (see more details in the
   [Rewrite exclusion statistics](https://docs.google.com/document/d/1uAsWnwy8HfIJhDPSh1efohnqfGsv2LJmYTRBj0JzZh8/edit#heading=h.dg4eebu87wg9)
   )
 - Pointer fields that require non-null, constexpr initialization
