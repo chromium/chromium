@@ -101,6 +101,18 @@ public class TraceEventTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
+    public void testWebViewStartupTotalFactoryInit() {
+        TraceEvent.setEnabled(true);
+        long startTime = 10;
+        long duration = 50;
+        TraceEvent.webViewStartupTotalFactoryInit(startTime, duration);
+        verify(mNativeMock).webViewStartupTotalFactoryInit(startTime, duration);
+        TraceEvent.setEnabled(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
     public void testWebViewStartupStage1() {
         TraceEvent.setEnabled(true);
         long startTime = 10;

@@ -5253,10 +5253,11 @@ chromium-metrics-reviews@google.com.
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    The total time to initialize WebViewChromiumFactoryProvider.
+    The total time to initialize WebViewChromiumFactoryProvider. Reported on S+.
 
     This measurement is different from Stage1.FactoryInit as it takes into
-    accout time spent in framework.
+    account time spent in framework. Does not overlap with
+    Android.WebView.Startup.CreationTime.Stage2.* measurements.
   </summary>
 </histogram>
 

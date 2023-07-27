@@ -595,6 +595,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
                         SystemClock.uptimeMillis() - startTime);
 
+                TraceEvent.webViewStartupTotalFactoryInit(
+                        mFactory.getInitInfo().mTotalFactoryInitStartTime,
+                        mFactory.getInitInfo().mTotalFactoryInitDuration);
+
                 TraceEvent.webViewStartupStage1(
                         mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
 

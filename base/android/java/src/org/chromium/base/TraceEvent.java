@@ -414,6 +414,17 @@ public class TraceEvent implements AutoCloseable {
     }
 
     /**
+     * Records a 'WebView.Startup.CreationTime.TotalFactoryInitTime' event with the
+     * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
+     * `durationMs`.
+     */
+    public static void webViewStartupTotalFactoryInit(long startTimeMs, long durationMs) {
+        if (sEnabled) {
+            TraceEventJni.get().webViewStartupTotalFactoryInit(startTimeMs, durationMs);
+        }
+    }
+
+    /**
      * Records a 'WebView.Startup.CreationTime.Stage1.FactoryInit' event with the
      * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
      * `durationMs`.
@@ -586,6 +597,7 @@ public class TraceEvent implements AutoCloseable {
                 String resourceName, long activityProtoPtr);
         void instantAndroidIPC(String name, long durMs);
         void instantAndroidToolbar(int blockReason, int allowReason, int snapshotDiff);
+        void webViewStartupTotalFactoryInit(long startTimeMs, long durationMs);
         void webViewStartupStage1(long startTimeMs, long durationMs);
         void webViewStartupStage2(long startTimeMs, long durationMs, boolean isColdStartup);
     }
