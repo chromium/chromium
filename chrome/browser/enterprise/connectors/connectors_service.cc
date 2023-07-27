@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -250,6 +251,13 @@ absl::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
     AnalysisConnector connector) {
   if (!settings.has_value())
     return absl::nullopt;
+
+#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  if (settings->cloud_or_local_settings.is_local_analysis()) {
+    return absl::nullopt;
+  }
+#endif
+
   absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   bool is_cloud = settings.value().cloud_or_local_settings.is_cloud_analysis();
 
@@ -262,8 +270,10 @@ absl::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
   }
 
   settings.value().per_profile =
-      dm_token.has_value() &&
-      dm_token.value().scope == policy::POLICY_SCOPE_USER;
+      (dm_token.has_value() &&
+       dm_token.value().scope == policy::POLICY_SCOPE_USER) ||
+      GetPolicyScope(ConnectorScopePref(connector)) ==
+          policy::POLICY_SCOPE_USER;
   settings.value().client_metadata = BuildClientMetadata(is_cloud);
 
   return settings;
@@ -514,9 +524,15 @@ bool ConnectorsService::CanUseProfileDmToken() const {
 
 policy::PolicyScope ConnectorsService::GetPolicyScope(
     const char* scope_pref) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // CrOS always uses a browser DM throughout connectors code, so its policy
+  // scope should always be POLICY_SCOPE_MACHINE.
+  return policy::PolicyScope::POLICY_SCOPE_MACHINE;
+#else
   return static_cast<policy::PolicyScope>(
       Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
           scope_pref));
+#endif
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
