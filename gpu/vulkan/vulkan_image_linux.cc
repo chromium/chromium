@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_util.h"
 
 namespace {
 
@@ -118,6 +119,21 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
       .fd = memory_fd,
   };
+
+  VkExportMemoryAllocateInfo export_memory_info = {
+      VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_KHR};
+  VkExternalMemoryProperties external_memory_properties;
+  VkResult vk_result = QueryVkExternalMemoryProperties(
+      device_queue->GetVulkanPhysicalDevice(), format, VK_IMAGE_TYPE_2D,
+      image_tiling, usage, flags,
+      VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+      &external_memory_properties);
+  if (vk_result == VK_SUCCESS) {
+    export_memory_info.handleTypes =
+        external_memory_properties.compatibleHandleTypes;
+
+    import_memory_fd_info.pNext = &export_memory_info;
+  }
 
   VkMemoryRequirements* requirements = nullptr;
   // TODO support multiple plane
