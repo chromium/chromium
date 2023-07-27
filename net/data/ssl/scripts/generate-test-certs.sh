@@ -241,13 +241,6 @@ SUBJECT_NAME="req_punycode_dn" \
     -config ../scripts/ee.cnf -newkey rsa:2048 -text \
     -out ../certificates/punycodetest.pem
 
-## Leaf certificate with a large key; Apple's certificate verifier rejects with
-## a fatal error if the key is bigger than 8192 bits.
-openssl req -x509 -days 3650 \
-    -config ../scripts/ee.cnf -newkey rsa:8200 -text \
-    -sha256 \
-    -out ../certificates/large_key.pem
-
 ## SHA1 certificate expiring in 2016.
 openssl req -config ../scripts/ee.cnf \
   -newkey rsa:2048 -text -out out/sha1_2016.req
