@@ -73,6 +73,8 @@ class BorealisInstallerTest : public testing::Test,
   BorealisInstallerTest& operator=(const BorealisInstallerTest&) = delete;
 
  protected:
+  BorealisInstaller* installer() { return installer_.get(); }
+
   void SetUp() override {
     test_features_ = std::make_unique<BorealisFeatures>(&profile_);
     test_context_manager_ =
@@ -151,6 +153,8 @@ class BorealisInstallerTest : public testing::Test,
   std::unique_ptr<BorealisDiskManagerDispatcher> test_disk_dispatcher_;
   raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_;
   std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
+
+ private:
   std::unique_ptr<BorealisInstaller> installer_;
 };
 
@@ -207,7 +211,7 @@ TEST_F(BorealisInstallerTest, HandlesMainAppPreExisting) {
 
 TEST_F(BorealisInstallerTest, InstallationObserver) {
   testing::StrictMock<MockObserver> observer;
-  installer_->AddObserver(&observer);
+  installer()->AddObserver(&observer);
   PrepareSuccessfulInstallation();
 
   EXPECT_CALL(observer, OnStateUpdated(InstallingState::kCheckingIfAllowed));
@@ -223,21 +227,21 @@ TEST_F(BorealisInstallerTest, InstallationObserver) {
 
 TEST_F(BorealisInstallerTest, CancelledInstallation) {
   testing::NiceMock<MockObserver> observer;
-  installer_->AddObserver(&observer);
+  installer()->AddObserver(&observer);
   FakeDlcserviceClient()->set_install_error(dlcservice::kErrorNone);
 
   EXPECT_CALL(observer, OnCancelInitiated());
   EXPECT_CALL(observer, OnInstallationEnded(BorealisInstallResult::kCancelled,
                                             testing::Not("")));
 
-  installer_->Start();
-  installer_->Cancel();
+  installer()->Start();
+  installer()->Cancel();
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisInstallerTest, InstallationInProgess) {
   testing::NiceMock<MockObserver> observer;
-  installer_->AddObserver(&observer);
+  installer()->AddObserver(&observer);
   PrepareSuccessfulInstallation();
 
   EXPECT_CALL(observer, OnInstallationEnded(
@@ -246,22 +250,22 @@ TEST_F(BorealisInstallerTest, InstallationInProgess) {
   EXPECT_CALL(observer,
               OnInstallationEnded(BorealisInstallResult::kSuccess, ""));
 
-  installer_->Start();
-  installer_->Start();
+  installer()->Start();
+  installer()->Start();
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisInstallerTest, CancelledThenSuccessfulInstallation) {
   PrepareSuccessfulInstallation();
 
-  installer_->Cancel();
+  installer()->Cancel();
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(BorealisDlcInstalled());
   EXPECT_FALSE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 
-  installer_->Start();
+  installer()->Start();
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(BorealisDlcInstalled());
@@ -295,7 +299,7 @@ TEST_F(BorealisInstallerTest, IncompleteInstallationRecordMetrics) {
 
 TEST_F(BorealisInstallerTest, ReportsStartupFailureAsError) {
   testing::NiceMock<MockObserver> observer;
-  installer_->AddObserver(&observer);
+  installer()->AddObserver(&observer);
   FakeDlcserviceClient()->set_install_error(dlcservice::kErrorNone);
   EXPECT_CALL(*test_context_manager_, StartBorealis)
       .WillOnce(
@@ -314,7 +318,7 @@ TEST_F(BorealisInstallerTest, ReportsStartupFailureAsError) {
 
 TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
   testing::NiceMock<MockObserver> observer;
-  installer_->AddObserver(&observer);
+  installer()->AddObserver(&observer);
   FakeDlcserviceClient()->set_install_error(dlcservice::kErrorNone);
   ctx_ = BorealisContext::CreateBorealisContextForTesting(&profile_);
   EXPECT_CALL(*test_context_manager_, StartBorealis)
@@ -337,7 +341,7 @@ TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
 // code returned by the service is handled by the installer.
 TEST_P(BorealisInstallerTestDlc, DlcError) {
   testing::NiceMock<MockObserver> observer;
-  installer_->AddObserver(&observer);
+  installer()->AddObserver(&observer);
   FakeDlcserviceClient()->set_install_error(GetParam().first);
 
   EXPECT_CALL(observer,
@@ -386,8 +390,8 @@ TEST_F(BorealisUninstallerTest, ErrorIfUninstallIsAlreadyInProgress) {
               Call(BorealisUninstallResult::kAlreadyInProgress))
       .Times(1);
 
-  installer_->Uninstall(callback_factory.BindOnce());
-  installer_->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
 }
 
 TEST_F(BorealisUninstallerTest, ErrorIfShutdownFails) {
@@ -400,7 +404,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfShutdownFails) {
             std::move(callback).Run(BorealisShutdownResult::kFailed);
           }));
 
-  installer_->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
   // Shutdown failed, so borealis's disk will still be there.
@@ -423,7 +427,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfDiskNotRemoved) {
           }));
   FakeConciergeClient()->set_destroy_disk_image_response(absl::nullopt);
 
-  installer_->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
   // The DLC should remain because the disk was not removed.
@@ -446,7 +450,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfDlcNotRemoved) {
           }));
   FakeDlcserviceClient()->set_uninstall_error("some failure");
 
-  installer_->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
   // Borealis is still "installed" according to the prefs.
@@ -471,7 +475,7 @@ TEST_F(BorealisUninstallerTest, UninstallationRemovesAllNecessaryPieces) {
           [](base::OnceCallback<void(BorealisShutdownResult)> callback) {
             std::move(callback).Run(BorealisShutdownResult::kSuccess);
           }));
-  installer_->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
   // Borealis is not running.
@@ -505,7 +509,7 @@ TEST_F(BorealisUninstallerTest, UninstallationIsIdempotent) {
           [](base::OnceCallback<void(BorealisShutdownResult)> callback) {
             std::move(callback).Run(BorealisShutdownResult::kSuccess);
           }));
-  installer_->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
   EXPECT_CALL(*test_context_manager_, ShutDownBorealis(testing::_))
@@ -513,7 +517,7 @@ TEST_F(BorealisUninstallerTest, UninstallationIsIdempotent) {
           [](base::OnceCallback<void(BorealisShutdownResult)> callback) {
             std::move(callback).Run(BorealisShutdownResult::kSuccess);
           }));
-  installer_->Uninstall(callback_factory.BindOnce());
+  installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
@@ -523,7 +527,7 @@ TEST_F(BorealisUninstallerTest, SuccessfulUninstallationRecordsMetrics) {
           [](base::OnceCallback<void(BorealisShutdownResult)> callback) {
             std::move(callback).Run(BorealisShutdownResult::kSuccess);
           }));
-  installer_->Uninstall(base::DoNothing());
+  installer()->Uninstall(base::DoNothing());
   task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(kBorealisUninstallNumAttemptsHistogram, 1);
@@ -539,7 +543,7 @@ TEST_F(BorealisUninstallerTest, FailedUninstallationRecordsMetrics) {
             std::move(callback).Run(BorealisShutdownResult::kFailed);
           }));
 
-  installer_->Uninstall(base::DoNothing());
+  installer()->Uninstall(base::DoNothing());
   task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(kBorealisUninstallNumAttemptsHistogram, 1);
