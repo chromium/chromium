@@ -2209,6 +2209,21 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
+- (void)showPasswordSearchPage {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController showPasswordSearchPage];
+    return;
+  }
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController = [SettingsNavigationController
+      passwordManagerSearchControllerForBrowser:browser
+                                       delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
@@ -2351,6 +2366,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf showDefaultBrowserSettings];
       };
+    case SEARCH_PASSWORDS:
+      return ^{
+        [weakSelf startPasswordSearch];
+      };
     default:
       return nil;
   }
@@ -2413,6 +2432,16 @@ void InjectNTP(Browser* browser) {
       showDefaultBrowserSettingsFromViewController:nil
                                       sourceForUMA:DefaultBrowserPromoSource::
                                                        kExternalIntent];
+}
+
+- (void)startPasswordSearch {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+  id<ApplicationSettingsCommands> applicationSettingsCommandsHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         ApplicationSettingsCommands);
+  [applicationSettingsCommandsHandler showPasswordSearchPage];
 }
 
 #pragma mark - TabOpening implementation.

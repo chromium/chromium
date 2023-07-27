@@ -100,16 +100,25 @@ extern NSString* const kSettingsDoneButtonId;
                                   (id<SettingsNavigationControllerDelegate>)
                                       delegate;
 
-// Creates a new SavePasswordsCollectionViewController and the chrome around it.
-// `browser` is the browser where settings are being displayed and should not be
-// nil. `delegate` may be nil. `showCancelButton` indicates whether a cancel
-// button should be shown in the upper left corner if the navigation stack is
-// empty.
+// Creates a new view controller presenting the saved passwords list and the
+// chrome around it. `browser` is the browser where settings are being displayed
+// and should not be nil. `delegate` may be nil. `showCancelButton` indicates
+// whether a cancel button should be shown in the upper left corner if the
+// navigation stack is empty.
 + (instancetype)
     savePasswordsControllerForBrowser:(Browser*)browser
                              delegate:(id<SettingsNavigationControllerDelegate>)
                                           delegate
                      showCancelButton:(BOOL)showCancelButton;
+
+// Creates a new PasswordManagerViewController in search mode and the chrome
+// around it. `browser` is the browser where settings are being displayed and
+// should not be nil. `delegate` may be nil.
++ (instancetype)
+    passwordManagerSearchControllerForBrowser:(Browser*)browser
+                                     delegate:
+                                         (id<SettingsNavigationControllerDelegate>)
+                                             delegate;
 
 // Creates a new PasswordDetailsViewController and the chrome around it.
 // `browser` is the browser where the view is being displayed and should not be

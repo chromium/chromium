@@ -45,6 +45,7 @@ const char kChromeAppGroupFocusOmniboxCommand[] = "focusomnibox";
 const char kChromeAppGroupIncognitoSearchCommand[] = "incognitosearch";
 const char kChromeAppGroupQRScannerCommand[] = "qrscanner";
 const char kChromeAppGroupLensCommand[] = "lens";
+const char kChromeAppGroupSearchPasswordsCommand[] = "searchpasswords";
 
 const char kChromeAppGroupSupportsSearchByImage[] = "supportsSearchByImage";
 const char kChromeAppGroupIsGoogleDefaultSearchEngine[] =

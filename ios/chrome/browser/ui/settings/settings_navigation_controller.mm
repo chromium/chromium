@@ -282,6 +282,24 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
+    passwordManagerSearchControllerForBrowser:(Browser*)browser
+                                     delegate:
+                                         (id<SettingsNavigationControllerDelegate>)
+                                             delegate {
+  DCHECK(browser);
+
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+
+  [navigationController showPasswordManagerSearchPage];
+
+  return navigationController;
+}
+
++ (instancetype)
     passwordDetailsControllerForBrowser:(Browser*)browser
                                delegate:
                                    (id<SettingsNavigationControllerDelegate>)
@@ -783,6 +801,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   }
 }
 
+- (void)showPasswordManagerSearchPage {
+  self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.savedPasswordsCoordinator.delegate = self;
+  [self.savedPasswordsCoordinator start];
+}
+
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
                         showCancelButton:(BOOL)showCancelButton {
@@ -1121,6 +1147,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showSafeBrowsingSettings {
   [self showSafeBrowsing];
+}
+
+- (void)showPasswordSearchPage {
+  [self showPasswordManagerSearchPage];
 }
 
 @end

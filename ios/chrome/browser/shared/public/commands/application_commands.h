@@ -98,6 +98,9 @@ struct CredentialUIEntry;
 // Shows the Safe Browsing page.
 - (void)showSafeBrowsingSettings;
 
+// Shows the Password Manager's search page.
+- (void)showPasswordSearchPage;
+
 @end
 
 // Protocol for commands that will generally be handled by the application,

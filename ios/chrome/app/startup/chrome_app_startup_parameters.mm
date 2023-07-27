@@ -58,6 +58,9 @@ NSString* const kWidgetKitHostLockscreenLauncherWidget =
     @"lockscreen-launcher-widget";
 // Host used to identify the Chrome Shortcuts widget.
 NSString* const kWidgetKitHostShortcutsWidget = @"shortcuts-widget";
+// Host used to identify the Search Passwords widget.
+NSString* const kWidgetKitHostSearchPasswordsWidget =
+    @"search-passwords-widget";
 // Path for search action.
 NSString* const kWidgetKitActionSearch = @"/search";
 // Path for incognito action.
@@ -72,6 +75,8 @@ NSString* const kWidgetKitActionLens = @"/lens";
 NSString* const kWidgetKitActionGame = @"/game";
 // Path for open URL action.
 NSString* const kWidgetKitActionOpenURL = @"/open";
+// Path for search passwords action.
+NSString* const kWidgetKitActionSearchPasswords = @"/search-passwords";
 
 const CGFloat kAppGroupTriggersVoiceSearchTimeout = 15.0;
 
@@ -135,7 +140,8 @@ enum class WidgetKitExtensionAction {
   ACTION_QUICK_ACTIONS_LENS = 10,
   ACTION_SHORTCUTS_SEARCH = 11,
   ACTION_SHORTCUTS_OPEN = 12,
-  kMaxValue = ACTION_SHORTCUTS_OPEN,
+  ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS = 13,
+  kMaxValue = ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS,
 };
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
@@ -230,6 +236,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       command = app_group::kChromeAppGroupLensCommand;
     } else if ([completeURL.path isEqual:kWidgetKitActionOpenURL]) {
       command = app_group::kChromeAppGroupOpenURLCommand;
+    } else if ([completeURL.path isEqual:kWidgetKitActionSearchPasswords]) {
+      command = app_group::kChromeAppGroupSearchPasswordsCommand;
     } else if ([completeURL.path isEqualToString:kWidgetKitActionGame]) {
       if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
         LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
@@ -597,6 +605,19 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     action = ACTION_NEW_INCOGNITO_SEARCH;
   }
 
+  if ([command isEqualToString:
+                   base::SysUTF8ToNSString(
+                       app_group::kChromeAppGroupSearchPasswordsCommand)]) {
+    params = [[ChromeAppStartupParameters alloc]
+        initWithExternalURL:GURL()
+          declaredSourceApp:appId
+            secureSourceApp:secureSourceApp
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
+    [params setPostOpeningAction:SEARCH_PASSWORDS];
+    action = ACTION_NO_ACTION;
+  }
+
   if (action != ACTION_NO_ACTION) {
     // An external action that opened Chrome (i.e. GrowthKit link open, open
     // Search, search clipboard content) is activity that should indicate a user
@@ -688,6 +709,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         NOTREACHED();
         break;
     }
+  }
+  if ([secureSourceApp isEqualToString:kWidgetKitHostSearchPasswordsWidget]) {
+    LogWidgetKitAction(WidgetKitExtensionAction::
+                           ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS);
   }
   return params;
 }
