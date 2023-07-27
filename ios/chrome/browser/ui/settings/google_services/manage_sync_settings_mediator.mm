@@ -78,12 +78,12 @@ static const syncer::UserSelectableType kSyncSwitchItems[] = {
 // This is the list of available datatypes for account state `kSignedIn`.
 static const syncer::UserSelectableType kAccountSwitchItems[] = {
     syncer::UserSelectableType::kHistory,
-    syncer::UserSelectableType::kAutofill,
     syncer::UserSelectableType::kBookmarks,
-    syncer::UserSelectableType::kPasswords,
     syncer::UserSelectableType::kReadingList,
-    syncer::UserSelectableType::kPreferences,
-    syncer::UserSelectableType::kPayments};
+    syncer::UserSelectableType::kAutofill,
+    syncer::UserSelectableType::kPasswords,
+    syncer::UserSelectableType::kPayments,
+    syncer::UserSelectableType::kPreferences};
 
 // Returns the configuration to be used for the accessory.
 UIImageConfiguration* AccessoryConfiguration() {
@@ -454,17 +454,24 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
                                                    AccessoryConfiguration())];
   dataFromChromeSyncItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
-  dataFromChromeSyncItem.title =
-      GetNSString(IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_TITLE);
-  dataFromChromeSyncItem.detailText =
-      GetNSString(IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_DESCRIPTION);
   dataFromChromeSyncItem.accessibilityIdentifier =
       kDataFromChromeSyncAccessibilityIdentifier;
   dataFromChromeSyncItem.accessibilityTraits |= UIAccessibilityTraitButton;
 
   switch (self.syncAccountState) {
     case SyncSettingsAccountState::kSignedIn:
+      dataFromChromeSyncItem.title =
+          GetNSString(IDS_IOS_MANAGE_DATA_IN_YOUR_ACCOUNT_TITLE);
+      dataFromChromeSyncItem.detailText =
+          GetNSString(IDS_IOS_MANAGE_DATA_IN_YOUR_ACCOUNT_DESCRIPTION);
+      [model addItem:dataFromChromeSyncItem
+          toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+      break;
     case SyncSettingsAccountState::kSyncing:
+      dataFromChromeSyncItem.title =
+          GetNSString(IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_TITLE);
+      dataFromChromeSyncItem.detailText =
+          GetNSString(IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_DESCRIPTION);
       [model addItem:dataFromChromeSyncItem
           toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
       break;

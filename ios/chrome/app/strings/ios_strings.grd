@@ -1606,7 +1606,7 @@ See your search engine’s instructions for deleting your search history, if app
         Manage Your Google Account
       </message>
       <message name="IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE" desc="Title for the button that removes a Google account from the device">
-        Remove from this Device
+        Remove from This Device
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [iOS only]">
         Manage Sync
@@ -1619,6 +1619,12 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_REMOVE_ACTION_TITLE" desc="Title of the action used to remove a selected item. [iOS only]">
         Remove
+      </message>
+      <message name="IDS_IOS_MANAGE_DATA_IN_YOUR_ACCOUNT_TITLE" desc="Title for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
+        Data in your account
+      </message>
+      <message name="IDS_IOS_MANAGE_DATA_IN_YOUR_ACCOUNT_DESCRIPTION" desc="Subtitle for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
+        Review your account data
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_ENCRYPTION" desc="Title for the cell to open the encryption dialog.">
         Encryption
