@@ -107,6 +107,14 @@ class VisitRow {
   // Note that this corresponds to the "from_visit" column in the visit DB.
   VisitID referring_visit = kInvalidVisitID;
 
+  // In some cases, a visit can have a referrer that is *not* an actual visit in
+  // the history DB. In those cases (and only those), this field contains the
+  // referrer URL.
+  // This can happen e.g. if a URL is opened from the side panel into the main
+  // frame, or for visits coming from outside of Chrome, e.g. from the Android
+  // Google app.
+  GURL external_referrer_url;
+
   // A combination of bits from PageTransition.
   ui::PageTransition transition = ui::PAGE_TRANSITION_LINK;
 

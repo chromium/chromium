@@ -15,6 +15,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace history {
+void PrintTo(const VisitRow& row, std::ostream* os);
+}  // namespace history
+
+namespace sync_pb {
+void PrintTo(const HistorySpecifics& history, std::ostream* os);
+}  // namespace sync_pb
+
 namespace history_helper {
 
 // Matchers for sync_pb::HistorySpecifics.

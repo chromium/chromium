@@ -460,6 +460,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
             IsChainEnd(), HasOpenerVisit()))));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsExternalReferrer) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to some URL, and specify a referrer that is not actually in the
+  // history DB.
+  GURL referrer("https://www.referrer.com/");
+  GURL url =
+      embedded_test_server()->GetURL("www.host.com", "/sync/simple.html");
+  NavigateToURL(url, ui::PAGE_TRANSITION_LINK, referrer);
+
+  EXPECT_TRUE(WaitForServerHistory(UnorderedElementsAre(
+      AllOf(StandardFieldsArePopulated(), UrlIs(url.spec()),
+            Not(HasReferringVisit()), ReferrerURLIs(referrer.spec())))));
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
@@ -614,6 +629,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       base::Time::Now() - base::Minutes(4), "other_cache_guid", url2, 102);
   // The second visit has the first one as a referrer.
   specifics2.set_originator_referring_visit_id(101);
+  specifics2.set_referrer_url(url1.spec());
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics1));
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics2));
@@ -636,6 +652,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
     visit_id2 = visits2[0].visit_id;
 
     EXPECT_EQ(visits2[0].referring_visit, visits1[0].visit_id);
+    // Since there is an actual referrer visit, the external referrer URL should
+    // be empty.
+    EXPECT_TRUE(visits2[0].external_referrer_url.is_empty());
   }
 
   // Update the visits on the server.
@@ -679,7 +698,33 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
     // And finally, the referrer link should still exist.
     EXPECT_EQ(visits2[0].referring_visit, visits1[0].visit_id);
+    // Since there is an actual referrer visit, the external referrer URL should
+    // still be empty.
+    EXPECT_TRUE(visits2[0].external_referrer_url.is_empty());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsExternalReferrer) {
+  const GURL url("https://www.url.com");
+  const GURL referrer("https://www.referrer.com");
+
+  sync_pb::HistorySpecifics specifics = CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url, 101);
+  // The foreign visit has a referrer URL, but no referring visit ID.
+  specifics.set_referrer_url(referrer.spec());
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics));
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Make sure the visit arrived, and its referrer URL was stored as an
+  // "external" referrer.
+  history::VisitVector visits =
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url);
+  ASSERT_EQ(visits.size(), 1u);
+  history::VisitRow visit = visits[0];
+  EXPECT_EQ(visit.referring_visit, history::kInvalidVisitID);
+  EXPECT_EQ(visit.external_referrer_url, referrer);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,

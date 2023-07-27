@@ -220,6 +220,9 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
     // any).
     row.originator_referring_visit = specifics.originator_referring_visit_id();
     row.originator_opener_visit = specifics.originator_opener_visit_id();
+    if (row.originator_referring_visit == kInvalidVisitID) {
+      row.external_referrer_url = GURL(specifics.referrer_url());
+    }
   } else {
     // All later visits in the chain are implicitly referred to by the preceding
     // visit.
@@ -1061,8 +1064,13 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
     }
 
     // Convert the current subchain into a SyncEntity.
-    GURL referrer_url =
-        GetURLForVisit(annotated_visits.front().visit_row.referring_visit);
+    GURL referrer_url;
+    VisitID referrer_id = annotated_visits.front().visit_row.referring_visit;
+    if (referrer_id != kInvalidVisitID) {
+      referrer_url = GetURLForVisit(referrer_id);
+    } else {
+      referrer_url = annotated_visits.front().visit_row.external_referrer_url;
+    }
     // Note: `favicon_urls` may legitimately be empty, that's fine.
     std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
         annotated_visits.back().url_row.url());
