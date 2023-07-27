@@ -85,4 +85,10 @@ export type Event = WebDriverBidi.Event | Cdp.Event;
 
 export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
-export type Message = WebDriverBidi.Message | Cdp.Message | {launched: true};
+export type Message = (
+  | WebDriverBidi.Message
+  | Cdp.Message
+  | {launched: true}
+) & {
+  channel?: WebDriverBidi.Script.Channel;
+};
