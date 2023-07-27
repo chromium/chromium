@@ -179,7 +179,7 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
 TextAutoSpace::CharType TextAutoSpace::GetTypeAndNext(const String& text,
                                                       wtf_size_t& offset) {
   CHECK(!text.Is8Bit());
-  UChar ch;
+  UChar32 ch;
   U16_NEXT(text.Characters16(), offset, text.length(), ch);
   return GetType(ch);
 }
@@ -189,7 +189,7 @@ TextAutoSpace::CharType TextAutoSpace::GetPrevType(const String& text,
                                                    wtf_size_t offset) {
   DCHECK_GT(offset, 0u);
   CHECK(!text.Is8Bit());
-  UChar last_ch;
+  UChar32 last_ch;
   U16_PREV(text.Characters16(), 0, offset, last_ch);
   return GetType(last_ch);
 }
