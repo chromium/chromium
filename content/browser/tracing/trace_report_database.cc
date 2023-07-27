@@ -11,15 +11,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/uuid.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 namespace {
+
 const base::FilePath::CharType kLocalTracesDatabaseName[] =
     FILE_PATH_LITERAL("LocalTraces.db");
-}  // namespace
+constexpr int kCurrentVersionNumber = 1;
 
 // create table `local_traces` with following columns:
 // `uuid` is the unique ID of the trace.
@@ -43,6 +45,8 @@ static constexpr char kLocalTracesTableSql[] = R"sql(
     proto BLOB NOT NULL,
     file_size INTEGER NOT NULL)
 )sql";
+
+}  // namespace
 
 TraceReportDatabase::TraceReportDatabase()
     : database_(sql::DatabaseOptions{.exclusive_locking = true,
@@ -78,11 +82,7 @@ bool TraceReportDatabase::OpenDatabase(const base::FilePath& path) {
     return false;
   }
 
-  if (!EnsureTableCreated()) {
-    database_.Close();
-    return false;
-  }
-  return true;
+  return EnsureTableCreated();
 }
 
 bool TraceReportDatabase::OpenDatabaseForTesting() {
@@ -90,16 +90,11 @@ bool TraceReportDatabase::OpenDatabaseForTesting() {
     return true;
   }
 
-  if (database_.OpenInMemory()) {
-    return true;
-  }
-
-  if (!EnsureTableCreated()) {
-    database_.Close();
+  if (!database_.OpenInMemory()) {
     return false;
   }
 
-  return true;
+  return EnsureTableCreated();
 }
 
 // TODO (aattar): Add database clean up solution and/or quota. Currently there's
@@ -230,17 +225,15 @@ bool TraceReportDatabase::DeleteAllTraces() {
 }
 
 bool TraceReportDatabase::EnsureTableCreated() {
-  if (!database_.is_open()) {
-    return false;
-  }
-  return database_.Execute(kLocalTracesTableSql);
-}
+  DCHECK(database_.is_open());
 
-bool TraceReportDatabase::EnsureTableCreatedForTesting() {
-  if (!database_.is_open()) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(&database_, kCurrentVersionNumber,
+                       kCurrentVersionNumber)) {
     return false;
   }
-  return database_.ExecuteScriptForTesting(kLocalTracesTableSql);  // IN-TEST
+
+  return database_.Execute(kLocalTracesTableSql);
 }
 
 std::vector<TraceReportDatabase::ClientReport>

@@ -17,18 +17,16 @@ namespace content {
 
 class TraceReportDatabaseTest : public testing::Test {
  protected:
-  void SetUp() override { trace_report_.OpenDatabaseForTesting(); }
+  void SetUp() override { ASSERT_TRUE(trace_report_.OpenDatabaseForTesting()); }
 
   TraceReportDatabase trace_report_;
 };
 
 TEST_F(TraceReportDatabaseTest, CreatingAndDroppingLocalTraceTable) {
-  ASSERT_TRUE(trace_report_.EnsureTableCreatedForTesting());
   EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
 }
 
 TEST_F(TraceReportDatabaseTest, AddingNewReport) {
-  ASSERT_TRUE(trace_report_.EnsureTableCreatedForTesting());
   EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
 
   // Create Report for the local traces database.
@@ -52,8 +50,6 @@ TEST_F(TraceReportDatabaseTest, AddingNewReport) {
 }
 
 TEST_F(TraceReportDatabaseTest, RetreiveProtoFromTrace) {
-  ASSERT_TRUE(trace_report_.EnsureTableCreatedForTesting());
-
   // Create Report for the local traces database.
   TraceReportDatabase::NewReport new_report;
   new_report.uuid = base::Uuid::GenerateRandomV4();
@@ -74,7 +70,6 @@ TEST_F(TraceReportDatabaseTest, RetreiveProtoFromTrace) {
 }
 
 TEST_F(TraceReportDatabaseTest, DeletingSingleTrace) {
-  ASSERT_TRUE(trace_report_.EnsureTableCreatedForTesting());
   EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
 
   // Create Report for the local traces database.
@@ -95,7 +90,6 @@ TEST_F(TraceReportDatabaseTest, DeletingSingleTrace) {
 }
 
 TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
-  ASSERT_TRUE(trace_report_.EnsureTableCreatedForTesting());
   EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
 
   // Create multiple NewReport and add to the local_traces table.
@@ -118,7 +112,6 @@ TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
 }
 
 TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
-  ASSERT_TRUE(trace_report_.EnsureTableCreatedForTesting());
   EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
 
   // Create Report for the local traces database.
@@ -143,7 +136,6 @@ TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
 }
 
 TEST_F(TraceReportDatabaseTest, UploadComplete) {
-  ASSERT_TRUE(trace_report_.EnsureTableCreatedForTesting());
   EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
 
   // Create Report for the local traces database.

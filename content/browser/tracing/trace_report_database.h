@@ -116,9 +116,6 @@ class CONTENT_EXPORT TraceReportDatabase {
   // Get string if the current Trace exists.
   absl::optional<std::string> GetProtoValue(base::Uuid uuid);
 
-  // Uses ExecuteScriptForTesting for creation of the table.
-  bool EnsureTableCreatedForTesting();
-
   // Returns all the reports currently stored in the database.
   std::vector<ClientReport> GetAllReports();
 

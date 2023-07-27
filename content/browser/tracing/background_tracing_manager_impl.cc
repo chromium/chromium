@@ -148,6 +148,7 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!creation_result) {
     RecordMetric(Metrics::DATABASE_INITIALIZATION_FAILED);
+    trace_database_.Reset();
   }
 }
 
