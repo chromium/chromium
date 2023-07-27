@@ -126,4 +126,11 @@ BASE_FEATURE(kDetectHiDpiForMsaa,
              "DetectHiDpiForMsaa",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSmallerInterestArea,
+             "SmallerInterestArea",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kInterestAreaSizeInPixels{
+    &kSmallerInterestArea, "size_in_pixels", kDefaultInterestAreaSizeInPixels};
+
 }  // namespace features

@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_settings.h"
 
+#include <algorithm>
+#include <tuple>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -14,6 +17,7 @@
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "cc/tiles/image_decode_cache_utils.h"
+#include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -80,6 +84,22 @@ bool IsSmallScreen(const gfx::Size& size) {
   return area < kSmallScreenPixelThreshold;
 }
 #endif
+
+std::pair<int, int> GetTilingInterestAreaSizes() {
+  int interest_area_size_in_pixels =
+      ::features::kInterestAreaSizeInPixels.Get();
+  if (interest_area_size_in_pixels ==
+      ::features::kInterestAreaSizeInPixels.default_value) {
+    return {
+        ::features::kDefaultInterestAreaSizeInPixels,
+        cc::LayerTreeSettings::kDefaultSkewportExtrapolationLimitInScrenPixels};
+  }
+  // Keep the same ratio we have by default.
+  static_assert(
+      cc::LayerTreeSettings::kDefaultSkewportExtrapolationLimitInScrenPixels ==
+      2 * ::features::kDefaultInterestAreaSizeInPixels / 3);
+  return {interest_area_size_in_pixels, (2 * interest_area_size_in_pixels) / 3};
+}
 
 }  // namespace
 
@@ -557,6 +577,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_variable_refresh_rate =
       ::features::IsVariableRefreshRateEnabled();
 
+  std::tie(settings.tiling_interest_area_padding,
+           settings.skewport_extrapolation_limit_in_screen_pixels) =
+      GetTilingInterestAreaSizes();
   return settings;
 }
 

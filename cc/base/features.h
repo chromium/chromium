@@ -6,6 +6,7 @@
 #define CC_BASE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
 
@@ -110,6 +111,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReducedFrameRateEstimation);
 
 // Use 4x MSAA (vs 8) on High DPI screens.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDetectHiDpiForMsaa);
+
+// Feature to reduce the area in which invisible tiles are kept around.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSmallerInterestArea);
+
+constexpr static int kDefaultInterestAreaSizeInPixels = 3000;
+CC_BASE_EXPORT extern const base::FeatureParam<int> kInterestAreaSizeInPixels;
 
 }  // namespace features
 
