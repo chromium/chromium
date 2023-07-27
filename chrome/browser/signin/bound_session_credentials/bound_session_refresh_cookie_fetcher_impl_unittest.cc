@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -31,9 +32,9 @@ using RefreshTestFuture =
 class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
  public:
   BoundSessionRefreshCookieFetcherImplTest() {
-    test_url_loader_factory_ = signin_client_.GetTestURLLoaderFactory();
     fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
-        &signin_client_, kGaiaUrl,
+        test_url_loader_factory_.GetSafeWeakWrapper(),
+        wait_for_network_callback_helper_, kGaiaUrl,
         base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName});
     UpdateCookieList();
   }
@@ -89,21 +90,20 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestSigninClient signin_client_{&prefs_};
-  raw_ptr<network::TestURLLoaderFactory> test_url_loader_factory_ = nullptr;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  TestWaitForNetworkCallbackHelper wait_for_network_callback_helper_;
   std::unique_ptr<BoundSessionRefreshCookieFetcherImpl> fetcher_;
   net::CookieList cookies_;
 };
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url,
             "https://accounts.google.com/RotateBoundCookies");
   EXPECT_EQ(pending_request->request.method, "GET");
@@ -115,7 +115,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
   EXPECT_TRUE(reported_cookies_notified());
   EXPECT_TRUE(expected_cookies_set());
 
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
 
   EXPECT_TRUE(future.IsReady());
@@ -124,15 +124,15 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
        SuccessCookiesReportedDelayed) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
 
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
   EXPECT_FALSE(future.IsReady());
   EXPECT_FALSE(reported_cookies_notified());
@@ -147,15 +147,15 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
        ResultNotReportedOnCookieRead) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
 
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
   EXPECT_FALSE(future.IsReady());
   EXPECT_FALSE(reported_cookies_notified());
@@ -169,15 +169,15 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, CookiesNotReported) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
 
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
   EXPECT_FALSE(future.IsReady());
   EXPECT_FALSE(reported_cookies_notified());
@@ -192,13 +192,13 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, CookiesNotReported) {
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
        CookiesReportedExpectedCookieNotSet) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
 
   UpdateCookieList(
       /*excluded_cookies=*/{k1PSIDTSCookieName, k3PSIDTSCookieName});
@@ -207,7 +207,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   EXPECT_TRUE(reported_cookies_notified());
   EXPECT_FALSE(expected_cookies_set());
 
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
 
   EXPECT_TRUE(future.IsReady());
@@ -218,13 +218,13 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
        CookiesReportedNotAllExpectedCookiesSet) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
 
   // Remove one of the expected cookies
   UpdateCookieList(/*excluded_cookies=*/{k3PSIDTSCookieName});
@@ -233,7 +233,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   EXPECT_TRUE(reported_cookies_notified());
   EXPECT_FALSE(expected_cookies_set());
 
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
 
   EXPECT_TRUE(future.IsReady());
@@ -243,16 +243,16 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureNetError) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
 
   network::URLLoaderCompletionStatus status(net::ERR_UNEXPECTED);
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url, status,
       network::mojom::URLResponseHead::New(), std::string());
 
@@ -263,15 +263,15 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureNetError) {
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureHttpError) {
-  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  EXPECT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
 
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "", net::HTTP_UNAUTHORIZED);
 
   EXPECT_TRUE(future.IsReady());
@@ -312,18 +312,18 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, NetworkDelayed) {
-  signin_client_.SetNetworkCallsDelayed(true);
+  wait_for_network_callback_helper_.SetNetworkCallsDelayed(true);
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 0u);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
 
-  signin_client_.SetNetworkCallsDelayed(false);
-  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  wait_for_network_callback_helper_.SetNetworkCallsDelayed(false);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_->GetPendingRequest(0);
+      test_url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url,
             "https://accounts.google.com/RotateBoundCookies");
-  test_url_loader_factory_->SimulateResponseForPendingRequest(
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
 
   EXPECT_TRUE(future.Wait());

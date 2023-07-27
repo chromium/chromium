@@ -12,7 +12,9 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
+#include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 #include "components/signin/public/base/signin_client.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
@@ -27,7 +29,9 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     Delegate* delegate)
     : BoundSessionCookieController(url, cookie_names, delegate),
       key_service_(key_service),
-      client_(client) {
+      client_(client),
+      wait_for_network_callback_helper_(
+          std::make_unique<WaitForNetworkCallbackHelperChrome>()) {
   // TODO(b/273920907): Mark `wrapped_key` as non-optional when
   // `BoundSessionCookieRefreshServiceImpl` uses only
   // explicitly registered sessions.
@@ -111,7 +115,9 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
 
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
-                   client_, url_, std::move(cookie_names))
+                   client_->GetURLLoaderFactory(),
+                   *wait_for_network_callback_helper_, url_,
+                   std::move(cookie_names))
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    client_, url_, std::move(cookie_names));
 }

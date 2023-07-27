@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/time/time.h"
-#include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -41,13 +41,14 @@ bool IsExpectedCookie(
 }  // namespace
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
-    SigninClient* client,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    WaitForNetworkCallbackHelper& wait_for_network_callback_helper,
     const GURL& cookie_url,
     base::flat_set<std::string> cookie_names)
-    : client_(client),
+    : url_loader_factory_(std::move(url_loader_factory)),
+      wait_for_network_callback_helper_(wait_for_network_callback_helper),
       expected_cookie_domain_(cookie_url),
-      expected_cookie_names_(std::move(cookie_names)),
-      url_loader_factory_(client->GetURLLoaderFactory()) {}
+      expected_cookie_names_(std::move(cookie_names)) {}
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
     default;
@@ -57,7 +58,7 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
   CHECK(!callback_);
   CHECK(callback);
   callback_ = std::move(callback);
-  client_->DelayNetworkCall(
+  wait_for_network_callback_helper_->DelayNetworkCall(
       base::BindOnce(&BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
                      weak_ptr_factory_.GetWeakPtr()));
 }

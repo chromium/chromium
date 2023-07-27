@@ -23,6 +23,7 @@ class UnexportableKeyService;
 class SigninClient;
 class BoundSessionCookieObserver;
 class SessionBindingHelper;
+class WaitForNetworkCallbackHelper;
 
 class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
  public:
@@ -80,7 +81,11 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   const raw_ptr<SigninClient> client_;
   std::vector<std::unique_ptr<BoundSessionCookieObserver>>
       bound_cookies_observers_;
+
+  std::unique_ptr<WaitForNetworkCallbackHelper>
+      wait_for_network_callback_helper_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
+
   std::vector<base::OnceClosure> resume_blocked_requests_;
   // Used to schedule preemptive cookie refresh.
   base::OneShotTimer cookie_refresh_timer_;

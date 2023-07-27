@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/cookies/canonical_cookie.h"
@@ -20,14 +21,15 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-class SigninClient;
+class WaitForNetworkCallbackHelper;
 
 class BoundSessionRefreshCookieFetcherImpl
     : public BoundSessionRefreshCookieFetcher,
       public network::mojom::CookieAccessObserver {
  public:
   explicit BoundSessionRefreshCookieFetcherImpl(
-      SigninClient* client,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      WaitForNetworkCallbackHelper& wait_for_network_callback_helper,
       const GURL& cookie_url,
       base::flat_set<std::string> cookie_names);
   ~BoundSessionRefreshCookieFetcherImpl() override;
@@ -57,14 +59,14 @@ class BoundSessionRefreshCookieFetcherImpl
   void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
                  observer) override;
 
-  const raw_ptr<SigninClient> client_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const raw_ref<WaitForNetworkCallbackHelper> wait_for_network_callback_helper_;
 
   // Used to check whether the refresh request has set the required cookie.
   // Otherwise, the request is considered a failure.
   const GURL expected_cookie_domain_;
   const base::flat_set<std::string> expected_cookie_names_;
 
-  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   RefreshCookieCompleteCallback callback_;
 
   bool expected_cookies_set_ = false;
