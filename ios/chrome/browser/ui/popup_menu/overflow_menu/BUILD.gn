@@ -16,8 +16,8 @@ source_set("overflow_menu_constants") {
 source_set("overflow_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "action_customization_coordinator.h",
-    "action_customization_coordinator.mm",
+    "menu_customization_coordinator.h",
+    "menu_customization_coordinator.mm",
     "overflow_menu_mediator.h",
     "overflow_menu_mediator.mm",
     "overflow_menu_orderer.h",
@@ -97,9 +97,9 @@ swift_source_set("overflow_menu_swift") {
   sources = [
     "Color+overflow_menu.swift",
     "action_customization_model.swift",
-    "action_customization_view.swift",
     "destination_customization_model.swift",
     "destination_drag_handler.swift",
+    "menu_customization_view.swift",
     "overflow_menu_action.swift",
     "overflow_menu_action_group.swift",
     "overflow_menu_action_list.swift",

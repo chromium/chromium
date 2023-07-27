@@ -4,13 +4,13 @@
 
 import SwiftUI
 
-@objc public protocol ActionCustomizationEventHandler: AnyObject {
+@objc public protocol MenuCustomizationEventHandler: AnyObject {
   func cancelWasTapped()
   func doneWasTapped()
 }
 
-/// View for showing the customization screen for overflow actions
-struct ActionCustomizationView: View {
+/// View for showing the customization screen for overflow menu
+struct MenuCustomizationView: View {
   @ObservedObject var actionCustomizationModel: ActionCustomizationModel
 
   @ObservedObject var destinationCustomizationModel: DestinationCustomizationModel
@@ -19,13 +19,13 @@ struct ActionCustomizationView: View {
 
   @StateObject var dragHandler: DestinationDragHandler
 
-  weak var eventHandler: ActionCustomizationEventHandler?
+  weak var eventHandler: MenuCustomizationEventHandler?
 
   init(
     actionCustomizationModel: ActionCustomizationModel,
     destinationCustomizationModel: DestinationCustomizationModel,
     uiConfiguration: OverflowMenuUIConfiguration,
-    eventHandler: ActionCustomizationEventHandler
+    eventHandler: MenuCustomizationEventHandler
   ) {
     self.actionCustomizationModel = actionCustomizationModel
     self.destinationCustomizationModel = destinationCustomizationModel

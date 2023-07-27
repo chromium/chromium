@@ -54,8 +54,8 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/ui/popup_menu/overflow_menu/action_customization_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/menu_customization_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -137,7 +137,7 @@ enum class IOSOverflowMenuActionType {
 
   OverflowMenuOrderer* _overflowMenuOrderer;
 
-  ActionCustomizationCoordinator* _actionCustomizationCoordinator;
+  MenuCustomizationCoordinator* _menuCustomizationCoordinator;
 }
 
 @synthesize mediator = _mediator;
@@ -578,16 +578,16 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - OverflowMenuCustomizationCommands
 
 - (void)showActionCustomization {
-  _actionCustomizationCoordinator = [[ActionCustomizationCoordinator alloc]
+  _menuCustomizationCoordinator = [[MenuCustomizationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
-  _actionCustomizationCoordinator.menuOrderer = _overflowMenuOrderer;
-  [_actionCustomizationCoordinator start];
+  _menuCustomizationCoordinator.menuOrderer = _overflowMenuOrderer;
+  [_menuCustomizationCoordinator start];
 }
 
 - (void)hideActionCustomization {
-  [_actionCustomizationCoordinator stop];
-  _actionCustomizationCoordinator = nil;
+  [_menuCustomizationCoordinator stop];
+  _menuCustomizationCoordinator = nil;
 }
 
 #pragma mark - ContainedPresenterDelegate

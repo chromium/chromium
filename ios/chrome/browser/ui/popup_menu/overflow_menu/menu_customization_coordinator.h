@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_ACTION_CUSTOMIZATION_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_ACTION_CUSTOMIZATION_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_MENU_CUSTOMIZATION_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_MENU_CUSTOMIZATION_COORDINATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -11,12 +11,12 @@
 
 @class OverflowMenuOrderer;
 
-// Coordinator for the action customization screen.
-@interface ActionCustomizationCoordinator : ChromeCoordinator
+// Coordinator for the overflow menu customization screen.
+@interface MenuCustomizationCoordinator : ChromeCoordinator
 
 // Orderer to provide the actions to customize in the correct order.
 @property(nonatomic, strong) OverflowMenuOrderer* menuOrderer;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_ACTION_CUSTOMIZATION_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_MENU_CUSTOMIZATION_COORDINATOR_H_

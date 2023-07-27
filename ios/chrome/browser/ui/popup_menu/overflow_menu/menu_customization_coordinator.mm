@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/popup_menu/overflow_menu/action_customization_coordinator.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/menu_customization_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -14,13 +14,13 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ActionCustomizationCoordinator () <
+@interface MenuCustomizationCoordinator () <
     UISheetPresentationControllerDelegate,
-    ActionCustomizationEventHandler>
+    MenuCustomizationEventHandler>
 
 @end
 
-@implementation ActionCustomizationCoordinator {
+@implementation MenuCustomizationCoordinator {
   // UI configuration object to configure this view.
   OverflowMenuUIConfiguration* _UIConfiguration;
 
@@ -37,13 +37,13 @@
                                      highlightDestination:-1];
 
   _viewController = [OverflowMenuViewProvider
-      makeActionCustomizationViewControllerWithActionModel:
+      makeMenuCustomizationViewControllerWithActionModel:
           self.menuOrderer.actionCustomizationModel
-                                          destinationModel:
-                                              self.menuOrderer
-                                                  .destinationCustomizationModel
-                                           uiConfiguration:_UIConfiguration
-                                              eventHandler:self];
+                                        destinationModel:
+                                            self.menuOrderer
+                                                .destinationCustomizationModel
+                                         uiConfiguration:_UIConfiguration
+                                            eventHandler:self];
 
   UISheetPresentationController* sheetPresentationController =
       _viewController.sheetPresentationController;
@@ -95,7 +95,7 @@
   return NO;
 }
 
-#pragma mark - ActionCustomizationEventHandler
+#pragma mark - MenuCustomizationEventHandler
 
 - (void)doneWasTapped {
   [self.menuOrderer commitActionsUpdate];
