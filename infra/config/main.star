@@ -40,8 +40,7 @@ lucicfg.config(
         "outages.pyl",
         "sheriff-rotations/*.txt",
         "project.pyl",
-        "testing/gn_isolate_map.pyl",
-        "testing/mixins.pyl",
+        "testing/*.pyl",
     ],
     fail_on_warnings = True,
     lint_checks = [
@@ -207,6 +206,7 @@ exec("//swarming.star")
 exec("//recipes.star")
 exec("//targets/mixins.star")
 exec("//targets/targets.star")
+exec("//targets/variants.star")
 
 exec("//notifiers.star")
 
