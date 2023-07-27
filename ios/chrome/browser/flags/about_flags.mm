@@ -1340,11 +1340,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFeedSyntheticCapabilitiesName,
      flag_descriptions::kEnableFeedSyntheticCapabilitiesDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableFeedSyntheticCapabilities)},
-    {"enable-friendlier-safe-browsing-settings",
-     flag_descriptions::kEnableFriendlierSafeBrowsingSettingsName,
-     flag_descriptions::kEnableFriendlierSafeBrowsingSettingsDescription,
+    {"enable-friendlier-safe-browsing-settings-standard-protection",
+     flag_descriptions::
+         kEnableFriendlierSafeBrowsingSettingsStandardProtectionName,
+     flag_descriptions::
+         kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(safe_browsing::kFriendlierSafeBrowsingSettings)},
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)},
     {"show-inactive-tabs-count", flag_descriptions::kShowInactiveTabsCountName,
      flag_descriptions::kShowInactiveTabsCountDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kShowInactiveTabsCount)},

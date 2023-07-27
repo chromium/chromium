@@ -166,11 +166,11 @@ export class SettingsSecurityPageElement extends
         observer: 'focusConfigChanged_',
       },
 
-      enableFriendlierSafeBrowsingSettings_: {
+      enableFriendlierSafeBrowsingSettingsStandardProtection_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'enableFriendlierSafeBrowsingSettings');
+              'enableFriendlierSafeBrowsingSettingsStandardProtection');
         },
       },
 
@@ -190,7 +190,7 @@ export class SettingsSecurityPageElement extends
   private enableSecurityKeysSubpage_: boolean;
   focusConfig: FocusConfig;
   private showDisableSafebrowsingDialog_: boolean;
-  private enableFriendlierSafeBrowsingSettings_: boolean;
+  private enableFriendlierSafeBrowsingSettingsStandardProtection_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -292,21 +292,21 @@ export class SettingsSecurityPageElement extends
 
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(
-        this.enableFriendlierSafeBrowsingSettings_ ?
+        this.enableFriendlierSafeBrowsingSettingsStandardProtection_ ?
             'safeBrowsingStandardDescUpdated' :
             'safeBrowsingStandardDesc');
   }
 
   private getPasswordsLeakToggleLabel_(): string {
     return this.i18n(
-        this.enableFriendlierSafeBrowsingSettings_ ?
+        this.enableFriendlierSafeBrowsingSettingsStandardProtection_ ?
             'passwordsLeakDetectionLabelUpdated' :
             'passwordsLeakDetectionLabel');
   }
 
   private getPasswordsLeakToggleSubLabel_(): string {
     let subLabel = this.i18n(
-        this.enableFriendlierSafeBrowsingSettings_ ?
+        this.enableFriendlierSafeBrowsingSettingsStandardProtection_ ?
             'passwordsLeakDetectionGeneralDescriptionUpdated' :
             'passwordsLeakDetectionGeneralDescription');
     // If the backing password leak detection preference is enabled, but the

@@ -129,7 +129,7 @@ const CGFloat kSymbolSize = 20;
       [[SettingsImageDetailTextItem alloc] initWithType:type];
   detailItem.detailText = l10n_util::GetNSString(detailText);
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
     detailItem.alignImageWithFirstLineOfText = YES;
   }
   detailItem.image = image;
@@ -139,12 +139,12 @@ const CGFloat kSymbolSize = 20;
   return detailItem;
 }
 
-// Decides on the string ouput based off of if kFriendlierSafeBrowsingSettings
-// is enabled.
+// Decides on the string ouput based off of if
+// kFriendlierSafeBrowsingSettingsEnhancedProtection is enabled.
 - (NSInteger)chooseLegacyString:(NSInteger)legacyString
                 orUpdatedString:(NSInteger)updatedString {
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
     return updatedString;
   }
 
@@ -169,7 +169,7 @@ const CGFloat kSymbolSize = 20;
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
     [model addSectionWithIdentifier:SectionIdentifierWhenOn];
     [model setHeader:[self showFirstHeader]
         forSectionWithIdentifier:SectionIdentifierWhenOn];
@@ -296,7 +296,7 @@ const CGFloat kSymbolSize = 20;
             accessibilityIdentifier:kSafeBrowsingEnhancedProtectionKeyCellId];
 
     if (base::FeatureList::IsEnabled(
-            safe_browsing::kFriendlierSafeBrowsingSettings)) {
+            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
       UIImage* dataIcon =
           DefaultSymbolWithPointSize(kChartBarXAxisSymbol, kSymbolSize);
       SettingsImageDetailTextItem* dataIconItem = [self

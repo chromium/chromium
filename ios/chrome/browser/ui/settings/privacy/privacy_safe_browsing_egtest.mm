@@ -194,7 +194,7 @@ namespace {
 
   // Check all rows exist.
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
     // Check that headers and footer exist.
     [[self elementInteractionWithGreyMatcher:
                grey_accessibilityID(
@@ -289,7 +289,7 @@ namespace {
 
   // Check all rows exist.
   if (!base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
     [[self elementInteractionWithGreyMatcher:
                grey_accessibilityID(kSafeBrowsingStandardProtectionShieldCellId)
                            scrollViewMatcher:

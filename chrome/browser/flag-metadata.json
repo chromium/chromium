@@ -2728,14 +2728,14 @@
     "expiry_milestone": 123
   },
   {
-    "name": "enable-friendlier-safe-browsing-settings",
-    "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-friendlier-safe-browsing-settings-enhanced-protection",
     "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com" ],
     "expiry_milestone": 121
+  },
+  {
+    "name": "enable-friendlier-safe-browsing-settings-standard-protection",
+    "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "enable-fullscreen-api",

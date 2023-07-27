@@ -8551,11 +8551,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)},
 
-    {"enable-friendlier-safe-browsing-settings",
-     flag_descriptions::kEnableFriendlierSafeBrowsingSettingsName,
-     flag_descriptions::kEnableFriendlierSafeBrowsingSettingsDescription,
+    {"enable-friendlier-safe-browsing-settings-standard-protection",
+     flag_descriptions::
+         kEnableFriendlierSafeBrowsingSettingsStandardProtectionName,
+     flag_descriptions::
+         kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(safe_browsing::kFriendlierSafeBrowsingSettings)},
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)},
 
     {"enable-tailored-security-retry-for-sync-users",
      flag_descriptions::kTailoredSecurityRetryForSyncUsersName,

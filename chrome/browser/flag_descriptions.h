@@ -736,8 +736,9 @@ extern const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[];
 extern const char
     kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription[];
 
-extern const char kEnableFriendlierSafeBrowsingSettingsName[];
-extern const char kEnableFriendlierSafeBrowsingSettingsDescription[];
+extern const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[];
+extern const char
+    kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[];
 
 extern const char kEnableTailoredSecurityUpdatedMessagesName[];
 extern const char kEnableTailoredSecurityUpdatedMessagesDescription[];

@@ -389,7 +389,8 @@ suite('SafeBrowsingFragment', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
+    loadTimeData.overrideValues(
+        {enableFriendlierSafeBrowsingSettingsStandardProtection: true});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -520,7 +521,7 @@ suite('SafeBrowsingFragment', function() {
   suite('SafeBrowsingFragment_FlagsDisabled', function() {
     suiteSetup(function() {
       loadTimeData.overrideValues(
-          {enableFriendlierSafeBrowsingSettings: false});
+          {enableFriendlierSafeBrowsingSettingsStandardProtection: false});
     });
 
     test('NotUpdatedStandardProtectionPrivacyGuide', function() {

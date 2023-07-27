@@ -171,8 +171,8 @@ BASE_FEATURE(kFriendlierSafeBrowsingSettingsEnhancedProtection,
              "FriendlierSafeBrowsingSettingsEnhancedProtection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFriendlierSafeBrowsingSettings,
-             "FriendlierSafeBrowsingSettings",
+BASE_FEATURE(kFriendlierSafeBrowsingSettingsStandardProtection,
+             "FriendlierSafeBrowsingSettingsStandardProtection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHashPrefixRealTimeLookups,

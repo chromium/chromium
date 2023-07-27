@@ -332,9 +332,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableEsbCollapse",
       safe_browsing::kEsbIphBubbleAndCollapseSettingsEnableCollapse.Get());
 
-  html_source->AddBoolean("enableFriendlierSafeBrowsingSettings",
-                          base::FeatureList::IsEnabled(
-                              safe_browsing::kFriendlierSafeBrowsingSettings));
+  html_source->AddBoolean(
+      "enableFriendlierSafeBrowsingSettingsStandardProtection",
+      base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection));
 
   html_source->AddBoolean("downloadBubbleEnabled",
                           download::IsDownloadBubbleEnabled(profile));

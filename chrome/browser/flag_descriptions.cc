@@ -1258,11 +1258,12 @@ const char
         "Updates the text, layout, icons, and links on both the privacy guide "
         "and the security settings page.";
 
-const char kEnableFriendlierSafeBrowsingSettingsName[] =
-    "Enable friendlier safe browsing settings";
-const char kEnableFriendlierSafeBrowsingSettingsDescription[] =
-    "Updates the text, layout, and icons on both the privacy guide and the "
-    "security settings page.";
+const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[] =
+    "Enable friendlier safe browsing settings standard protection";
+const char
+    kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[] =
+        "Updates the text and layout on both the privacy guide and the "
+        "security settings page.";
 
 const char kEnableTailoredSecurityUpdatedMessagesName[] =
     "Enable tailored security updated messages";

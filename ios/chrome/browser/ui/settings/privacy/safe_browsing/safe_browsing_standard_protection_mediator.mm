@@ -350,7 +350,7 @@ const CGFloat kSymbolSize = 20;
   leakCheckItem.enabled = self.inSafeBrowsingStandardProtection;
   leakCheckItem.on = [self passwordLeakCheckItemOnState];
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
     leakCheckItem.detailText = l10n_util::GetNSString(
         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY);
   } else {

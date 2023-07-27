@@ -57,7 +57,7 @@ suite('Main', function() {
       enableSecurityKeysSubpage: true,
       showHttpsOnlyModeSetting: true,
       showChromeRootStoreCertificates: true,
-      enableFriendlierSafeBrowsingSettings: true,
+      enableFriendlierSafeBrowsingSettingsStandardProtection: true,
     });
   });
 
@@ -180,7 +180,7 @@ suite('FlagsDisabled', function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
       showHttpsOnlyModeSetting: false,
-      enableFriendlierSafeBrowsingSettings: false,
+      enableFriendlierSafeBrowsingSettingsStandardProtection: false,
     });
   });
 
@@ -220,7 +220,7 @@ suite('FlagsDisabled', function() {
   });
 
   // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
-  // launched.
+  // standard protection is launched.
   test('NotUpdatedStandardProtectionDropdown', function() {
     const standardProtection = page.$.safeBrowsingStandard;
     const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');

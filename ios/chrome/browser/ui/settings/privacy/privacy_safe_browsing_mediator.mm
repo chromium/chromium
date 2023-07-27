@@ -134,16 +134,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (ItemArray)safeBrowsingItems {
   if (!_safeBrowsingItems) {
     NSMutableArray* items = [NSMutableArray array];
-    NSInteger enhancedProtectionSummary = [self
-        chooseLegacyString:
-            IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY
-           orUpdatedString:
-               IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY];
-    NSInteger standardProtectionSummary = [self
-        chooseLegacyString:
-            IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY
-           orUpdatedString:
-               IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY];
+    NSInteger enhancedProtectionSummary;
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
+      enhancedProtectionSummary = [self
+          chooseLegacyString:
+              IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY
+             orUpdatedString:
+                 IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY];
+    } else {
+      enhancedProtectionSummary =
+          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY;
+    }
+    NSInteger standardProtectionSummary;
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
+      standardProtectionSummary = [self
+          chooseLegacyString:
+              IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY
+             orUpdatedString:
+                 IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY];
+    } else {
+      standardProtectionSummary =
+          IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY;
+    }
     TableViewInfoButtonItem* safeBrowsingEnhancedProtectionItem = [self
              infoButtonItemType:ItemTypeSafeBrowsingEnhancedProtection
                         titleId:
@@ -159,11 +173,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
                      detailText:standardProtectionSummary
         accessibilityIdentifier:kSettingsSafeBrowsingStandardProtectionCellId];
     [items addObject:safeBrowsingStandardProtectionItem];
-
-    NSInteger noProtectionSummary = [self
-        chooseLegacyString:IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
-           orUpdatedString:
-               IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY];
+    NSInteger noProtectionSummary;
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
+      noProtectionSummary = [self
+          chooseLegacyString:IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
+             orUpdatedString:
+                 IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY];
+    } else {
+      noProtectionSummary = IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY;
+    }
     if (self.enterpriseEnabled) {
       TableViewInfoButtonItem* safeBrowsingNoProtectionItem = [self
                infoButtonItemType:ItemTypeSafeBrowsingNoProtection
@@ -287,12 +306,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                     type == ItemTypeSafeBrowsingNoProtection);
 }
 
-// Decides on the string ouput based off of if kFriendlierSafeBrowsingSettings
-// is enabled.
+// Decides on the string ouput based off of if
+// kFriendlierSafeBrowsingSettingsStandardProtection is enabled.
 - (NSInteger)chooseLegacyString:(NSInteger)legacyString
                 orUpdatedString:(NSInteger)updatedString {
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
     return updatedString;
   }
 
