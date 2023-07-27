@@ -1554,7 +1554,8 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
 TEST_P(CertVerifyProcInternalTest, Sha1IntermediateUsesServerGatedCrypto) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 
-  root->GenerateRSAKey();
+  ASSERT_TRUE(root->UseKeyFromFile(
+      GetTestCertsDirectory().AppendASCII("rsa-2048-1.key")));
   root->SetSignatureAlgorithm(SignatureAlgorithm::kRsaPkcs1Sha1);
 
   intermediate->SetExtendedKeyUsages({der::Input(kNetscapeServerGatedCrypto)});
@@ -3812,7 +3813,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // This test wants to check handling of MD5 CRLs, but ecdsa-with-md5
   // signatureAlgorithm does not exist. Use an RSA private key for intermediate
   // so that the CRL will be signed with the md5WithRSAEncryption algorithm.
-  intermediate->GenerateRSAKey();
+  ASSERT_TRUE(intermediate->UseKeyFromFile(
+      GetTestCertsDirectory().AppendASCII("rsa-2048-1.key")));
   leaf->SetSignatureAlgorithm(SignatureAlgorithm::kRsaPkcs1Sha256);
 
   // Leaf is revoked by intermediate issued CRL which is signed with
