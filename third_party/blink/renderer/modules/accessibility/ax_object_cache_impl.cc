@@ -3183,6 +3183,9 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kRoleMaybeChanged:
       HandleRoleMaybeChangedWithCleanLayout(node);
       break;
+    case TreeUpdateReason::kRoleMaybeChangedFromHref:
+      HandleRoleMaybeChangedWithCleanLayout(node);
+      break;
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
       SectionOrRegionRoleMaybeChangedWithCleanLayout(node);
@@ -3666,6 +3669,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     DeferTreeUpdate(TreeUpdateReason::kNameAttributeChanged, element);
   } else if (attr_name == html_names::kControlsAttr) {
     ChildrenChanged(element);
+  } else if (attr_name == html_names::kHrefAttr) {
+    DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChangedFromHref, element);
   }
 }
 

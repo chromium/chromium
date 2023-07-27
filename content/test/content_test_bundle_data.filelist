@@ -2473,6 +2473,8 @@ data/accessibility/html/a-expected-fuchsia.txt
 data/accessibility/html/a-expected-mac.txt
 data/accessibility/html/a-expected-uia-win.txt
 data/accessibility/html/a-expected-win.txt
+data/accessibility/html/a-href-update-expected-blink.txt
+data/accessibility/html/a-href-update.html
 data/accessibility/html/a-name-calc-expected-android-external.txt
 data/accessibility/html/a-name-calc-expected-android.txt
 data/accessibility/html/a-name-calc-expected-auralinux.txt
