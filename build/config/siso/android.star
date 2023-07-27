@@ -79,7 +79,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": remote_run,
             "canonicalize_dir": True,
-            "timeout": "2m",
+            "timeout": "5m",
         },
         {
             "name": "android/compile_java",
