@@ -105,6 +105,7 @@ class ASH_EXPORT SensorProvider
   void RemoveObserver(Observer* observer);
 
   // Starts/Stops sensor reading.
+  // Changes 'sensor_read_on_' and call EnableSensorReadingInternal.
   void EnableSensorReading();
   void StopSensorReading();
 
@@ -158,6 +159,9 @@ class ASH_EXPORT SensorProvider
   // Ignores the sensor with id, device_type as the attributes are not expected.
   void IgnoreSensor(chromeos::sensors::mojom::DeviceType device_type,
                     int32_t id);
+
+  // Enables all SamplesObservers and sets frequency for SamplesObservers.
+  void EnableSensorReadingInternal();
 
   void OnSensorRemoteDisconnect(
       chromeos::sensors::mojom::DeviceType device_type,

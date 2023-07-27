@@ -29,6 +29,8 @@ constexpr base::TimeDelta kDelayReconnect = base::Seconds(1);
 // Timeout for getting lid_angle samples.
 constexpr base::TimeDelta kLidAngleTimeout = base::Seconds(1);
 
+constexpr double kReadFrequencyInHz = 100.0;
+
 }  // namespace
 
 SensorProvider::DeviceState::DeviceState() {
@@ -347,8 +349,13 @@ void SensorProvider::IgnoreSensor(DeviceType device_type, int32_t id) {
 }
 
 void SensorProvider::EnableSensorReading() {
+  sensor_read_on_ = true;
+  EnableSensorReadingInternal();
+}
+
+void SensorProvider::EnableSensorReadingInternal() {
   // Starts Sensor Reading if all sensors are ready.
-  if (CheckSensorSamplesObserver()) {
+  if (sensor_read_on_ && CheckSensorSamplesObserver()) {
     GetLidAngleUpdate();
     for (auto& sensor : sensors_) {
       for (auto& type : sensor.second) {
@@ -359,7 +366,6 @@ void SensorProvider::EnableSensorReading() {
       }
     }
   }
-  sensor_read_on_ = true;
 }
 
 void SensorProvider::StopSensorReading() {
@@ -385,11 +391,9 @@ void SensorProvider::CreateSensorSamplesObserver(DeviceType device_type,
         id, std::move(sensor.remote), sensor.scale.value(),
         base::BindRepeating(&SensorProvider::OnSampleUpdatedCallback,
                             weak_ptr_factory_.GetWeakPtr(), device_type),
-        device_type);
+        device_type, kReadFrequencyInHz);
   }
-  if (sensor_read_on_ && CheckSensorSamplesObserver()) {
-    EnableSensorReading();
-  }
+  EnableSensorReadingInternal();
 }
 
 bool SensorProvider::CheckSensorSamplesObserver() {
