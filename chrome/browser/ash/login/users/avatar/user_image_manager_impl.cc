@@ -12,11 +12,9 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -241,9 +239,6 @@ class UserImageManagerImpl::Job {
   // Notifies the `parent_` that the Job is done.
   void NotifyJobDone();
 
-  // Sets the user's image to a stub image.
-  void SetStubImage();
-
   const AccountId& account_id() const { return parent_->account_id_; }
 
   raw_ptr<UserImageManagerImpl, ExperimentalAsh> parent_;
@@ -290,9 +285,12 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
                          false));
     } else {
       if (g_skip_default_user_image_download) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(&UserImageManagerImpl::Job::SetStubImage,
-                                      weak_factory_.GetWeakPtr()));
+        auto user_image = std::make_unique<user_manager::UserImage>(
+            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                IDR_LOGIN_DEFAULT_USER));
+        UpdateUser(std::move(user_image));
+        UpdateLocalState();
+        NotifyJobDone();
         return;
       }
       // Fetch the default image from cloud before caching it.
@@ -331,15 +329,22 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   // Fetch the default image from cloud before caching it.
   image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&UserImageManagerImpl::Job::SetStubImage,
-                                weak_factory_.GetWeakPtr()));
+  // Set user image to a temp stub image while fetching the default image from
+  // the cloud.
+  auto user_image = std::make_unique<user_manager::UserImage>(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_LOGIN_DEFAULT_USER));
+  UpdateUser(std::move(user_image));
+  UpdateLocalState();
 
-  if (!g_skip_default_user_image_download) {
-    user_image_loader::StartWithGURLAnimated(
-        image_url_, base::BindOnce(&Job::OnLoadImageDone,
-                                   weak_factory_.GetWeakPtr(), true));
+  if (g_skip_default_user_image_download) {
+    NotifyJobDone();
+    return;
   }
+
+  user_image_loader::StartWithGURLAnimated(
+      image_url_,
+      base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(), true));
 }
 
 void UserImageManagerImpl::Job::SetToImage(
@@ -536,20 +541,6 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
 
 void UserImageManagerImpl::Job::NotifyJobDone() {
   parent_->OnJobDone();
-}
-
-void UserImageManagerImpl::Job::SetStubImage() {
-  auto user_image = std::make_unique<user_manager::UserImage>(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_LOGIN_DEFAULT_USER));
-  UpdateUser(std::move(user_image));
-  UpdateLocalState();
-
-  // If we don't download the actual user image, we will stick to the stub and
-  // thus can report the job as done.
-  if (g_skip_default_user_image_download) {
-    NotifyJobDone();
-  }
 }
 
 UserImageManagerImpl::UserImageManagerImpl(

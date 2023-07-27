@@ -380,7 +380,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
       ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
@@ -705,7 +704,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(user_image_index);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(user_image_index, user->image_index());
@@ -735,7 +733,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
       ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
