@@ -2319,6 +2319,10 @@ class ContentAnalysisPrintBrowserTestBase
 
   bool EnableLocalScanAfterPreview() override { return false; }
 
+  int GetExpectedNewDocumentCalledCount() {
+    return ContentAnalysisAllowsPrint() ? (UseService() ? 2 : 1) : 0;
+  }
+
   // The value OnPrintEnterpriseConnector should be set to.
   virtual const char* PolicyValue() const = 0;
 
@@ -2371,7 +2375,7 @@ class ContentAnalysisAfterPrintPreviewBrowserTest
   }
   bool UseService() override { return std::get<2>(GetParam()); }
 };
-#endif
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 using ContentAnalysisScriptedPreviewlessVariation =
     testing::tuple<const char* /*policy_value*/,
@@ -2501,8 +2505,7 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
     // part of content analysis, since that can needlessly prompt the user.
     // When printing OOP, an extra call for a new document will occur since it
     // gets called in both the browser process and in the Print Backend service.
-    EXPECT_EQ(new_document_called_count(),
-              ContentAnalysisAllowsPrint() ? (UseService() ? 2 : 1) : 0);
+    EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
   }
 };
 
@@ -2668,8 +2671,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
-  EXPECT_EQ(new_document_called_count(),
-            ContentAnalysisAllowsPrint() ? (UseService() ? 2 : 1) : 0);
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -2701,7 +2703,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     // 5.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/5);
-    PrintAfterPreviewIsReadyAndLoaded();
   } else {
     print_view_manager->set_on_print_preview_done_closure(base::BindOnce(
         &ContentAnalysisBeforePrintPreviewBrowserTest::CheckForQuit,
@@ -2709,8 +2710,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     // Expect an extra message for the print job created after content
     // analysis to be destroyed.
     SetNumExpectedMessages(/*num=*/ContentAnalysisAllowsPrint() ? 2 : 1);
-    PrintAfterPreviewIsReadyAndLoaded();
   }
+
+  PrintAfterPreviewIsReadyAndLoaded();
 
   ASSERT_TRUE(print_view_manager->preview_allowed());
 
@@ -2724,8 +2726,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
-  EXPECT_EQ(new_document_called_count(),
-            ContentAnalysisAllowsPrint() ? (UseService() ? 2 : 1) : 0);
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
@@ -2771,7 +2772,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
       // 7.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
       SetNumExpectedMessages(/*num=*/7);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
     } else {
 #if BUILDFLAG(IS_WIN)
       // The expected event for this is:
@@ -2788,7 +2789,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
       // 6.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
       SetNumExpectedMessages(/*num=*/6);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
     }
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
   } else {
@@ -2801,7 +2802,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     //  Expect an extra message for the print job created after content
     //  analysis to be destroyed.
     SetNumExpectedMessages(/*num=*/UseService() ? 2 : 3);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
   }
 
@@ -2819,17 +2820,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   EXPECT_EQ(print_job_destruction_count(),
             ContentAnalysisAllowsPrint() ? 2 : 1);
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 1);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(scanning_responses_count(), 1);
 
   // Validate that `NewDocument` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
-  EXPECT_EQ(new_document_called_count(),
-            ContentAnalysisAllowsPrint() ? (UseService() ? 2 : 1) : 0);
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
-#endif
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
                        PrintNow) {
@@ -2880,7 +2880,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
       // 7.  Wait for the one print job to be destroyed, to ensure printing
       //     finished cleanly before completing the test.
       SetNumExpectedMessages(/*num=*/7);
-#endif
+#endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
     } else {
       // The expected events for this are:
       // 1.  The document is composited for content analysis.
@@ -2912,13 +2912,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
       // 3.  The print job used for scanning is destroyed.
       SetNumExpectedMessages(/*num=*/3);
     }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-#endif
              /*print_preview_disabled=*/true,
              /*has_selection=*/false);
 
@@ -2937,8 +2934,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
-  EXPECT_EQ(new_document_called_count(),
-            ContentAnalysisAllowsPrint() ? (UseService() ? 2 : 1) : 0);
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
@@ -2950,7 +2946,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
                        WindowPrint) {
   RunScriptedPrintTest("window.print()");
 }
-
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
