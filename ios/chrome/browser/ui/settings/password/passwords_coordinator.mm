@@ -191,10 +191,14 @@ using password_manager::WarningType;
 
   self.mediator.consumer = self.passwordsViewController;
 
+  BOOL startBlockedForReauth =
+      password_manager::features::IsAuthOnEntryEnabled();
+  // Disable animation when content will be blocked for reauth to prevent
+  // flickering in navigation bar.
   [self.baseNavigationController pushViewController:self.passwordsViewController
-                                           animated:YES];
+                                           animated:!startBlockedForReauth];
 
-  if (password_manager::features::IsAuthOnEntryEnabled()) {
+  if (startBlockedForReauth) {
     [self blockForReauth];
   }
 

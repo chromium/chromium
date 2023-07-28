@@ -11,9 +11,27 @@ source_set("reauthentication") {
   ]
 
   deps = [
+    ":reauthentication_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/common/ui/reauthentication",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("reauthentication_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "reauthentication_view_controller.h",
+    "reauthentication_view_controller.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings/password:title_view",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
   ]
 
   frameworks = [ "UIKit.framework" ]
