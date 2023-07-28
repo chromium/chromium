@@ -434,6 +434,10 @@ bool CrasAudioHandler::IsInputMuted() {
   return input_mute_on_;
 }
 
+bool CrasAudioHandler::IsInputMutedBySecurityCurtain() {
+  return input_mute_forced_by_security_curtain_;
+}
+
 bool CrasAudioHandler::IsInputMutedForDevice(uint64_t device_id) {
   const AudioDevice* device = GetDeviceFromId(device_id);
   if (!device)
@@ -905,7 +909,7 @@ void CrasAudioHandler::SetOutputMuteLockedBySecurityCurtain(bool mute_on) {
     return;
 
   output_mute_forced_by_security_curtain_ = mute_on;
-  UpdateAudioMute();
+  UpdateAudioOutputMute();
 }
 
 void CrasAudioHandler::AdjustOutputVolumeToAudibleLevel() {
@@ -951,6 +955,15 @@ void CrasAudioHandler::SetInputMute(
   SetInputMute(mute_on, method);
   base::UmaHistogramEnumeration(
       CrasAudioHandler::kInputGainMuteSourceHistogramName, source);
+}
+
+void CrasAudioHandler::SetInputMuteLockedBySecurityCurtain(bool mute_on) {
+  if (input_mute_forced_by_security_curtain_ == mute_on) {
+    return;
+  }
+
+  input_mute_forced_by_security_curtain_ = mute_on;
+  SetInputMute(mute_on, InputMuteChangeMethod::kOther);
 }
 
 void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
@@ -1471,12 +1484,12 @@ void CrasAudioHandler::ApplyAudioPolicy() {
     return;
 
   output_mute_forced_by_policy_ = mute_on;
-  UpdateAudioMute();
+  UpdateAudioOutputMute();
   // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome
   // media system.
 }
 
-void CrasAudioHandler::UpdateAudioMute() {
+void CrasAudioHandler::UpdateAudioOutputMute() {
   if (output_mute_forced_by_policy_ ||
       output_mute_forced_by_security_curtain_) {
     // Mute the device, but do not update the preference.
@@ -1547,8 +1560,13 @@ void CrasAudioHandler::SetInputMuteInternal(bool mute_on) {
   // The switch disables internal microphone, and cras audio handler is expected
   // to keep system wide cras mute on while the switch is toggled (which should
   // ensure non-internal audio input devices are kept muted).
-  if (!mute_on && input_muted_by_microphone_mute_switch_)
+  //
+  // Also do not allow unmuting the device if the security curtain is showing,
+  // to prevent a remote admin from spying on the user
+  if (!mute_on && (input_muted_by_microphone_mute_switch_ ||
+                   input_mute_forced_by_security_curtain_)) {
     return;
+  }
 
   input_mute_on_ = mute_on;
   CrasAudioClient::Get()->SetInputMute(mute_on);

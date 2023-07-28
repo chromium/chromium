@@ -52,6 +52,9 @@ class ASH_EXPORT SecurityCurtainController {
     // Factory that creates the view that will be shown as the curtain overlay.
     // Will be invoked multiple times, once for each monitor.
     ViewFactory curtain_factory;
+
+    bool mute_audio_output = true;
+    bool mute_audio_input = true;
   };
 
   virtual ~SecurityCurtainController() = default;
