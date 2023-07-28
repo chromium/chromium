@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -30,9 +31,12 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
+#include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_view_host.h"
@@ -51,6 +55,7 @@ using base::Bucket;
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using password_manager::PasswordForm;
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
@@ -84,6 +89,18 @@ void ClickOnView(views::View* view) {
       ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   view->OnMouseReleased(released_event);
+}
+
+PasswordForm CreateSharedCredentials(const GURL& url) {
+  PasswordForm shared_credentials;
+  shared_credentials.signon_realm = url.GetWithEmptyPath().spec();
+  shared_credentials.url = url;
+  shared_credentials.username_value = u"username";
+  shared_credentials.password_value = u"12345";
+  shared_credentials.match_type = PasswordForm::MatchType::kExact;
+  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_credentials.sender_name = u"Elisa Becket";
+  return shared_credentials;
 }
 
 }  // namespace
@@ -985,4 +1002,57 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                       "Screenshot can only run in pixel_tests on Windows."),
                   Screenshot(ManagePasswordsDetailsView::kTopView,
                              std::string(), "4385094"));
+}
+
+class SharedPasswordsNotificationBubbleInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTest {
+ public:
+  ~SharedPasswordsNotificationBubbleInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kSharedPasswordNotificationUI};
+};
+
+IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
+                       SharedPasswordNotificationUIShowsUpAndTakeScreenshot) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials = CreateSharedCredentials(test_url);
+  shared_credentials.sharing_notification_displayed = false;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          nullptr);
+  };
+
+  RunTestSequence(Do(setup_shared_passwords),
+                  WaitForShow(SharedPasswordsNotificationView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  Screenshot(SharedPasswordsNotificationView::kTopView,
+                             std::string(), "4714696"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedPasswordsNotificationBubbleInteractiveUiTest,
+    SharedPasswordNotificationUIShouldNotShowIfNotifiedAlready) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials = CreateSharedCredentials(test_url);
+  shared_credentials.sharing_notification_displayed = true;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          nullptr);
+  };
+
+  RunTestSequence(Do(setup_shared_passwords),
+                  EnsureNotPresent(SharedPasswordsNotificationView::kTopView));
 }

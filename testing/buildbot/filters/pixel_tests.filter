@@ -81,6 +81,7 @@ ScreenCaptureNotificationUiBrowserTest.*
 SecurePaymentConfirmationDialogViewTest.InvokeUi_*
 *SendTabToSelfBubbleTest.*
 SessionCrashedBubbleViewTest.*
+*SharedPasswordsNotificationBubbleInteractiveUiTest.*
 SyncConfirmationUIDialogPixelTest.*
 SyncConfirmationUIWindowPixelTest.*
 TabGroupEditorBubbleViewDialogBrowserTest.*
