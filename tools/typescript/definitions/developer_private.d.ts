@@ -457,6 +457,8 @@ declare global {
           Promise<LoadError|null>;
       export function removeHostPermission(extensionId: string, host: string):
           Promise<void>;
+      export function removeMultipleExtensions(extensionIds: string[]):
+          Promise<void>;
       export function repairExtension(extensionId: string): Promise<void>;
       export function requestFileSource(properties:
                                             RequestFileSourceProperties):

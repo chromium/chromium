@@ -23,6 +23,7 @@
 
 class Browser;
 class SettingsOverriddenDialogController;
+class Profile;
 
 namespace content {
 class WebContents;
@@ -54,6 +55,16 @@ void ShowExtensionInstallBlockedDialog(
 void ShowExtensionInstallFrictionDialog(
     content::WebContents* contents,
     base::OnceCallback<void(bool)> callback);
+
+// Shows a model dialog to users when they uninstall multiple extensions.
+// When the dialog is accepted, `accept_callback` is invoked.
+// When the dialog is canceled, `cancel_callback` is invoked.
+void ShowExtensionMultipleUninstallDialog(
+    Profile* profile,
+    gfx::NativeWindow parent,
+    const std::vector<ExtensionId>& extension_ids,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback);
 
 // Shows a dialog when extensions require a refresh for their action
 // to be run or blocked. When the dialog is accepted, `callback` is

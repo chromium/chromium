@@ -2741,6 +2741,122 @@ TEST_F(DeveloperPrivateApiUnitTest,
       permissions_manager->HasGrantedHostPermission(*extension_2, kGoogleCom));
 }
 
+// Test uninstalling multiple extensions.
+TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveMultipleExtensions) {
+  scoped_refptr<const Extension> extension_1 =
+      ExtensionBuilder("test_1").Build();
+  scoped_refptr<const Extension> extension_2 =
+      ExtensionBuilder("test_2").Build();
+  service()->AddExtension(extension_1.get());
+  service()->AddExtension(extension_2.get());
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_1->id()));
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_2->id()));
+
+  base::Value::List extension_ids_entries;
+  extension_ids_entries.reserve(2u);
+  extension_ids_entries.Append(extension_1->id());
+  extension_ids_entries.Append(extension_2->id());
+  std::string extension_ids_arg;
+  EXPECT_TRUE(
+      base::JSONWriter::Write(extension_ids_entries, &extension_ids_arg));
+  std::string args = base::StringPrintf(R"([%s])", extension_ids_arg.c_str());
+
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+
+  // Accept the multiple extension uninstallation bubble by default in unit
+  // tests.
+  function->accept_bubble_for_testing(true);
+
+  // Run the private api to remove the installed extensions.
+  api_test_utils::RunFunction(function.get(), args, profile());
+
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_1->id()));
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_2->id()));
+  EXPECT_EQ(registry()->enabled_extensions().size(), 0u);
+}
+
+TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveComponentExtensions) {
+  // Create a component extension and a regular extension, then try to remove
+  // them.
+  scoped_refptr<const Extension> component_extension =
+      ExtensionBuilder("component_extension")
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .Build();
+  scoped_refptr<const Extension> test_extension =
+      ExtensionBuilder("test_extension").Build();
+  service()->AddExtension(component_extension.get());
+  service()->AddExtension(test_extension.get());
+
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+
+  // Create a list of extensions with a component extension in it.
+  base::Value::List extensions_list;
+  extensions_list.reserve(2u);
+  extensions_list.Append(component_extension->id());
+  extensions_list.Append(test_extension->id());
+  std::string args;
+  EXPECT_TRUE(base::JSONWriter::Write(extensions_list, &args));
+  std::string component_args = base::StringPrintf(R"([%s])", args.c_str());
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+
+  // Accept the multiple extension uninstallation bubble by default in unit
+  // tests.
+  function->accept_bubble_for_testing(true);
+  // Verify the error message for uninstalling component and enterprise
+  // extensions.
+  EXPECT_EQ(
+      "Cannot uninstall the enterprise or component extensions in your list.",
+      api_test_utils::RunFunctionAndReturnError(function.get(), component_args,
+                                                profile()));
+
+  // Because there is a component extension in the list, the uninstallation is
+  // canceled. The number of extensions remains the same.
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+}
+
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateRemoveEnterpriseExtensions) {
+  // Create an enterprise extension and a regular extension, then try to remove
+  // them.
+  scoped_refptr<const Extension> enterprise_extension =
+      ExtensionBuilder("enterprise_extension")
+          .SetLocation(mojom::ManifestLocation::kExternalPolicy)
+          .Build();
+  scoped_refptr<const Extension> test_extension =
+      ExtensionBuilder("test_extension").Build();
+  service()->AddExtension(enterprise_extension.get());
+  service()->AddExtension(test_extension.get());
+
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+
+  // Create a list of extensions with an enterprise extension in it.
+  base::Value::List extensions_list;
+  extensions_list.reserve(2u);
+  extensions_list.Append(enterprise_extension->id());
+  extensions_list.Append(test_extension->id());
+  std::string args;
+  EXPECT_TRUE(base::JSONWriter::Write(extensions_list, &args));
+  std::string enterprise_args = base::StringPrintf(R"([%s])", args.c_str());
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+
+  // Accept the multiple extension uninstallation bubble by default in unit
+  // tests.
+  function->accept_bubble_for_testing(true);
+  // Verify the error message for uninstalling component and enterprise
+  // extensions.
+  EXPECT_EQ(
+      "Cannot uninstall the enterprise or component extensions in your list.",
+      api_test_utils::RunFunctionAndReturnError(function.get(), enterprise_args,
+                                                profile()));
+
+  // Because there is an enterprise extension in the list, the uninstallation is
+  // canceled. The number of extensions remains the same.
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+}
+
 class DeveloperPrivateApiAllowlistUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:

@@ -832,6 +832,11 @@ namespace developerPrivate {
         ExtensionSiteAccessUpdate[] updates,
         optional VoidCallback callback);
 
+    // Removes multiple installed extensions.
+    [supportsPromises] static void removeMultipleExtensions(
+        DOMString[] extensionIds,
+        optional VoidCallback callback);
+
     [nocompile, deprecated="Use openDevTools"]
         static void inspect(InspectOptions options,
                             optional VoidCallback callback);

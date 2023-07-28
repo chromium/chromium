@@ -5871,6 +5871,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON" desc="Text for the uninstall button on the non-platform app and ARC(App Runtime for Chrome) app uninstall prompt">
         Uninstall
       </message>
+      <!-- Remove multiple extension dialog extension name bullet poinit -->
+      <message name="IDS_EXTENSION_PROMPT_MULTIPLE_UNINSTALL_NAME_BULLET_POINT" desc="A bullet point to place in front of extension name.">
+        ''' • '''
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_MULTIPLE_UNINSTALL_TITLE" desc="Title text for removing multiple extensions.">
+        {NUM_EXTENSIONS, plural,
+         =1 {Remove extension?}
+         other {Remove # extensions?}}
+      </message>
       <message name="IDS_EXTENSION_PROMPT_UNINSTALL_TRIGGERED_BY_EXTENSION" desc="Text in uninstall-extension dialog that indicates the uninstall was triggered by another extension (the name of the extension being uninstalled is already present in the dialog title).">
         "<ph name="TRIGGERING_EXTENSION_NAME">$1<ex>Extension Manager</ex></ph>" would like to remove this extension.
       </message>

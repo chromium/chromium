@@ -52,8 +52,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
@@ -165,6 +168,11 @@ const char kInvalidLazyBackgroundPageParameter[] =
 const char kInvalidRenderProcessId[] =
     "render_process_id can be set to -1 for only lazy background page based or "
     "service-worker based extensions.";
+const char kFailToUninstallEnterpriseOrComponentExtensions[] =
+    "Cannot uninstall the enterprise or component extensions in your list.";
+const char kFailToUninstallNoneExistentExtensions[] =
+    "Cannot uninstall non-existent extensions in your list.";
+const char kUserCancelledError[] = "User cancelled uninstall";
 
 const char kUnpackedAppsFolder[] = "apps_target";
 const char kManifestFile[] = "manifest.json";
@@ -2639,6 +2647,85 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
 }
 
 void DeveloperPrivateUpdateSiteAccessFunction::OnSiteSettingsUpdated() {
+  Respond(NoArguments());
+}
+
+DeveloperPrivateRemoveMultipleExtensionsFunction::
+    DeveloperPrivateRemoveMultipleExtensionsFunction() = default;
+DeveloperPrivateRemoveMultipleExtensionsFunction::
+    ~DeveloperPrivateRemoveMultipleExtensionsFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
+  absl::optional<developer::RemoveMultipleExtensions::Params> params =
+      developer::RemoveMultipleExtensions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  profile_ = Profile::FromBrowserContext(browser_context());
+  extension_ids_ = std::move(params->extension_ids);
+
+  // Verify the input extension list.
+  for (const auto& extension_id : extension_ids_) {
+    CHECK(profile_);
+    const Extension* current_extension =
+        ExtensionRegistry::Get(profile_)->GetExtensionById(
+            extension_id, ExtensionRegistry::EVERYTHING);
+    if (!current_extension) {
+      // Return early if the extension is a non-existent extension.
+      return RespondNow(Error(kFailToUninstallNoneExistentExtensions));
+    }
+    // If enterprise or component extensions are found, do nothing and respond
+    // with an error.
+    if (Manifest::IsComponentLocation(current_extension->location()) ||
+        Manifest::IsPolicyLocation(current_extension->location())) {
+      return RespondNow(Error(kFailToUninstallEnterpriseOrComponentExtensions));
+    }
+  }
+
+  if (accept_bubble_for_testing_.has_value()) {
+    if (*accept_bubble_for_testing_) {
+      OnDialogAccepted();
+      return AlreadyResponded();
+    }
+    return RespondNow(NoArguments());
+  }
+
+  Browser* browser = chrome::FindBrowserWithWebContents(GetSenderWebContents());
+  CHECK(browser);
+
+  ShowExtensionMultipleUninstallDialog(
+      browser->profile(), browser->window()->GetNativeWindow(), extension_ids_,
+      base::BindOnce(
+          &DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted,
+          this),
+      base::BindOnce(
+          &DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogCancelled,
+          this));
+  return RespondLater();
+}
+
+void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogCancelled() {
+  // Let the consumer end know that the Close button was clicked.
+  Respond(Error(kUserCancelledError));
+}
+
+void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted() {
+  for (const auto& extension_id : extension_ids_) {
+    if (!browser_context()) {
+      return;
+    }
+    const Extension* current_extension =
+        ExtensionRegistry::Get(profile_)->GetExtensionById(
+            extension_id, ExtensionRegistry::EVERYTHING);
+    // Extensions can be uninstalled externally while the dialog is open. Only
+    // uninstall extensions that are still existent.
+    if (!current_extension) {
+      continue;
+    }
+    // If an extension fails to be uninstalled, it will not pause the
+    // uninstall of the other extensions on the list.
+    ExtensionSystem::Get(profile_)->extension_service()->UninstallExtension(
+        extension_id, UNINSTALL_REASON_USER_INITIATED, nullptr);
+  }
   Respond(NoArguments());
 }
 

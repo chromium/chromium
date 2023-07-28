@@ -1868,6 +1868,7 @@ enum HistogramValue {
   PASSWORDSPRIVATE_FETCHFAMILYMEMBERS = 1806,
   READINGLIST_UPDATEENTRY = 1807,
   READINGLIST_QUERY = 1808,
+  DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS = 1809,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

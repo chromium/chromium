@@ -944,6 +944,44 @@ class DeveloperPrivateUpdateSiteAccessFunction
   void OnSiteSettingsUpdated();
 };
 
+class DeveloperPrivateRemoveMultipleExtensionsFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeMultipleExtensions",
+                             DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS)
+  DeveloperPrivateRemoveMultipleExtensionsFunction();
+
+  DeveloperPrivateRemoveMultipleExtensionsFunction(
+      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
+  DeveloperPrivateRemoveMultipleExtensionsFunction& operator=(
+      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
+
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
+
+ private:
+  ~DeveloperPrivateRemoveMultipleExtensionsFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  // A callback function to run when the user accepts the action dialog.
+  void OnDialogAccepted();
+
+  // A callback function to run when the user cancels the action dialog.
+  void OnDialogCancelled();
+
+  // The IDs of the extensions to be uninstalled.
+  std::vector<ExtensionId> extension_ids_;
+
+  raw_ptr<Profile> profile_;
+
+  // If true, immediately accept the blocked action dialog by running the
+  // callback.
+  absl::optional<bool> accept_bubble_for_testing_;
+};
+
 }  // namespace api
 
 }  // namespace extensions
