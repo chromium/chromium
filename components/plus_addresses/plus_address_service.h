@@ -31,6 +31,11 @@ class PlusAddressService {
   // Default constructor/destructor only, for now.
   PlusAddressService();
   ~PlusAddressService();
+
+  // Returns `true` when plus addresses are supported. Currently requires only
+  // that the `kPlusAddressesEnabled` base::Feature is enabled.
+  // TODO(crbug.com/1467623): also take signin state into account.
+  bool SupportsPlusAddresses();
   // Get a plus address, if one exists, for the passed-in facet.
   absl::optional<std::string> GetPlusAddress(std::string facet);
   // Save a plus address for the given facet.

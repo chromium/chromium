@@ -4,6 +4,8 @@
 
 source_set("plus_addresses") {
   sources = [
+    "features.cc",
+    "features.h",
     "plus_address_service.cc",
     "plus_address_service.h",
   ]

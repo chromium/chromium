@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/features.h"
 
 namespace plus_addresses {
 
 PlusAddressService::PlusAddressService() = default;
 PlusAddressService::~PlusAddressService() = default;
+
+bool PlusAddressService::SupportsPlusAddresses() {
+  return base::FeatureList::IsEnabled(plus_addresses::kFeature);
+}
 
 absl::optional<std::string> PlusAddressService::GetPlusAddress(
     std::string facet) {
