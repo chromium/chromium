@@ -1,0 +1,24 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("plus_addresses") {
+  sources = [
+    "plus_address_service.cc",
+    "plus_address_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plus_address_service_unittest.cc" ]
+
+  deps = [
+    ":plus_addresses",
+    "//base/test:test_support",
+  ]
+}
