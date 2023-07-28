@@ -687,9 +687,15 @@ const FeatureEntry::FeatureVariation kBottomOmniboxDefaultSettingVariations[] =
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
-    {"Base only", "enable-features", "ReplaceSyncPromosWithSignInPromos"},
+    {"Disabled", "disable-features",
+     "ReplaceSyncPromosWithSignInPromos,"
+     "FeedBottomSyncStringRemoval"},
+    {"Base only", "enable-features",
+     "ReplaceSyncPromosWithSignInPromos,"
+     "FeedBottomSyncStringRemoval"},
     {"Everything (bookmarks, reading list, etc)", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
+     "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataType,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "EnablePasswordsAccountStorage,"
@@ -699,7 +705,6 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "ReadingListEnableSyncTransportModeUponSignIn,"
      "ConsistencyNewAccountInterface,"
      "AutofillAccountProfileStorage,"
-     "FeedBottomSyncStringRemoval,"
      "SyncEnableHistoryDataType"},
 };
 
