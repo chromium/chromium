@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -117,7 +118,7 @@ using chrome_test_util::SettingsDoneButton;
 // Tests that keyboard commands are not registered when the bookmark UI is
 // shown.
 - (void)testKeyboardCommandsNotRegistered_AddBookmarkPresented {
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
 
   // Load a webpage because the NTP is not always bookmarkable.

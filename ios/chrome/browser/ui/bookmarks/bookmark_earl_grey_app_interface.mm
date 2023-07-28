@@ -45,9 +45,10 @@
                                       secondURL:(NSString*)secondURL
                                        thirdURL:(NSString*)thirdURL
                                       fourthURL:(NSString*)fourthURL {
-  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded]) {
-    return testing::NSErrorWithLocalizedDescription(
-        @"Bookmark model was not loaded");
+  NSError* bookmarkModelsLoadedError =
+      [BookmarkEarlGreyAppInterface waitForBookmarkModelsLoaded];
+  if (bookmarkModelsLoadedError) {
+    return bookmarkModelsLoadedError;
   }
 
   bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
@@ -99,9 +100,10 @@
 }
 
 + (NSError*)setupBookmarksWhichExceedsScreenHeightUsingURL:(NSString*)URL {
-  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded]) {
-    return testing::NSErrorWithLocalizedDescription(
-        @"Bookmark model was not loaded");
+  NSError* waitForBookmarkModelsLoadedError =
+      [BookmarkEarlGreyAppInterface waitForBookmarkModelsLoaded];
+  if (waitForBookmarkModelsLoadedError) {
+    return waitForBookmarkModelsLoadedError;
   }
 
   bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
@@ -139,25 +141,34 @@
   return nil;
 }
 
-+ (BOOL)waitForBookmarkModelLoaded {
++ (NSError*)waitForBookmarkModelsLoaded {
   bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       [BookmarkEarlGreyAppInterface localOrSyncableBookmarkModel];
-  bookmarks::BookmarkModel* accountBookmarkModel =
-      [BookmarkEarlGreyAppInterface accountBookmarkModel];
 
   BOOL localOrSyncableModelSuccess =
       base::test::ios::WaitUntilConditionOrTimeout(
           base::test::ios::kWaitForUIElementTimeout, ^{
-            return localOrSyncableBookmarkModel->loaded() == YES;
+            return localOrSyncableBookmarkModel->loaded();
           });
-
-  if (!localOrSyncableModelSuccess || !accountBookmarkModel) {
-    return localOrSyncableModelSuccess;
+  if (!localOrSyncableModelSuccess) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"Local/Syncable bookmark model did not load");
   }
-  return base::test::ios::WaitUntilConditionOrTimeout(
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      [BookmarkEarlGreyAppInterface accountBookmarkModel];
+
+  if (!accountBookmarkModel) {
+    return nil;
+  }
+  BOOL accountSuccess = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
-        return accountBookmarkModel->loaded() == YES;
+        return accountBookmarkModel->loaded();
       });
+  if (!accountSuccess) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"Account bookmark model exists but did not load");
+  }
+  return nil;
 }
 
 // TODO(crbug.com/1434501): Add account BookmarkModel support.
@@ -184,9 +195,10 @@
 
 // TODO(crbug.com/1434501): Add account BookmarkModel support.
 + (NSError*)addBookmarkWithTitle:(NSString*)title URL:(NSString*)url {
-  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded]) {
-    return testing::NSErrorWithLocalizedDescription(
-        @"Bookmark model was not loaded");
+  NSError* waitForBookmarkModelsLoadedError =
+      [BookmarkEarlGreyAppInterface waitForBookmarkModelsLoaded];
+  if (waitForBookmarkModelsLoadedError) {
+    return waitForBookmarkModelsLoadedError;
   }
 
   GURL bookmarkURL = GURL(base::SysNSStringToUTF8(url));
@@ -374,7 +386,6 @@
   PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
   return prefs->GetInteger(prefs::kIosBookmarkSigninPromoDisplayedCount);
 }
-
 #pragma mark - Helpers
 
 + (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel {

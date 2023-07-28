@@ -7,9 +7,6 @@
 
 namespace chrome_test_util {
 
-// Returns if the internal Bookmarks state is loaded.
-bool BookmarksLoaded();
-
 // Clears all bookmarks. Returns true if successful, false otherwise.
 bool ClearBookmarks();
 

@@ -50,7 +50,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 @implementation AccountsTableTestCase
 
 - (void)tearDown {
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 
@@ -61,7 +61,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
@@ -227,7 +227,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
@@ -255,7 +255,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
@@ -281,7 +281,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
@@ -353,7 +353,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Simulate that the user remove their primary account from another Google

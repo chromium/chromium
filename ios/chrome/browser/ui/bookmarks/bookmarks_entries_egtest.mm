@@ -65,7 +65,7 @@ id<GREYMatcher> AddBookmarkButton() {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }

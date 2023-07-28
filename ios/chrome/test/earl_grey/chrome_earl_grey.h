@@ -632,10 +632,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - Bookmarks Utilities (EG2)
 
-// Waits for the bookmark internal state to be done loading.
-// If the condition is not met within a timeout a GREYAssert is induced.
-- (void)waitForBookmarksToFinishLoading;
-
 // Clears bookmarks if any bookmark still presents. A GREYAssert is induced if
 // bookmarks can not be cleared.
 - (void)clearBookmarks;

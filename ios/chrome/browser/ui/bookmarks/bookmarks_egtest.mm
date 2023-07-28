@@ -48,7 +48,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
 }
 
@@ -75,7 +75,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notNil()];
 
   // Add the bookmark from the UI.
-  [BookmarkEarlGrey waitForBookmarkModelLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:bookmarkTitle];
 
   // Verify the bookmark is set.
@@ -181,7 +181,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:secondURL];
 
-  [BookmarkEarlGrey waitForBookmarkModelLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:@"my bookmark"];
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"my bookmark" expectedCount:1];
 }
@@ -1000,7 +1000,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [ChromeEarlGrey loadURL:incognitoURL];
 
   // Add the bookmark from the UI.
-  [BookmarkEarlGrey waitForBookmarkModelLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   NSString* bookmarkTitle = @"Test Page";
   [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:@"Test Page"];
 

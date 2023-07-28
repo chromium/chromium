@@ -66,7 +66,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 @implementation SyncFakeServerTestCase
 
 - (void)tearDown {
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
 
   [ChromeEarlGrey clearSyncServerData];

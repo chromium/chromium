@@ -1269,11 +1269,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface addBookmarkWithSyncPassphrase:syncPassphrase];
 }
 
-- (void)waitForBookmarksToFinishLoading {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [ChromeEarlGreyAppInterface waitForBookmarksToFinishinLoading]);
-}
-
 - (void)clearBookmarks {
   EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface clearBookmarks]);
 }

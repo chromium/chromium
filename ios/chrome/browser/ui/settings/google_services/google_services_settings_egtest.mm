@@ -97,7 +97,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
   // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
   [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
@@ -212,7 +212,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kWaitForActionTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Turn off "Allow Chrome Sign-in" feature with Clear Data option.
@@ -280,7 +280,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kWaitForActionTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Turn off "Allow Chrome Sign-in" feature with Keep Data option.

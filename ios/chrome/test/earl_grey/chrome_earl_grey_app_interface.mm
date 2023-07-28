@@ -785,17 +785,6 @@ NSString* SerializedValue(const base::Value* value) {
 
 #pragma mark - Bookmarks Utilities (EG2)
 
-+ (NSError*)waitForBookmarksToFinishinLoading {
-  bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return chrome_test_util::BookmarksLoaded();
-  });
-  if (!success) {
-    return testing::NSErrorWithLocalizedDescription(
-        @"Bookmark model did not load");
-  }
-  return nil;
-}
-
 + (NSError*)clearBookmarks {
   bool success = chrome_test_util::ClearBookmarks();
   if (!success) {

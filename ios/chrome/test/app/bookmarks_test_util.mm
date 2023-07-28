@@ -17,13 +17,6 @@
 
 namespace chrome_test_util {
 
-bool BookmarksLoaded() {
-  bookmarks::BookmarkModel* bookmarkModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          GetOriginalBrowserState());
-  return bookmarkModel->loaded();
-}
-
 bool ClearBookmarks() {
   ChromeBrowserState* browserState = GetOriginalBrowserState();
   [BookmarkPathCache

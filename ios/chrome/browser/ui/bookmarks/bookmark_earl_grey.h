@@ -42,7 +42,7 @@ const GURL GetFrenchUrl();
 
 // Waits for the Bookmark modedl to be `loaded`. GREYAssert is induced if test
 // bookmarks can not be loaded.
-- (void)waitForBookmarkModelLoaded;
+- (void)waitForBookmarkModelsLoaded;
 
 #pragma mark - Common Helpers
 

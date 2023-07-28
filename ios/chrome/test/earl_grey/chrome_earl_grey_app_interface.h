@@ -330,11 +330,6 @@
 
 #pragma mark - Bookmarks Utilities (EG2)
 
-// Waits for the bookmark internal state to be done loading.
-// If not succeed returns an NSError indicating  why the operation failed,
-// otherwise nil.
-+ (NSError*)waitForBookmarksToFinishinLoading;
-
 // Clears bookmarks. If not succeed returns an NSError indicating  why the
 // operation failed, otherwise nil.
 + (NSError*)clearBookmarks;

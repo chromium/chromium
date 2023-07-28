@@ -94,7 +94,7 @@ void WaitForSettingDoneButton() {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [ChromeEarlGrey clearBookmarks];
   // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
   [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
@@ -178,7 +178,7 @@ void WaitForSettingDoneButton() {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out and clear data from Sync settings.
@@ -226,7 +226,7 @@ void WaitForSettingDoneButton() {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out and keep data from Sync settings.
