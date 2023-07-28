@@ -53,7 +53,6 @@ source_set("eg_test_support+eg2") {
 
   deps = [
     "//base",
-    "//base/ios",
     "//base/test:test_support",
     "//components/variations",
     "//ios/testing:system_alert_handler",

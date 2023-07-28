@@ -20,7 +20,6 @@ source_set("tab_grid") {
     ":tab_grid_paging",
     ":tab_grid_ui",
     "//base",
-    "//base/ios",
     "//components/bookmarks/browser",
     "//components/search_engines",
     "//components/strings",

@@ -57,7 +57,6 @@ source_set("scene") {
   deps = [
     ":scene_state_browser_agent",
     "//base",
-    "//base/ios",
     "//components/autofill/core/browser",
     "//components/breadcrumbs/core",
     "//components/breadcrumbs/core:status",

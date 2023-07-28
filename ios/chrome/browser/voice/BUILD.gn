@@ -18,7 +18,6 @@ source_set("voice") {
   deps = [
     ":voice_search_language",
     "//base",
-    "//base/ios",
     "//components/pref_registry",
     "//components/prefs",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",

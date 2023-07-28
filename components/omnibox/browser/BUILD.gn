@@ -395,9 +395,7 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
-  if (is_ios) {
-    deps += [ "//base/ios" ]
-  } else {
+  if (!is_ios) {
     deps += [ "//ui/base/clipboard" ]
   }
 

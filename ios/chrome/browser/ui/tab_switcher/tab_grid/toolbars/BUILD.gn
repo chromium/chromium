@@ -35,7 +35,6 @@ source_set("toolbars_ui") {
 
   deps = [
     "//base",
-    "//base/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
