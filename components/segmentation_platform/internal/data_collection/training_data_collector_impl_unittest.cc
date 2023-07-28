@@ -484,6 +484,23 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousCollectionOnStartupNoDelay) {
   ExpectResult1Ukm();
 }
 
+// Tests that continuous collection do not collect for ondemand models on
+// startup.
+TEST_F(TrainingDataCollectorImplTest,
+       OnDemandModelsDoNotTriggerPeriodicCollection) {
+  AddTimeTrigger(
+      CreateSegmentInfo(kTestOptimizationTarget0, kOnDemandDecisionType,
+                        /*upload_tensors=*/true),
+      base::Seconds(10));
+
+  clock()->Advance(base::Days(1));
+  collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
+                              kPeriodicDecisionType);
+  Init();
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
+}
+
 // Tests that ReportCollectedContinuousTrainingData() works well later if
 // no data is reported on start up.
 TEST_F(TrainingDataCollectorImplTest,
@@ -564,7 +581,7 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousWithExactPrediction) {
 
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kOnDemandDecisionType);
+                              kPeriodicDecisionType);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
   WaitForContinuousCollection();
@@ -591,7 +608,7 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousWithFlexibleObservation) {
 
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kOnDemandDecisionType);
+                              kPeriodicDecisionType);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
   WaitForContinuousCollection();
@@ -815,7 +832,7 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithStoreToDisk) {
   // the training data.
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kOnDemandDecisionType);
+                              kPeriodicDecisionType);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0);
   clock()->Advance(kNextUserSession);

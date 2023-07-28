@@ -29,6 +29,7 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
 
 namespace segmentation_platform {
@@ -46,25 +47,6 @@ base::Time GetNextReportTime(base::Time last_report_time) {
   return last_report_time + base::Hours(kMinimumReportingIntervalInHours);
 }
 
-// Parse outputs into a map of metric hash of the uma output and its index in
-// the output list.
-std::map<uint64_t, int> ParseUmaOutputs(
-    const proto::SegmentationModelMetadata& metadata) {
-  std::map<uint64_t, int> hash_index_map;
-  if (!metadata.has_training_outputs())
-    return hash_index_map;
-
-  const auto& training_outputs = metadata.training_outputs();
-  for (int i = 0; i < training_outputs.outputs_size(); ++i) {
-    const auto& output = training_outputs.outputs(i);
-    if (!output.has_uma_output() || !output.uma_output().has_uma_feature())
-      continue;
-
-    hash_index_map[output.uma_output().uma_feature().name_hash()] = i;
-  }
-  return hash_index_map;
-}
-
 // Returns a list of preferred segment info for each segment ID in the list.
 std::map<SegmentId, proto::SegmentInfo> GetPreferredSegmentInfo(
     DefaultModelManager::SegmentInfoList&& segment_list) {
@@ -80,6 +62,26 @@ std::map<SegmentId, proto::SegmentInfo> GetPreferredSegmentInfo(
   }
 
   return result;
+}
+
+bool IsPeriodic(const proto::SegmentInfo& info) {
+  DecisionType type =
+      info.model_metadata().training_outputs().trigger_config().decision_type();
+
+  // Add exception allowlist for old models that did not have model type set.
+  // This is needed because some legacy target models do not have the
+  // decision_type field set. For those models, a periodic type should be
+  // defaulted.
+  if (info.segment_id() ==
+          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB ||
+      info.segment_id() ==
+          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE ||
+      info.segment_id() ==
+          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE) {
+    return type != proto::TrainingOutputs::TriggerConfig::ONDEMAND;
+  }
+
+  return type == proto::TrainingOutputs::TriggerConfig::PERIODIC;
 }
 
 }  // namespace
@@ -170,17 +172,10 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
              .training_outputs()
              .trigger_config()
              .use_exact_prediction_time()) {
-      auto hash_index_map = ParseUmaOutputs(segment_info.model_metadata());
-      for (const auto& hash_index : hash_index_map) {
-        const auto& output =
-            segment_info.model_metadata().training_outputs().outputs(
-                hash_index.second);
-        all_segments_for_training_.insert(segment.first);
-        // If tensor length is 0, the output is for immediate collection.
-        if (output.uma_output().uma_feature().tensor_length() != 0) {
-          continuous_collection_segments_.insert(segment.first);
-          continue;
-        }
+      all_segments_for_training_.insert(segment.first);
+      // Add periodic models to continuous collection segments.
+      if (IsPeriodic(segment_info)) {
+        continuous_collection_segments_.insert(segment.first);
       }
     }
 
@@ -536,10 +531,19 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
 
   TrainingTimings training_request = ComputeDecisionTiming(segment_info);
 
-  auto is_periodic = (type != proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+  if (type != segment_info.model_metadata()
+                  .training_outputs()
+                  .trigger_config()
+                  .decision_type()) {
+    RecordTrainingDataCollectionEvent(
+        segment_id,
+        stats::TrainingDataCollectionEvent::kOnDecisionTimeTypeMistmatch);
+    return;
+  }
+
   RecordTrainingDataCollectionEvent(
       segment_info.segment_id(),
-      is_periodic
+      IsPeriodic(segment_info)
           ? stats::TrainingDataCollectionEvent::kContinousCollectionStart
           : stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
 
@@ -716,11 +720,7 @@ TrainingDataCollectorImpl::ComputeDecisionTiming(
   TrainingDataCollectorImpl::TrainingTimings training_request;
   const auto& training_config =
       info.model_metadata().training_outputs().trigger_config();
-  auto type = training_config.decision_type();
   base::Time current_time = clock_->Now();
-
-  // Default for unset decision type is periodic type.
-  bool is_periodic = (type != proto::TrainingOutputs::TriggerConfig::ONDEMAND);
 
   // Check for delay triggers in the config.
   absl::optional<uint64_t> delay_sec;
@@ -733,7 +733,7 @@ TrainingDataCollectorImpl::ComputeDecisionTiming(
 
   bool exact_prediction_time = training_config.use_exact_prediction_time();
 
-  if (is_periodic) {
+  if (IsPeriodic(info)) {
     if (delay_sec && exact_prediction_time) {
       // Triggered by the client pref update, so use current time.
       // TODO(ssid): This is not accurate since the client did not start using
@@ -773,8 +773,6 @@ base::Time TrainingDataCollectorImpl::ComputeObservationTiming(
   const auto& training_config =
       info.model_metadata().training_outputs().trigger_config();
   base::Time current_time = clock_->Now();
-  bool is_periodic = (training_config.decision_type() !=
-                      proto::TrainingOutputs::TriggerConfig::ONDEMAND);
   bool flexible_observation_period =
       training_config.use_flexible_observation_time();
 
@@ -794,7 +792,7 @@ base::Time TrainingDataCollectorImpl::ComputeObservationTiming(
     // prediction.
     observation_time = prediction_time + base::Seconds(*delay_sec);
   }
-  if (is_periodic && !delay_sec) {
+  if (IsPeriodic(info) && !delay_sec) {
     // If delay is not set, then observation should be reset, so the feature
     // processor uses prediction time as observation time.
     observation_time = base::Time();
@@ -819,8 +817,6 @@ bool TrainingDataCollectorImpl::FillTrainingData(
 
   const auto& training_config =
       segment_info.model_metadata().training_outputs().trigger_config();
-  bool is_periodic = (training_config.decision_type() !=
-                      proto::TrainingOutputs::TriggerConfig::ONDEMAND);
 
   // Only periodic segments need storage to disk and can be multi-session.
   // If the exact prediction time is not used, we could recompute inputs at
@@ -830,7 +826,7 @@ bool TrainingDataCollectorImpl::FillTrainingData(
   // If delay is not specified, then the collector cannot know when to trigger
   // observation and the training data will live in database forever. So, it is
   // safe to verify the delay before storing to disk.
-  bool store_to_disk = is_periodic &&
+  bool store_to_disk = IsPeriodic(segment_info) &&
                        training_config.use_exact_prediction_time() &&
                        training_request.observation_delayed_task.has_value();
 

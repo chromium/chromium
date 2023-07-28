@@ -283,7 +283,8 @@ enum class TrainingDataCollectionEvent {
   kDisallowedForRecording = 17,
   kObservationDisallowed = 18,
   kTrainingDataMissing = 19,
-  kMaxValue = kTrainingDataMissing,
+  kOnDecisionTimeTypeMistmatch = 20,
+  kMaxValue = kOnDecisionTimeTypeMistmatch,
 };
 
 // Records analytics for training data collection.
