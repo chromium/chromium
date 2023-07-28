@@ -114,6 +114,10 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
   base::TimeDelta AssignMonotonicTimestamp(base::TimeDelta real_timestamp);
   base::TimeDelta RetrieveRealTimestamp(base::TimeDelta monotonic_timestamp);
 
+  bool ResetMediaCodec();
+
+  void SetEncoderColorSpace();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
@@ -171,6 +175,15 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
 
   // Required for encoders which are missing stride information.
   absl::optional<gfx::Size> aligned_size_;
+
+  // Currently configured color space.
+  absl::optional<gfx::ColorSpace> encoder_color_space_;
+
+  // Pending color space to be set on the MediaCodec after flushing.
+  absl::optional<gfx::ColorSpace> pending_color_space_;
+
+  // True if any frames have been sent to the encoder.
+  bool have_encoded_frames_ = false;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

@@ -10,6 +10,7 @@ class TestHarness {
   skipped = false;
   message = 'ok';
   logs = [];
+  logWindow = null;
 
   constructor() {}
 
@@ -51,6 +52,10 @@ class TestHarness {
   log(msg) {
     this.logs.push(msg);
     console.log(msg);
+    if (this.logWindow === null)
+      this.logWindow = document.querySelector('textarea');
+    if (this.logWindow)
+      this.logWindow.value += msg + '\n';
   }
 
   run(arg) {

@@ -1259,12 +1259,8 @@ void VideoEncoder::CallOutputCallback(
     first_output_after_configure_ = false;
 
     if (output_color_space != last_output_color_space_) {
-// TODO(crbug.com/1241448): Make Android obey the contract below. For now
-// Android VEA only _eventually_ gives a key frame when color space changes.
-#if !BUILDFLAG(IS_ANDROID)
       DCHECK(output.key_frame) << "Encoders should generate a keyframe when "
                                << "changing color space";
-#endif
       last_output_color_space_ = output_color_space;
     }
 
