@@ -389,11 +389,14 @@ bool AppServerWin::SwapInNewVersion() {
     return false;
   }
 
-  VLOG_IF(1, !UninstallGoogleUpdate(updater_scope()))
-      << "UninstallGoogleUpdate() failed.";
+  if (!UninstallGoogleUpdate(updater_scope())) {
+    VLOG(1) << "UninstallGoogleUpdate() failed.";
+  }
+
   if (!IsSystemInstall(updater_scope())) {
-    VLOG_IF(1, !DeleteLegacyEntriesPerUser())
-        << "DeleteLegacyEntriesPerUser() failed.";
+    if (!DeleteLegacyEntriesPerUser()) {
+      VLOG(1) << "DeleteLegacyEntriesPerUser() failed.";
+    }
   }
 
   return true;
