@@ -528,9 +528,14 @@ void StatefulSSLHostStateDelegate::ResetRecurrentErrorCountForTesting() {
 
 void StatefulSSLHostStateDelegate::SetClockForTesting(
     std::unique_ptr<base::Clock> clock) {
+  // Pointers to the existing Clock object must be reset before swapping the
+  // underlying Clock object, otherwise they are dangling (briefly).
+  https_only_mode_allowlist_.SetClockForTesting(nullptr);    // IN-TEST
+  https_only_mode_enforcelist_.SetClockForTesting(nullptr);  // IN-TEST
+
   clock_ = std::move(clock);
-  https_only_mode_allowlist_.SetClockForTesting(clock_.get());
-  https_only_mode_enforcelist_.SetClockForTesting(clock_.get());
+  https_only_mode_allowlist_.SetClockForTesting(clock_.get());    // IN-TEST
+  https_only_mode_enforcelist_.SetClockForTesting(clock_.get());  // IN-TEST
 }
 
 void StatefulSSLHostStateDelegate::SetRecurrentInterstitialThresholdForTesting(
