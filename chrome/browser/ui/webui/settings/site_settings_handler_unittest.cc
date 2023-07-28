@@ -2137,7 +2137,8 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
   CHECK(exception.FindString(site_settings::kDisplayName));
   CHECK(exception.FindString(site_settings::kEmbeddingOrigin));
   CHECK(exception.FindString(site_settings::kSetting));
-  CHECK(exception.FindString(site_settings::kDescription));
+  // Notifications should not have a description.
+  CHECK(!exception.FindString(site_settings::kDescription));
   CHECK(exception.FindBool(site_settings::kIncognito).has_value());
 
   base::Value::List args;

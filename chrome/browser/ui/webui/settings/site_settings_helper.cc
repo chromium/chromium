@@ -687,7 +687,9 @@ base::Value::Dict GetExceptionForPage(
   DCHECK(!setting_string.empty());
   exception.Set(kSetting, setting_string);
 
-  if (!expiration.is_null() && !incognito) {
+  // Cookie exception types may have an expiration that should be shown.
+  if (content_type == ContentSettingsType::COOKIES && !expiration.is_null() &&
+      !incognito) {
     exception.Set(kDescription, GetExpirationDescription(expiration));
   }
 
