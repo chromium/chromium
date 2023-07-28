@@ -125,7 +125,11 @@ class BluetoothIntegrationTest : public InteractiveMixinBasedBrowserTest {
     adapter_client_ = bluez_dbus_manager_->GetBluetoothAdapterClient();
     ASSERT_TRUE(adapter_client_);
     std::vector<dbus::ObjectPath> adapters = adapter_client_->GetAdapters();
-    ASSERT_FALSE(adapters.empty());
+    // Some VM images have bluez, but no bluetooth adapters.
+    if (adapters.empty()) {
+      LOG(WARNING) << "No bluetooth adapters, skipping test";
+      GTEST_SKIP();
+    }
     properties_ = adapter_client_->GetProperties(adapters[0]);
     ASSERT_TRUE(properties_);
   }
