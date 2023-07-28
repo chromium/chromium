@@ -260,10 +260,6 @@ String PrintContext::PageProperty(LocalFrame* frame,
   return String("pageProperty() unimplemented for: ") + property_name;
 }
 
-bool PrintContext::IsPageBoxVisible(LocalFrame* frame, uint32_t page_number) {
-  return frame->GetDocument()->IsPageBoxVisible(page_number);
-}
-
 String PrintContext::PageSizeAndMarginsInPixels(LocalFrame* frame,
                                                 uint32_t page_number,
                                                 int width,
