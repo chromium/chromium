@@ -9,16 +9,15 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bruschetta {
 
-TEST(BruschettaUtilTest, SortInstallableConfigs) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  profile.GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
-                              base::test::ParseJsonDict(R"(
+namespace {
+
+void SetPolicy(Profile* profile) {
+  profile->GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
+                               base::test::ParseJsonDict(R"(
     {
       "vm_config_abc": {
           "name": "abc",
@@ -31,12 +30,28 @@ TEST(BruschettaUtilTest, SortInstallableConfigs) {
       }
     }
   )"));
+}
+
+}  // namespace
+
+TEST(BruschettaUtilTest, SortInstallableConfigs) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  SetPolicy(&profile);
   std::vector<InstallableConfig> configs =
       GetInstallableConfigs(&profile).extract();
   ASSERT_EQ(2U, configs.size());
   EXPECT_EQ("vm_config_abc", configs[0].first);
   SortInstallableConfigs(&configs);
   EXPECT_EQ("vm_config_def", configs[0].first);
+}
+
+TEST(BruschettaUtilTest, GetFirstVmNameFromPolicy) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  EXPECT_EQ(GetFirstVmNameFromPolicy(&profile), absl::nullopt);
+  SetPolicy(&profile);
+  EXPECT_EQ(GetFirstVmNameFromPolicy(&profile), "def");
 }
 
 }  // namespace bruschetta

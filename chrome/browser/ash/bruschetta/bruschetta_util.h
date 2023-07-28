@@ -83,6 +83,10 @@ absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
 
 std::string GetVmUsername(const Profile* profile);
 
+// Returns the first (by display order) VM name from the policy, or
+// absl::nullopt if the policy is not available.
+absl::optional<std::string> GetFirstVmNameFromPolicy(Profile* profile);
+
 }  // namespace bruschetta
 
 #endif  // CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_

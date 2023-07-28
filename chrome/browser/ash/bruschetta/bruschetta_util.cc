@@ -166,4 +166,20 @@ absl::optional<const base::Value::Dict*> GetConfigForGuest(
   return GetConfigWithEnabledLevel(profile, config_id, enabled_level);
 }
 
+absl::optional<std::string> GetFirstVmNameFromPolicy(Profile* profile) {
+  std::vector<bruschetta::InstallableConfig> configs =
+      bruschetta::GetInstallableConfigs(profile).extract();
+  if (configs.empty()) {
+    return absl::nullopt;
+  }
+  SortInstallableConfigs(&configs);
+  const base::Value::Dict& first_vm = configs[0].second;
+  const std::string* name = first_vm.FindString(prefs::kPolicyNameKey);
+  if (name) {
+    return *name;
+  }
+  // Fall back to key.
+  return configs[0].first;
+}
+
 }  // namespace bruschetta
