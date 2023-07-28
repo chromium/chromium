@@ -128,6 +128,8 @@ const char* const kKnownSettings[] = {
     kReleaseLtsTag,
     kDeviceChannelDowngradeBehavior,
     kDeviceSystemAecEnabled,
+    kDeviceReportRuntimeCounters,
+    kDeviceReportRuntimeCountersCheckingRateMs,
     kReportDeviceActivityTimes,
     kReportDeviceAudioStatus,
     kReportDeviceAudioStatusCheckingRateMs,
@@ -680,6 +682,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetBoolean(kReportDeviceAudioStatus,
                                    reporting_policy.report_audio_status());
     }
+    if (reporting_policy.has_report_runtime_counters()) {
+      new_values_cache->SetBoolean(kDeviceReportRuntimeCounters,
+                                   reporting_policy.report_runtime_counters());
+    }
     if (reporting_policy.has_report_boot_mode()) {
       new_values_cache->SetBoolean(kReportDeviceBootMode,
                                    reporting_policy.report_boot_mode());
@@ -804,6 +810,12 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetInteger(
           kReportDeviceAudioStatusCheckingRateMs,
           reporting_policy.report_device_audio_status_checking_rate_ms());
+    }
+    if (reporting_policy
+            .has_device_report_runtime_counters_checking_rate_ms()) {
+      new_values_cache->SetInteger(
+          kDeviceReportRuntimeCountersCheckingRateMs,
+          reporting_policy.device_report_runtime_counters_checking_rate_ms());
     }
     if (reporting_policy.has_report_signal_strength_event_driven_telemetry()) {
       base::Value::List signal_strength_telemetry_list;

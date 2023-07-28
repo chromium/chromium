@@ -879,6 +879,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_session_status()), nullptr);
     }
+    if (container.has_report_runtime_counters()) {
+      policies->Set(key::kDeviceReportRuntimeCounters, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.report_runtime_counters()), nullptr);
+    }
     if (container.has_report_os_update_status()) {
       policies->Set(key::kReportDeviceOsUpdateStatus, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
@@ -997,6 +1002,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       DecodeIntegerReportingPolicy(
           policies, key::kReportDeviceAudioStatusCheckingRateMs,
           container.report_device_audio_status_checking_rate_ms());
+    }
+    if (container.has_device_report_runtime_counters_checking_rate_ms()) {
+      DecodeIntegerReportingPolicy(
+          policies, key::kDeviceReportRuntimeCountersCheckingRateMs,
+          container.device_report_runtime_counters_checking_rate_ms());
     }
     if (container.has_report_signal_strength_event_driven_telemetry()) {
       base::Value::List signal_strength_telemetry_list;

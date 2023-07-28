@@ -245,6 +245,11 @@ const char kReportDeviceLoginLogout[] = "cros.reporting.report_login_logout";
 // Determines whether CRD session events are reported.
 const char kReportCRDSessions[] = "cros.reporting.report_crd_sessions";
 
+// A boolean pref that determines whether the device runtime counters should be
+// reported.
+const char kDeviceReportRuntimeCounters[] =
+    "cros.reporting.report_runtime_counters";
+
 // Determines the device activity heartbeat collection rate (in milliseconds).
 const char kDeviceActivityHeartbeatCollectionRateMs[] =
     "cros.reporting.device_activity_heartbeat_collection_rate_ms";
@@ -264,7 +269,7 @@ const char kHeartbeatFrequency[] = "cros.device_status.heartbeat_frequency";
 const char kSystemLogUploadEnabled[] =
     "cros.device_status.system_log_upload_enabled";
 
-// How frequently the networks health telemetry are collected.
+// How frequently the networks health telemetry is collected.
 const char kReportDeviceNetworkTelemetryCollectionRateMs[] =
     "cros.telemetry_reporting.report_network_telemetry_collection_rate_ms";
 
@@ -275,6 +280,10 @@ const char kReportDeviceNetworkTelemetryEventCheckingRateMs[] =
 // How frequently the audio data are checked for events.
 const char kReportDeviceAudioStatusCheckingRateMs[] =
     "cros.telemetry_reporting.report_device_audio_status_checking_rate_ms";
+
+// How frequently the runtime counters telemetry is collected.
+const char kDeviceReportRuntimeCountersCheckingRateMs[] =
+    "cros.telemetry_reporting.device_report_runtime_counters_checking_rate_ms";
 
 // How frequently the audio data are checked for events.
 const char kReportDeviceSignalStrengthEventDrivenTelemetry[] =

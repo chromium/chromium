@@ -167,6 +167,7 @@ message DeviceReportingProto {
   optional bool report_crd_sessions = 36 [default = false];
   optional bool report_peripherals = 37 [default = false];
   optional bool report_network_events = 41 [default = false];
+  optional bool report_runtime_counters = 42 [default = false];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in
@@ -188,6 +189,10 @@ message DeviceReportingProto {
   // Audio telemetry policy
   optional int64 report_device_audio_status_checking_rate_ms = 35
       [default = 600000];
+
+  // Runtime counters telemetry policy.
+  optional int64 device_report_runtime_counters_checking_rate_ms = 43
+      [default = 86400000];
 
   optional StringList report_signal_strength_event_driven_telemetry = 38;
 

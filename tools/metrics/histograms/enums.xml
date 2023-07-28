@@ -33652,6 +33652,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1131" label="GlanceablesEnabled"/>
   <int value="1132" label="DeviceAuthenticationURLBlocklist"/>
   <int value="1133" label="DeviceAuthenticationURLAllowlist"/>
+  <int value="1134" label="DeviceReportRuntimeCounters"/>
+  <int value="1135" label="DeviceReportRuntimeCountersCheckingRateMs"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

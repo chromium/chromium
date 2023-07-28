@@ -13957,6 +13957,9 @@
   "ReportDeviceLoginLogout": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "DeviceReportRuntimeCounters": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "ReportCRDSessions": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
@@ -13973,6 +13976,9 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "ReportDeviceAudioStatusCheckingRateMs": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+  "DeviceReportRuntimeCountersCheckingRateMs": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "ReportDeviceSignalStrengthEventDrivenTelemetry": {

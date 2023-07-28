@@ -652,6 +652,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kAccountsPrefTransferSAMLCookies
     //   kDeviceAttestationEnabled
     //   kDeviceOwner
+    //   kDeviceReportRuntimeCounters
     //   kDeviceReportXDREvents
     //   kHeartbeatEnabled
     //   kHeartbeatFrequency
@@ -690,6 +691,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kVariationsRestrictParameter
     //   kDeviceDisabled
     //   kDeviceDisabledMessage
+    //   DeviceReportRuntimeCountersCheckingRateMs
     //   ReportDeviceNetworkTelemetryCollectionRateMs
     //   ReportDeviceNetworkTelemetryEventCheckingRateMs
     //   ReportDeviceAudioStatusCheckingRateMs

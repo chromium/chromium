@@ -1132,6 +1132,8 @@ policies:
   1131: GlanceablesEnabled
   1132: DeviceAuthenticationURLBlocklist
   1133: DeviceAuthenticationURLAllowlist
+  1134: DeviceReportRuntimeCounters
+  1135: DeviceReportRuntimeCountersCheckingRateMs
 atomic_groups:
   1: Homepage
   2: RemoteAccess
