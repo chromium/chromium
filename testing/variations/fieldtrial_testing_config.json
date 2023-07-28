@@ -5376,6 +5376,21 @@
             ]
         }
     ],
+    "EnableADPFRendererMain": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableADPFRendererMain"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableADPFScrollBoost": [
         {
             "platforms": [
