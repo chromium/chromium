@@ -39,6 +39,10 @@
     width: var(--cr-icon-ripple-size);
   }
 
+  :host-context(body.jelly-enabled) #title {
+    font: var(--cros-button-1-font);
+  }
+
   #title-icon {
     height: 36px;
     margin-inline-end: 12px;
@@ -76,7 +80,7 @@
   <template is="dom-if" if="[[titleIcon]]">
     <img id="title-icon" src="[[titleIcon]]" aria-hidden="true">
   </template>
-  <h1 class="cr-title-text">[[pageTitle]]</h1>
+  <h1 id="title" class="cr-title-text">[[pageTitle]]</h1>
   <template is="dom-if" if="[[learnMoreUrl]]">
     <cr-icon-button iron-icon="cr:help-outline" dir="ltr"
         aria-label="[[getLearnMoreAriaLabel_(pageTitle)]]" on-click="onHelpClick_">
