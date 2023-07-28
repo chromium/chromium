@@ -55,42 +55,7 @@ constexpr base::FilePath::StringPieceType
 
 namespace {
 
-constexpr std::array<base::FilePath::StringPieceType, 6> kFileNames = {{
-    ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName,
-    ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName,
-    ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName,
-    ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName,
-    ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName,
-    ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName,
-}};
-
 constexpr char kFirstMemoryMappedVersion[] = "2";
-
-zxcvbn::RankedDicts ParseRankedDictionaries(const base::FilePath& install_dir) {
-  std::vector<std::string> raw_dicts;
-  for (const auto& file_name : kFileNames) {
-    base::FilePath dictionary_path = install_dir.Append(file_name);
-    DVLOG(1) << "Reading Dictionary from file: " << dictionary_path;
-
-    std::string dictionary;
-    if (base::ReadFileToString(dictionary_path, &dictionary)) {
-      raw_dicts.push_back(std::move(dictionary));
-    } else {
-      VLOG(1) << "Failed reading from " << dictionary_path;
-    }
-  }
-
-  // The contained StringPieces hold references to the strings in raw_dicts.
-  std::vector<std::vector<base::StringPiece>> dicts;
-  for (const auto& raw_dict : raw_dicts) {
-    dicts.push_back(base::SplitStringPiece(
-        raw_dict, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-  }
-
-  // This copies the words; after this call, the original strings can be
-  // discarded.
-  return zxcvbn::RankedDicts(dicts);
-}
 
 zxcvbn::RankedDicts MemoryMapRankedDictionaries(
     const base::FilePath& install_dir) {
@@ -128,7 +93,7 @@ bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
     return false;
   }
 
-  if (base::ranges::any_of(kFileNames, [&](const auto& file_name) {
+  if (base::ranges::any_of(kFileNames, [&install_dir](const auto& file_name) {
         return !base::PathExists(install_dir.Append(file_name));
       })) {
     return false;
@@ -136,7 +101,7 @@ bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
 
   // If the version supports memory mapping, then the binary file that contains
   // the combined ranked dictionaries must exist, too.
-  return version < base::Version(kFirstMemoryMappedVersion) ||
+  return version >= base::Version(kFirstMemoryMappedVersion) &&
          base::PathExists(install_dir.Append(
              ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName));
 }
@@ -166,18 +131,13 @@ void ZxcvbnDataComponentInstallerPolicy::ComponentReady(
   DVLOG(1) << "Zxcvbn Data Component ready, version " << version.GetString()
            << " in " << install_dir;
 
-  if (version >= base::Version(kFirstMemoryMappedVersion) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kMemoryMapWeaknessCheckDictionaries)) {
+  if (version >= base::Version(kFirstMemoryMappedVersion)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&MemoryMapRankedDictionaries, install_dir),
         base::BindOnce(&zxcvbn::SetRankedDicts));
   } else {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&ParseRankedDictionaries, install_dir),
-        base::BindOnce(&zxcvbn::SetRankedDicts));
+    DVLOG(1) << "Zxcvbn Data Component failed, old version";
   }
 }
 

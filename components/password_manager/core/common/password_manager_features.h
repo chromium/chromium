@@ -32,10 +32,7 @@ BASE_DECLARE_FEATURE(kForgotPasswordFormSupport);
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheet);
-#endif                                            // IS_IOS
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_DECLARE_FEATURE(kMemoryMapWeaknessCheckDictionaries);
-#endif
+#endif  // IS_IOS
 BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
 BASE_DECLARE_FEATURE(kSendPasswords);

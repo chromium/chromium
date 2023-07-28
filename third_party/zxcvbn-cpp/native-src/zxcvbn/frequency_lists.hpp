@@ -3,10 +3,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/files/memory_mapped_file.h"
-#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -55,7 +55,7 @@ class RankedDicts {
   };
 
   explicit RankedDicts(
-      const std::vector<std::vector<base::StringPiece>>& ordered_dicts);
+      const std::vector<std::vector<std::string_view>>& ordered_dicts);
   explicit RankedDicts(std::unique_ptr<base::MemoryMappedFile>);
   RankedDicts() = default;
   RankedDicts(RankedDicts&&) = default;
@@ -64,7 +64,11 @@ class RankedDicts {
   RankedDicts& operator=(RankedDicts&&) = default;
   RankedDicts& operator=(const RankedDicts&) = delete;
 
-  absl::optional<rank_t> Find(base::StringPiece needle) const;
+  absl::optional<rank_t> Find(std::string_view needle) const;
+
+  std::string_view DataForTesting() const {
+    return std::string_view(data_.data(), data_.size());
+  }
 
  private:
   bool IsRealMarker(size_t offset) const;
