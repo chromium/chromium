@@ -15329,6 +15329,26 @@
             ]
         }
     ],
+    "V8Turboshaft": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Turboshaft"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8VirtualMemoryCage": [
         {
             "platforms": [
