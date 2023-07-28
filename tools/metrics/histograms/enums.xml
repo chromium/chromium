@@ -26176,6 +26176,48 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="Error - Disconnected"/>
   <int value="7" label="Error - Response Missing"/>
   <int value="8" label="Error - Unknown"/>
+  <int value="9" label="Error - Failed"/>
+  <int value="10" label="Error - No Memory"/>
+  <int value="11" label="Error - Service Unknown"/>
+  <int value="12" label="Error - Name Has No Owner"/>
+  <int value="13" label="Error - IO Error"/>
+  <int value="14" label="Error - Bad Address"/>
+  <int value="15" label="Error - Limits Exceeded"/>
+  <int value="16" label="Error - Auth Failed"/>
+  <int value="17" label="Error - No Server"/>
+  <int value="18" label="Error - No Network"/>
+  <int value="19" label="Error - Address In Use"/>
+  <int value="20" label="Error - Invalid Args"/>
+  <int value="21" label="Error - File Not Found"/>
+  <int value="22" label="Error - File Exists"/>
+  <int value="23" label="Error - Unknown Method"/>
+  <int value="24" label="Error - Unknown Object"/>
+  <int value="25" label="Error - Unknown Interface"/>
+  <int value="26" label="Error - Unknown Property"/>
+  <int value="27" label="Error - Property Read Only"/>
+  <int value="28" label="Error - Match Rule Not Found"/>
+  <int value="29" label="Error - Match Rule Invalid"/>
+  <int value="30" label="Error - Spawn Exec Failed"/>
+  <int value="31" label="Error - Spawn Fork Failed"/>
+  <int value="32" label="Error - Spawn Child Exited"/>
+  <int value="33" label="Error - Spawn Child Signaled"/>
+  <int value="34" label="Error - Spawn Failed"/>
+  <int value="35" label="Error - Spawn Setup Failed"/>
+  <int value="36" label="Error - Spawn Config Invalid"/>
+  <int value="37" label="Error - Spawn Service Invalid"/>
+  <int value="38" label="Error - Spawn Service Not Found"/>
+  <int value="39" label="Error - Spawn Permissions Invalid"/>
+  <int value="40" label="Error - Spawn File Invalid"/>
+  <int value="41" label="Error - Spawn No Memory"/>
+  <int value="42" label="Error - Unix Process Id Unknown"/>
+  <int value="43" label="Error - Invalid Signature"/>
+  <int value="44" label="Error - Invalid File Content"/>
+  <int value="45" label="Error - SE Linux Security Context Unknown"/>
+  <int value="46" label="Error - Adt Audit Data Unknown"/>
+  <int value="47" label="Error - Object Path InUse"/>
+  <int value="48" label="Error - Inconsistent Message"/>
+  <int value="49" label="Error - Interactive Authorization Required"/>
+  <int value="50" label="Error - Not Container"/>
 </enum>
 
 <enum name="DCLayerResult">
