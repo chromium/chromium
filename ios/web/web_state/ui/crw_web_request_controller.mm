@@ -310,7 +310,8 @@ enum class BackForwardNavigationType {
         requestURL, referrer, transition,
         rendererInitiated ? web::NavigationInitiationType::RENDERER_INITIATED
                           : web::NavigationInitiationType::BROWSER_INITIATED,
-        isPostNavigation, web::HttpsUpgradeType::kNone);
+        isPostNavigation, /*is_error_navigation=*/false,
+        web::HttpsUpgradeType::kNone);
     item =
         self.navigationManagerImpl->GetPendingItemInCurrentOrRestoredSession();
   }

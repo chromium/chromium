@@ -108,6 +108,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//components/signin/internal/identity_manager",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
@@ -117,9 +118,11 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
 }

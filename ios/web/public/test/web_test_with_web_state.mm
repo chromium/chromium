@@ -67,6 +67,7 @@ void WebTestWithWebState::AddPendingItem(const GURL& url,
       .AddPendingItem(url, Referrer(), transition,
                       web::NavigationInitiationType::BROWSER_INITIATED,
                       /*is_post_navigation=*/false,
+                      /*is_error_navigation=*/false,
                       web::HttpsUpgradeType::kNone);
 }
 

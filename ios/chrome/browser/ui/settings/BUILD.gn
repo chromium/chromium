@@ -378,12 +378,15 @@ source_set("eg_app_support+eg2") {
     "//components/metrics",
     "//components/prefs",
     "//components/search_engines",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/supervised_user:sync_settings_factory",
     "//ios/chrome/test/app:test_support",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
@@ -400,6 +403,7 @@ source_set("eg_test_support+eg2") {
   public_deps = [ "//components/content_settings/core/common" ]
   deps = [
     "//base",
+    "//components/supervised_user/core/browser",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
@@ -421,6 +425,8 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/policy:generated",
     "//components/strings",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",

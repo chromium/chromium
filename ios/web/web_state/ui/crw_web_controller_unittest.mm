@@ -1306,7 +1306,8 @@ TEST_F(ScriptExecutionTest, UserScriptOnAppSpecificPage) {
   nav_manager.AddPendingItem(
       GURL(kTestAppSpecificURL), Referrer(), ui::PAGE_TRANSITION_TYPED,
       NavigationInitiationType::BROWSER_INITIATED,
-      /*is_post_navigation=*/false, web::HttpsUpgradeType::kNone);
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
   nav_manager.CommitPendingItem();
 
   NSError* error = nil;

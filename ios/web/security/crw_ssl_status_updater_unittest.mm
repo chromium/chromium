@@ -123,7 +123,8 @@ class CRWSSLStatusUpdaterTest : public web::WebTest {
     nav_manager_->AddPendingItem(
         GURL(item_url_spec), Referrer(), ui::PAGE_TRANSITION_LINK,
         web::NavigationInitiationType::BROWSER_INITIATED,
-        /*is_post_navigation=*/false, web::HttpsUpgradeType::kNone);
+        /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+        web::HttpsUpgradeType::kNone);
     nav_manager_->CommitPendingItem();
   }
 
