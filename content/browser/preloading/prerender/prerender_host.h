@@ -275,6 +275,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return attributes_.embedder_histogram_suffix;
   }
 
+  absl::optional<blink::mojom::SpeculationEagerness> eagerness() const {
+    return attributes_.eagerness;
+  }
+
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
  private:

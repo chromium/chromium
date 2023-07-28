@@ -234,10 +234,11 @@ bool PrerendererImpl::MaybePrerender(
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
       candidate->url, GetTriggerType(candidate->injection_world),
-      /*embedder_histogram_suffix=*/"", referrer, rfhi.GetLastCommittedOrigin(),
-      rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
-      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
-      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      /*embedder_histogram_suffix=*/"", referrer, candidate->eagerness,
+      rfhi.GetLastCommittedOrigin(), rfhi.GetProcess()->GetID(),
+      web_contents->GetWeakPtr(), rfhi.GetFrameToken(),
+      rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/absl::nullopt, rfhi.GetDevToolsNavigationToken());
 
   // TODO(crbug.com/1354049): Handle the case where multiple speculation rules

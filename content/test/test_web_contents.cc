@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -474,6 +475,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
   return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
       url, PrerenderTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", Referrer(),
+      blink::mojom::SpeculationEagerness::kEager,
       rfhi->GetLastCommittedOrigin(), rfhi->GetProcess()->GetID(), GetWeakPtr(),
       rfhi->GetFrameToken(), rfhi->GetFrameTreeNodeId(),
       rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,

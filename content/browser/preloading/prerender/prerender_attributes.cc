@@ -20,6 +20,7 @@ PrerenderAttributes::PrerenderAttributes(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
     Referrer referrer,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
     absl::optional<url::Origin> initiator_origin,
     int initiator_process_id,
     base::WeakPtr<WebContents> initiator_web_contents,
@@ -35,6 +36,7 @@ PrerenderAttributes::PrerenderAttributes(
       trigger_type(trigger_type),
       embedder_histogram_suffix(embedder_histogram_suffix),
       referrer(referrer),
+      eagerness(eagerness),
       initiator_origin(std::move(initiator_origin)),
       initiator_process_id(initiator_process_id),
       initiator_web_contents(std::move(initiator_web_contents)),
@@ -46,6 +48,7 @@ PrerenderAttributes::PrerenderAttributes(
       initiator_devtools_navigation_token(initiator_devtools_navigation_token) {
   CHECK(!IsBrowserInitiated() ||
         !initiator_devtools_navigation_token.has_value());
+  CHECK(!IsBrowserInitiated() || !eagerness.has_value());
 }
 
 PrerenderAttributes::~PrerenderAttributes() = default;
@@ -58,6 +61,7 @@ PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&& attributes)
       trigger_type(attributes.trigger_type),
       embedder_histogram_suffix(attributes.embedder_histogram_suffix),
       referrer(attributes.referrer),
+      eagerness(attributes.eagerness),
       initiator_origin(attributes.initiator_origin),
       initiator_process_id(attributes.initiator_process_id),
       initiator_web_contents(std::move(attributes.initiator_web_contents)),

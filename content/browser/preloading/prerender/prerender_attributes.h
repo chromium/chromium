@@ -14,6 +14,7 @@
 #include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -26,6 +27,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       PrerenderTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       Referrer referrer,
+      absl::optional<blink::mojom::SpeculationEagerness> eagerness,
       absl::optional<url::Origin> initiator_origin,
       int initiator_process_id,
       base::WeakPtr<WebContents> initiator_web_contents,
@@ -56,6 +58,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
   std::string embedder_histogram_suffix;
 
   Referrer referrer;
+
+  // Records the eagerness of the corresponding speculation rule.
+  // This is absl::nullopt when prerendering is initiated by the browser.
+  absl::optional<blink::mojom::SpeculationEagerness> eagerness;
 
   // This is absl::nullopt when prerendering is initiated by the browser
   // (not by a renderer using Speculation Rules API).
