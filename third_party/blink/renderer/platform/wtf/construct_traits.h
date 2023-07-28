@@ -23,7 +23,8 @@ class ConstructTraits {
   // placement new.
   template <typename... Args>
   static T* Construct(void* location, Args&&... args) {
-    return new (NotNullTag::kNotNull, location) T(std::forward<Args>(args)...);
+    return ::new (NotNullTag::kNotNull, location)
+        T(std::forward<Args>(args)...);
   }
 
   // After constructing elements using memcopy or memmove (or similar)
