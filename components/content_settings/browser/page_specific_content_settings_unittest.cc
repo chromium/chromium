@@ -1475,4 +1475,73 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
       ContentSettingsType::MEDIASTREAM_MIC));
 }
 
+// Tests that a permission indicator will not be dismissed by a timer if was
+// opened.
+TEST_F(PageSpecificContentSettingsTest,
+       MediaIndicatorsDoNotDismissIfOpenedDelay) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      content_settings::features::kImprovedSemanticsActivityIndicators);
+
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  PageSpecificContentSettings::MicrophoneCameraState
+      blocked_microphone_camera_state = {
+          PageSpecificContentSettings::kMicrophoneAccessed,
+          PageSpecificContentSettings::kMicrophoneBlocked};
+  pscs->OnMediaStreamPermissionSet(
+      GURL("http://google.com"), blocked_microphone_camera_state, std::string(),
+      std::string(), std::string(), std::string());
+
+  EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+  // 60 secodns timer is on.
+  EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing()
+                  [ContentSettingsType::MEDIASTREAM_MIC]
+                      .IsRunning());
+
+  pscs->OnActivityIndicatorBubbleOpened(ContentSettingsType::MEDIASTREAM_MIC);
+
+  EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+  // A mic timer was stopped.
+  EXPECT_FALSE(pscs->get_media_blocked_indicator_timer_for_testing()
+                   [ContentSettingsType::MEDIASTREAM_MIC]
+                       .IsRunning());
+
+  // A blockage indicator timer was stopped because an activity indicator popup
+  // bubble was opened.
+  task_environment()->AdvanceClock(base::Seconds(65));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kMicrophoneAccessed));
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kMicrophoneBlocked));
+
+  // An indicator popup bubble is closed.
+  pscs->OnActivityIndicatorBubbleClosed(ContentSettingsType::MEDIASTREAM_MIC);
+
+  // A mic timer was restarted.
+  EXPECT_TRUE(pscs->get_media_blocked_indicator_timer_for_testing()
+                  [ContentSettingsType::MEDIASTREAM_MIC]
+                      .IsRunning());
+
+  task_environment()->AdvanceClock(base::Seconds(61));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(pscs->get_media_blocked_indicator_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kMicrophoneAccessed));
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kMicrophoneBlocked));
+}
+
 }  // namespace content_settings

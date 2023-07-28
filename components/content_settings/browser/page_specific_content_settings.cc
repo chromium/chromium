@@ -1495,9 +1495,9 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
           FROM_HERE, delay,
           base::BindOnce(
               &PageSpecificContentSettings::OnCapturingStateChangedInternal,
-              weak_factory_.GetWeakPtr(), type, is_capturing));
+              weak_factory_.GetWeakPtr(), type, /*is_capturing=*/false));
     } else {
-      OnCapturingStateChangedInternal(type, is_capturing);
+      OnCapturingStateChangedInternal(type, /*is_capturing=*/false);
     }
   }
 }
@@ -1542,6 +1542,32 @@ const base::Time PageSpecificContentSettings::GetLastUsedTime(
                           GetWebContents()->GetLastCommittedURL(), type, &info);
 
   return info.metadata.last_used();
+}
+
+void PageSpecificContentSettings::OnActivityIndicatorBubbleOpened(
+    ContentSettingsType type) {
+  if (indicators_hiding_delay_timer_.contains(type) &&
+      indicators_hiding_delay_timer_[type].IsRunning()) {
+    indicators_hiding_delay_timer_[type].Stop();
+  } else if (media_blocked_indicator_timer_.contains(type) &&
+             media_blocked_indicator_timer_[type].IsRunning()) {
+    media_blocked_indicator_timer_[type].Stop();
+  }
+}
+
+void PageSpecificContentSettings::OnActivityIndicatorBubbleClosed(
+    ContentSettingsType type) {
+  if (indicators_hiding_delay_timer_.contains(type)) {
+    // In use indicator timer was stopped, relaunch.
+    indicators_hiding_delay_timer_[type].Start(
+        FROM_HERE, kMediaIndicatorHoldAfterUseDuration,
+        base::BindOnce(
+            &PageSpecificContentSettings::OnCapturingStateChangedInternal,
+            weak_factory_.GetWeakPtr(), type, /*is_capturing=*/false));
+  } else if (media_blocked_indicator_timer_.contains(type)) {
+    // Blocked indicator timer was stopped, relaunch.
+    OnMediaBlockedIndicatorsShown(type);
+  }
 }
 
 void PageSpecificContentSettings::OnMediaBlockedIndicatorsShown(

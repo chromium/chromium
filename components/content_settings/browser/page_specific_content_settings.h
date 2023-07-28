@@ -472,6 +472,12 @@ class PageSpecificContentSettings
   // Returns base::Time() if `type` was not used in the last 24 hours.
   const base::Time GetLastUsedTime(ContentSettingsType type);
 
+  // This method is called when audio or video activity indicator is opened.
+  void OnActivityIndicatorBubbleOpened(ContentSettingsType type);
+
+  // This method is called when audio or video activity indicator is closed.
+  void OnActivityIndicatorBubbleClosed(ContentSettingsType type);
+
   void set_media_stream_access_origin_for_testing(const GURL& url) {
     media_stream_access_origin_ = url;
   }

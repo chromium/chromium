@@ -929,6 +929,16 @@ ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
   state_ = content_settings->GetMicrophoneCameraState();
   DCHECK(CameraAccessed() || MicrophoneAccessed());
 
+  if (CameraAccessed()) {
+    content_settings->OnActivityIndicatorBubbleOpened(
+        ContentSettingsType::MEDIASTREAM_CAMERA);
+  }
+
+  if (MicrophoneAccessed()) {
+    content_settings->OnActivityIndicatorBubbleOpened(
+        ContentSettingsType::MEDIASTREAM_MIC);
+  }
+
   // If the permission is turned off in MacOS system preferences, overwrite
   // the bubble to enable the user to trigger the system dialog.
   if (ShouldShowSystemMediaPermissions()) {
@@ -953,6 +963,17 @@ ContentSettingMediaStreamBubbleModel::~ContentSettingMediaStreamBubbleModel() =
 void ContentSettingMediaStreamBubbleModel::CommitChanges() {
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
+
+  if (CameraAccessed()) {
+    content_settings->OnActivityIndicatorBubbleClosed(
+        ContentSettingsType::MEDIASTREAM_CAMERA);
+  }
+
+  if (MicrophoneAccessed()) {
+    content_settings->OnActivityIndicatorBubbleClosed(
+        ContentSettingsType::MEDIASTREAM_MIC);
+  }
+
   if (content_settings->media_stream_access_origin().is_empty()) {
     return;
   }
