@@ -11,10 +11,12 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #import "ios/chrome/browser/upgrade/upgrade_utils.h"
+#import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -214,9 +216,20 @@ void IOSChromeSafetyCheckManager::StartOmahaCheck() {
 
   SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kRunning);
 
-  OmahaService::CheckNow(
-      base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // Only make Omaha requests on the proper channels.
+  switch (::GetChannel()) {
+    case version_info::Channel::STABLE:
+    case version_info::Channel::BETA:
+    case version_info::Channel::DEV:
+    case version_info::Channel::CANARY: {
+      OmahaService::CheckNow(
+          base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    }
+    default:
+      break;
+  }
 
   // If the Omaha response isn't recieved after `kOmahaNetworkWaitTime`,
   // consider this an Omaha failure.
