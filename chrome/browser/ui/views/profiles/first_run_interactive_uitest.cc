@@ -125,9 +125,7 @@ class FirstRunInteractiveUiTest
     // Simulate the Dice "ENABLE_SYNC" header parameter.
     {
       auto process_dice_header_delegate_impl =
-          ProcessDiceHeaderDelegateImpl::Create(
-              web_contents(),
-              ProcessDiceHeaderDelegateImpl::ShowSigninErrorCallback());
+          ProcessDiceHeaderDelegateImpl::Create(web_contents());
       process_dice_header_delegate_impl->EnableSync(account_info.account_id);
     }
   }

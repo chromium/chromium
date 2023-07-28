@@ -144,15 +144,28 @@ class ProcessDiceHeaderDelegateImplTest
           /*record_signin_started_metrics=*/true,
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &ProcessDiceHeaderDelegateImplTest::ShowSigninErrorCallback,
               base::Unretained(this)));
     }
     simulator->Commit();
     DCHECK_EQ(signin_url_, web_contents()->GetVisibleURL());
-    return ProcessDiceHeaderDelegateImpl::Create(
-        web_contents(),
-        base::BindOnce(
-            &ProcessDiceHeaderDelegateImplTest::ShowSigninErrorCallback,
-            base::Unretained(this)));
+
+    if (is_sync_signin_tab) {
+      return ProcessDiceHeaderDelegateImpl::Create(web_contents());
+    } else {
+      // Use the constructor rather than the `Create()` method, to specify the
+      // error callback.
+      return std::make_unique<ProcessDiceHeaderDelegateImpl>(
+          web_contents(), /*is_sync_signin_tab=*/false,
+          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+          kTestPromoAction, signin_metrics::Reason::kUnknownReason, GURL(),
+          ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
+          base::BindOnce(
+              &ProcessDiceHeaderDelegateImplTest::ShowSigninErrorCallback,
+              base::Unretained(this)));
+    }
   }
 
   // ChromeRenderViewHostTestHarness:

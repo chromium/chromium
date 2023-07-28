@@ -23,11 +23,11 @@
 
 namespace {
 
-void RedirectToNtp(content::WebContents* contents) {
-  VLOG(1) << "RedirectToNtp";
-  contents->GetController().LoadURL(
-      GURL(chrome::kChromeUINewTabURL), content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+void RedirectToUrl(content::WebContents* contents, const GURL& url) {
+  VLOG(1) << "RedirectToUrl " << url;
+  contents->GetController().LoadURL(url, content::Referrer(),
+                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                    std::string());
 }
 
 // Helper function similar to DiceTabHelper::FromWebContents(), but also handles
@@ -43,9 +43,7 @@ DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
 
 // static
 std::unique_ptr<ProcessDiceHeaderDelegateImpl>
-ProcessDiceHeaderDelegateImpl::Create(
-    content::WebContents* web_contents,
-    ShowSigninErrorCallback show_signin_error_callback) {
+ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   bool is_sync_signin_tab = false;
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
@@ -54,6 +52,7 @@ ProcessDiceHeaderDelegateImpl::Create(
   signin_metrics::Reason reason = signin_metrics::Reason::kUnknownReason;
   GURL redirect_url;
   EnableSyncCallback enable_sync_callback;
+  ShowSigninErrorCallback show_signin_error_callback;
 
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
   if (tab_helper) {
@@ -62,11 +61,17 @@ ProcessDiceHeaderDelegateImpl::Create(
     access_point = tab_helper->signin_access_point();
     promo_action = tab_helper->signin_promo_action();
     reason = tab_helper->signin_reason();
+    show_signin_error_callback =
+        std::move(tab_helper->GetShowSigninErrorCallback());
     if (is_sync_signin_tab) {
       enable_sync_callback = tab_helper->GetEnableSyncCallback();
     }
   } else {
     access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+    // If there is no `DiceTabHelper` default to the in-browser error callback.
+    // This callback does nothing if there is no browser open.
+    show_signin_error_callback =
+        DiceTabHelper::GetShowSigninErrorCallbackForBrowser();
   }
 
   return std::make_unique<ProcessDiceHeaderDelegateImpl>(
@@ -95,6 +100,7 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
       enable_sync_callback_(std::move(enable_sync_callback)),
       show_signin_error_callback_(std::move(show_signin_error_callback)) {
   DCHECK_EQ(!is_sync_signin_tab_, enable_sync_callback_.is_null());
+  DCHECK(show_signin_error_callback_);
 }
 
 ProcessDiceHeaderDelegateImpl::~ProcessDiceHeaderDelegateImpl() = default;
@@ -129,8 +135,8 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
 
 void ProcessDiceHeaderDelegateImpl::EnableSync(
     const CoreAccountId& account_id) {
-  DiceTabHelper* tab_helper =
-      GetDiceTabHelperFromWebContents(web_contents_.get());
+  content::WebContents* web_contents = web_contents_.get();
+  DiceTabHelper* tab_helper = GetDiceTabHelperFromWebContents(web_contents);
   if (tab_helper) {
     tab_helper->OnSyncSigninFlowComplete();
   }
@@ -140,44 +146,26 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
     return;
   }
 
-  content::WebContents* web_contents = web_contents_.get();
   VLOG(1) << "Start sync after web sign-in.";
   std::move(enable_sync_callback_)
       .Run(&profile_.get(), access_point_, promo_action_, reason_, web_contents,
            account_id);
 
-  if (!web_contents) {
-    return;
-  }
-
-  // After signing in to Chrome, the user should be redirected to the NTP,
-  // unless specified otherwise.
-  if (redirect_url_.is_empty()) {
-    RedirectToNtp(web_contents);
-    return;
-  }
-
-  DCHECK(redirect_url_.is_valid());
-  web_contents->GetController().LoadURL(redirect_url_, content::Referrer(),
-                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                        std::string());
+  Redirect();
 }
 
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
     const std::string& email,
     const GoogleServiceAuthError& error) {
   DCHECK_NE(GoogleServiceAuthError::NONE, error.state());
-  DiceTabHelper* tab_helper =
-      GetDiceTabHelperFromWebContents(web_contents_.get());
+  content::WebContents* web_contents = web_contents_.get();
+  DiceTabHelper* tab_helper = GetDiceTabHelperFromWebContents(web_contents);
   if (tab_helper) {
     tab_helper->OnSyncSigninFlowComplete();
   }
 
-  bool should_enable_sync = ShouldEnableSync();
-
-  content::WebContents* web_contents = web_contents_.get();
-  if (should_enable_sync && web_contents) {
-    RedirectToNtp(web_contents);
+  if (ShouldEnableSync()) {
+    Redirect();
   }
 
   // Show the error even if the WebContents was closed, because the user may be
@@ -189,4 +177,20 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
 
 signin_metrics::AccessPoint ProcessDiceHeaderDelegateImpl::GetAccessPoint() {
   return access_point_;
+}
+
+void ProcessDiceHeaderDelegateImpl::Redirect() {
+  content::WebContents* web_contents = web_contents_.get();
+  if (!web_contents) {
+    return;
+  }
+
+  DCHECK(redirect_url_.is_empty() || redirect_url_.is_valid())
+      << "Invalid redirect url: " << redirect_url_;
+
+  // After signing in to Chrome, the user should be redirected to the NTP,
+  // unless specified otherwise.
+  RedirectToUrl(web_contents, redirect_url_.is_empty()
+                                  ? GURL(chrome::kChromeUINewTabURL)
+                                  : redirect_url_);
 }

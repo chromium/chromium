@@ -103,6 +103,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -577,8 +578,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
                                     const CoreAccountId& account_id) {
     // Simulate the Dice "ENABLE_SYNC" header parameter.
     auto process_dice_header_delegate_impl =
-        ProcessDiceHeaderDelegateImpl::Create(
-            contents, ProcessDiceHeaderDelegateImpl::ShowSigninErrorCallback());
+        ProcessDiceHeaderDelegateImpl::Create(contents);
     process_dice_header_delegate_impl->EnableSync(account_id);
   }
 
@@ -1397,6 +1397,23 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // This should not crash.
   StartDiceSignIn();
+}
+
+// Regression test for https://crbug.com/1467483
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       DiceSigninFailure) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  StartDiceSignIn();
+
+  // Simulate Dice token exchange failure.
+  auto process_dice_header_delegate_impl =
+      ProcessDiceHeaderDelegateImpl::Create(web_contents());
+  process_dice_header_delegate_impl->HandleTokenExchangeFailure(
+      "example@gmail.com",
+      GoogleServiceAuthError::FromServiceError("SomeError"));
+
+  // This should not crash.
+  WaitForLoadStop(GaiaUrls::GetInstance()->blank_page_url());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

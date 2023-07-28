@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -35,14 +35,15 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
                               const CoreAccountId&)>;
 
   // Callback showing a signin error UI.
+  // This is similar to `DiceTabHelper::ShowSigninErrorCallback` but is a once
+  // callback (vs repeating).
   using ShowSigninErrorCallback = base::OnceCallback<
       void(Profile*, content::WebContents*, const SigninUIError&)>;
 
   // Helper function for creating `ProcessDiceHeaderDelegateImpl` from a
   // `content::WebContents`.
   static std::unique_ptr<ProcessDiceHeaderDelegateImpl> Create(
-      content::WebContents* web_contents,
-      ShowSigninErrorCallback show_signin_error_callback);
+      content::WebContents* web_contents);
 
   // |is_sync_signin_tab| is true if a sync signin flow has been started in that
   // tab.
@@ -73,6 +74,9 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
  private:
   // Returns true if sync should be enabled after the user signs in.
   bool ShouldEnableSync();
+
+  // Navigate to `redirect_url_` or the NTP if no url is specified.
+  void Redirect();
 
   const base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<Profile> profile_;

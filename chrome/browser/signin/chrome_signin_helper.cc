@@ -71,8 +71,6 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #endif
 
 namespace signin {
@@ -373,18 +371,6 @@ void ProcessMirrorHeader(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// Shows UI for signin errors.
-void ShowDiceSigninError(Profile* profile,
-                         content::WebContents* web_contents,
-                         const SigninUIError& error) {
-  DCHECK(profile);
-  Browser* browser = web_contents
-                         ? chrome::FindBrowserWithWebContents(web_contents)
-                         : chrome::FindBrowserWithProfile(profile);
-  LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
-      browser, error, /*from_profile_picker=*/false);
-}
-
 void ProcessDiceHeader(
     const DiceResponseParams& dice_params,
     const content::WebContents::Getter& web_contents_getter) {
@@ -405,8 +391,7 @@ void ProcessDiceHeader(
   DiceResponseHandler* dice_response_handler =
       DiceResponseHandler::GetForProfile(profile);
   dice_response_handler->ProcessDiceHeader(
-      dice_params, ProcessDiceHeaderDelegateImpl::Create(
-                       web_contents, base::BindOnce(&ShowDiceSigninError)));
+      dice_params, ProcessDiceHeaderDelegateImpl::Create(web_contents));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

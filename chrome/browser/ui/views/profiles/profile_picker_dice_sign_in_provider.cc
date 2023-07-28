@@ -268,7 +268,8 @@ GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
 void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
     DiceTabHelper& helper,
     DiceTabHelperMode mode) {
-  DiceTabHelper::EnableSyncCallback callback;
+  DiceTabHelper::EnableSyncCallback enable_sync_callback;
+  DiceTabHelper::ShowSigninErrorCallback show_signin_error_callback;
   // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
   // redirect to chrome:// URLs such as the NTP.
   GURL redirect_url;
@@ -279,19 +280,24 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       // assuming that this is not SAML. If the user uses a SAML account, a
       // browser window will open, and the `DiceTabHelper` will be reinitialized
       // with the `kInBrowser` mode.
-      callback =
+      enable_sync_callback =
           base::IgnoreArgs<Profile*, signin_metrics::AccessPoint,
                            signin_metrics::PromoAction, signin_metrics::Reason,
                            content::WebContents*, const CoreAccountId&>(
               base::BindRepeating(&ProfilePickerDiceSignInProvider::FinishFlow,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   /*is_saml=*/false));
+      // TODO(https://crbug.com/1467483): Handle signin errors in the profile
+      // picker.
+      show_signin_error_callback = base::DoNothing();
       redirect_url = GaiaUrls::GetInstance()->blank_page_url();
       break;
     case DiceTabHelperMode::kInBrowser:
       // This is used when a SAML flow is detected (through a navigation outside
       // of Gaia).
-      callback = DiceTabHelper::GetEnableSyncCallbackForBrowser();
+      enable_sync_callback = DiceTabHelper::GetEnableSyncCallbackForBrowser();
+      show_signin_error_callback =
+          DiceTabHelper::GetShowSigninErrorCallbackForBrowser();
       redirect_url = GURL(chrome::kChromeUINewTabURL);
       // The metrics were already recorded once when starting the flow in the
       // profile picker.
@@ -303,5 +309,5 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       std::move(redirect_url), record_signin_started_metrics,
-      std::move(callback));
+      std::move(enable_sync_callback), std::move(show_signin_error_callback));
 }

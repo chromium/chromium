@@ -10,6 +10,8 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/navigation_controller.h"
@@ -40,6 +42,26 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
       });
 }
 
+// static
+DiceTabHelper::ShowSigninErrorCallback
+DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
+  return base::BindRepeating([](Profile* profile,
+                                content::WebContents* web_contents,
+                                const SigninUIError& error) {
+    if (!profile) {
+      return;
+    }
+    Browser* browser = web_contents
+                           ? chrome::FindBrowserWithWebContents(web_contents)
+                           : chrome::FindBrowserWithProfile(profile);
+    if (!browser) {
+      return;
+    }
+    LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
+        browser, error, /*from_profile_picker=*/false);
+  });
+}
+
 DiceTabHelper::ResetableState::ResetableState() = default;
 DiceTabHelper::ResetableState::~ResetableState() = default;
 DiceTabHelper::ResetableState::ResetableState(ResetableState&& other) = default;
@@ -59,7 +81,8 @@ void DiceTabHelper::InitializeSigninFlow(
     signin_metrics::PromoAction promo_action,
     const GURL& redirect_url,
     bool record_signin_started_metrics,
-    EnableSyncCallback enable_sync_callback) {
+    EnableSyncCallback enable_sync_callback,
+    ShowSigninErrorCallback show_signin_error_callback) {
   DCHECK(signin_url.is_valid());
   DCHECK(state_.signin_url.is_empty() || state_.signin_url == signin_url);
 
@@ -70,6 +93,7 @@ void DiceTabHelper::InitializeSigninFlow(
   state_.signin_promo_action = promo_action;
   state_.signin_reason = reason;
   state_.enable_sync_callback = std::move(enable_sync_callback);
+  state_.show_signin_error_callback = std::move(show_signin_error_callback);
 
   is_chrome_signin_page_ = true;
   signin_page_load_recorded_ = false;

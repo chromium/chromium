@@ -405,7 +405,8 @@ void SigninViewController::ShowDiceSigninTab(
   tab_helper->InitializeSigninFlow(
       signin_url, access_point, signin_reason, promo_action, redirect_url,
       /*record_signin_started_metrics=*/true,
-      DiceTabHelper::GetEnableSyncCallbackForBrowser());
+      DiceTabHelper::GetEnableSyncCallbackForBrowser(),
+      DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
 }
 
 void SigninViewController::ShowDiceEnableSyncTab(
