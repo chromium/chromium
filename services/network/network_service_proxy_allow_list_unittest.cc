@@ -150,4 +150,19 @@ TEST_F(NetworkServiceProxyAllowListTest, Matches_SubResource) {
                                 GURL("http://example3.com")));
 }
 
+TEST_F(NetworkServiceProxyAllowListTest, Matches_LongSubdomain) {
+  NetworkServiceProxyAllowList allowList;
+
+  MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  resourceOwner->add_owned_resources()->set_domain("example.com");
+
+  allowList.UseMaskedDomainList(mdl);
+
+  EXPECT_TRUE(
+      allowList.Matches(GURL("http://a.very.nested.subdomain.example.com"),
+                        GURL("http://top.com")));
+}
+
 }  // namespace network

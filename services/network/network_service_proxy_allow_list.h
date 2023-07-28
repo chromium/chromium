@@ -46,15 +46,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   void UseMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl);
 
  private:
-  void AddDomainRule(const std::string& domain,
-                     const net::ProxyBypassRules& bypass_rules);
+  void AddDomainRules(const std::string& domain,
+                      const net::ProxyBypassRules& bypass_rules);
 
   mojom::CustomProxyConfigPtr custom_proxy_config_;
 
-  // Maps each domain eligible for the proxy to the top frame domains that allow
-  // the proxy to be bypassed.
-  std::map<std::unique_ptr<net::SchemeHostPortMatcherRule>,
-           net::ProxyBypassRules>
+  // Maps domain suffixes to smaller maps of domains eligible for the proxy and
+  // the top frame domains that allow the proxy to be bypassed.
+  std::map<std::string,
+           std::map<std::unique_ptr<net::SchemeHostPortMatcherRule>,
+                    net::ProxyBypassRules>>
       allow_list_with_bypass_map_;
 };
 

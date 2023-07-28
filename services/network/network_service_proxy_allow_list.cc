@@ -16,6 +16,15 @@ std::string NormalizeHost(std::string s) {
   return s.substr(0, 4) == "www." ? s.substr(4) : s;
 }
 
+// Extracts a suffix from the domain that is useful for comparing domains and
+// subdomains.
+std::string DomainSuffix(std::string domain) {
+  auto host_suffix_start = domain.rfind(".", domain.rfind("."));
+  return host_suffix_start != std::string::npos
+             ? domain.substr(host_suffix_start)
+             : domain;
+}
+
 }  // namespace
 
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
@@ -55,8 +64,7 @@ NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
       CHECK(bypass_rules.AddRuleFromString("." + property));
     }
 
-    allow_list.AddDomainRule(domain, bypass_rules);
-    allow_list.AddDomainRule("." + domain, bypass_rules);
+    allow_list.AddDomainRules(domain, bypass_rules);
   }
 
   return allow_list;
@@ -77,25 +85,34 @@ NetworkServiceProxyAllowList::GetCustomProxyConfig() {
   return custom_proxy_config_ ? custom_proxy_config_->Clone() : nullptr;
 }
 
-void NetworkServiceProxyAllowList::AddDomainRule(
+void NetworkServiceProxyAllowList::AddDomainRules(
     const std::string& domain,
     const net::ProxyBypassRules& bypass_rules) {
   auto rule = net::SchemeHostPortMatcherRule::FromUntrimmedRawString(domain);
 
+  std::string domain_suffix = DomainSuffix(domain);
+
   if (rule) {
-    allow_list_with_bypass_map_[std::move(rule)] = bypass_rules;
+    allow_list_with_bypass_map_[domain_suffix][std::move(rule)] = bypass_rules;
+  }
+
+  // Only add rules for subdomains if the provided domain string doesn't support
+  // them.
+  if (!(domain.starts_with(".") || domain.starts_with("*"))) {
+    auto subdomain_rule =
+        net::SchemeHostPortMatcherRule::FromUntrimmedRawString("." + domain);
+    if (subdomain_rule) {
+      allow_list_with_bypass_map_[domain_suffix][std::move(subdomain_rule)] =
+          bypass_rules;
+    }
   }
 }
 
 bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
                                            const GURL& top_frame_url) {
-  if (!IsPopulated()) {
-    return false;
-  }
-
   // If there is no top frame URL, the request should not be proxied because it
   // is not to a 3P resource.
-  if (top_frame_url.is_empty()) {
+  if (!IsPopulated() || top_frame_url.is_empty()) {
     return false;
   }
 
@@ -106,12 +123,15 @@ bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
     return false;
   }
 
-  // TODO(crbug.com/1463809): Use a more efficient data structure before a rule
-  // count increase starts to create performance issues.
-  for (const auto& [rule, bypass_rules] : allow_list_with_bypass_map_) {
-    auto result = rule->Evaluate(request_url);
-    if (result == net::SchemeHostPortMatcherResult::kInclude) {
-      return bypass_rules.Matches(top_frame_url, true);
+  auto resource_host_suffix = DomainSuffix(resource_host);
+
+  if (allow_list_with_bypass_map_.contains(resource_host_suffix)) {
+    for (const auto& [rule, bypass_rules] :
+         allow_list_with_bypass_map_.at(resource_host_suffix)) {
+      auto result = rule->Evaluate(request_url);
+      if (result == net::SchemeHostPortMatcherResult::kInclude) {
+        return bypass_rules.Matches(top_frame_url, true);
+      }
     }
   }
 
@@ -132,9 +152,7 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
         CHECK(bypass_rules.AddRuleFromString("." + property));
       }
 
-      AddDomainRule(resource.domain(), bypass_rules);
-      // Resources on subdomains should also be proxied.
-      AddDomainRule("." + resource.domain(), bypass_rules);
+      AddDomainRules(resource.domain(), bypass_rules);
     }
   }
 }
