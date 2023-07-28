@@ -500,6 +500,8 @@ class MockFileSystem(object):
     def patch_builtins(self):
         with contextlib.ExitStack() as stack:
             stack.enter_context(patch('builtins.open', self._open_mock))
+            stack.enter_context(patch('os.sep', self.sep))
+            stack.enter_context(patch('os.path.sep', self.sep))
             stack.enter_context(patch('os.path.abspath', self.abspath))
             stack.enter_context(patch('os.path.relpath', self.relpath))
             stack.enter_context(patch('os.path.join', self.join))

@@ -123,7 +123,8 @@ class BaseUpdateMetadataTest(LoggingTestCase):
             stack.enter_context(
                 patch('manifest.manifest.load_and_update',
                       self._manifest_load_and_update))
-            default_port = Mock()
+            default_port = Mock(wraps=self.tool.port_factory.get('test'))
+            default_port.FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
             default_port.default_smoke_test_only.return_value = False
             default_port.skipped_due_to_smoke_tests.return_value = False
             stack.enter_context(
@@ -633,9 +634,8 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                         'test_port', self.tool.port_factory.get())
                     for report in reports
                 })
-            updater = MetadataUpdater.from_manifests(manifests, configs,
-                                                     self.tool.filesystem,
-                                                     **options)
+            updater = MetadataUpdater.from_manifests(
+                manifests, configs, self.tool.port_factory.get(), **options)
             updater.collect_results(
                 io.StringIO(json.dumps(report)) for report in reports)
             for test_file in updater.test_files_to_update():
@@ -671,6 +671,66 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             'external/wpt/fail.html.ini', """\
             [fail.html]
               expected: [OK, FAIL]
+            """)
+
+    def test_migrate_comments(self):
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            # Comment 0
+            [variant.html?foo=bar/abc]
+              bug: crbug.com/123
+            """)
+        self.write_contents(
+            'TestExpectations', """\
+            # tags: [ Linux Mac Win ]
+            # results: [ Failure Pass ]
+
+            # This comment should not be transferred because it's in its own
+            # paragraph block.
+
+            # Comment 1
+            #   Comment 2
+            crbug.com/456 [ Linux ] external/wpt/variant.html?foo=bar/abc [ Failure ]  # Comment 3
+            crbug.com/789 [ Mac ] virtual/virtual_wpt/external/wpt/variant.html?foo=bar/abc [ Failure ]  # Comment 4
+            # Not transferred
+            external/wpt/variant.html?foo=baz [ Failure ]
+
+            # Group of tests that fail for the same reason.
+            non/wpt/test.html [ Failure ]  # Not transferred
+            wpt_internal/dir/multiglob.https.any.worker.html [ Failure ] #Comment 5
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/variant.html?foo=bar/abc',
+                    'status': 'OK',
+                }, {
+                    'test': '/variant.html?foo=baz',
+                    'status': 'OK',
+                }, {
+                    'test':
+                    '/wpt_internal/dir/multiglob.https.any.worker.html',
+                    'status': 'ERROR',
+                    'expected': 'OK',
+                }],
+            },
+            migrate=True)
+        # Note: Comments/bugs are migrated, even if all results are as expected.
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            # Comment 1
+            #   Comment 2
+            # Comment 3
+            # Comment 4
+            [variant.html?foo=bar/abc]
+              bug: [crbug.com/123, crbug.com/456, crbug.com/789]
+            """)
+        self.assert_contents(
+            'wpt_internal/dir/multiglob.https.any.js.ini', """\
+            # Group of tests that fail for the same reason.
+            #Comment 5
+            [multiglob.https.any.worker.html]
+              expected: ERROR
             """)
 
     def test_remove_all_pass(self):
