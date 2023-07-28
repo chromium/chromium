@@ -133,6 +133,9 @@ public class ClearBrowsingDataTabsFragment
                 default:
                     throw new RuntimeException("invalid position: " + position);
             }
+            // We supply the fetcher in the next line.
+            fragment.setArguments(ClearBrowsingDataFragment.createFragmentArgs(
+                    /*isFetcherSuppliedFromOutside=*/true));
             fragment.setClearBrowsingDataFetcher(mFetcher);
             return fragment;
         }

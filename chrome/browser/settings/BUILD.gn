@@ -42,6 +42,7 @@ android_library("test_support_java") {
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",

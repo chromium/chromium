@@ -107,8 +107,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testClickingOnMoreOptions_LaunchesClearBrowsingData() {
         doNothing()
                 .when(mSettingsLauncherMock)
-                .launchSettingsActivity(
-                        eq(mActivity), eq(SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA));
+                .launchSettingsActivity(eq(mActivity),
+                        eq(SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE));
         new QuickDeleteDialogDelegate(mActivity, mQuickDeleteView, mModalDialogManager,
                 mOnDismissCallbackMock, mTabModelSelectorMock, mSettingsLauncherMock,
                 mTimePeriodChangeObserverMock)
@@ -119,8 +119,8 @@ public class QuickDeleteDialogDelegateUnitTest {
         moreOptionsView.performClick();
 
         verify(mSettingsLauncherMock)
-                .launchSettingsActivity(
-                        eq(mActivity), eq(SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA));
+                .launchSettingsActivity(eq(mActivity),
+                        eq(SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE));
     }
 
     @Test

@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.runner.lifecycle.Stage;
@@ -29,6 +31,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 public class SettingsActivityTestRule<T extends Fragment>
         extends BaseActivityTestRule<SettingsActivity> {
     private final Class<T> mFragmentClass;
+    private @Nullable Bundle mDefaultFragmentArgs;
 
     /**
      * Create the settings activity test rule with an specific fragment class.
@@ -40,11 +43,22 @@ public class SettingsActivityTestRule<T extends Fragment>
     }
 
     /**
+     * Create the settings activity test rule with an specific fragment class.
+     * @param fragmentClass Fragment that will be attached after the activity starts.
+     * @param defaultFragmentArgs A bundle of default fragment arguments to be used.
+     */
+    public SettingsActivityTestRule(Class<T> fragmentClass, @NonNull Bundle defaultFragmentArgs) {
+        super(SettingsActivity.class);
+        mFragmentClass = fragmentClass;
+        mDefaultFragmentArgs = defaultFragmentArgs;
+    }
+
+    /**
      * Launches the settings activity with the specified fragment.
      * @return The activity that just started.
      */
     public SettingsActivity startSettingsActivity() {
-        return startSettingsActivity(null);
+        return startSettingsActivity(mDefaultFragmentArgs);
     }
 
     /**

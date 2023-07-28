@@ -58,7 +58,9 @@ public class ClearBrowsingDataFragmentBasicTest {
             new ChromeTabbedActivityTestRule();
     public final SettingsActivityTestRule<ClearBrowsingDataFragmentBasic>
             mSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(ClearBrowsingDataFragmentBasic.class);
+                    new SettingsActivityTestRule<>(ClearBrowsingDataFragmentBasic.class,
+                            ClearBrowsingDataFragment.createFragmentArgs(
+                                    /*isFetcherSuppliedFromOutside=*/false));
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
     // CTA won't work.

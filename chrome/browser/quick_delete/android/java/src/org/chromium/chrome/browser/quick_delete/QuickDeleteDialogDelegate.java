@@ -197,11 +197,9 @@ class QuickDeleteDialogDelegate {
     }
 
     private void updateMoreOptions(@NonNull ButtonCompat moreOptionsView) {
-        // TODO(crbug.com/1412087): Update this to pass arguments to hide the basic tab and only
-        // show the advanced tab.
         moreOptionsView.setOnClickListener(view
-                -> mSettingsLauncher.launchSettingsActivity(
-                        mContext, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA));
+                -> mSettingsLauncher.launchSettingsActivity(mContext,
+                        SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE));
     }
 
     /**
