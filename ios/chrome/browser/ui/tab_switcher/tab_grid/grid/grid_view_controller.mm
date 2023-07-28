@@ -124,6 +124,10 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                   UIPointerInteractionDelegate>
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
+// The collection view's data source.
+@property(nonatomic, strong)
+    UICollectionViewDiffableDataSource<NSString*, NSString*>*
+        diffableDataSource;
 // The cell registration for grid cells.
 @property(nonatomic, strong)
     UICollectionViewCellRegistration* gridCellRegistration;
@@ -139,10 +143,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // The supplementary view registration for the Inactive Tabs preamble header.
 @property(nonatomic, strong) UICollectionViewSupplementaryRegistration*
     inactiveTabsPreambleHeaderRegistration;
-// The collection view's data source.
-@property(nonatomic, strong)
-    UICollectionViewDiffableDataSource<NSString*, NSString*>*
-        diffableDataSource;
 // A view to obscure incognito content when the user isn't authorized to
 // see it.
 @property(nonatomic, strong) IncognitoReauthView* blockingView;
@@ -616,6 +616,63 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   header.hidden = NO;
 }
 
+#pragma mark - Public Editing Mode Selection
+
+- (void)selectAllItemsForEditing {
+  if (_mode != TabGridModeSelection) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  for (TabSwitcherItem* item in self.items) {
+    [self selectItemWithIDForEditing:item.identifier];
+  }
+  [self.collectionView reloadData];
+}
+
+- (void)deselectAllItemsForEditing {
+  if (_mode != TabGridModeSelection) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  for (TabSwitcherItem* item in self.items) {
+    [self deselectItemWithIDForEditing:item.identifier];
+  }
+  [self.collectionView reloadData];
+}
+
+- (NSArray<NSString*>*)selectedItemIDsForEditing {
+  return [self.selectedEditingItemIDs allObjects];
+}
+
+- (NSArray<NSString*>*)selectedShareableItemIDsForEditing {
+  return [self.selectedSharableEditingItemIDs allObjects];
+}
+
+- (BOOL)allItemsSelectedForEditing {
+  return _mode == TabGridModeSelection &&
+         self.items.count == self.selectedEditingItemIDs.count;
+}
+
+#pragma mark - Private Editing Mode Selection
+
+- (BOOL)isItemWithIDSelectedForEditing:(NSString*)identifier {
+  return [self.selectedEditingItemIDs containsObject:identifier];
+}
+
+- (void)selectItemWithIDForEditing:(NSString*)identifier {
+  [self.selectedEditingItemIDs addObject:identifier];
+  if ([self.shareableItemsProvider isItemWithIdentifierSharable:identifier]) {
+    [self.selectedSharableEditingItemIDs addObject:identifier];
+  }
+}
+
+- (void)deselectItemWithIDForEditing:(NSString*)identifier {
+  [self.selectedEditingItemIDs removeObject:identifier];
+  [self.selectedSharableEditingItemIDs removeObject:identifier];
+}
+
 // TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
 // the diffable data source refactor is validated by testers.
 #pragma mark - UICollectionViewDataSource
@@ -643,20 +700,47 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   return base::checked_cast<NSInteger>(self.items.count);
 }
 
-#pragma mark - UICollectionView Diffable Data Source Helpers
+// TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
+// the diffable data source refactor is validated by testers.
+- (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
+                 cellForItemAtIndexPath:(NSIndexPath*)indexPath {
+  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
 
-- (void)reloadCollectionViewData {
-  NSDiffableDataSourceSnapshot* snapshot =
-      [[NSDiffableDataSourceSnapshot alloc] init];
-  [snapshot appendSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
-  NSString* identifierKey = NSStringFromSelector(@selector(identifier));
-  [snapshot appendItemsWithIdentifiers:[self.items valueForKey:identifierKey]];
-  if (self.showingSuggestedActions) {
-    [snapshot
-        appendSectionsWithIdentifiers:@[ kSuggestedActionsSectionIdentifier ]];
-    [snapshot appendItemsWithIdentifiers:@[ kSuggestedActionsCellIdentifier ]];
+  NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
+  UICollectionViewCell* cell;
+
+  if (indexPath.section == kSuggestedActionsSectionIndex) {
+    DCHECK(self.suggestedActionsViewController);
+    cell = [collectionView
+        dequeueReusableCellWithReuseIdentifier:kSuggestedActionsCellIdentifier
+                                  forIndexPath:indexPath];
+    SuggestedActionsGridCell* suggestedActionsCell =
+        base::mac::ObjCCastStrict<SuggestedActionsGridCell>(cell);
+    suggestedActionsCell.suggestedActionsView =
+        self.suggestedActionsViewController.view;
+  } else {
+    // In some cases this is called with an indexPath.item that's beyond (by
+    // 1) the bounds of self.items -- see crbug.com/1068136. Presumably this
+    // is a race condition where an item has been deleted at the same time as
+    // the collection is doing layout (potentially during rotation?). DCHECK
+    // to catch this in debug, and then in production fudge by duplicating the
+    // last cell. The assumption is that there will be another, correct layout
+    // shortly after the incorrect one.
+    DCHECK_LT(itemIndex, self.items.count);
+    // Outside of debug builds, keep array bounds valid.
+    if (itemIndex >= self.items.count) {
+      itemIndex = self.items.count - 1;
+    }
+
+    TabSwitcherItem* item = self.items[itemIndex];
+    cell =
+        [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
+                                                  forIndexPath:indexPath];
+    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
+    [self configureCell:gridCell withItem:item atIndex:itemIndex];
   }
-  [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
+
+  return cell;
 }
 
 // TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
@@ -720,6 +804,22 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
       [self configureInactiveTabsPreambleHeader:header];
       return header;
   }
+}
+
+#pragma mark - UICollectionView Diffable Data Source Helpers
+
+- (void)reloadCollectionViewData {
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot appendSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
+  NSString* identifierKey = NSStringFromSelector(@selector(identifier));
+  [snapshot appendItemsWithIdentifiers:[self.items valueForKey:identifierKey]];
+  if (self.showingSuggestedActions) {
+    [snapshot
+        appendSectionsWithIdentifiers:@[ kSuggestedActionsSectionIdentifier ]];
+    [snapshot appendItemsWithIdentifiers:@[ kSuggestedActionsCellIdentifier ]];
+  }
+  [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
 }
 
 // Creates the cell and supplementary view registrations and assigns them to the
@@ -885,77 +985,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                                item:item];
 }
 
-// TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
-// the diffable data source refactor is validated by testers.
-- (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
-                 cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
-
-  NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-  UICollectionViewCell* cell;
-
-  if (indexPath.section == kSuggestedActionsSectionIndex) {
-    DCHECK(self.suggestedActionsViewController);
-    cell = [collectionView
-        dequeueReusableCellWithReuseIdentifier:kSuggestedActionsCellIdentifier
-                                  forIndexPath:indexPath];
-    SuggestedActionsGridCell* suggestedActionsCell =
-        base::mac::ObjCCastStrict<SuggestedActionsGridCell>(cell);
-    suggestedActionsCell.suggestedActionsView =
-        self.suggestedActionsViewController.view;
-  } else {
-    // In some cases this is called with an indexPath.item that's beyond (by
-    // 1) the bounds of self.items -- see crbug.com/1068136. Presumably this
-    // is a race condition where an item has been deleted at the same time as
-    // the collection is doing layout (potentially during rotation?). DCHECK
-    // to catch this in debug, and then in production fudge by duplicating the
-    // last cell. The assumption is that there will be another, correct layout
-    // shortly after the incorrect one.
-    DCHECK_LT(itemIndex, self.items.count);
-    // Outside of debug builds, keep array bounds valid.
-    if (itemIndex >= self.items.count) {
-      itemIndex = self.items.count - 1;
-    }
-
-    TabSwitcherItem* item = self.items[itemIndex];
-    cell =
-        [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
-                                                  forIndexPath:indexPath];
-    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
-    [self configureCell:gridCell withItem:item atIndex:itemIndex];
-  }
-
-  return cell;
-}
-
-- (void)collectionView:(UICollectionView*)collectionView
-       willDisplayCell:(UICollectionViewCell*)cell
-    forItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    return;
-  }
-
-  // Checking and updating the GridCell's `state` if needed.
-  //
-  // For the context: `setMode:` method updates the `state` property of the
-  // visible GridCells only. However, there are might be some cells that were
-  // dequeued already but haven't been displayed yet. Those will never update
-  // their `state` unless we forcely handle it here.
-  //
-  // See crbug.com//1427278
-  if ([cell isKindOfClass:[GridCell class]]) {
-    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
-
-    BOOL isTabGridInSelectionMode = _mode == TabGridModeSelection;
-    BOOL isGridCellInSelectionMode = gridCell.state != GridCellStateNotEditing;
-
-    if (isTabGridInSelectionMode != isGridCellInSelectionMode) {
-      gridCell.state = isTabGridInSelectionMode ? GridCellStateEditingUnselected
-                                                : GridCellStateNotEditing;
-    }
-  }
-}
-
 #pragma mark - UICollectionViewDelegate
 
 - (CGSize)collectionView:(UICollectionView*)collectionView
@@ -1115,6 +1144,34 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   return [[BidirectionalCollectionViewTransitionLayout alloc]
       initWithCurrentLayout:fromLayout
                  nextLayout:toLayout];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+       willDisplayCell:(UICollectionViewCell*)cell
+    forItemAtIndexPath:(NSIndexPath*)indexPath {
+  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+    return;
+  }
+
+  // Checking and updating the GridCell's `state` if needed.
+  //
+  // For the context: `setMode:` method updates the `state` property of the
+  // visible GridCells only. However, there are might be some cells that were
+  // dequeued already but haven't been displayed yet. Those will never update
+  // their `state` unless we forcely handle it here.
+  //
+  // See crbug.com//1427278
+  if ([cell isKindOfClass:[GridCell class]]) {
+    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
+
+    BOOL isTabGridInSelectionMode = _mode == TabGridModeSelection;
+    BOOL isGridCellInSelectionMode = gridCell.state != GridCellStateNotEditing;
+
+    if (isTabGridInSelectionMode != isGridCellInSelectionMode) {
+      gridCell.state = isTabGridInSelectionMode ? GridCellStateEditingUnselected
+                                                : GridCellStateNotEditing;
+    }
+  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -1659,63 +1716,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // Called when the Inactive Tabs settings link is tapped.
 - (void)didTapInactiveTabsSettingsLink {
   [self.delegate didTapInactiveTabsSettingsLinkInGridViewController:self];
-}
-
-#pragma mark - Public Editing Mode Selection
-
-- (void)selectAllItemsForEditing {
-  if (_mode != TabGridModeSelection) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
-  for (TabSwitcherItem* item in self.items) {
-    [self selectItemWithIDForEditing:item.identifier];
-  }
-  [self.collectionView reloadData];
-}
-
-- (void)deselectAllItemsForEditing {
-  if (_mode != TabGridModeSelection) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
-  for (TabSwitcherItem* item in self.items) {
-    [self deselectItemWithIDForEditing:item.identifier];
-  }
-  [self.collectionView reloadData];
-}
-
-- (NSArray<NSString*>*)selectedItemIDsForEditing {
-  return [self.selectedEditingItemIDs allObjects];
-}
-
-- (NSArray<NSString*>*)selectedShareableItemIDsForEditing {
-  return [self.selectedSharableEditingItemIDs allObjects];
-}
-
-- (BOOL)allItemsSelectedForEditing {
-  return _mode == TabGridModeSelection &&
-         self.items.count == self.selectedEditingItemIDs.count;
-}
-
-#pragma mark - Private Editing Mode Selection
-
-- (BOOL)isItemWithIDSelectedForEditing:(NSString*)identifier {
-  return [self.selectedEditingItemIDs containsObject:identifier];
-}
-
-- (void)selectItemWithIDForEditing:(NSString*)identifier {
-  [self.selectedEditingItemIDs addObject:identifier];
-  if ([self.shareableItemsProvider isItemWithIdentifierSharable:identifier]) {
-    [self.selectedSharableEditingItemIDs addObject:identifier];
-  }
-}
-
-- (void)deselectItemWithIDForEditing:(NSString*)identifier {
-  [self.selectedEditingItemIDs removeObject:identifier];
-  [self.selectedSharableEditingItemIDs removeObject:identifier];
 }
 
 #pragma mark - Suggested Actions Section
