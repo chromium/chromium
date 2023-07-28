@@ -36,7 +36,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
@@ -447,7 +446,6 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1467656")
     public void testMetadata_chromeComponents() throws Throwable {
         final String allowlistComponentVersion = "123.456.78.9";
         // A fake expiry date, the allowlist component info should be recorded regardless of the
@@ -483,7 +481,6 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1467656")
     public void testPageLoadsEnableMultipleUploads() throws Throwable {
         mPlatformServiceBridge.waitForNextMetricsLog();
 
