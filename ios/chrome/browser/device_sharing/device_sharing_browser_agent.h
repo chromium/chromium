@@ -39,14 +39,12 @@ class DeviceSharingBrowserAgent
   explicit DeviceSharingBrowserAgent(Browser* browser);
 
   // Update the active URL for the current web state of the browser.
-  void UpdateForActiveWebState();
+  void UpdateForActiveWebState(web::WebState* active_web_state);
 
   // WebStateListObserver
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;

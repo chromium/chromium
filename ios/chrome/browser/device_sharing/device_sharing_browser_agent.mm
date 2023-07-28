@@ -32,10 +32,11 @@ void DeviceSharingBrowserAgent::UpdateForActiveBrowser() {
   // Tell the manager that this is now the active browser, and update.
   DeviceSharingManagerFactory::GetForBrowserState(browser_->GetBrowserState())
       ->SetActiveBrowser(browser_);
-  UpdateForActiveWebState();
+  UpdateForActiveWebState(browser_->GetWebStateList()->GetActiveWebState());
 }
 
-void DeviceSharingBrowserAgent::UpdateForActiveWebState() {
+void DeviceSharingBrowserAgent::UpdateForActiveWebState(
+    web::WebState* active_web_state) {
   DeviceSharingManager* manager =
       DeviceSharingManagerFactory::GetForBrowserState(
           browser_->GetBrowserState());
@@ -46,8 +47,6 @@ void DeviceSharingBrowserAgent::UpdateForActiveWebState() {
     return;
   }
 
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
   if (active_web_state) {
     manager->UpdateActiveUrl(browser_, active_web_state->GetVisibleURL());
     manager->UpdateActiveTitle(browser_, active_web_state->GetTitle());
@@ -60,16 +59,18 @@ void DeviceSharingBrowserAgent::UpdateForActiveWebState() {
 }
 
 #pragma mark - WebStateListObserver
-void DeviceSharingBrowserAgent::WebStateActivatedAt(
+
+void DeviceSharingBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  UpdateForActiveWebState();
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  if (status.active_web_state_change()) {
+    UpdateForActiveWebState(status.new_active_web_state);
+  }
 }
 
 #pragma mark - BrowserObserver
+
 void DeviceSharingBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser, browser_);
   // Signal no active URL. If this is the active browser in the manager, then
@@ -84,12 +85,13 @@ void DeviceSharingBrowserAgent::BrowserDestroyed(Browser* browser) {
 }
 
 #pragma mark - WebStateObserver
+
 void DeviceSharingBrowserAgent::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  UpdateForActiveWebState();
+  UpdateForActiveWebState(browser_->GetWebStateList()->GetActiveWebState());
 }
 
 void DeviceSharingBrowserAgent::TitleWasSet(web::WebState* web_state) {
-  UpdateForActiveWebState();
+  UpdateForActiveWebState(browser_->GetWebStateList()->GetActiveWebState());
 }
