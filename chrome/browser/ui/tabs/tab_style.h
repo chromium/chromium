@@ -66,7 +66,6 @@ class TabStyle {
   enum class TabSelectionState {
     kActive,
     kSelected,
-    kHovered,
     kInactive,
   };
 
@@ -164,6 +163,7 @@ class TabStyle {
   // use their own color ids.
   virtual SkColor GetTabBackgroundColor(
       TabSelectionState state,
+      bool hovered,
       bool frame_active,
       const ui::ColorProvider& color_provider) const = 0;
 

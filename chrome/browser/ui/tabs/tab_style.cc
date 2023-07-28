@@ -46,6 +46,7 @@ class GM2TabStyle : public TabStyle {
   int GetBottomCornerRadius() const override;
   SkColor GetTabBackgroundColor(
       TabSelectionState state,
+      bool hovered,
       bool frame_active,
       const ui::ColorProvider& color_provider) const override;
   float GetSelectedTabOpacity() const override;
@@ -64,6 +65,7 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetDragHandleExtension(int height) const override;
   SkColor GetTabBackgroundColor(
       TabSelectionState state,
+      bool hovered,
       bool frame_active,
       const ui::ColorProvider& color_provider) const override;
   gfx::Insets GetContentsInsets() const override;
@@ -171,6 +173,7 @@ gfx::Insets GM2TabStyle::GetContentsInsets() const {
 
 SkColor GM2TabStyle::GetTabBackgroundColor(
     const TabSelectionState state,
+    bool hovered,
     const bool frame_active,
     const ui::ColorProvider& color_provider) const {
   const SkColor active_color = color_provider.GetColor(
@@ -180,6 +183,10 @@ SkColor GM2TabStyle::GetTabBackgroundColor(
       frame_active ? kColorTabBackgroundInactiveFrameActive
                    : kColorTabBackgroundInactiveFrameInactive);
 
+  if (hovered) {
+    return active_color;
+  }
+
   switch (state) {
     case TabStyle::TabSelectionState::kActive:
       return active_color;
@@ -188,8 +195,6 @@ SkColor GM2TabStyle::GetTabBackgroundColor(
       // selected states having their own color ids even in GM2.
       return color_utils::AlphaBlend(active_color, inactive_color,
                                      GetSelectedTabOpacity());
-    case TabStyle::TabSelectionState::kHovered:
-      return active_color;
     case TabStyle::TabSelectionState::kInactive:
       return inactive_color;
     default:
@@ -246,23 +251,32 @@ int ChromeRefresh2023TabStyle::GetDragHandleExtension(int height) const {
 
 SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
     const TabSelectionState state,
+    const bool hovered,
     const bool frame_active,
     const ui::ColorProvider& color_provider) const {
   switch (state) {
-    case TabStyle::TabSelectionState::kSelected:
-      return frame_active ? color_provider.GetColor(
-                                kColorTabBackgroundSelectedFrameActive)
-                          : color_provider.GetColor(
-                                kColorTabBackgroundSelectedFrameInactive);
-    case TabStyle::TabSelectionState::kHovered:
-      return frame_active
-                 ? color_provider.GetColor(kColorTabBackgroundHoverFrameActive)
-                 : color_provider.GetColor(
-                       kColorTabBackgroundHoverFrameInactive);
-    case TabStyle::TabSelectionState::kActive:
-    case TabStyle::TabSelectionState::kInactive:
-      return GM2TabStyle::GetTabBackgroundColor(state, frame_active,
-                                                color_provider);
+    case TabStyle::TabSelectionState::kActive: {
+      constexpr ui::ColorId kActiveColorIds[2] = {
+          kColorTabBackgroundActiveFrameInactive,
+          kColorTabBackgroundActiveFrameActive};
+      return color_provider.GetColor(kActiveColorIds[frame_active]);
+    }
+    case TabStyle::TabSelectionState::kSelected: {
+      constexpr ui::ColorId kSelectedColorIds[2][2] = {
+          {kColorTabBackgroundSelectedFrameInactive,
+           kColorTabBackgroundSelectedFrameActive},
+          {kColorTabBackgroundSelectedHoverFrameInactive,
+           kColorTabBackgroundSelectedHoverFrameActive}};
+      return color_provider.GetColor(kSelectedColorIds[hovered][frame_active]);
+    }
+    case TabStyle::TabSelectionState::kInactive: {
+      constexpr ui::ColorId kInactiveColorIds[2][2] = {
+          {kColorTabBackgroundInactiveFrameInactive,
+           kColorTabBackgroundInactiveFrameActive},
+          {kColorTabBackgroundInactiveHoverFrameInactive,
+           kColorTabBackgroundInactiveHoverFrameActive}};
+      return color_provider.GetColor(kInactiveColorIds[hovered][frame_active]);
+    }
     default:
       NOTREACHED_NORETURN();
   }

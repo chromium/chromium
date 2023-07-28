@@ -57,9 +57,9 @@ TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
   if (color_provider) {
     views::InkDrop::Get(this)->SetBaseColor(color_provider->GetColor(
         GetWidget()->ShouldPaintAsActive()
-            ? (is_chrome_refresh ? kColorTabBackgroundHoverFrameActive
+            ? (is_chrome_refresh ? kColorTabBackgroundInactiveHoverFrameActive
                                  : kColorNewTabButtonInkDropFrameActive)
-            : (is_chrome_refresh ? kColorTabBackgroundHoverFrameInactive
+            : (is_chrome_refresh ? kColorTabBackgroundInactiveHoverFrameInactive
                                  : kColorNewTabButtonInkDropFrameInactive)));
   }
 }
@@ -94,8 +94,8 @@ void TabStripControlButton::UpdateColors() {
   const bool frame_active = (GetWidget() && GetWidget()->ShouldPaintAsActive());
   const ui::ColorId hover_color =
       features::IsChromeRefresh2023()
-          ? (frame_active ? kColorTabBackgroundHoverFrameActive
-                          : kColorTabBackgroundHoverFrameInactive)
+          ? (frame_active ? kColorTabBackgroundInactiveHoverFrameActive
+                          : kColorTabBackgroundInactiveHoverFrameInactive)
           : (frame_active ? kColorNewTabButtonInkDropFrameActive
                           : kColorNewTabButtonInkDropFrameInactive);
 

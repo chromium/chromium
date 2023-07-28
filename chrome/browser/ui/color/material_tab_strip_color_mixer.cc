@@ -30,9 +30,27 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundActiveFrameActive] = {ui::kColorSysBase};
   mixer[kColorTabBackgroundActiveFrameInactive] = {
       kColorTabBackgroundActiveFrameActive};
+
   mixer[kColorTabBackgroundInactiveFrameActive] = {ui::kColorSysHeader};
   mixer[kColorTabBackgroundInactiveFrameInactive] = {
       ui::kColorSysHeaderInactive};
+  mixer[kColorTabBackgroundInactiveHoverFrameActive] = {
+      ui::kColorSysStateHeaderHover};
+  // TODO(tbergquist): Use kColorSysStateHeaderHoverInactive, once it exists.
+  mixer[kColorTabBackgroundInactiveHoverFrameInactive] = {
+      ui::kColorSysStateHeaderHover};
+
+  mixer[kColorTabBackgroundSelectedFrameActive] = {ui::GetResultingPaintColor(
+      ui::kColorSysStateHeaderSelect, kColorTabBackgroundInactiveFrameActive)};
+  mixer[kColorTabBackgroundSelectedFrameInactive] = {
+      ui::GetResultingPaintColor(ui::kColorSysStateHeaderSelect,
+                                 kColorTabBackgroundInactiveFrameInactive)};
+  mixer[kColorTabBackgroundSelectedHoverFrameActive] = {
+      ui::GetResultingPaintColor(ui::kColorSysStateHoverDimBlendProtection,
+                                 kColorTabBackgroundSelectedFrameActive)};
+  mixer[kColorTabBackgroundSelectedHoverFrameInactive] = {
+      ui::GetResultingPaintColor(ui::kColorSysStateHoverDimBlendProtection,
+                                 kColorTabBackgroundSelectedFrameInactive)};
 
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorSysOnSurface};
   mixer[kColorTabForegroundActiveFrameInactive] = {
@@ -43,15 +61,6 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabForegroundInactiveFrameInactive] =
       ui::BlendForMinContrast({kColorTabForegroundInactiveFrameActive},
                               {kColorTabBackgroundInactiveFrameInactive});
-
-  mixer[kColorTabBackgroundHoverFrameActive] = {ui::kColorSysStateHeaderHover};
-  mixer[kColorTabBackgroundHoverFrameInactive] = {
-      ui::kColorSysStateHoverOnSubtle};
-
-  mixer[kColorTabBackgroundSelectedFrameActive] = {
-      ui::kColorSysStateHeaderSelect};
-  mixer[kColorTabBackgroundSelectedFrameInactive] = {
-      kColorTabBackgroundSelectedFrameActive};
 
   /* WebUI Tab Strip colors. */
   mixer[kColorWebUiTabStripBackground] = {ui::kColorSysHeader};

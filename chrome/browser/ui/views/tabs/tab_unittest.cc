@@ -649,7 +649,8 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
       const SkColor bg_color = TabStyle::Get()->GetTabBackgroundColor(
           active == TabActive::kActive ? TabStyle::TabSelectionState::kActive
                                        : TabStyle::TabSelectionState::kInactive,
-          tab->GetWidget()->ShouldPaintAsActive(), *tab->GetColorProvider());
+          /*hovered=*/false, tab->GetWidget()->ShouldPaintAsActive(),
+          *tab->GetColorProvider());
       const float contrast = color_utils::GetContrastRatio(fg_color, bg_color);
       EXPECT_GE(contrast, color_utils::kMinimumReadableContrastRatio);
     }

@@ -132,8 +132,8 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
 
   SkColor GetTabColor(BrowserView* browser_view) {
     return TabStyle::Get()->GetTabBackgroundColor(
-        TabStyle::TabSelectionState::kActive, true,
-        *browser_view->GetColorProvider());
+        TabStyle::TabSelectionState::kActive, /*hovered=*/false,
+        /*frame_active=*/true, *browser_view->GetColorProvider());
   }
 
   WebAppRegistrar& registrar() {

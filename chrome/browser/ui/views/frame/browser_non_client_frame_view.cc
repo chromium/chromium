@@ -136,7 +136,7 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
   // color.
   return TabStyle::Get()->GetTabBackgroundColor(
              TabStyle::TabSelectionState::kInactive,
-             ShouldPaintAsActive(active_state),
+             /*hovered=*/false, ShouldPaintAsActive(active_state),
              *GetColorProvider()) != GetFrameColor(active_state);
 }
 
