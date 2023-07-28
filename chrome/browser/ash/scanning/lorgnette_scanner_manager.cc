@@ -42,6 +42,8 @@ constexpr char kEpsonNoFlipModels[] =
     "|DS-790WN"
     "|DS-C420W"
     "|DS-C480W"
+    "|ES-C320W"
+    "|ES-C380W"
     "|LM-C4000"
     "|LM-C5000"
     "|LM-C6000"
