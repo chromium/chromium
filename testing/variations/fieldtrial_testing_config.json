@@ -918,6 +918,22 @@
             ]
         }
     ],
+    "AudioFocusEnforcementStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "DisabledV2",
+                    "disable_features": [
+                        "AudioFocusEnforcement"
+                    ]
+                }
+            ]
+        }
+    ],
     "AudioProcessHighPriorityWin": [
         {
             "platforms": [
