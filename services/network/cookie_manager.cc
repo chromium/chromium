@@ -73,11 +73,6 @@ CookieManager::CookieManager(
 }
 
 CookieManager::~CookieManager() {
-  // The cookie manager will go away which means potentially clearing cookies if
-  // policy calls for it. This can be important for background mode for which
-  // renderers might stay active.
-  OnSettingsWillChange();
-
   if (session_cleanup_cookie_store_) {
     session_cleanup_cookie_store_->DeleteSessionCookies(
         cookie_settings_.CreateDeleteCookieOnExitPredicate());
