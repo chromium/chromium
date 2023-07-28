@@ -75,7 +75,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     const learnMore =
         fileHandlingItem.shadowRoot!.querySelector<HTMLElement>('#learn-more')!;
     assertTrue(!!learnMore);
-    let link = learnMore.shadowRoot!.querySelector<HTMLLinkElement>('a');
+    let link = learnMore.shadowRoot!.querySelector<HTMLAnchorElement>('a');
     assertTrue(!!link);
     assertEquals(link.href, app.fileHandlingState!.learnMoreUrl!.url);
 
@@ -84,7 +84,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     app2.fileHandlingState!.learnMoreUrl = undefined;
     fileHandlingItem.app = app2;
     await flushTasks();
-    link = learnMore.shadowRoot!.querySelector<HTMLLinkElement>('a');
+    link = learnMore.shadowRoot!.querySelector<HTMLAnchorElement>('a');
     assertTrue(!!link);
     assertEquals(link.getAttribute('href'), '#');
 
