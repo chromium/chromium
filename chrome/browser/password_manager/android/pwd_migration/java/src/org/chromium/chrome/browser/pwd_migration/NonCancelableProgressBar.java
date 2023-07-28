@@ -15,9 +15,10 @@ import androidx.fragment.app.DialogFragment;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 
 /**
- * Shows the dialog that informs the user about the progress of password deletion.
+ * Shows the dialog that informs the user that some operation is ongoing without indicating the
+ * progress.
  */
-public class ProgressBarDeletionDialog extends DialogFragment {
+public class NonCancelableProgressBar extends DialogFragment {
     /**
      * Opens the dialog with the progress bar and sets the progress indicator to being
      * indeterminate, because the background operation does not easily allow to signal its own
@@ -34,7 +35,7 @@ public class ProgressBarDeletionDialog extends DialogFragment {
         return new AlertDialog
                 .Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
-                .setTitle(R.string.clear_browsing_data_progress_message)
+                .setTitle(R.string.please_wait_progress_message)
                 .create();
     }
 }

@@ -38,6 +38,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/pwd_migration/ExportDeletionDialogFragment.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/ExportFlowInterface.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/NonCancelableProgressBar.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningIntroFragment.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediator.java",
@@ -47,7 +48,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningUtil.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningView.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewBinder.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/ProgressBarDeletionDialog.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.pwd_migration"

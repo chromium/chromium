@@ -26,6 +26,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pwd_migration.ExportFlowInterface;
+import org.chromium.chrome.browser.pwd_migration.NonCancelableProgressBar;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
@@ -89,6 +90,9 @@ public class ExportFlow implements ExportFlowInterface {
 
     /** The key for saving {@link #mExportFileUri} to instance bundle. */
     private static final String SAVED_STATE_EXPORT_FILE_URI = "saved-state-export-file-uri";
+
+    /** The delay after which the progress bar will be displayed. */
+    private static final int PROGRESS_BAR_DELAY_MS = 500;
 
     // Potential values of the histogram recording the result of exporting. This needs to match
     // ExportPasswordsResult from
@@ -423,15 +427,11 @@ public class ExportFlow implements ExportFlowInterface {
             // The serialization has not finished. Until this finishes, a progress bar is
             // displayed with an option to cancel the export.
             ProgressBarDialogFragment progressBarDialogFragment = new ProgressBarDialogFragment();
-            progressBarDialogFragment.setCancelProgressHandler(
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (which == AlertDialog.BUTTON_NEGATIVE) {
-                                mExportState = ExportState.INACTIVE;
-                            }
-                        }
-                    });
+            progressBarDialogFragment.setCancelProgressHandler((unusedDialogInterface, button) -> {
+                if (button == AlertDialog.BUTTON_NEGATIVE) {
+                    mExportState = ExportState.INACTIVE;
+                }
+            });
             mProgressBarManager.show(progressBarDialogFragment, mDelegate.getFragmentManager());
         } else {
             // Note: if the serialization is quicker than the user interacting with the
@@ -586,18 +586,22 @@ public class ExportFlow implements ExportFlowInterface {
 
             @Override
             protected void onPostExecute(String exceptionMessage) {
-                if (exceptionMessage != null) {
-                    showExportErrorAndAbort(R.string.password_settings_export_tips,
-                            exceptionMessage, R.string.try_again,
-                            HistogramExportResult.WRITE_FAILED);
-                } else {
-                    mDelegate.onExportFlowSucceeded();
-                    mExportFileUri = null;
-                    RecordHistogram.recordEnumeratedHistogram(mExportResultHistogramName,
-                            HistogramExportResult.SUCCESS, HistogramExportResult.NUM_ENTRIES);
-                }
+                mProgressBarManager.hide(() -> {
+                    if (exceptionMessage != null) {
+                        showExportErrorAndAbort(R.string.password_settings_export_tips,
+                                exceptionMessage, R.string.try_again,
+                                HistogramExportResult.WRITE_FAILED);
+                    } else {
+                        mDelegate.onExportFlowSucceeded();
+                        mExportFileUri = null;
+                        RecordHistogram.recordEnumeratedHistogram(mExportResultHistogramName,
+                                HistogramExportResult.SUCCESS, HistogramExportResult.NUM_ENTRIES);
+                    }
+                });
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        mProgressBarManager.showWithDelay(new NonCancelableProgressBar(),
+                mDelegate.getFragmentManager(), PROGRESS_BAR_DELAY_MS);
     }
 
     private static void writeToInternalStorage(Uri exportedPasswordsUri, Uri savedPasswordsFileUri)

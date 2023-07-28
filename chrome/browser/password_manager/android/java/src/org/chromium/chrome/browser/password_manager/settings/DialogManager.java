@@ -55,6 +55,8 @@ public final class DialogManager {
     @Nullable
     private Runnable mCallback;
 
+    private boolean mShowingRequested;
+
     /** Possible actions taken on the dialog during {@link #hide}. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({HideActions.NO_OP, HideActions.HIDDEN_IMMEDIATELY, HideActions.HIDING_DELAYED})
@@ -86,12 +88,30 @@ public final class DialogManager {
     }
 
     /**
+     * Shows the dialog after the specified delay.
+     *
+     * @param dialog to be shown.
+     * @param fragmentManager needed to call {@link android.app.DialogFragment#show}.
+     * @param delay the delay in ms after which the dialog will be displayed (if not canceled during
+     *         this delay).
+     */
+    public void showWithDelay(DialogFragment dialog, FragmentManager fragmentManager, int delay) {
+        mShowingRequested = true;
+        new TimedCallbackDelayer(delay).delay(() -> {
+            // hide() might have been called during the delay.
+            if (mShowingRequested) {
+                show(dialog, fragmentManager);
+            }
+        });
+    }
+
+    /**
      * Shows the dialog.
      * @param dialog to be shown.
      * @param fragmentManager needed to call {@link android.app.DialogFragment#show}
      */
     public void show(DialogFragment dialog, FragmentManager fragmentManager) {
-        assert mDialogFragment == null;
+        mShowingRequested = true;
         mDialogFragment = dialog;
         mDialogFragment.show(fragmentManager, null);
         // Initiate the barrier closure, expecting 2 runs: one automatic but delayed, and one
@@ -147,5 +167,6 @@ public final class DialogManager {
         mDialogFragment = null;
         mCallback = null;
         mBarrierClosure = null;
+        mShowingRequested = false;
     }
 }
