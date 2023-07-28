@@ -135,7 +135,6 @@ template("generate_skylab_deps") {
            "The test_exe and generated_script must both be defined when " +
                "generating the skylab runner script")
     action(target_name) {
-      testonly = true
       script = "//build/chromeos/generate_skylab_deps.py"
       outputs = [ generated_script ]
       args = [
@@ -209,7 +208,6 @@ template("generate_skylab_deps") {
       }
     }
     action(target_name) {
-      testonly = true
       script = "//build/chromeos/generate_skylab_deps.py"
       if (defined(tast_control)) {
         sources = [ tast_control ]
@@ -543,73 +541,54 @@ template("tast_test") {
            "Specify one of tast_tests or tast_attr_expr.")
   }
 
-  _data_deps = [
-    "//:chromiumos_preflight",  # Builds the browser.
-    "//chromeos:cros_chrome_deploy",  # Adds additional browser run-time deps.
-
-    # Tools used to symbolize Chrome crash dumps.
-    # TODO(crbug.com/1156772): Remove these if/when all tests pick them up by
-    # default.
-    "//third_party/breakpad:dump_syms",
-    "//third_party/breakpad:minidump_dump",
-    "//third_party/breakpad:minidump_stackwalk",
-  ]
-  _data = [ "//components/crash/content/tools/generate_breakpad_symbols.py" ]
-
-  if (is_skylab) {
-    not_needed([ "deploy_lacros_chrome" ])
-    # TODO(b:291974625): Provision both ash and chrome together when it is ready.
-    generate_skylab_deps(target_name) {
-      data = _data
-      data_deps = _data_deps
-
-      # To disable a test on specific milestones, add it to the appropriate
-      # collection in the following file
-      tast_control = "//chromeos/tast_control.gni"
-    }
-  } else {
-    # Append any disabled tests to the expression.
-    if (defined(tast_disabled_tests)) {
-      assert(defined(tast_attr_expr),
-             "tast_attr_expr must be used when specifying tast_disabled_tests.")
-      foreach(_test, tast_disabled_tests) {
-        _excluded_test_name_and_board = []
-        _excluded_test_name_and_board = string_split(_test, "@") + [ "" ]
-        _excluded_test_name = _excluded_test_name_and_board[0]
-        _excluded_board = _excluded_test_name_and_board[1]
-        if (_excluded_board == "" || _excluded_board == cros_board) {
-          tast_attr_expr += " && !\"name:${_excluded_test_name}\""
-        }
+  # Append any disabled tests to the expression.
+  if (defined(tast_disabled_tests)) {
+    assert(defined(tast_attr_expr),
+           "tast_attr_expr must be used when specifying tast_disabled_tests.")
+    foreach(_test, tast_disabled_tests) {
+      _excluded_test_name_and_board = []
+      _excluded_test_name_and_board = string_split(_test, "@") + [ "" ]
+      _excluded_test_name = _excluded_test_name_and_board[0]
+      _excluded_board = _excluded_test_name_and_board[1]
+      if (_excluded_board == "" || _excluded_board == cros_board) {
+        tast_attr_expr += " && !\"name:${_excluded_test_name}\""
       }
     }
-    if (defined(tast_attr_expr)) {
-      tast_attr_expr = "( " + tast_attr_expr + " )"
-    }
-    generate_runner_script(target_name) {
-      testonly = true
-      generated_script = "$root_build_dir/bin/run_${target_name}"
-      runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
-      deploy_chrome = true
+  }
+  if (defined(tast_attr_expr)) {
+    tast_attr_expr = "( " + tast_attr_expr + " )"
+  }
+  generate_runner_script(target_name) {
+    testonly = true
+    generated_script = "$root_build_dir/bin/run_${target_name}"
+    runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
+    deploy_chrome = true
+    deploy_lacros = deploy_lacros_chrome
+    data_deps = [
+      "//:chromiumos_preflight",  # Builds the browser.
+      "//chromeos:cros_chrome_deploy",  # Adds additional browser run-time deps.
 
-      data_deps = _data_deps
-      if (!defined(deploy_lacros_chrome)) {
-        deploy_lacros_chrome = false
-      }
-      deploy_lacros = deploy_lacros_chrome
-      data = _data
-      if (deploy_lacros_chrome) {
-        data += [
-          # A script needed to launch Lacros in Lacros Tast tests.
-          "//build/lacros/mojo_connection_lacros_launcher.py",
-        ]
+      # Tools used to symbolize Chrome crash dumps.
+      # TODO(crbug.com/1156772): Remove these if/when all tests pick them up by
+      # default.
+      "//third_party/breakpad:dump_syms",
+      "//third_party/breakpad:minidump_dump",
+      "//third_party/breakpad:minidump_stackwalk",
+    ]
 
-        # By default, tast tests download a lacros-chrome from a gcs location and
-        # use it for testing. To support running lacros tast tests from Chromium CI,
-        # a Var is added to support pointing the tast tests to use a specified
-        # pre-deployed lacros-chrome. The location is decided by:
-        # https://source.chromium.org/chromium/chromium/src/+/main:third_party/chromite/scripts/deploy_chrome.py;l=80;drc=86f1234a4be8e9574442e076cdc835897f7bea61
-        tast_vars = [ "lacros.DeployedBinary=/usr/local/lacros-chrome" ]
-      }
+    data = [ "//components/crash/content/tools/generate_breakpad_symbols.py" ]
+    if (deploy_lacros_chrome) {
+      data += [
+        # A script needed to launch Lacros in Lacros Tast tests.
+        "//build/lacros/mojo_connection_lacros_launcher.py",
+      ]
+
+      # By default, tast tests download a lacros-chrome from a gcs location and
+      # use it for testing. To support running lacros tast tests from Chromium CI,
+      # a Var is added to support pointing the tast tests to use a specified
+      # pre-deployed lacros-chrome. The location is decided by:
+      # https://source.chromium.org/chromium/chromium/src/+/main:third_party/chromite/scripts/deploy_chrome.py;l=80;drc=86f1234a4be8e9574442e076cdc835897f7bea61
+      tast_vars = [ "lacros.DeployedBinary=/usr/local/lacros-chrome" ]
     }
   }
 }
