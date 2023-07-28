@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -102,6 +103,13 @@ int BrowserMainParts::PreMainMessageLoopRun() {
       web_ui_controller_factory_.get());
 
   InitializeUiToolkit();
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("webshell")) {
+    CreateAndShowWindow(
+        GURL("chrome://browser/"),
+        l10n_util::GetStringUTF16(IDS_WEBUI_EXAMPLES_WEBSHELL_TITLE));
+    return 0;
+  }
 
   CreateAndShowWindow(
       GURL("chrome://main/"),

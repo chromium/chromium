@@ -1168,7 +1168,11 @@
     "structures": [7340],
   },
   "ui/webui/examples/resources/webui_examples_resources.grd": {
-    "messages": [7360],
+    "messages": [7350],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ui/webui/examples/resources/browser/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [7360],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_resources.grd": {
     "META": {"sizes": {"includes": [1100]}},

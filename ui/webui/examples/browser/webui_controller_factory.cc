@@ -5,6 +5,7 @@
 #include "ui/webui/examples/browser/webui_controller_factory.h"
 
 #include "content/public/browser/web_ui_controller.h"
+#include "ui/webui/examples/browser/ui/web/browser.h"
 #include "ui/webui/examples/browser/ui/web/webui.h"
 #include "url/gurl.h"
 
@@ -21,8 +22,17 @@ WebUIControllerFactory::~WebUIControllerFactory() = default;
 std::unique_ptr<content::WebUIController>
 WebUIControllerFactory::CreateWebUIControllerForURL(content::WebUI* web_ui,
                                                     const GURL& url) {
-  if (url.SchemeIs(kChromeScheme) && url.host_piece() == WebUI::kHost)
+  if (!url.SchemeIs(kChromeScheme)) {
+    return nullptr;
+  }
+
+  if (url.host_piece() == WebUI::kHost) {
     return std::make_unique<WebUI>(web_ui);
+  }
+
+  if (url.host_piece() == Browser::kHost) {
+    return std::make_unique<Browser>(web_ui);
+  }
 
   return nullptr;
 }
@@ -30,8 +40,13 @@ WebUIControllerFactory::CreateWebUIControllerForURL(content::WebUI* web_ui,
 content::WebUI::TypeID WebUIControllerFactory::GetWebUIType(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  if (url.SchemeIs(kChromeScheme) && url.host_piece() == WebUI::kHost)
+  if (url.SchemeIs(kChromeScheme) && url.host_piece() == WebUI::kHost) {
     return reinterpret_cast<content::WebUI::TypeID>(0x1);
+  }
+
+  if (url.SchemeIs(kChromeScheme) && url.host_piece() == Browser::kHost) {
+    return reinterpret_cast<content::WebUI::TypeID>(0x2);
+  }
 
   return content::WebUI::kNoWebUI;
 }
