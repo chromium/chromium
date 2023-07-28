@@ -9,6 +9,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -45,15 +48,28 @@ std::unique_ptr<I18nAddressComponent> BuildSubTree(
                                                 MergeMode::kDefault);
 }
 
+std::unique_ptr<AddressComponent> GetLegacyHierarchy(
+    AutofillModelType model_type) {
+  switch (model_type) {
+    case AutofillModelType::kAddressModel:
+      return std::make_unique<AddressNode>();
+    case AutofillModelType::kNameModel:
+      if (HonorificPrefixEnabled()) {
+        return std::make_unique<NameFullWithPrefix>();
+      }
+      return std::make_unique<NameFull>();
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
-std::unique_ptr<I18nAddressComponent> CreateAddressComponentModel(
+std::unique_ptr<AddressComponent> CreateAddressComponentModel(
     AutofillModelType model_type,
     std::string_view country_code) {
   auto* it = i18n_model_definition::kAutofillModelRules.find(country_code);
   if (it == i18n_model_definition::kAutofillModelRules.end()) {
-    // TODO(crbug.com/1464568): Return legacy hierarchies.
-    return nullptr;
+    return GetLegacyHierarchy(model_type);
   }
 
   // Convert the list of node properties into an adjacency lookup table.

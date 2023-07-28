@@ -6,7 +6,11 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -39,7 +43,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_ReturnsNonEmptyModel) {
          {AutofillModelType::kAddressModel, AutofillModelType::kNameModel}) {
       // Make sure that the process of building the model finishes and returns a
       // non empty hierarchy.
-      std::unique_ptr<I18nAddressComponent> model =
+      std::unique_ptr<AddressComponent> model =
           CreateAddressComponentModel(model_type, country_code);
 
       ASSERT_TRUE(model);
@@ -68,7 +72,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_ReturnedModelIsTree) {
        i18n_model_definition::kAutofillModelRules) {
     // Currently, the model for kAddressModel should comprise all the nodes in
     // the rules.
-    std::unique_ptr<I18nAddressComponent> root = CreateAddressComponentModel(
+    std::unique_ptr<AddressComponent> root = CreateAddressComponentModel(
         AutofillModelType::kAddressModel, country_code);
 
     ServerFieldTypeSet supported_types;
@@ -89,11 +93,39 @@ TEST(AutofillI18nApi, GetAddressComponentModel_ReturnedModelIsTree) {
 TEST(AutofillI18nApi, GetAddressComponentModel_CountryNodeHasValue) {
   for (const auto& [country_code, tree_def] :
        i18n_model_definition::kAutofillModelRules) {
-    std::unique_ptr<I18nAddressComponent> model = CreateAddressComponentModel(
+    std::unique_ptr<AddressComponent> model = CreateAddressComponentModel(
         AutofillModelType::kAddressModel, country_code);
     EXPECT_EQ(model->GetValueForType(ADDRESS_HOME_COUNTRY),
               base::UTF8ToUTF16(country_code));
   }
+}
+
+TEST(AutofillI18nApi, GetLegacy_FullName) {
+  // "Countries that have not been migrated to the new Autofill i18n model
+  // should use the legacy hierarchy."
+  ASSERT_FALSE(i18n_model_definition::kAutofillModelRules.contains("CA"));
+  EXPECT_TRUE(CreateAddressComponentModel(AutofillModelType::kNameModel, "CA")
+                  ->SameAs(NameFull()));
+}
+
+TEST(AutofillI18nApi, GetLegacy_FullNameWithPrefix) {
+  base::test::ScopedFeatureList structured_name_feature(
+      features::kAutofillEnableSupportForHonorificPrefixes);
+
+  // "Countries that have not been migrated to the new Autofill i18n model
+  // should use the legacy hierarchy."
+  ASSERT_FALSE(i18n_model_definition::kAutofillModelRules.contains("DE"));
+  EXPECT_TRUE(CreateAddressComponentModel(AutofillModelType::kNameModel, "DE")
+                  ->SameAs(NameFullWithPrefix()));
+}
+
+TEST(AutofillI18nApi, GetLegacy_AddressNode) {
+  // "Countries that have not been migrated to the new Autofill i18n model
+  // should use the legacy hierarchy."
+  ASSERT_FALSE(i18n_model_definition::kAutofillModelRules.contains("ES"));
+  EXPECT_TRUE(
+      CreateAddressComponentModel(AutofillModelType::kAddressModel, "ES")
+          ->SameAs(AddressNode()));
 }
 
 }  // namespace autofill

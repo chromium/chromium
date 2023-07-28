@@ -18,7 +18,7 @@ enum class AutofillModelType {
 // Creates an instance of the hierarchy model corresponding to the
 // given `AutofillModelType` in the provided country. All the nodes have
 // empty values, except for the country node (if exist).
-std::unique_ptr<I18nAddressComponent> CreateAddressComponentModel(
+std::unique_ptr<AddressComponent> CreateAddressComponentModel(
     AutofillModelType model_type,
     std::string_view country_code);
 
