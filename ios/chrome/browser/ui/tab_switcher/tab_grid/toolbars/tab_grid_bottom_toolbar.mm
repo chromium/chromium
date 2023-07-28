@@ -392,7 +392,7 @@
     [_largeNewTabButton removeFromSuperview];
 
     // For incognito/regular pages, display all 3 buttons;
-    // For remote tabs page, only display new tab button.
+    // For remote tabs page, only display trailing button.
     if (self.page == TabGridPageRemoteTabs) {
       [_toolbar setItems:@[ _spaceItem, trailingButton ]];
     } else {
@@ -407,10 +407,16 @@
   } else {
     [NSLayoutConstraint deactivateConstraints:_compactConstraints];
     [_toolbar removeFromSuperview];
-
+    // Do not display new tab button for remote tabs page.
+    if (self.page == TabGridPageRemoteTabs) {
+      [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
+      [_largeNewTabButton removeFromSuperview];
+      self.hidden = YES;
+    } else {
       [self addSubview:_largeNewTabButton];
       [NSLayoutConstraint activateConstraints:_floatingConstraints];
       self.hidden = NO;
+    }
   }
 
   [self updateBackgroundVisibility];
