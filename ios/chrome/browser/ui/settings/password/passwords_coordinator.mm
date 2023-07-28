@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -104,6 +105,10 @@ using password_manager::WarningType;
 @property(nonatomic, strong)
     PasswordSettingsCoordinator* passwordSettingsCoordinator;
 
+// Coordinator for blocking password manager until successful Local
+// Authentication.
+@property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
+
 // Modal alert for interactions with passwords list.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
@@ -137,6 +142,24 @@ using password_manager::WarningType;
   return self.passwordsViewController;
 }
 
+// Covers password manager with an empty view controller until successful
+// Local Authentication.
+- (void)blockForReauth {
+  DCHECK_EQ(_baseNavigationController.topViewController,
+            _passwordsViewController);
+  DCHECK(!_reauthCoordinator);
+
+  // TODO(crbug.com/1462419): Resign first responder and stop AlertCoordinator.
+  // Needed when blocking on device lock.
+
+  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+      initWithBaseNavigationController:_baseNavigationController
+                               browser:self.browser
+                reauthenticationModule:_reauthModule];
+
+  [_reauthCoordinator start];
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -157,9 +180,7 @@ using password_manager::WarningType;
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   self.passwordsViewController = [[PasswordManagerViewController alloc]
       initWithChromeAccountManagerService:accountManagerService
-                              prefService:browserState->GetPrefs()
-                              requireAuth:password_manager::features::
-                                              IsAuthOnEntryEnabled()];
+                              prefService:browserState->GetPrefs()];
 
   self.passwordsViewController.handler = self;
   self.passwordsViewController.delegate = self.mediator;
@@ -172,6 +193,10 @@ using password_manager::WarningType;
 
   [self.baseNavigationController pushViewController:self.passwordsViewController
                                            animated:YES];
+
+  if (password_manager::features::IsAuthOnEntryEnabled()) {
+    [self blockForReauth];
+  }
 
   // When kIOSPasswordCheckup is enabled, start a password check.
   if (password_manager::features::IsPasswordCheckupEnabled()) {
@@ -206,6 +231,9 @@ using password_manager::WarningType;
   [self.addPasswordCoordinator stop];
   self.addPasswordCoordinator.delegate = nil;
   self.addPasswordCoordinator = nil;
+
+  [self.reauthCoordinator stop];
+  self.reauthCoordinator = nil;
 
   [self.mediator disconnect];
 }

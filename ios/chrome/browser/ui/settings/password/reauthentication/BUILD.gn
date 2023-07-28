@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reauthentication") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "reauthentication_coordinator.h",
+    "reauthentication_coordinator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

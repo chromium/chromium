@@ -168,8 +168,7 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
             browser_state_.get());
     return [[PasswordManagerViewController alloc]
         initWithChromeAccountManagerService:account_manager_service
-                                prefService:browser_state_.get()->GetPrefs()
-                                requireAuth:require_auth_];
+                                prefService:browser_state_.get()->GetPrefs()];
   }
 
   PasswordManagerViewController* GetPasswordManagerViewController() {
@@ -338,7 +337,6 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   id passwords_settings_commands_strict_mock_;
-  bool require_auth_ = false;
 };
 
 // Tests default case has no saved sites and no blocked sites.
