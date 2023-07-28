@@ -45,6 +45,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -418,6 +419,7 @@ void ZoomBubbleView::Init() {
   // Add zoom label with the new zoom percent.
   auto label = std::make_unique<ZoomValue>(web_contents());
   label->SetProperty(views::kMarginsKey, gfx::Insets(label_margin));
+  label->SetAccessibleRole(ax::mojom::Role::kAlert);
   label_ = label.get();
   AddChildView(std::move(label));
 
@@ -529,6 +531,7 @@ void ZoomBubbleView::UpdateZoomPercent() {
   label_->SetText(base::FormatPercent(
       zoom::ZoomController::FromWebContents(web_contents())->GetZoomPercent()));
   label_->SetAccessibleName(GetAccessibleWindowTitle());
+  label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 
   // Disable buttons at min, max and default
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
