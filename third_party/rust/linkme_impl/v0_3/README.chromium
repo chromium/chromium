@@ -1,8 +1,0 @@
-Name: linkme-impl
-URL: https://crates.io/crates/linkme-impl
-Description: Implementation detail of the linkme crate
-Version: 0.3.11
-Security Critical: no
-Shipped: no
-License: Apache 2.0
-Revision: 56eb3e5724e67af928756b0e19b5b23247699b86

@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -29,30 +30,9 @@ bool is_subprocess() {
 #endif
 }
 
-int verify_tests_ran() {
-  if (is_subprocess()) {
-    // Double-check that we actually ran all the tests. If this fails we'll
-    // see all the tests marked as "fail on exit" since the whole process is
-    // considered a failure.
-    auto succeed = testing::UnitTest::GetInstance()->successful_test_count();
-    int expected_success = kNumTests;
-    if (succeed != expected_success) {
-      std::cerr << "***ERROR***: Expected " << expected_success
-                << " tests to succeed, but we saw: " << succeed << '\n';
-      return 1;
-    } else {
-      std::cerr << "***OK***: Ran " << succeed << " tests, yay!\n";
-      return 0;
-    }
-  } else {
-    return 0;
-  }
-}
-
 int main(int argc, char** argv) {
   // Run tests in a single process so we can count the tests.
-  std::string single_process =
-      base::StringPrintf("--%s=1", switches::kTestLauncherJobs);
+  std::string single_process = base::StringPrintf("--test-launcher-jobs=1");
   // We verify that the test suite and test name written in the #[gtest] macro
   // is being propagated to Gtest by using a test filter that matches on the
   // test suites/names.
@@ -71,12 +51,23 @@ int main(int argc, char** argv) {
 
     int Run() {
       int result = base::TestSuite::Run();
-#if !BUILDFLAG(USE_BLINK)
-      // If the tests ran in the main process (on iOS), we'll verify here.
-      if (!result) {
-        return verify_tests_ran();
+
+      if (is_subprocess()) {
+        // Double-check that we actually ran all the tests. If this fails we'll
+        // see all the tests marked as "fail on exit" since the whole process is
+        // considered a failure.
+        auto succeed =
+            testing::UnitTest::GetInstance()->successful_test_count();
+        int expected_success = kNumTests;
+        if (succeed != expected_success) {
+          std::cerr << "***ERROR***: Expected " << expected_success
+                    << " tests to succeed, but we saw: " << succeed << '\n';
+          return 1;
+        } else {
+          std::cerr << "***OK***: Ran " << succeed << " tests, yay!\n";
+        }
       }
-#endif
+
       return result;
     }
   };
@@ -84,12 +75,7 @@ int main(int argc, char** argv) {
   InteropTestSuite test_suite(my_argv.size() - 1u, my_argv.data());
   // Note: With the iOS test launcher, this does not return, so we do the check
   // for which tests ran in the TestSuite.
-  int result = base::LaunchUnitTests(
+  return base::LaunchUnitTests(
       my_argv.size() - 1u, my_argv.data(),
       base::BindOnce(&InteropTestSuite::Run, base::Unretained(&test_suite)));
-  // If the tests ran in a child process, we'll verify here.
-  if (!result) {
-    return verify_tests_ran();
-  }
-  return result;
 }

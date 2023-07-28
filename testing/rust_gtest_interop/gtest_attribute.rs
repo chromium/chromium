@@ -1,7 +1,3 @@
-// Copyright 2023 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use syn::spanned::Spanned;
@@ -284,9 +280,8 @@ pub fn gtest(
         mod #test_mod {
             use super::*;
 
-
-            #[::rust_gtest_interop::linkme::distributed_slice(::rust_gtest_interop::GTESTS)]
-            fn register_test() {
+            #[::rust_gtest_interop::small_ctor::ctor]
+            unsafe fn register_test() {
                 let r = ::rust_gtest_interop::__private::TestRegistration {
                     func: #run_test_fn,
                     test_suite_name: #test_suite_name_c_bytes,

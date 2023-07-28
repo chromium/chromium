@@ -1154,22 +1154,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "sandbox_unittests",
         "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
@@ -2400,10 +2384,6 @@
       {
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "test": "sbox_integration_tests",
@@ -16675,106 +16655,6 @@
           "15a5195m",
           "--xctest"
         ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
         "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20803,106 +20683,6 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPad Air (5th generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPad Air (5th generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPad Air (5th generation) 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
       {
@@ -27307,214 +27087,6 @@
           "15a5195m",
           "--xctest"
         ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPad Air (5th generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPad Air (5th generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "17.0",
-          "--args-json",
-          "{\"test_args\": [\"--run-with-custom-webkit\"]}",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPad Air (5th generation) 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "16.2",
-          "--args-json",
-          "{\"test_args\": [\"--run-with-custom-webkit\"]}",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "17.0",
-          "--args-json",
-          "{\"test_args\": [\"--run-with-custom-webkit\"]}",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "16.2",
-          "--args-json",
-          "{\"test_args\": [\"--run-with-custom-webkit\"]}",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
         "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -32634,56 +32206,6 @@
           "15a5209g",
           "--xctest"
         ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 16.4",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5209g",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_4",
-              "path": "Runtime-ios-16.4"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 16.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "16.4",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5209g",
-          "--xctest"
-        ],
         "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -36894,56 +36416,6 @@
           "15a5209g",
           "--xctest"
         ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 16.4",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5209g",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_4",
-              "path": "Runtime-ios-16.4"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 16.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "16.4",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5209g",
-          "--xctest"
-        ],
         "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -40869,106 +40341,6 @@
           "15a5209g",
           "--xctest"
         ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPad Air (5th generation) 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5209g",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5209g",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5209g",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5209g",
-          "--xctest"
-        ],
         "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -44806,106 +44178,6 @@
           "15a5209g",
           "--xctest"
         ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPad Air (5th generation) 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5209g",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5209g",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5209g",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5209g",
-          "--xctest"
-        ],
         "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -46520,21 +45792,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/"
       },
@@ -47256,21 +46513,6 @@
         },
         "test": "perfetto_unittests",
         "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "merge": {
@@ -49274,22 +48516,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "sandbox_linux_unittests",
         "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
       },
@@ -50989,22 +50215,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "merge": {
@@ -52878,24 +52088,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04",
-              "pool": "chromium.tests.no-external-ip"
-            }
-          ],
-          "expiration": 43200,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -55524,23 +54716,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "merge": {
@@ -58480,25 +57655,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045",
-              "pool": "chromium.tests.no-external-ip"
-            }
-          ],
-          "expiration": 43200,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "isolate_profile_data": true,

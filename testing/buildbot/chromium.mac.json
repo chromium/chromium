@@ -1074,22 +1074,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-10.15"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "sandbox_unittests",
         "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
@@ -2817,23 +2801,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -4636,23 +4603,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -6479,23 +6429,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "sandbox_unittests",
         "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
@@ -8237,22 +8170,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "merge": {
@@ -11819,108 +11736,6 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPhone 14 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
       {
@@ -17500,108 +17315,6 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPhone 14 Plus 17.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14 Plus",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 Plus 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "variant_id": "iPhone 14 Plus 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14 Plus",
-          "--version",
-          "17.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15a5195m",
-          "--xctest"
-        ],
-        "isolate_name": "rust_gtest_interop_unittests",
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "rust_gtest_interop_unittests iPhone 14 Plus 17.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13.4"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_15a5195m",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
       {
@@ -25937,22 +25650,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-11"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "sandbox_unittests",
         "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
@@ -27604,23 +27301,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "ci_only": true,
@@ -29319,23 +28999,6 @@
         },
         "test": "remoting_unittests",
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
-      },
-      {
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "ci_only": true,

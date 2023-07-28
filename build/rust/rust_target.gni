@@ -66,10 +66,6 @@ template("rust_target") {
         "// Generated crate root for ${_target_name}.",
         "// @generated",
         "",
-        "// TODO(danakj): Work around ",
-        "//    https://github.com/dtolnay/linkme/issues/49",
-        "#![feature(used_with_arg)]",
-        "",
       ]
       foreach(rs, invoker.sources) {
         rs_path_from_root = rebase_path(rs, target_gen_dir)

@@ -80,7 +80,6 @@ dependencies = [
  "hex",
  "hex-literal",
  "lazy_static",
- "linkme",
  "log",
  "memoffset",
  "once_cell",
@@ -99,8 +98,9 @@ dependencies = [
  "serde_json",
  "serde_json_lenient",
  "skrifa",
+ "small_ctor",
  "static_assertions",
- "syn 1.0.99",
+ "syn",
  "tempfile",
  "toml",
  "unicode-linebreak",
@@ -149,7 +149,7 @@ dependencies = [
  "codespan-reporting",
  "proc-macro2",
  "quote",
- "syn 1.0.99",
+ "syn",
 ]
 
 [[package]]
@@ -158,7 +158,7 @@ version = "1.0.82"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.99",
+ "syn",
 ]
 
 [[package]]
@@ -247,22 +247,6 @@ version = "0.2.144"
 [[package]]
 name = "link-cplusplus"
 version = "1.0.5"
-
-[[package]]
-name = "linkme"
-version = "0.3.11"
-dependencies = [
- "linkme-impl",
-]
-
-[[package]]
-name = "linkme-impl"
-version = "0.3.11"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.16",
-]
 
 [[package]]
 name = "log"
@@ -395,7 +379,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustc_version",
- "syn 1.0.99",
+ "syn",
  "unicode-ident",
 ]
 
@@ -406,7 +390,7 @@ dependencies = [
  "quote",
  "rand",
  "rustc_version",
- "syn 1.0.99",
+ "syn",
 ]
 
 [[package]]
@@ -444,7 +428,7 @@ version = "1.0.147"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.99",
+ "syn",
 ]
 
 [[package]]
@@ -473,6 +457,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "small_ctor"
+version = "0.1.1"
+
+[[package]]
 name = "static_assertions"
 version = "1.1.0"
 
@@ -483,15 +471,6 @@ version = "0.10.0"
 [[package]]
 name = "syn"
 version = "1.0.99"
-dependencies = [
- "proc-macro2",
- "quote",
- "unicode-ident",
-]
-
-[[package]]
-name = "syn"
-version = "2.0.16"
 dependencies = [
  "proc-macro2",
  "quote",

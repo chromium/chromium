@@ -14,10 +14,6 @@ namespace testing {
 class Test;
 }
 
-// The before-main entry point to register all GTest tests that are written in
-// Rust. Must be called before RUN_ALL_TESTS().
-extern "C" void rust_gtest_interop_register_all_tests();
-
 // Macro to make an extern "C" function which acts as a Gtest factory for a
 // testing::Test subclass T. Invoke this macro once for each subclass of
 // testing::Test that should be used as a TestSuite class from a Rust test,
@@ -71,8 +67,7 @@ Subclass* rust_gtest_factory_for_subclass(void (*body)(Subclass*)) {
 
 // Returns a factory that will run the test function. Used for any Rust tests
 // that don't need a specific C++ testing::Test subclass.
-extern "C" testing::Test* rust_gtest_default_factory(
-    void (*body)(testing::Test*));
+testing::Test* rust_gtest_default_factory(void (*body)());
 
 // Register a test to be run via GTest. This must be called before main(), as
 // there's no calls from C++ into Rust to collect tests. Any function given to
@@ -91,12 +86,12 @@ extern "C" testing::Test* rust_gtest_default_factory(
 //
 // SAFETY: This function makes copies of the strings so the pointers do not need
 // to outlive the function call.
-extern "C" void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
-                                    void (*test_function)(testing::Test*),
-                                    const char* test_suite_name,
-                                    const char* test_name,
-                                    const char* file,
-                                    int32_t line);
+void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
+                         void (*test_function)(testing::Test*),
+                         const char* test_suite_name,
+                         const char* test_name,
+                         const char* file,
+                         int32_t line);
 
 // Report a test failure at a given file and line tuple, with a provided
 // message.
@@ -110,9 +105,9 @@ extern "C" void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
 //
 // SAFETY: This function makes copies of the strings so the pointers do not need
 // to outlive the function call.
-extern "C" void rust_gtest_add_failure_at(const char* file,
-                                          int32_t line,
-                                          const char* message);
+void rust_gtest_add_failure_at(const char* file,
+                               int32_t line,
+                               const char* message);
 
 }  // namespace rust_gtest_interop
 
