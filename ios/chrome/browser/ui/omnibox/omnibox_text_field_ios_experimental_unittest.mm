@@ -117,6 +117,10 @@ class OmniboxTextFieldExperimentalTest : public PlatformTest {
 #define MAYBE_SelectedRanges FLAKY_SelectedRanges
 #endif
 TEST_F(OmniboxTextFieldExperimentalTest, MAYBE_SelectedRanges) {
+  if (@available(iOS 17, *)) {
+    // TODO:(crbug.com/1468176): Failing on iOS17 beta 5.
+    return;
+  }
   base::FilePath test_data_directory;
   ASSERT_TRUE(base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
   base::FilePath test_file = test_data_directory.Append(
