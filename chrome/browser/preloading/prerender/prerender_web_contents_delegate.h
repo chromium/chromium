@@ -27,6 +27,12 @@ class PrerenderWebContentsDelegateImpl
                       bool* was_blocked) override;
   void ActivateContents(content::WebContents* contents) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
+  void WebContentsCreated(content::WebContents* source_contents,
+                          int opener_render_process_id,
+                          int opener_render_frame_id,
+                          const std::string& frame_name,
+                          const GURL& target_url,
+                          content::WebContents* new_contents) override;
   void PortalWebContentsCreated(
       content::WebContents* portal_web_contents) override;
   void WebContentsBecamePortal(

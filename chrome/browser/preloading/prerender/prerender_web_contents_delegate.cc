@@ -36,6 +36,17 @@ bool PrerenderWebContentsDelegateImpl::ShouldSuppressDialogs(
   NOTREACHED_NORETURN();
 }
 
+void PrerenderWebContentsDelegateImpl::WebContentsCreated(
+    content::WebContents* source_contents,
+    int opener_render_process_id,
+    int opener_render_frame_id,
+    const std::string& frame_name,
+    const GURL& target_url,
+    content::WebContents* new_contents) {
+  // A prerendered page should not create a new WebContents.
+  NOTREACHED_NORETURN();
+}
+
 void PrerenderWebContentsDelegateImpl::PortalWebContentsCreated(
     content::WebContents* portal_web_contents) {
   // Portal is not available on a prerendered page.
