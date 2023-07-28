@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
@@ -17,6 +18,8 @@
 namespace autofill {
 
 namespace {
+using i18n_model_definition::kAutofillFormattingRulesMap;
+using i18n_model_definition::kAutofillModelRules;
 
 // Adjacency mapping, stores for each field type X the list of field types
 // which are children of X.
@@ -67,8 +70,8 @@ std::unique_ptr<AddressComponent> GetLegacyHierarchy(
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
     AutofillModelType model_type,
     std::string_view country_code) {
-  auto* it = i18n_model_definition::kAutofillModelRules.find(country_code);
-  if (it == i18n_model_definition::kAutofillModelRules.end()) {
+  auto* it = kAutofillModelRules.find(country_code);
+  if (it == kAutofillModelRules.end()) {
     return GetLegacyHierarchy(model_type);
   }
 
@@ -89,6 +92,12 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
                             VerificationStatus::kObserved);
   }
   return result;
+}
+
+std::u16string_view GetFormattingExpression(ServerFieldType field_type,
+                                            std::string_view country_code) {
+  auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
+  return it != kAutofillFormattingRulesMap.end() ? it->second : u"";
 }
 
 }  // namespace autofill

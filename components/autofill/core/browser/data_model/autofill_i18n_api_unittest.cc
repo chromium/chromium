@@ -7,15 +7,19 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
+using i18n_model_definition::kAutofillFormattingRulesMap;
+using i18n_model_definition::kAutofillModelRules;
 
 // Checks that the AddressComponent graph has no cycles.
 bool IsTree(AddressComponent* node, ServerFieldTypeSet* visited_types) {
@@ -37,8 +41,7 @@ bool IsTree(AddressComponent* node, ServerFieldTypeSet* visited_types) {
 }  // namespace
 
 TEST(AutofillI18nApi, GetAddressComponentModel_ReturnsNonEmptyModel) {
-  for (const auto& [country_code, properties] :
-       i18n_model_definition::kAutofillModelRules) {
+  for (const auto& [country_code, properties] : kAutofillModelRules) {
     for (AutofillModelType model_type :
          {AutofillModelType::kAddressModel, AutofillModelType::kNameModel}) {
       // Make sure that the process of building the model finishes and returns a
@@ -68,8 +71,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_ReturnsNonEmptyModel) {
 }
 
 TEST(AutofillI18nApi, GetAddressComponentModel_ReturnedModelIsTree) {
-  for (const auto& [country_code, tree_def] :
-       i18n_model_definition::kAutofillModelRules) {
+  for (const auto& [country_code, tree_def] : kAutofillModelRules) {
     // Currently, the model for kAddressModel should comprise all the nodes in
     // the rules.
     std::unique_ptr<AddressComponent> root = CreateAddressComponentModel(
@@ -91,8 +93,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_ReturnedModelIsTree) {
 }
 
 TEST(AutofillI18nApi, GetAddressComponentModel_CountryNodeHasValue) {
-  for (const auto& [country_code, tree_def] :
-       i18n_model_definition::kAutofillModelRules) {
+  for (const auto& [country_code, tree_def] : kAutofillModelRules) {
     std::unique_ptr<AddressComponent> model = CreateAddressComponentModel(
         AutofillModelType::kAddressModel, country_code);
     EXPECT_EQ(model->GetValueForType(ADDRESS_HOME_COUNTRY),
@@ -103,7 +104,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_CountryNodeHasValue) {
 TEST(AutofillI18nApi, GetLegacy_FullName) {
   // "Countries that have not been migrated to the new Autofill i18n model
   // should use the legacy hierarchy."
-  ASSERT_FALSE(i18n_model_definition::kAutofillModelRules.contains("CA"));
+  ASSERT_FALSE(kAutofillModelRules.contains("CA"));
   EXPECT_TRUE(CreateAddressComponentModel(AutofillModelType::kNameModel, "CA")
                   ->SameAs(NameFull()));
 }
@@ -114,7 +115,7 @@ TEST(AutofillI18nApi, GetLegacy_FullNameWithPrefix) {
 
   // "Countries that have not been migrated to the new Autofill i18n model
   // should use the legacy hierarchy."
-  ASSERT_FALSE(i18n_model_definition::kAutofillModelRules.contains("DE"));
+  ASSERT_FALSE(kAutofillModelRules.contains("DE"));
   EXPECT_TRUE(CreateAddressComponentModel(AutofillModelType::kNameModel, "DE")
                   ->SameAs(NameFullWithPrefix()));
 }
@@ -122,10 +123,28 @@ TEST(AutofillI18nApi, GetLegacy_FullNameWithPrefix) {
 TEST(AutofillI18nApi, GetLegacy_AddressNode) {
   // "Countries that have not been migrated to the new Autofill i18n model
   // should use the legacy hierarchy."
-  ASSERT_FALSE(i18n_model_definition::kAutofillModelRules.contains("ES"));
+  ASSERT_FALSE(kAutofillModelRules.contains("ES"));
   EXPECT_TRUE(
       CreateAddressComponentModel(AutofillModelType::kAddressModel, "ES")
           ->SameAs(AddressNode()));
+}
+
+TEST(Autofilli18nApi, GetFormattingExpressions) {
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
+  for (const std::string& country_code : country_data_map->country_codes()) {
+    for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
+      if (ServerFieldType raw_value = static_cast<ServerFieldType>(i);
+          ToSafeServerFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
+        auto* it = kAutofillFormattingRulesMap.find({country_code, raw_value});
+        // The expected value is contained in `kAutofillFormattingRulesMap`. If
+        // no entry is found, an empty string is expected.
+        std::u16string_view expected =
+            it != kAutofillFormattingRulesMap.end() ? it->second : u"";
+
+        EXPECT_EQ(GetFormattingExpression(raw_value, country_code), expected);
+      }
+    }
+  }
 }
 
 }  // namespace autofill
