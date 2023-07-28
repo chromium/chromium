@@ -175,7 +175,8 @@ SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
   auto representation = (*found)->ProduceGLTexture(this, tracker);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexture: Trying to produce a "
-                  "representation from an incompatible mailbox.";
+                  "representation from an incompatible backing: "
+               << (*found)->GetName();
     return nullptr;
   }
 
@@ -198,7 +199,8 @@ SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
   auto representation = (*found)->ProduceGLTexturePassthrough(this, tracker);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexturePassthrough: Trying to "
-                  "produce a representation from an incompatible mailbox.";
+                  "produce a representation from an incompatible backing: "
+               << (*found)->GetName();
     return nullptr;
   }
 
@@ -222,7 +224,8 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageManager::ProduceSkia(
   auto representation = (*found)->ProduceSkia(this, tracker, context_state);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceSkia: Trying to produce a "
-                  "Skia representation from an incompatible mailbox.";
+                  "Skia representation from an incompatible backing: "
+               << (*found)->GetName();
     return nullptr;
   }
 
@@ -249,7 +252,8 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
       this, tracker, device, backend_type, std::move(view_formats));
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to produce a "
-                  "Dawn representation from an incompatible mailbox.";
+                  "Dawn representation from an incompatible backing: "
+               << (*found)->GetName();
     return nullptr;
   }
 
@@ -272,7 +276,8 @@ std::unique_ptr<OverlayImageRepresentation> SharedImageManager::ProduceOverlay(
   auto representation = (*found)->ProduceOverlay(this, tracker);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceOverlay: Trying to produce a "
-                  "Overlay representation from an incompatible mailbox.";
+                  "Overlay representation from an incompatible backing: "
+               << (*found)->GetName();
     return nullptr;
   }
 
@@ -297,7 +302,8 @@ std::unique_ptr<VaapiImageRepresentation> SharedImageManager::ProduceVASurface(
 
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceVASurface: Trying to produce a "
-                  "VA-API representation from an incompatible mailbox.";
+                  "VA-API representation from an incompatible backing: "
+               << (*found)->GetName();
     return nullptr;
   }
   return representation;
@@ -378,7 +384,8 @@ SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,
   if (!representation) {
     LOG(ERROR)
         << "SharedImageManager::ProduceLegacyOverlay: Trying to produce a "
-           "Legacy Overlay representation from an incompatible mailbox.";
+           "Legacy Overlay representation from an incompatible backing: "
+        << (*found)->GetName();
     return nullptr;
   }
 
