@@ -1036,14 +1036,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
 
-  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered_passkeys;
-  for (sync_pb::WebauthnCredentialSpecifics& entity :
-       passkey_model->GetAllPasskeys()) {
-    if (entity.rp_id() != rp_id) {
-      continue;
-    }
-    filtered_passkeys.emplace_back(std::move(entity));
-  }
-  discovery_factory->SetEnclavePasskeys(std::move(filtered_passkeys));
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model->GetPasskeysForRelyingPartyId(rp_id);
+  discovery_factory->SetEnclavePasskeys(std::move(passkeys));
 }
 #endif
