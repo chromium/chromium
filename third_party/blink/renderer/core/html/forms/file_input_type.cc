@@ -98,6 +98,20 @@ VectorType CreateFilesFrom(const FormControlState& state,
   return files;
 }
 
+template <typename ItemType, typename VectorType>
+VectorType CreateFilesFrom(const FormControlState& state,
+                           ExecutionContext* execution_context,
+                           ItemType (*factory)(ExecutionContext*,
+                                               const FormControlState&,
+                                               wtf_size_t&)) {
+  VectorType files;
+  files.ReserveInitialCapacity(state.ValueSize() / 3);
+  for (wtf_size_t i = 0; i < state.ValueSize();) {
+    files.push_back(factory(execution_context, state, i));
+  }
+  return files;
+}
+
 Vector<String> FileInputType::FilesFromFormControlState(
     const FormControlState& state) {
   return CreateFilesFrom<String, Vector<String>>(state,
@@ -122,9 +136,10 @@ FormControlState FileInputType::SaveFormControlState() const {
 void FileInputType::RestoreFormControlState(const FormControlState& state) {
   if (state.ValueSize() % 3)
     return;
+  ExecutionContext* execution_context = GetElement().GetExecutionContext();
   HeapVector<Member<File>> file_vector =
       CreateFilesFrom<File*, HeapVector<Member<File>>>(
-          state, &File::CreateFromControlState);
+          state, execution_context, &File::CreateFromControlState);
   auto* file_list = MakeGarbageCollected<FileList>();
   for (const auto& file : file_vector)
     file_list->Append(file);
@@ -134,9 +149,10 @@ void FileInputType::RestoreFormControlState(const FormControlState& state) {
 void FileInputType::AppendToFormData(FormData& form_data) const {
   FileList* file_list = GetElement().files();
   unsigned num_files = file_list->length();
+  ExecutionContext* context = GetElement().GetExecutionContext();
   if (num_files == 0) {
     form_data.AppendFromElement(GetElement().GetName(),
-                                MakeGarbageCollected<File>(""));
+                                MakeGarbageCollected<File>(context, ""));
     return;
   }
 
@@ -296,7 +312,7 @@ FileList* FileInputType::CreateFileList(ExecutionContext& context,
       String relative_path =
           string_path.Substring(root_length).Replace('\\', '/');
       file_list->Append(
-          File::CreateWithRelativePath(string_path, relative_path));
+          File::CreateWithRelativePath(&context, string_path, relative_path));
     }
     return file_list;
   }
@@ -304,7 +320,7 @@ FileList* FileInputType::CreateFileList(ExecutionContext& context,
   for (const auto& file : files) {
     if (file->is_native_file()) {
       file_list->Append(File::CreateForUserProvidedFile(
-          FilePathToString(file->get_native_file()->file_path),
+          &context, FilePathToString(file->get_native_file()->file_path),
           file->get_native_file()->display_name));
     } else {
       const auto& fs_info = file->get_file_system();

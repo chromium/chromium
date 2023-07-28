@@ -42,6 +42,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
@@ -243,6 +244,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
 
 // static
 scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
+    mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
     const String& path,
     int64_t offset,
     int64_t length,
@@ -253,8 +255,8 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
   uint64_t size = length == BlobData::kToEndOfFile
                       ? std::numeric_limits<uint64_t>::max()
                       : length;
-  return base::AdoptRef(
-      new BlobDataHandle(std::move(element), content_type, size));
+  return base::AdoptRef(new BlobDataHandle(
+      file_backed_blob_factory, std::move(element), content_type, size));
 }
 
 // static
@@ -290,22 +292,31 @@ BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
       type_.IsNull() ? "" : type_, "", std::move(elements));
 }
 
-BlobDataHandle::BlobDataHandle(mojom::blink::DataElementFilePtr file_element,
-                               const String& content_type,
-                               uint64_t size)
+BlobDataHandle::BlobDataHandle(
+    mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
+    mojom::blink::DataElementFilePtr file_element,
+    const String& content_type,
+    uint64_t size)
     : uuid_(WTF::CreateCanonicalUUIDString()),
       type_(content_type),
       size_(size),
       is_single_unknown_size_file_(size ==
                                    std::numeric_limits<uint64_t>::max()) {
-  // TODO(b/286061811): Replace with FileBackedBlobFactory::Register that takes
-  // directly the DataElementFilePtr.
-  Vector<mojom::blink::DataElementPtr> elements;
-  elements.push_back(DataElement::NewFile(std::move(file_element)));
-  TRACE_EVENT0("Blob", "Registry::RegisterBlob");
-  GetThreadSpecificRegistry()->Register(
-      blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-      type_.IsNull() ? "" : type_, "", std::move(elements));
+  if (file_backed_blob_factory) {
+    file_backed_blob_factory->RegisterBlob(
+        blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
+        type_.IsNull() ? "" : type_, std::move(file_element));
+  } else {
+    // TODO(b/287417238): Temporarily fallback to the previous BlobRegistry
+    // registration when new interface is disabled by its feature flag or the
+    // interface is not bound to a frame.
+    Vector<mojom::blink::DataElementPtr> elements;
+    elements.push_back(DataElement::NewFile(std::move(file_element)));
+    TRACE_EVENT0("Blob", "Registry::RegisterBlob");
+    GetThreadSpecificRegistry()->Register(
+        blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
+        type_.IsNull() ? "" : type_, "", std::move(elements));
+  }
 }
 
 BlobDataHandle::BlobDataHandle(const String& uuid,

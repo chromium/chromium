@@ -500,6 +500,8 @@ source_set("testing") {
     "testing/fake_remote_frame_host.h",
     "testing/fake_remote_main_frame_host.cc",
     "testing/fake_remote_main_frame_host.h",
+    "testing/file_backed_blob_factory_test_helper.cc",
+    "testing/file_backed_blob_factory_test_helper.h",
     "testing/garbage_collected_script_wrappable.cc",
     "testing/garbage_collected_script_wrappable.h",
     "testing/gc_object_liveness_observer.h",

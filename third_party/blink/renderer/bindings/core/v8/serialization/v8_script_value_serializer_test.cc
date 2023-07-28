@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
+#include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
@@ -1642,7 +1643,11 @@ TEST(V8ScriptValueSerializerTest, DecodeBlobIndexOutOfRange) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileNative) {
   V8TestingScope scope;
-  auto* file = MakeGarbageCollected<File>("/native/path");
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
+  auto* file =
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
@@ -1850,7 +1855,11 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV8WithSnapshot) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
   V8TestingScope scope;
-  auto* file = MakeGarbageCollected<File>("/native/path");
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
+  auto* file =
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file, scope.GetScriptState());
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =
@@ -1920,9 +1929,14 @@ TEST(V8ScriptValueSerializerTest, DecodeFileIndexOutOfRange) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileList) {
   V8TestingScope scope;
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
   auto* file_list = MakeGarbageCollected<FileList>();
-  file_list->Append(MakeGarbageCollected<File>("/native/path"));
-  file_list->Append(MakeGarbageCollected<File>("/native/path2"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path2"));
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file_list, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   FileList* new_file_list = V8FileList::ToWrappable(scope.GetIsolate(), result);
@@ -1981,9 +1995,14 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListV8WithoutSnapshot) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileListIndex) {
   V8TestingScope scope;
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
   auto* file_list = MakeGarbageCollected<FileList>();
-  file_list->Append(MakeGarbageCollected<File>("/native/path"));
-  file_list->Append(MakeGarbageCollected<File>("/native/path2"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path2"));
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file_list, scope.GetScriptState());
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =

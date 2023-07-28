@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_property_bag.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/file_backed_blob_factory_dispatcher.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -68,14 +69,17 @@ static String GetContentTypeFromFileName(const String& name,
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithType(
+    ExecutionContext* context,
     const String& path,
     const String& content_type) {
   return BlobDataHandle::CreateForFile(
-      path, /*offset=*/0, BlobData::kToEndOfFile,
+      FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context), path,
+      /*offset=*/0, BlobData::kToEndOfFile,
       /*expected_modification_time=*/absl::nullopt, content_type);
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFile(
+    ExecutionContext* context,
     const String& path,
     File::ContentTypeLookupPolicy policy) {
   if (path.empty()) {
@@ -84,23 +88,24 @@ static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFile(
     return BlobDataHandle::Create(std::move(blob_data), /*size=*/0);
   }
   return CreateBlobDataHandleForFileWithType(
-      path, GetContentTypeFromFileName(path, policy));
+      context, path, GetContentTypeFromFileName(path, policy));
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithName(
+    ExecutionContext* context,
     const String& path,
     const String& file_system_name,
     File::ContentTypeLookupPolicy policy) {
   return CreateBlobDataHandleForFileWithType(
-      path, GetContentTypeFromFileName(file_system_name, policy));
+      context, path, GetContentTypeFromFileName(file_system_name, policy));
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithMetadata(
     const String& file_system_name,
     const FileMetadata& metadata) {
   return BlobDataHandle::CreateForFile(
-      metadata.platform_path, /*offset=*/0, metadata.length,
-      metadata.modification_time,
+      /*file_backed_blob_factory=*/nullptr, metadata.platform_path,
+      /*offset=*/0, metadata.length, metadata.modification_time,
       GetContentTypeFromFileName(file_system_name,
                                  File::kWellKnownContentTypes));
 }
@@ -138,7 +143,8 @@ File* File::Create(ExecutionContext* context,
       BlobDataHandle::Create(std::move(blob_data), file_size));
 }
 
-File* File::CreateFromControlState(const FormControlState& state,
+File* File::CreateFromControlState(ExecutionContext* context,
+                                   const FormControlState& state,
                                    wtf_size_t& index) {
   if (index + 2 >= state.ValueSize()) {
     index = state.ValueSize();
@@ -148,8 +154,8 @@ File* File::CreateFromControlState(const FormControlState& state,
   String name = state[index++];
   String relative_path = state[index++];
   if (relative_path.empty())
-    return File::CreateForUserProvidedFile(path, name);
-  return File::CreateWithRelativePath(path, relative_path);
+    return File::CreateForUserProvidedFile(context, path, name);
+  return File::CreateWithRelativePath(context, path, relative_path);
 }
 
 String File::PathFromControlState(const FormControlState& state,
@@ -163,9 +169,10 @@ String File::PathFromControlState(const FormControlState& state,
   return path;
 }
 
-File* File::CreateWithRelativePath(const String& path,
+File* File::CreateWithRelativePath(ExecutionContext* context,
+                                   const String& path,
                                    const String& relative_path) {
-  File* file = MakeGarbageCollected<File>(path, File::kAllContentTypes,
+  File* file = MakeGarbageCollected<File>(context, path, File::kAllContentTypes,
                                           File::kIsUserVisible);
   file->relative_path_ = relative_path;
   return file;
@@ -190,20 +197,22 @@ File* File::CreateForFileSystemFile(ExecutionContext& context,
   return MakeGarbageCollected<File>(url, metadata, user_visibility, handle);
 }
 
-File::File(const String& path,
+File::File(ExecutionContext* context,
+           const String& path,
            ContentTypeLookupPolicy policy,
            UserVisibility user_visibility)
-    : Blob(CreateBlobDataHandleForFile(path, policy)),
+    : Blob(CreateBlobDataHandleForFile(context, path, policy)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(path),
       name_(FilePathToWebString(WebStringToFilePath(path).BaseName())) {}
 
-File::File(const String& path,
+File::File(ExecutionContext* context,
+           const String& path,
            const String& name,
            ContentTypeLookupPolicy policy,
            UserVisibility user_visibility)
-    : Blob(CreateBlobDataHandleForFileWithName(path, name, policy)),
+    : Blob(CreateBlobDataHandleForFileWithName(context, path, name, policy)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(path),

@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
+#include "third_party/blink/renderer/core/fileapi/file_backed_blob_factory_dispatcher.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
@@ -418,6 +419,8 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
           }
           blob_data->AppendBlob(
               BlobDataHandle::CreateForFile(
+                  FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(
+                      execution_context),
                   element.filename_, element.file_start_, file_length,
                   element.expected_file_modification_time_,
                   /*content_type=*/""),

@@ -7,16 +7,19 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 
 namespace blink {
 
 TEST(FileListTest, pathsForUserVisibleFiles) {
+  ScopedNullExecutionContext context;
   auto* const file_list = MakeGarbageCollected<FileList>();
 
   // Native file.
-  file_list->Append(MakeGarbageCollected<File>("/native/path"));
+  file_list->Append(MakeGarbageCollected<File>(&context.GetExecutionContext(),
+                                               "/native/path"));
 
   // Blob file.
   const scoped_refptr<BlobDataHandle> blob_data_handle =

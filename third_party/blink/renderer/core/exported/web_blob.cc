@@ -37,7 +37,9 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/fileapi/file_backed_blob_factory_dispatcher.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -50,8 +52,12 @@ WebBlob WebBlob::CreateFromSerializedBlob(mojom::SerializedBlobPtr blob) {
       blob->size, ToCrossVariantMojoType(std::move(blob->blob))));
 }
 
-WebBlob WebBlob::CreateFromFile(const WebString& path, uint64_t size) {
+WebBlob WebBlob::CreateFromFile(v8::Isolate* isolate,
+                                const WebString& path,
+                                uint64_t size) {
   return MakeGarbageCollected<Blob>(BlobDataHandle::CreateForFile(
+      FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(
+          ExecutionContext::From(isolate->GetCurrentContext())),
       path, /*offset=*/0, size, /*expected_modification_time=*/absl::nullopt,
       /*content_type=*/""));
 }

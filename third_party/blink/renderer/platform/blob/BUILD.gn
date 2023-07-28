@@ -75,6 +75,8 @@ source_set("test_support") {
     "testing/fake_blob_registry.h",
     "testing/fake_blob_url_store.cc",
     "testing/fake_blob_url_store.h",
+    "testing/fake_file_backed_blob_factory.cc",
+    "testing/fake_file_backed_blob_factory.h",
   ]
 
   configs += [

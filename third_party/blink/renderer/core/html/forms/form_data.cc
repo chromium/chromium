@@ -413,7 +413,8 @@ void FormData::AppendToControlState(FormControlState& state) const {
   }
 }
 
-FormData* FormData::CreateFromControlState(const FormControlState& state,
+FormData* FormData::CreateFromControlState(ExecutionContext& execution_context,
+                                           const FormControlState& state,
                                            wtf_size_t& index) {
   bool ok = false;
   uint64_t length = state[index].ToUInt64Strict(&ok);
@@ -428,10 +429,12 @@ FormData* FormData::CreateFromControlState(const FormControlState& state,
     const String& name = state[index++];
     const String& entry_type = state[index++];
     if (entry_type == "File") {
-      if (auto* file = File::CreateFromControlState(state, index))
+      if (auto* file =
+              File::CreateFromControlState(&execution_context, state, index)) {
         form_data->append(name, file);
-      else
+      } else {
         return nullptr;
+      }
     } else if (entry_type == "USVString") {
       form_data->append(name, state[index++]);
     } else {

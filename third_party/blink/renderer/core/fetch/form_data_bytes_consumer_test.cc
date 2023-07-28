@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -130,7 +131,14 @@ class NoopClient final : public GarbageCollected<NoopClient>,
 
 class FormDataBytesConsumerTest : public PageTestBase {
  public:
-  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
+  void SetUp() override {
+    PageTestBase::SetUp(gfx::Size());
+    file_factory_helper_ = std::make_unique<FileBackedBlobFactoryTestHelper>(
+        GetFrame().GetDocument()->GetExecutionContext());
+  }
+
+ private:
+  std::unique_ptr<FileBackedBlobFactoryTestHelper> file_factory_helper_;
 };
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromString) {

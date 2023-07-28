@@ -59,7 +59,9 @@ class BLINK_EXPORT WebBlob {
   }
 
   static WebBlob CreateFromSerializedBlob(mojom::SerializedBlobPtr blob);
-  static WebBlob CreateFromFile(const WebString& path, uint64_t size);
+  static WebBlob CreateFromFile(v8::Isolate* isolate,
+                                const WebString& path,
+                                uint64_t size);
   static WebBlob FromV8Value(v8::Local<v8::Value>);
 
   void Reset();

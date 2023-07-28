@@ -452,7 +452,13 @@ void WebFrameWidgetImpl::DragTargetDragEnter(
     DragOperationsMask operations_allowed,
     uint32_t key_modifiers,
     DragTargetDragEnterCallback callback) {
-  current_drag_data_ = DataObject::Create(web_drag_data);
+  auto* target = local_root_->GetFrame()->DocumentAtPoint(
+      PhysicalOffset::FromPointFRound(ViewportToRootFrame(point_in_viewport)));
+
+  // Any execution context should do the work since no file should ever be
+  // created during drag events.
+  current_drag_data_ = DataObject::Create(
+      target ? target->GetExecutionContext() : nullptr, web_drag_data);
   operations_allowed_ = operations_allowed;
 
   DragTargetDragEnterOrOver(point_in_viewport, screen_point, kDragEnter,
@@ -508,7 +514,11 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
     return;
   }
 
-  current_drag_data_ = DataObject::Create(web_drag_data);
+  auto* target = local_root_->GetFrame()->DocumentAtPoint(
+      PhysicalOffset::FromPointFRound(ViewportToRootFrame(point_in_viewport)));
+
+  current_drag_data_ = DataObject::Create(
+      target ? target->GetExecutionContext() : nullptr, web_drag_data);
 
   // If this webview transitions from the "drop accepting" state to the "not
   // accepting" state, then our IPC message reply indicating that may be in-

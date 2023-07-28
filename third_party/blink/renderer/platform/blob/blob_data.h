@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -169,6 +170,7 @@ class PLATFORM_EXPORT BlobDataHandle
     return base::AdoptRef(new BlobDataHandle());
   }
   static scoped_refptr<BlobDataHandle> CreateForFile(
+      mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
       const String& path,
       int64_t offset,
       int64_t length,
@@ -229,7 +231,8 @@ class PLATFORM_EXPORT BlobDataHandle
  private:
   BlobDataHandle();
   BlobDataHandle(std::unique_ptr<BlobData>, uint64_t size);
-  BlobDataHandle(mojom::blink::DataElementFilePtr file_element,
+  BlobDataHandle(mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
+                 mojom::blink::DataElementFilePtr file_element,
                  const String& content_type,
                  uint64_t size);
   BlobDataHandle(const String& uuid, const String& type, uint64_t size);

@@ -7,6 +7,8 @@ blink_core_sources_fileapi = [
   "blob.h",
   "file.cc",
   "file.h",
+  "file_backed_blob_factory_dispatcher.cc",
+  "file_backed_blob_factory_dispatcher.h",
   "file_error.cc",
   "file_error.h",
   "file_list.cc",

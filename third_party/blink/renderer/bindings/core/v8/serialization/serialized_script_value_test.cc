@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_data.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -120,10 +121,14 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ImageData) {
 
 TEST(SerializedScriptValueTest, UserSelectedFile) {
   V8TestingScope scope;
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
   String file_path = test::BlinkRootDir() +
                      "/renderer/bindings/core/v8/serialization/"
                      "serialized_script_value_test.cc";
-  auto* original_file = MakeGarbageCollected<File>(file_path);
+  auto* original_file =
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), file_path);
+  file_factory_helper.FlushForTesting();
   ASSERT_TRUE(original_file->HasBackingFile());
   ASSERT_EQ(File::kIsUserVisible, original_file->GetUserVisibility());
   ASSERT_EQ(file_path, original_file->GetPath());

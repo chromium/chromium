@@ -16,9 +16,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_file_backed_blob_factory.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -32,6 +34,7 @@ using mojom::blink::DataElementBlob;
 using mojom::blink::DataElementBytes;
 using mojom::blink::DataElementFile;
 using mojom::blink::DataElementPtr;
+using mojom::blink::FileBackedBlobFactory;
 
 namespace {
 
@@ -270,27 +273,28 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
   base::Time kModificationTime = base::Time();
   String kType = "content/type";
 
-  scoped_refptr<BlobDataHandle> handle = BlobDataHandle::CreateForFile(
-      kPath, kOffset, kSize, kModificationTime, kType);
+  FakeFileBackedBlobFactory file_factory;
+  mojo::Remote<FileBackedBlobFactory> file_factory_remote;
+  mojo::Receiver<FileBackedBlobFactory> file_factory_receiver(
+      &file_factory, file_factory_remote.BindNewPipeAndPassReceiver());
+
+  scoped_refptr<BlobDataHandle> handle =
+      BlobDataHandle::CreateForFile(file_factory_remote.get(), kPath, kOffset,
+                                    kSize, kModificationTime, kType);
 
   EXPECT_EQ(kType, handle->GetType());
   EXPECT_EQ(kSize, handle->size());
   EXPECT_FALSE(handle->IsSingleUnknownSizeFile());
 
-  blob_registry_remote_.FlushForTesting();
-  EXPECT_EQ(1u, mock_blob_registry_.registrations.size());
-  ASSERT_EQ(0u, mock_blob_registry_.owned_receivers.size());
-  const auto& reg = mock_blob_registry_.registrations[0];
+  file_factory_remote.FlushForTesting();
+  EXPECT_EQ(1u, file_factory.registrations.size());
+  const auto& reg = file_factory.registrations[0];
   EXPECT_EQ(handle->Uuid(), reg.uuid);
   EXPECT_EQ(kType, reg.content_type);
-  EXPECT_EQ("", reg.content_disposition);
-  EXPECT_EQ(1u, reg.elements.size());
-  auto& element = reg.elements.front();
-  ASSERT_TRUE(element->is_file());
-  EXPECT_EQ(WebStringToFilePath(kPath), element->get_file()->path);
-  EXPECT_EQ(kSize, element->get_file()->length);
-  EXPECT_EQ(kOffset, element->get_file()->offset);
-  EXPECT_EQ(kModificationTime, element->get_file()->expected_modification_time);
+  EXPECT_EQ(WebStringToFilePath(kPath), reg.file->path);
+  EXPECT_EQ(kSize, reg.file->length);
+  EXPECT_EQ(kOffset, reg.file->offset);
+  EXPECT_EQ(kModificationTime, reg.file->expected_modification_time);
 }
 
 TEST_F(BlobDataHandleTest, CreateFromEmptyElements) {
