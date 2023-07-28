@@ -1067,6 +1067,9 @@ void SyncServiceImpl::OnActionableProtocolError(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ash, revoke the Sync consent/Clear primary
       // account after a dashboard clear.
+      // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+      // deleted from the codebase. See ConsentLevel::kSync documentation for
+      // details.
       if (!IsLocalSyncEnabled() &&
           identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
         signin::PrimaryAccountMutator* account_mutator =
@@ -1367,6 +1370,9 @@ bool SyncServiceImpl::IsSyncFeatureConsideredRequested() const {
     return false;
   }
 
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   const bool has_sync_consent = HasSyncConsent();
   const bool is_sync_requested = sync_prefs_.IsSyncRequested();
 

@@ -79,6 +79,9 @@ class SyncServiceImplStartupTest : public testing::Test {
         kEmail, signin::ConsentLevel::kSignin);
   }
 
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   void SignInWithSyncConsent() {
     sync_service_impl_bundle_.identity_test_env()->MakePrimaryAccountAvailable(
         kEmail, signin::ConsentLevel::kSync);
@@ -98,6 +101,9 @@ class SyncServiceImplStartupTest : public testing::Test {
     sync_service_impl_bundle_.identity_test_env()->WaitForRefreshTokensLoaded();
   }
 
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   void SignInWithSyncConsentWithoutRefreshToken() {
     // Set the primary account *without* providing an OAuth token.
     sync_service_impl_bundle_.identity_test_env()->SetPrimaryAccount(

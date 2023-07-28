@@ -111,6 +111,9 @@ class SyncServiceImplTest : public ::testing::Test {
         kTestUser, signin::ConsentLevel::kSignin);
   }
 
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   void SignInWithSyncConsent() {
     identity_test_env()->MakePrimaryAccountAvailable(
         kTestUser, signin::ConsentLevel::kSync);
@@ -689,6 +692,9 @@ TEST_F(SyncServiceImplTest, RevokeAccessTokenFromTokenService) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
+  // TODO(crbug.com/1462552): Update once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   const CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
@@ -728,6 +734,9 @@ TEST_F(SyncServiceImplTest, CredentialsRejectedByClient_StopSync) {
   TestSyncServiceObserver observer;
   service()->AddObserver(&observer);
 
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   const CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
@@ -779,6 +788,9 @@ TEST_F(SyncServiceImplTest, SignOutRevokeAccessToken) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   const CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
@@ -877,6 +889,9 @@ TEST_F(SyncServiceImplTest, CredentialErrorReturned) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   const CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
@@ -934,6 +949,9 @@ TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   const CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
@@ -1045,6 +1063,9 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   ASSERT_FALSE(service()->IsSyncFeatureDisabledViaDashboard());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // TODO(crbug.com/1462552): Update once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   EXPECT_CALL(
       *trusted_vault_client(),
       ClearLocalDataForAccount(Eq(identity_manager()->GetPrimaryAccountInfo(
@@ -1056,6 +1077,9 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ash does not support signout.
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(service()->GetDisableReasons().Empty());
@@ -1079,6 +1103,9 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   // On Desktop and Lacros, the sync consent is revoked, but the primary account
   // is left at ConsentLevel::kSignin. Sync will restart in standalone transport
   // mode.
+  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(
