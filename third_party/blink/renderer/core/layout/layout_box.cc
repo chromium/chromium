@@ -148,19 +148,15 @@ namespace {
 
 LayoutUnit TextAreaIntrinsicInlineSize(const HTMLTextAreaElement& textarea,
                                        const LayoutBox& box) {
+  // Always add the scrollbar thickness for 'overflow:auto'.
+  const auto& style = box.StyleRef();
   int scrollbar_thickness = 0;
-  if (!RuntimeEnabledFeatures::LayoutNewTextAreaScrollbarEnabled() ||
-      box.StyleRef().OverflowBlockDirection() == EOverflow::kScroll ||
-      box.StyleRef().OverflowBlockDirection() == EOverflow::kAuto) {
+  if (style.OverflowBlockDirection() == EOverflow::kScroll ||
+      style.OverflowBlockDirection() == EOverflow::kAuto) {
     scrollbar_thickness = layout_text_control::ScrollbarThickness(box);
   }
 
-  // <textarea>'s intrinsic inline-size always contains the scrollbar thickness
-  // regardless of actual existence of a scrollbar.
-  //
-  // See |NGBlockLayoutAlgorithm::ComputeMinMaxSizes()| and |LayoutBlock::
-  // ComputeIntrinsicLogicalWidths()|.
-  return LayoutUnit(ceilf(layout_text_control::GetAvgCharWidth(box.StyleRef()) *
+  return LayoutUnit(ceilf(layout_text_control::GetAvgCharWidth(style) *
                           textarea.cols())) +
          scrollbar_thickness;
 }
@@ -212,23 +208,19 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
 
 LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
                                       const LayoutBox& box) {
-  const auto* inner_editor = textarea.InnerEditorElement();
-  if (!inner_editor || !inner_editor->GetLayoutBox()) {
-    return box.FirstLineHeight() * textarea.rows();
-  }
-  const LayoutBox& inner_box = *inner_editor->GetLayoutBox();
-  const ComputedStyle& inner_style = inner_box.StyleRef();
-  // We are able to have a horizontal scrollbar if the overflow style is
-  // scroll, or if it's auto and there's no word wrap and new textarea
-  // scrollbar logic is disabled.
+  // Only add the scrollbar thickness for 'overflow: scroll'.
   int scrollbar_thickness = 0;
-  if (box.StyleRef().OverflowInlineDirection() == EOverflow::kScroll ||
-      (!RuntimeEnabledFeatures::LayoutNewTextAreaScrollbarEnabled() &&
-       box.StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
-       inner_style.OverflowWrap() == EOverflowWrap::kNormal)) {
+  if (box.StyleRef().OverflowInlineDirection() == EOverflow::kScroll) {
     scrollbar_thickness = layout_text_control::ScrollbarThickness(box);
   }
-  return inner_box.FirstLineHeight() * textarea.rows() + scrollbar_thickness;
+
+  const auto* inner_editor = textarea.InnerEditorElement();
+  const LayoutUnit line_height =
+      inner_editor && inner_editor->GetLayoutBox()
+          ? inner_editor->GetLayoutBox()->FirstLineHeight()
+          : box.FirstLineHeight();
+
+  return line_height * textarea.rows() + scrollbar_thickness;
 }
 
 LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,

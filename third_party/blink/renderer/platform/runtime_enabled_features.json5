@@ -2042,10 +2042,6 @@
       settable_from_internals: true,
     },
     {
-      name: "LayoutDisableWebkitBoxSafeAlignment",
-      status: "stable",
-    },
-    {
       name: "LayoutFlexNewColumnAlgorithm",
       status: "stable",
     },
@@ -2061,19 +2057,11 @@
       status: "stable",
     },
     {
-      name: "LayoutFlexSafeAlignment",
-      status: "stable",
-    },
-    {
       name: "LayoutIgnoreMarginsForSticky",
       status: "stable",
     },
     {
       name: "LayoutNewFixedPositionInvalidation",
-      status: "stable",
-    },
-    {
-      name: "LayoutNewTextAreaScrollbar",
       status: "stable",
     },
     {

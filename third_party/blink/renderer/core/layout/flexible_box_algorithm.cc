@@ -333,14 +333,8 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
       break;
     case ItemPosition::kFlexEnd:
       return available_free_space;
-    case ItemPosition::kCenter: {
-      const LayoutUnit result = (available_free_space / 2);
-      return (!RuntimeEnabledFeatures::
-                  LayoutDisableWebkitBoxSafeAlignmentEnabled() &&
-              is_deprecated_webkit_box)
-                 ? result.ClampNegativeToZero()
-                 : result;
-    }
+    case ItemPosition::kCenter:
+      return available_free_space / 2;
     case ItemPosition::kBaseline:
     case ItemPosition::kLastBaseline:
       return baseline_offset;
@@ -871,8 +865,7 @@ void FlexLayoutAlgorithm::AlignChildren() {
         flex_item.needs_relayout_for_stretch_ = true;
       }
       LayoutUnit available_space = flex_item.AvailableAlignmentSpace();
-      if (RuntimeEnabledFeatures::LayoutFlexSafeAlignmentEnabled() &&
-          !is_webkit_box &&
+      if (!is_webkit_box &&
           flex_item.style_
                   .ResolvedAlignSelf(ItemPosition::kStretch, &StyleRef())
                   .Overflow() == OverflowAlignment::kSafe) {
@@ -1129,13 +1122,13 @@ LayoutUnit FlexLayoutAlgorithm::InitialContentPositionOffset(
     const StyleContentAlignmentData& data,
     unsigned number_of_items,
     bool is_reversed) {
-  if (available_free_space <= 0 &&
+  // Safe-alignment with negative free-space does nothing.
+  if (available_free_space <= LayoutUnit() &&
       (style.IsDeprecatedWebkitBox() ||
-       (RuntimeEnabledFeatures::LayoutFlexSafeAlignmentEnabled() &&
-        data.Overflow() == OverflowAlignment::kSafe))) {
-    // -webkit-box only considers |available_free_space| if > 0.
+       data.Overflow() == OverflowAlignment::kSafe)) {
     return LayoutUnit();
   }
+
   ContentPosition position = data.GetPosition();
   DCHECK_NE(position, ContentPosition::kLeft)
       << "ResolvedJustifyContent was supposed to translate this to kStart/End";
