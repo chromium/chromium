@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
-#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -51,13 +50,6 @@
 namespace optimization_guide {
 
 namespace {
-
-// Provide a random time delta in seconds before fetching models.
-base::TimeDelta RandomFetchDelay() {
-  return base::Seconds(
-      base::RandInt(features::PredictionModelFetchRandomMinDelaySecs(),
-                    features::PredictionModelFetchRandomMaxDelaySecs()));
-}
 
 proto::ModelCacheKey GetModelCacheKey(const std::string& locale) {
   proto::ModelCacheKey model_cache_key;
@@ -210,6 +202,13 @@ PredictionManager::PredictionManager(
       optimization_guide_logger_(optimization_guide_logger),
       pref_service_(pref_service),
       component_updates_enabled_provider_(component_updates_enabled_provider),
+      prediction_model_fetch_timer_(
+          pref_service,
+          base::BindRepeating(
+              &PredictionManager::FetchModels,
+              // Its safe to use `base::Unretained(this)` here since
+              // `prediction_model_fetch_timer_` is owned by `this`.
+              base::Unretained(this))),
       clock_(base::DefaultClock::GetInstance()),
       off_the_record_(off_the_record),
       application_locale_(application_locale),
@@ -314,9 +313,10 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   if (!store_is_ready_)
     return;
 
-  // If no fetch is scheduled, maybe schedule one.
-  if (!fetch_timer_.IsRunning())
-    MaybeScheduleFirstModelFetch();
+  if (ShouldFetchModels(off_the_record_,
+                        component_updates_enabled_provider_.Run())) {
+    prediction_model_fetch_timer_.ScheduleFetchOnModelRegistration();
+  }
 
   // Otherwise, load prediction models for any newly registered targets.
   LoadPredictionModels({optimization_target});
@@ -357,8 +357,9 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
       std::move(prediction_model_download_manager);
 }
 
-void PredictionManager::FetchModels(bool is_first_model_fetch) {
+void PredictionManager::FetchModels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(store_is_ready_);
 
   // The histogram that gets recorded here is used for integration tests that
   // pass in a model override. For simplicity, we place the recording of this
@@ -384,7 +385,7 @@ void PredictionManager::FetchModels(bool is_first_model_fetch) {
     return;
   }
 
-  if (is_first_model_fetch) {
+  if (prediction_model_fetch_timer_.IsFirstModelFetch()) {
     DCHECK(!init_time_.is_null());
     base::UmaHistogramMediumTimes(
         "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit",
@@ -465,12 +466,13 @@ void PredictionManager::FetchModels(bool is_first_model_fetch) {
           base::BindOnce(&PredictionManager::OnModelsFetched,
                          ui_weak_ptr_factory_.GetWeakPtr(), models_info));
 
-  if (fetch_initiated)
-    SetLastModelFetchAttemptTime(clock_->Now());
+  if (fetch_initiated) {
+    prediction_model_fetch_timer_.NotifyModelFetchAttempt();
+  }
   // Schedule the next fetch regardless since we may not have initiated a fetch
   // due to a network condition and trying in the next minute to see if that is
   // unblocked is only a timer firing and not an actual query to the server.
-  ScheduleModelsFetch();
+  prediction_model_fetch_timer_.SchedulePeriodicModelsFetch();
 }
 
 void PredictionManager::OnModelsFetched(
@@ -478,6 +480,7 @@ void PredictionManager::OnModelsFetched(
     absl::optional<std::unique_ptr<proto::GetModelsResponse>>
         get_models_response_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(store_is_ready_);
   if (!get_models_response_data) {
     for (const auto& model_info : models_request_info) {
       RecordLifecycleState(model_info.optimization_target(),
@@ -485,7 +488,6 @@ void PredictionManager::OnModelsFetched(
     }
     return;
   }
-  SetLastModelFetchSuccessTime(clock_->Now());
 
   if ((*get_models_response_data)->models_size() > 0 ||
       models_request_info.size() > 0) {
@@ -493,8 +495,9 @@ void PredictionManager::OnModelsFetched(
                            (*get_models_response_data)->models());
   }
 
-  fetch_timer_.Stop();
-  ScheduleModelsFetch();
+  prediction_model_fetch_timer_.NotifyModelFetchSuccess();
+  prediction_model_fetch_timer_.Stop();
+  prediction_model_fetch_timer_.SchedulePeriodicModelsFetch();
 }
 
 void PredictionManager::UpdateModelMetadata(
@@ -811,8 +814,11 @@ void PredictionManager::MaybeInitializeModelDownloads(
   }
 
   // Only load models if there are optimization targets registered.
-  if (!registered_optimization_targets_and_metadata_.empty())
-    MaybeScheduleFirstModelFetch();
+  if (!registered_optimization_targets_and_metadata_.empty() &&
+      ShouldFetchModels(off_the_record_,
+                        component_updates_enabled_provider_.Run())) {
+    prediction_model_fetch_timer_.MaybeScheduleFirstModelFetch();
+  }
 }
 
 void PredictionManager::OnStoreInitialized(
@@ -1036,70 +1042,10 @@ void PredictionManager::StoreLoadedModelInfo(
                                                        std::move(model_info));
 }
 
-void PredictionManager::MaybeScheduleFirstModelFetch() {
-  if (!ShouldFetchModels(off_the_record_,
-                         component_updates_enabled_provider_.Run())) {
-    return;
-  }
-
-  // Add a slight delay to allow the rest of the browser startup process to
-  // finish up.
-  fetch_timer_.Start(FROM_HERE, features::PredictionModelFetchStartupDelay(),
-                     base::BindOnce(&PredictionManager::FetchModels,
-                                    base::Unretained(this), true));
-}
-
-base::Time PredictionManager::GetLastFetchAttemptTime() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-      pref_service_->GetInt64(prefs::kModelAndFeaturesLastFetchAttempt)));
-}
-
-base::Time PredictionManager::GetLastFetchSuccessTime() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-      pref_service_->GetInt64(prefs::kModelLastFetchSuccess)));
-}
-
-void PredictionManager::ScheduleModelsFetch() {
-  DCHECK(!fetch_timer_.IsRunning());
-  DCHECK(store_is_ready_);
-  const base::TimeDelta time_until_update_time =
-      GetLastFetchSuccessTime() + features::PredictionModelFetchInterval() -
-      clock_->Now();
-  const base::TimeDelta time_until_retry =
-      GetLastFetchAttemptTime() + features::PredictionModelFetchRetryDelay() -
-      clock_->Now();
-  base::TimeDelta fetcher_delay =
-      std::max(time_until_update_time, time_until_retry);
-  if (fetcher_delay <= base::TimeDelta()) {
-    fetch_timer_.Start(FROM_HERE, RandomFetchDelay(),
-                       base::BindOnce(&PredictionManager::FetchModels,
-                                      base::Unretained(this), false));
-    return;
-  }
-  fetch_timer_.Start(FROM_HERE, fetcher_delay, this,
-                     &PredictionManager::ScheduleModelsFetch);
-}
-
-void PredictionManager::SetLastModelFetchAttemptTime(
-    base::Time last_attempt_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(
-      prefs::kModelAndFeaturesLastFetchAttempt,
-      last_attempt_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-}
-
-void PredictionManager::SetLastModelFetchSuccessTime(
-    base::Time last_success_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(
-      prefs::kModelLastFetchSuccess,
-      last_success_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-}
-
 void PredictionManager::SetClockForTesting(const base::Clock* clock) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   clock_ = clock;
+  prediction_model_fetch_timer_.SetClockForTesting(clock);  // IN-TEST
 }
 
 base::FilePath PredictionManager::GetBaseModelDirForDownload(

@@ -537,6 +537,18 @@ base::TimeDelta PredictionModelFetchInterval() {
       kOptimizationTargetPrediction, "fetch_interval_hours", 24));
 }
 
+bool IsPredictionModelNewRegistrationFetchEnabled() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOptimizationGuideInstallWideModelStore, "new_registration_fetch_enabled",
+      true);
+}
+
+base::TimeDelta PredictionModelNewRegistrationFetchDelay() {
+  return base::Seconds(GetFieldTrialParamByFeatureAsInt(
+      kOptimizationGuideInstallWideModelStore,
+      "new_registration_fetch_delay_secs", 30));
+}
+
 bool IsModelExecutionWatchdogEnabled() {
   return base::FeatureList::IsEnabled(kPreventLongRunningPredictionModels);
 }

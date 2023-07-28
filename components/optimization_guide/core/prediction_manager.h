@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/prediction_model_download_observer.h"
+#include "components/optimization_guide/core/prediction_model_fetch_timer.h"
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -41,7 +42,6 @@ class PrefService;
 
 namespace optimization_guide {
 
-enum class OptimizationGuideDecision;
 class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
 class PredictionModelDownloadManager;
@@ -173,9 +173,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Called to make a request to fetch models from the remote Optimization Guide
   // Service. Used to fetch models for the registered optimization targets.
-  // |is_first_model_fetch| indicates whether this is the first model fetch
-  // happening at startup, and is used to record metrics.
-  void FetchModels(bool is_first_model_fetch);
+  void FetchModels();
 
   // Callback when the models have been fetched from the remote Optimization
   // Guide Service and are ready for parsing. Processes the prediction models in
@@ -355,9 +353,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // is launched.
   base::TimeTicks init_time_;
 
-  // The timer used to schedule fetching prediction models and host model
-  // features from the remote Optimization Guide Service.
-  base::OneShotTimer fetch_timer_;
+  PredictionModelFetchTimer prediction_model_fetch_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.

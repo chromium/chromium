@@ -221,6 +221,16 @@ base::TimeDelta PredictionModelFetchStartupDelay();
 // refresh models.
 base::TimeDelta PredictionModelFetchInterval();
 
+// Returns whether to enable fetching the model again when a new optimization
+// target observer registration happens, after the initial model fetch is
+// completed.
+bool IsPredictionModelNewRegistrationFetchEnabled();
+
+// Returns the time to wait for starting a model fetch when a new optimization
+// target observer registration happens, after the initial model fetch is
+// completed.
+base::TimeDelta PredictionModelNewRegistrationFetchDelay();
+
 // Whether to use the model execution watchdog.
 bool IsModelExecutionWatchdogEnabled();
 
