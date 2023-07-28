@@ -80,6 +80,8 @@
     return;
   }
 
+  self.viewController.parentViewControllerHeight =
+      self.baseViewController.view.frame.size.height;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];

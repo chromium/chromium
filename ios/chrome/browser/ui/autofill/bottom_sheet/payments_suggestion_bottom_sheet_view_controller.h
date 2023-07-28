@@ -28,6 +28,9 @@ class GURL;
 // The delegate for the bottom sheet view controller.
 @property(nonatomic, strong) id<PaymentsSuggestionBottomSheetDelegate> delegate;
 
+// Height of the parent view controller.
+@property(nonatomic, assign) CGFloat parentViewControllerHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_VIEW_CONTROLLER_H_

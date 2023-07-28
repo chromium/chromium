@@ -123,18 +123,29 @@ CGFloat const kSpacing = 10;
   }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewIsAppearing:(BOOL)animated {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
+  [super viewIsAppearing:animated];
+#endif
+
+  BOOL useMinimizedState = _tableViewIsMinimized;
+
   if (_creditCardData.count) {
     [self.view layoutIfNeeded];
-    CGFloat fullHeight = [self tableViewHeight];
+    CGFloat fullHeight =
+        [self computeTableViewHeightForCellCount:_creditCardData.count];
     if (fullHeight > 0) {
-      // Update height constraint for the table view.
+      // Update height constraints for the table view.
       _heightConstraint.constant = fullHeight;
 
-      // TODO(crbug.com/1462643): Verify if the full height is larger than the
-      // whole screen. If so, use the full height here too.
+      NSUInteger minimizedCount =
+          _creditCardData.count <= 2 ? _creditCardData.count : 2;
       _minimizedHeightConstraint.constant =
-          (fullHeight / _creditCardData.count) * 2.5;
+          [self computeTableViewHeightForCellCount:minimizedCount];
+
+      // Do not use minized state if it is larger than the superview height.
+      useMinimizedState &=
+          [self initialHeight] < self.parentViewControllerHeight;
     }
   }
 
@@ -147,7 +158,7 @@ CGFloat const kSpacing = 10;
   // Setup the minimized height (if the user has more than 2 credit cards).
   NSMutableArray* currentDetents = [[NSMutableArray alloc] init];
   if (@available(iOS 16, *)) {
-    if (_tableViewIsMinimized) {
+    if (useMinimizedState) {
       CGFloat bottomSheetHeight = [self initialHeight];
       auto detentBlock = ^CGFloat(
           id<UISheetPresentationControllerDetentResolutionContext> context) {
@@ -184,7 +195,7 @@ CGFloat const kSpacing = 10;
     [currentDetents addObject:customDetentExpand];
     presentationController.detents = [currentDetents copy];
     presentationController.selectedDetentIdentifier =
-        _tableViewIsMinimized ? @"customDetent" : @"customDetentExpand";
+        useMinimizedState ? @"customDetent" : @"customDetentExpand";
   }
 }
 
@@ -250,30 +261,7 @@ CGFloat const kSpacing = 10;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewDetailIconCell* cell =
       [tableView dequeueReusableCellWithIdentifier:@"cell"];
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  cell.userInteractionEnabled = YES;
-
-  cell.textLabel.text = [self suggestionAtRow:indexPath.row];
-  [cell setDetailText:[self descriptionAtRow:indexPath.row]];
-  [cell setIconImage:[self iconAtRow:indexPath.row]
-            tintColor:nil
-      backgroundColor:cell.backgroundColor
-         cornerRadius:kCreditCardIconCornerRadius];
-  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
-
-  // Make separator invisible on last cell
-  CGFloat separatorLeftMargin = [self isLastRow:indexPath]
-                                    ? tableView.bounds.size.width
-                                    : kTableViewHorizontalSpacing;
-  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
-
-  if (_creditCardData.count > 1 && [self selectedRow] == indexPath.row) {
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-  } else {
-    cell.accessoryType = UITableViewCellAccessoryNone;
-  }
-  return cell;
+  return [self layoutCell:cell forTableView:tableView atIndexPath:indexPath];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -340,7 +328,8 @@ CGFloat const kSpacing = 10;
       forCellReuseIdentifier:@"cell"];
 
   _minimizedHeightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] * 2.5];
+      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
+                                [self initialNumberOfVisibleCells]];
   _minimizedHeightConstraint.priority = UILayoutPriorityDefaultLow;
   _heightConstraint = [tableView.heightAnchor
       constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
@@ -409,6 +398,56 @@ CGFloat const kSpacing = 10;
 
 - (CGFloat)initialNumberOfVisibleCells {
   return 2.5;
+}
+
+// Mocks the cells to calculate the real table view height.
+- (CGFloat)computeTableViewHeightForCellCount:(NSUInteger)count {
+  CGFloat height = 0;
+  for (NSUInteger i = 0; i < count; i++) {
+    TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
+    // Setup UI same as real cell.
+    cell = [self layoutCell:cell
+               forTableView:[self tableView]
+                atIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+    CGFloat cellHeight =
+        [cell systemLayoutSizeFittingSize:CGSizeMake(
+                                              [self tableView].frame.size.width,
+                                              1)]
+            .height;
+    height += cellHeight;
+  }
+  return height;
+}
+
+// Layouts the cell for the table view with the payment info at the specific
+// index path.
+- (TableViewDetailIconCell*)layoutCell:(TableViewDetailIconCell*)cell
+                          forTableView:(UITableView*)tableView
+                           atIndexPath:(NSIndexPath*)indexPath {
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  cell.userInteractionEnabled = YES;
+
+  cell.textLabel.text = [self suggestionAtRow:indexPath.row];
+  [cell setDetailText:[self descriptionAtRow:indexPath.row]];
+  [cell setIconImage:[self iconAtRow:indexPath.row]
+            tintColor:nil
+      backgroundColor:cell.backgroundColor
+         cornerRadius:kCreditCardIconCornerRadius];
+  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
+
+  // Make separator invisible on last cell
+  CGFloat separatorLeftMargin = [self isLastRow:indexPath]
+                                    ? tableView.bounds.size.width
+                                    : kTableViewHorizontalSpacing;
+  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
+
+  if (_creditCardData.count > 1 && [self selectedRow] == indexPath.row) {
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+  } else {
+    cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  return cell;
 }
 
 @end

@@ -27,8 +27,11 @@
 // Returns the currently selected row.
 - (NSInteger)selectedRow;
 
-// Return the height of the table view.
+// Returns the height of the table view.
 - (CGFloat)tableViewHeight;
+
+// Returns the table view.
+- (UITableView*)tableView;
 
 // Select the first row in the table view.
 - (void)selectFirstRow;

@@ -136,6 +136,10 @@ CGFloat const kInitialHeightPadding = 5;
   return _tableView.contentSize.height;
 }
 
+- (UITableView*)tableView {
+  return _tableView;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
