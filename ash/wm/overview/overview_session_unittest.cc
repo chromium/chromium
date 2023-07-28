@@ -4240,13 +4240,13 @@ TEST_F(ClamshellScrollOverviewSessionTest, CheckManyWindowsOffScreen) {
 
   // `item9` should not be within `screen_bounds` but it should have an
   // x value within `screen_bounds`.
-  EXPECT_FALSE(screen_bounds.Contains(item8_bounds));
+  EXPECT_FALSE(screen_bounds.Contains(item9_bounds));
   EXPECT_GT(item9_bounds.x(), screen_bounds.x());
   EXPECT_LT(item9_bounds.x(), screen_bounds.x() + screen_bounds.width());
 
   // `item8` should not be within `screen_bounds` but it should have an
   // x value within `screen_bounds`.
-  EXPECT_FALSE(screen_bounds.Contains(item9_bounds));
+  EXPECT_FALSE(screen_bounds.Contains(item8_bounds));
   EXPECT_GT(item8_bounds.x(), screen_bounds.x());
   EXPECT_LT(item8_bounds.x(), screen_bounds.x() + screen_bounds.width());
 }
@@ -4381,6 +4381,10 @@ TEST_F(ClamshellScrollOverviewSessionTest,
   auto active_window = CreateAppWindow();
   auto minimized_window = CreateAppWindow();
   auto floated_window = CreateAppWindow();
+
+  // Confirm minimized window.
+  WindowState::Get(minimized_window.get())->Minimize();
+  ASSERT_TRUE(WindowState::Get(minimized_window.get())->IsMinimized());
 
   // Confirm floated window.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
