@@ -87,14 +87,11 @@ base::FilePath GetCachePath(const base::FilePath& base) {
 }  // namespace
 
 ChromeBrowserStateImpl::ChromeBrowserStateImpl(
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    const base::FilePath& path)
-    : ChromeBrowserState(std::move(io_task_runner)),
-      state_path_(path),
+    const base::FilePath& state_path,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    : ChromeBrowserState(state_path, std::move(io_task_runner)),
       pref_registry_(new user_prefs::PrefRegistrySyncable),
       io_data_(new ChromeBrowserStateImplIOData::Handle(this)) {
-  otr_state_path_ = state_path_.Append(FILE_PATH_LITERAL("OTR"));
-
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 
@@ -102,10 +99,10 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   // the cache directory depends on the browser state stash directory, which
   // isn't available to PathService.
   base::FilePath base_cache_path;
-  ios::GetUserCacheDirectory(state_path_, &base_cache_path);
+  ios::GetUserCacheDirectory(state_path, &base_cache_path);
 
   bool directories_created = EnsureBrowserStateDirectoriesCreated(
-      state_path_, otr_state_path_, base_cache_path);
+      state_path, GetOffTheRecordStatePath(), base_cache_path);
   DCHECK(directories_created);
 
   // Bring up the policy system before creating `prefs_`.
@@ -118,7 +115,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   // Create the UserCloudPolicyManager and force it to load immediately since
   // BrowserState is loaded synchronously.
   user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
-      GetStatePath(), policy_schema_registry_.get(),
+      state_path, policy_schema_registry_.get(),
       /*force_immediate_load=*/true, GetIOTaskRunner(),
       base::BindRepeating(&ApplicationContext::GetNetworkConnectionTracker,
                           base::Unretained(GetApplicationContext())));
@@ -142,7 +139,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   }
 
   prefs_ = CreateBrowserStatePrefs(
-      state_path_, GetIOTaskRunner().get(), pref_registry_,
+      state_path, GetIOTaskRunner().get(), pref_registry_,
       policy_connector_ ? policy_connector_->GetPolicyService() : nullptr,
       GetApplicationContext()->GetBrowserPolicyConnector(),
       supervised_user_prefs);
@@ -164,20 +161,20 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
       SupervisedUserSettingsServiceFactory::GetForBrowserState(this);
 
   // Initialize the settings service and have the pref store subscribe to it.
-  supervised_user_settings->Init(state_path_, GetIOTaskRunner(),
+  supervised_user_settings->Init(state_path, GetIOTaskRunner(),
                                  /*load_synchronously=*/true);
 
   if (supervised_user::IsChildAccountSupervisionEnabled()) {
     supervised_user_prefs->Init(supervised_user_settings);
   }
 
-  base::FilePath cookie_path = state_path_.Append(kIOSChromeCookieFilename);
+  base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);
   base::FilePath cache_path = GetCachePath(base_cache_path);
   int cache_max_size = 0;
 
   // Make sure we initialize the io_data_ after everything else has been
   // initialized that we might be reading from the IO thread.
-  io_data_->Init(cookie_path, cache_path, cache_max_size, state_path_);
+  io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
 
   // Listen for bookmark model load, to bootstrap the sync service.
   // TODO(crbug.com/1427452): See if BookmarkModelLoadedObserver can be removed.
@@ -220,7 +217,7 @@ ChromeBrowserState*
 ChromeBrowserStateImpl::GetOffTheRecordChromeBrowserState() {
   if (!otr_state_) {
     otr_state_.reset(new OffTheRecordChromeBrowserStateImpl(
-        GetIOTaskRunner(), this, otr_state_path_));
+        GetIOTaskRunner(), this, GetOffTheRecordStatePath()));
   }
 
   return otr_state_.get();
@@ -253,10 +250,6 @@ ChromeBrowserStateImpl::GetSyncablePrefs() {
 
 bool ChromeBrowserStateImpl::IsOffTheRecord() const {
   return false;
-}
-
-base::FilePath ChromeBrowserStateImpl::GetStatePath() const {
-  return state_path_;
 }
 
 void ChromeBrowserStateImpl::SetOffTheRecordChromeBrowserState(

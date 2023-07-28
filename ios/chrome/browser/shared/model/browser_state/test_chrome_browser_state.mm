@@ -39,9 +39,10 @@
 #endif
 
 TestChromeBrowserState::TestChromeBrowserState(
+    const base::FilePath& state_path,
     TestChromeBrowserState* original_browser_state,
     TestingFactories testing_factories)
-    : ChromeBrowserState(original_browser_state->GetIOTaskRunner()),
+    : ChromeBrowserState(state_path, original_browser_state->GetIOTaskRunner()),
       testing_prefs_(nullptr),
       otr_browser_state_(nullptr),
       original_browser_state_(original_browser_state) {
@@ -59,15 +60,16 @@ TestChromeBrowserState::TestChromeBrowserState(
 }
 
 TestChromeBrowserState::TestChromeBrowserState(
-    const base::FilePath& path,
+    const base::FilePath& state_path,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     RefcountedTestingFactories refcounted_testing_factories,
     std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager)
-    : ChromeBrowserState(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      state_path_(path),
+    : ChromeBrowserState(
+          state_path,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       prefs_(std::move(prefs)),
       testing_prefs_(nullptr),
       user_cloud_policy_manager_(std::move(user_cloud_policy_manager)),
@@ -118,14 +120,6 @@ void TestChromeBrowserState::Init() {
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
          web::WebThread::CurrentlyOn(web::WebThread::UI));
 
-  if (state_path_.empty()) {
-    state_path_ = base::CreateUniqueTempDirectoryScopedToTest();
-  }
-
-  if (IsOffTheRecord()) {
-    state_path_ = state_path_.Append(FILE_PATH_LITERAL("OTR"));
-  }
-
   if (!base::PathExists(state_path_)) {
     base::CreateDirectory(state_path_);
   }
@@ -175,19 +169,6 @@ bool TestChromeBrowserState::IsOffTheRecord() const {
   return original_browser_state_ != nullptr;
 }
 
-base::FilePath TestChromeBrowserState::GetStatePath() const {
-  if (!IsOffTheRecord()) {
-    return state_path_;
-  }
-
-  base::FilePath otr_stash_state_path =
-      state_path_.Append(FILE_PATH_LITERAL("OTR"));
-  if (!base::PathExists(otr_stash_state_path)) {
-    base::CreateDirectory(otr_stash_state_path);
-  }
-  return otr_stash_state_path;
-}
-
 scoped_refptr<base::SequencedTaskRunner>
 TestChromeBrowserState::GetIOTaskRunner() {
   return base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -222,7 +203,8 @@ TestChromeBrowserState::CreateOffTheRecordBrowserStateWithTestingFactories(
     TestingFactories testing_factories) {
   DCHECK(!IsOffTheRecord());
   DCHECK(!otr_browser_state_);
-  otr_browser_state_.reset(new TestChromeBrowserState(this, testing_factories));
+  otr_browser_state_.reset(new TestChromeBrowserState(
+      GetOffTheRecordStatePath(), this, testing_factories));
   otr_browser_state_->Init();
   return otr_browser_state_.get();
 }
@@ -323,6 +305,13 @@ std::unique_ptr<TestChromeBrowserState>
 TestChromeBrowserState::Builder::Build() {
   DCHECK(!build_called_);
   build_called_ = true;
+
+  // Ensure that `state_path_` is not empty, creating a new temporary
+  // directory if needed.
+  if (state_path_.empty()) {
+    state_path_ = base::CreateUniqueTempDirectoryScopedToTest();
+  }
+
   return base::WrapUnique(new TestChromeBrowserState(
       state_path_, std::move(pref_service_), std::move(testing_factories_),
       std::move(refcounted_testing_factories_), std::move(policy_connector_),

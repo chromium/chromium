@@ -150,7 +150,7 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserState(
           {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
 
   std::unique_ptr<ChromeBrowserStateImpl> browser_state_impl(
-      new ChromeBrowserStateImpl(io_task_runner, path));
+      new ChromeBrowserStateImpl(path, io_task_runner));
   DCHECK(!browser_state_impl->IsOffTheRecord());
 
   std::pair<ChromeBrowserStateImplPathMap::iterator, bool> insert_result =

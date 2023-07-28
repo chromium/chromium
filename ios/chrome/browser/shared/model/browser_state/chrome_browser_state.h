@@ -126,19 +126,26 @@ class ChromeBrowserState : public web::BrowserState {
   // Returns a weak pointer to the current instance.
   virtual base::WeakPtr<ChromeBrowserState> AsWeakPtr() = 0;
 
+  // Returns the path where the off-the-record BrowserState data is stored.
+  // If the BrowserState is off-the-record, this is equal to GetStatePath().
+  base::FilePath GetOffTheRecordStatePath() const;
+
   // web::BrowserState
-  net::URLRequestContextGetter* GetRequestContext() override;
+  base::FilePath GetStatePath() const final;
+  net::URLRequestContextGetter* GetRequestContext() final;
   void UpdateCorsExemptHeader(
-      network::mojom::NetworkContextParams* params) override;
+      network::mojom::NetworkContextParams* params) final;
 
  protected:
   explicit ChromeBrowserState(
+      const base::FilePath& state_path,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
  private:
   friend class ::TestChromeBrowserState;
   friend class ::TestChromeBrowserStateManager;
 
+  base::FilePath const state_path_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
 };

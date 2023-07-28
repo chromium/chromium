@@ -47,7 +47,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
 
   // BrowserState:
   bool IsOffTheRecord() const override;
-  base::FilePath GetStatePath() const override;
 
   // ChromeBrowserState:
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
@@ -146,10 +145,12 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     RefcountedTestingFactories refcounted_testing_factories_;
   };
 
- protected:
+ private:
+  friend class Builder;
+
   // Used to create the principal TestChromeBrowserState.
   TestChromeBrowserState(
-      const base::FilePath& path,
+      const base::FilePath& state_path,
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
       TestingFactories testing_factories,
       RefcountedTestingFactories refcounted_testing_factories,
@@ -157,20 +158,15 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       std::unique_ptr<policy::UserCloudPolicyManager>
           user_cloud_policy_manager);
 
- private:
-  friend class Builder;
-
   // Used to create the incognito TestChromeBrowserState.
-  TestChromeBrowserState(TestChromeBrowserState* original_browser_state,
+  TestChromeBrowserState(const base::FilePath& state_path,
+                         TestChromeBrowserState* original_browser_state,
                          TestingFactories testing_factories);
 
   // Initialization of the TestChromeBrowserState. This is a separate method
   // as it needs to be called after the bi-directional link between original
   // and off-the-record TestChromeBrowserState has been created.
   void Init();
-
-  // The path to this browser state.
-  base::FilePath state_path_;
 
   // If non-null, `testing_prefs_` points to `prefs_`. It is there to avoid
   // casting as `prefs_` may not be a TestingPrefServiceSyncable.
