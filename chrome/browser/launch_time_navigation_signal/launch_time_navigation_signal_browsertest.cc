@@ -125,9 +125,23 @@ class LaunchNavigationBrowserTest
         expected_system_entropy);
   }
 
-  void CheckActivePageUseCounterCount(int expected_count) {
-    CheckUseCounterCountForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents(), expected_count);
+  void CheckUseCounterCount(int expected_count) {
+    // Fetch the Blink.UseCounter.Features histogram in every renderer process
+    // until reaching, but not exceeding, `expected_count`.
+    while (true) {
+      content::FetchHistogramsFromChildProcesses();
+      metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+      int count = histogram_tester_.GetBucketCount(
+          "Blink.UseCounter.Features",
+          blink::mojom::WebFeature::kPerformanceNavigateSystemEntropy);
+      CHECK_LE(count, expected_count);
+      if (count == expected_count) {
+        return;
+      }
+
+      base::PlatformThread::Sleep(base::Milliseconds(5));
+    }
   }
 
   void CheckPageSystemEntropyAt(int tab_index,
@@ -167,18 +181,6 @@ class LaunchNavigationBrowserTest
   }
 
  private:
-  void CheckUseCounterCountForWebContents(
-      content::WebContents* const web_contents,
-      int expected_count) {
-    // Navigate away in order to flush use counters.
-    ASSERT_TRUE(
-        content::NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
-    histogram_tester_.ExpectBucketCount(
-        "Blink.UseCounter.Features",
-        blink::mojom::WebFeature::kPerformanceNavigateSystemEntropy,
-        expected_count);
-  }
-
   virtual void SetLaunchUrls(base::CommandLine*) = 0;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -206,15 +208,15 @@ IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserBasicTest, CmdLineLaunch) {
   }
 
   CheckActivePageSystemEntropy(expected_system_entropy[0]);
-  CheckActivePageUseCounterCount(expected_usecounter_count[0]);
+  CheckUseCounterCount(expected_usecounter_count[0]);
 
   Navigate("/page_with_image.html");
   CheckActivePageSystemEntropy(expected_system_entropy[1]);
-  CheckActivePageUseCounterCount(expected_usecounter_count[1]);
+  CheckUseCounterCount(expected_usecounter_count[1]);
 
   Navigate("/hello.html");
   CheckActivePageSystemEntropy(expected_system_entropy[2]);
-  CheckActivePageUseCounterCount(expected_usecounter_count[2]);
+  CheckUseCounterCount(expected_usecounter_count[2]);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -289,15 +291,15 @@ IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserRestartTest,
 
   Navigate("/hello.html");
   CheckActivePageSystemEntropy(expected_system_entropy[0]);
-  CheckActivePageUseCounterCount(expected_usecounter_count[0]);
+  CheckUseCounterCount(expected_usecounter_count[0]);
 
   Navigate("/page_with_image.html");
   CheckActivePageSystemEntropy(expected_system_entropy[1]);
-  CheckActivePageUseCounterCount(expected_usecounter_count[1]);
+  CheckUseCounterCount(expected_usecounter_count[1]);
 
   Navigate("/hello.html");
   CheckActivePageSystemEntropy(expected_system_entropy[2]);
-  CheckActivePageUseCounterCount(expected_usecounter_count[2]);
+  CheckUseCounterCount(expected_usecounter_count[2]);
 
   // Set browser startup behavior here for the non-PRE split test.
   browser()->profile()->GetPrefs()->SetInteger(
@@ -309,9 +311,8 @@ IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserRestartTest,
 }
 
 // We attempt to restart the browser in this test body.
-// Flaky. See http://crbug.com/1448030.
 IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserRestartTest,
-                       DISABLED_CmdLineURLRestartTest) {
+                       CmdLineURLRestartTest) {
   const ParamType& test_params = GetParam();
   const size_t expected_initial_tab_count = GetExpectedTabCountFromRestore();
   const bool expect_valid_system_entropy =
