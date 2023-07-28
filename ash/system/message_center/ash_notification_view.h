@@ -148,6 +148,11 @@ class ASH_EXPORT AshNotificationView
 
   bool disable_expand_collapse_for_test() { return disable_expand_collapse_; }
 
+  message_center::NotificationControlButtonsView*
+  control_buttons_view_for_test() {
+    return control_buttons_view_;
+  }
+
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
   class GroupedNotificationsContainer : public views::BoxLayoutView {

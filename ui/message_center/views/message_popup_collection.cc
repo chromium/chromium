@@ -48,7 +48,7 @@ MessagePopupCollection::~MessagePopupCollection() {
   // Ignore calls to update which can cause crashes.
   is_updating_ = true;
   for (const auto& item : popup_items_)
-    item.popup->Close();
+    ClosePopupItem(item);
 }
 
 void MessagePopupCollection::Update() {
@@ -302,6 +302,10 @@ bool MessagePopupCollection::IsNextEdgeOutsideWorkArea(
   const gfx::Rect work_area = GetWorkArea();
   return IsTopDown() ? next_edge > work_area.bottom()
                      : next_edge < work_area.y();
+}
+
+void MessagePopupCollection::ClosePopupItem(const PopupItem& item) {
+  item.popup->Close();
 }
 
 void MessagePopupCollection::MoveDownPopups() {
@@ -558,7 +562,7 @@ bool MessagePopupCollection::AddPopup() {
     item.popup = CreatePopup(*new_notification);
 
     if (IsNextEdgeOutsideWorkArea(item)) {
-      item.popup->Close();
+      ClosePopupItem(item);
       return false;
     }
 
@@ -613,7 +617,7 @@ void MessagePopupCollection::CloseAnimatingPopups() {
   for (auto& item : popup_items_) {
     if (!item.is_animating)
       continue;
-    item.popup->Close();
+    ClosePopupItem(item);
   }
   RemoveClosedPopupItems();
 }
@@ -623,7 +627,7 @@ bool MessagePopupCollection::CloseTransparentPopups() {
   for (auto& item : popup_items_) {
     if (item.popup->GetOpacity() > 0.0)
       continue;
-    item.popup->Close();
+    ClosePopupItem(item);
     removed = true;
   }
   RemoveClosedPopupItems();
@@ -635,7 +639,7 @@ void MessagePopupCollection::ClosePopupsOutsideWorkArea() {
   for (auto& item : popup_items_) {
     if (work_area.Contains(item.bounds))
       continue;
-    item.popup->Close();
+    ClosePopupItem(item);
   }
   RemoveClosedPopupItems();
 }

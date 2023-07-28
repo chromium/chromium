@@ -49,6 +49,7 @@
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
 #include "url/gurl.h"
@@ -1296,6 +1297,83 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleAndSlider) {
   // Baseline offset should be set to be on top of the bubble again.
   EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
             popup_collection->baseline_offset_for_test());
+}
+
+// b/291988617
+TEST_P(AshMessagePopupCollectionTest, QsBubbleNotCloseWhenPopupClose) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  // Create a window to simulate the step from b/291988617.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
+
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
+  auto id = AddNotification();
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+  auto* popup = popup_collection->GetPopupViewForNotificationID(id);
+
+  ASSERT_TRUE(unified_system_tray->bubble());
+  ASSERT_TRUE(popup);
+
+  AnimateUntilIdle();
+
+  // Click the notification close button, the popup should disappear. However,
+  // the bubble show still remain open.
+  LeftClickOn(static_cast<AshNotificationView*>(popup->message_view())
+                  ->control_buttons_view_for_test()
+                  ->close_button());
+
+  AnimateUntilIdle();
+
+  EXPECT_FALSE(popup_collection->GetPopupViewForNotificationID(id));
+  EXPECT_TRUE(unified_system_tray->bubble());
+}
+
+// Same as the above test. But now test with a bubble created by
+// `TrayBubbleWrapper` instead of the QS bubble. We will use Phone Hub bubble in
+// this case.
+TEST_P(AshMessagePopupCollectionTest, BubbleNotCloseWhenPopupClose) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  // Update display so that notification fit on top of phone hub bubble.
+  UpdateDisplay("1001x900");
+
+  phone_hub_manager()->fake_feature_status_provider()->SetStatus(
+      phonehub::FeatureStatus::kEnabledAndConnected);
+  auto* phone_hub_tray =
+      GetPrimaryShelf()->status_area_widget()->phone_hub_tray();
+  phone_hub_tray->SetPhoneHubManager(phone_hub_manager());
+  ASSERT_TRUE(phone_hub_tray->GetVisible());
+
+  phone_hub_tray->ShowBubble();
+
+  auto id = AddNotification();
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+  auto* popup = popup_collection->GetPopupViewForNotificationID(id);
+
+  ASSERT_TRUE(phone_hub_tray->GetBubbleView());
+  ASSERT_TRUE(popup);
+
+  AnimateUntilIdle();
+
+  // Click the notification close button, the popup should disappear. However,
+  // the bubble show still remain open.
+  LeftClickOn(static_cast<AshNotificationView*>(popup->message_view())
+                  ->control_buttons_view_for_test()
+                  ->close_button());
+
+  AnimateUntilIdle();
+
+  EXPECT_FALSE(popup_collection->GetPopupViewForNotificationID(id));
+  EXPECT_TRUE(phone_hub_tray->GetBubbleView());
 }
 
 }  // namespace ash

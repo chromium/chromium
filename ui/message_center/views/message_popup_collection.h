@@ -178,6 +178,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Returns true if the edge is outside work area.
   bool IsNextEdgeOutsideWorkArea(const PopupItem& item) const;
 
+  // Called to close a particular popup item.
+  virtual void ClosePopupItem(const PopupItem& item);
+
   // Marks `is_animating` flag of all popups for `MOVE_DOWN` animation.
   void MoveDownPopups();
 

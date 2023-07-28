@@ -22,6 +22,7 @@
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
@@ -265,6 +266,14 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
       MessageViewFactory::Create(notification, /*shown_in_popup=*/true)
           .release(),
       this, a11_feedback_on_init);
+}
+
+void AshMessagePopupCollection::ClosePopupItem(const PopupItem& item) {
+  // We lock closing tray bubble here to prevent a bubble close when popup item
+  // is removed (b/291988617).
+  auto lock = TrayBackgroundView::DisableCloseBubbleOnWindowActivated();
+
+  message_center::MessagePopupCollection::ClosePopupItem(item);
 }
 
 void AshMessagePopupCollection::OnTabletModeStarted() {

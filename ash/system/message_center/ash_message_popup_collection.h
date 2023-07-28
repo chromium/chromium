@@ -89,6 +89,7 @@ class ASH_EXPORT AshMessagePopupCollection
   void AnimationFinished() override;
   message_center::MessagePopupView* CreatePopup(
       const message_center::Notification& notification) override;
+  void ClosePopupItem(const PopupItem& item) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
