@@ -77,11 +77,11 @@ BASE_FEATURE(kIWAForTelemetryExtensionAPI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Jelly features. go/jelly-flags
-BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Jellyroll features. Jellyroll is a feature flag for CrOSNext, which
 // controls all system UI updates and new system components. go/jelly-flags
-BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
@@ -138,9 +138,9 @@ bool IsJellyEnabled() {
 }
 
 bool IsJellyrollEnabled() {
-  // Force Jellyroll features on if Jelly is enabled since they need to be
-  // tested together. b/270742469
-  return IsJellyEnabled() || base::FeatureList::IsEnabled(kJellyroll);
+  // Only enable Jellyroll if Jelly is also enabled as this is how tests expect
+  // this to behave.
+  return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {
