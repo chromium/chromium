@@ -24,6 +24,7 @@
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -37,8 +38,8 @@
 namespace {
 
 ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
-    ThemeService::BrowserColorVariant color_variant) {
-  using BCV = ThemeService::BrowserColorVariant;
+    ui::mojom::BrowserColorVariant color_variant) {
+  using BCV = ui::mojom::BrowserColorVariant;
   using SV = ui::ColorProviderKey::SchemeVariant;
   static constexpr auto kSchemeVariantMap = base::MakeFixedFlatMap<BCV, SV>({
       {BCV::kTonalSpot, SV::kTonalSpot},
@@ -185,7 +186,7 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
 
   // Sets the `kBrowserColorVariant` pref for the `profile`.
   void SetBrowserColorVariant(Profile* profile,
-                              ThemeService::BrowserColorVariant color_variant) {
+                              ui::mojom::BrowserColorVariant color_variant) {
     GetThemeService(profile)->SetBrowserColorVariant(color_variant);
   }
 
@@ -386,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
 // pref.
 IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
                        BrowserFrameTracksBrowserColorVariant) {
-  using BCV = ThemeService::BrowserColorVariant;
+  using BCV = ui::mojom::BrowserColorVariant;
 
   // Set the scheme_variant pref to kSystem. The browser should honor this pref.
   views::Widget* browser_frame = GetBrowserFrame(browser());

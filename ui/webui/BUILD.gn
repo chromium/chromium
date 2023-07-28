@@ -39,6 +39,7 @@ static_library("webui") {
       "//ui/webui/resources/cr_components/customize_themes:mojom",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/most_visited:mojom",
+      "//ui/webui/resources/cr_components/theme_color_picker:mojom",
     ]
     sources += [
       "color_change_listener/color_change_handler.cc",

@@ -62,6 +62,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -540,20 +541,21 @@ absl::optional<SkColor> ThemeService::GetUserColor() const {
              : absl::optional<SkColor>(user_color);
 }
 
-void ThemeService::SetBrowserColorVariant(BrowserColorVariant color_variant) {
+void ThemeService::SetBrowserColorVariant(
+    ui::mojom::BrowserColorVariant color_variant) {
   profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
                                    static_cast<int>(color_variant));
   NotifyThemeChanged();
 }
 
-ThemeService::BrowserColorVariant ThemeService::GetBrowserColorVariant() const {
-  return static_cast<BrowserColorVariant>(
+ui::mojom::BrowserColorVariant ThemeService::GetBrowserColorVariant() const {
+  return static_cast<ui::mojom::BrowserColorVariant>(
       profile_->GetPrefs()->GetInteger(prefs::kBrowserColorVariant));
 }
 
 void ThemeService::SetUserColorAndBrowserColorVariant(
     SkColor user_color,
-    BrowserColorVariant color_variant) {
+    ui::mojom::BrowserColorVariant color_variant) {
   ClearThemeData(/*clear_ntp_background=*/false);
   profile_->GetPrefs()->SetInteger(prefs::kUserColor, user_color);
   profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,

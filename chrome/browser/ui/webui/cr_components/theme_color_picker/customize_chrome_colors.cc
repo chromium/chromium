@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_colors.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 
 #include <array>
 #include <utility>
 
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
+#include "ui/base/mojom/themes.mojom.h"
 
 namespace {
 
@@ -39,41 +40,41 @@ const decltype(kDynamicCustomizeChromeColors) kDynamicCustomizeChromeColors =
     std::array<DynamicColorInfo, 13>{
         DynamicColorInfo(SkColorSetRGB(140, 171, 228),
                          IDS_NTP_COLORS_BLUE,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
         DynamicColorInfo(SkColorSetRGB(140, 171, 228),
                          IDS_NTP_COLORS_COOL_GREY,
-                         ThemeService::BrowserColorVariant::kNeutral),
+                         ui::mojom::BrowserColorVariant::kNeutral),
         DynamicColorInfo(SkColorSetRGB(136, 136, 136),
                          IDS_NTP_COLORS_GREY,
-                         ThemeService::BrowserColorVariant::kNeutral),
+                         ui::mojom::BrowserColorVariant::kNeutral),
         DynamicColorInfo(SkColorSetRGB(38, 166, 154),
                          IDS_NTP_COLORS_AQUA,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
         DynamicColorInfo(SkColorSetRGB(0, 255, 0),
                          IDS_NTP_COLORS_GREEN,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
         DynamicColorInfo(SkColorSetRGB(135, 186, 129),
                          IDS_NTP_COLORS_VIRIDIAN,
-                         ThemeService::BrowserColorVariant::kNeutral),
+                         ui::mojom::BrowserColorVariant::kNeutral),
         DynamicColorInfo(SkColorSetRGB(250, 223, 115),
                          IDS_NTP_COLORS_CITRON,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
         DynamicColorInfo(SkColorSetRGB(255, 128, 0),
                          IDS_NTP_COLORS_ORANGE,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
         DynamicColorInfo(SkColorSetRGB(252, 219, 201),
                          IDS_NTP_COLORS_APRICOT,
-                         ThemeService::BrowserColorVariant::kNeutral),
+                         ui::mojom::BrowserColorVariant::kNeutral),
         DynamicColorInfo(SkColorSetRGB(243, 178, 190),
                          IDS_NTP_COLORS_ROSE,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
         DynamicColorInfo(SkColorSetRGB(243, 178, 190),
                          IDS_NTP_COLORS_PINK,
-                         ThemeService::BrowserColorVariant::kNeutral),
+                         ui::mojom::BrowserColorVariant::kNeutral),
         DynamicColorInfo(SkColorSetRGB(255, 0, 255),
                          IDS_NTP_COLORS_FUCHSIA,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
         DynamicColorInfo(SkColorSetRGB(229, 213, 252),
                          IDS_NTP_COLORS_VIOLET,
-                         ThemeService::BrowserColorVariant::kTonalSpot),
+                         ui::mojom::BrowserColorVariant::kTonalSpot),
     };

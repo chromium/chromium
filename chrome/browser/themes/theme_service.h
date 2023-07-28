@@ -21,6 +21,7 @@
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/system_theme.h"
 
@@ -56,16 +57,6 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
     kSystem = 0,
     kLight = 1,
     kDark = 2,
-  };
-
-  // This is stored as an integer in the profile prefs, so entries should not be
-  // renumbered and numeric values should never be reused.
-  enum class BrowserColorVariant {
-    kSystem = 0,
-    kTonalSpot = 1,
-    kNeutral = 2,
-    kVibrant = 3,
-    kExpressive = 4,
   };
 
   // This class keeps track of the number of existing |ThemeReinstaller|
@@ -206,14 +197,14 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   virtual absl::optional<SkColor> GetUserColor() const;
 
   // Sets/gets the browser kSchemeVariant preference.
-  void SetBrowserColorVariant(BrowserColorVariant color_variant);
-  virtual BrowserColorVariant GetBrowserColorVariant() const;
+  void SetBrowserColorVariant(ui::mojom::BrowserColorVariant color_variant);
+  virtual ui::mojom::BrowserColorVariant GetBrowserColorVariant() const;
 
   // Convenience method that allows setting both the kUserColor and
   // kSchemeVariant before propagating theme update notifications.
   virtual void SetUserColorAndBrowserColorVariant(
       SkColor user_color,
-      BrowserColorVariant color_variant);
+      ui::mojom::BrowserColorVariant color_variant);
 
   // Sets/gets the browser grayscale theme preference.
   virtual void SetIsGrayscale(bool is_grayscale);

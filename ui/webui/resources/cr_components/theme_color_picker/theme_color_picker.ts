@@ -1,36 +1,38 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './theme_color.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
-import './color.js';
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
-import './strings.m.js'; // Required by <managed-dialog>.
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ColorElement} from './color.js';
+import {ThemeColorPickerBrowserProxy} from './browser_proxy.js';
 import {Color, ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
-import {getTemplate} from './colors.html.js';
-import {BrowserColorVariant, ChromeColor, Theme} from './customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import {ThemeColorElement} from './theme_color.js';
+import {getTemplate} from './theme_color_picker.html.js';
+import {ChromeColor, Theme} from './theme_color_picker.mojom-webui.js';
 
-export interface ColorsElement {
+const ThemeColorPickerElementBase = I18nMixin(PolymerElement);
+
+export interface ThemeColorPickerElement {
   $: {
     chromeColors: DomRepeat,
     customColorContainer: HTMLElement,
-    customColor: ColorElement,
+    customColor: ThemeColorElement,
     colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
   };
 }
 
-export class ColorsElement extends PolymerElement {
+export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   static get is() {
-    return 'customize-chrome-colors';
+    return 'cr-theme-color-picker';
   }
 
   static get template() {
@@ -58,19 +60,19 @@ export class ColorsElement extends PolymerElement {
         computed: 'computeSelectedColor_(theme_, colors_)',
       },
       isDefaultColorSelected_: {
-        type: Object,
+        type: Boolean,
         computed: 'computeIsDefaultColorSelected_(selectedColor_)',
       },
       isGreyDefaultColorSelected_: {
-        type: Object,
+        type: Boolean,
         computed: 'computeIsGreyDefaultColorSelected_(selectedColor_)',
       },
       isMainColorSelected_: {
-        type: Object,
+        type: Boolean,
         computed: 'computeIsMainColorSelected_(selectedColor_)',
       },
       isCustomColorSelected_: {
-        type: Object,
+        type: Boolean,
         computed: 'computeIsCustomColorSelected_(selectedColor_)',
       },
       customColor_: {
@@ -89,7 +91,11 @@ export class ColorsElement extends PolymerElement {
         type: Boolean,
         computed: 'computeShowCustomColorBackgroundColor_(theme_)',
       },
-      isChromeRefresh2023_: Boolean,
+      isChromeRefresh2023_: {
+        type: Boolean,
+        value: () =>
+            document.documentElement.hasAttribute('chrome-refresh-2023'),
+      },
     };
   }
 
@@ -109,26 +115,19 @@ export class ColorsElement extends PolymerElement {
   private showManagedDialog_: boolean;
   private isChromeRefresh2023_: boolean;
 
-  constructor() {
-    super();
-    this.isChromeRefresh2023_ =
-        loadTimeData.getString('chromeRefresh2023Attribute') ===
-        'chrome-refresh-2023';
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        CustomizeChromeApiProxy.getInstance()
+        ThemeColorPickerBrowserProxy.getInstance()
             .callbackRouter.setTheme.addListener((theme: Theme) => {
               this.theme_ = theme;
             });
-    CustomizeChromeApiProxy.getInstance().handler.updateTheme();
+    ThemeColorPickerBrowserProxy.getInstance().handler.updateTheme();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
+    ThemeColorPickerBrowserProxy.getInstance().callbackRouter.removeListener(
         this.setThemeListenerId_!);
   }
 
@@ -146,8 +145,7 @@ export class ColorsElement extends PolymerElement {
   }
 
   private computeMainColor_(): SkColor|undefined {
-    return this.theme_ && this.theme_.backgroundImage &&
-        this.theme_.backgroundImage.mainColor;
+    return this.theme_ && this.theme_.backgroundImageMainColor;
   }
 
   private computeSelectedColor_(): SelectedColor {
@@ -160,8 +158,8 @@ export class ColorsElement extends PolymerElement {
     if (!this.theme_.foregroundColor) {
       return {type: ColorType.DEFAULT};
     }
-    if (this.theme_.backgroundImage && this.theme_.backgroundImage.mainColor &&
-        this.theme_.backgroundImage.mainColor!.value ===
+    if (this.theme_.backgroundImageMainColor &&
+        this.theme_.backgroundImageMainColor!.value ===
             this.theme_.seedColor.value) {
       return {type: ColorType.MAIN};
     }
@@ -210,10 +208,6 @@ export class ColorsElement extends PolymerElement {
     return this.boolToString_(this.isChromeColorSelected_(color, variant));
   }
 
-  private tabIndex_(selected: boolean): string {
-    return selected ? '0' : '-1';
-  }
-
   private chromeColorTabIndex_(color: SkColor, variant: BrowserColorVariant):
       string {
     return this.selectedColor_.type === ColorType.CHROME &&
@@ -223,13 +217,16 @@ export class ColorsElement extends PolymerElement {
         '-1';
   }
 
+  private tabIndex_(selected: boolean): string {
+    return selected ? '0' : '-1';
+  }
+
   private themeHasBackgroundImage_(): boolean {
-    return !!this.theme_ && !!this.theme_.backgroundImage;
+    return !!this.theme_ && !!this.theme_.hasBackgroundImage;
   }
 
   private themeHasMainColor_(): boolean {
-    return !!this.theme_ && !!this.theme_.backgroundImage &&
-        !!this.theme_.backgroundImage.mainColor;
+    return !!this.theme_ && !!this.theme_.backgroundImageMainColor;
   }
 
   private computeShowBackgroundColor_(): boolean {
@@ -244,23 +241,22 @@ export class ColorsElement extends PolymerElement {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    CustomizeChromeApiProxy.getInstance().handler.setDefaultColor();
+    ThemeColorPickerBrowserProxy.getInstance().handler.setDefaultColor();
   }
 
   private onGreyDefaultColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    CustomizeChromeApiProxy.getInstance().handler.setGreyDefaultColor();
+    ThemeColorPickerBrowserProxy.getInstance().handler.setGreyDefaultColor();
   }
 
   private onMainColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
-        this.theme_!.backgroundImage!.mainColor!,
-        BrowserColorVariant.kTonalSpot);
+    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
+        this.theme_!.backgroundImageMainColor!, BrowserColorVariant.kTonalSpot);
   }
 
   private onChromeColorClick_(e: Event) {
@@ -268,7 +264,7 @@ export class ColorsElement extends PolymerElement {
       return;
     }
     const color = this.$.chromeColors.itemForElement(e.target as HTMLElement);
-    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
+    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
         color.seed, color.variant);
   }
 
@@ -281,7 +277,7 @@ export class ColorsElement extends PolymerElement {
   }
 
   private onCustomColorChange_(e: Event) {
-    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
+    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
         hexColorToSkColor((e.target as HTMLInputElement).value),
         BrowserColorVariant.kTonalSpot);
   }
@@ -301,8 +297,8 @@ export class ColorsElement extends PolymerElement {
   }
 
   private updateColors_() {
-    CustomizeChromeApiProxy.getInstance()
-        .handler.getOverviewChromeColors(this.theme_.isDarkMode)
+    ThemeColorPickerBrowserProxy.getInstance()
+        .handler.getChromeColors(this.theme_.isDarkMode, false)
         .then(({colors}) => {
           this.colors_ = colors;
         });
@@ -323,8 +319,8 @@ export class ColorsElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'customize-chrome-colors': ColorsElement;
+    'cr-theme-color-picker': ThemeColorPickerElement;
   }
 }
 
-customElements.define(ColorsElement.is, ColorsElement);
+customElements.define(ThemeColorPickerElement.is, ThemeColorPickerElement);

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_COLORS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_COLORS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_THEME_COLOR_PICKER_CUSTOMIZE_CHROME_COLORS_H_
+#define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_THEME_COLOR_PICKER_CUSTOMIZE_CHROME_COLORS_H_
 
 #include <array>
 
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
-#include "chrome/browser/themes/theme_service.h"
+#include "ui/base/mojom/themes.mojom.h"
 
 // The customize chrome side panel only uses the chrome colors with the
 // following ids, which is a subset of all chrome colors.
@@ -38,13 +38,13 @@ extern const std::array<chrome_colors::ColorInfo,
 struct DynamicColorInfo {
   constexpr DynamicColorInfo(SkColor color,
                              int label_id,
-                             ThemeService::BrowserColorVariant variant)
+                             ui::mojom::BrowserColorVariant variant)
       : color(color), label_id(label_id), variant(variant) {}
   SkColor color;
   int label_id;
-  ThemeService::BrowserColorVariant variant;
+  ui::mojom::BrowserColorVariant variant;
 };
 
 extern const std::array<DynamicColorInfo, 13> kDynamicCustomizeChromeColors;
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_COLORS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_THEME_COLOR_PICKER_CUSTOMIZE_CHROME_COLORS_H_

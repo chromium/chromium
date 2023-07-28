@@ -1,9 +1,9 @@
 <style>
   :host {
-    --customize-color-border-radius: 50%;
-    --customize-color-check-mark-end: -1px;
-    --customize-color-check-mark-size: 16px;
-    --customize-color-check-mark-top: 0;
+    --cr-theme-color-border-radius: 50%;
+    --cr-theme-color-check-mark-end: -1px;
+    --cr-theme-color-check-mark-size: 16px;
+    --cr-theme-color-check-mark-top: 0;
     box-sizing: border-box;
     cursor: pointer;
     display: block;
@@ -17,32 +17,32 @@
   }
 
   svg {
-    border-radius: var(--customize-color-border-radius);
+    border-radius: var(--cr-theme-color-border-radius);
     box-sizing: border-box;
     display: block;
     width: 100%;
   }
 
-  customize-colors-check-mark-wrapper {
-    --customize-colors-check-mark-wrapper-end: var(--customize-color-check-mark-end);
-    --customize-colors-check-mark-wrapper-size: var(--customize-color-check-mark-size);
-    --customize-colors-check-mark-wrapper-top: var(--customize-color-check-mark-top);
+  cr-theme-color-check-mark-wrapper {
+    --cr-theme-color-check-mark-wrapper-end: var(--cr-theme-color-check-mark-end);
+    --cr-theme-color-check-mark-wrapper-size: var(--cr-theme-color-check-mark-size);
+    --cr-theme-color-check-mark-wrapper-top: var(--cr-theme-color-check-mark-top);
   }
 
-  :host-context([chrome-refresh-2023]) customize-colors-check-mark-wrapper {
-    --customize-colors-check-mark-wrapper-background: var(
+  :host-context([chrome-refresh-2023]) cr-theme-color-check-mark-wrapper {
+    --cr-theme-color-check-mark-wrapper-background: var(
         --color-side-panel-customize-chrome-color-picker-checkmark-background);
-    --customize-colors-check-mark-wrapper-color: var(
+    --cr-theme-color-check-mark-wrapper-color: var(
         --color-side-panel-customize-chrome-color-picker-checkmark-foreground);
   }
 
   #background {
-    fill: var(--customize-color-background-color);
+    fill: var(--cr-theme-color-background-color);
   }
 
   :host(:not([checked])) svg {
-    border: 1px solid var(--customize-color-border-color,
-                          var(--customize-color-foreground-color));
+    border: 1px solid var(--cr-theme-color-border-color,
+                          var(--cr-theme-color-foreground-color));
   }
 
   :host([background-color-hidden]) #background {
@@ -50,12 +50,12 @@
   }
 
   #foreground {
-    fill: var(--customize-color-foreground-color);
+    fill: var(--cr-theme-color-foreground-color);
   }
 
   #base {
     display: none;
-    fill: var(--customize-color-base-color);
+    fill: var(--cr-theme-color-base-color);
   }
 
   /* Set styles for high contrast mode in Windows. */
@@ -74,7 +74,7 @@
     display: block;
   }
 </style>
-<customize-colors-check-mark-wrapper checked="[[checked]]">
+<cr-theme-color-check-mark-wrapper checked="[[checked]]">
   <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
     <rect id="foreground" x="0" y="0" width="50" height="50">
@@ -84,4 +84,4 @@
     <rect id="base" x="25" y="25" width="25" height="25">
     </rect>
   </svg>
-</customize-colors-check-mark-wrapper>
+</cr-theme-color-check-mark-wrapper>

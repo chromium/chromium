@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/themes.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/font_list.h"
@@ -73,8 +74,8 @@ bool IsUsingLinuxSystemTheme(Profile* profile) {
 }
 
 ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
-    ThemeService::BrowserColorVariant color_variant) {
-  using BCV = ThemeService::BrowserColorVariant;
+    ui::mojom::BrowserColorVariant color_variant) {
+  using BCV = ui::mojom::BrowserColorVariant;
   using SV = ui::ColorProviderKey::SchemeVariant;
   static constexpr auto kSchemeVariantMap = base::MakeFixedFlatMap<BCV, SV>({
       {BCV::kTonalSpot, SV::kTonalSpot},
@@ -477,9 +478,9 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   // scheme_variant.
   const auto* theme_service =
       ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
-  ThemeService::BrowserColorVariant color_variant =
+  ui::mojom::BrowserColorVariant color_variant =
       theme_service->GetBrowserColorVariant();
-  if (color_variant != ThemeService::BrowserColorVariant::kSystem) {
+  if (color_variant != ui::mojom::BrowserColorVariant::kSystem) {
     key.scheme_variant = GetSchemeVariant(color_variant);
   }
 

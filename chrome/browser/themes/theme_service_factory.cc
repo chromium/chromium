@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "ui/base/mojom/themes.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/themes/theme_helper_win.h"
@@ -136,7 +137,7 @@ void ThemeServiceFactory::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kUserColor, SK_ColorTRANSPARENT);
   registry->RegisterIntegerPref(
       prefs::kBrowserColorVariant,
-      static_cast<int>(ThemeService::BrowserColorVariant::kSystem));
+      static_cast<int>(ui::mojom::BrowserColorVariant::kSystem));
   registry->RegisterBooleanPref(prefs::kGrayscaleThemeEnabled, false);
 }
 
