@@ -826,7 +826,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     // Don't pop this view based on intermediary values.
     return;
   }
-  if (_isBeingDismissed) {
+  if (_isBeingDismissed || self.signoutDismissalByParentCoordinator) {
     return;
   }
   _isBeingDismissed = YES;

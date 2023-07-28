@@ -62,6 +62,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     SyncObserverModelBridge> {
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 // View controller.
@@ -195,6 +197,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 // Closes the Manage sync settings view controller.
 - (void)closeManageSyncSettings {
+  if (_settingsAreDismissed) {
+    return;
+  }
   if (self.viewController.navigationController) {
     if (!_dismissWebAndAppSettingDetailsController.is_null()) {
       std::move(_dismissWebAndAppSettingDetailsController)
@@ -203,10 +208,23 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     if (!_dismissAccountDetailsController.is_null()) {
       std::move(_dismissAccountDetailsController).Run(/*animated=*/false);
     }
+
+    NSEnumerator<UIViewController*>* inversedViewControllers =
+        [self.baseNavigationController.viewControllers reverseObjectEnumerator];
+    for (UIViewController* controller in inversedViewControllers) {
+      if (controller == self.viewController) {
+        break;
+      }
+      if ([controller respondsToSelector:@selector(settingsWillBeDismissed)]) {
+        [controller performSelector:@selector(settingsWillBeDismissed)];
+      }
+    }
+
     [self.baseNavigationController popToViewController:self.viewController
                                               animated:NO];
     [self.baseNavigationController popViewControllerAnimated:YES];
   }
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerPresentationDelegate
@@ -298,6 +316,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   accountsTableViewController.applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  accountsTableViewController.signoutDismissalByParentCoordinator = YES;
   [self.baseNavigationController pushViewController:accountsTableViewController
                                            animated:YES];
 }
