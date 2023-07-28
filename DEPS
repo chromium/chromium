@@ -4235,7 +4235,7 @@ deps = {
 
   'src/remoting/android/internal': {
       'url': Var('chrome_git') + '/chrome/remoting/android/internal.git' + '@' +
-        '6b9f36fb32ddb796f16cc5b5830f58ec1944966a',
+        'd4b268b20d45eeb46d9c7cb2b9d88f921254fdae',
       'condition': 'checkout_android and checkout_src_internal',
   },
 
