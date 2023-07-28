@@ -250,7 +250,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       }
     });
 
-    this.$['step-ad-join'].addEventListener('authCompleted', (e) => {
+    this.$['step-ad-join'].addEventListener('authCompletedAd', (e) => {
       this.$['step-ad-join'].disabled = true;
       this.$['step-ad-join'].loading = true;
       chrome.send('oauthEnrollAdCompleteLogin', [
