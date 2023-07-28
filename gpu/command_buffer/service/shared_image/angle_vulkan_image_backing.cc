@@ -62,6 +62,49 @@ gl::ScopedEGLImage CreateEGLImage(VkImage image,
 
 }  // namespace
 
+// GLTexturePassthroughImageRepresentation implementation.
+class AngleVulkanImageBacking::
+    GLTexturePassthroughAngleVulkanImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
+ public:
+  GLTexturePassthroughAngleVulkanImageRepresentation(
+      SharedImageManager* manager,
+      AngleVulkanImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::vector<scoped_refptr<gles2::TexturePassthrough>> textures)
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
+        textures_(std::move(textures)) {
+    DCHECK_EQ(textures_.size(), NumPlanesExpected());
+  }
+
+  ~GLTexturePassthroughAngleVulkanImageRepresentation() override = default;
+
+ private:
+  AngleVulkanImageBacking* backing_impl() {
+    return static_cast<AngleVulkanImageBacking*>(backing());
+  }
+
+  // GLTexturePassthroughImageRepresentation:
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override {
+    DCHECK(format().IsValidPlaneIndex(plane_index));
+    return textures_[plane_index];
+  }
+  bool BeginAccess(GLenum mode) override {
+    DCHECK(mode_ == 0);
+    mode_ = mode;
+    return backing_impl()->BeginAccessGLTexturePassthrough(mode_);
+  }
+  void EndAccess() override {
+    DCHECK(mode_ != 0);
+    backing_impl()->EndAccessGLTexturePassthrough(mode_);
+    mode_ = 0;
+  }
+
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_;
+  GLenum mode_ = 0;
+};
+
 class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
     : public SkiaGaneshImageRepresentation {
  public:
@@ -348,8 +391,8 @@ AngleVulkanImageBacking::ProduceGLTexturePassthrough(
     textures.push_back(gl_texture.passthrough_texture);
   }
 
-  return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
-      manager, this, this, tracker, std::move(textures));
+  return std::make_unique<GLTexturePassthroughAngleVulkanImageRepresentation>(
+      manager, this, tracker, std::move(textures));
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -374,8 +417,8 @@ AngleVulkanImageBacking::ProduceSkiaGanesh(
                                            this, tracker);
 }
 
-bool AngleVulkanImageBacking::GLTextureImageRepresentationBeginAccess(
-    bool readonly) {
+bool AngleVulkanImageBacking::BeginAccessGLTexturePassthrough(GLenum mode) {
+  bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   if (!readonly) {
     // For GL write access.
     if (is_gl_write_in_process_) {
@@ -433,8 +476,8 @@ bool AngleVulkanImageBacking::GLTextureImageRepresentationBeginAccess(
   return true;
 }
 
-void AngleVulkanImageBacking::GLTextureImageRepresentationEndAccess(
-    bool readonly) {
+void AngleVulkanImageBacking::EndAccessGLTexturePassthrough(GLenum mode) {
+  bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   if (readonly) {
     // For GL read access.
     if (gl_reads_in_process_ == 0) {
