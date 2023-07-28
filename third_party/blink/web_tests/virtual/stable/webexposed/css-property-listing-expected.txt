@@ -382,6 +382,7 @@ All changes to this list should go through Blink's feature review process: http:
     transform-box
     transform-origin
     transform-style
+    transition-behavior
     transition-delay
     transition-duration
     transition-property
@@ -768,6 +769,7 @@ All changes to this list should go through Blink's feature review process: http:
         text-emphasis-color
         text-emphasis-style
     transition
+        transition-behavior
         transition-delay
         transition-duration
         transition-property

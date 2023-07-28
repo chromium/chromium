@@ -1158,7 +1158,7 @@
     },
     {
       name: "CSSTransitionDiscrete",
-      status: "experimental",
+      status: "stable",
     },
     {
       // A kill switch for the fix for part of https://crbug.com/1180387 .
