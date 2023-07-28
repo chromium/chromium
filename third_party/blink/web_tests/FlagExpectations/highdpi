@@ -223,8 +223,6 @@ crbug.com/1179556 paint/transforms/subpixel-scale-align.html [ Failure ]
 crbug.com/1179570 printing/block-width-relayout-shrink.html [ Failure ]
 crbug.com/1287552 printing/multicol-2-pages.html [ Crash Failure ]
 crbug.com/1179570 printing/thead-repeats-with-translucent-text-and-borders.html [ Failure ]
-crbug.com/1286601 printing/vertical-lr.html [ Crash Failure ]
-crbug.com/1286601 printing/vertical-rl.html [ Crash Failure ]
 
 crbug.com/1179565 svg/animations/no-attr-lineargradient-spreadmethod.svg [ Failure ]
 crbug.com/1179565 svg/animations/mozilla/animateMotion-indefinite-to-1.svg [ Failure ]
