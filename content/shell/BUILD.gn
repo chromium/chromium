@@ -674,6 +674,9 @@ if (is_android) {
         configs += [ "//build/config/win:windowed" ]
       }
 
+      # Limit pre-loaded modules to improve sandbox coverage in content_shell.
+      configs += [ "//build/config/win:delayloads" ]
+
       # Increase the initial stack size. The default is 1MB, this is 8MB.
       # This matches the chrome.exe.
       ldflags = [ "/STACK:0x800000" ]
