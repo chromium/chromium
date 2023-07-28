@@ -6,6 +6,7 @@ import * as animate from './animation.js';
 import {assertEnumVariant, assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
+import * as localDev from './local_dev.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import {AspectRatioSet, Facing, FpsRange, Resolution} from './type.js';
@@ -505,3 +506,11 @@ export function isFileSystemDirectoryHandle(handle: FileSystemHandle):
     handle is FileSystemDirectoryHandle {
   return handle.kind === 'directory';
 }
+
+/**
+ * Expands a path to full absolute path.
+ *
+ * This is a no-op for CCA on CrOS, but is needed for local dev since it might
+ * be served in a subpath.
+ */
+export const expandPath = localDev.overridableFunction((path: string) => path);
