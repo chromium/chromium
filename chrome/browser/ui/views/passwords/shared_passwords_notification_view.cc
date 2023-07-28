@@ -45,8 +45,6 @@ SharedPasswordsNotificationView::SharedPasswordsNotificationView(
       &SharedPasswordsNotificationBubbleController::OnCloseBubbleClicked,
       base::Unretained(&controller_)));
 
-  // TODO(crbug.com/1464209): Add pixel tests once the strings are clarified
-  // with UXW.
   SetLayoutManager(std::make_unique<views::BoxLayout>());
 
   views::StyledLabel* styled_label =
