@@ -35,6 +35,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
@@ -689,6 +690,12 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   // The reasons for this subtree's root document.
   const BackForwardCacheCanStoreDocumentResult& GetDocumentResult() const {
     return document_result_;
+  }
+
+  // The blocking details map for this subtree's root document.
+  const BackForwardCacheCanStoreDocumentResult::BlockingDetailsMap&
+  GetBlockingDetailsMap() const {
+    return document_result_.blocking_details_map();
   }
 
   // Populate NotRestoredReasons mojom struct based on the existing tree of

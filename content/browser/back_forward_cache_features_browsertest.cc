@@ -2027,6 +2027,279 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {}, FROM_HERE);
 }
 
+// Test for sending JavaScript details where blocking features are used.
+class BackForwardCacheBrowserTestWithJavaScriptDetails
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(
+        blink::features::kRegisterJSSourceLocationBlockingBFCache, "", "true");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Use a blocklisted feature in multiple locations from an external JavaScript
+// file and make sure all the JavaScript location details are captured.
+// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MultipleBlocksFromJavaScriptFile \
+  DISABLED_MultipleBlocksFromJavaScriptFile
+#else
+#define MAYBE_MultipleBlocksFromJavaScriptFile MultipleBlocksFromJavaScriptFile
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+                       MAYBE_MultipleBlocksFromJavaScriptFile) {
+  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
+                                   net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(ws_server.Start());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page with multiple WebSocket usage.
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_websocket_external_script.html"));
+  GURL url_js(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/websocket_external_script.js"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Open WebSocket connections.
+  const char scriptA[] = R"(
+    openWebSocketConnectionA($1);
+  )";
+  const char scriptB[] = R"(
+    openWebSocketConnectionB($1);
+  )";
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptA,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptB,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketAOpen()"));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketBOpen()"));
+
+  // Call this to access tree result later.
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+
+  // 2) Navigate to b.com.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
+                    {}, {}, {}, FROM_HERE);
+  auto& map = GetTreeResult()->GetBlockingDetailsMap();
+  // Only WebSocket should be reported.
+  EXPECT_EQ(static_cast<int>(map.size()), 1);
+  EXPECT_TRUE(
+      map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
+  // Both socketA and socketB's JavaScript locations should be reported.
+  EXPECT_THAT(
+      map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
+      testing::UnorderedElementsAre(
+          MatchesBlockingDetails(url_js.spec(), absl::nullopt, 10, 15),
+          MatchesBlockingDetails(url_js.spec(), absl::nullopt, 17, 15)));
+}
+
+// Use a blocklisted feature in multiple locations from an external JavaScript
+// file but stop using one of them before navigating away. Make sure that only
+// the one still in use is reported.
+// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_BlockAndUnblockFromJavaScriptFile \
+  DISABLED_BlockAndUnblockFromJavaScriptFile
+#else
+#define MAYBE_BlockAndUnblockFromJavaScriptFile \
+  BlockAndUnblockFromJavaScriptFile
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+                       MAYBE_BlockAndUnblockFromJavaScriptFile) {
+  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
+                                   net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(ws_server.Start());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page with multiple WebSocket usage.
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_websocket_external_script.html"));
+  GURL url_js(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/websocket_external_script.js"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Call this to access tree result later.
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+  // Open WebSocket connections socketA and socketB, but close socketA
+  // immediately..
+  const char scriptA[] = R"(
+    openWebSocketConnectionA($1);
+  )";
+  const char scriptB[] = R"(
+    openWebSocketConnectionB($1);
+  )";
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptA,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptB,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketAOpen()"));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketBOpen()"));
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "closeConnection();"));
+  ASSERT_EQ(false, EvalJs(rfh_a.get(), "isSocketAOpen()"));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketBOpen()"));
+
+  // 2) Navigate to b.com.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back and ensure that the socketB's detail is captured.
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
+                    {}, {}, {}, FROM_HERE);
+  auto& map = GetTreeResult()->GetBlockingDetailsMap();
+  // Only WebSocket should be reported.
+  EXPECT_EQ(static_cast<int>(map.size()), 1);
+  EXPECT_TRUE(
+      map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
+  // Only socketB's JavaScript locations should be reported.
+  EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
+              testing::UnorderedElementsAre(MatchesBlockingDetails(
+                  url_js.spec(), absl::nullopt, 17, 15)));
+}
+
+// Use a blocklisted feature in multiple places from HTML file and make sure all
+// the JavaScript locations detail are captured.
+// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MultipleBlocksFromHTMLFile DISABLED_MultipleBlocksFromHTMLFile
+#else
+#define MAYBE_MultipleBlocksFromHTMLFile MultipleBlocksFromHTMLFile
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+                       MAYBE_MultipleBlocksFromHTMLFile) {
+  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
+                                   net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(ws_server.Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page with multiple WebSocket usage.
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_websocket_inline_script.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Open WebSocket connections.
+  const char scriptA[] = R"(
+    openWebSocketConnectionA($1);
+  )";
+  const char scriptB[] = R"(
+    openWebSocketConnectionB($1);
+  )";
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptA,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptB,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketAOpen()"));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketBOpen()"));
+  // Call this to access tree result later.
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+
+  // 2) Navigate to b.com.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
+                    {}, {}, {}, FROM_HERE);
+  auto& map = GetTreeResult()->GetBlockingDetailsMap();
+  // Only WebSocket should be reported.
+  EXPECT_EQ(static_cast<int>(map.size()), 1);
+  EXPECT_TRUE(
+      map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
+  // Both socketA and socketB's JavaScript locations should be reported.
+  EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
+              testing::UnorderedElementsAre(
+                  MatchesBlockingDetails(url_a.spec(), absl::nullopt, 11, 15),
+                  MatchesBlockingDetails(url_a.spec(), absl::nullopt, 18, 15)));
+}
+
+// Use a blocklisted feature in multiple locations from HTML file but stop using
+// one of them before navigating away. Make sure that only the one still in use
+// is reported.
+// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_BlockAndUnblockFromHTMLFile DISABLED_BlockAndUnblockFromHTMLFile
+#else
+#define MAYBE_BlockAndUnblockFromHTMLFile BlockAndUnblockFromHTMLFile
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+                       MAYBE_BlockAndUnblockFromHTMLFile) {
+  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
+                                   net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(ws_server.Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page with multiple broadcast channel usage.
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_websocket_inline_script.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Call this to access tree result later.
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+  // Open WebSocket connections socketA and socketB, but close socketA
+  // immediately.
+  const char scriptA[] = R"(
+    openWebSocketConnectionA($1);
+  )";
+  const char scriptB[] = R"(
+    openWebSocketConnectionB($1);
+  )";
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptA,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(123, EvalJs(rfh_a.get(),
+                        JsReplace(scriptB,
+                                  ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketAOpen()"));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketBOpen()"));
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "closeConnection();"));
+  ASSERT_EQ(false, EvalJs(rfh_a.get(), "isSocketAOpen()"));
+  ASSERT_EQ(true, EvalJs(rfh_a.get(), "isSocketBOpen()"));
+
+  // 2) Navigate to b.com.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
+                    {}, {}, {}, FROM_HERE);
+  auto& map = GetTreeResult()->GetBlockingDetailsMap();
+  // Only WebSocket should be reported.
+  EXPECT_EQ(static_cast<int>(map.size()), 1);
+  EXPECT_TRUE(
+      map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
+  // Only socketB's JavaScript locations should be reported.
+  EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
+              testing::UnorderedElementsAre(
+                  MatchesBlockingDetails(url_a.spec(), absl::nullopt, 18, 15)));
+}
+
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_DoesNotCacheIfWebDatabase DISABLED_DoesNotCacheIfWebDatabase

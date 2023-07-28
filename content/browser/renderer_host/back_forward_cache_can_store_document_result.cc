@@ -274,6 +274,15 @@ bool BackForwardCacheCanStoreDocumentResult::CanRestore() const {
   return not_restored_reasons_.Empty();
 }
 
+const BlockListedFeatures
+BackForwardCacheCanStoreDocumentResult::blocklisted_features() const {
+  BlockListedFeatures features;
+  for (const auto& [key, value] : blocking_details_map_) {
+    features.Put(key);
+  }
+  return features;
+}
+
 namespace {
 std::string DisabledReasonsToString(
     const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap& reasons,
@@ -324,7 +333,7 @@ BackForwardCacheCanStoreDocumentResult::GetStringReasons() const {
        not_restored_reasons_) {
     switch (reason) {
       case Reason::kBlocklistedFeatures:
-        reason_strs = FeaturesToStringVector(blocklisted_features_);
+        reason_strs = FeaturesToStringVector(blocklisted_features());
         break;
       default:
         reason_strs.push_back(NotRestoredReasonToReportString(reason));
@@ -353,7 +362,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kWasGrantedMediaAccess:
       return "frame was granted microphone or camera access";
     case Reason::kBlocklistedFeatures:
-      return "blocklisted features: " + DescribeFeatures(blocklisted_features_);
+      return "blocklisted features: " +
+             DescribeFeatures(blocklisted_features());
     case Reason::kDisableForRenderFrameHostCalled:
       return "BackForwardCache::DisableForRenderFrameHost() was called: " +
              DisabledReasonsToString(disabled_reasons_);
@@ -573,10 +583,18 @@ void BackForwardCacheCanStoreDocumentResult::No(
 }
 
 void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
-    BlockListedFeatures features) {
+    BlockingDetailsMap map) {
   AddNotRestoredReason(
       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
-  blocklisted_features_.PutAll(features);
+  for (const auto& [k, v] : map) {
+    if (blocking_details_map_.contains(k)) {
+      for (auto& details : map[k]) {
+        blocking_details_map_[k].push_back(std::move(details));
+      }
+    } else {
+      blocking_details_map_[k] = std::move(map[k]);
+    }
+  }
 }
 
 void BackForwardCacheCanStoreDocumentResult::
@@ -622,7 +640,11 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToAXEvents(
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_restored_reasons_.PutAll(other.not_restored_reasons_);
-  blocklisted_features_.PutAll(other.blocklisted_features());
+  for (const auto& [k, v] : other.blocking_details_map()) {
+    for (const auto& details : v) {
+      blocking_details_map_[k].push_back(details.Clone());
+    }
+  }
   for (const auto& reason : other.disabled_reasons()) {
     disabled_reasons_.insert(reason);
   }
@@ -639,7 +661,19 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
 BackForwardCacheCanStoreDocumentResult::
     BackForwardCacheCanStoreDocumentResult() = default;
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
-    BackForwardCacheCanStoreDocumentResult&) = default;
+    BackForwardCacheCanStoreDocumentResult& other)
+    : not_restored_reasons_(other.not_restored_reasons_),
+      disabled_reasons_(other.disabled_reasons_),
+      browsing_instance_swap_result_(other.browsing_instance_swap_result_),
+      disallow_activation_reasons_(other.disallow_activation_reasons_),
+      ax_events_(other.ax_events_) {
+  // Manually copy `blocking_details_map_`.
+  for (const auto& [k, v] : other.blocking_details_map()) {
+    for (const auto& details : v) {
+      blocking_details_map_[k].push_back(details.Clone());
+    }
+  }
+}
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
     BackForwardCacheCanStoreDocumentResult&&) = default;
 BackForwardCacheCanStoreDocumentResult::

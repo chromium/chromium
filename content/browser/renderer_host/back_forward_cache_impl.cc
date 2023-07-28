@@ -430,6 +430,37 @@ bool IsSameOriginForTreeResult(RenderFrameHostImpl* rfh,
   return url::Origin::Create(url).IsSameOriginWith(main_document_origin);
 }
 
+// Mark the result with No due to a single feature without JavaScript details.
+void MarkNoWithSingleFeature(BackForwardCacheCanStoreDocumentResult* result,
+                             WebSchedulerTrackedFeature feature) {
+  BackForwardCacheCanStoreDocumentResult::BlockingDetailsMap map;
+  auto details_ptr = blink::mojom::BlockingDetails::New();
+  details_ptr->feature = static_cast<uint32_t>(feature);
+  map[feature].push_back(std::move(details_ptr));
+  result->NoDueToFeatures(std::move(map));
+}
+
+// Mark the result with No due to multiple features for `rfh`.
+void MarkNoWithMultilpleFeatures(BackForwardCacheCanStoreDocumentResult* result,
+                                 RenderFrameHostImpl* rfh,
+                                 WebSchedulerTrackedFeatures features) {
+  BackForwardCacheCanStoreDocumentResult::BlockingDetailsMap map;
+  WebSchedulerTrackedFeatures features_added;
+  for (const auto& details : rfh->GetBackForwardCacheBlockingDetails()) {
+    auto feature = static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+        details->feature);
+    // Some features might be recorded but not banned. Do not save the details
+    // in this case.
+    if (!features.Has(feature)) {
+      continue;
+    }
+    map[feature].push_back(details.Clone());
+    features_added.Put(feature);
+  }
+  result->NoDueToFeatures(std::move(map));
+  DCHECK(features == features_added);
+}
+
 }  // namespace
 
 // static
@@ -878,8 +909,9 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
     if (!AllowStoringPagesWithCacheControlNoStore()) {
       // Block pages with cache-control: no-store when
       // |should_cache_control_no_store_enter| flag is false.
-      result.NoDueToFeatures(
-          {WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore});
+      MarkNoWithSingleFeature(
+          &result,
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
     } else {
       // Even if `should_cache_control_no_store_enter` is true, we may still
       // block pages with cache-control: no-store if the cookie is disabled.
@@ -977,7 +1009,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
   }
   if (!banned_features.Empty()) {
     if (!ShouldIgnoreBlocklists()) {
-      result.NoDueToFeatures(banned_features);
+      MarkNoWithMultilpleFeatures(&result, rfh, banned_features);
     }
   }
 }
@@ -1003,7 +1035,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     if (requested_features == RequestedFeatures::kAll ||
         (requested_features == RequestedFeatures::kAllIfAcked &&
          rfh->render_view_host()->DidReceiveBackForwardCacheAck())) {
-      result.NoDueToFeatures(banned_features);
+      MarkNoWithMultilpleFeatures(&result, rfh, banned_features);
     }
   }
 

@@ -470,6 +470,31 @@ SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
           testing::ElementsAreArray(children))));
 }
 
+BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
+    const absl::optional<testing::Matcher<std::string>>& url,
+    const absl::optional<testing::Matcher<std::string>>& function_name,
+    const testing::Matcher<uint64_t>& line_number,
+    const testing::Matcher<uint64_t>& column_number) {
+  return testing::Pointee(testing::AllOf(
+      url.has_value()
+          ? testing::Field("url", &blink::mojom::BlockingDetails::url,
+                           testing::Optional(url.value()))
+          : testing::Field("url", &blink::mojom::BlockingDetails::url,
+                           absl::optional<std::string>(absl::nullopt)),
+      function_name.has_value()
+          ? testing::Field("function_name",
+                           &blink::mojom::BlockingDetails::function_name,
+                           testing::Optional(function_name.value()))
+          : testing::Field("function_name",
+                           &blink::mojom::BlockingDetails::function_name,
+                           absl::optional<std::string>(absl::nullopt)),
+      testing::Field("line_number", &blink::mojom::BlockingDetails::line_number,
+                     line_number),
+      testing::Field("column_number",
+                     &blink::mojom::BlockingDetails::column_number,
+                     column_number)));
+}
+
 void BackForwardCacheUnloadBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
