@@ -118,10 +118,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach:
     case WebStateListChange::Type::kInsert:
@@ -134,24 +131,18 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
       // Do nothing when a WebState is replaced.
       break;
   }
-}
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress())
-    return;
-  // If the selected index changes as a result of the last webstate being
-  // detached, atIndex will be -1.
-  if (atIndex == -1) {
-    [self.consumer selectItemWithID:nil];
-    return;
+  if (status.active_web_state_change()) {
+    // If the selected index changes as a result of the last webstate being
+    // detached, the active index will be -1.
+    if (status.active_index == WebStateList::kInvalidIndex) {
+      [self.consumer selectItemWithID:nil];
+      return;
+    }
+
+    [self.consumer
+        selectItemWithID:status.new_active_web_state->GetStableIdentifier()];
   }
-
-  [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
