@@ -430,8 +430,30 @@ TEST_F(UserAgentUtilsTest, CustomUserAgent) {
   // Make sure user-agent API returns value correctly when user provide custom
   // user-agent.
   EXPECT_EQ(GetUserAgent(), custom_user_agent);
-  // Make sure return blank values for GetUserAgentMetadata().
-  EXPECT_EQ(blink::UserAgentMetadata(), GetUserAgentMetadata());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto metadata = GetUserAgentMetadata();
+
+    // Verify low-entropy client hints aren't empty.
+    const std::string major_version = version_info::GetMajorVersionNumber();
+    const blink::UserAgentBrandVersion chromium_brand_version = {"Chromium",
+                                                                 major_version};
+    EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                     chromium_brand_version));
+    EXPECT_NE("", metadata.platform);
+
+    // Verify high-entropy client hints are empty, take platform version as
+    // an example to verify.
+    EXPECT_EQ("", metadata.platform_version);
+  }
+
+  scoped_feature_list.InitAndEnableFeature(blink::features::kUACHOverrideBlank);
+  {
+    // Make sure return blank values for GetUserAgentMetadata().
+    EXPECT_EQ(blink::UserAgentMetadata::Marshal(blink::UserAgentMetadata()),
+              blink::UserAgentMetadata::Marshal(GetUserAgentMetadata()));
+  }
 }
 
 TEST_F(UserAgentUtilsTest, InvalidCustomUserAgent) {

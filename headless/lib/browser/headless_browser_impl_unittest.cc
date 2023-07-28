@@ -5,10 +5,12 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace headless {
 
@@ -42,9 +44,28 @@ TEST(HeadlessBrowserTest, CustomUserAgent) {
   command_line->AppendSwitchASCII(embedder_support::kUserAgent,
                                   custom_user_agent);
   ASSERT_TRUE(command_line->HasSwitch(embedder_support::kUserAgent));
-  // Make sure return blank values for HeadlessBrowser::GetUserAgentMetadata().
-  EXPECT_EQ(blink::UserAgentMetadata(),
-            HeadlessBrowser::GetUserAgentMetadata());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    // Verify low-entropy client hints aren't empty.
+    auto metadata = HeadlessBrowser::GetUserAgentMetadata();
+    EXPECT_THAT(
+        metadata.brand_version_list,
+        testing::Contains(testing::Field(&blink::UserAgentBrandVersion::brand,
+                                         testing::Eq("HeadlessChrome"))));
+    EXPECT_NE("", metadata.platform);
+
+    // Verify high-entropy client hints are empty, take platform version as
+    // an example to verify.
+    EXPECT_EQ("", metadata.platform_version);
+  }
+
+  scoped_feature_list.InitAndEnableFeature(blink::features::kUACHOverrideBlank);
+  {
+    // Make sure return blank values for GetUserAgentMetadata().
+    EXPECT_EQ(blink::UserAgentMetadata(),
+              HeadlessBrowser::GetUserAgentMetadata());
+  }
 }
 
 }  // namespace headless

@@ -551,12 +551,6 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
 
 blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
   blink::UserAgentMetadata metadata;
-  // If users provide valid user-agent in the command line, return an default
-  // blank UserAgentMetadata values.
-  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
-  if (custom_ua.has_value()) {
-    return metadata;
-  }
 
   bool enable_updated_grease_by_policy = true;
   UserAgentOptions ua_options;
@@ -567,19 +561,37 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
           policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled);
     ua_options.force_major_to_minor = GetMajorToMinorFromPrefs(pref_service);
   }
+
+  // Low entropy client hints.
   metadata.brand_version_list = GetBrandMajorVersionList(
       enable_updated_grease_by_policy, ua_options.force_major_to_minor);
-  metadata.brand_full_version_list = GetBrandFullVersionList(
-      enable_updated_grease_by_policy, ua_options.force_major_to_minor);
-  metadata.full_version = GetVersionNumber(ua_options);
-  metadata.platform = GetPlatformForUAMetadata();
-  metadata.architecture = content::GetCpuArchitecture();
-  metadata.model = content::BuildModelInfo();
   metadata.mobile = false;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseMobileUserAgent);
 #endif
+  metadata.platform = GetPlatformForUAMetadata();
+
+  // For users providing a valid user-agent override via the command line:
+  // If kUACHOverrideBlank is enabled, set user-agent metadata with the
+  // default blank values, otherwise return the default UserAgentMetadata values
+  // to populate and send only the low entropy client hints.
+  // Notes: Sending low entropy hints with empty values may cause requests being
+  // blocked by web application firewall software, etc.
+  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  if (custom_ua.has_value()) {
+    return base::FeatureList::IsEnabled(blink::features::kUACHOverrideBlank)
+               ? blink::UserAgentMetadata()
+               : metadata;
+  }
+
+  // High entropy client hints.
+  metadata.brand_full_version_list = GetBrandFullVersionList(
+      enable_updated_grease_by_policy, ua_options.force_major_to_minor);
+  metadata.full_version = GetVersionNumber(ua_options);
+  metadata.architecture = content::GetCpuArchitecture();
+  metadata.model = content::BuildModelInfo();
+
   // TODO(https://crbug.com/1442283): Support a broader range of form-factors.
   metadata.form_factor = metadata.mobile ? kMobileFormFactor : "";
 
