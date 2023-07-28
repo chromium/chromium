@@ -21,8 +21,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 max_size: 1048576
 owners:
 - mattme@google.com
@@ -36,5 +34,7 @@ schema:
       description: URL to a JSON file with a list of print servers.
       type: string
   type: object
+supported_on:
+- chrome_os:87-
 tags: []
 type: external
