@@ -125,6 +125,12 @@ bool WaylandOzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {
 }
 
 void WaylandOzoneUIControlsTestHelper::RequestProcessed(uint32_t request_id) {
+  // The Wayland base protocol does not map cleanly onto ui_controls semantics.
+  // We need to wait for a Wayland round-trip to ensure that all side-effects
+  // have been processed. See https://crbug.com/1336706#c11 and
+  // https://crbug.com/1443374#c3 for details.
+  wl::WaylandProxy::GetInstance()->RoundTripQueue();
+
   if (base::Contains(pending_closures_, request_id)) {
     if (!pending_closures_[request_id].is_null()) {
       // PostTask to avoid re-entrancy.
