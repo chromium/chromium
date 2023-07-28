@@ -5591,6 +5591,7 @@ crbug.com/1464848 [ Mac10.15 ] http/tests/inspector-protocol/network/disabled-ca
 crbug.com/1466578 [ Mac11-arm64 ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure ]
 crbug.com/1466578 [ Mac12-arm64 ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure ]
 crbug.com/1466578 [ Mac13-arm64 ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure ]
+crbug.com/1445140 [ Mac ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
