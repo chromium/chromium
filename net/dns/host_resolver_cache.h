@@ -118,7 +118,7 @@ class NET_EXPORT HostResolverCache final {
 
  private:
   struct Key {
-    ~Key() = default;
+    ~Key();
 
     std::string domain_name;
     NetworkAnonymizationKey network_anonymization_key;
