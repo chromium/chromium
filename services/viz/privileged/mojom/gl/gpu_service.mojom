@@ -110,7 +110,8 @@ interface GpuService {
 
   // Registers a DCOMP surface handle and returns a token. The token will then
   // be used by MediaFoundationRendererClient to call DCOMPTexture to set the
-  // surface in GLImageDCOMPSurface. Null token will be returned upon failure.
+  // surface in DCompSurfaceImageBacking. Null token will be returned upon
+  // failure.
   // Also see media/mojo/mojom/dcomp_surface_registry.mojom.
   [EnableIf=is_win]
   RegisterDCOMPSurfaceHandle(handle<platform> surface_handle)
