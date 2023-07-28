@@ -500,6 +500,10 @@ void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
   cardboard_image_transport_->CreateGpuFenceForSyncToken(
       sync_token,
       base::BindOnce(&CardboardRenderLoop::OnWebXrTokenSignaled, GetWeakPtr()));
+
+  if (pending_getframedata_) {
+    std::move(pending_getframedata_).Run();
+  }
 }
 
 void CardboardRenderLoop::OnWebXrTokenSignaled(
