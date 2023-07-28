@@ -5287,8 +5287,8 @@
   </message>
 
   <!-- Bruschetta -->
-  <message name="IDS_BRUSCHETTA_NAME" desc="Bruschetta" translateable="false">
-    Bruschetta
+  <message name="IDS_BRUSCHETTA_NAME" desc="The display name for Bruschetta (codename) when a specific VM name cannot be used." translateable="false">
+    Managed Development Environment
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_WINDOW_TITLE" desc="Title for the installer window while Bruschetta (codename) is installing." translateable="false">
     Bruschetta Installer
