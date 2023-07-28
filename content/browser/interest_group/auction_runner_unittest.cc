@@ -1620,6 +1620,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     auction_config.non_shared_params.auction_report_buyers =
         auction_report_buyers_;
 
+    auction_config.expects_additional_bids = pass_promise_for_additional_bids_;
+
     return auction_config;
   }
 
@@ -2783,6 +2785,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // This is also tested only with promises at this level.
   absl::optional<base::Uuid> server_response_request_id_;
   raw_ptr<AdAuctionPageData> ad_auction_page_data_;
+
+  bool pass_promise_for_additional_bids_ = false;
 
   absl::optional<std::vector<absl::uint128>> auction_report_buyer_keys_;
   absl::optional<base::flat_map<
@@ -6959,6 +6963,51 @@ TEST_F(AuctionRunnerTest, PromiseSignals4) {
                   "Uncaught Error: unexpectedly perBuyerSignals is null."))));
 }
 
+// An auction that passes empty additionalBids via a promise.
+TEST_F(AuctionRunnerTest, PromiseSignalsAdditionalBids) {
+  base::test::ScopedFeatureList additional_bids_on;
+  additional_bids_on.InitAndEnableFeature(
+      blink::features::kFledgeNegativeTargeting);
+  pass_promise_for_additional_bids_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in empty additionalBids.
+  abortable_ad_auction_->ResolvedAdditionalBids(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
 // Runs an auction that passes auctionSignals via a promise, and makes sure that
 // URL fetches begin, and worklet processes are launched, before the promise is
 // resolved.
@@ -7504,6 +7553,47 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId6) {
             TakeBadMessage());
 }
 
+TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionIdAdditionalBids) {
+  base::test::ScopedFeatureList additional_bids_on;
+  additional_bids_on.InitAndEnableFeature(
+      blink::features::kFledgeNegativeTargeting);
+  pass_promise_for_additional_bids_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in additionalBids with wrong component ID.
+  abortable_ad_auction_->ResolvedAdditionalBids(
+      blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0), {});
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("Invalid auction ID in ResolvedAdditionalBids", TakeBadMessage());
+}
+
 TEST_F(AuctionRunnerTest, PromiseInvalidDirectFromSellerSignals) {
   pass_promise_for_direct_from_seller_signals_ = true;
 
@@ -8034,6 +8124,98 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise9) {
       buyer_currencies);
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedBuyerCurrenciesPromise updating non-promise",
+            TakeBadMessage());
+}
+
+// Trying to update additionalBids twice.
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
+  base::test::ScopedFeatureList additional_bids_on;
+  additional_bids_on.InitAndEnableFeature(
+      blink::features::kFledgeNegativeTargeting);
+
+  // Have two kind of promises so we don't just finish after first
+  // additionalBids update
+  use_promise_for_per_buyer_signals_ = true;
+  pass_promise_for_additional_bids_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in additional bids twice.
+  blink::AuctionConfig::BuyerCurrencies buyer_currencies;
+  abortable_ad_auction_->ResolvedAdditionalBids(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+  abortable_ad_auction_->ResolvedAdditionalBids(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ("ResolvedAdditionalBids updating non-promise", TakeBadMessage());
+}
+
+// Trying to update additionalBids when the negative targeting feature is off.
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateAdditionalBidsFeatureOff) {
+  base::test::ScopedFeatureList additional_bids_off;
+  additional_bids_off.InitAndDisableFeature(
+      blink::features::kFledgeNegativeTargeting);
+
+  pass_promise_for_additional_bids_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  abortable_ad_auction_->ResolvedAdditionalBids(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ("ResolvedAdditionalBids with FledgeNegativeTargeting off",
             TakeBadMessage());
 }
 

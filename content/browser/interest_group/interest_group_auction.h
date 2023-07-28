@@ -30,6 +30,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -510,6 +511,21 @@ class CONTENT_EXPORT InterestGroupAuction
   // a parent auction.
   void NotifyComponentConfigPromisesResolved(uint32_t pos);
 
+  // Called by AuctionRunner when the promise providing the additional_bids
+  // array has been resolved, if one exists.
+  void NotifyAdditionalBidsConfig(
+      std::vector<mojo_base::BigBuffer> additional_bids);
+
+  // Called by AuctionRunner when the value of `additional_bids` for component
+  // auction with position `pos` in the original configuration has been
+  // resolved.
+  //
+  // Assumes that `pos` has already been range-checked, and that this is
+  // a parent auction.
+  void NotifyComponentAdditionalBidsConfig(
+      uint32_t pos,
+      std::vector<mojo_base::BigBuffer> additional_bids);
+
   // Close all Mojo pipes and release all weak pointers. Called when an
   // auction fails and on auction complete.
   void ClosePipes();
@@ -976,6 +992,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Configuration of this auction.
   raw_ptr<const blink::AuctionConfig, AcrossTasksDanglingUntriaged> config_;
+
+  // Supposed additional bids provided by the renderer; not decoded or checked
+  // yet.
+  std::vector<mojo_base::BigBuffer> encoded_additional_bids_;
 
   // True once all promises in this and component auction's configuration have
   // been resolved. (Note that if `this` is a component auction, it only looks

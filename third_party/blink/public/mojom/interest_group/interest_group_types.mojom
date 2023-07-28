@@ -447,4 +447,8 @@ struct AuctionAdConfig {
   bool has_all_buyer_experiment_group_id = false;
   int16 all_buyer_experiment_group_id;
   map<url.mojom.Origin, uint16> per_buyer_experiment_group_ids;
+
+  // Optionally specifies that some bids will be provided as signed exchanges,
+  // via `AbortableAdAuction.ResolvedAdditionalBids()`.
+  bool expects_additional_bids = false;
 };

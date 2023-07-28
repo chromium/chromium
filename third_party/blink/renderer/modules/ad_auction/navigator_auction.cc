@@ -190,6 +190,19 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     const String seller_name_;
   };
 
+  class AdditionalBidsResolved : public AuctionHandleFunction {
+   public:
+    AdditionalBidsResolved(AuctionHandle* auction_handle,
+                           mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+                           const String& seller_name);
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+
+   private:
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const String seller_name_;
+  };
+
   class ResolveToConfigResolved : public AuctionHandleFunction {
    public:
     ResolveToConfigResolved(AuctionHandle* auction_handle);
@@ -1338,6 +1351,25 @@ void CopyDirectFromSellerSignalsFromIdlToMojo(
       AuctionAdConfigMaybePromiseDirectFromSellerSignals::NewPromise(0);
 }
 
+void CopyAdditionalBidsFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    const mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    ScriptState& script_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasAdditionalBids()) {
+    output.expects_additional_bids = false;
+    return;
+  }
+
+  auction_handle->AttachPromiseHandler(
+      script_state, input.additionalBids(),
+      MakeGarbageCollected<
+          NavigatorAuction::AuctionHandle::AdditionalBidsResolved>(
+          auction_handle, auction_id->Clone(), input.seller()));
+  output.expects_additional_bids = true;
+}
+
 // Returns nullopt + sets exception on failure, or returns a concrete value.
 absl::optional<HashMap<scoped_refptr<const SecurityOrigin>, String>>
 ConvertNonPromisePerBuyerSignalsFromV8ToMojo(const ScriptState& script_state,
@@ -1890,6 +1922,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       auction_handle, auction_id.get(), script_state, config, *mojo_config);
   CopyPerBuyerCurrenciesFromIdlToMojo(auction_handle, auction_id.get(),
                                       script_state, config, *mojo_config);
+  CopyAdditionalBidsFromIdlToMojo(auction_handle, auction_id.get(),
+                                  script_state, config, *mojo_config);
 
   if (mojo_config->server_response && !is_top_level) {
     // TODO(1457241): Add support for multi-level auctions including server-side
@@ -2468,6 +2502,52 @@ ScriptValue NavigatorAuction::AuctionHandle::ServerResponseResolved::Call(
   typed_array->CopyContents(buffer.data(), buffer.size());
   auction_handle()->mojo_pipe()->ResolvedAuctionAdResponsePromise(
       auction_id_->Clone(), std::move(buffer));
+  return ScriptValue();
+}
+
+NavigatorAuction::AuctionHandle::AdditionalBidsResolved::AdditionalBidsResolved(
+    AuctionHandle* auction_handle,
+    mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+    const String& seller_name)
+    : AuctionHandleFunction(auction_handle),
+      auction_id_(std::move(auction_id)),
+      seller_name_(seller_name) {}
+
+ScriptValue NavigatorAuction::AuctionHandle::AdditionalBidsResolved::Call(
+    ScriptState* script_state,
+    ScriptValue value) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context) {
+    return ScriptValue();
+  }
+
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "NavigatorAuction", "runAdAuction");
+  blink::HeapVector<blink::NotShared<DOMUint8Array>> additional_ads;
+  bool ok = false;
+
+  if (!value.IsEmpty()) {
+    additional_ads =
+        NativeValueTraits<IDLSequence<NotShared<DOMUint8Array>>>::NativeValue(
+            script_state->GetIsolate(), value.V8Value(), exception_state);
+    ok = true;
+  }
+
+  if (ok && !exception_state.HadException()) {
+    WTF::Vector<mojo_base::BigBuffer> converted_additional_ads;
+    for (const auto& entry : additional_ads) {
+      mojo_base::BigBuffer mojo_buffer(
+          base::make_span(entry->Data(), entry->length()));
+      converted_additional_ads.push_back(std::move(mojo_buffer));
+    }
+
+    auction_handle()->mojo_pipe()->ResolvedAdditionalBids(
+        auction_id_->Clone(), std::move(converted_additional_ads));
+  } else {
+    auction_handle()->Abort();
+  }
+
   return ScriptValue();
 }
 

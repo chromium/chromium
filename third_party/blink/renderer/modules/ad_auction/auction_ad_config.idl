@@ -57,6 +57,9 @@ dictionary AuctionAdConfig {
 
   AuctionAdInterestGroupSize requestedSize;
 
+  [RuntimeEnabled=FledgeNegativeTargeting]
+  Promise<sequence<Uint8Array>> additionalBids;
+
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
 

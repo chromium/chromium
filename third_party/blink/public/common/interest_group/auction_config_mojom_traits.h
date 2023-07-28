@@ -390,6 +390,10 @@ struct BLINK_COMMON_EXPORT
     return config.per_buyer_experiment_group_ids;
   }
 
+  static bool expects_additional_bids(const blink::AuctionConfig& config) {
+    return config.expects_additional_bids;
+  }
+
   static bool Read(blink::mojom::AuctionAdConfigDataView data,
                    blink::AuctionConfig* out);
 };

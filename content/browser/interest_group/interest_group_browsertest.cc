@@ -566,6 +566,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          features::kPrivacySandboxAdsAPIsOverride,
          blink::features::kAdInterestGroupAPI, blink::features::kParakeet,
          blink::features::kFledge, blink::features::kAllowURNsInIframes,
+         blink::features::kFledgeNegativeTargeting,
          blink::features::kBiddingAndScoringDebugReportingAPI,
          features::kBackForwardCache},
         /*disabled_features=*/
@@ -6051,6 +6052,46 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidAdditionalBids) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': Failed to convert value to 'Uint8Array'.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      additionalBids: Promise.resolve([1, 2, 3]),
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionBuyersNoInterestGroup) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -10175,7 +10216,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
     perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
-    sellerCurrency: 'EUR'
+    sellerCurrency: 'EUR',
+    additionalBids: [],
   });
 })())",
                       seller_origin, seller_script_url,
@@ -10501,6 +10543,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
       perBuyerCurrencies: maybePromise({$8: 'USD'}),
       sellerCurrency: 'CAD',
+      additionalBids: [],
     }],
   });
 })())",

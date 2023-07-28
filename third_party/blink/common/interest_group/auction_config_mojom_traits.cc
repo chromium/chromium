@@ -237,6 +237,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     return false;
   }
 
+  out->expects_additional_bids = data.expects_additional_bids();
+
   if (data.has_seller_experiment_group_id())
     out->seller_experiment_group_id = data.seller_experiment_group_id();
 

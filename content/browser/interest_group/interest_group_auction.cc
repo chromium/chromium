@@ -2321,6 +2321,31 @@ void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
   it->second->NotifyConfigPromisesResolved();
 }
 
+void InterestGroupAuction::NotifyAdditionalBidsConfig(
+    std::vector<mojo_base::BigBuffer> additional_bids) {
+  encoded_additional_bids_ = std::move(additional_bids);
+
+  // Note that there is no need to do anything to advance the auction, since
+  // that should happen in NotifyConfigPromisesResolved() once everything is
+  // ready.
+}
+
+void InterestGroupAuction::NotifyComponentAdditionalBidsConfig(
+    uint32_t pos,
+    std::vector<mojo_base::BigBuffer> additional_bids) {
+  DCHECK(!parent_);  // Should not be called on a component.
+  auto it = component_auctions_.find(pos);
+
+  if (it == component_auctions_.end()) {
+    // TODO(morlovich): We drop empty components at database loading stage
+    // (see InterestGroupAuction::OnComponentInterestGroupsRead),
+    // that's probably a problem for doing additional_bids!
+    return;
+  }
+
+  it->second->NotifyAdditionalBidsConfig(std::move(additional_bids));
+}
+
 void InterestGroupAuction::ClosePipes() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 

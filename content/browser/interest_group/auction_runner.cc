@@ -305,6 +305,44 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
                      base::Unretained(this), base::TimeTicks::Now()));
 }
 
+void AuctionRunner::ResolvedAdditionalBids(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    std::vector<mojo_base::BigBuffer> additional_bids) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeNegativeTargeting)) {
+    mojo::ReportBadMessage(
+        "ResolvedAdditionalBids with FledgeNegativeTargeting off");
+    return;
+  }
+
+  if (state_ == State::kFailed) {
+    return;
+  }
+
+  blink::AuctionConfig* config =
+      LookupAuction(*owned_auction_config_, auction_id);
+  if (!config) {
+    mojo::ReportBadMessage("Invalid auction ID in ResolvedAdditionalBids");
+    return;
+  }
+
+  if (!config->expects_additional_bids) {
+    mojo::ReportBadMessage("ResolvedAdditionalBids updating non-promise");
+    return;
+  }
+
+  config->expects_additional_bids = false;
+
+  if (auction_id->is_main_auction()) {
+    auction_.NotifyAdditionalBidsConfig(std::move(additional_bids));
+  } else {
+    auction_.NotifyComponentAdditionalBidsConfig(
+        auction_id->get_component_auction(), std::move(additional_bids));
+  }
+
+  NotifyPromiseResolved(auction_id.get(), config);
+}
+
 void AuctionRunner::Abort() {
   // Don't abort if the auction already finished (either as success or failure;
   // this includes the case of multiple promise arguments rejecting).

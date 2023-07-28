@@ -85,11 +85,12 @@ bool operator==(const AuctionConfig& a, const AuctionConfig& b) {
   return std::tie(a.seller, a.decision_logic_url, a.trusted_scoring_signals_url,
                   a.non_shared_params, a.direct_from_seller_signals,
                   a.seller_experiment_group_id, a.all_buyer_experiment_group_id,
-                  a.per_buyer_experiment_group_ids) ==
+                  a.per_buyer_experiment_group_ids,
+                  a.expects_additional_bids) ==
          std::tie(b.seller, b.decision_logic_url, b.trusted_scoring_signals_url,
                   b.non_shared_params, b.direct_from_seller_signals,
                   b.seller_experiment_group_id, b.all_buyer_experiment_group_id,
-                  b.per_buyer_experiment_group_ids);
+                  b.per_buyer_experiment_group_ids, b.expects_additional_bids);
 }
 
 namespace {
@@ -218,6 +219,8 @@ AuctionConfig CreateFullConfig() {
   auction_config.direct_from_seller_signals =
       AuctionConfig::MaybePromiseDirectFromSellerSignals::FromValue(
           std::move(direct_from_seller_signals));
+
+  auction_config.expects_additional_bids = true;
 
   return auction_config;
 }

@@ -108,7 +108,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
    private:
     Tag tag_ = Tag::kValue;
-    Value value_;
+    Value value_ = {};
   };
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseJson
@@ -332,6 +332,12 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   absl::optional<uint16_t> seller_experiment_group_id;
   absl::optional<uint16_t> all_buyer_experiment_group_id;
   base::flat_map<url::Origin, uint16_t> per_buyer_experiment_group_ids;
+
+  // This specifies whether additional_bids are expected --- if true, a
+  // ResolvedAdditionalBids() is expected to provide them. The provided value
+  // itself will be stored separately since we don't want to be copying it all
+  // over the place. Once received, this will be switched to false.
+  bool expects_additional_bids = false;
 };
 
 }  // namespace blink

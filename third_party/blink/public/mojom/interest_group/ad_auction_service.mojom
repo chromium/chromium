@@ -85,6 +85,19 @@ interface AbortableAdAuction {
     AuctionAdConfigAuctionId auction,
     mojo_base.mojom.BigBuffer result);
 
+  // Used to provide result of resolving a promise specifying
+  // `additional_bids` field of an AuctionConfig. Each entry is expected to
+  // contain a signed (by the bidder) exchange of a JSON object describing a bid
+  // and conditions of its use (such as nonce of auction and expected seller).
+  //
+  // After decoding (including via utility processes) it uses part of the
+  // information to set up the internal state to be ready to perform scoring,
+  // and passes the rest to a seller worklet to do the scoring portion of
+  // bidding and scoring auction phase.
+  ResolvedAdditionalBids(
+      AuctionAdConfigAuctionId auction,
+      array<mojo_base.mojom.BigBuffer> additional_bids);
+
   // Aborts the auction for which the receiver for this pipe was passed to
   // RunAdAuction(), unless the auction has already finished (with at most
   // reporting pending).  Either way, the normal callback for RunAdAuction()
