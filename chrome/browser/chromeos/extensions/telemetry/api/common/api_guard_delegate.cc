@@ -33,8 +33,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"  // nogncheck
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -156,7 +158,7 @@ bool IsExtensionForceInstalled(content::BrowserContext* context,
   return force_install_list.Find(extension_id) != nullptr;
 }
 
-bool IsPwaUiOpenAndSecure(content::BrowserContext* context,
+bool IsAppUIOpenAndSecure(content::BrowserContext* context,
                           const extensions::Extension* extension) {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -221,8 +223,15 @@ void IsExpectedManufacturerForExtensionId(const std::string& extension_id,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsExtensionUsedByShimlessRMA(content::BrowserContext* context) {
+  return ::ash::features::IsShimlessRMA3pDiagnosticsEnabled() &&
+         ::ash::IsShimlessRmaAppBrowserContext(context);
+}
+
 bool IsCurrentUserAffiliated() {
-  return user_manager::UserManager::Get()->GetActiveUser()->IsAffiliated();
+  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
+  return active_user->IsAffiliated();
 }
 
 void IsCurrentUserOwnerOnOwnerFetched(CheckCallback callback) {
@@ -241,6 +250,12 @@ void IsCurrentUserOwner(content::BrowserContext* context,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsExtensionUsedByShimlessRMA(content::BrowserContext* context) {
+  // TODO(b/292227137): Shimless RMA App is not enabled in LaCrOS before
+  // migrating Shimless RMA to LaCrOS.
+  return false;
+}
+
 bool IsCurrentUserAffiliated() {
   return policy::PolicyLoaderLacros::IsMainUserAffiliated();
 }
@@ -267,7 +282,8 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
   // following constraints are satisfied:
   // 1. The user is either:
   //    a. managed and the extension was force-installed via policy, or
-  //    b. the user is the device owner.
+  //    b. the user is the device owner, or
+  //    c. the user is in the Shimless RMA flow.
   // 2. The PWA UI associated with the extension must be opened.
   // 3. The device hardware belongs to the OEM associated with the extension.
   void CanAccessApi(content::BrowserContext* context,
@@ -294,7 +310,10 @@ void ApiGuardDelegateImpl::CanAccessApi(content::BrowserContext* context,
   // these callbacks are bound to the `condition_checker_`, which is bound to
   // the delegate.
 
-  if (IsCurrentUserAffiliated()) {
+  if (IsExtensionUsedByShimlessRMA(context)) {
+    // No user to check for the Shimless RMA flow. Note that in this
+    // case there is no active user in UserManager.
+  } else if (IsCurrentUserAffiliated()) {
     condition_checker_->AppendChecker(
         base::BindOnce(&IsExtensionForceInstalled, base::Unretained(context),
                        extension->id()),
@@ -306,9 +325,9 @@ void ApiGuardDelegateImpl::CanAccessApi(content::BrowserContext* context,
   }
 
   condition_checker_->AppendChecker(
-      base::BindOnce(&IsPwaUiOpenAndSecure, base::Unretained(context),
+      base::BindOnce(&IsAppUIOpenAndSecure, base::Unretained(context),
                      base::Unretained(extension)),
-      "Companion PWA UI is not open or not secure");
+      "Companion app UI is not open or not secure");
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kTelemetryExtensionSkipManufacturerCheckForTesting)) {
