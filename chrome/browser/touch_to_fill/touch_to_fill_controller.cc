@@ -136,10 +136,9 @@ gfx::NativeView TouchToFillController::GetNativeView() {
 }
 
 void TouchToFillController::Close() {
-  view_.reset();
-  // Unretained is safe here because TouchToFillController owns the delegate.
-  delegate_->OnDismiss(base::BindOnce(&TouchToFillController::ActionCompleted,
-                                      base::Unretained(this)));
+  // TODO(crbug/1468487). This is a duplicate of `OnDismiss`. Merge the two
+  // functions.
+  OnDismiss();
 }
 
 void TouchToFillController::Reset() {
