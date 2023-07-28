@@ -381,11 +381,17 @@ void DeskButton::OnViewBlurred(views::View* observed_view) {
 }
 
 void DeskButton::OnButtonPressed() {
+  // If there is an ongoing desk switch animation, do nothing.
+  DesksController* desk_controller = DesksController::Get();
+  if (desk_controller->AreDesksBeingModified()) {
+    return;
+  }
+
   base::UmaHistogramBoolean(kDeskButtonPressesHistogramName, true);
 
   aura::Window* root = desk_button_widget_->GetNativeWindow()->GetRootWindow();
   DeskBarController* desk_bar_controller =
-      DesksController::Get()->desk_bar_controller();
+      desk_controller->desk_bar_controller();
 
   if (is_activated_ && desk_bar_controller->GetDeskBarView(root)) {
     desk_bar_controller->CloseDeskBar(root);
