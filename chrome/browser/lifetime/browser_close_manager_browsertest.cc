@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -299,6 +300,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
 
     content::DownloadTestObserverInProgress observer(
         browser->profile()->GetDownloadManager(), 1);
+    SetPromptForDownload(browser, false);
     ui_test_utils::NavigateToURLWithDisposition(
         browser, slow_download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_NO_WAIT);

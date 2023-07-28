@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "content/public/browser/download_item_utils.h"
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,6 +94,9 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
         std::make_unique<DownloadBubbleSecurityView>(
             bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
             bubble_delegate_));
+
+    content::DownloadItemUtils::AttachInfoForTesting(&download_item_, profile_,
+                                                     nullptr);
 
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>();
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(

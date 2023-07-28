@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/values.h"
+#include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 
 #include <stddef.h>
@@ -420,6 +421,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
       DownloadTestFileActivityObserver observer(incognito_browser_->profile());
       observer.EnableFileChooser(false);
     }
+    SetPromptForDownload(incognito_browser_, false);
     current_browser_ = incognito_browser_;
     if (events_listener_.get())
       events_listener_->UpdateProfile(current_browser()->profile());

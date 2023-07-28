@@ -32,6 +32,11 @@ DownloadManager* DownloadManagerForBrowser(Browser* browser) {
   return browser->profile()->GetDownloadManager();
 }
 
+void SetPromptForDownload(Browser* browser, bool prompt_for_download) {
+  browser->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                             prompt_for_download);
+}
+
 DownloadTestObserverResumable::DownloadTestObserverResumable(
     DownloadManager* download_manager,
     size_t transition_count)
@@ -112,8 +117,7 @@ bool DownloadTestBase::InitialSetup() {
   EXPECT_EQ(1, window_count);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  SetPromptForDownload(browser(), false);
 
   DownloadManager* manager = DownloadManagerForBrowser(browser());
   DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
@@ -208,10 +212,12 @@ void DownloadTestBase::DownloadAndWaitWithDisposition(
     Browser* browser,
     const GURL& url,
     WindowOpenDisposition disposition,
-    int browser_test_flags) {
+    int browser_test_flags,
+    bool prompt_for_download) {
   // Setup notification, navigate, and block.
   std::unique_ptr<content::DownloadTestObserver> observer(
       CreateWaiter(browser, 1));
+  SetPromptForDownload(browser, prompt_for_download);
   // This call will block until the condition specified by
   // |browser_test_flags|, but will not wait for the download to finish.
   ui_test_utils::NavigateToURLWithDisposition(browser, url, disposition,
@@ -223,10 +229,12 @@ void DownloadTestBase::DownloadAndWaitWithDisposition(
   EXPECT_FALSE(DidShowFileChooser());
 }
 
-void DownloadTestBase::DownloadAndWait(Browser* browser, const GURL& url) {
+void DownloadTestBase::DownloadAndWait(Browser* browser,
+                                       const GURL& url,
+                                       bool prompt_for_download) {
   DownloadAndWaitWithDisposition(
       browser, url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP, prompt_for_download);
 }
 
 bool DownloadTestBase::CheckDownload(Browser* browser,

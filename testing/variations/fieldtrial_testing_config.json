@@ -5254,41 +5254,6 @@
             ]
         }
     ],
-    "DownloadUXRedesign": [
-        {
-            "platforms": [
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_New_20220816",
-                    "enable_features": [
-                        "DownloadBubble"
-                    ]
-                },
-                {
-                    "name": "Enabled_20220816",
-                    "enable_features": [
-                        "DownloadBubble"
-                    ],
-                    "disable_features": [
-                        "DownloadBubbleV2"
-                    ]
-                },
-                {
-                    "name": "Enabled_V2_20220816",
-                    "enable_features": [
-                        "DownloadBubble",
-                        "DownloadBubbleV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "EcheNetworkConnectionState": [
         {
             "platforms": [

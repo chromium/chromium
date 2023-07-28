@@ -869,8 +869,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CheckLocalFileZone_DependsOnLocalConfig) {
 // downloads preferences settings.
 IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadMimeTypeSelect) {
   // Re-enable prompting.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kPromptForDownload, true);
+  SetPromptForDownload(browser(), true);
 
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -4780,6 +4779,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
       DangerousDownloadWaiter(
           incognito_browser, 1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
+  SetPromptForDownload(incognito_browser, false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, download_url));
   dangerous_observer->WaitForFinished();
 
