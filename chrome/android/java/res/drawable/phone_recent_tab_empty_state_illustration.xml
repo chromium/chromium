@@ -51,7 +51,8 @@ found in the LICENSE file.
         android:pathData="M86,70V80L92,86"
         android:strokeColor="@color/empty_state_icon_color"
         android:strokeWidth="2"/>
-    <path android:fillColor="@color/empty_state_icon_color"
+    <path
+        android:fillColor="@color/empty_state_icon_color"
         android:fillType="evenOdd"
         android:pathData="M75,48V28C75,26.9 74.1,26 73,26L32,26C30.9,26 30,26.9 30,28L30,86C30,87.1 30.9,88 32,88H40V90H32C29.79,90 28,88.21 28,86L28,28C28,25.79 29.79,24 32,24L73,24C75.21,24 77,25.79 77,28V48H75Z"/>
 </vector>

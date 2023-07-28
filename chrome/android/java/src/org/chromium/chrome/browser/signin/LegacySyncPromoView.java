@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.DeviceFormFactor;
 
 // TODO(crbug/1319351): Extend the comment below to explain under which circumstances this class is
 // still used
@@ -236,9 +237,12 @@ public class LegacySyncPromoView
         // visible. I want there to be a guarantee that this state is never seen, but to do so would
         // require some code restructuring.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+            int emptyViewImageResId =
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                    ? R.drawable.tablet_recent_tab_empty_state_illustration
+                    : R.drawable.phone_recent_tab_empty_state_illustration;
             return new ViewState(R.string.recent_tabs_no_tabs_empty_state,
-                    R.string.recent_tabs_sign_in_on_other_devices,
-                    R.drawable.recent_tab_empty_state_illustration);
+                    R.string.recent_tabs_sign_in_on_other_devices, emptyViewImageResId);
         } else {
             return new ViewState(
                     R.string.ntp_recent_tabs_sync_promo_instructions, new ButtonAbsent());
