@@ -1066,7 +1066,7 @@ struct PsrEvent {
 
 // Platform Service Record (PSR) information.
 //
-// NextMinVersion: 1, NextIndex: 15
+// NextMinVersion: 2, NextIndex: 16
 [Stable]
 struct PsrInfo {
   // The PSR log state.
@@ -1114,6 +1114,8 @@ struct PsrInfo {
   uint32 warm_reset_counter@13;
   // First 100 PSR events that have been saved.
   array<PsrEvent> events@14;
+  // Is PSR supported.
+  [MinVersion=1] bool is_supported@15;
 };
 
 // Network probe result. Can either be populated with the NetworkHealthSnapshot
