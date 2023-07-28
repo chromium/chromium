@@ -5,35 +5,31 @@
 #ifndef WOLVIC_BROWSER_VR_WVR_MANAGER_H_
 #define WOLVIC_BROWSER_VR_WVR_MANAGER_H_
 
-#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/ipc/common/surface_handle.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_helper.h"
-#include "wolvic/browser/vr/moz_external_vr.h"
 #include "wolvic/browser/vr/wvr_graphics_delegate.h"
 
+namespace device {
+class MailboxToSurfaceBridge;
+}
+
 namespace wolvic {
+
+class WvrApi;
 
 class WvrManager : public device::mojom::XRPresentationProvider,
                    public device::mojom::XRFrameDataProvider {
  public:
-  WvrManager(WvrGraphicsDelegate* graphics);
+  WvrManager(WvrApi* wvr_api, WvrGraphicsDelegate* graphics);
 
   WvrManager(const WvrManager&) = delete;
   WvrManager& operator=(const WvrManager&) = delete;
@@ -118,9 +114,6 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   void ClosePresentationBindings();
   void OnSubmitClientMojoConnectionError();
 
-  void PushState(bool notifyCond = false);
-  void PullState(const std::function<bool()>& waitCondition = {});
-
   base::TimeTicks pending_time_;
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
       get_frame_data_callback_;
@@ -133,12 +126,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   mojo::Receiver<device::mojom::XRFrameDataProvider> frame_data_receiver_{this};
   mojo::Remote<device::mojom::XRPresentationClient> submit_client_;
 
+  raw_ptr<WvrApi> wvr_api_;
   raw_ptr<WvrGraphicsDelegate> graphics_;
-
-  // Communicate via mozilla shared memory.
-  mozilla::gfx::VRBrowserState browser_state_;
-  mozilla::gfx::VRSystemState system_state_;
-  raw_ptr<mozilla::gfx::VRExternalShmem> shmem_;
 
   // on WVR Thread
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -149,8 +138,6 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   base::CancelableOnceClosure webxr_frame_timeout_closure_;
 
   base::OnceClosure exit_vr_callback_;
-
-  uint32_t presenting_generation_;
 
   base::WeakPtrFactory<WvrManager> weak_ptr_factory_{this};
 };

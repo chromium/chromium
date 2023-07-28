@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "wolvic/browser/vr/wvr_thread.h"
+#include "wolvic/browser/vr/wvr_api.h"
 
 namespace wolvic {
 
@@ -16,8 +17,10 @@ WvrThread::~WvrThread() {
 
 void WvrThread::Init() {
   DCHECK(!wvr_manager_);
+  wvr_api_ = std::make_unique<WvrApi>();
   wvr_graphics_ = std::make_unique<WvrGraphicsDelegate>();
-  wvr_manager_ = std::make_unique<WvrManager>(wvr_graphics_.get());
+
+  wvr_manager_ = std::make_unique<WvrManager>(wvr_api_.get(), wvr_graphics_.get());
   wvr_graphics_->set_webxr_presentation_state(wvr_manager_->webxr());
 
   std::move(initialized_callback_).Run();
