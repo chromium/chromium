@@ -78,7 +78,7 @@ class ScalableIph : public KeyedService,
                     public IphSession::Delegate {
  public:
   // List of events ScalableIph supports.
-  enum class Event { kFiveMinTick };
+  enum class Event { kFiveMinTick = 0, kUnlocked };
 
   ScalableIph(feature_engagement::Tracker* tracker,
               std::unique_ptr<ScalableIphDelegate> delegate);
@@ -93,6 +93,7 @@ class ScalableIph : public KeyedService,
 
   // ScalableIphDelegate::Observer:
   void OnConnectionChanged(bool online) override;
+  void OnUnlockedOrSuspendDone() override;
 
   // IphSession::Delegate:
   void PerformActionForIphSession(ActionType action_type) override;
@@ -113,6 +114,7 @@ class ScalableIph : public KeyedService,
  private:
   void EnsureTimerStarted();
   void RecordTimeTickEvent();
+  void RecordUnlockedEvent();
   void RecordEventInternal(Event event, bool init_success);
   void CheckTriggerConditionsOnInitSuccess(bool init_success);
   void CheckTriggerConditions();
@@ -135,6 +137,7 @@ class ScalableIph : public KeyedService,
 
   base::ScopedObservation<ScalableIphDelegate, ScalableIph>
       delegate_observation_{this};
+
   base::WeakPtrFactory<ScalableIph> weak_ptr_factory_{this};
 };
 

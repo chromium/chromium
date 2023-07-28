@@ -45,6 +45,10 @@ constexpr char kActionTypeOpenFileManager[] = "OpenFileManager";
 // `FiveMinTick` event is recorded every five minutes after OOBE completion.
 constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";
 
+// `Unlocked` event is recorded every unlock of the lock screen or
+// `SuspendDone` if the lock screen is not enabled.
+constexpr char kEventNameUnlocked[] = "ScalableIphUnlocked";
+
 // Constants for custom conditions.
 // Naming convention:
 // Camel case starting with a capital letter. Note that param names must start

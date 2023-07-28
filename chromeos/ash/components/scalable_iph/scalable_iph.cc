@@ -40,8 +40,10 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
   // events.
   static const base::NoDestructor<
       base::flat_map<ScalableIph::Event, std::string>>
-      event_names_map(
-          {{ScalableIph::Event::kFiveMinTick, kEventNameFiveMinTick}});
+      event_names_map({
+          {ScalableIph::Event::kFiveMinTick, kEventNameFiveMinTick},
+          {ScalableIph::Event::kUnlocked, kEventNameUnlocked},
+      });
   return *event_names_map;
 }
 
@@ -293,6 +295,10 @@ void ScalableIph::OnConnectionChanged(bool online) {
   tracker_->AddOnInitializedCallback(
       base::BindOnce(&ScalableIph::CheckTriggerConditionsOnInitSuccess,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ScalableIph::OnUnlockedOrSuspendDone() {
+  RecordEvent(Event::kUnlocked);
 }
 
 void ScalableIph::PerformActionForIphSession(ActionType action_type) {
