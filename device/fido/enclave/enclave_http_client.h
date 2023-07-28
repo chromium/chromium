@@ -19,7 +19,7 @@ namespace net {
 class IOBuffer;
 }
 
-namespace device {
+namespace device::enclave {
 
 class EnclaveHttpClient : public net::URLRequest::Delegate {
  public:
@@ -53,6 +53,12 @@ class EnclaveHttpClient : public net::URLRequest::Delegate {
   void BuildInitBody(base::span<const uint8_t> data);
   void BuildCommandBody(base::span<const uint8_t> data);
 
+  // Decodes the body JSON from the HTTP responses.
+  absl::optional<std::vector<uint8_t>> ParseInitResponse(
+      const base::Value::Dict& response_dict);
+  absl::optional<std::vector<uint8_t>> ParseCommandResponse(
+      const base::Value::Dict& response_dict);
+
   void Read(net::URLRequest* request);
   bool ConsumeBytesRead(net::URLRequest* request, int num_bytes);
 
@@ -71,8 +77,10 @@ class EnclaveHttpClient : public net::URLRequest::Delegate {
   scoped_refptr<net::IOBuffer> read_buffer_;
   std::vector<char> response_body_;
   absl::optional<std::string> post_body_;
+
+  std::string session_id_;
 };
 
-}  // namespace device
+}  // namespace device::enclave
 
 #endif  // DEVICE_FIDO_ENCLAVE_ENCLAVE_HTTP_CLIENT_H_

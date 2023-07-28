@@ -35,11 +35,11 @@ class EnclaveTestService {
 
  private:
   base::RunLoop run_loop_;
-  std::unique_ptr<EnclaveHttpServer> enclave_server_;
+  std::unique_ptr<enclave::EnclaveHttpServer> enclave_server_;
 };
 
 int EnclaveTestService::Start() {
-  enclave_server_ = std::make_unique<EnclaveHttpServer>(
+  enclave_server_ = std::make_unique<enclave::EnclaveHttpServer>(
       kIdentitySeed, run_loop_.QuitClosure());
   enclave_server_->StartServer();
 

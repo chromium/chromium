@@ -19,6 +19,8 @@ namespace cablev2 {
 class Crypter;
 }
 
+namespace enclave {
+
 // Local test server for the enclave authenticator. It implements the service
 // side of the cablev2 handshake, then receives and responds to encrypted
 // commands, transported in Base64 encoding within JSON over plain HTTP at the
@@ -28,7 +30,7 @@ class Crypter;
 class EnclaveHttpServer {
  public:
   EnclaveHttpServer(
-      base::span<const uint8_t, cablev2::kQRSeedSize> identity_seed,
+      base::span<const uint8_t, ::device::cablev2::kQRSeedSize> identity_seed,
       base::OnceClosure shutdown_callback);
   ~EnclaveHttpServer();
 
@@ -45,7 +47,11 @@ class EnclaveHttpServer {
 
   std::unique_ptr<net::test_server::HttpResponse> OnHttpRequest(
       const net::test_server::HttpRequest& request);
-  std::unique_ptr<net::test_server::HttpResponse> HandleRequestError(
+  std::unique_ptr<net::test_server::HttpResponse> HandleInitRequest(
+      const std::string& request_body);
+  std::unique_ptr<net::test_server::HttpResponse> HandleCommandRequest(
+      const std::string& request_body);
+  std::unique_ptr<net::test_server::HttpResponse> MakeErrorResponse(
       net::HttpStatusCode code,
       const std::string& error_string);
   void Close();
@@ -56,12 +62,14 @@ class EnclaveHttpServer {
   net::test_server::EmbeddedTestServerHandle server_handle_;
 
   // Private key seed used in handshake.
-  const std::array<uint8_t, cablev2::kQRSeedSize> identity_seed_;
+  const std::array<uint8_t, ::device::cablev2::kQRSeedSize> identity_seed_;
 
-  std::unique_ptr<cablev2::Crypter> crypter_;
+  std::unique_ptr<::device::cablev2::Crypter> crypter_;
 
   base::OnceClosure shutdown_callback_;
 };
+
+}  // namespace enclave
 
 }  // namespace device
 

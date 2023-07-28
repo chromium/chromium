@@ -4,12 +4,14 @@
 
 #include "device/fido/enclave/enclave_http_client.h"
 
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_piece.h"
+#include "components/device_event_log/device_event_log.h"
+#include "device/fido/enclave/enclave_protocol_utils.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
@@ -20,12 +22,8 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 
-namespace device {
+namespace device::enclave {
 namespace {
-
-const char kInitPath[] = "v1/init";
-const char kCommandPath[] = "v1/cmd";
-
 constexpr int kReadBufferSize = 2048;
 
 // An arbitrary cap on the HTTP response size.
@@ -102,7 +100,6 @@ void EnclaveHttpClient::SendHttpRequest(RequestType type,
                                         base::span<const uint8_t> data) {
   CHECK(!url_request_);
   CHECK(request_in_progress_ == RequestType::kNone);
-  CHECK(type != RequestType::kNone);
   request_in_progress_ = type;
 
   if (!read_buffer_) {
@@ -112,15 +109,19 @@ void EnclaveHttpClient::SendHttpRequest(RequestType type,
   GURL request_url;
   GURL::Replacements replacement;
 
-  if (type == RequestType::kInit) {
-    replacement.SetPathStr(kInitPath);
-    request_url = service_url_.ReplaceComponents(replacement);
-    BuildInitBody(data);
-  } else {
-    // type == RequestType::kCommand
-    replacement.SetPathStr(kCommandPath);
-    request_url = service_url_.ReplaceComponents(replacement);
-    BuildCommandBody(data);
+  switch (type) {
+    case RequestType::kInit:
+      replacement.SetPathStr(kInitPath);
+      request_url = service_url_.ReplaceComponents(replacement);
+      BuildInitBody(data);
+      break;
+    case RequestType::kCommand:
+      replacement.SetPathStr(kCommandPath);
+      request_url = service_url_.ReplaceComponents(replacement);
+      BuildCommandBody(data);
+      break;
+    case RequestType::kNone:
+      NOTREACHED();
   }
 
   url_request_ = url_request_context_->CreateRequest(
@@ -139,19 +140,22 @@ void EnclaveHttpClient::SendHttpRequest(RequestType type,
 }
 
 void EnclaveHttpClient::BuildInitBody(base::span<const uint8_t> data) {
-  std::string encoded_data = base::Base64Encode(data);
+  std::string encoded_data;
+  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_data);
   base::Value::Dict values;
-  values.Set("handshake", encoded_data);
+  values.Set(kInitSessionRequestData, encoded_data);
   post_body_ = std::string();
   base::JSONWriter::Write(values, &post_body_.value());
 }
 
 void EnclaveHttpClient::BuildCommandBody(base::span<const uint8_t> data) {
-  // TODO(kenrb): This will need another field to identify the session.
-
-  std::string encoded_data = base::Base64Encode(data);
+  std::string encoded_data;
+  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_data);
   base::Value::Dict values;
-  values.Set("requestData", encoded_data);
+  values.Set(kSessionId, session_id_);
+  values.Set(kSendCommandRequestData, encoded_data);
   post_body_ = std::string();
   base::JSONWriter::Write(values, &post_body_.value());
 }
@@ -229,20 +233,22 @@ void EnclaveHttpClient::CompleteRequest(int status) {
     absl::optional<base::Value> response_dict =
         base::JSONReader::Read(response_body_string);
     if (response_dict && response_dict->is_dict()) {
-      std::string field_name = (request_in_progress_ == RequestType::kInit)
-                                   ? "handshakeResponseData"
-                                   : "commandResponseData";
-      const std::string* handshake_value =
-          response_dict->GetDict().FindString(field_name);
-      if (handshake_value) {
-        response_data = base::Base64Decode(*handshake_value);
-        if (!response_data) {
-          status = net::ERR_INVALID_RESPONSE;
-        }
-      } else {
+      switch (request_in_progress_) {
+        case RequestType::kInit:
+          response_data = ParseInitResponse(response_dict->GetDict());
+          break;
+        case RequestType::kCommand:
+          response_data = ParseCommandResponse(response_dict->GetDict());
+          break;
+        case RequestType::kNone:
+          NOTREACHED();
+      }
+      if (!response_data) {
         status = net::ERR_INVALID_RESPONSE;
       }
     } else {
+      FIDO_LOG(ERROR)
+          << "Handshake response from enclave service is not valid JSON.";
       status = net::ERR_INVALID_RESPONSE;
     }
   }
@@ -251,4 +257,49 @@ void EnclaveHttpClient::CompleteRequest(int status) {
   on_request_done_.Run(status, std::move(response_data));
 }
 
-}  // namespace device
+absl::optional<std::vector<uint8_t>> EnclaveHttpClient::ParseInitResponse(
+    const base::Value::Dict& response_dict) {
+  const std::string* session_id = response_dict.FindString(kSessionId);
+  if (!session_id) {
+    FIDO_LOG(ERROR)
+        << "Handshake response from enclave service missing session ID.";
+    return absl::nullopt;
+  }
+  const std::string* handshake_response_value =
+      response_dict.FindString(kInitSessionResponseData);
+  if (!handshake_response_value) {
+    FIDO_LOG(ERROR) << "Handshake response from enclave service missing data.";
+    return absl::nullopt;
+  }
+  absl::optional<std::vector<uint8_t>> decoded_response = base::Base64UrlDecode(
+      *handshake_response_value, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
+  if (!decoded_response) {
+    FIDO_LOG(ERROR)
+        << "Handshake response data from enclave service failed to decode.";
+    return absl::nullopt;
+  }
+
+  session_id_ = std::move(*session_id);
+  return decoded_response;
+}
+
+absl::optional<std::vector<uint8_t>> EnclaveHttpClient::ParseCommandResponse(
+    const base::Value::Dict& response_dict) {
+  const std::string* command_response_value =
+      response_dict.FindString(kSendCommandResponseData);
+  if (!command_response_value) {
+    FIDO_LOG(ERROR) << "Command response from enclave service missing data.";
+    return absl::nullopt;
+  }
+  absl::optional<std::vector<uint8_t>> decoded_response = base::Base64UrlDecode(
+      *command_response_value, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
+  if (!decoded_response) {
+    FIDO_LOG(ERROR)
+        << "Command response data from enclave service failed to decode.";
+    return absl::nullopt;
+  }
+
+  return decoded_response;
+}
+
+}  // namespace device::enclave

@@ -508,6 +508,7 @@ if (is_win || is_linux || is_mac) {
       ":fido",
       "//base",
       "//components/cbor",
+      "//components/device_event_log",
       "//components/sync/protocol:protocol",
       "//mojo/public/cpp/bindings",
       "//net",

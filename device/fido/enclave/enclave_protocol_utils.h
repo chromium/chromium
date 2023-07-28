@@ -23,10 +23,17 @@ namespace device {
 
 class JSONRequest;
 
-// For testing only.
-std::pair<absl::optional<CtapGetAssertionRequest>, std::string>
-    COMPONENT_EXPORT(DEVICE_FIDO)
-        CtapGetAssertionRequestFromJson(const std::string& json);
+namespace enclave {
+
+const char kInitPath[] = "v1/init";
+const char kCommandPath[] = "v1/cmd";
+
+// Keys for the RPC param names to the HTTP front end:
+const char kInitSessionRequestData[] = "request";
+const char kInitSessionResponseData[] = "response";
+const char kSessionId[] = "session_id";
+const char kSendCommandRequestData[] = "command";
+const char kSendCommandResponseData[] = "response";
 
 // For testing only.
 std::string COMPONENT_EXPORT(DEVICE_FIDO)
@@ -40,6 +47,14 @@ void BuildGetAssertionRequestBody(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     scoped_refptr<JSONRequest> request,
     std::string* out_request_body);
+
+// For testing only.
+bool COMPONENT_EXPORT(DEVICE_FIDO) ParseGetAssertionRequestBody(
+    const std::string& request_body,
+    sync_pb::WebauthnCredentialSpecifics* out_passkey,
+    base::Value* out_request);
+
+}  // namespace enclave
 
 }  // namespace device
 

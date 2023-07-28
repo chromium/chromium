@@ -22,14 +22,14 @@
 
 namespace device {
 
-class EnclaveHttpClient;
-
 namespace cablev2 {
 class Crypter;
 class HandshakeInitiator;
 }  // namespace cablev2
 
 namespace enclave {
+
+class EnclaveHttpClient;
 
 // TODO(kenrb): Remove the export directive when it is no longer used by the
 // client stand-alone app.
