@@ -30,6 +30,10 @@ void SendEventToUma(const char* event_name) {
   base::UmaHistogramBoolean(event_name, true);
 }
 
+bool IsEqual(gfx::Size lhs, webrtc::DesktopSize rhs) {
+  return (lhs.width() == rhs.width()) && (lhs.height() == rhs.height());
+}
+
 }  // namespace
 
 FrameSinkDesktopCapturer::FrameSinkDesktopCapturer()
@@ -91,8 +95,7 @@ void FrameSinkDesktopCapturer::CaptureFrame() {
     callback_->OnCaptureResult(Result::ERROR_TEMPORARY, nullptr);
     return;
   }
-  if (source->size().width() != frame->size().width() ||
-      source->size().height() != frame->size().height()) {
+  if (!IsEqual(source->GetSizeInPixel(), frame->size())) {
     SelectSource(source_display_id_);
     callback_->OnCaptureResult(Result::ERROR_TEMPORARY, nullptr);
     return;
@@ -116,9 +119,10 @@ bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
   scoped_window_capture_request_ =
       ash_->MakeDisplayCapturable(source_display_id_);
 
-  video_capturer_->SetResolutionConstraints(GetSourceDisplay()->size(),
-                                            GetSourceDisplay()->size(),
-                                            /*use_fixed_aspect_ratio=*/false);
+  video_capturer_->SetResolutionConstraints(
+      GetSourceDisplay()->GetSizeInPixel(),
+      GetSourceDisplay()->GetSizeInPixel(),
+      /*use_fixed_aspect_ratio=*/false);
   video_capturer_->ChangeTarget(
       viz::VideoCaptureTarget(ash_->GetFrameSinkId(source_display_id_),
                               scoped_window_capture_request_.GetCaptureId()),

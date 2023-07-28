@@ -367,6 +367,18 @@ TEST_F(FrameSinkDesktopCapturerTest,
   StartCapturerForTesting();
 }
 
+TEST_F(
+    FrameSinkDesktopCapturerTest,
+    ShouldUseDisplaySizeInPixelsAsResolutionConstraintEvenIfScaleFactorIsSet) {
+  // the `@2` sets the scale factor to 2.
+  ash_proxy().UpdatePrimaryDisplaySpec("1000x500@2");
+  const Size expected_display_size(1000, 500);
+  EXPECT_CALL(video_capturer_,
+              SetResolutionConstraints(expected_display_size,
+                                       expected_display_size, _));
+  StartCapturerForTesting();
+}
+
 TEST_F(FrameSinkDesktopCapturerTest, ShouldDropFramesThatMismatchDisplaySize) {
   const Size other_size(110, 220);
   ash_proxy().UpdatePrimaryDisplaySpec("345x67");
@@ -374,6 +386,16 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldDropFramesThatMismatchDisplaySize) {
   CaptureResult result =
       SendAndCaptureSingleFrame(frame_params().WithSize(other_size));
   EXPECT_THAT(result.result, Eq(DesktopCapturer::Result::ERROR_TEMPORARY));
+}
+
+TEST_F(FrameSinkDesktopCapturerTest,
+       ShouldAcceptFramesThatMatchPhysicalDisplaySizeEvenIfScaleFactorIsSet) {
+  const Size scaled_size(1000, 500);
+  ash_proxy().UpdatePrimaryDisplaySpec("1000x500@2");
+  StartCapturerForTesting();
+  CaptureResult result =
+      SendAndCaptureSingleFrame(frame_params().WithSize(scaled_size));
+  EXPECT_THAT(result.result, Eq(DesktopCapturer::Result::SUCCESS));
 }
 
 TEST_F(FrameSinkDesktopCapturerTest,
