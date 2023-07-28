@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
@@ -58,6 +59,7 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
+using chrome_test_util::PasswordsTableViewMatcher;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TabGridEditButton;
@@ -282,6 +284,13 @@ id<GREYMatcher> TooLongNoteFooter() {
           password_manager::constants::kMaxPasswordNoteLength)));
 }
 
+// Returns matcher for the title of the alert displayed when reauthentication is
+// requested but the user doesn't have a passcode set.
+id<GREYMatcher> SetPasscodeDialogTitle() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE));
+}
+
 // Saves two example forms in the store.
 void SaveExamplePasswordForms() {
   SavePasswordForm(/*password=*/@"password1",
@@ -330,6 +339,27 @@ void CopyPasswordDetailWithInteraction(GREYElementInteraction* element) {
 void CopyPasswordDetailWithID(int detail_id) {
   CopyPasswordDetailWithInteraction(
       GetPasswordDetailTextFieldWithID(detail_id));
+}
+
+// Close the alert requesting the user to set a passcode.
+void DismissSetPasscodeDialog() {
+  [[EarlGrey selectElementWithMatcher:SetPasscodeDialogTitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+      performAction:grey_tap()];
+}
+
+// Opens the help article explaining how to set a passcode by tapping on the
+// "Learn How" action in the set passcode alert.
+void OpenSetPasscodeHelpArticle() {
+  [[EarlGrey selectElementWithMatcher:SetPasscodeDialogTitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  NSString* learnHow =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW);
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   learnHow)] performAction:grey_tap()];
 }
 
 }  // namespace
@@ -471,6 +501,15 @@ void CopyPasswordDetailWithID(int detail_id) {
             (testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+  if ([self
+          isRunningTest:@selector(testOpenPasswordManagerWithSuccessfulAuth)] ||
+      [self isRunningTest:@selector(testOpenPasswordManagerWithFailedAuth)] ||
+      [self isRunningTest:@selector
+            (testOpenPasswordManagerWithWithoutPasscodeSet)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordAuthOnEntry);
   }
 
   return config;
@@ -1582,12 +1621,8 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   CopyPasswordDetailWithID(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
 
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(title)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      performAction:grey_tap()];
+  DismissSetPasscodeDialog();
+
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -1617,15 +1652,8 @@ void CopyPasswordDetailWithID(int detail_id) {
   [GetInteractionForPasswordDetailItem(ShowPasswordButton())
       performAction:grey_tap()];
 
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(title)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  NSString* learnHow =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW);
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   learnHow)] performAction:grey_tap()];
+  OpenSetPasscodeHelpArticle();
+
   // Check the sub menu is closed due to the help article.
   NSError* error = nil;
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -3154,6 +3182,73 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   [GetInteractionForListItem(localIconMatcher, kGREYDirectionDown)
       assertWithMatcher:grey_notVisible()];
+}
+
+// Checks opening the password manager with a successful reauthentication shows
+// the Password Manager.
+- (void)testOpenPasswordManagerWithSuccessfulAuth {
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  // Delay the auth result to be able to validate that the passwords are not
+  // visible until the result is emitted.
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  OpenPasswordManager();
+
+  // Password Manager should be blocked until successful auth.
+  [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Successful auth should remove blocking view and Password Manager should be
+  // visible visible.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Checks opening the password manager with a failed reauthentication does not
+// show passwords and closes the Password Manager.
+- (void)testOpenPasswordManagerWithFailedAuth {
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  // Delay the auth result to be able to validate that the passwords are not
+  // visible until the result is emitted.
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  OpenPasswordManager();
+
+  // Password Manager should be blocked until successful auth.
+  [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Failed auth should dismiss the Password Manager, leaving the NTP visible.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks opening the password manager with no passcode does not show passwords
+// and displays an alert prompting the user to set a passcode.
+- (void)testOpenPasswordManagerWithWithoutPasscodeSet {
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  OpenPasswordManager();
+
+  // Password Manager should be blocked.
+  [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Dismiss the passcode alert, this should dismiss the Password Manager.
+  DismissSetPasscodeDialog();
+
+  // Check for the NTP after Password Manager is gone.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

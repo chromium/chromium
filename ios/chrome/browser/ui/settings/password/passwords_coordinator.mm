@@ -61,7 +61,8 @@ using password_manager::WarningType;
     PasswordsInOtherAppsCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
-    PasswordManagerViewControllerPresentationDelegate>
+    PasswordManagerViewControllerPresentationDelegate,
+    ReauthenticationCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -157,6 +158,8 @@ using password_manager::WarningType;
                                browser:self.browser
                 reauthenticationModule:_reauthModule];
 
+  _reauthCoordinator.delegate = self;
+
   [_reauthCoordinator start];
 }
 
@@ -237,6 +240,7 @@ using password_manager::WarningType;
   self.addPasswordCoordinator = nil;
 
   [self.reauthCoordinator stop];
+  self.reauthCoordinator.delegate = nil;
   self.reauthCoordinator = nil;
 
   [self.mediator disconnect];
@@ -460,6 +464,17 @@ using password_manager::WarningType;
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
+}
+
+#pragma mark - ReauthenticationCoordinatorDelegate
+
+- (void)successfulReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  DCHECK_EQ(_reauthCoordinator, coordinator);
+
+  [_reauthCoordinator stop];
+  _reauthCoordinator.delegate = nil;
+  _reauthCoordinator = nil;
 }
 
 @end

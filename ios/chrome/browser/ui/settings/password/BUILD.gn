@@ -279,6 +279,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
+    ":features",
     ":password_constants",
     "//base:base",
     "//base/test:test_support",

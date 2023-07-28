@@ -13,8 +13,14 @@ source_set("reauthentication") {
   deps = [
     ":reauthentication_ui",
     "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
   ]
 
   frameworks = [ "UIKit.framework" ]

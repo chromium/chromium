@@ -25,6 +25,17 @@
     (ReauthenticationResult)expectedResult;
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;
 
+// Whether the mock module should return the mocked result when the
+// reauthentication request is made or wait for
+// `mockReauthenticationModuleReturnMockedResult` to be invoked. Defaults to
+// sync. Use it for testing state before the result is returned (e.g. View X
+// shouldn't be visible until successful reauth).
++ (void)mockReauthenticationModuleShouldReturnSynchronously:(BOOL)returnSync;
+
+// Makes the mock reauthentication module return its mocked result by invoking
+// the handler of the last reauthentication request.
++ (void)mockReauthenticationModuleReturnMockedResult;
+
 // Dismisses snack bar.  Used before next test.
 + (void)dismissSnackBar;
 

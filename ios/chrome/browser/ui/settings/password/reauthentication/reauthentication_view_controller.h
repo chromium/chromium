@@ -9,9 +9,23 @@
 
 @protocol ReauthenticationProtocol;
 
+@protocol ReauthenticationViewControllerDelegate <NSObject>
+
+// Displays an alert requesting the user to set up a passcode before getting
+// access to the Password Manager.
+- (void)showSetUpPasscodeDialog;
+
+// Handle the result of Local Authentication.
+- (void)reauthenticationDidFinishWithSuccess:(BOOL)success;
+
+@end
+
 // View controller that requests Local Authentication upon presentation and
 // forwards the result to its delegate.
 @interface ReauthenticationViewController : UIViewController
+
+// Delegate of the view controller. Most likely a ReauthenticationCoordinator.
+@property(nonatomic, weak) id<ReauthenticationViewControllerDelegate> delegate;
 
 // Initializes the view controller with a `reauthenticationModule` for
 // triggering Local Authentication.

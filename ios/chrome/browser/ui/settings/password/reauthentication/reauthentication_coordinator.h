@@ -7,8 +7,19 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class ReauthenticationCoordinator;
 @class UINavigationController;
 @protocol ReauthenticationProtocol;
+
+@protocol ReauthenticationCoordinatorDelegate <NSObject>
+
+// Invoked when Local Authentication is successful and
+// ReauthenticationViewController is popped from the navigation
+// controller.
+- (void)successfulReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator;
+
+@end
 
 // Coordinator that pushes a ReauthenticationViewController in a navigation
 // controller. Blocks the content in the navigation controller until until Local
@@ -17,6 +28,8 @@
 // controller that must be blocked, right after pushing the blocked view
 // controller in the navigation controller.
 @interface ReauthenticationCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<ReauthenticationCoordinatorDelegate> delegate;
 
 // Creates a coordinator for blocking the top view controller in
 // `navigationController`.
