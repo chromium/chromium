@@ -2416,14 +2416,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
-    expires_after="2023-08-05">
+    expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>The Spotlight Action pressed by the user.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.Availability" enum="IOSSpotlightAvailability"
-    expires_after="2023-12-10">
+    expires_after="2024-06-01">
   <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2434,26 +2434,56 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksIndexingDuration" units="ms"
-    expires_after="2023-08-05">
+    expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>Time spent in Spotlight initial indexation of bookmarks.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksInitialIndexSize" units="units"
-    expires_after="2023-08-05">
+    expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>Number of bookmarks indexed during initial indexation.</summary>
 </histogram>
 
+<histogram name="IOS.Spotlight.OpenTabsIndexingDuration" units="ms"
+    expires_after="2024-06-01">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Time spent in Spotlight initial indexation of open tabs.</summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.OpenTabsInitialIndexSize" units="units"
+    expires_after="2024-06-01">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Number of open tabs indexed during initial indexation.</summary>
+</histogram>
+
 <histogram name="IOS.Spotlight.Origin" enum="IOSSpotlightOrigin"
-    expires_after="2023-10-08">
+    expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
     This event is recorded each time a Chrome Spotlight entry is selected by the
     user. The enumeration indicates the nature of the Spotlight entry.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.ReadingListIndexingDuration" units="ms"
+    expires_after="2024-06-01">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Time spent in Spotlight initial indexation of reading list.</summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.ReadingListInitialIndexSize" units="units"
+    expires_after="2024-06-01">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Number of reading list items indexed during initial indexation.
   </summary>
 </histogram>
 

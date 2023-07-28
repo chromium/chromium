@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/elapsed_timer.h"
 #import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
@@ -244,10 +245,17 @@ using web::WebState;
 /// Iterate over all non-incognito web states and adds them to the index
 /// immediately.
 - (void)indexAllOpenTabs {
+  const base::ElapsedTimer timer;
+
   for (Browser* browser : self.browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
     [self addAllURLsFromWebStateList:webStateList];
   }
+
+  UMA_HISTOGRAM_TIMES("IOS.Spotlight.OpenTabsIndexingDuration",
+                      timer.Elapsed());
+  UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.OpenTabsInitialIndexSize",
+                            _knownURLCounts.size());
 }
 
 /// NSError to throw when the browser list isn't available.
