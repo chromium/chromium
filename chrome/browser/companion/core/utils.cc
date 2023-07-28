@@ -45,7 +45,7 @@ std::string GetImageUploadURLForCompanion() {
   std::string url = base::GetFieldTrialParamValueByFeature(
       *GetFeatureToUse(), "companion-image-upload-url");
   if (url.empty()) {
-    return std::string("https://lens.google.com/upload");
+    return std::string("https://lens.google.com/v3/upload");
   }
   return url;
 }
