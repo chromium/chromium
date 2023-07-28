@@ -347,7 +347,7 @@ ProfileAttributesStorage::ProfileAttributesStorage(
   repeating_timer_->Start();
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  EnsureStorageKeyOrderPrefIsInitialized();
+  EnsureProfilesOrderPrefIsInitialized();
 }
 
 ProfileAttributesStorage::~ProfileAttributesStorage() = default;
@@ -522,20 +522,59 @@ ProfileAttributesStorage::GetAllProfilesAttributesSorted(
   return ret;
 }
 
-void ProfileAttributesStorage::EnsureStorageKeyOrderPrefIsInitialized() {
-  // Makes sure the pref is properly initialized if it wasn't.
-  if (!prefs_->HasPrefPath(prefs::kProfilesOrder)) {
-    ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
-    base::Value::List& saved_order = update.Get();
-    std::vector<ProfileAttributesEntry*> entries =
-        GetAllProfilesAttributesSortedByLocalProfileName();
-    for (ProfileAttributesEntry* entry : entries) {
-      saved_order.Append(StorageKeyFromProfilePath(entry->GetPath()));
+bool ProfileAttributesStorage::IsProfilesOrderPrefValid() const {
+  const base::Value::List& profile_keys_order =
+      prefs_->GetList(prefs::kProfilesOrder);
+
+  // We use this map to validate the values in the prefs.
+  base::flat_map<std::string, ProfileAttributesEntry*> key_entry_map =
+      GetStorageKeyEntryMap();
+
+  // Make sure the sizes are equal to proceed.
+  if (profile_keys_order.size() != key_entry_map.size()) {
+    return false;
+  }
+
+  base::flat_set<ProfileAttributesEntry*> entries_set;
+  for (const base::Value& keyValue : profile_keys_order) {
+    const std::string& key = keyValue.GetString();
+
+    auto key_entry_it = key_entry_map.find(key);
+    // If the entry is not found, there is a mismatch.
+    if (key_entry_it == key_entry_map.end()) {
+      return false;
+    }
+
+    ProfileAttributesEntry* found_entry = key_entry_it->second;
+    CHECK(found_entry);
+    auto inserted_entry = entries_set.insert(found_entry);
+    // We do not expect the same entry to be repeated or be invalid.
+    // `inserted_entry.second` is false if the element already exists.
+    if (!inserted_entry.second) {
+      return false;
     }
   }
 
-  DCHECK_EQ(prefs_->GetList(prefs::kProfilesOrder).size(),
-            GetNumberOfProfiles());
+  return true;
+}
+
+void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
+  ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
+  base::Value::List& profile_keys_order = update.Get();
+
+  // If the saved order pref is not valid, we recover by reseting the whole list
+  // and re-populate it with the profiles ordered by local profile name.
+  if (!IsProfilesOrderPrefValid()) {
+    profile_keys_order.clear();
+
+    std::vector<ProfileAttributesEntry*> entries =
+        GetAllProfilesAttributesSortedByLocalProfileName();
+    for (ProfileAttributesEntry* entry : entries) {
+      profile_keys_order.Append(StorageKeyFromProfilePath(entry->GetPath()));
+    }
+  }
+
+  DCHECK_EQ(profile_keys_order.size(), GetNumberOfProfiles());
 }
 
 base::flat_map<std::string, ProfileAttributesEntry*>
@@ -1101,4 +1140,9 @@ void ProfileAttributesStorage::SaveAvatarImageAtPathNoCallback(
     const base::FilePath& image_path) {
   SaveAvatarImageAtPath(profile_path, image, key, image_path,
                         base::OnceClosure());
+}
+
+void ProfileAttributesStorage::
+    EnsureProfilesOrderPrefIsInitializedForTesting() {
+  EnsureProfilesOrderPrefIsInitialized();
 }

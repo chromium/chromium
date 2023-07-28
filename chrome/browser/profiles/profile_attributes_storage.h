@@ -206,6 +206,8 @@ class ProfileAttributesStorage
   // tests to time out.
   void DisableProfileMetricsForTesting();
 
+  void EnsureProfilesOrderPrefIsInitializedForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            DownloadHighResAvatarTest);
@@ -233,7 +235,11 @@ class ProfileAttributesStorage
 
   // Makes sure that the pref `prefs::kProfilesOrder` is properly initialized
   // with the existing profiles.
-  void EnsureStorageKeyOrderPrefIsInitialized();
+  void EnsureProfilesOrderPrefIsInitialized();
+
+  // Returns whether the list in `prefs::kProfilesOrder` is consistent with the
+  // profile entries.
+  bool IsProfilesOrderPrefValid() const;
 
   // Returns a constructed map of storage key to each `ProfileAttributesEntry`.
   base::flat_map<std::string, ProfileAttributesEntry*> GetStorageKeyEntryMap()

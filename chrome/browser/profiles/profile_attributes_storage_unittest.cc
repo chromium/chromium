@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/state.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -2019,6 +2020,61 @@ TEST_F(ProfileAttributesStorageTest,
     ASSERT_EQ(2U, saved_order_entries.size());
     EXPECT_EQ(profile1, saved_order_entries[0]->GetLocalProfileName());
     EXPECT_EQ(profile3, saved_order_entries[1]->GetLocalProfileName());
+  }
+}
+
+TEST_F(ProfileAttributesStorageTest, RecoverProfileOrderPrefAfterIssues) {
+  DisableObserver();
+
+  base::Value::List profile_keys;
+  profile_keys.with_capacity(3);
+  profile_keys.Append(u"D");
+  profile_keys.Append(u"B");
+  profile_keys.Append(u"C");
+
+  for (auto& profile_key : profile_keys) {
+    AddSimpleTestingProfileWithName(
+        base::ASCIIToUTF16(profile_key.GetString()));
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  ScopedListPrefUpdate update(local_state, prefs::kProfilesOrder);
+  base::Value::List& profiles_order = update.Get();
+
+  ASSERT_EQ(profile_keys, profiles_order);
+
+  // After recovery, the expected order is modified to be alphabetically
+  // ordered.
+  base::Value::List expected_recovered_keys;
+  expected_recovered_keys.with_capacity(profile_keys.size());
+  expected_recovered_keys.Append(profile_keys[1].GetString());
+  expected_recovered_keys.Append(profile_keys[2].GetString());
+  expected_recovered_keys.Append(profile_keys[0].GetString());
+
+  {
+    // Simulate an issue with a lost profile in the pref.
+    profiles_order.EraseValue(profile_keys[0]);
+    ASSERT_NE(profiles_order.size(), expected_recovered_keys.size());
+    storage()->EnsureProfilesOrderPrefIsInitializedForTesting();
+    EXPECT_EQ(profiles_order, expected_recovered_keys);
+  }
+
+  {
+    // Simulate an issue where a key is duplicated.
+    profiles_order[0] = base::Value(profiles_order[1].GetString());
+    ASSERT_EQ(profiles_order[0], profiles_order[1]);
+    ASSERT_NE(profiles_order[0], expected_recovered_keys[0]);
+    ASSERT_NE(expected_recovered_keys[0], expected_recovered_keys[1]);
+    storage()->EnsureProfilesOrderPrefIsInitializedForTesting();
+    EXPECT_EQ(profiles_order, expected_recovered_keys);
+  }
+
+  {
+    // Simulate an issue where a key does not match an entry.
+    profiles_order[0] = base::Value(u"DBC");
+    ASSERT_NE(profiles_order[0], expected_recovered_keys[0]);
+    storage()->EnsureProfilesOrderPrefIsInitializedForTesting();
+    EXPECT_EQ(profiles_order, expected_recovered_keys);
   }
 }
 
