@@ -67,7 +67,8 @@ class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {
 
 // Verifies that moving the focus by the tab key from the lock contents view
 // to the login shelf works as expected.
-TEST_F(LoginShelfViewPixelTest, FocusTraversalFromLockContents) {
+// Test disabled due to flakiness. http://crbug.com/1468453
+TEST_F(LoginShelfViewPixelTest, DISABLED_FocusTraversalFromLockContents) {
   // Trigger the tab key. Verify that the login user expand button is focused.
   aura::Window* primary_shelf_window = GetPrimaryShelf()->GetWindow();
   PressAndReleaseKey(ui::VKEY_TAB);
@@ -146,7 +147,9 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 
 // Verifies that focusing on the login shelf widget with a policy wallpaper
 // works as expected (see https://crbug.com/1197052).
-TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL, FocusOnShutdownButton) {
+// Test disabled due to flakiness. http://crbug.com/1468453
+TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL,
+       DISABLED_FocusOnShutdownButton) {
   FocusOnShutdownButton();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
