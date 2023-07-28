@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
-import("//chrome/test/include_js_tests.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
