@@ -306,13 +306,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // Casting is safe, as this code is run on iOS Chrome & WebView only.
   auto* driver = static_cast<IOSPasswordManagerDriver*>(
       [_driverHelper PasswordManagerDriver:webFrame]);
-  if (driver)
-    driver->ProcessFrameDeletion();
 
   auto fieldDataManager =
       UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
-  _passwordManager->OnIframeDetach(webFrame->GetFrameId(), driver,
-                                   *fieldDataManager);
+  _passwordManager->OnIframeDetach(frameId, driver, *fieldDataManager);
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
@@ -430,9 +427,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  const std::string frameId = SysNSStringToUTF8(formQuery.frameID);
   web::WebFrame* frame =
-      feature->GetWebFramesManager(_webState)->GetFrameWithId(
-          SysNSStringToUTF8(formQuery.frameID));
+      feature->GetWebFramesManager(_webState)->GetFrameWithId(frameId);
 
   if (frame == nullptr) {
     completion({}, self);
@@ -441,7 +438,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   NSArray<FormSuggestion*>* rawSuggestions = [self.suggestionHelper
       retrieveSuggestionsWithFormID:formQuery.uniqueFormID
                     fieldIdentifier:formQuery.uniqueFieldID
-                            inFrame:frame
+                         forFrameId:frameId
                           fieldType:formQuery.fieldType];
 
   NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
@@ -529,9 +526,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
           completionHandler:(SuggestionHandledCompletion)completion {
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  const std::string frameId = SysNSStringToUTF8(frameID);
   web::WebFrame* frame =
-      feature->GetWebFramesManager(_webState)->GetFrameWithId(
-          SysNSStringToUTF8(frameID));
+      feature->GetWebFramesManager(_webState)->GetFrameWithId(frameId);
 
   switch (suggestion.popupItemId) {
     case autofill::PopupItemId::kAllSavedPasswordsEntry: {
@@ -566,7 +563,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                            kPasswordFormSuggestionSuffix.length];
       std::unique_ptr<password_manager::FillData> fillData =
           [self.suggestionHelper passwordFillDataForUsername:username
-                                                     inFrame:frame];
+                                                  forFrameId:frameId];
 
       if (!fillData) {
         completion();
@@ -602,21 +599,21 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 - (void)processPasswordFormFillData:
             (const autofill::PasswordFormFillData&)formData
-                            inFrame:(web::WebFrame*)frame
+                         forFrameId:(const std::string&)frameId
                         isMainFrame:(BOOL)isMainFrame
                   forSecurityOrigin:(const GURL&)origin {
   // Biometric auth is always enabled on iOS so wait_for_username is
   // specifically set to prevent filling without user confirmation.
   DCHECK(formData.wait_for_username);
   [self.suggestionHelper processWithPasswordFormFillData:formData
-                                                 inFrame:frame
+                                              forFrameId:frameId
                                              isMainFrame:isMainFrame
                                        forSecurityOrigin:origin];
 }
 
-- (void)onNoSavedCredentialsWithFrame:(web::WebFrame*)frame {
-  [self.suggestionHelper processWithNoSavedCredentialsWithFrame:frame];
-  [self detachListenersForBottomSheet:frame];
+- (void)onNoSavedCredentialsWithFrameId:(const std::string&)frameId {
+  [self.suggestionHelper processWithNoSavedCredentialsWithFrameId:frameId];
+  [self detachListenersForBottomSheet:frameId];
 }
 
 - (void)formEligibleForGenerationFound:(const PasswordFormGenerationData&)form {
@@ -652,12 +649,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
-                              inFrame:(web::WebFrame*)frame {
-  [self.delegate attachListenersForBottomSheet:rendererIds inFrame:frame];
+                           forFrameId:(const std::string&)frameId {
+  [self.delegate attachListenersForBottomSheet:rendererIds forFrameId:frameId];
 }
 
-- (void)detachListenersForBottomSheet:(web::WebFrame*)frame {
-  [self.delegate detachListenersForBottomSheet:frame];
+- (void)detachListenersForBottomSheet:(const std::string&)frameId {
+  [self.delegate detachListenersForBottomSheet:frameId];
 }
 
 #pragma mark - Private methods
@@ -683,8 +680,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     // Invoke the password manager callback to autofill password forms
     // on the loaded page.
     _passwordManager->OnPasswordFormsParsed(driver, forms);
-  } else {
-    [self onNoSavedCredentialsWithFrame:frame];
+  } else if (frame) {
+    [self onNoSavedCredentialsWithFrameId:frame->GetFrameId()];
   }
   // Invoke the password manager callback to check if password was
   // accepted or rejected. If accepted, infobar is presented. If

@@ -475,7 +475,7 @@ void ChromeAutofillClientIOS::PropagateAutofillPredictions(
   AutofillBottomSheetTabHelper* helper =
       AutofillBottomSheetTabHelper::FromWebState(web_state_);
   if (helper && !personal_data_manager_->GetCreditCardsToSuggest().empty()) {
-    helper->AttachPaymentsListeners(forms, frame);
+    helper->AttachPaymentsListeners(forms, frame->GetFrameId());
   }
 
   // If the frame exists, then the driver will exist/be created.

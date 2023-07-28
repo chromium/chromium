@@ -573,19 +573,20 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
-                              inFrame:(web::WebFrame*)frame {
+                           forFrameId:(const std::string&)frameId {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(_webState);
   if (bottomSheetTabHelper) {
-    bottomSheetTabHelper->AttachPasswordListeners(rendererIds, frame);
+    bottomSheetTabHelper->AttachPasswordListeners(rendererIds, frameId);
   }
 }
 
-- (void)detachListenersForBottomSheet:(web::WebFrame*)frame {
+- (void)detachListenersForBottomSheet:(const std::string&)frameId {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(_webState);
   if (bottomSheetTabHelper) {
-    bottomSheetTabHelper->DetachPasswordListeners(frame, /*refocus = */ false);
+    bottomSheetTabHelper->DetachPasswordListeners(frameId,
+                                                  /*refocus = */ false);
   }
 }
 

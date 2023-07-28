@@ -45,7 +45,7 @@ class WebState;
 // one of the suggestions.
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
-                              inFrame:(web::WebFrame*)frame;
+                           forFrameId:(const std::string&)frameId;
 
 @end
 
@@ -72,7 +72,7 @@ class WebState;
 - (NSArray<FormSuggestion*>*)
     retrieveSuggestionsWithFormID:(autofill::FormRendererId)formIdentifier
                   fieldIdentifier:(autofill::FieldRendererId)fieldIdentifier
-                          inFrame:(web::WebFrame*)frame
+                       forFrameId:(const std::string&)frameId
                         fieldType:(NSString*)fieldType;
 
 // Checks if suggestions are available for the field.
@@ -90,7 +90,7 @@ class WebState;
 // -fillPasswordFormWithFillData:completionHandler:.
 - (std::unique_ptr<password_manager::FillData>)
     passwordFillDataForUsername:(NSString*)username
-                        inFrame:(web::WebFrame*)frame;
+                     forFrameId:(const std::string&)frameId;
 
 // The following methods should be called to maintain the correct state along
 // with password forms.
@@ -105,7 +105,7 @@ class WebState;
 // -processPasswordFormFillData.
 - (void)processWithPasswordFormFillData:
             (const autofill::PasswordFormFillData&)formData
-                                inFrame:(web::WebFrame*)frame
+                             forFrameId:(const std::string&)frameId
                             isMainFrame:(BOOL)isMainFrame
                       forSecurityOrigin:(const GURL&)origin;
 
@@ -115,7 +115,7 @@ class WebState;
 // -onNoSavedCredentials.
 // The frame is used to get the AccountSelectFillData and reset the credentials
 // cache.
-- (void)processWithNoSavedCredentialsWithFrame:(web::WebFrame*)frame;
+- (void)processWithNoSavedCredentialsWithFrameId:(const std::string&)frameId;
 
 // Updates the state for password form extraction state.
 // This method should be called in password controller's
