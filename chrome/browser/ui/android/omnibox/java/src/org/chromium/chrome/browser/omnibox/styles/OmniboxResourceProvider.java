@@ -504,6 +504,15 @@ public class OmniboxResourceProvider {
                         : R.dimen.toolbar_edge_padding);
     }
 
+    /** Return the width of the Omnibox Suggestion decoration icon. */
+    public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                        && OmniboxFeatures.shouldShowSmallBottomMargin())
+                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
+                        : R.dimen.omnibox_suggestion_icon_area_size);
+    }
+
     /** */
     public static @DimenRes int selectMarginDimen(
             Context context, @DimenRes int regular, @DimenRes int smaller, @DimenRes int smallest) {

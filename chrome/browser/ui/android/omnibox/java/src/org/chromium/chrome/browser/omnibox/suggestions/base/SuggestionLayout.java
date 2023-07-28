@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 import java.lang.annotation.Retention;
@@ -143,10 +144,8 @@ class SuggestionLayout extends ViewGroup {
             setPaddingRelative(startSpace, 0, endSpace, 0);
         }
 
-        mDecorationIconWidthPx = getResources().getDimensionPixelSize(
-                useModernUI && OmniboxFeatures.shouldShowSmallBottomMargin()
-                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                        : R.dimen.omnibox_suggestion_icon_area_size);
+        mDecorationIconWidthPx =
+                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(context);
 
         mActionButtonWidthPx = getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_action_button_width);

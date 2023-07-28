@@ -9,18 +9,20 @@ import android.view.KeyEvent;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
  * Container view for the {@link ChipView}.
  * Chips should be initially horizontally aligned with the Content view and stretch to the end of
- * the encompassing BaseSuggestionView
+ * the encompassing BaseSuggestionView.
  */
 public class ActionChipsView extends RecyclerView {
     private @Nullable ActionChipsAdapter mAdapter;
@@ -41,10 +43,8 @@ public class ActionChipsView extends RecyclerView {
         setPaddingRelative(0, 0, 0,
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
 
-        final @Px int leadInSpace = getResources().getDimensionPixelSize(
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                        : R.dimen.omnibox_suggestion_icon_area_size);
+        final @Px int leadInSpace =
+                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(context);
         final @Px int elementSpace =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
 
@@ -67,17 +67,22 @@ public class ActionChipsView extends RecyclerView {
             if (chip != null) return chip.performClick();
         }
 
+        return superOnKeyDown(keyCode, event);
+    }
+
+    /**
+     * Proxy calls to super.onKeyDown; call exposed for testing purposes.
+     * There is no way to detect calls to super using robolectric.
+     */
+    @CheckDiscard("Should be inlined except for testing")
+    @VisibleForTesting
+    public boolean superOnKeyDown(int keyCode, KeyEvent event) {
         return super.onKeyDown(keyCode, event);
     }
 
     public void setAdapter(@Nullable ActionChipsAdapter adapter) {
         super.setAdapter(adapter);
         mAdapter = adapter;
-    }
-
-    @Override
-    public @Nullable ActionChipsAdapter getAdapter() {
-        return mAdapter;
     }
 
     @Override
