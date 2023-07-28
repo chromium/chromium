@@ -306,8 +306,14 @@ class Reconfigurer {
           if (e.name === 'NotReadableError') {
             // TODO(b/187879603): Remove this hacked once we understand more
             // about such error.
+            let facing: Facing|null = null;
+            let errorMessage: string = e.message;
             const deviceOperator = DeviceOperator.getInstance();
             if (deviceOperator !== null) {
+              // We cannot get the camera facing from stream since it might
+              // not be successfully opened. Therefore, we asked the camera
+              // facing via Mojo API.
+              facing = await deviceOperator.getCameraFacing(c.deviceId);
               // If 'NotReadableError' is thrown while the device is in use,
               // it means that the devices is used by Lacros.
               // In this case, we add it into `failedDevices` and skip using
@@ -315,16 +321,10 @@ class Reconfigurer {
               const inUse = await deviceOperator.isDeviceInUse(c.deviceId);
               if (inUse) {
                 this.failedDevices.add(c.deviceId);
+                errorMessage = 'Lacros is using the camera';
               }
             }
-            // We cannot get the camera facing from stream since it might
-            // not be successfully opened. Therefore, we asked the camera
-            // facing via Mojo API.
-            let facing: Facing|null = null;
-            if (deviceOperator !== null) {
-              facing = await deviceOperator.getCameraFacing(c.deviceId);
-            }
-            errorToReport = new Error(`${e.message} (facing = ${facing})`);
+            errorToReport = new Error(`${errorMessage} (facing = ${facing})`);
             errorToReport.name = 'NotReadableError';
           } else {
             errorToReport = e;
