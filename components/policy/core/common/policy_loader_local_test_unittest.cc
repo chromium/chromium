@@ -9,6 +9,8 @@
 #include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -85,6 +87,47 @@ TEST_F(PolicyLoaderLocalTestTest, LoadFromJson) {
                    POLICY_SOURCE_CLOUD, /*name=*/"b", base::Value("test")));
 
   LoadAndVerifyPolicies(policy_loader.get(), expected_policies);
+}
+
+TEST_F(PolicyLoaderLocalTestTest, SamePolicyCombination) {
+  std::unique_ptr<PolicyLoaderLocalTest> policy_loader =
+      std::make_unique<PolicyLoaderLocalTest>();
+
+  // Set same policy with different source
+  policy_loader->SetPolicyListJson(R"(
+  [
+    {
+      "level": 1,
+      "scope": 1,
+      "source": 1,
+      "name": "CloudReportingEnabled",
+      "value": true
+    },
+    {
+      "level": 1,
+      "scope": 1,
+      "source": 2,
+      "name": "CloudReportingEnabled",
+      "value": false
+    }
+  ])");
+
+  std::unique_ptr<PolicyBundle> bundle =
+      std::make_unique<PolicyBundle>(policy_loader->Load());
+  const PolicyMap::Entry* entry =
+      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+          .Get(policy::key::kCloudReportingEnabled);
+
+  PolicyMap::Entry expected_entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                  POLICY_SOURCE_CLOUD, base::Value(false),
+                                  nullptr);
+  expected_entry.AddConflictingPolicy(
+      PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                       POLICY_SOURCE_COMMAND_LINE, base::Value(true), nullptr));
+  expected_entry.AddMessage(PolicyMap::MessageType::kWarning,
+                            IDS_POLICY_CONFLICT_DIFF_VALUE);
+
+  EXPECT_TRUE(entry->Equals(expected_entry));
 }
 
 TEST_F(PolicyLoaderLocalTestTest, InvalidInput_MissingScope) {

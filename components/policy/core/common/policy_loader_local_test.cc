@@ -56,7 +56,12 @@ void PolicyLoaderLocalTest::SetPolicyListJson(
     base::Value value = policy_dict->Find("value")->Clone();
 
     PolicyMap::Entry entry(level, scope, source, std::move(value), nullptr);
-    policy_map.Set(name, std::move(entry));
+    // Policies are set to the |policy_map| this way so that combinations
+    // of the same policy are merged properly
+    PolicyMap entry_map = PolicyMap();
+    entry_map.Set(name, std::move(entry));
+
+    policy_map.MergePolicy(name, std::move(entry_map), false);
   }
 
   FilterSensitivePolicies(&policy_map);
