@@ -852,8 +852,9 @@ class RawRefRewriter {
         affected_expr_operator_rewriter(output_helper,
                                         affectedMemberExprOperatorFct_),
         affected_expr_rewriter(output_helper, affectedMemberExprFct_),
-        affected_expr_rewriter_withParentheses(output_helper,
-                                               affectedMemberExprWithParenFct_),
+        affected_expr_rewriter_with_parentheses(
+            output_helper,
+            affectedMemberExprWithParenFct_),
         affected_initializer_expr_rewriter(output_helper,
                                            affectedInitializerExprFct_),
         global_scope_rewriter(output_helper, "global-scope"),
@@ -901,6 +902,8 @@ class RawRefRewriter {
                           hasParent(declStmt(hasParent(cxxForRangeStmt()))))))),
                 hasAncestor(cxxConstructorDecl(isDefaulted())),
                 hasParent(cxxOperatorCallExpr()),
+                hasParent(unaryOperator(
+                    anyOf(hasOperatorName("--"), hasOperatorName("++")))),
                 hasParent(arraySubscriptExpr()),
                 hasParent(callExpr(callee(
                     fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))))
@@ -965,16 +968,18 @@ class RawRefRewriter {
     match_finder.addMatcher(auto_var_decl_matcher, &affected_expr_rewriter);
 
     // Matches affected member expressions that need parenthesization.
-    auto affected_member_expr_withParentheses =
+    auto affected_member_expr_with_parentheses =
         memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))),
                    anyOf(hasParent(cxxOperatorCallExpr()),
+                         hasParent(unaryOperator(anyOf(hasOperatorName("--"),
+                                                       hasOperatorName("++")))),
                          hasParent(arraySubscriptExpr()),
                          hasParent(callExpr(callee(fieldDecl(
                              hasExplicitFieldDecl(field_decl_matcher)))))))
             .bind("affectedMemberExprWithParentheses");
 
-    match_finder.addMatcher(affected_member_expr_withParentheses,
-                            &affected_expr_rewriter_withParentheses);
+    match_finder.addMatcher(affected_member_expr_with_parentheses,
+                            &affected_expr_rewriter_with_parentheses);
 
     // for structs/class that don't define a constructor and are initialized
     // using braced list initialization, we need to add raw_ref around the
@@ -1168,7 +1173,7 @@ class RawRefRewriter {
   RawRefFieldDeclRewriter field_decl_rewriter;
   AffectedExprRewriter affected_expr_operator_rewriter;
   AffectedExprRewriter affected_expr_rewriter;
-  AffectedExprRewriter affected_expr_rewriter_withParentheses;
+  AffectedExprRewriter affected_expr_rewriter_with_parentheses;
   AffectedExprRewriter affected_initializer_expr_rewriter;
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter overlapping_field_decl_writer;

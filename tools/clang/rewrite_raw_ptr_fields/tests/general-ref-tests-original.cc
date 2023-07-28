@@ -120,6 +120,9 @@ int main() {
   // Expected rewrite:  A obj{.member = {raw_ref(a)}};
   A obj2{.member = {a}};
   obj2.member.i++;
+  ++obj2.member.i;
+  obj2.member.i--;
+  --obj2.member.i;
 
   // No rewrite expected here for obj2.member.i since A::member::i itself will
   // be rewritten into raw_ref.

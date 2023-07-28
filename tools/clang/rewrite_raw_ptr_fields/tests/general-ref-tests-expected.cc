@@ -117,16 +117,19 @@ int main() {
 
   // Expected rewrite:  A obj{raw_ref(a)};
   A obj{raw_ref(a)};
-  *obj.member.i++;
+  (*obj.member.i)++;
 
   // Expected rewrite:  A obj{.member = {raw_ref(a)}};
   A obj2{.member = {raw_ref(a)}};
-  *obj2.member.i++;
+  (*obj2.member.i)++;
+  ++(*obj2.member.i);
+  (*obj2.member.i)--;
+  --(*obj2.member.i);
 
   // No rewrite expected here for obj2.member.i since A::member::i itself will
   // be rewritten into raw_ref.
   A obj3{obj2.member.i};
-  *obj3.member.i++;
+  (*obj3.member.i)++;
 
   static struct {
     // Expected rewrite: const raw_ref<int> member;
@@ -142,7 +145,7 @@ int main() {
   // No need to add raw_ref() around `a` here because the constructor will be
   // called.
   Temp tmp{a};
-  *tmp.member++;
+  (*tmp.member)++;
 
   struct StringRefObj {
     const raw_ref<const std::string> member;
