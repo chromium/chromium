@@ -987,18 +987,15 @@ V4L2Queue::V4L2Queue(const IoctlAsCallback& ioctl_cb,
       weak_this_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Check if this queue support requests.
   struct v4l2_requestbuffers reqbufs = {
       .count = 0, .type = type_, .memory = V4L2_MEMORY_MMAP};
-  if (ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs) != 0) {
-    VPLOGF(1) << "Request support checks's VIDIOC_REQBUFS ioctl failed.";
-    return;
-  }
+  supports_requests_ = (ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs) == kIoctlOk) &&
+                       (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS);
 
-  if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
-    supports_requests_ = true;
-    DVLOGF(4) << "Queue supports request API.";
-  }
+  // Stateful backends for example do not support requests.
+  VPLOG_IF(4, supports_requests_)
+      << "This queue does " << (supports_requests_ ? "" : "not")
+      << " support requests.";
 }
 
 V4L2Queue::~V4L2Queue() {
