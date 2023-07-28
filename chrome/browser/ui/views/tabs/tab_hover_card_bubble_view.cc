@@ -401,6 +401,11 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
 
   if (discard_tab_treatment_enabled_ || memory_usage_in_hovercards_enabled_) {
     footer_view_ = AddChildView(std::make_unique<FooterView>());
+    footer_view_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kScaleToMaximum)
+            .WithOrder(2));
   }
 
   // Set up layout.

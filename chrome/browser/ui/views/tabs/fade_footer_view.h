@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_FADE_FOOTER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_FADE_FOOTER_VIEW_H_
 
+#include <string>
+
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/tabs/fade_view.h"
 #include "ui/views/controls/image_view.h"
@@ -26,8 +28,12 @@ struct PerformanceRowData {
 template <typename T>
 class FooterRow : public FadeWrapper<views::View, T> {
  public:
-  FooterRow();
+  explicit FooterRow(bool is_fade_out_view);
   ~FooterRow() override = default;
+
+  virtual void SetContent(const ui::ImageModel& icon_image_model,
+                          std::u16string label_text,
+                          int max_footer_width);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -40,8 +46,6 @@ class FooterRow : public FadeWrapper<views::View, T> {
 
   views::ImageView* icon() { return icon_; }
 
-  void UpdateIconAndLabelLayout(int max_footer_width);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterUpdates);
@@ -49,13 +53,15 @@ class FooterRow : public FadeWrapper<views::View, T> {
                            HoverCardFooterShowsDiscardStatus);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
+  const bool is_fade_out_view_ = false;
   raw_ptr<views::Label> footer_label_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
 };
 
 class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
  public:
-  FadeAlertFooterRow() = default;
+  explicit FadeAlertFooterRow(bool is_fade_out_view)
+      : FooterRow<AlertFooterRowData>(is_fade_out_view) {}
   ~FadeAlertFooterRow() override = default;
 
   // FadeWrapper:
@@ -64,7 +70,8 @@ class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
 
 class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
  public:
-  FadePerformanceFooterRow() = default;
+  explicit FadePerformanceFooterRow(bool is_fade_out_view)
+      : FooterRow<PerformanceRowData>(is_fade_out_view) {}
   ~FadePerformanceFooterRow() override = default;
 
   // FadeWrapper:
@@ -91,6 +98,9 @@ class FooterView : public views::View {
   PerformanceFadeView* GetPerformanceRowForTesting() {
     return performance_row_;
   }
+
+  // views::View:
+  gfx::Size GetMinimumSize() const override;
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
