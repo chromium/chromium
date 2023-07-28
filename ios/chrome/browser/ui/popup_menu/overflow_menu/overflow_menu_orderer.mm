@@ -337,8 +337,12 @@ using DestinationLookup =
                                _destinationOrderData.shownDestinations);
     _localStatePrefs->ClearPref(prefs::kOverflowMenuHiddenDestinations);
 
-    _destinationUsageHistoryEnabled.value = YES;
-    [self.destinationUsageHistory clearStoredClickData];
+    // If Destination Usage History needs to be reenabled, then clear any stored
+    // data.
+    if (!_destinationUsageHistoryEnabled.value) {
+      _destinationUsageHistoryEnabled.value = YES;
+      [self.destinationUsageHistory clearStoredClickData];
+    }
 
     [self flushDestinationsToPrefs];
   }

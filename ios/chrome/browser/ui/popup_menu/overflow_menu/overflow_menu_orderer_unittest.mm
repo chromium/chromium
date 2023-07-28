@@ -296,7 +296,7 @@ TEST_F(OverflowMenuOrdererTest, MigratesDestinationRanking) {
       prefs_->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
 
   EXPECT_EQ(new_ranking, old_ranking);
-  EXPECT_EQ(0ul, new_usage_history.size());
+  EXPECT_EQ(1ul, new_usage_history.size());
 }
 
 TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationInMiddleOfRanking) {
