@@ -31,8 +31,8 @@ void AutocompleteUnrecognizedFallbackMetricLogger::ContextMenuClosed() {
   }
 
   auto metric_name = [](std::string_view bucket) {
-    return base::StrCat({"Autofill.ManualFallback.Funnel.ExplicitTriggering.",
-                         bucket, ".Address"});
+    return base::StrCat(
+        {"Autofill.ManualFallback.ExplicitlyTriggered.", bucket, ".Address"});
   };
   // Emit to the bucket corresponding to the `state` and to the "Total" bucket.
   base::UmaHistogramBoolean(

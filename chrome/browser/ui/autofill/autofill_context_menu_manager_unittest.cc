@@ -253,7 +253,7 @@ TEST_F(AutofillContextMenuManagerTest,
 }
 
 TEST_F(AutofillContextMenuManagerTest,
-       AutocompleteUnrecognizedFallback_ExplicitTriggeringMetric_NotAccepted) {
+       AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_NotAccepted) {
   // Simulate triggering the context menu on an ac=unrecognized field.
   FormData form = SeeAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -261,21 +261,20 @@ TEST_F(AutofillContextMenuManagerTest,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  // Expect that when closing the context menu without accepting, the explicit
-  // trigging metric is emitted correctly.
+  // Expect that when closing the context menu without accepting, the explicitly
+  // triggered metric is emitted correctly.
   base::HistogramTester histogram_tester;
   autofill_context_menu_manager()->OnMenuClosed();
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ManualFallback.Funnel.ExplicitTriggering."
+      "Autofill.ManualFallback.ExplicitlyTriggered."
       "ClassifiedFieldAutocompleteUnrecognized.Address",
       false, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ManualFallback.Funnel.ExplicitTriggering.Total.Address", false,
-      1);
+      "Autofill.ManualFallback.ExplicitlyTriggered.Total.Address", false, 1);
 }
 
 TEST_F(AutofillContextMenuManagerTest,
-       AutocompleteUnrecognizedFallback_ExplicitTriggeringMetric_Accepted) {
+       AutocompleteUnrecognizedFallback_ExplicitlyTriggeringMetric_Accepted) {
   // Simulate triggering the context menu on an ac=unrecognized field.
   FormData form = SeeAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -283,19 +282,18 @@ TEST_F(AutofillContextMenuManagerTest,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  // Expect that when accepting a suggestion, the explicit trigging metric is
+  // Expect that when accepting a suggestion, the explicitly triggered metric is
   // emitted correctly.
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
   base::HistogramTester histogram_tester;
   autofill_context_menu_manager()->OnMenuClosed();
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ManualFallback.Funnel.ExplicitTriggering."
+      "Autofill.ManualFallback.ExplicitlyTriggered."
       "ClassifiedFieldAutocompleteUnrecognized.Address",
       true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ManualFallback.Funnel.ExplicitTriggering.Total.Address", true,
-      1);
+      "Autofill.ManualFallback.ExplicitlyTriggered.Total.Address", true, 1);
 }
 
 }  // namespace autofill
