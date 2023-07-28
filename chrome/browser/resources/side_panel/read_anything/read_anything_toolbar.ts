@@ -47,6 +47,30 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     anchorAlignmentY: AnchorAlignment.AFTER_END,
   };
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    const onFontClick = (fontName: string) => {
+      this.onFontClick_(fontName);
+    };
+
+    const fontNodes = Array.from(this.$.fontSubmenu.children);
+    fontNodes.forEach((element) => {
+      if (element instanceof HTMLButtonElement) {
+        if (element.classList.contains('back') || !element.innerText) {
+          return;
+        }
+        // Update the font of each button to be the same as the font text.
+        element.style.fontFamily = element.innerText;
+        // Set the onclick listener for each button so that the content
+        // page font updates when a button is clicked.
+        element.addEventListener('click', function() {
+          onFontClick(element.innerText);
+        });
+      }
+    });
+  }
+
   private onDefaultTheme_() {
     this.updateTheme_('');
   }
@@ -157,34 +181,6 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       this.contentPage.updateLetterSpacing(letterSpacing);
     }
     this.closeMenus_();
-  }
-
-  private onPoppinsClick_() {
-    this.onFontClick_('Poppins');
-  }
-
-  private onSansSerifClick_() {
-    this.onFontClick_('Sans-Serif');
-  }
-
-  private onSerifClick_() {
-    this.onFontClick_('Serif');
-  }
-
-  private onComicNeueClick_() {
-    this.onFontClick_('Comic Neue');
-  }
-
-  private onLexendDecaClick_() {
-    this.onFontClick_('Lexend Deca');
-  }
-
-  private onEbGaramondClick_() {
-    this.onFontClick_('EB Garamond');
-  }
-
-  private onStixClick_() {
-    this.onFontClick_('STIX Two Text');
   }
 
   private onFontClick_(fontName: string) {
