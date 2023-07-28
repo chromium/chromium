@@ -18,10 +18,10 @@
 #include <errno.h>
 #endif
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/safe_conversions.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,9 +38,9 @@ mach_timebase_info_data_t* MachTimebaseInfo() {
   static mach_timebase_info_data_t timebase_info = []() {
     mach_timebase_info_data_t info;
     kern_return_t kr = mach_timebase_info(&info);
-    PA_DCHECK(kr == KERN_SUCCESS) << "mach_timebase_info";
-    PA_DCHECK(info.numer);
-    PA_DCHECK(info.denom);
+    PA_BASE_DCHECK(kr == KERN_SUCCESS) << "mach_timebase_info";
+    PA_BASE_DCHECK(info.numer);
+    PA_BASE_DCHECK(info.denom);
     return info;
   }();
   return &timebase_info;
@@ -69,14 +69,14 @@ int64_t MachTimeToMicroseconds(uint64_t mach_time) {
   const uint64_t mach_time_remainder = mach_time % divisor;
 
   // Now multiply, keeping an eye out for overflow.
-  PA_CHECK(!__builtin_umulll_overflow(microseconds, timebase_info->numer,
-                                      &microseconds));
+  PA_BASE_CHECK(!__builtin_umulll_overflow(microseconds, timebase_info->numer,
+                                           &microseconds));
 
   // By dividing first we lose precision. Regain it by adding back the
   // microseconds from the remainder, with an eye out for overflow.
   uint64_t least_significant_microseconds =
       (mach_time_remainder * timebase_info->numer) / divisor;
-  PA_CHECK(!__builtin_uaddll_overflow(
+  PA_BASE_CHECK(!__builtin_uaddll_overflow(
       microseconds, least_significant_microseconds, &microseconds));
 
   // Don't bother with the rollover handling that the Windows version does.
@@ -99,7 +99,7 @@ int64_t ComputeCurrentTicks() {
   // `CLOCK_MONOTONIC` is supported on all versions of iOS that Chrome is
   // supported on.
   int res = clock_gettime(CLOCK_MONOTONIC, &tp);
-  PA_DCHECK(0 == res) << "Failed clock_gettime, errno: " << errno;
+  PA_BASE_DCHECK(0 == res) << "Failed clock_gettime, errno: " << errno;
 
   return (int64_t)tp.tv_sec * 1000000 + tp.tv_nsec / 1000;
 #else
@@ -125,7 +125,7 @@ int64_t ComputeThreadTicks() {
   kern_return_t kr = thread_info(
       thread_port, THREAD_BASIC_INFO,
       reinterpret_cast<thread_info_t>(&thread_info_data), &thread_info_count);
-  PA_DCHECK(kr == KERN_SUCCESS) << "thread_info";
+  PA_BASE_DCHECK(kr == KERN_SUCCESS) << "thread_info";
 
   CheckedNumeric<int64_t> absolute_micros(thread_info_data.user_time.seconds +
                                           thread_info_data.system_time.seconds);
@@ -180,7 +180,7 @@ CFAbsoluteTime Time::ToCFAbsoluteTime() const {
 
 // static
 Time Time::FromNSDate(NSDate* date) {
-  PA_DCHECK(date);
+  PA_BASE_DCHECK(date);
   return FromCFAbsoluteTime(date.timeIntervalSinceReferenceDate);
 }
 

@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <atomic>
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "build/build_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,7 +41,7 @@ void InitThreading() {
                            withObject:nil];
     multithreaded = YES;
 
-    PA_DCHECK([NSThread isMultiThreaded]);
+    PA_BASE_DCHECK([NSThread isMultiThreaded]);
   }
 }
 

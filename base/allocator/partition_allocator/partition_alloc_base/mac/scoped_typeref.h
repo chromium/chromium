@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_TYPEREF_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_TYPEREF_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_policy.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
 namespace partition_alloc::internal::base {
 
@@ -91,7 +91,7 @@ class ScopedTypeRef {
   // by pass-by-pointer create functions. To enforce this, require that the
   // object be reset to NULL before this may be used.
   [[nodiscard]] element_type* InitializeInto() {
-    PA_DCHECK(!object_);
+    PA_BASE_DCHECK(!object_);
     return &object_;
   }
 

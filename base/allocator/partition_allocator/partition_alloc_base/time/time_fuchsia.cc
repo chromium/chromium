@@ -8,8 +8,8 @@
 #include <zircon/syscalls.h>
 #include <zircon/threads.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
 namespace partition_alloc::internal::base {
 
@@ -19,7 +19,7 @@ namespace subtle {
 Time TimeNowIgnoringOverride() {
   timespec ts;
   int status = timespec_get(&ts, TIME_UTC);
-  PA_CHECK(status != 0);
+  PA_BASE_CHECK(status != 0);
   return Time::FromTimeSpec(ts);
 }
 
@@ -34,7 +34,7 @@ Time TimeNowFromSystemTimeIgnoringOverride() {
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
   const zx_time_t nanos_since_boot = zx_clock_get_monotonic();
-  PA_CHECK(0 != nanos_since_boot);
+  PA_BASE_CHECK(0 != nanos_since_boot);
   return TimeTicks::FromZxTime(nanos_since_boot);
 }
 }  // namespace subtle
@@ -89,7 +89,7 @@ ThreadTicks ThreadTicksNowIgnoringOverride() {
   zx_status_t status = zx_object_get_info(thrd_get_zx_handle(thrd_current()),
                                           ZX_INFO_THREAD_STATS, &info,
                                           sizeof(info), nullptr, nullptr);
-  PA_CHECK(status == ZX_OK);
+  PA_BASE_CHECK(status == ZX_OK);
   return ThreadTicks() + Nanoseconds(info.total_runtime);
 }
 }  // namespace subtle

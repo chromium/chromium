@@ -7,7 +7,7 @@
 #include <string.h>
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -93,7 +93,7 @@ FilePath FilePath::Append(const StringType& component) const {
     appended = without_nuls;
   }
 
-  PA_DCHECK(!IsPathAbsolute(appended));
+  PA_BASE_DCHECK(!IsPathAbsolute(appended));
 
   if (path_.compare(kCurrentDirectory) == 0 && !appended.empty()) {
     // Append normally doesn't do any normalization, but as a special case,

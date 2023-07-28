@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
 namespace partition_alloc::internal::base {
 
@@ -21,7 +21,7 @@ namespace partition_alloc::internal::base {
 // implementation uses a CHECK to enforce this as a hard restriction.
 template <typename T, typename Compare>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi, Compare comp) {
-  PA_CHECK(!comp(hi, lo));
+  PA_BASE_CHECK(!comp(hi, lo));
   return comp(v, lo) ? lo : comp(hi, v) ? hi : v;
 }
 

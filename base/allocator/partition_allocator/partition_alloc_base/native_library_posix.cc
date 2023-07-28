@@ -6,8 +6,8 @@
 
 #include <dlfcn.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/files/file_path.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
@@ -36,7 +36,7 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
   // Certain platforms don't define RTLD_DEEPBIND. Android dlopen() requires
   // further investigation, as it might vary across versions. Crash here to
   // warn developers that they're trying to rely on uncertain behavior.
-  PA_CHECK(!options.prefer_own_symbols);
+  PA_BASE_CHECK(!options.prefer_own_symbols);
 #else
   if (options.prefer_own_symbols)
     flags |= RTLD_DEEPBIND;

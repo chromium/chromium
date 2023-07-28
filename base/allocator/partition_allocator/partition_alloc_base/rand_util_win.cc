@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
 // Prototype for ProcessPrng.
 // See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng
@@ -30,14 +30,14 @@ void RandBytes(void* output, size_t output_length) {
   static decltype(&ProcessPrng) process_prng_fn = nullptr;
   if (!process_prng_fn) {
     HMODULE hmod = LoadLibraryW(L"bcryptprimitives.dll");
-    PA_CHECK(hmod);
+    PA_BASE_CHECK(hmod);
     process_prng_fn = reinterpret_cast<decltype(&ProcessPrng)>(
         GetProcAddress(hmod, "ProcessPrng"));
-    PA_CHECK(process_prng_fn);
+    PA_BASE_CHECK(process_prng_fn);
   }
   BOOL success = process_prng_fn(static_cast<BYTE*>(output), output_length);
   // ProcessPrng is documented to always return TRUE.
-  PA_CHECK(success);
+  PA_BASE_CHECK(success);
 }
 
 }  // namespace partition_alloc::internal::base

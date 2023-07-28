@@ -42,10 +42,10 @@
 #include <atomic>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/bit_cast.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
@@ -66,8 +66,9 @@ bool CanConvertToFileTime(int64_t us) {
 }
 
 FILETIME MicrosecondsToFileTime(int64_t us) {
-  PA_DCHECK(CanConvertToFileTime(us)) << "Out-of-range: Cannot convert " << us
-                                      << " microseconds to FILETIME units.";
+  PA_BASE_DCHECK(CanConvertToFileTime(us))
+      << "Out-of-range: Cannot convert " << us
+      << " microseconds to FILETIME units.";
 
   // Multiply by 10 to convert microseconds to 100-nanoseconds. Bit_cast will
   // handle alignment problems. This only works on little-endian machines.
@@ -293,7 +294,7 @@ TimeDelta QPCValueToTimeDelta(LONGLONG qpc_value) {
   // InitializeNowFunctionPointer(), has happened by this point.
   std::atomic_thread_fence(std::memory_order_acquire);
 
-  PA_DCHECK(g_qpc_ticks_per_second > 0);
+  PA_BASE_DCHECK(g_qpc_ticks_per_second > 0);
 
   // If the QPC Value is below the overflow threshold, we proceed with
   // simple multiply and divide.
@@ -399,7 +400,7 @@ ThreadTicks ThreadTicksNowIgnoringOverride() {
 // static
 ThreadTicks ThreadTicks::GetForThread(
     const PlatformThreadHandle& thread_handle) {
-  PA_DCHECK(IsSupported());
+  PA_BASE_DCHECK(IsSupported());
 
 #if defined(ARCH_CPU_ARM64)
   // QueryThreadCycleTime versus TSCTicksPerSecond doesn't have much relation to
@@ -489,7 +490,7 @@ bool HasConstantRateTSC() {
 }
 
 double TSCTicksPerSecond() {
-  PA_DCHECK(HasConstantRateTSC());
+  PA_BASE_DCHECK(HasConstantRateTSC());
   // The value returned by QueryPerformanceFrequency() cannot be used as the TSC
   // frequency, because there is no guarantee that the TSC frequency is equal to
   // the performance counter frequency.
@@ -529,7 +530,7 @@ double TSCTicksPerSecond() {
   //   https://msdn.microsoft.com/library/windows/desktop/ms644905.aspx
   LARGE_INTEGER perf_counter_frequency = {};
   ::QueryPerformanceFrequency(&perf_counter_frequency);
-  PA_DCHECK(perf_counter_now >= perf_counter_initial);
+  PA_BASE_DCHECK(perf_counter_now >= perf_counter_initial);
   const uint64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
   const double elapsed_time_seconds =
       perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
@@ -539,7 +540,7 @@ double TSCTicksPerSecond() {
     return 0;
 
   // Compute the frequency of the TSC.
-  PA_DCHECK(tsc_now >= tsc_initial);
+  PA_BASE_DCHECK(tsc_now >= tsc_initial);
   const uint64_t tsc_ticks = tsc_now - tsc_initial;
   tsc_ticks_per_second = tsc_ticks / elapsed_time_seconds;
 
