@@ -313,6 +313,10 @@
       base_feature: "none",
     },
     {
+      name: "AnchorHrefCheckInvalidURL",
+      status: "stable",
+    },
+    {
       name: "AndroidDownloadableFontsMatching",
       base_feature: "none",
       public: true,

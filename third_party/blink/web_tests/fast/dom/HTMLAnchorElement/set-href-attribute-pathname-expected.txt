@@ -15,9 +15,9 @@ PASS a.href is 'https://www.mydomain.com/null?key=value'
 Set pathname to empty string
 PASS a.href is 'https://www.mydomain.com/?key=value'
 Set pathname that includes illegal characters to URL that contains illegal characters.
-PASS a.href is 'https://www.my%7Cd[]%28%29omain.com/path/testurl.html?key=value'
+PASS a.href is 'https://www.my|d[]()omain.com/path/testurl.html?key=value'
 Set pathname to URL that contains '@' in host
-PASS a.href is 'http://w@/#ww'
+PASS a.href is 'http://w@#ww'
 Set pathname to a URL with non-hierarchical protocol
 PASS a.href is 'tel:+1800-555-1212'
 PASS successfullyParsed is true

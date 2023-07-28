@@ -40,16 +40,16 @@ PASS canonicalize('http://[1:2:3:4:5:6::8]/') is 'http://[1:2:3:4:5:6:0:8]/'
 PASS canonicalize('http://[1:2:3:4:5:6:7:8:]/') is 'http://[1:2:3:4:5:6:7:8:]/'
 PASS canonicalize('http://[1:2:3:4:5:6:192.168.0.1:]/') is 'http://[1:2:3:4:5:6:192.168.0.1:]/'
 PASS canonicalize('http://[-1:2:3:4:5:6:7:8]/') is 'http://[-1:2:3:4:5:6:7:8]/'
-FAIL canonicalize('http://[1::%1]/') should be http://[1::%1]/. Was http://[1::%251]/.
-FAIL canonicalize('http://[1::%eth0]/') should be http://[1::%eth0]/. Was http://[1::%25eth0]/.
-FAIL canonicalize('http://[1::%]/') should be http://[1::%]/. Was http://[1::%25]/.
-FAIL canonicalize('http://[%]/') should be http://[%]/. Was http://[%25]/.
-FAIL canonicalize('http://[::%:]/') should be http://[::%:]/. Was http://[::%25:]/.
+PASS canonicalize('http://[1::%1]/') is 'http://[1::%1]/'
+PASS canonicalize('http://[1::%eth0]/') is 'http://[1::%eth0]/'
+PASS canonicalize('http://[1::%]/') is 'http://[1::%]/'
+PASS canonicalize('http://[%]/') is 'http://[%]/'
+PASS canonicalize('http://[::%:]/') is 'http://[::%:]/'
 PASS canonicalize('http://[:0:0::0:0:8]/') is 'http://[:0:0::0:0:8]/'
 PASS canonicalize('http://[0:0::0:0:8:]/') is 'http://[0:0::0:0:8:]/'
 PASS canonicalize('http://[:0:0::0:0:8:]/') is 'http://[:0:0::0:0:8:]/'
 PASS canonicalize('http://[::192.168..1]/') is 'http://[::192.168..1]/'
-FAIL canonicalize('http://[::1 hello]/') should be http://[::1 hello]/. Was http://[::1%20hello]/.
+PASS canonicalize('http://[::1 hello]/') is 'http://[::1 hello]/'
 PASS successfullyParsed is true
 
 TEST COMPLETE

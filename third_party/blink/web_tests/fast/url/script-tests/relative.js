@@ -62,7 +62,8 @@ cases = [
   ["http://host/a", "//another/path?query#ref", "http://another/path?query#ref"],
   ["http://host/a", "///another/path", "http://another/path"],
   ["http://host/a", "//Another\\\\path", "http://another/path"],
-  ["http://host/a", "//", "http:"],
+  // Invalid URL since host is missing.
+  ["http://host/a", "//", "//"],
   // IE will also allow one or the other to be a backslash to get the same
   // behavior.
   ["http://host/a", "\\\\/another/path", "http://another/path"],

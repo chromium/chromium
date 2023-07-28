@@ -53,14 +53,12 @@ shouldBe("a.href", "'https://www.mydomain.com/?key=value'");
 debug("Set pathname that includes illegal characters to URL that contains illegal characters.");
 a.href = "https://www.my|d[]()omain.com/path/testurl.html?key=value";
 a.pathname = "p$a|th"; // should be no-op since original URL is invalid
-// TODO(crbug.com/1212315): this should just be the a.href input.
-shouldBe("a.href", "'https://www.my%7Cd[]%28%29omain.com/path/testurl.html?key=value'");
+shouldBe("a.href", "'https://www.my|d[]()omain.com/path/testurl.html?key=value'");
 
 debug("Set pathname to URL that contains '@' in host");
 a.href = "http://w@#ww";
 a.pathname = "path"; // should be no-op since original URL is invalid
-// TODO(crbug.com/1212315): this should just be the a.href input.
-shouldBe("a.href", "'http://w@/#ww'");
+shouldBe("a.href", "'http://w@#ww'");
 
 // IE8 allows setting the pathname, for non-hierarchial URL.
 // It is not supposed to allow that per

@@ -40,7 +40,7 @@ PASS canonicalize('http://example.com/﷐zyx') is 'http://example.com/%EF%B7%90z
 PASS canonicalize('http://example.com/‥/foo') is 'http://example.com/%E2%80%A5/foo'
 PASS canonicalize('http://example.com/﻿/foo') is 'http://example.com/%EF%BB%BF/foo'
 PASS canonicalize('http://example.com/‮/foo/‭/bar') is 'http://example.com/%E2%80%AE/foo/%E2%80%AD/bar'
-PASS canonicalize('http://example.com／foo/') is 'http://example.com%2Ffoo/'
+PASS canonicalize('http://example.com／foo/') is 'http://example.com／foo/'
 PASS successfullyParsed is true
 
 TEST COMPLETE

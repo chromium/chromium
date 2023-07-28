@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 365 tests; 358 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 365 tests; 355 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -259,14 +259,14 @@ PASS Parsing origin: <data:/../> against <about:blank>
 PASS Parsing origin: <javascript:/../> against <about:blank>
 PASS Parsing origin: <mailto:/../> against <about:blank>
 PASS Parsing origin: <sc://ñ.test/> against <about:blank>
-PASS Parsing origin: <x> against <sc://ñ>
+FAIL Parsing origin: <x> against <sc://ñ> assert_equals: origin expected "null" but got ""
 PASS Parsing origin: <sc:\../> against <about:blank>
 PASS Parsing origin: <sc::a@example.net> against <about:blank>
 PASS Parsing origin: <wow:%NBD> against <about:blank>
 PASS Parsing origin: <wow:%1G> against <about:blank>
 PASS Parsing origin: <wow:￿> against <about:blank>
-FAIL Parsing origin: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: origin expected "http://example.com" but got "null"
-FAIL Parsing origin: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "http://!\"$&'()*+,-.;=_`{}~" but got "null"
+FAIL Parsing origin: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: origin expected "http://example.com" but got ""
+FAIL Parsing origin: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "http://!\"$&'()*+,-.;=_`{}~" but got ""
 PASS Parsing origin: <sc://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
 PASS Parsing origin: <ftp://%e2%98%83> against <about:blank>
 PASS Parsing origin: <https://%e2%98%83> against <about:blank>
@@ -308,8 +308,8 @@ PASS Parsing origin: <http://[1:0::]> against <http://example.net/>
 PASS Parsing origin: <sc://ñ> against <about:blank>
 PASS Parsing origin: <sc://ñ?x> against <about:blank>
 PASS Parsing origin: <sc://ñ#x> against <about:blank>
-PASS Parsing origin: <#x> against <sc://ñ>
-PASS Parsing origin: <?x> against <sc://ñ>
+FAIL Parsing origin: <#x> against <sc://ñ> assert_equals: origin expected "null" but got ""
+FAIL Parsing origin: <?x> against <sc://ñ> assert_equals: origin expected "null" but got ""
 PASS Parsing origin: <tftp://foobar.com/someconfig;mode=netascii> against <about:blank>
 PASS Parsing origin: <telnet://user:pass@foobar.com:23/> against <about:blank>
 PASS Parsing origin: <ut2004://10.10.10.10:7777/Index.ut2> against <about:blank>
@@ -342,7 +342,7 @@ PASS Parsing origin: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:b
 PASS Parsing origin: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> against <about:blank>
 PASS Parsing origin: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank>
 PASS Parsing origin: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
-FAIL Parsing origin: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got "null"
+FAIL Parsing origin: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got ""
 PASS Parsing origin: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
 PASS Parsing origin: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
 PASS Parsing origin: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>

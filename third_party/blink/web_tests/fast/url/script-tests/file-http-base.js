@@ -45,8 +45,8 @@ cases = [
     ["file:c:\\\\foo\\\\bar.html", "file:///c:/foo/bar.html"],
     ["file:c|//foo\\\\bar.html", "file:///c%7C//foo/bar.html"],
     // file: tests from WebKit (LayoutTests/fast/loader/url-parse-1.html)
-    ["//", "file:///"],
-    ["///", "file:///"],
+    ["//", "//"],
+    ["///", "///"],
     ["///test", "file:///test"],
     ["file://test", "file://test/"],
     ["file://localhost",  "file://localhost/"],

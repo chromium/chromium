@@ -89,8 +89,11 @@ cases = [
 for (var i = 0; i < cases.length; ++i) {
   test_vector = cases[i][0];
   expected_result = cases[i][1];
-  if (expected_result === "")
-    expected_result = test_vector.toLowerCase();
+  if (expected_result === "") {
+    // The result of `canonicalize` should be same as the input if input is an
+    // invalid URL.
+    expected_result = test_vector;
+  }
   shouldBe("canonicalize('http://" + test_vector + "/')",
            "'http://" + expected_result + "/'");
 }
