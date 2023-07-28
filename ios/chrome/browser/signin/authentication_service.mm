@@ -44,19 +44,6 @@
 
 namespace {
 
-// Enum describing the different sync states per login methods.
-enum LoginMethodAndSyncState {
-  // Legacy values retained to keep definitions in histograms.xml in sync.
-  CLIENT_LOGIN_SYNC_OFF,
-  CLIENT_LOGIN_SYNC_ON,
-  SHARED_AUTHENTICATION_SYNC_OFF,
-  SHARED_AUTHENTICATION_SYNC_ON,
-  // NOTE: Add new login methods and sync states only immediately above this
-  // line. Also, make sure the enum list in tools/histogram/histograms.xml is
-  // updated with any change in here.
-  LOGIN_METHOD_AND_SYNC_STATE_COUNT
-};
-
 // Enum for Signin.IOSDeviceRestoreSignedInState histogram.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class IOSDeviceRestoreSignedinState : int {
@@ -234,15 +221,6 @@ AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus() {
 }
 
 void AuthenticationService::OnApplicationWillEnterForeground() {
-  if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    bool can_sync_start = sync_setup_service_->IsSyncFeatureEnabled();
-    LoginMethodAndSyncState loginMethodAndSyncState =
-        can_sync_start ? SHARED_AUTHENTICATION_SYNC_ON
-                       : SHARED_AUTHENTICATION_SYNC_OFF;
-    UMA_HISTOGRAM_ENUMERATION("Signin.IOSLoginMethodAndSyncState",
-                              loginMethodAndSyncState,
-                              LOGIN_METHOD_AND_SYNC_STATE_COUNT);
-  }
   if (GetServiceStatus() !=
       AuthenticationService::ServiceStatus::SigninDisabledByInternal) {
     UMA_HISTOGRAM_COUNTS_100(

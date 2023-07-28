@@ -723,24 +723,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.IOSLoginMethodAndSyncState"
-    enum="SigninIOSLoginMethodAndSyncState" expires_after="2023-11-19">
-  <owner>jlebel@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Tracks the combination of sign-in method and sync state for signed-in users
-    on iOS. If the user is signed in, this histogram is updated with the sign-in
-    method and the sync state each time the application goes to foregrond.
-    &quot;Client Login&quot; corresponds to users that have signed in via the
-    legacy client login flow (Chrome iOS M27 and before). &quot;Shared
-    Authentication&quot; corresponds to user that have signed in via the iOS
-    Shared Authentication library. &quot;Sync off&quot; corresponds to users
-    that have sync turned off. &quot;Sync on&quot; corresponds to users that
-    have sync turned on.
-  </summary>
-</histogram>
-
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
     expires_after="2023-11-19">
   <owner>jlebel@chromium.org</owner>

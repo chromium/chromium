@@ -98065,13 +98065,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Failed to set ExcludedFromBackup flag on sentinel file"/>
 </enum>
 
-<enum name="SigninIOSLoginMethodAndSyncState">
-  <int value="0" label="Client Login / Sync Off"/>
-  <int value="1" label="Client Login / Sync On"/>
-  <int value="2" label="Shared Authentication / Sync Off"/>
-  <int value="3" label="Shared Authentication / Sync On"/>
-</enum>
-
 <enum name="SigninLoadTokenFromDB">
   <int value="0" label="Loaded"/>
   <int value="1" label="Revoked by Dice migration"/>
