@@ -521,6 +521,7 @@ test("chromedriver_unittests") {
     "net/sync_websocket_impl_unittest.cc",
     "net/test_http_server.cc",
     "net/test_http_server.h",
+    "net/test_http_server_unittest.cc",
     "net/timeout_unittest.cc",
     "net/websocket_unittest.cc",
     "performance_logger_unittest.cc",

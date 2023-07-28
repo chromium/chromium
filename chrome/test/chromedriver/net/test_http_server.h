@@ -62,21 +62,28 @@ class TestHttpServer : public net::HttpServer::Delegate {
   // Sets a callback to be called once when receiving next WebSocket message.
   void SetMessageCallback(base::OnceClosure callback);
 
+  GURL http_url() const;
+
   // Returns the web socket URL that points to the server.
   GURL web_socket_url() const;
 
   // Overridden from net::HttpServer::Delegate:
   void OnConnect(int connection_id) override;
   void OnHttpRequest(int connection_id,
-                     const net::HttpServerRequestInfo& info) override {}
+                     const net::HttpServerRequestInfo& info) override;
   void OnWebSocketRequest(int connection_id,
                           const net::HttpServerRequestInfo& info) override;
   void OnWebSocketMessage(int connection_id, std::string data) override;
   void OnClose(int connection_id) override;
 
+  void SetDataForPath(std::string path, std::string data);
+
  private:
   void StartOnServerThread(bool* success, base::WaitableEvent* event);
   void StopOnServerThread(base::WaitableEvent* event);
+  void SetDataForPathOnServerThread(std::string path,
+                                    std::string data,
+                                    base::WaitableEvent* event);
 
   base::Thread thread_;
 
@@ -90,6 +97,7 @@ class TestHttpServer : public net::HttpServer::Delegate {
 
   // Protects |web_socket_url_|.
   mutable base::Lock url_lock_;
+  GURL http_url_;
   GURL web_socket_url_;
 
   // Protects the action flags and |message_callback_|.
@@ -97,6 +105,8 @@ class TestHttpServer : public net::HttpServer::Delegate {
   WebSocketRequestAction request_action_ = kAccept;
   WebSocketMessageAction message_action_ = kEchoMessage;
   base::OnceClosure message_callback_;
+
+  std::map<std::string, std::string> resource_map_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_TEST_HTTP_SERVER_H_
