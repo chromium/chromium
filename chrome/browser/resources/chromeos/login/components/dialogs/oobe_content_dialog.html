@@ -57,6 +57,10 @@ found in the LICENSE file.
         2 * var(--oobe-adaptive-dialog-content-padding));
   }
 
+  :host([isGaia]) {
+    --gaia-horizontal-padding-offset: 20px;
+  }
+
   :host-context([orientation=vertical]) {
     --oobe-adaptive-dialog-item-alignment: center;
   }
@@ -71,9 +75,24 @@ found in the LICENSE file.
     margin-inline-end: var(--oobe-adaptive-dialog-content-padding);
     margin-inline-start: var(--oobe-adaptive-dialog-content-padding);
   }
+
+  :host([isGaia]) #mainContainer {
+    --oobe-content-dialog-content-padding: calc(
+      var(--oobe-adaptive-dialog-content-padding)
+       - var(--gaia-horizontal-padding-offset));
+    margin-inline-end: var(--oobe-content-dialog-content-padding);
+    margin-inline-start: var(--oobe-content-dialog-content-padding);
+  }
+
   :host-context(.jelly-enabled) #mainContainer {
     border-radius: var(--oobe-container-border-radius);
     overflow: hidden;
+  }
+
+  :host([fullscreen]) #mainContainer {
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    overflow: visible;
   }
 
   #scrollContainer {
@@ -85,6 +104,15 @@ found in the LICENSE file.
 
   #contentContainer {
     width: var(--oobe-adaptive-dialog-content-width);
+  }
+
+  :host([isGaia]) #contentContainer {
+    width: calc(var(--oobe-adaptive-dialog-content-width)
+                + 2 * var(--gaia-horizontal-padding-offset));
+  }
+
+  :host([fullscreen]) #contentContainer {
+    width: 100%;
   }
 
   .vertical-mode-centering {
@@ -102,16 +130,6 @@ found in the LICENSE file.
 
   :host([no-buttons]) .buttons-common {
     display: none;
-  }
-
-  :host([fullscreen]) #mainContainer {
-    margin-inline-end: 0;
-    margin-inline-start: 0;
-    overflow: visible;
-  }
-
-  :host([fullscreen]) #contentContainer {
-    width: 100%;
   }
 
   .bottom-buttons-container {

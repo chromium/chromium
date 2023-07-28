@@ -95,7 +95,8 @@ found in the LICENSE file.
 <!-- As this dialog have pre-loading logic that require access to elements,
       dialog is marked as no-lazy. -->
 <oobe-content-dialog role="dialog" id="gaiaDialog" no-lazy
-    no-buttons$="[[isSamlSsoVisible]]" fullscreen$="[[isSamlSsoVisible]]">
+    no-buttons$="[[isSamlSsoVisible]]" fullscreen$="[[isSamlSsoVisible]]"
+    isGaia$="[[!isSamlSsoVisible]]">
   <div slot="content" id="signin-frame-container"
       hideshadows$="[[isPopUpOverlayVisible_]]"
       class="flex layout vertical">
