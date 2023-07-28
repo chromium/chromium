@@ -180,6 +180,11 @@ void GeolocationController::SetLocalTimeConverterForTesting(
   local_time_converter_ = local_time_converter;
 }
 
+void GeolocationController::SetGeolocationProviderForTesting(
+    std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider) {
+  simple_geolocation_provider_ = std::move(simple_geolocation_provider);
+}
+
 void GeolocationController::SetCurrentTimezoneIdForTesting(
     const std::u16string& timezone_id) {
   current_timezone_id_ = timezone_id;

@@ -126,6 +126,8 @@ class ASH_EXPORT ScheduledFeature
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  base::OneShotTimer* timer() const { return timer_.get(); }
+
  protected:
   // Called by `Refresh()` and `RefreshScheduleTimer()` to refresh the feature
   // state such as display temperature in Night Light.

@@ -22,6 +22,7 @@ source_set("browser_tests") {
     "media_app/media_app_integration_browsertest.cc",
     "os_feedback_app_integration_browsertest.cc",
     "personalization_app/personalization_app_integration_browsertest.cc",
+    "personalization_app/personalization_app_time_of_day_browsertest.cc",
     "print_management_app_integration_browsertest.cc",
     "projector_app/projector_app_integration_browsertest.cc",
     "scanning_app_integration_browsertest.cc",

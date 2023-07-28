@@ -130,7 +130,8 @@ class ASH_EXPORT GeolocationController
   void SetClockForTesting(base::Clock* clock);
   void SetLocalTimeConverterForTesting(
       const LocalTimeConverter* local_time_converter);
-
+  void SetGeolocationProviderForTesting(
+      std::unique_ptr<SimpleGeolocationProvider> geolocation_provider);
   void SetCurrentTimezoneIdForTesting(const std::u16string& timezone_id);
 
  protected:
