@@ -39,30 +39,6 @@ inline constexpr char kTextQueryParameterKey[] = "q";
 inline constexpr char kOriginQueryParameterValue[] =
     "chrome-untrusted://companion-side-panel.top-chrome";
 
-// Checks to see if the page url is a valid one to be sent to companion.
-bool IsValidPageURLForCompanion(const GURL& url) {
-  if (!url.is_valid()) {
-    return false;
-  }
-
-  if (!url.has_host()) {
-    return false;
-  }
-  if (net::IsLocalhost(url)) {
-    return false;
-  }
-  if (url.HostIsIPAddress()) {
-    return false;
-  }
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-  if (url.has_username() || url.has_password()) {
-    return false;
-  }
-  return true;
-}
-
 }  // namespace
 
 CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
