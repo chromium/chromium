@@ -24,7 +24,7 @@ function createFakeSelectmenu(selectedValueText) {
     }
 
     .fake-selectmenu-selected-value {
-      color: HighlightText;
+      color: FieldText;
       flex-grow:1;
     }
 
