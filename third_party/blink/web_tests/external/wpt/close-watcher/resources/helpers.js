@@ -5,8 +5,8 @@ window.createRecordingCloseWatcher = (t, events, name) => {
 
   const watcher = new CloseWatcher();
   t.add_cleanup(() => watcher.destroy());
-  watcher.oncancel = () => events.push(prefix + "cancel");
-  watcher.onclose = () => events.push(prefix + "close");
+  watcher.addEventListener("cancel", () => events.push(prefix + "cancel"));
+  watcher.addEventListener("close", () => events.push(prefix + "close"));
 
   return watcher;
 };

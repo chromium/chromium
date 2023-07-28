@@ -8,10 +8,5 @@ PASS Esc key does not count as user activation, so it fires close but not cancel
 PASS destroy() then close via Esc key fires no events
 PASS Esc key then destroy() fires only one close event
 PASS close via synthesized Esc key should not work
-PASS destroy() inside oncancel
-PASS destroy() inside onclose is benign
-PASS requestClose() inside oncancel should not trigger an infinite loop
-PASS requestClose() inside onclose should not trigger an infinite loop
-PASS requestClose() with events added via addEventListener()
 Harness: the test ran to completion.
 

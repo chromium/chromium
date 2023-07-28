@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS cancel and close event properties are correct
+Harness: the test ran to completion.
+

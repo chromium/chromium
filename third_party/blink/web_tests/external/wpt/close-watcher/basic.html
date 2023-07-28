@@ -8,25 +8,13 @@
 
 <div id='d' style='height: 100px; width: 100px'></div>
 <script>
-// *not* \uu001B; see https://w3c.github.io/webdriver/#keyboard-actions
-const ESC = '\uE00C';
-
-test(() => {
-  let watcher = new CloseWatcher();
-  let oncancel_called = false;
-  let onclose_called = false;
-  watcher.oncancel = () => oncancel_called = true;
-  watcher.onclose = e => {
-    assert_equals(e.constructor, Event);
-    assert_false(e.cancelable);
-    assert_false(e.bubbles);
-    onclose_called = true;
-  }
+test(t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
 
   watcher.requestClose();
 
-  assert_false(oncancel_called);
-  assert_true(onclose_called);
+  assert_array_equals(events, ["close"]);
 }, "requestClose() with no user activation only fires close");
 
 test(t => {
@@ -118,48 +106,4 @@ test(t => {
 
   assert_array_equals(events, []);
 }, "close via synthesized Esc key should not work");
-
-promise_test(async t => {
-  let watcher = new CloseWatcher();
-  watcher.oncancel = () => { watcher.destroy(); }
-  watcher.onclose = t.unreached_func("onclose");
-  await test_driver.bless("give user activation so that cancel will fire", () => {
-    watcher.requestClose();
-  });
-}, "destroy() inside oncancel");
-
-test(t => {
-  let watcher = new CloseWatcher();
-  watcher.onclose = () => { watcher.destroy(); }
-  watcher.requestClose();
-}, "destroy() inside onclose is benign");
-
-promise_test(async t => {
-  let watcher = new CloseWatcher();
-  watcher.oncancel = () => { watcher.requestClose(); }
-  await test_driver.bless("give user activation so that cancel will fire", () => {
-    watcher.requestClose();
-  });
-}, "requestClose() inside oncancel should not trigger an infinite loop");
-
-test(t => {
-  let watcher = new CloseWatcher();
-  watcher.onclose = () => { watcher.requestClose(); }
-  watcher.requestClose();
-}, "requestClose() inside onclose should not trigger an infinite loop");
-
-promise_test(async () => {
-  let watcher = new CloseWatcher();
-  let oncancel_called = false;
-  let onclose_called = false;
-  watcher.addEventListener("cancel", () => oncancel_called = true);
-  watcher.addEventListener("close", () => onclose_called = true);
-
-  await test_driver.bless("give user activation so that cancel will fire", () => {
-    watcher.requestClose();
-  });
-
-  assert_true(oncancel_called);
-  assert_true(onclose_called);
-}, "requestClose() with events added via addEventListener()");
 </script>
