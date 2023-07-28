@@ -4367,6 +4367,15 @@
     "expiry_milestone": 130
   },
   {
+    "name": "fluent-scrollbars",
+    "owners": [
+      "gastonr@microsoft.com",
+      "gerchiko@microsoft.com",
+      "yshalivskyy@microsoft.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson", "tclaiborne" ],
     "expiry_milestone": 120

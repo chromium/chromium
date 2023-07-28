@@ -1668,6 +1668,10 @@ const char kFillingAcrossGroupedSitesDescription[] =
     "This flag enables password filling across grouped websites. Information "
     "about website groups is provided by the affiliation service.";
 
+const char kFluentScrollbarsName[] = "Windows Fluent scrollbars.";
+const char kFluentScrollbarsDescription[] =
+    "Stylizes scrollbars with Microsoft Fluent design.";
+
 const char kMutationEventsName[] =
     "Enable (deprecated) synchronous mutation events";
 const char kMutationEventsDescription[] =

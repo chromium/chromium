@@ -939,6 +939,9 @@ extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 extern const char kFillingAcrossGroupedSitesName[];
 extern const char kFillingAcrossGroupedSitesDescription[];
 
+extern const char kFluentScrollbarsName[];
+extern const char kFluentScrollbarsDescription[];
+
 extern const char kMutationEventsName[];
 extern const char kMutationEventsDescription[];
 

@@ -65746,6 +65746,7 @@ from previous Chrome versions.
   <int value="941883332" label="ProactiveTabFreezeAndDiscard:disabled"/>
   <int value="941948340" label="PlaybackSpeedButton:enabled"/>
   <int value="942357311" label="UpcomingSharingFeatures:disabled"/>
+  <int value="942758470" label="FluentScrollbar:enabled"/>
   <int value="942807728" label="NewTabstripAnimation:disabled"/>
   <int value="943319566" label="enable-intent-picker"/>
   <int value="943447234" label="NtpDriveModule:disabled"/>
@@ -66528,6 +66529,7 @@ from previous Chrome versions.
       label="SamePartyCookiesConsideredFirstParty:disabled"/>
   <int value="1333344850"
       label="SuppressClipboardSuggestionAfterFirstUsed:enabled"/>
+  <int value="1333354155" label="FluentScrollbar:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>
