@@ -755,7 +755,8 @@ void SetServerCreditCards(AutofillTable* table,
     card.SetNumber(card.LastFourDigits());
     card.SetNetworkForMaskedCard(card.network());
     card.set_instrument_id(card.instrument_id());
-    table->AddServerCvc(card.instrument_id(), card.cvc());
+    table->AddServerCvc({card.instrument_id(), card.cvc(),
+                         /*last_updated_timestamp=*/AutofillClock::Now()});
   }
   table->SetServerCreditCards(as_masked_cards);
 

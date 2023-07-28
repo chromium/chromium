@@ -14,6 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_metadata_store.h"
@@ -43,6 +44,18 @@ struct FormFieldData;
 class IBAN;
 struct PaymentsCustomerData;
 class VirtualCardUsageData;
+// Helper struct to better group server cvc related variables for better
+// passing last_updated_timestamp, which is needed for sync bridge. Limited
+// scope in autofill table & sync bridge.
+struct ServerCvc {
+  bool operator==(const ServerCvc&) const = default;
+  // A server generated id to identify the corresponding credit card.
+  const int64_t instrument_id;
+  // Encrypted CVC value of the card.
+  const std::u16string cvc;
+  // The timestamp of the most recent update to the data entry.
+  const base::Time last_updated_timestamp;
+};
 
 // This class manages the various Autofill tables within the SQLite database
 // passed to the constructor. It expects the following schemas:
@@ -713,12 +726,12 @@ class AutofillTable : public WebDatabaseTable,
                               const std::u16string& full_number);
   bool MaskServerCreditCard(const std::string& id);
 
-  // Methods to add, update, remove and clear cvc in the `server_stored_cvc`
-  // table. Return value indicates if the operation is succeeded and value
-  // actually changed. It may return false when operation is success but no data
-  // is changed, e.g. delete an empty table.
-  bool AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
-  bool UpdateServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  // Methods to add, update, remove, clear and get cvc in the
+  // `server_stored_cvc` table. Return value indicates if the operation is
+  // succeeded and value actually changed. It may return false when operation is
+  // success but no data is changed, e.g. delete an empty table.
+  bool AddServerCvc(const ServerCvc& server_cvc);
+  bool UpdateServerCvc(const ServerCvc& server_cvc);
   bool RemoveServerCvc(int64_t instrument_id);
   // This will clear all server cvcs.
   bool ClearServerCvcs();
@@ -729,10 +742,8 @@ class AutofillTable : public WebDatabaseTable,
   // done on the Chrome side. So this ReconcileServerCvc will be invoked when
   // card sync happens and will remove orphaned CVC from the current client.
   bool ReconcileServerCvcs();
-  // Methods for getting cvc from server_stored_cvc. For testing purpose only
-  // because CVC is populated to CreditCard via GetServerCreditCards.
-  std::u16string GetServerCvcForTesting(int64_t instrument_id);
-  base::flat_map<int64_t, std::u16string> GetAllServerCvcsForTesting();
+  // Get all server cvcs from `server_stored_cvc` table.
+  std::vector<std::unique_ptr<ServerCvc>> GetAllServerCvcs() const;
 
   // Methods to add, update, remove and get the metadata for server cards and
   // addresses.
@@ -983,9 +994,6 @@ class AutofillTable : public WebDatabaseTable,
       const std::string& guid) const;
   bool GetAutofillProfilesFromLegacyTable(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
-
-  // Get all server flat_map<instrument_id, cvc> from `server_stored_cvc` table.
-  base::flat_map<int64_t, std::u16string> GetAllServerCvcs() const;
 
   bool InitMainTable();
   bool InitCreditCardsTable();

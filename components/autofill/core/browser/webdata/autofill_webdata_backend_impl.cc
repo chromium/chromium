@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database_backend.h"
 
@@ -728,7 +729,9 @@ WebDatabase::State AutofillWebDataBackendImpl::AddServerCvc(
     const std::u16string& cvc,
     WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->AddServerCvc(instrument_id, cvc)) {
+  if (AutofillTable::FromWebDatabase(db)->AddServerCvc(
+          ServerCvc{instrument_id, cvc,
+                    /*last_updated_timestamp=*/AutofillClock::Now()})) {
     ReportResult(Result::kAddServerCvc_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
@@ -741,7 +744,9 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCvc(
     const std::u16string& cvc,
     WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->UpdateServerCvc(instrument_id, cvc)) {
+  if (AutofillTable::FromWebDatabase(db)->UpdateServerCvc(
+          ServerCvc{instrument_id, cvc,
+                    /*last_updated_timestamp=*/AutofillClock::Now()})) {
     ReportResult(Result::kUpdateServerCvc_Success);
     return WebDatabase::COMMIT_NEEDED;
   }

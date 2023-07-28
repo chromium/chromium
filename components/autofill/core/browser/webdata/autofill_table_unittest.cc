@@ -1327,44 +1327,36 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
 // expected.
 TEST_F(AutofillTableTest, ServerCvc) {
   const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-
   int64_t kInstrumentId = 1111;
   const std::u16string kCvc = u"123";
-  EXPECT_TRUE(table_->AddServerCvc(kInstrumentId, kCvc));
+  const ServerCvc kServerCvc{kInstrumentId, kCvc, kArbitraryTime};
+  EXPECT_TRUE(table_->AddServerCvc(kServerCvc));
   // Database does not allow adding same instrument_id twice.
-  EXPECT_FALSE(table_->AddServerCvc(kInstrumentId, kCvc));
-  EXPECT_EQ(table_->GetServerCvcForTesting(kInstrumentId), kCvc);
-  // Verify last_updated_timestamp in server_stored_cvc table is set correctly.
-  EXPECT_EQ(GetDateModified("server_stored_cvc", "last_updated_timestamp",
-                            kInstrumentId),
-            kArbitraryTime.ToTimeT());
+  EXPECT_FALSE(table_->AddServerCvc(kServerCvc));
+  EXPECT_THAT(table_->GetAllServerCvcs(),
+              UnorderedElementsAre(testing::Pointee(kServerCvc)));
 
-  // Set the current time to another value.
   const base::Time kSomeLaterTime = base::Time::FromDoubleT(1000);
-  test_clock.SetNow(kSomeLaterTime);
-
   const std::u16string kNewCvc = u"234";
-  EXPECT_TRUE(table_->UpdateServerCvc(kInstrumentId, kNewCvc));
-  EXPECT_EQ(table_->GetServerCvcForTesting(kInstrumentId), kNewCvc);
-  // Verify last_updated_timestamp in server_stored_cvc table is set correctly.
-  EXPECT_EQ(GetDateModified("server_stored_cvc", "last_updated_timestamp",
-                            kInstrumentId),
-            kSomeLaterTime.ToTimeT());
+  const ServerCvc kNewServerCvcUnderSameInstrumentId{kInstrumentId, kNewCvc,
+                                                     kSomeLaterTime};
+  EXPECT_TRUE(table_->UpdateServerCvc(kNewServerCvcUnderSameInstrumentId));
+  EXPECT_THAT(table_->GetAllServerCvcs(),
+              UnorderedElementsAre(
+                  testing::Pointee(kNewServerCvcUnderSameInstrumentId)));
 
   // Remove the server cvc. It should also remove cvc from server_stored_cvc
   // table.
   EXPECT_TRUE(table_->RemoveServerCvc(kInstrumentId));
-  EXPECT_TRUE(table_->GetServerCvcForTesting(kInstrumentId).empty());
+  EXPECT_TRUE(table_->GetAllServerCvcs().empty());
 
   // Remove non-exist cvc will return false.
   EXPECT_FALSE(table_->RemoveServerCvc(kInstrumentId));
 
   // Clear the server_stored_cvc table.
-  table_->AddServerCvc(kInstrumentId, kCvc);
+  table_->AddServerCvc(kServerCvc);
   EXPECT_TRUE(table_->ClearServerCvcs());
-  EXPECT_TRUE(table_->GetAllServerCvcsForTesting().empty());
+  EXPECT_TRUE(table_->GetAllServerCvcs().empty());
 
   // Clear the server_stored_cvc table when table is empty will return false.
   EXPECT_FALSE(table_->ClearServerCvcs());
@@ -1372,6 +1364,7 @@ TEST_F(AutofillTableTest, ServerCvc) {
 
 // Tests that verify reconcile server cvc function working as expected.
 TEST_F(AutofillTableTest, ReconcileServerCvcs) {
+  const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
   // Add 2 server credit cards.
   CreditCard card1 = test::GetMaskedServerCard();
   card1.set_cvc(u"123");
@@ -1379,15 +1372,15 @@ TEST_F(AutofillTableTest, ReconcileServerCvcs) {
   card2.set_cvc(u"234");
   test::SetServerCreditCards(table_.get(), {card1, card2});
 
-  // Add 1 server cvc that doesn't have a credit card associate with. We should
-  // have 3 cvcs in server_stored_cvc table.
-  EXPECT_TRUE(table_->AddServerCvc(3333, u"456"));
-  EXPECT_EQ(3U, table_->GetAllServerCvcsForTesting().size());
+  // Add 1 server cvc that doesn't have a credit card associate with. We
+  // should have 3 cvcs in server_stored_cvc table.
+  EXPECT_TRUE(table_->AddServerCvc(ServerCvc{3333, u"456", kArbitraryTime}));
+  EXPECT_EQ(3U, table_->GetAllServerCvcs().size());
 
   // After we reconcile server cvc, we should only see 2 cvcs in
   // server_stored_cvc table because obsolete cvc has been reconciled.
   EXPECT_TRUE(table_->ReconcileServerCvcs());
-  EXPECT_EQ(2U, table_->GetAllServerCvcsForTesting().size());
+  EXPECT_EQ(2U, table_->GetAllServerCvcs().size());
 }
 
 TEST_F(AutofillTableTest, AddFullServerCreditCard) {

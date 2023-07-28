@@ -649,14 +649,13 @@ void BindLocalStoredCvcToStatement(const CreditCard& credit_card,
   s->BindInt64(index++, modification_date.ToTimeT());
 }
 
-void BindServerStoredCvcToStatement(int64_t instrument_id,
-                                    const std::u16string& cvc,
-                                    const AutofillTableEncryptor& encryptor,
-                                    sql::Statement* s) {
+void BindServerCvcToStatement(const ServerCvc& server_cvc,
+                              const AutofillTableEncryptor& encryptor,
+                              sql::Statement* s) {
   int index = 0;
-  s->BindInt64(index++, instrument_id);
-  BindEncryptedValueToColumn(s, index++, cvc, encryptor);
-  s->BindInt64(index++, AutofillClock::Now().ToTimeT());
+  s->BindInt64(index++, server_cvc.instrument_id);
+  BindEncryptedValueToColumn(s, index++, server_cvc.cvc, encryptor);
+  s->BindInt64(index++, server_cvc.last_updated_timestamp.ToTimeT());
 }
 
 void BindIBANToStatement(const IBAN& iban,
@@ -741,6 +740,15 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
         UnencryptValueFromColumn(cvc_statement.value(), 0, encryptor));
   }
   return credit_card;
+}
+
+std::unique_ptr<ServerCvc> ServerCvcFromStatement(
+    sql::Statement& s,
+    const AutofillTableEncryptor& encryptor) {
+  return std::make_unique<ServerCvc>(ServerCvc{
+      .instrument_id = s.ColumnInt64(0),
+      .cvc = UnencryptValueFromColumn(s, 1, encryptor),
+      .last_updated_timestamp = base::Time::FromTimeT(s.ColumnInt64(2))});
 }
 
 std::unique_ptr<IBAN> IBANFromStatement(
@@ -1782,20 +1790,6 @@ bool AutofillTable::GetAutofillProfilesFromLegacyTable(
   return s.Succeeded();
 }
 
-base::flat_map<int64_t, std::u16string> AutofillTable::GetAllServerCvcs()
-    const {
-  std::vector<std::pair<int64_t, std::u16string>> cvcs;
-  sql::Statement s;
-  SelectBuilder(db_, s, kServerStoredCvcTable,
-                {kInstrumentId, kValueEncrypted});
-  while (s.Step()) {
-    int64_t instrument_id = s.ColumnInt64(0);
-    cvcs.emplace_back(instrument_id, UnencryptValueFromColumn(
-                                         s, 1, *autofill_table_encryptor_));
-  }
-  return cvcs;
-}
-
 bool AutofillTable::GetServerProfiles(
     std::vector<std::unique_ptr<AutofillProfile>>* profiles) const {
   profiles->clear();
@@ -2154,8 +2148,10 @@ bool AutofillTable::GetCreditCards(
 bool AutofillTable::GetServerCreditCards(
     std::vector<std::unique_ptr<CreditCard>>* credit_cards) const {
   credit_cards->clear();
-  base::flat_map<int64_t, std::u16string> instrument_to_cvc =
-      GetAllServerCvcs();
+  auto instrument_to_cvc = base::MakeFlatMap<int64_t, std::u16string>(
+      GetAllServerCvcs(), {}, [](const auto& server_cvc) {
+        return std::make_pair(server_cvc->instrument_id, server_cvc->cvc);
+      });
 
   sql::Statement s;
   SelectBuilder(
@@ -2273,29 +2269,25 @@ bool AutofillTable::MaskServerCreditCard(const std::string& id) {
   return DeleteFromUnmaskedCreditCards(id);
 }
 
-bool AutofillTable::AddServerCvc(int64_t instrument_id,
-                                 const std::u16string& cvc) {
-  if (cvc.empty()) {
+bool AutofillTable::AddServerCvc(const ServerCvc& server_cvc) {
+  if (server_cvc.cvc.empty()) {
     return false;
   }
 
   sql::Statement s;
   InsertBuilder(db_, s, kServerStoredCvcTable,
                 {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
-  BindServerStoredCvcToStatement(instrument_id, cvc, *autofill_table_encryptor_,
-                                 &s);
+  BindServerCvcToStatement(server_cvc, *autofill_table_encryptor_, &s);
   s.Run();
   return db_->GetLastChangeCount() > 0;
 }
 
-bool AutofillTable::UpdateServerCvc(int64_t instrument_id,
-                                    const std::u16string& cvc) {
+bool AutofillTable::UpdateServerCvc(const ServerCvc& server_cvc) {
   sql::Statement s;
   UpdateBuilder(db_, s, kServerStoredCvcTable,
                 {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp},
                 "instrument_id=?1");
-  BindServerStoredCvcToStatement(instrument_id, cvc, *autofill_table_encryptor_,
-                                 &s);
+  BindServerCvcToStatement(server_cvc, *autofill_table_encryptor_, &s);
   s.Run();
   return db_->GetLastChangeCount() > 0;
 }
@@ -2320,19 +2312,16 @@ bool AutofillTable::ReconcileServerCvcs() {
   return db_->GetLastChangeCount() > 0;
 }
 
-std::u16string AutofillTable::GetServerCvcForTesting(int64_t instrument_id) {
+std::vector<std::unique_ptr<ServerCvc>> AutofillTable::GetAllServerCvcs()
+    const {
+  std::vector<std::unique_ptr<ServerCvc>> cvcs;
   sql::Statement s;
-  SelectBuilder(db_, s, kServerStoredCvcTable, {kValueEncrypted},
-                "WHERE instrument_id = ?");
-  s.BindInt64(0, instrument_id);
-
-  return s.Step() ? UnencryptValueFromColumn(s, 0, *autofill_table_encryptor_)
-                  : u"";
-}
-
-base::flat_map<int64_t, std::u16string>
-AutofillTable::GetAllServerCvcsForTesting() {
-  return GetAllServerCvcs();
+  SelectBuilder(db_, s, kServerStoredCvcTable,
+                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
+  while (s.Step()) {
+    cvcs.push_back(ServerCvcFromStatement(s, *autofill_table_encryptor_));
+  }
+  return cvcs;
 }
 
 bool AutofillTable::AddServerCardMetadata(
