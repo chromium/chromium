@@ -609,6 +609,13 @@
           =1 {1 site blocked}
           other {# sites blocked}}
       </message>
+      <!-- TODO(crbug.com/1446230): Add descriptions and make the strings translateable. -->
+      <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_ALLOWED" desc="" translateable="false">
+        Third-party cookies allowed
+      </message>
+      <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED" desc="" translateable="false">
+        Third-party cookies blocked
+      </message>
       <message name="IDS_PAGE_INFO_ANDROID_LOCATION_BLOCKED" desc="The label used in the Page Info dialog to indicate that location has been been disabled for the device in Android settings">
         Turned off for this device
       </message>

@@ -21,6 +21,7 @@ import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
+import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -63,6 +64,7 @@ public class PageInfoCookiesController
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
+        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) updateRowViewSubtitle(mStatus);
     }
 
     private void launchSubpage() {
@@ -194,6 +196,9 @@ public class PageInfoCookiesController
         mStatus = status;
         mIsEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
         mExpiration = expiration;
+
+        updateRowViewSubtitle(status);
+
         if (mSubPage != null) {
             mSubPage.setCookieStatus(mStatus, mIsEnforced, expiration);
         }
@@ -203,7 +208,6 @@ public class PageInfoCookiesController
     public void onSitesCountChanged(int allowedSites, int blockedSites) {
         mAllowedSites = allowedSites;
         mBlockedSites = blockedSites;
-        // TODO(crbug.com/1446230): Update the row view.
         if (mSubPage != null) {
             mSubPage.setSitesCount(allowedSites, blockedSites);
         }
@@ -211,6 +215,14 @@ public class PageInfoCookiesController
 
     private boolean isDeletionDisabled() {
         return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
+    }
+
+    private void updateRowViewSubtitle(int status) {
+        boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
+        // TODO(crbug.com/1446230): Incorporate the breakage confidence level here.
+        mRowView.updateSubtitle(mRowView.getContext().getString(blockingEnabled
+                        ? R.string.page_info_cookies_subtitle_blocked
+                        : R.string.page_info_cookies_subtitle_allowed));
     }
 
     void onUiClosing() {

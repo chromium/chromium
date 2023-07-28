@@ -193,9 +193,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                     getContext().getString(R.string.page_info_cookies_send_feedback_description),
                     new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
-            // Calculate the days to expiration.
-            long currentTime = TimeUtils.currentTimeMillis();
-            int days = (int) ((expiration - currentTime) / DateUtils.DAY_IN_MILLIS);
+            int days = calculateDaysUntilExpiration(expiration);
             mThirdPartyCookiesTitle.setTitle(getContext().getResources().getQuantityString(
                     R.plurals.page_info_cookies_blocking_restart_title, days, days));
             mThirdPartyCookiesSummary.setSummary(SpanApplier.applySpans(
@@ -275,6 +273,17 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         });
 
         return true;
+    }
+
+    /**
+     * Returns the number of days left until the exception expiration.
+     * @param expiration A timestamp for the expiration.
+     * @return Number of days until expiration. Day boundary is considered to be the local midnight.
+     */
+    public static int calculateDaysUntilExpiration(long expiration) {
+        // TODO(b/292489843): Update the days logic.
+        long currentTime = TimeUtils.currentTimeMillis();
+        return (int) ((expiration - currentTime) / DateUtils.DAY_IN_MILLIS);
     }
 
     private void updateCookieDeleteButton() {
