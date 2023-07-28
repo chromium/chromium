@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -2739,6 +2740,29 @@ TEST(URLCanonTest, IDNToASCII) {
   str = u"xn--1⁄4";
   EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
   output.set_length(0);
+}
+
+TEST(URLCanonTest, UnescapePathCharHistogram) {
+  struct TestCase {
+    base::StringPiece path;
+    base::HistogramBase::Count cnt;
+  } cases[] = {
+      {"/a", 0},
+      {"/%61", 1},
+      {"/%61%61", 1},
+  };
+
+  for (const auto& c : cases) {
+    base::HistogramTester histogram_tester;
+    Component in_comp(0, c.path.size());
+    Component out_comp;
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    bool success = CanonicalizePath(c.path.data(), in_comp, &output, &out_comp);
+    ASSERT_TRUE(success);
+    histogram_tester.ExpectBucketCount("URL.Path.UnescapeEscapedChar", 1,
+                                       c.cnt);
+  }
 }
 
 }  // namespace url

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
@@ -266,6 +267,7 @@ bool DoPartialPathInternal(const CHAR* spec,
   absl::optional<size_t> last_invalid_percent_index;
 
   bool success = true;
+  bool unescape_escaped_char = false;
   for (size_t i = static_cast<size_t>(path.begin); i < end; i++) {
     UCHAR uch = static_cast<UCHAR>(spec[i]);
     if (sizeof(CHAR) > 1 && uch >= 0x80) {
@@ -333,6 +335,8 @@ bool DoPartialPathInternal(const CHAR* spec,
 
             if (unescaped_flags & UNESCAPE) {
               // This escaped value shouldn't be escaped.  Try to copy it.
+              unescape_escaped_char = true;
+
               output->push_back(unescaped_value);
               // If we just unescaped a value within 2 output characters of the
               // '%' from a previously-detected invalid escape sequence, we
@@ -374,6 +378,8 @@ bool DoPartialPathInternal(const CHAR* spec,
       }
     }
   }
+  base::UmaHistogramBoolean("URL.Path.UnescapeEscapedChar",
+                            unescape_escaped_char);
   return success;
 }
 
