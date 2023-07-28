@@ -1113,12 +1113,22 @@ ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
 }
 }  // namespace
 
-// Note that SetTouchscreenDevices() does not update the device list
-// if the number of displays don't change.
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
-                       DisableIfTouchscreenWithStylusNotSupported) {
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledWebAppManagerBrowserTest,
+    DisableIfTouchscreenWithStylusNotSupported_NoStylusSupport) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->has_stylus_enabled_touchscreen = false;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#else
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
+      {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                         /*stylus_support=*/false)});
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const auto manifest = base::ReplaceStringPlaceholders(
       R"({
@@ -1134,46 +1144,57 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       " disabled because the device does not have a built-in touchscreen with "
       "stylus support.";
 
-  // Test Case: No touchscreen installed on device.
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
   EXPECT_EQ(disabled_configs.size(), 1u);
   EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+}
 
-  // Test Case: Built-in touchscreen without stylus support installed on device.
-  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
-      ui::InputDeviceType::INPUT_DEVICE_INTERNAL, /* stylus_support =*/false)});
-  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 2u);
-  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledWebAppManagerBrowserTest,
+    DisableIfTouchscreenWithStylusNotSupported_HasStylusSupport) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Test Case: Connected external touchscreen with stylus support connected to
-  // device.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->has_stylus_enabled_touchscreen = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#else
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
       {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
-                         /* stylus_support =*/false),
-       CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_USB,
-                         /* stylus_support =*/true)});
-  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 3u);
-  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+                         /*stylus_support=*/true)});
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Test Case: Create a built-in touchscreen device with stylus support and add
-  // it to the device.
-  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
-      {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, true)});
+  const auto manifest = base::ReplaceStringPlaceholders(
+      R"({
+        "app_url": "$1",
+        "launch_container": "window",
+        "disable_if_touchscreen_with_stylus_not_supported": true,
+        "user_type": ["unmanaged"]
+      })",
+      {GetAppUrl().spec()}, nullptr);
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 3u);
 }
 
+// Verify that stylus detection works even if DeviceDataManager is slow to
+// initialize.
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DisableIfTouchscreenWithStylusStartupDelay) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->has_stylus_enabled_touchscreen = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const auto manifest = base::ReplaceStringPlaceholders(
       R"({
@@ -1190,10 +1211,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindLambdaForTesting([]() {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
         // Create a built-in touchscreen device with stylus support
-        // and add it to the device.
+        // and add it to the device. Lacros does not use DeviceDataManager to
+        // determine whether stylus is supported, but still needs device lists
+        // to be complete before continuing.
         ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
             ui::InputDeviceType::INPUT_DEVICE_INTERNAL, true)});
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
         ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
       }),
       base::Milliseconds(500));

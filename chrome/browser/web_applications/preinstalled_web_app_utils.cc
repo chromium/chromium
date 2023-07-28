@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -21,6 +20,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/common/constants.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace web_app {
@@ -731,4 +731,21 @@ void MarkPreinstalledAppAsUninstalled(Profile* profile,
                               prefs::kWebAppsUninstalledDefaultChromeApps);
   EnsureContains(update.Get(), app_id);
 }
+
+absl::optional<bool> DeviceHasStylusEnabledTouchscreen() {
+  if (!ui::DeviceDataManager::HasInstance() ||
+      !ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
+    return absl::nullopt;
+  }
+
+  for (const ui::TouchscreenDevice& device :
+       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
+    if (device.has_stylus &&
+        device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace web_app

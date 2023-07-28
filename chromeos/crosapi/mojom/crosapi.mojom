@@ -873,6 +873,12 @@ struct DeviceProperties {
 
   // The device's hostname as set by DeviceHostnameTemplate policy.
   [MinVersion=3] string? hostname@8;
+
+  // If true, the device has a built-in touchscreen with stylus support. A null
+  // value indicates that Ash was unable to determine stylus support (including
+  // being too old to support it).
+  [MinVersion=4]
+  bool? has_stylus_enabled_touchscreen@9;
 };
 
 [Stable, Extensible]

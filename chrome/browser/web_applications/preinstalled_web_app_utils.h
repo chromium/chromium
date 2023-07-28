@@ -77,6 +77,12 @@ void SetMigrationRun(Profile* profile,
                      base::StringPiece feature_name,
                      bool was_migrated);
 
+// Returns whether the device has a stylus-enabled internal touchscreen, used
+// for determining whether the device should enable/disable particular
+// preinstalled apps. Returns absl::nullopt if attached devices could not be
+// determined, due to ui::DeviceDataManager not being fully initialized.
+absl::optional<bool> DeviceHasStylusEnabledTouchscreen();
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_UTILS_H_

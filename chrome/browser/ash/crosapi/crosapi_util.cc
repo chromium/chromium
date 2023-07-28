@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -273,6 +274,9 @@ mojom::DevicePropertiesPtr GetDeviceProperties() {
     result->hostname =
         device_name_policy_handler->GetHostnameChosenByAdministrator();
   }
+
+  result->has_stylus_enabled_touchscreen =
+      web_app::DeviceHasStylusEnabledTouchscreen();
 
   return result;
 }

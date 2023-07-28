@@ -156,6 +156,16 @@ bool IsTabletFormFactor() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+absl::optional<bool> HasStylusEnabledTouchscreen() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()
+      ->DeviceProperties()
+      ->has_stylus_enabled_touchscreen;
+#else
+  return DeviceHasStylusEnabledTouchscreen();
+#endif
+}
+
 LoadedConfigs LoadConfigsBlocking(
     const std::vector<base::FilePath>& config_dirs) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -432,7 +442,9 @@ absl::optional<std::string> GetDisableReason(
 
   // Only install if device has a built-in touch screen with stylus support.
   if (options.disable_if_touchscreen_with_stylus_not_supported) {
-    if (!ui::DeviceDataManager::HasInstance()) {
+    absl::optional<bool> has_stylus = HasStylusEnabledTouchscreen();
+
+    if (!has_stylus.has_value()) {
       base::UmaHistogramEnumeration(
           kHistogramMigrationDisabledReason,
           DisabledReason::kStylusRequiredNoDeviceData);
@@ -440,17 +452,7 @@ absl::optional<std::string> GetDisableReason(
              " disabled because touchscreen device information is unavailable";
     }
 
-    DCHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete());
-    bool have_touchscreen_with_stylus = false;
-    for (const ui::TouchscreenDevice& device :
-         ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
-      if (device.has_stylus &&
-          device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
-        have_touchscreen_with_stylus = true;
-        break;
-      }
-    }
-    if (!have_touchscreen_with_stylus) {
+    if (!has_stylus.value()) {
       base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
                                     DisabledReason::kStylusRequired);
       return options.install_url.spec() +
