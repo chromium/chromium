@@ -16,21 +16,9 @@
 SystemGeolocationSourceLacros::SystemGeolocationSourceLacros()
     : permission_update_callback_(base::DoNothing()) {
   // binding to remote
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
-    LOG(WARNING) << "crosapi: Prefs API not available";
-    return;
-  }
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::GeolocationService>()) {
-    LOG(WARNING) << "crosapi: GeolocationService API not available";
-    return;
-  }
-  lacros_service->GetRemote<crosapi::mojom::Prefs>()->AddObserver(
-      crosapi::mojom::PrefPath::kGeolocationAllowed,
-      pref_receiver_.BindNewPipeAndPassRemoteWithVersion());
-  CHECK(pref_receiver_.is_bound());
+  // The following was removed to fix b/293398125
+  // TODO(b/293398125): Replace with a crosapi call that doesn't read the pref
+  // directly
 }
 
 SystemGeolocationSourceLacros::~SystemGeolocationSourceLacros() = default;

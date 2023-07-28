@@ -83,11 +83,17 @@ void SystemGeolocationSource::OnPrefChanged(const std::string& pref_name) {
   device::LocationSystemPermissionStatus status =
       device::LocationSystemPermissionStatus::kNotDetermined;
 
-  PrefService* pref_service = pref_change_registrar_->prefs();
-  if (pref_service) {
-    status = pref_service->GetBoolean(prefs::kUserGeolocationAllowed)
-                 ? device::LocationSystemPermissionStatus::kAllowed
-                 : device::LocationSystemPermissionStatus::kDenied;
+  if (ash::features::IsCrosPrivacyHubV1Enabled()) {
+    PrefService* pref_service = pref_change_registrar_->prefs();
+    if (pref_service) {
+      status = pref_service->GetBoolean(prefs::kUserGeolocationAllowed)
+                   ? device::LocationSystemPermissionStatus::kAllowed
+                   : device::LocationSystemPermissionStatus::kDenied;
+    }
+  } else {
+    // If the global switch feature is not enabled, we allow explicitly to be
+    // backward compatible.
+    status = device::LocationSystemPermissionStatus::kAllowed;
   }
   permission_update_callback_.Run(status);
 }

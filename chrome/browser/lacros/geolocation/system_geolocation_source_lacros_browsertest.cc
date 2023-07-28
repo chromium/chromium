@@ -77,8 +77,9 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 }
 
+// TODO(b/293398125): re-enable
 IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
-                       IntegrationToBrowser) {
+                       DISABLED_IntegrationToBrowser) {
   class Observer : public device::GeolocationManager::PermissionObserver {
    public:
     // device::GeolocationManager::PermissionObserver:

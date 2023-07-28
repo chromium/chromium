@@ -21,9 +21,7 @@ namespace ash {
 class SystemGeolocationSourceTests : public AshTestBase {
  protected:
   SystemGeolocationSourceTests()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // AshTestBase:
   void SetUp() override { AshTestBase::SetUp(); }
@@ -37,6 +35,8 @@ class SystemGeolocationSourceTests : public AshTestBase {
 };
 
 TEST_F(SystemGeolocationSourceTests, PermissionUpdate) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+
   SystemGeolocationSource source;
   base::test::RepeatingTestFuture<device::LocationSystemPermissionStatus>
       status;
@@ -50,8 +50,32 @@ TEST_F(SystemGeolocationSourceTests, PermissionUpdate) {
   SetUserPref(false);
   EXPECT_EQ(device::LocationSystemPermissionStatus::kDenied, status.Take());
 
-  // Change user settings back to allowedy and check that the callback is
-  // called.
+  // Change user settings to allow and check that the callback is called.
+  SetUserPref(true);
+  EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
+}
+
+TEST_F(SystemGeolocationSourceTests, DisabledInV0) {
+  // Disables the geolocation part of the PrivacyHub
+  scoped_feature_list_.InitWithFeatures({ash::features::kCrosPrivacyHubV0},
+                                        {ash::features::kCrosPrivacyHub});
+
+  SystemGeolocationSource source;
+  base::test::RepeatingTestFuture<device::LocationSystemPermissionStatus>
+      status;
+
+  source.RegisterPermissionUpdateCallback(status.GetCallback());
+
+  // The value should always be kAllowed.
+  EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
+
+  // Change user settings to deny and check that the sent value is still
+  // kAllowed.
+  SetUserPref(false);
+  EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
+
+  // Change user settings to deny and check that the sent value is still
+  // kAllowed.
   SetUserPref(true);
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 }
