@@ -751,6 +751,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
 }
 
 void OobeInteractiveUITest::SimpleEndToEnd() {
+  test::SetFakeTouchpadDevice();
   PerformStepsBeforeEnrollmentCheck();
   PerformSessionSignInSteps();
 
@@ -824,6 +825,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
 };
 
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
+  test::SetFakeTouchpadDevice();
   policy_test_server_mixin_.SetupZeroTouchForcedEnrollment();
 
   WizardController::default_controller()

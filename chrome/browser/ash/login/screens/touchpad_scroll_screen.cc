@@ -47,6 +47,13 @@ void RecordSettingChangedMetric(bool initial_value, bool current_value) {
   base::UmaHistogramBoolean("OOBE.CHOOBE.SettingChanged.Touchpad-scroll",
                             initial_value != current_value);
 }
+
+bool CheckNoTouchpadDeviceExist() {
+  const auto touchpads =
+      InputDeviceSettingsController::Get()->GetConnectedTouchpads();
+  return touchpads.empty();
+}
+
 }  // namespace
 
 // static
@@ -75,6 +82,10 @@ bool TouchpadScrollScreen::ShouldBeSkipped(const WizardContext& context) const {
   }
 
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
+    return true;
+  }
+
+  if (CheckNoTouchpadDeviceExist()) {
     return true;
   }
 
