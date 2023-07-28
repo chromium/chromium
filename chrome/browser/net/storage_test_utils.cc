@@ -73,12 +73,10 @@ void SetStorageForWorker(content::RenderFrameHost* frame) {
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected));
 }
 
-void ExpectStorageForFrame(content::RenderFrameHost* frame,
-                           bool include_cookies,
-                           bool expected) {
+void ExpectStorageForFrame(content::RenderFrameHost* frame, bool expected) {
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
-  for (const auto& data_type : GetStorageTypesForFrame(include_cookies)) {
+  for (const auto& data_type : GetStorageTypesForFrame(false)) {
     actual[data_type] =
         content::EvalJs(frame, "has" + data_type + "();").ExtractBool();
     if (frame->GetLastCommittedOrigin() !=

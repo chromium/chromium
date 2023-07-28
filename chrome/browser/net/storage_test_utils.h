@@ -22,9 +22,7 @@ std::string GetFrameContent(content::RenderFrameHost* frame);
 // used on page like //chrome/test/data/browsing_data/site_data.html
 void SetStorageForFrame(content::RenderFrameHost* frame, bool include_cookies);
 void SetStorageForWorker(content::RenderFrameHost* frame);
-void ExpectStorageForFrame(content::RenderFrameHost* frame,
-                           bool include_cookies,
-                           bool expected);
+void ExpectStorageForFrame(content::RenderFrameHost* frame, bool expected);
 void ExpectStorageForWorker(content::RenderFrameHost* frame, bool expected);
 
 // Helpers to set and check various types of cross tab info for a given frame.

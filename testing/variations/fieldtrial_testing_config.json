@@ -6071,7 +6071,9 @@
                     "name": "EnabledWithWait_20230705",
                     "enable_features": [
                         "FirstPartySets",
-                        "PrivacySandboxFirstPartySetsUI"
+                        "PrivacySandboxFirstPartySetsUI",
+                        "StorageAccessAPI",
+                        "StorageAccessAPIForOriginExtension"
                     ]
                 },
                 {
@@ -6081,7 +6083,9 @@
                     },
                     "enable_features": [
                         "FirstPartySets",
-                        "PrivacySandboxFirstPartySetsUI"
+                        "PrivacySandboxFirstPartySetsUI",
+                        "StorageAccessAPI",
+                        "StorageAccessAPIForOriginExtension"
                     ],
                     "disable_features": [
                         "WaitForFirstPartySetsInit"

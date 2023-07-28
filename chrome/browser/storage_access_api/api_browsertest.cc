@@ -1462,8 +1462,7 @@ class StorageAccessAPIStorageBrowserTest
   void ExpectStorage(content::RenderFrameHost* frame, bool expected) {
     switch (GetTestType()) {
       case TestType::kFrame:
-        storage::test::ExpectStorageForFrame(frame, /*include_cookies=*/false,
-                                             expected);
+        storage::test::ExpectStorageForFrame(frame, expected);
         return;
       case TestType::kWorker:
         storage::test::ExpectStorageForWorker(frame, expected);
@@ -1893,19 +1892,16 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIEnterprisePolicyBrowserTest,
   // Navigate to Origin B, setup storage, and expect storage.
   NavigateToPage(kHostB, "/browsing_data/site_data.html");
   storage::test::ExpectStorageForFrame(GetPrimaryMainFrame(),
-                                       /*include_cookies=*/false,
                                        /*expected=*/false);
   storage::test::SetStorageForFrame(GetPrimaryMainFrame(),
                                     /*include_cookies=*/false);
   storage::test::ExpectStorageForFrame(GetPrimaryMainFrame(),
-                                       /*include_cookies=*/false,
                                        /*expected=*/true);
 
   // Navigate to Origin A w/ Frame B and expect storage if not partitioned.
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
-  storage::test::ExpectStorageForFrame(GetFrame(), /*include_cookies=*/false,
-                                       !ExpectPartitionedStorage());
+  storage::test::ExpectStorageForFrame(GetFrame(), !ExpectPartitionedStorage());
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
