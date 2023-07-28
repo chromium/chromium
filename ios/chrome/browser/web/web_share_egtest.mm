@@ -98,6 +98,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a fully specified url can be shared.
 - (void)testShareUrl {
+  // TODO(crbug.com/1468173): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
+  }
+
   const GURL pageURL = self.testServer->GetURL(kWebShareValidLinkUrl);
   [ChromeEarlGrey loadURL:pageURL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -110,6 +115,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a relative  url can be shared.
 - (void)testShareRelativeUrl {
+  // TODO(crbug.com/1468173): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
+  }
+
   const GURL pageURL = self.testServer->GetURL(kWebShareRelativeLinkUrl);
   [ChromeEarlGrey loadURL:pageURL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -122,6 +132,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a relative url can be shared when the filename starts with "file".
 - (void)testShareRelativeFilenameUrl {
+  // TODO(crbug.com/1468173): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
+  }
+
   const GURL pageURL =
       self.testServer->GetURL(kWebShareRelativeFilenameFileUrl);
   [ChromeEarlGrey loadURL:pageURL];
@@ -148,6 +163,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that an url object can be shared.
 - (void)testShareUrlObject {
+  // TODO(crbug.com/1468173): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
+  }
   const GURL pageURL = self.testServer->GetURL(kWebShareUrlObjectUrl);
   [ChromeEarlGrey loadURL:pageURL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
