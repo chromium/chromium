@@ -990,70 +990,76 @@ std::unique_ptr<HttpResponse> HandleChunked(const HttpRequest& request) {
       delay_before_headers, delay_between_chunks, chunk_size, num_chunks);
 }
 
-}  // anonymous namespace
+EmbeddedTestServer::HandleRequestCallback PrefixHandler(
+    const std::string& prefix,
+    std::unique_ptr<HttpResponse> (*handler)(const HttpRequest& request)) {
+  return base::BindRepeating(&HandlePrefixedRequest, prefix,
+                             base::BindRepeating(handler));
+}
 
-#define PREFIXED_HANDLER(prefix, handler)             \
-  base::BindRepeating(&HandlePrefixedRequest, prefix, \
-                      base::BindRepeating(handler))
-#define SERVER_REDIRECT_HANDLER(prefix, handler, status_code) \
-  base::BindRepeating(&HandlePrefixedRequest, prefix,         \
-                      base::BindRepeating(handler, status_code))
+EmbeddedTestServer::HandleRequestCallback ServerRedirectHandler(
+    const std::string& prefix,
+    std::unique_ptr<HttpResponse> (*handler)(HttpStatusCode redirect_code,
+                                             const HttpRequest& request),
+    HttpStatusCode redirect_code) {
+  return base::BindRepeating(&HandlePrefixedRequest, prefix,
+                             base::BindRepeating(handler, redirect_code));
+}
+
+}  // anonymous namespace
 
 void RegisterDefaultHandlers(EmbeddedTestServer* server) {
   server->RegisterDefaultHandler(base::BindRepeating(&HandleDefaultConnect));
 
-  server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/cachetime", &HandleCacheTime));
+  server->RegisterDefaultHandler(PrefixHandler("/cachetime", &HandleCacheTime));
   server->RegisterDefaultHandler(
       base::BindRepeating(&HandleEchoHeader, "/echoheader", "no-cache"));
   server->RegisterDefaultHandler(base::BindRepeating(
       &HandleEchoCookieWithStatus, "/echo-cookie-with-status"));
   server->RegisterDefaultHandler(base::BindRepeating(
       &HandleEchoHeader, "/echoheadercache", "max-age=60000"));
-  server->RegisterDefaultHandler(PREFIXED_HANDLER("/echo", &HandleEcho));
+  server->RegisterDefaultHandler(PrefixHandler("/echo", &HandleEcho));
+  server->RegisterDefaultHandler(PrefixHandler("/echotitle", &HandleEchoTitle));
+  server->RegisterDefaultHandler(PrefixHandler("/echoall", &HandleEchoAll));
+  server->RegisterDefaultHandler(PrefixHandler("/echo-raw", &HandleEchoRaw));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/echotitle", &HandleEchoTitle));
-  server->RegisterDefaultHandler(PREFIXED_HANDLER("/echoall", &HandleEchoAll));
-  server->RegisterDefaultHandler(PREFIXED_HANDLER("/echo-raw", &HandleEchoRaw));
+      PrefixHandler("/echocriticalheader", &HandleEchoCriticalHeader));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/echocriticalheader", &HandleEchoCriticalHeader));
+      PrefixHandler("/set-cookie", &HandleSetCookie));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/set-cookie", &HandleSetCookie));
+      PrefixHandler("/set-invalid-cookie", &HandleSetInvalidCookie));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/set-invalid-cookie", &HandleSetInvalidCookie));
+      PrefixHandler("/expect-and-set-cookie", &HandleExpectAndSetCookie));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/expect-and-set-cookie", &HandleExpectAndSetCookie));
-  server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/set-header", &HandleSetHeader));
+      PrefixHandler("/set-header", &HandleSetHeader));
   server->RegisterDefaultHandler(
       base::BindRepeating(&HandleSetHeaderWithFile, "/set-header-with-file"));
-  server->RegisterDefaultHandler(PREFIXED_HANDLER("/iframe", &HandleIframe));
+  server->RegisterDefaultHandler(PrefixHandler("/iframe", &HandleIframe));
+  server->RegisterDefaultHandler(PrefixHandler("/nocontent", &HandleNoContent));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/nocontent", &HandleNoContent));
+      PrefixHandler("/close-socket", &HandleCloseSocket));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/close-socket", &HandleCloseSocket));
+      PrefixHandler("/auth-basic", &HandleAuthBasic));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/auth-basic", &HandleAuthBasic));
-  server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/auth-digest", &HandleAuthDigest));
+      PrefixHandler("/auth-digest", &HandleAuthDigest));
 
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect", &HandleServerRedirect, HTTP_MOVED_PERMANENTLY));
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-301", &HandleServerRedirect, HTTP_MOVED_PERMANENTLY));
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-302", &HandleServerRedirect, HTTP_FOUND));
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-303", &HandleServerRedirect, HTTP_SEE_OTHER));
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-307", &HandleServerRedirect, HTTP_TEMPORARY_REDIRECT));
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-308", &HandleServerRedirect, HTTP_PERMANENT_REDIRECT));
 
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-with-cookie", &HandleServerRedirectWithCookie,
       HTTP_MOVED_PERMANENTLY));
-  server->RegisterDefaultHandler(SERVER_REDIRECT_HANDLER(
+  server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-with-secure-cookie",
       &HandleServerRedirectWithSecureCookie, HTTP_MOVED_PERMANENTLY));
 
@@ -1064,20 +1070,18 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
       base::BindRepeating(&HandleCrossSiteRedirect, server,
                           "/cross-site-with-cookie", /*set_cookie=*/true));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/client-redirect", &HandleClientRedirect));
+      PrefixHandler("/client-redirect", &HandleClientRedirect));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/defaultresponse", &HandleDefaultResponse));
-  server->RegisterDefaultHandler(PREFIXED_HANDLER("/slow", &HandleSlowServer));
+      PrefixHandler("/defaultresponse", &HandleDefaultResponse));
+  server->RegisterDefaultHandler(PrefixHandler("/slow", &HandleSlowServer));
+  server->RegisterDefaultHandler(PrefixHandler("/hung", &HandleHungResponse));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/hung", &HandleHungResponse));
+      PrefixHandler("/hung-after-headers", &HandleHungAfterHeadersResponse));
   server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/hung-after-headers", &HandleHungAfterHeadersResponse));
-  server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/exabyte_response", &HandleExabyteResponse));
-  server->RegisterDefaultHandler(
-      PREFIXED_HANDLER("/gzip-body", &HandleGzipBody));
-  server->RegisterDefaultHandler(PREFIXED_HANDLER("/self.pac", &HandleSelfPac));
-  server->RegisterDefaultHandler(PREFIXED_HANDLER("/chunked", &HandleChunked));
+      PrefixHandler("/exabyte_response", &HandleExabyteResponse));
+  server->RegisterDefaultHandler(PrefixHandler("/gzip-body", &HandleGzipBody));
+  server->RegisterDefaultHandler(PrefixHandler("/self.pac", &HandleSelfPac));
+  server->RegisterDefaultHandler(PrefixHandler("/chunked", &HandleChunked));
 
   // TODO(svaldez): HandleDownload
   // TODO(svaldez): HandleDownloadFinish
@@ -1089,7 +1093,5 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
   // TODO(svaldez): HandleClientCipherList
   // TODO(svaldez): HandleEchoMultipartPost
 }
-
-#undef PREFIXED_HANDLER
 
 }  // namespace net::test_server
