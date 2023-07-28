@@ -31,8 +31,12 @@ export class PolicyTestRowElement extends CustomElement {
 
   // Event listener function for changing the type of input in the value cell of
   // this row depending on the value type of the selected policy.
-  private changeInputType_(event: Event) {
+  private changeInputTypeEvent_(event: Event) {
     const selectElement: HTMLSelectElement = event.target! as HTMLSelectElement;
+    this.changeInputType_(selectElement);
+  }
+
+  private changeInputType_(selectElement: HTMLSelectElement) {
     const newValueType =
         selectElement.options[selectElement.selectedIndex]!.classList[0];
     const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
@@ -109,7 +113,7 @@ export class PolicyTestRowElement extends CustomElement {
   private initialize_() {
     const policyNameDropdown = this.getRequiredElement('.name');
     policyNameDropdown.addEventListener(
-        'change', this.changeInputType_.bind(this));
+        'change', this.changeInputTypeEvent_.bind(this));
 
     // Populate the policy name dropdown with all policy names.
     const policyNamesToTypes =
@@ -158,20 +162,23 @@ export class PolicyTestRowElement extends CustomElement {
   }
 
   setInitialValues(initialValues: PolicyInfo) {
-    const policyNameInput = this.getRequiredElement<HTMLInputElement>('.name');
+    const policyNameInput = this.getRequiredElement<HTMLSelectElement>('.name');
     const policySourceInput =
         this.getRequiredElement<HTMLInputElement>('.source');
     const policyLevelInput =
         this.getRequiredElement<HTMLInputElement>('.level');
     const policyScopeInput =
-        this.getRequiredElement<HTMLInputElement>('.target');
-    const policyValueInput =
-        this.getRequiredElement<HTMLInputElement>('.value');
+        this.getRequiredElement<HTMLInputElement>('.scope');
 
-    policyNameInput.value = initialValues.name;
     policySourceInput.value = String(initialValues.source);
     policyLevelInput.value = String(initialValues.level);
     policyScopeInput.value = String(initialValues.scope);
+
+    // Change input type according to policy, set value to new input
+    policyNameInput.value = initialValues.name;
+    this.changeInputType_(policyNameInput);
+    const policyValueInput =
+        this.getRequiredElement<HTMLInputElement>('.value');
     policyValueInput.value = String(initialValues.value);
   }
 

@@ -25,7 +25,6 @@ export class PolicyTestTableElement extends CustomElement {
     while (table.childElementCount > 1) {
       table.removeChild(table.lastChild!);
     }
-    this.addEmptyRow();
   }
 
   // Event listener function that adds a new PolicyTestRowElement to the table

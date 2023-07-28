@@ -95,8 +95,12 @@ function applyPoliciesFromFile(jsonFile: File) {
         const fileInput =
             getRequiredElement<HTMLInputElement>('import-policies-file-input');
 
-        const policies: PolicyInfo[] =
-            JSON.parse(reader.result as string) as PolicyInfo[];
+        // Extension policies are ignored, they are not supported on this page
+        // TODO(b:293339258): Verify imported file is valid and display error
+        // message if invalid
+        const policies = JSON.parse(
+            reader.result as string)['policyValues']['chrome']['policies'];
+
         const policyTable =
             getRequiredElement<PolicyTestTableElement>('policy-test-table');
 
@@ -104,8 +108,13 @@ function applyPoliciesFromFile(jsonFile: File) {
         policyTable.clearRows();
 
         // Add row for each policy
-        for (let i = 0; i < policies.length; i++) {
-          policyTable.addRow(policies[i]!);
+        for (const [key, value] of Object.entries(policies)) {
+          if ((key as string)[0] == '_') {
+            continue;
+          }
+
+          policyTable.addRow(convertToPolicyInfo(
+              key as string, value as {[key: string]: any}));
         }
 
         // Reset files
@@ -113,6 +122,40 @@ function applyPoliciesFromFile(jsonFile: File) {
       },
       false,
   );
+}
+
+function convertToPolicyInfo(policyName: string, value: {[key: string]: any}) {
+  const sources: {[key: string]: PolicySource} = {
+    'sourceEnterpriseDefault': PolicySource.SOURCE_ENTERPRISE_DEFAULT,
+    'commandLine': PolicySource.SOURCE_COMMAND_LINE_VAL,
+    'cloud': PolicySource.SOURCE_CLOUD_VAL,
+    'sourceActiveDirectory': PolicySource.SOURCE_ACTIVE_DIRECTORY_VAL,
+    'platform': PolicySource.SOURCE_PLATFORM_VAL,
+    'merged': PolicySource.SOURCE_MERGED_VAL,
+    'cloud_from_ash': PolicySource.SOURCE_CLOUD_FROM_ASH_VAL,
+    'restrictedManagedGuestSessionOverride':
+        PolicySource.SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL,
+  };
+
+  const scopes: {[key: string]: PolicyScope} = {
+    'user': PolicyScope.SCOPE_USER_VAL,
+    'machine': PolicyScope.SCOPE_DEVICE_VAL,
+  };
+
+  const levels: {[key: string]: PolicyLevel} = {
+    'recommended': PolicyLevel.LEVEL_RECOMMENDED_VAL,
+    'mandatory': PolicyLevel.LEVEL_MANDATORY_VAL,
+  };
+
+  const policy: PolicyInfo = {
+    name: policyName,
+    source: sources[value['source']] ?? PolicySource.SOURCE_ENTERPRISE_DEFAULT,
+    scope: scopes[value['scope']] ?? PolicyScope.SCOPE_USER_VAL,
+    level: levels[value['level']] ?? PolicyLevel.LEVEL_MANDATORY_VAL,
+    value: JSON.stringify(value['value']),
+  };
+
+  return policy;
 }
 
 function applyPolicies() {
@@ -132,6 +175,7 @@ function applyPolicies() {
 
 function clearPolicies() {
   getRequiredElement<PolicyTestTableElement>('policy-test-table').clearRows();
+  getRequiredElement<PolicyTestTableElement>('policy-test-table').addEmptyRow();
 }
 
 function resetPolicies(event: Event) {
