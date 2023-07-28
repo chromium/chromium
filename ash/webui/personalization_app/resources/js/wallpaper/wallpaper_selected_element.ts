@@ -300,6 +300,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
       // Hide button when viewing Google Photos.
       case Paths.GOOGLE_PHOTOS_COLLECTION:
         return false;
+      // Hide button when viewing local images.
+      case Paths.LOCAL_COLLECTION:
+        return false;
       default:
         return true;
     }
