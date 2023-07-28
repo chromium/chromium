@@ -207,8 +207,10 @@ void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
       battery_info.charge_full * kMilliampsInAnAmp;
   double charge_full_design_milliamp_hours =
       battery_info.charge_full_design * kMilliampsInAnAmp;
-  battery_health.SetBatteryWearPercentage(100 * charge_full_now_milliamp_hours /
-                                          charge_full_design_milliamp_hours);
+  battery_health.SetBatteryWearPercentage(
+      std::min({(100 * charge_full_now_milliamp_hours /
+                 charge_full_design_milliamp_hours),
+                100.0}));
 }
 
 std::u16string GetBatteryTimeText(base::TimeDelta time_left) {
