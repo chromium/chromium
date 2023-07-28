@@ -82,6 +82,11 @@
             align-with-options$="[[!shouldShowTitle(section)]]">
             <div class="start" aria-hidden="true">
               [[dependent.label]]
+              <template is="dom-if" if="[[dependent.subtitle)]]">
+                <span class="secondary label subtitle">
+                  [[dependent.subtitle]]
+                </span>
+              </template>
             </div>
             <template is="dom-if"
                 if="[[isToggleButton_(dependent.uiType)]]">
