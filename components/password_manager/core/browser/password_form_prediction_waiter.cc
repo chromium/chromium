@@ -28,6 +28,10 @@ void PasswordFormPredictionWaiter::Reset() {
   timer_.Stop();
 }
 
+bool PasswordFormPredictionWaiter::IsActive() const {
+  return timer_.IsRunning();
+}
+
 base::OnceClosure PasswordFormPredictionWaiter::CreateClosure() {
   outstanding_closures_++;
   return base::BindOnce(&PasswordFormPredictionWaiter::OnClosureComplete,

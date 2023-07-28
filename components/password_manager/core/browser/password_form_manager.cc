@@ -655,7 +655,6 @@ PasswordFormManager::PasswordFormManager(
 }
 
 void PasswordFormManager::DelayFillForServerSidePredictions() {
-  waiting_for_server_predictions_ = true;
   async_predictions_waiter_.StartTimer();
   server_predictions_closure_ = async_predictions_waiter_.CreateClosure();
 }
@@ -707,7 +706,7 @@ void PasswordFormManager::OnFetchCompleted() {
              !wait_for_server_predictions_for_filling_) {
     ReportTimeBetweenStoreAndServerUMA();
     FillNow();
-  } else if (!waiting_for_server_predictions_) {
+  } else if (!async_predictions_waiter_.IsActive()) {
     DelayFillForServerSidePredictions();
   }
 }
@@ -879,8 +878,8 @@ void PasswordFormManager::Fill() {
     return;
   }
 
-  // Create a waiter for predictions if there is currently none.
-  if (!waiting_for_server_predictions_) {
+  // Start a waiter for predictions if there is currently no active one.
+  if (!async_predictions_waiter_.IsActive()) {
     DelayFillForServerSidePredictions();
   }
 }
@@ -888,8 +887,6 @@ void PasswordFormManager::Fill() {
 void PasswordFormManager::FillNow() {
   if (!driver_)
     return;
-
-  waiting_for_server_predictions_ = false;
 
   if (form_fetcher_->GetState() == FormFetcher::State::WAITING)
     return;
@@ -1239,7 +1236,7 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
 
   // If the observed form has changed, it might be autofilled again.
   async_predictions_waiter_.Reset();
-  waiting_for_server_predictions_ = false;
+  server_predictions_closure_.Reset();
   autofills_left_ = kMaxTimesAutofill;
   parser_.reset_predictions();
   UpdatePredictionsForObservedForm(predictions);

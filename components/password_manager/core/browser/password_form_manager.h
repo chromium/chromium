@@ -411,9 +411,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // loop.
   int autofills_left_ = kMaxTimesAutofill;
 
-  // True until server predictions received or waiting for them timed out.
-  bool waiting_for_server_predictions_ = false;
-
   // Closure to call when server predictions are received.
   base::OnceClosure server_predictions_closure_;
 
