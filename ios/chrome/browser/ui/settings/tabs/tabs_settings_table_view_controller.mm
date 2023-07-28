@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - TabsSettingsConsumer
 
-- (void)inactiveTabsTimeThresholdChanged:(int)threshold {
+- (void)setInactiveTabsTimeThreshold:(int)threshold {
   [self updateInactiveTabsItemWithDaysThreshold:threshold];
 }
 

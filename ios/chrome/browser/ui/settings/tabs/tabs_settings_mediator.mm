@@ -65,7 +65,7 @@
       int currentThreshold = IsInactiveTabsExplictlyDisabledByUser()
                                  ? kInactiveTabsDisabledByUser
                                  : InactiveTabsTimeThreshold().InDays();
-      [_consumer inactiveTabsTimeThresholdChanged:currentThreshold];
+      [_consumer setInactiveTabsTimeThreshold:currentThreshold];
     }
 
     if (IsTabPickupEnabled()) {
@@ -91,8 +91,9 @@
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kInactiveTabsTimeThreshold) {
     CHECK(IsInactiveTabsAvailable());
-    [_consumer inactiveTabsTimeThresholdChanged:
-                   _prefs->GetInteger(prefs::kInactiveTabsTimeThreshold)];
+    [_consumer
+        setInactiveTabsTimeThreshold:_prefs->GetInteger(
+                                         prefs::kInactiveTabsTimeThreshold)];
   } else if (preferenceName == prefs::kTabPickupEnabled) {
     CHECK(IsTabPickupEnabled());
     [_consumer
