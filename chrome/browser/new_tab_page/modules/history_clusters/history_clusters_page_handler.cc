@@ -308,6 +308,10 @@ void HistoryClustersPageHandler::RecordClick(int64_t cluster_id) {
   ranking_metrics_logger_->SetClicked(cluster_id);
 }
 
+void HistoryClustersPageHandler::RecordDisabled(int64_t cluster_id) {
+  ranking_metrics_logger_->SetDisabled(cluster_id);
+}
+
 void HistoryClustersPageHandler::RecordLayoutTypeShown(
     ntp::history_clusters::mojom::LayoutType layout_type,
     int64_t cluster_id) {
