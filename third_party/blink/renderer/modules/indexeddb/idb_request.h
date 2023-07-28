@@ -149,14 +149,20 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
     AsyncTraceState(AsyncTraceState&& other) {
       DCHECK(IsEmpty());
       type_ = other.type_;
-      id_ = other.id_;
       other.type_.reset();
+      start_time_ = other.start_time_;
+      other.start_time_ = base::TimeTicks();
+      id_ = other.id_;
+      other.id_ = 0;
     }
     AsyncTraceState& operator=(AsyncTraceState&& rhs) {
       DCHECK(IsEmpty());
       type_ = rhs.type_;
-      id_ = rhs.id_;
       rhs.type_.reset();
+      start_time_ = rhs.start_time_;
+      rhs.start_time_ = base::TimeTicks();
+      id_ = rhs.id_;
+      rhs.id_ = 0;
       return *this;
     }
 
@@ -175,6 +181,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
 
    protected:  // For testing
     absl::optional<TypeForMetrics> type() const { return type_; }
+    const base::TimeTicks& start_time() const { return start_time_; }
     size_t id() const { return id_; }
 
    private:

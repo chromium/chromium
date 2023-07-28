@@ -470,6 +470,9 @@ class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
   absl::optional<IDBRequest::TypeForMetrics> type() const {
     return IDBRequest::AsyncTraceState::type();
   }
+  const base::TimeTicks& start_time() const {
+    return IDBRequest::AsyncTraceState::start_time();
+  }
   size_t id() const { return IDBRequest::AsyncTraceState::id(); }
 };
 
@@ -485,10 +488,12 @@ TEST(IDBRequestAsyncTraceStateTest, MoveConstructor) {
       IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys;
   AsyncTraceStateForTesting source_state(type);
   size_t id = source_state.id();
+  base::TimeTicks start_time = source_state.start_time();
 
   AsyncTraceStateForTesting state(std::move(source_state));
   EXPECT_EQ(type, *state.type());
   EXPECT_EQ(id, state.id());
+  EXPECT_EQ(start_time, state.start_time());
   EXPECT_TRUE(source_state.IsEmpty());
 }
 
@@ -497,6 +502,7 @@ TEST(IDBRequestAsyncTraceStateTest, MoveAssignment) {
       IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys;
   AsyncTraceStateForTesting source_state(type);
   size_t id = source_state.id();
+  base::TimeTicks start_time = source_state.start_time();
 
   AsyncTraceStateForTesting state;
   EXPECT_TRUE(state.IsEmpty());
@@ -504,6 +510,7 @@ TEST(IDBRequestAsyncTraceStateTest, MoveAssignment) {
   state = std::move(source_state);
   EXPECT_EQ(type, *state.type());
   EXPECT_EQ(id, state.id());
+  EXPECT_EQ(start_time, state.start_time());
   EXPECT_TRUE(source_state.IsEmpty());
 }
 
