@@ -1276,7 +1276,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.FamilyLinkUser.LocalWebApprovalParentAuthenticationError"
-    units="Status error codes raised in GMS Core" expires_after="2023-06-13">
+    units="Status error codes raised in GMS Core" expires_after="2023-10-28">
   <owner>anthie@google.com</owner>
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -1285,7 +1285,8 @@ chromium-metrics-reviews@google.com.
     The different GMS error status codes that a user may encounter during the
     parent authentication step in the local web approval flow. Recorded on
     Android only. See go/chrome-local-web-approval-parent-auth-error-codes
-    (Googlers only) for the error code definitions.
+    (Googlers only) for the error code definitions. Warning: this histogram was
+    expired from 2023-06-13 to 2023-07-28; data may be missing.
   </summary>
 </histogram>
 
