@@ -1224,19 +1224,6 @@ void PasswordManager::ProcessAutofillPredictions(
   for (const FormStructure* form : forms) {
     if (logger)
       logger->LogFormStructure(Logger::STRING_SERVER_PREDICTIONS, *form);
-    if (GetMatchedManager(driver, form->global_id().renderer_id)) {
-      // The form manager is already created.
-      continue;
-    }
-
-    const FormPredictions* form_predictions =
-        &predictions_[form->form_signature()];
-    // Do not skip the form if it either contains a field for the Username
-    // first flow or a clear-text password field.
-    if (!(HasSingleUsernameVote(*form_predictions) ||
-          HasNewPasswordVote(*form_predictions))) {
-      continue;
-    }
 
     const FormData& form_data = form->ToFormData();
     // If the renderer recognizes `form` as a credential form, then we will be
@@ -1244,9 +1231,34 @@ void PasswordManager::ProcessAutofillPredictions(
     if (util::IsRendererRecognizedCredentialForm(form_data)) {
       continue;
     }
+
+    const FormPredictions* form_predictions =
+        &predictions_[form->form_signature()];
+    // Skip the form if it contains neither a field for a username first flow
+    // nor a clear-text password field.
+    if (!(HasSingleUsernameVote(*form_predictions) ||
+          HasNewPasswordVote(*form_predictions))) {
+      continue;
+    }
+
+    if (PasswordFormManager* manager =
+            GetMatchedManager(driver, form->global_id().renderer_id)) {
+      if (!HasObservedFormChanged(form_data, *manager)) {
+        continue;
+      }
+
+      // If the observed form has changed, update the manager and trigger
+      // filling.
+      manager->UpdateFormManagerWithFormChanges(form_data, predictions_);
+      manager->Fill();
+      continue;
+    }
+
     CreateFormManager(driver, form_data);
   }
 
+  // TODO(crbug.com/1468274): Avoid the loop over all managers - only update the
+  // ones affected. Calling twice is a no-op, but still one that can be avoided.
   for (auto& manager : form_managers_)
     manager->ProcessServerPredictions(predictions_);
 

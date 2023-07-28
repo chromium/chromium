@@ -3008,6 +3008,44 @@ TEST_F(PasswordManagerTest,
 
   task_environment_.RunUntilIdle();
 }
+
+// Check that an update from a login form to a form with a `SINGLE_USERNAME`
+// prediction results in a new fill attempt even if the renderer does not call
+// `OnFormsParsed()` after the dynamic update because the username field does
+// not have an autocomplete attribute.
+TEST_F(PasswordManagerTest,
+       DynamicFormUpdateToSingleUsernameFormTriggersFillingFromPredictions) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
+
+  PasswordForm form(MakeSimpleForm());
+  store_->AddLogin(form);
+
+  // The first time we see the form, it has a password field and is therefore
+  // recognized by the renderer (which calls `OnPasswordFormsParsed`).
+  FormStructure form_structure(form.form_data);
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(autofill::USERNAME)});
+  form_structure.field(1)->set_server_predictions(
+      {CreateFieldPrediction(autofill::PASSWORD)});
+  EXPECT_CALL(driver_, SetPasswordFillData);
+  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
+  task_environment_.RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&driver_);
+
+  // Simulate removing the password field. The remaining username field could
+  // now be a `SINGLE_USERNAME` field in a "Forgot password?" flow.
+  FormData modified_form_data = form.form_data;
+  modified_form_data.fields.pop_back();
+  FormStructure modified_form_structure{modified_form_data};
+  modified_form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
+
+  EXPECT_CALL(driver_, SetPasswordFillData);
+  manager()->ProcessAutofillPredictions(&driver_, {&modified_form_structure});
+
+  task_environment_.RunUntilIdle();
+}
 #endif  // !BUIDFLAG(IS_IOS)
 
 // Check that when autofill predictions are received before a form is found then
