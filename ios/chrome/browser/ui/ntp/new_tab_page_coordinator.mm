@@ -817,7 +817,7 @@
                              syncer::kReplaceSyncPromosWithSignInPromos))) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else {
-    // TODO(crbug.com/1447012): Show the SSO screen directly if there are no
+    // TODO(crbug.com/1450861): Show the SSO screen directly if there are no
     // device-level accounts.
     const AuthenticationOperation operation =
         base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)

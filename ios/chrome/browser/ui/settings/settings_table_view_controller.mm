@@ -721,7 +721,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       SyncServiceFactory::GetForBrowserState(_browserState);
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/1447012): Make detailText private when the feature is
+    // TODO(crbug.com/1447010): Make detailText private when the feature is
     // launched.
     signInTextItem.detailText =
         l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL);
@@ -1970,7 +1970,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   DCHECK(!self.isSigninInProgress);
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
-  // TODO(crbug.com/1447012): Show the SSO screen directly if there are no
+  // TODO(crbug.com/1450861): Show the SSO screen directly if there are no
   // device-level accounts.
   AuthenticationOperation operation =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)

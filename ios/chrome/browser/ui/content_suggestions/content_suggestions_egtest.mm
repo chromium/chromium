@@ -549,7 +549,7 @@ void TapMoreButtonIfVisible() {
       selectElementWithMatcher:
           grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  // TODO(crbug.com/1447012): Support testing the "Continue as..." button
+  // TODO(crbug.com/1468408): Support testing the "Continue as..." button
   // upstream, to verify the setup list item disappears.
 }
 

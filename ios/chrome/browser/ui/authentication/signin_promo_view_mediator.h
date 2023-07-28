@@ -58,7 +58,6 @@ enum class SigninPromoAction {
   // an account is tapped, it is signed in instantly.
   kInstantSignin,
   // Performs AuthenticationOperationSigninOnly.
-  // TODO(crbug.com/1447012): secondary button should auto-open account chooser.
   kSigninSheet,
 };
 
