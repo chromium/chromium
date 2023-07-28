@@ -243,3 +243,12 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 14) # workaround for older compilers (e.g. g++ 5.4).
 add_executable(zlib_bench contrib/bench/zlib_bench.cc)
 target_link_libraries(zlib_bench zlib)
+
+#============================================================================
+# Minigzip tool
+#============================================================================
+add_executable(minizip_bin contrib/minizip/minizip.c contrib/minizip/ioapi.c
+contrib/minizip/ioapi.h contrib/minizip/unzip.c
+contrib/minizip/unzip.h contrib/minizip/zip.c contrib/minizip/zip.h
+)
+target_link_libraries(minizip_bin zlib)
