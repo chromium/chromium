@@ -7,6 +7,32 @@ import("//build/timestamp.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
 
+source_set("msi_custom_action_sources") {
+  sources = [
+    "msi_custom_action.cc",
+    "msi_custom_action.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:tagging",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  libs = [ "msi.lib" ]
+}
+
+shared_library("msi_custom_action") {
+  sources = [ "msi_custom_action.def" ]
+
+  deps = [
+    ":msi_custom_action_sources",
+    ":version",
+  ]
+
+  configs += [ "//build/config/win:windowed" ]
+}
+
 source_set("lib") {
   sources = [
     "configuration.cc",

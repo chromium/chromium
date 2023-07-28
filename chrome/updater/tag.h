@@ -114,6 +114,9 @@ struct TagArgs {
 
   // List of apps to install.
   std::vector<AppArgs> apps;
+
+  // Vector of name/value attributes from the tag.
+  std::vector<std::pair<std::string, std::string>> attributes;
 };
 
 std::ostream& operator<<(std::ostream&, const TagArgs::BrowserType&);

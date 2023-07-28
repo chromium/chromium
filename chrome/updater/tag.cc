@@ -390,7 +390,7 @@ namespace query_string {
 // An attribute in a metainstaller tag or app installer data args string.
 // - The first value is the "name" of the attribute.
 // - The second value is the "value" of the attribute.
-using Attribute = std::pair<base::StringPiece, std::string>;
+using Attribute = std::pair<std::string, std::string>;
 
 // Splits |query_string| into |Attribute|s. Attribute values will be unescaped
 // if |unescape_value| is true.
@@ -407,7 +407,7 @@ std::vector<Attribute> Split(base::StringPiece query_string,
       // Add a name-only attribute.
       base::StringPiece name = base::TrimWhitespaceASCII(
           attribute_string, base::TrimPositions::TRIM_ALL);
-      attributes.emplace_back(name, "");
+      attributes.emplace_back(std::string{name}, "");
     } else {
       base::StringPiece name =
           base::TrimWhitespaceASCII(attribute_string.substr(0, separate_pos),
@@ -436,7 +436,9 @@ ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
   const auto& global_func_lookup_table = global_attributes::GetTable();
   const auto& app_func_lookup_table = app_attributes::GetTable();
 
-  for (const auto& attribute : query_string::Split(tag)) {
+  const std::vector<std::pair<std::string, std::string>> attributes =
+      query_string::Split(tag);
+  for (const auto& attribute : attributes) {
     // Attribute names are only ASCII, so no i18n case folding needed.
     const base::StringPiece name = attribute.first;
     const base::StringPiece value = attribute.second;
@@ -469,6 +471,7 @@ ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
   // The bundle name inherits the first app's name, if not set.
   if (args->bundle_name.empty() && !args->apps.empty())
     args->bundle_name = args->apps[0].app_name;
+  args->attributes = attributes;
 
   return ErrorCode::kSuccess;
 }
