@@ -63,15 +63,14 @@ class AutofillManager
  public:
   // Observer of AutofillManager events.
   //
-  // OnAfterFoo() is called, perhaps asynchronously (but on the UI thread),
-  // after OnBeforeFoo(). The only exceptions where OnBeforeFoo() may be called
-  // without a corresponding OnAfterFoo() call are:
+  // For the On{Before,After}Foo() events, the following invariant holds:
+  // Every OnBeforeFoo() is followed by an OnAfterFoo(); on OnAfterFoo() may be
+  // called asynchronously (but on the UI thread). The only exceptions where
+  // OnBeforeFoo() may be called without a corresponding OnAfterFoo() call are:
   // - if the number of cached forms exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if this AutofillManager has been destroyed or reset in the meantime.
   // - if the request in AutofillDownloadManager was not successful (i.e. no 2XX
   //   response code or a null response body).
-  //
-  // New pairs of events may be added as needed.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnAutofillManagerDestroyed(AutofillManager& manager) {}
@@ -120,6 +119,14 @@ class AutofillManager
 
     virtual void OnBeforeLoadedServerPredictions(AutofillManager& manager) {}
     virtual void OnAfterLoadedServerPredictions(AutofillManager& manager) {}
+
+    // Fired when the field types predictions of a form *may* have changed.
+    // At the moment, we cannot distinguish whether autocomplete attributes or
+    // local heuristics changed.
+    enum class FieldTypeSource { kHeuristicsOrAutocomplete, kAutofillServer };
+    virtual void OnFieldTypesDetermined(AutofillManager& manager,
+                                        FormGlobalId form,
+                                        FieldTypeSource source) {}
 
     // TODO(crbug.com/1330105): Clean up API: delete the events that don't
     // follow the OnBeforeFoo() / OnAfterFoo() pattern.

@@ -217,6 +217,11 @@ class MockAutofillObserver : public AutofillManager::Observer {
               OnAfterLoadedServerPredictions,
               (AutofillManager&),
               (override));
+
+  MOCK_METHOD(void,
+              OnFieldTypesDetermined,
+              (AutofillManager&, FormGlobalId, FieldTypeSource),
+              (override));
 };
 
 // Creates a vector of test forms which differ in their FormGlobalIds

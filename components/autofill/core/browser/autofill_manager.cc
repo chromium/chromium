@@ -184,6 +184,8 @@ void AutofillManager::OnLanguageDetermined(
     for (auto& [form_id, form_structure] : form_structures_) {
       form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
                                               log_manager_);
+      NotifyObservers(&Observer::OnFieldTypesDetermined, form_id,
+                      Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
     }
     NotifyObservers(&Observer::OnAfterLanguageDetermined);
     return;
@@ -220,12 +222,18 @@ void AutofillManager::OnLanguageDetermined(
                         AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "Autofill.Timing.OnLanguageDetermined.UpdateCache");
-    if (!self)
+    if (!self) {
       return;
-    for (auto& [id, form_structure] : context.form_structures)
-      self->form_structures_[id] = std::move(form_structure);
-    if (context.log_manager && self->log_manager_)
+    }
+    if (context.log_manager && self->log_manager_) {
       context.log_manager->Flush(*self->log_manager_);
+    }
+    for (auto& [id, form_structure] : context.form_structures) {
+      self->form_structures_[id] = std::move(form_structure);
+      self->NotifyObservers(
+          &Observer::OnFieldTypesDetermined, id,
+          Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+    }
     self->NotifyObservers(&Observer::OnAfterLanguageDetermined);
   };
 
@@ -762,14 +770,19 @@ void AutofillManager::ParseFormsAsync(
          const std::vector<FormData>& parsed_forms, AsyncContext context) {
         SCOPED_UMA_HISTOGRAM_TIMER(
             "Autofill.Timing.ParseFormsAsync.UpdateCache");
-        if (!self)
+        if (!self) {
           return;
+        }
+        if (context.log_manager && self->log_manager_) {
+          context.log_manager->Flush(*self->log_manager_);
+        }
         for (auto& form_structure : context.form_structures) {
           FormGlobalId id = form_structure->global_id();
           self->form_structures_[id] = std::move(form_structure);
+          self->NotifyObservers(
+              &Observer::OnFieldTypesDetermined, id,
+              Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         }
-        if (context.log_manager && self->log_manager_)
-          context.log_manager->Flush(*self->log_manager_);
         self->NotifyObservers(&Observer::OnFormParsed);
         std::move(callback).Run(*self, parsed_forms);
       };
@@ -856,12 +869,17 @@ void AutofillManager::ParseFormAsync(
          const FormData& form_data, AsyncContext context) {
         SCOPED_UMA_HISTOGRAM_TIMER(
             "Autofill.Timing.ParseFormAsync.UpdateCache");
-        if (!self)
+        if (!self) {
           return;
+        }
+        if (context.log_manager && self->log_manager_) {
+          context.log_manager->Flush(*self->log_manager_);
+        }
         FormGlobalId id = context.form_structure->global_id();
         self->form_structures_[id] = std::move(context.form_structure);
-        if (context.log_manager && self->log_manager_)
-          context.log_manager->Flush(*self->log_manager_);
+        self->NotifyObservers(
+            &Observer::OnFieldTypesDetermined, id,
+            Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         self->NotifyObservers(&Observer::OnFormParsed);
         std::move(callback).Run(*self, form_data);
       };
@@ -916,6 +934,9 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
   form_structures_[parsed_form_structure->global_id()] =
       std::move(form_structure);
 
+  NotifyObservers(&Observer::OnFieldTypesDetermined,
+                  parsed_form_structure->global_id(),
+                  Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
   return parsed_form_structure;
 }
 
@@ -979,6 +1000,12 @@ void AutofillManager::OnLoadedServerPredictions(
   // Forward form structures to the password generation manager to detect
   // account creation forms.
   PropagateAutofillPredictions(queried_forms);
+
+  for (const FormStructure* form : queried_forms) {
+    NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
+                    Observer::FieldTypeSource::kAutofillServer);
+  }
+
   NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
 }
 
