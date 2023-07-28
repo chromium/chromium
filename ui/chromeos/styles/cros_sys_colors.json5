@@ -321,6 +321,14 @@
       light: '$cros.ref.yellow90',
       dark: 'blend(rgba($cros.ref.yellow90.rgb, 0.20), $black)',
     },
+    'system-on-warning-container': {
+      light: '$cros.ref.yellow10',
+      dark: '$cros.ref.yellow10',
+    },
+    'system-warning-container': {
+      light: '$cros.ref.yellow80',
+      dark: '$cros.ref.yellow80',
+    },
     'warning': {
       light: '$cros.ref.yellow50',
       dark: '$cros.ref.yellow80',
@@ -568,7 +576,7 @@
      * elevated colors when the kJelly flag is OFF but with sys illo tokens when
      * the jelly flag is ON. To support this we map sys illo references for
      * assets on elevated surfaces to the following elevated sys token set.
-     * These colors are identical to their non elevated counterparts when the 
+     * These colors are identical to their non elevated counterparts when the
      * jelly flag is ON but when the flag is off they get remapped to the
      * correct GM2 eleavted token.
      */

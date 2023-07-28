@@ -32,6 +32,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -139,72 +140,88 @@ void QsBatteryInfoViewBase::OnPowerStatusChanged() {
   Update();
 }
 
-QsBatteryLabelView::QsBatteryLabelView(UnifiedSystemTrayController* controller)
-    : QsBatteryInfoViewBase(controller) {
-  SetID(VIEW_ID_QS_BATTERY_BUTTON);
-  views::FocusRing::Get(/*host=*/this)
-      ->SetColorId(cros_tokens::kCrosSysFocusRing);
-
-  // Sets the text.
+void QsBatteryInfoViewBase::OnThemeChanged() {
+  PillButton::OnThemeChanged();
   Update();
 }
 
-QsBatteryLabelView::~QsBatteryLabelView() = default;
+void QsBatteryInfoViewBase::UpdateIconAndText(bool bsm_active) {
+  // Change to icon type if battery saver mode is enabled with
+  // QsBatteryLabelView.
+  SetPillButtonType(Type::kPrimaryWithIconLeading);
+  SetButtonTextColorId(bsm_active
+                           ? cros_tokens::kCrosSysSystemOnWarningContainer
+                           : cros_tokens::kCrosSysOnPositiveContainer);
+  SetBackgroundColorId(bsm_active ? cros_tokens::kCrosSysSystemWarningContainer
+                                  : cros_tokens::kCrosSysPositiveContainer);
 
-void QsBatteryLabelView::OnThemeChanged() {
-  PillButton::OnThemeChanged();
-
-  SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
-}
-
-void QsBatteryLabelView::Update() {
-  const std::u16string status_string =
-      PowerStatus::Get()->GetInlinedStatusString();
-  SetText(status_string);
-  SetVisible(!status_string.empty());
-}
-
-QsBatteryIconView::QsBatteryIconView(UnifiedSystemTrayController* controller)
-    : QsBatteryInfoViewBase(controller, Type::kPrimaryWithIconLeading) {
-  SetID(VIEW_ID_QS_BATTERY_BUTTON);
-
-  // Sets the text and icon.
-  Update();
-}
-
-QsBatteryIconView::~QsBatteryIconView() = default;
-
-void QsBatteryIconView::OnThemeChanged() {
-  PillButton::OnThemeChanged();
-
-  SetButtonTextColorId(cros_tokens::kCrosSysOnPositiveContainer);
-  SetBackgroundColorId(cros_tokens::kCrosSysPositiveContainer);
-  ConfigureIcon();
-}
-
-void QsBatteryIconView::Update() {
   const std::u16string percentage_text =
       PowerStatus::Get()->GetStatusStrings().first;
   SetText(percentage_text);
   SetVisible(!percentage_text.empty());
 
   if (GetColorProvider()) {
-    ConfigureIcon();
+    ConfigureIcon(bsm_active);
   }
 }
 
-void QsBatteryIconView::ConfigureIcon() {
-  const SkColor battery_icon_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPositiveContainer);
+void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
+  const SkColor battery_icon_color = GetColorProvider()->GetColor(
+      bsm_active ? cros_tokens::kCrosSysSystemOnWarningContainer
+                 : cros_tokens::kCrosSysOnPositiveContainer);
+  const absl::optional<SkColor> battery_badge_color =
+      bsm_active ? absl::optional<SkColor>(GetColorProvider()->GetColor(
+                       cros_tokens::kCrosSysSystemWarningContainer))
+                 : absl::nullopt;
 
   PowerStatus::BatteryImageInfo info =
-      PowerStatus::Get()->GenerateBatteryImageInfo(battery_icon_color);
+      PowerStatus::Get()->GenerateBatteryImageInfo(battery_icon_color,
+                                                   battery_badge_color);
   info.alert_if_low = false;
+  if (bsm_active) {
+    // Use solid battery icon for battery saver mode enabled.
+    info.charge_percent = 100;
+  }
 
-  SetImageModel(
-      ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
-          info, kUnifiedTrayBatteryIconSize, this->GetColorProvider())));
+  SetImageModel(ButtonState::STATE_NORMAL,
+                ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
+                    info, kUnifiedTrayBatteryIconSize, GetColorProvider())));
+}
+
+QsBatteryLabelView::QsBatteryLabelView(UnifiedSystemTrayController* controller)
+    : QsBatteryInfoViewBase(controller) {
+  SetID(VIEW_ID_QS_BATTERY_BUTTON);
+  views::FocusRing::Get(/*host=*/this)
+      ->SetColorId(cros_tokens::kCrosSysFocusRing);
+  Update();
+}
+
+QsBatteryLabelView::~QsBatteryLabelView() = default;
+
+void QsBatteryLabelView::Update() {
+  if (PowerStatus::Get()->IsBatterySaverActive()) {
+    UpdateIconAndText(true);
+  } else {
+    SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+
+    const std::u16string status_string =
+        PowerStatus::Get()->GetInlinedStatusString();
+    SetText(status_string);
+    SetVisible(!status_string.empty());
+  }
+}
+
+QsBatteryIconView::QsBatteryIconView(UnifiedSystemTrayController* controller)
+    : QsBatteryInfoViewBase(controller, Type::kPrimaryWithIconLeading) {
+  SetID(VIEW_ID_QS_BATTERY_BUTTON);
+  // Sets the text and icon.
+  Update();
+}
+
+QsBatteryIconView::~QsBatteryIconView() = default;
+
+void QsBatteryIconView::Update() {
+  UpdateIconAndText(PowerStatus::Get()->IsBatterySaverActive());
 }
 
 QuickSettingsFooter::QuickSettingsFooter(
