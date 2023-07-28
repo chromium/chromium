@@ -5,25 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_LOCAL_IMAGE_SEARCH_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_LOCAL_IMAGE_SEARCH_PROVIDER_H_
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/sequence_bound.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 namespace app_list {
 
 class FileResult;
-class AnnotationStorage;
 struct FileSearchResult;
 
-// Searches for images based on their annotations. Owns an annotation store and
-// a worker for updating the store.
-// TODO(b/260646344): Still in a prototype stage.
+// Searches for images based on their annotations.
 class LocalImageSearchProvider : public SearchProvider {
  public:
   explicit LocalImageSearchProvider(Profile* profile);
@@ -47,9 +40,6 @@ class LocalImageSearchProvider : public SearchProvider {
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
-  base::FilePath root_path_;
-
-  base::SequenceBound<AnnotationStorage> annotation_storage_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LocalImageSearchProvider> weak_factory_{this};
