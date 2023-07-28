@@ -301,7 +301,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     }
     [strongSelf.viewController allowUserInteraction];
     strongSelf.signOutFlowInProgress = NO;
-    [self.delegate showSignOutToast];
+    [strongSelf.delegate showSignOutToast];
     [strongSelf closeManageSyncSettings];
   };
   self.authService->SignOut(
