@@ -1454,6 +1454,8 @@ void AuthenticatorPhoneConfirmationSheet::OnAccept() {
   dialog_model()->ContactPriorityPhone();
 }
 
+// AuthenticatorMultiSourcePickerSheetModel --------------------------------
+
 AuthenticatorMultiSourcePickerSheetModel::
     AuthenticatorMultiSourcePickerSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
@@ -1517,4 +1519,45 @@ std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepTitle() const {
 std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepDescription()
     const {
   return u"";
+}
+
+// AuthenticatorPriorityMechanismSheetModel --------------------------------
+
+AuthenticatorPriorityMechanismSheetModel::
+    AuthenticatorPriorityMechanismSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+AuthenticatorPriorityMechanismSheetModel::
+    ~AuthenticatorPriorityMechanismSheetModel() = default;
+
+std::u16string AuthenticatorPriorityMechanismSheetModel::GetStepTitle() const {
+  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_USE_PASSKEY_TITLE,
+                                    GetRelyingPartyIdString(dialog_model()));
+}
+
+std::u16string AuthenticatorPriorityMechanismSheetModel::GetStepDescription()
+    const {
+  return u"";
+}
+
+bool AuthenticatorPriorityMechanismSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+bool AuthenticatorPriorityMechanismSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+std::u16string AuthenticatorPriorityMechanismSheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+void AuthenticatorPriorityMechanismSheetModel::OnAccept() {
+  dialog_model()
+      ->mechanisms()[*dialog_model()->priority_mechanism_index()]
+      .callback.Run();
 }

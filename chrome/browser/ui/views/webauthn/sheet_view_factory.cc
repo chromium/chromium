@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_priority_mechanism_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
@@ -308,6 +309,11 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               dialog_model,
               AuthenticatorSelectAccountSheetModel::kPreUserVerification,
               AuthenticatorSelectAccountSheetModel::kSingleAccount));
+      break;
+    case Step::kSelectPriorityMechanism:
+      sheet_view = std::make_unique<AuthenticatorPriorityMechanismSheetView>(
+          std::make_unique<AuthenticatorPriorityMechanismSheetModel>(
+              dialog_model));
       break;
     case Step::kAttestationPermissionRequest:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(

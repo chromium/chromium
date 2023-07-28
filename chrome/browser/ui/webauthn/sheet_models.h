@@ -663,4 +663,21 @@ class AuthenticatorMultiSourcePickerSheetModel
   std::u16string primary_passkeys_label_;
 };
 
+class AuthenticatorPriorityMechanismSheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorPriorityMechanismSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorPriorityMechanismSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelbase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonEnabled() const override;
+  bool IsAcceptButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+};
+
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

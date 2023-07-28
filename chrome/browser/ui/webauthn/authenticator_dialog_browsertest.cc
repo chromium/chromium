@@ -622,6 +622,14 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           std::move(phone_cred1),
           std::move(phone_cred2),
       };
+    } else if (name == "one_local_cred") {
+      transport_availability.recognized_credentials = {
+          std::move(local_cred1),
+      };
+    } else if (name == "one_phone_cred") {
+      transport_availability.recognized_credentials = {
+          std::move(phone_cred1),
+      };
     }
     model_->StartFlow(std::move(transport_availability),
                       /*is_conditional_mediation=*/false);
@@ -645,5 +653,15 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_phone_only) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_one_local_cred) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_one_phone_cred) {
   ShowAndVerifyUi();
 }

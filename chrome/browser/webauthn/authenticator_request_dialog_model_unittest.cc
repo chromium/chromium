@@ -122,6 +122,7 @@ enum class TransportAvailabilityParam {
   kOneRecognizedCred,
   kTwoRecognizedCreds,
   kOnePhoneRecognizedCred,
+  kTwoPhoneRecognizedCred,
   kEmptyAllowList,
   kOnlyInternal,
   kOnlyHybridOrInternal,
@@ -147,6 +148,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kTwoRecognizedCreds";
     case TransportAvailabilityParam::kOnePhoneRecognizedCred:
       return "kOnePhoneRecognizedCred";
+    case TransportAvailabilityParam::kTwoPhoneRecognizedCred:
+      return "kTwoPhoneRecognizedCred";
     case TransportAvailabilityParam::kEmptyAllowList:
       return "kEmptyAllowList";
     case TransportAvailabilityParam::kOnlyInternal:
@@ -186,6 +189,9 @@ const device::PublicKeyCredentialUserEntity kUser2({5, 6, 7, 8},
 const device::PublicKeyCredentialUserEntity kPhoneUser1({9, 0, 1, 2},
                                                         "purah",
                                                         absl::nullopt);
+const device::PublicKeyCredentialUserEntity kPhoneUser2({3, 4, 5, 6},
+                                                        "impa",
+                                                        absl::nullopt);
 
 const device::DiscoverableCredentialMetadata
     kCred1(device::AuthenticatorType::kOther, "rp.com", {0}, kUser1);
@@ -193,6 +199,8 @@ const device::DiscoverableCredentialMetadata
     kCred2(device::AuthenticatorType::kOther, "rp.com", {1}, kUser2);
 const device::DiscoverableCredentialMetadata
     kPhoneCred1(device::AuthenticatorType::kPhone, "rp.com", {2}, kPhoneUser1);
+const device::DiscoverableCredentialMetadata
+    kPhoneCred2(device::AuthenticatorType::kPhone, "rp.com", {3}, kPhoneUser2);
 
 }  // namespace
 
@@ -231,6 +239,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto two_cred = TransportAvailabilityParam::kTwoRecognizedCreds;
   const auto one_phone_cred =
       TransportAvailabilityParam::kOnePhoneRecognizedCred;
+  const auto two_phone_cred =
+      TransportAvailabilityParam::kTwoPhoneRecognizedCred;
   const auto empty_al = TransportAvailabilityParam::kEmptyAllowList;
   const auto only_internal = TransportAvailabilityParam::kOnlyInternal;
   const auto only_hybrid_or_internal =
@@ -253,6 +263,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto use_pk_multi = Step::kPreSelectAccount;
   const auto qr = Step::kCableV2QRCode;
   const auto pconf = Step::kPhoneConfirmationSheet;
+  const auto hero = Step::kSelectPriorityMechanism;
 
   using psync = base::StrongAlias<class PhoneFromSyncTag, std::string>;
   using pqr = base::StrongAlias<class PhoneFromQrTag, std::string>;
@@ -558,8 +569,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
   // Tests for the new UI that lists synced passkeys mixed with local
   // credentials.
-  // TODO(crbug.com/1459273): when a single passkey is available, we should jump
-  // directly to a "hero" screen instead of the selector.
   Test kListSyncedPasskeysTests[]{
       // Mac & Linux:
       // Mix of phone and internal credentials.
@@ -582,10 +591,26 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {usb, cable, internal},
+       {two_phone_cred},
+       {psync("a")},
+       {c(phone), c(phone), add, t(usb)},
+       mss},
+      // Single internal credential.
+      {L,
+       ga,
+       {usb, cable, internal},
+       {one_cred},
+       {psync("a")},
+       {c(other), add, t(usb)},
+       hero},
+      // Single phone credential.
+      {L,
+       ga,
+       {usb, cable, internal},
        {one_phone_cred},
        {psync("a")},
        {c(phone), add, t(usb)},
-       mss},
+       hero},
   };
 
   Test kListSyncedPasskeysTests_Windows_NoWinHybrid[]{
@@ -612,9 +637,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {cable},
-       {one_phone_cred, has_winapi, maybe_plat, only_hybrid_or_internal},
+       {two_phone_cred, has_winapi, maybe_plat, only_hybrid_or_internal},
        {psync("a")},
-       {c(phone), winapi, add},
+       {c(phone), c(phone), winapi, add},
        mss},
   };
 
@@ -692,6 +717,11 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kOnePhoneRecognizedCred)) {
       transports_info.recognized_credentials.emplace_back(kPhoneCred1);
+    }
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kTwoPhoneRecognizedCred)) {
+      transports_info.recognized_credentials.emplace_back(kPhoneCred1);
+      transports_info.recognized_credentials.emplace_back(kPhoneCred2);
     }
     transports_info.has_empty_allow_list = base::Contains(
         test.params, TransportAvailabilityParam::kEmptyAllowList);

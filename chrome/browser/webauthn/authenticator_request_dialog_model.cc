@@ -341,7 +341,12 @@ void AuthenticatorRequestDialogModel::
       SetCurrentStep(Step::kErrorNoAvailableTransports);
     }
   } else if (priority_mechanism_index_) {
-    mechanisms_[*priority_mechanism_index_].callback.Run();
+    Mechanism& mechanism = mechanisms_[*priority_mechanism_index_];
+    if (absl::holds_alternative<Mechanism::Credential>(mechanism.type)) {
+      SetCurrentStep(Step::kSelectPriorityMechanism);
+    } else {
+      mechanism.callback.Run();
+    }
   } else {
     SetCurrentStep(Step::kMechanismSelection);
   }
@@ -396,6 +401,7 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kOffTheRecordInterstitial ||
          current_step() == Step::kPreSelectAccount ||
+         current_step() == Step::kSelectPriorityMechanism ||
          current_step() == Step::kSelectAccount ||
          current_step() == Step::kConditionalMediation ||
          current_step() == Step::kNotStarted)
@@ -1038,6 +1044,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
          current_step() == Step::kConditionalMediation ||
          current_step() == Step::kCreatePasskey ||
          current_step() == Step::kPreSelectAccount ||
+         current_step() == Step::kSelectPriorityMechanism ||
          current_step() == Step::kSelectAccount ||
          current_step() == Step::kNotStarted);
   switch (transport) {
@@ -1440,9 +1447,22 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
 absl::optional<size_t>
 AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
   if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
-    // For now, always go to the multi source passkey picker if enabled.
+    // The index of the last mechanism of type `Credential`.
+    absl::optional<size_t> cred_index;
+    size_t cred_count = 0;
+    for (size_t i = 0; i < mechanisms_.size(); ++i) {
+      if (absl::holds_alternative<Mechanism::Credential>(mechanisms_[i].type)) {
+        cred_index = i;
+        ++cred_count;
+      }
+    }
+    // If there is a single recognized passkey, go to that.
+    if (cred_count == 1) {
+      return cred_index;
+    }
     // TODO(crbug.com/1459273): implement skipping to the relevant authenticator
-    // if there is a single passkey available, or for certain Windows requests.
+    // for certain Windows requests.
+    // For all other cases, go to the multi source passkey picker.
     return absl::nullopt;
   }
   if (mechanisms_.size() == 1) {

@@ -137,8 +137,14 @@ class AuthenticatorRequestDialogModel {
     // available credential and choosing one from a list of multiple options.
     kSelectAccount,
     kSelectSingleAccount,
+
+    // TODO(crbug.com/1459273): Remove after new passkey selection UI launches.
     kPreSelectAccount,
     kPreSelectSingleAccount,
+
+    // kSelectPriorityPasskey lets the user confirm a single "priority"
+    // mechanism.
+    kSelectPriorityMechanism,
 
     // Attestation permission requests.
     kAttestationPermissionRequest,
@@ -552,6 +558,9 @@ class AuthenticatorRequestDialogModel {
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
   virtual base::span<const Mechanism> mechanisms() const;
+  absl::optional<int> priority_mechanism_index() const {
+    return priority_mechanism_index_;
+  }
 
   // Contacts the "priority" paired phone. This is only valid to call when there
   // is a single phone paired.
