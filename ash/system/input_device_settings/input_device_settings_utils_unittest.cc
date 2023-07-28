@@ -366,4 +366,86 @@ TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
                  ->FindInt(prefs::kButtonRemappingKeyboardCode));
 }
 
+TEST(ConvertListToButtonRemappingArray, ConvertListToButtonRemappingArray) {
+  // Valid dict with name, customizable button and action fields.
+  base::Value::Dict dict1;
+  dict1.Set(prefs::kButtonRemappingName, button_remapping1.name);
+  dict1.Set(
+      prefs::kButtonRemappingCustomizableButton,
+      static_cast<int>(button_remapping1.button->get_customizable_button()));
+  dict1.Set(prefs::kButtonRemappingAction,
+            static_cast<int>(button_remapping1.remapping_action->get_action()));
+
+  // Invalid dict without name field.
+  base::Value::Dict dict2;
+  dict2.Set(prefs::kButtonRemappingKeyboardCode,
+            static_cast<int>(button_remapping3.button->get_vkey()));
+
+  // Valid dict with name, vkey and key event fields.
+  base::Value::Dict dict3;
+  dict3.Set(prefs::kButtonRemappingName, button_remapping3.name);
+  dict3.Set(prefs::kButtonRemappingKeyboardCode,
+            static_cast<int>(button_remapping3.button->get_vkey()));
+
+  // Construct the key event dict.
+  base::Value::Dict dict3_key_event;
+  dict3_key_event.Set(
+      prefs::kButtonRemappingDomCode,
+      static_cast<int>(
+          button_remapping3.remapping_action->get_key_event()->dom_code));
+  dict3_key_event.Set(
+      prefs::kButtonRemappingDomKey,
+      static_cast<int>(
+          button_remapping3.remapping_action->get_key_event()->dom_key));
+  dict3_key_event.Set(
+      prefs::kButtonRemappingModifiers,
+      static_cast<int>(
+          button_remapping3.remapping_action->get_key_event()->modifiers));
+  dict3_key_event.Set(
+      prefs::kButtonRemappingKeyboardCode,
+      static_cast<int>(
+          button_remapping3.remapping_action->get_key_event()->vkey));
+  dict3.Set(prefs::kButtonRemappingKeyEvent, std::move(dict3_key_event));
+
+  base::Value::List list;
+  list.Append(dict1.Clone());
+  list.Append(dict2.Clone());
+  list.Append(dict3.Clone());
+
+  std::vector<mojom::ButtonRemappingPtr> array =
+      ConvertListToButtonRemappingArray(list);
+  EXPECT_EQ(2, static_cast<int>(array.size()));
+
+  mojom::ButtonRemappingPtr remapping1 = std::move(array[0]);
+  EXPECT_EQ(*dict1.FindString(prefs::kButtonRemappingName), remapping1->name);
+  EXPECT_TRUE(remapping1->button->is_customizable_button());
+  EXPECT_EQ(static_cast<mojom::CustomizableButton>(
+                *dict1.FindInt(prefs::kButtonRemappingCustomizableButton)),
+            remapping1->button->get_customizable_button());
+  EXPECT_TRUE(remapping1->remapping_action->is_action());
+  EXPECT_EQ(static_cast<uint>(*dict1.FindInt(prefs::kButtonRemappingAction)),
+            remapping1->remapping_action->get_action());
+
+  mojom::ButtonRemappingPtr remapping2 = std::move(array[1]);
+  EXPECT_EQ(*dict3.FindString(prefs::kButtonRemappingName), remapping2->name);
+  EXPECT_TRUE(remapping2->button->is_vkey());
+  EXPECT_EQ(static_cast<::ui::KeyboardCode>(
+                *dict3.FindInt(prefs::kButtonRemappingKeyboardCode)),
+            remapping2->button->get_vkey());
+  EXPECT_TRUE(remapping2->remapping_action->is_key_event());
+  EXPECT_EQ(static_cast<uint>(*dict3.FindDict(prefs::kButtonRemappingKeyEvent)
+                                   ->FindInt(prefs::kButtonRemappingDomCode)),
+            remapping2->remapping_action->get_key_event()->dom_code);
+  EXPECT_EQ(static_cast<uint>(*dict3.FindDict(prefs::kButtonRemappingKeyEvent)
+                                   ->FindInt(prefs::kButtonRemappingDomKey)),
+            remapping2->remapping_action->get_key_event()->dom_key);
+  EXPECT_EQ(static_cast<uint>(*dict3.FindDict(prefs::kButtonRemappingKeyEvent)
+                                   ->FindInt(prefs::kButtonRemappingModifiers)),
+            remapping2->remapping_action->get_key_event()->modifiers);
+  EXPECT_EQ(
+      static_cast<uint>(*dict3.FindDict(prefs::kButtonRemappingKeyEvent)
+                             ->FindInt(prefs::kButtonRemappingKeyboardCode)),
+      remapping2->remapping_action->get_key_event()->vkey);
+}
+
 }  // namespace ash

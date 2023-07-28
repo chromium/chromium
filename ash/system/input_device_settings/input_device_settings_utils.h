@@ -96,6 +96,11 @@ ASH_EXPORT mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
 ASH_EXPORT base::Value::List ConvertButtonRemappingArrayToList(
     const std::vector<mojom::ButtonRemappingPtr>& remappings);
 
+// This helper function converts a list of dicts to
+// a button remapping object array. The dicts will be stored in prefs.
+ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
+ConvertListToButtonRemappingArray(const base::Value::List& list);
+
 ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
 
 }  // namespace ash
