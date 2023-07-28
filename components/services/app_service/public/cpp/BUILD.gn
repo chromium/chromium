@@ -35,11 +35,13 @@ component("app_types") {
 
   defines = [ "IS_APP_TYPES_IMPL" ]
 
-  public_deps = [ "//components/services/app_service/public/protos" ]
+  public_deps = [
+    "//base",
+    "//components/services/app_service/public/protos",
+  ]
 
   deps = [
     ":macros",
-    "//base",
     "//ui/gfx",
     "//url",
   ]
