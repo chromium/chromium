@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/avatar_menu.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -259,6 +261,13 @@ class ProfileAttributesStorageTest : public testing::Test {
       EnableObserver();
   }
 
+  void AddSimpleTestingProfileWithName(const std::u16string& profile_name) {
+    ProfileAttributesInitParams params;
+    params.profile_path = GetProfilePath(base::UTF16ToASCII(profile_name));
+    params.profile_name = profile_name;
+    storage()->AddProfile(std::move(params));
+  }
+
   TestingProfileManager& testing_profile_manager() {
     return testing_profile_manager_;
   }
@@ -483,6 +492,8 @@ TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
     EXPECT_EQ(i + 1, storage()->GetNumberOfProfiles());
     EXPECT_EQ(i + 1, storage()->GetAllProfilesAttributes().size());
     EXPECT_EQ(i + 1, storage()->GetAllProfilesAttributesSortedByName().size());
+    EXPECT_EQ(i + 1,
+              storage()->GetAllProfilesAttributesSortedForDisplay().size());
   }
 
   EXPECT_EQ(5U, storage()->GetNumberOfProfiles());
@@ -502,10 +513,14 @@ TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
 
   std::vector<ProfileAttributesEntry*> entries =
       storage()->GetAllProfilesAttributes();
+  EXPECT_EQ(4U, entries.size());
   for (auto* attributes_entry : entries) {
     EXPECT_NE(GetProfilePath("testing_profile_path0"),
               attributes_entry->GetPath());
   }
+
+  EXPECT_EQ(4U, storage()->GetAllProfilesAttributesSortedByName().size());
+  EXPECT_EQ(4U, storage()->GetAllProfilesAttributesSortedForDisplay().size());
 }
 
 TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
@@ -1952,3 +1967,119 @@ TEST_F(ProfileAttributesStorageTest,
   EXPECT_EQ(actual_profile_names, expected_profile_names);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(ProfileAttributesStorageTest,
+       InitialSavedOrderValidWithAddRemoveProfiles) {
+  DisableObserver();
+
+  ASSERT_EQ(0U, storage()->GetNumberOfProfiles());
+  ASSERT_EQ(0U, storage()->GetAllProfilesAttributesSortedForDisplay().size());
+
+  const std::u16string profile1(u"D");
+  const std::u16string profile2(u"B");
+  const std::u16string profile3(u"C");
+
+  // Add two initial profiles.
+  AddSimpleTestingProfileWithName(profile1);
+  AddSimpleTestingProfileWithName(profile2);
+  ASSERT_EQ(2U, storage()->GetNumberOfProfiles());
+
+  // Check the initial saved order is the same as the profile insertion order
+  // and not based on the Profile Name.
+  {
+    auto saved_order_entries =
+        storage()->GetAllProfilesAttributesSortedForDisplay();
+    ASSERT_EQ(2U, saved_order_entries.size());
+    EXPECT_EQ(profile1, saved_order_entries[0]->GetLocalProfileName());
+    EXPECT_EQ(profile2, saved_order_entries[1]->GetLocalProfileName());
+  }
+
+  // Add a third profile.
+  AddSimpleTestingProfileWithName(profile3);
+  ASSERT_EQ(3U, storage()->GetNumberOfProfiles());
+
+  // Check after one more insertion.
+  {
+    auto saved_order_entries =
+        storage()->GetAllProfilesAttributesSortedForDisplay();
+    ASSERT_EQ(3U, saved_order_entries.size());
+    EXPECT_EQ(profile1, saved_order_entries[0]->GetLocalProfileName());
+    EXPECT_EQ(profile2, saved_order_entries[1]->GetLocalProfileName());
+    EXPECT_EQ(profile3, saved_order_entries[2]->GetLocalProfileName());
+  }
+
+  // Remove the second profile that was added.
+  storage()->RemoveProfile(GetProfilePath(base::UTF16ToASCII(profile2)));
+  ASSERT_EQ(2U, storage()->GetNumberOfProfiles());
+
+  // Check after removing the second profile profile.
+  {
+    auto saved_order_entries =
+        storage()->GetAllProfilesAttributesSortedForDisplay();
+    ASSERT_EQ(2U, saved_order_entries.size());
+    EXPECT_EQ(profile1, saved_order_entries[0]->GetLocalProfileName());
+    EXPECT_EQ(profile3, saved_order_entries[1]->GetLocalProfileName());
+  }
+}
+
+class ProfileAttributesStorageTestWithProfileReorderingParam
+    : public base::test::WithFeatureOverride,
+      public ProfileAttributesStorageTest {
+ public:
+  ProfileAttributesStorageTestWithProfileReorderingParam()
+      : base::test::WithFeatureOverride(kProfilesReordering) {}
+};
+
+// In this test we are checking the order of which the method
+// `GetAllProfilesAttributesSortedWithCheck()` based on the feature flag
+// `kProfilesReordering`.
+// When the feature is on, we expect the order to be the same as the order of
+// profile insertion. When the feature is off, we expect the order to be
+// alphabetically sorted based on the profile name.
+TEST_P(ProfileAttributesStorageTestWithProfileReorderingParam,
+       ProfileOrderWith_GetAllProfilesAttributesSortedWithCheck) {
+  DisableObserver();
+
+  EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
+  EXPECT_EQ(0U, storage()->GetAllProfilesAttributesSortedWithCheck().size());
+
+  const std::u16string profile1(u"D");
+  const std::u16string profile2(u"C");
+  const std::u16string profile3(u"B");
+
+  // Add two initial profiles "D" and "B".
+  AddSimpleTestingProfileWithName(profile1);
+  AddSimpleTestingProfileWithName(profile3);
+
+  {
+    auto sorted_entries = storage()->GetAllProfilesAttributesSortedWithCheck();
+    ASSERT_EQ(2U, sorted_entries.size());
+    if (IsParamFeatureEnabled()) {
+      EXPECT_EQ(profile1, sorted_entries[0]->GetLocalProfileName());
+      EXPECT_EQ(profile3, sorted_entries[1]->GetLocalProfileName());
+    } else {
+      EXPECT_EQ(profile3, sorted_entries[0]->GetLocalProfileName());
+      EXPECT_EQ(profile1, sorted_entries[1]->GetLocalProfileName());
+    }
+  }
+
+  // Add a third profile "C".
+  AddSimpleTestingProfileWithName(profile2);
+
+  {
+    auto sorted_entries = storage()->GetAllProfilesAttributesSortedWithCheck();
+    ASSERT_EQ(3U, sorted_entries.size());
+    if (IsParamFeatureEnabled()) {
+      EXPECT_EQ(profile1, sorted_entries[0]->GetLocalProfileName());
+      EXPECT_EQ(profile3, sorted_entries[1]->GetLocalProfileName());
+      EXPECT_EQ(profile2, sorted_entries[2]->GetLocalProfileName());
+    } else {
+      EXPECT_EQ(profile3, sorted_entries[0]->GetLocalProfileName());
+      EXPECT_EQ(profile2, sorted_entries[1]->GetLocalProfileName());
+      EXPECT_EQ(profile1, sorted_entries[2]->GetLocalProfileName());
+    }
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ProfileAttributesStorageTestWithProfileReorderingParam);

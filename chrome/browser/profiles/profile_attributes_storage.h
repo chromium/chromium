@@ -87,6 +87,18 @@ class ProfileAttributesStorage
   std::vector<ProfileAttributesEntry*>
   GetAllProfilesAttributesSortedByLocalProfileName() const;
 
+  // Return all user profile attributes sorted using the `prefs::kProfilesOrder`
+  // profile order stored.
+  std::vector<ProfileAttributesEntry*>
+  GetAllProfilesAttributesSortedForDisplay() const;
+
+  // Conditionally returns the sorted list based on the feature flag
+  // `kProfilesReordering`. It will return the sorted list based on the stored
+  // order if the feature is enabled, or the sorted list based on the local
+  // profile name if the feature is disabled.
+  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedWithCheck()
+      const;
+
   // Returns a ProfileAttributesEntry with the data for the profile at |path|
   // if the operation is successful. Returns |nullptr| otherwise.
   // Returned value should not be cached because the profile entry may be
@@ -218,6 +230,14 @@ class ProfileAttributesStorage
 
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSorted(
       bool use_local_profile_name) const;
+
+  // Makes sure that the pref `prefs::kProfilesOrder` is properly initialized
+  // with the existing profiles.
+  void EnsureStorageKeyOrderPrefIsInitialized();
+
+  // Returns a constructed map of storage key to each `ProfileAttributesEntry`.
+  base::flat_map<std::string, ProfileAttributesEntry*> GetStorageKeyEntryMap()
+      const;
 
   // Creates and initializes a ProfileAttributesEntry with `key`. `is_omitted`
   // indicates whether the profile should be hidden in UI.

@@ -1914,6 +1914,12 @@ inline constexpr char kProfileCreatedByVersion[] = "profile.created_by_version";
 // them.
 inline constexpr char kProfileAttributes[] = "profile.info_cache";
 
+// A list of the profiles that is ordered based on the user preferences. It is
+// stored using the storage key of each profile which is unique. The order can
+// be seen and modified on the profile picker using the drag and drop
+// functionality.
+inline constexpr char kProfilesOrder[] = "profile.profiles_order";
+
 // A list of profile paths that should be deleted on shutdown. The deletion does
 // not happen if the browser crashes, so we remove the profile on next start.
 inline constexpr char kProfilesDeleted[] = "profiles.profiles_deleted";
