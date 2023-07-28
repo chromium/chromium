@@ -841,6 +841,7 @@ DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
     const std::u16string& subpage_summary,
     const std::u16string& secondary_subpage_button_label) {
   return DownloadUIModel::BubbleUIInfo()
+      .AddSubpageSummary(subpage_summary)
       .AddIconAndColor(features::IsChromeRefresh2023()
                            ? kDownloadWarningIcon
                            : vector_icons::kNotSecureWarningIcon,
