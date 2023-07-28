@@ -325,10 +325,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
           .SetMustRemainVisible(false),
 
       If([&] { return WithDefaultBrowserStep(); },
-         WaitForWebContentsNavigation(kWebContentsId,
-                                      // TODO(crbug.com/1465822): Replace this
-                                      // placeholder URL and act on the page
-                                      GURL("chrome://version"))));
+         WaitForWebContentsNavigation(
+             kWebContentsId,
+             // TODO(crbug.com/1465822): Act on the page.
+             GURL(chrome::kChromeUIIntroDefaultBrowserURL))));
 
   WaitForPickerClosed();
 

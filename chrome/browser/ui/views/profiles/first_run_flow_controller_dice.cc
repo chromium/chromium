@@ -124,8 +124,9 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
     }
 
     host()->ShowScreenInPickerContents(
-        // TODO(crbug.com/1465822): Implement the WebUI page.
-        GURL(chrome::kChromeUIVersionURL),
+        // TODO(crbug.com/1465822): Implement the WebUI page and wait for user
+        // response.
+        GURL(chrome::kChromeUIIntroDefaultBrowserURL),
         std::move(navigation_finished_closure));
   }
 

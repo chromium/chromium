@@ -11,7 +11,10 @@ assert(is_chromeos_lacros || enable_dice_support)
 build_webui("build") {
   grd_prefix = "intro"
 
-  static_files = [ "intro.html" ]
+  static_files = [
+    "default_browser/default_browser.html",
+    "intro.html",
+  ]
 
   if (enable_dice_support) {
     static_files += [
@@ -23,6 +26,7 @@ build_webui("build") {
       static_files += [ "images/security.svg" ]
     }
     web_component_files = [
+      "default_browser/app.ts",
       "dice_app.ts",
       "sign_in_promo.ts",
     ]

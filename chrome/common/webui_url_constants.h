@@ -462,6 +462,8 @@ extern const char kChromeUIEnterpriseProfileWelcomeHost[];
 extern const char kChromeUIEnterpriseProfileWelcomeURL[];
 extern const char kChromeUIIntroHost[];
 extern const char kChromeUIIntroURL[];
+extern const char kChromeUIIntroDefaultBrowserSubPage[];
+extern const char kChromeUIIntroDefaultBrowserURL[];
 extern const char kChromeUIProfileCustomizationHost[];
 extern const char kChromeUIProfileCustomizationURL[];
 extern const char kChromeUIProfilePickerHost[];

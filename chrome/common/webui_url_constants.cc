@@ -532,6 +532,8 @@ const char kChromeUIEnterpriseProfileWelcomeURL[] =
     "chrome://enterprise-profile-welcome/";
 const char kChromeUIIntroHost[] = "intro";
 const char kChromeUIIntroURL[] = "chrome://intro";
+const char kChromeUIIntroDefaultBrowserSubPage[] = "default-browser";
+const char kChromeUIIntroDefaultBrowserURL[] = "chrome://intro/default-browser";
 const char kChromeUIProfileCustomizationHost[] = "profile-customization";
 const char kChromeUIProfileCustomizationURL[] =
     "chrome://profile-customization";
