@@ -113,7 +113,7 @@ class PuffinComponentUnpacker
   // If there is an error at any step, the remaining steps are skipped and
   // `EndUnpacking` is called. `EndUnpacking` is responsible for calling the
   // callback provided in `Unpack`.
-  void EndUnpacking(UnpackerError error, int extended_error);
+  void EndUnpacking(UnpackerError error, int extended_error = 0);
 
   std::vector<uint8_t> pk_hash_;
   base::FilePath path_;
