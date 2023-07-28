@@ -394,6 +394,7 @@ TEST_F(ShoppingListHandlerTest,
   info.emplace();
   info->title = "example_title";
   info->product_cluster_title = "example_cluster_title";
+  info->product_cluster_id = absl::optional<uint64_t>(123L);
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
@@ -401,6 +402,7 @@ TEST_F(ShoppingListHandlerTest,
          shopping_list::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("example_title", product_info->title);
         ASSERT_EQ("example_cluster_title", product_info->cluster_title);
+        ASSERT_EQ(123L, product_info->cluster_id);
         run_loop->Quit();
       },
       &run_loop));
