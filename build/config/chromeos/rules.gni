@@ -371,18 +371,25 @@ template("generate_runner_script") {
         test_exe,
       ]
 
-      # For Lacros browser test running on cros device, Lacros need to know
-      # the wayland socket file created by Ash.
-      # This should only be useful for test built on top of browser test.
-      # gtest unit tests don't need this. However there's no good way to
-      # differentiate them, and we don't want to maintain a list based on
-      # target names. So here it applies to all gtest targets.
-      if (is_chromeos_lacros) {
-        executable_args += [
-          "--env-var",
-          "XDG_RUNTIME_DIR",
-          "/run/chrome",
-        ]
+      # This target is not a gtest unit test, but an integration test suite.
+      # Similar to interactive ui tests, it would start a full browser and
+      # then do testing.
+      # See more at //docs/testing/chromeos_integration.
+      if (test_exe == "chromeos_integration_tests") {
+        if (is_chromeos_ash) {
+          # For ash, it need to first stop the existing ash.
+          executable_args += [ "--stop-ui" ]
+        }
+
+        # Lacros need to know the wayland socket file created by Ash.
+        # In this way, Lacros will be connected to the system Ash.
+        if (is_chromeos_lacros) {
+          executable_args += [
+            "--env-var",
+            "XDG_RUNTIME_DIR",
+            "/run/chrome",
+          ]
+        }
       }
       if (defined(runtime_deps_file)) {
         executable_args += [
