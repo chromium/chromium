@@ -1706,6 +1706,10 @@ const char kForceUiDirectionDescription[] =
     "Explicitly force the UI to left-to-right (LTR) or right-to-left (RTL) "
     "mode, overriding the default direction of the UI language.";
 
+const char kForgotPasswordFormSupportName[] = "Forgot Password Form Support";
+const char kForgotPasswordFormSupportDescription[] =
+    "Detect and fill usernames in forgot password forms.";
+
 const char kFullscreenPopupWindowsName[] = "Fullscreen popup windows";
 const char kFullscreenPopupWindowsDescription[] =
     "Enables sites with Window Management permission to open fullscreen popup "

@@ -27,6 +27,7 @@ BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kForceInitialSyncWhenDecryptionFails);
 #endif
+BASE_DECLARE_FEATURE(kForgotPasswordFormSupport);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);

@@ -10745,6 +10745,12 @@ const FeatureEntry kFeatureEntries[] = {
          profile_management::features::kThirdPartyProfileManagement)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+    {"forgot-password-form-support",
+     flag_descriptions::kForgotPasswordFormSupportName,
+     flag_descriptions::kForgotPasswordFormSupportDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kForgotPasswordFormSupport)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

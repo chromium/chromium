@@ -59945,6 +59945,7 @@ from previous Chrome versions.
       label="(Obsolete) AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
+  <int value="-2014920890" label="ForgotPasswordFormSupport:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
   <int value="-2013124655" label="EnableEphemeralFlashPermission:disabled"/>
   <int value="-2012990889" label="SpannableInlineAutocomplete:enabled"/>
@@ -60300,6 +60301,7 @@ from previous Chrome versions.
   <int value="-1846680525" label="WebUIA11yEnhancements:enabled"/>
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
+  <int value="-1846358874" label="ForgotPasswordFormSupport:enabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1843677118" label="TwoPanesStartSurfaceAndroid:disabled"/>
   <int value="-1842511843" label="DiceWebSigninInterception:enabled"/>

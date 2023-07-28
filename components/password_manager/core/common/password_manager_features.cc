@@ -26,6 +26,12 @@ BASE_FEATURE(kForceInitialSyncWhenDecryptionFails,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When enabled, username fields for forgot password flows are recognized
+// and filled.
+BASE_FEATURE(kForgotPasswordFormSupport,
+             "ForgotPasswordFormSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // Removes the list of passwords from the Settings UI and adds a separate
 // Password Manager view.
