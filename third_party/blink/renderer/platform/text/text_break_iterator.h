@@ -230,7 +230,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   }
 
   LineBreakType BreakType() const { return break_type_; }
-  void SetBreakType(LineBreakType break_type) { break_type_ = break_type; }
+  void SetBreakType(LineBreakType break_type);
   BreakSpaceType BreakSpace() const { return break_space_; }
   void SetBreakSpace(BreakSpaceType break_space) { break_space_ = break_space; }
   LineBreakStrictness Strictness() const { return strictness_; }
@@ -381,6 +381,16 @@ inline void LazyLineBreakIterator::InvalidateLocaleWithKeyword() {
   if (locale_with_keyword_) {
     locale_with_keyword_ = AtomicString();
     ReleaseIterator();
+  }
+}
+
+inline void LazyLineBreakIterator::SetBreakType(LineBreakType break_type) {
+  if (break_type_ != break_type) {
+    if (break_type_ == LineBreakType::kPhrase ||
+        break_type == LineBreakType::kPhrase) {
+      InvalidateLocaleWithKeyword();
+    }
+    break_type_ = break_type;
   }
 }
 

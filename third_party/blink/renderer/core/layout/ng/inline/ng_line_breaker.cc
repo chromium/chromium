@@ -701,6 +701,8 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   //   <p>...<span>....</span></p>
   // When the line wraps in <span>, the 2nd line needs to start with the style
   // of the <span>.
+  override_break_anywhere_ = false;
+  disable_phrase_ = false;
   disable_score_line_break_ = false;
   if (!current_style_)
     SetCurrentStyle(line_info->LineStyle());
@@ -3122,19 +3124,21 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
 
   // Reaching here means that the rewind point was not found.
 
+  if (break_iterator_.BreakType() == LineBreakType::kPhrase &&
+      !disable_phrase_) {
+    // If the phrase line break overflowed, retry with the normal line break.
+    disable_phrase_ = true;
+    break_iterator_.SetBreakType(LineBreakType::kNormal);
+    RetryAfterOverflow(line_info, item_results);
+    return;
+  }
+
   if (!override_break_anywhere_ && has_break_anywhere_if_overflow) {
     // Overflow occurred but `overflow-wrap` is set. Change the break type and
     // retry the line breaking.
     override_break_anywhere_ = true;
     break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
-    // `NGScoreLineBreaker` doesn't support multi-pass line breaking.
-    disable_score_line_break_ = true;
-    state_ = LineBreakState::kContinue;
-    // TODO(kojii): Not all items need to rewind, but such case is rare and
-    // rewinding all items simplifes the code.
-    if (!item_results->empty())
-      Rewind(0, line_info);
-    ResetRewindLoopDetector();
+    RetryAfterOverflow(line_info, item_results);
     return;
   }
 
@@ -3169,6 +3173,20 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
                                 return !item_result.can_break_after;
                               }));
   state_ = LineBreakState::kOverflow;
+}
+
+void NGLineBreaker::RetryAfterOverflow(NGLineInfo* line_info,
+                                       NGInlineItemResults* item_results) {
+  // `NGScoreLineBreaker` doesn't support multi-pass line breaking.
+  disable_score_line_break_ = true;
+
+  state_ = LineBreakState::kContinue;
+  // TODO(kojii): Not all items need to rewind, but such case is rare and
+  // rewinding all items simplifes the code.
+  if (!item_results->empty()) {
+    Rewind(0, line_info);
+  }
+  ResetRewindLoopDetector();
 }
 
 // Rewind to |new_end| on overflow. If trailable items follow at |new_end|, they
@@ -3457,9 +3475,12 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
           break_anywhere_if_overflow_ = false;
           break;
         case EWordBreak::kAuto:
-          // TODO(crbug.com/1443291): Same as `kNormal` for now.
           DCHECK(RuntimeEnabledFeatures::CSSPhraseLineBreakEnabled());
-          line_break_type = LineBreakType::kNormal;
+          if (UNLIKELY(disable_phrase_)) {
+            line_break_type = LineBreakType::kNormal;
+          } else {
+            line_break_type = LineBreakType::kPhrase;
+          }
           break_anywhere_if_overflow_ = false;
           break;
       }
