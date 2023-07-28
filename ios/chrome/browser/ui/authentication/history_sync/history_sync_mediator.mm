@@ -65,7 +65,8 @@
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   CHECK(identity);
-  // TODO(crbug.com/1447014): Should we record the history sync opt-in?
+  // TODO(crbug.com/1467853): Record the history sync opt-in when the new
+  // consent type will be available.
   syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory, true);
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs, true);

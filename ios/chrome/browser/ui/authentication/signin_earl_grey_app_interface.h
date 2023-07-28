@@ -84,6 +84,9 @@ enum class UserSelectableType;
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
 
+// Returns if the data type is enabled for the sync service.
++ (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_APP_INTERFACE_H_

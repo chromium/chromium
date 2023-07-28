@@ -196,4 +196,12 @@
   settings->SetSelectedType(type, enabled);
 }
 
++ (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type {
+  syncer::SyncUserSettings* settings =
+      SyncServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState())
+          ->GetUserSettings();
+  return settings->GetSelectedTypes().Has(type) ? YES : NO;
+}
+
 @end

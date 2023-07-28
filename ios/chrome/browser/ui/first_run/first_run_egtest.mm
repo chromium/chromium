@@ -11,6 +11,9 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_prefs.h"
+#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -20,6 +23,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -33,6 +37,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -156,6 +161,22 @@ void DismissDefaultBrowserPromo() {
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearSyncServerData];
 
+  // Clear sync prefs for data types.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                syncer::SyncPrefs::GetPrefNameForTypeForTesting(
+                                    syncer::UserSelectableType::kTabs))];
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                syncer::SyncPrefs::GetPrefNameForTypeForTesting(
+                                    syncer::UserSelectableType::kHistory))];
+
+  // Clear MSBB consent.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                unified_consent::prefs::
+                                    kUrlKeyedAnonymizedDataCollectionEnabled)];
+
   [super tearDown];
 }
 
@@ -172,6 +193,10 @@ void DismissDefaultBrowserPromo() {
       [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
       [self isRunningTest:@selector
             (testSignInSubtitleIfHistorySyncOptInEnabled)] ||
+      [self
+          isRunningTest:@selector(testHistorySyncConsentGrantedAfterConfirm)] ||
+      [self isRunningTest:@selector
+            (testHistorySyncConsentNotGrantedAfterReject)] ||
       [self isRunningTest:@selector(testHistorySyncSkipIfSyncDisabled)] ||
       [self isRunningTest:@selector(testHistorySyncSkipIfTabsSyncDisabled)] ||
       [self isRunningTest:@selector
@@ -1081,6 +1106,88 @@ void DismissDefaultBrowserPromo() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that accepting History Sync enables the history sync, grants the
+// history sync and MSBB consent.
+- (void)testHistorySyncConsentGrantedAfterConfirm {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Accept History Sync.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the history sync is enabled.
+  GREYAssertTrue(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be enabled.");
+  GREYAssertTrue([SigninEarlGreyAppInterface
+                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                 @"Tabs sync should be enabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is granted.
+  // Verify that MSBB consent is granted.
+  GREYAssertTrue(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent was not granted.");
+}
+
+// Tests that refusing History Sync keep the history syncdisabled, and does not
+// grant the history sync and MSBB consent.
+- (void)testHistorySyncConsentNotGrantedAfterReject {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Refuse History Sync.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStyleSecondaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the history sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse([SigninEarlGreyAppInterface
+                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                  @"Tabs sync should be disabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is not granted.
+  // Verify that MSBB consent is not granted.
+  GREYAssertFalse(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent should not be granted.");
 }
 
 #pragma mark - Helper
