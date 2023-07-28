@@ -1,0 +1,44 @@
+<!-- Page to help with testing of drag-and-drop of files.
+     Input is at (0,0) to (500,500) coordinates. -->
+
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        input {
+            position: absolute;
+            left: 0px;
+            background: green;
+            top: 0px;
+            width: 500px;
+            height: 500px;
+            border: 0px;
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <input id='drop-area' type="file">
+    <script>
+        let dropArea = document.getElementById('drop-area');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        })
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        dropArea.addEventListener('drop', async (e) => {
+            try {
+                let file = e.dataTransfer.files[0];
+                const content = await file.text();
+                console.log(content);
+            } catch {
+                console.log("Could not read the file.");
+            }
+        }, false);
+    </script>
+</body>

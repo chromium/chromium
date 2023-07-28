@@ -52,6 +52,7 @@ class DlpScopedFileAccessDelegate
 
  private:
   friend class DlpScopedFileAccessDelegateTest;
+  friend class DlpScopedFileAccessDelegateInteractiveUITest;
 
   // Starts a RequestFileAccess request to the daemon.
   void PostRequestFileAccessToDaemon(
