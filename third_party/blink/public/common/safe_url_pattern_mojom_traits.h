@@ -118,17 +118,57 @@ struct BLINK_COMMON_EXPORT
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::SafeUrlPatternDataView,
                                         ::blink::SafeUrlPattern> {
+  static const std::vector<liburlpattern::Part>& protocol(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.protocol;
+  }
+  static const std::vector<liburlpattern::Part>& username(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.username;
+  }
+  static const std::vector<liburlpattern::Part>& password(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.password;
+  }
   static const std::vector<liburlpattern::Part>& hostname(
       const ::blink::SafeUrlPattern& pattern) {
     return pattern.hostname;
+  }
+  static const std::vector<liburlpattern::Part>& port(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.port;
   }
   static const std::vector<liburlpattern::Part>& pathname(
       const ::blink::SafeUrlPattern& pattern) {
     return pattern.pathname;
   }
+  static const std::vector<liburlpattern::Part>& search(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.search;
+  }
+  static const std::vector<liburlpattern::Part>& hash(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.hash;
+  }
+  static const blink::SafeUrlPatternOptions& options(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.options;
+  }
 
   static bool Read(blink::mojom::SafeUrlPatternDataView data,
                    ::blink::SafeUrlPattern* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::SafeUrlPatternOptionsDataView,
+                 blink::SafeUrlPatternOptions> {
+  static bool ignore_case(const ::blink::SafeUrlPatternOptions& data) {
+    return data.ignore_case;
+  }
+
+  static bool Read(blink::mojom::SafeUrlPatternOptionsDataView data,
+                   ::blink::SafeUrlPatternOptions* out);
 };
 
 }  // namespace mojo

@@ -79,8 +79,6 @@ message ServiceWorkerRegistrationData {
       message Condition {
         // Structure representing a URLPattern as described in:
         // https://wicg.github.io/urlpattern/.
-        // This currently only represents the pathname part of the pattern but
-        // other parts can be added as needed.
         message URLPattern {
           message Part {
             enum Modifier {
@@ -113,8 +111,22 @@ message ServiceWorkerRegistrationData {
               WildcardPattern full_wildcard = 5;
             }
           }
-          repeated Part pathname = 1;
+          message Options {
+            optional bool ignore_case = 1 [default = false];
+          }
+
+          repeated Part legacy_pathname = 1;
+
+          repeated Part protocol = 3;
+          repeated Part username = 4;
+          repeated Part password = 5;
           repeated Part hostname = 2;
+          repeated Part port = 6;
+          repeated Part pathname = 7;
+          repeated Part search = 8;
+          repeated Part hash = 9;
+
+          optional Options options = 10;
         }
         message Request {
           optional string method = 1;

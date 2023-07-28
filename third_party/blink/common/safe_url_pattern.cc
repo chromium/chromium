@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/safe_url_pattern.h"
 
+#include <tuple>
+
 namespace blink {
 
 SafeUrlPattern::SafeUrlPattern() = default;
@@ -11,7 +13,20 @@ SafeUrlPattern::SafeUrlPattern() = default;
 SafeUrlPattern::~SafeUrlPattern() = default;
 
 bool operator==(const SafeUrlPattern& left, const SafeUrlPattern& right) {
-  return left.hostname == right.hostname && left.pathname == right.pathname;
+  auto fields = [](const SafeUrlPattern& p) {
+    return std::tie(p.protocol, p.username, p.password, p.hostname, p.port,
+                    p.pathname, p.search, p.hash, p.options);
+  };
+  return fields(left) == fields(right);
+}
+
+bool operator==(const SafeUrlPatternOptions& left,
+                const SafeUrlPatternOptions& right) {
+  auto fields = [](const SafeUrlPatternOptions& op) {
+    return std::tie(op.ignore_case);
+  };
+
+  return fields(left) == fields(right);
 }
 
 }  // namespace blink

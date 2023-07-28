@@ -6,12 +6,18 @@ module blink.mojom;
 
 // Structure representing a URLPattern as described in:
 // https://wicg.github.io/urlpattern/.
-// This currently only represents the pathname and hostname parts of the
-// pattern but other parts can be added as needed.
 // Due to a security concern, it won't support regex pattern.
 struct SafeUrlPattern {
+  array<SafeUrlPatternPart> protocol;
+  array<SafeUrlPatternPart> username;
+  array<SafeUrlPatternPart> password;
   array<SafeUrlPatternPart> hostname;
+  array<SafeUrlPatternPart> port;
   array<SafeUrlPatternPart> pathname;
+  array<SafeUrlPatternPart> search;
+  array<SafeUrlPatternPart> hash;
+
+  SafeUrlPatternOptions options;
 };
 
 // Represents a fixed string part of a URLPattern as described in:
@@ -54,3 +60,8 @@ struct SafeUrlPatternPart {
   Modifier modifier;
 };
 
+// URLPatternOptions described in:
+// https://wicg.github.io/urlpattern/#dictdef-urlpatternoptions
+struct SafeUrlPatternOptions {
+  bool ignore_case = false;
+};
