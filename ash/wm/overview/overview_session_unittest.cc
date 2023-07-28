@@ -17,6 +17,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/drag_drop/drag_drop_controller.h"
@@ -4043,7 +4044,9 @@ TEST_F(TabletModeOverviewSessionTest, SnappingFullscreenWindow) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
 }
 
-class ContinuousOverviewAnimationTest : public OverviewTestBase {
+class ContinuousOverviewAnimationTest
+    : public OverviewTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   ContinuousOverviewAnimationTest() = default;
   ContinuousOverviewAnimationTest(const ContinuousOverviewAnimationTest&) =
@@ -4059,6 +4062,13 @@ class ContinuousOverviewAnimationTest : public OverviewTestBase {
                               chromeos::features::kJelly},
         /*disabled_features=*/{});
     OverviewTestBase::SetUp();
+
+    // Toggle natural scrolling. Behavior should always stay the same.
+    PrefService* pref_service =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    bool enabled = GetParam();
+    pref_service->SetBoolean(prefs::kTouchpadEnabled, true);
+    pref_service->SetBoolean(prefs::kNaturalScroll, enabled);
   }
 
   // If `complete_scroll` is false, end the scroll with the fingers still on the
@@ -4076,6 +4086,111 @@ class ContinuousOverviewAnimationTest : public OverviewTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests that continuous scrolls slowly shrink active windows and increase the
+// opacity of minimized windows, regardless of the state of `NaturalScroll`.
+TEST_P(ContinuousOverviewAnimationTest, PositionWindows) {
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  std::unique_ptr<aura::Window> window3(CreateTestWindow());
+  std::unique_ptr<aura::Window> minimized_window(CreateTestWindow());
+  WindowState::Get(minimized_window.get())->Minimize();
+
+  // Get the original positions.
+  const gfx::Rect original_bounds1 = window1->bounds();
+  const gfx::Rect original_bounds2 = window2->bounds();
+  const gfx::Rect original_bounds3 = window3->bounds();
+
+  // Get the final positions by toggling overview mode regularly.
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+  OverviewItem* item1 = GetOverviewItemForWindow(window1.get());
+  OverviewItem* item2 = GetOverviewItemForWindow(window2.get());
+  OverviewItem* item3 = GetOverviewItemForWindow(window3.get());
+
+  const gfx::Rect final_bounds1 = gfx::ToEnclosedRect(item1->target_bounds());
+  const gfx::Rect final_bounds2 = gfx::ToEnclosedRect(item2->target_bounds());
+  const gfx::Rect final_bounds3 = gfx::ToEnclosedRect(item3->target_bounds());
+  ToggleOverview();
+  ASSERT_FALSE(InOverviewSession());
+
+  // Swipe up a little bit and keep the fingers rested on the trackpad so that
+  // the window placements are paused. Technically, we are in an overview
+  // session, but the windows have not been placed in their final positions yet
+  // due to the scroll still being in progress.
+  const float short_scroll = 50.f;
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/false);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Get the current window positions and opacities.
+  int top_inset = window1.get()->GetProperty(aura::client::kTopViewInset);
+  gfx::RectF curr_bounds1 =
+      window_util::GetTransformedBounds(window1.get(), top_inset);
+  gfx::RectF curr_bounds2 =
+      window_util::GetTransformedBounds(window2.get(), top_inset);
+  gfx::RectF curr_bounds3 =
+      window_util::GetTransformedBounds(window3.get(), top_inset);
+
+  // Each active window should be smaller than their original state, but larger
+  // than their final overview mode state.
+  EXPECT_LT(curr_bounds1.width(), original_bounds1.width());
+  EXPECT_GT(curr_bounds1.width(), final_bounds1.width());
+  EXPECT_LT(curr_bounds2.width(), original_bounds2.width());
+  EXPECT_GT(curr_bounds2.width(), final_bounds2.width());
+  EXPECT_LT(curr_bounds3.width(), original_bounds3.width());
+  EXPECT_GT(curr_bounds3.width(), final_bounds3.width());
+
+  EXPECT_LT(curr_bounds1.height(), original_bounds1.height());
+  EXPECT_GT(curr_bounds1.height(), final_bounds1.height());
+  EXPECT_LT(curr_bounds2.height(), original_bounds2.height());
+  EXPECT_GT(curr_bounds2.height(), final_bounds2.height());
+  EXPECT_LT(curr_bounds3.height(), original_bounds3.height());
+  EXPECT_GT(curr_bounds3.height(), final_bounds3.height());
+
+  // Confirm the opacity of minimized windows is not 100%.
+  float opacity = GetOverviewItemForWindow(minimized_window.get())
+                      ->overview_item_view()
+                      ->layer()
+                      ->opacity();
+  EXPECT_NE(opacity, 1.f);
+  EXPECT_NE(opacity, 0.f);
+}
+
+// Tests that scrolls enter/exit overview mode as expected, regardless of the
+// state of `NaturalScroll`.
+TEST_P(ContinuousOverviewAnimationTest, ReverseGesturesTest) {
+  const float long_scroll = 600.f;
+  const float short_scroll = 50.f;
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test an incorrect, complete, scroll.
+  ThreeFingerScroll(0, -long_scroll, /*complete_scroll=*/true);
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test a correct, complete, scroll.
+  ThreeFingerScroll(0, long_scroll, /*complete_scroll=*/true);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Test an incorrect, complete, scroll.
+  ThreeFingerScroll(0, long_scroll, /*complete_scroll=*/true);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Test a correct, complete, scroll.
+  ThreeFingerScroll(0, -long_scroll, /*complete_scroll=*/true);
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test an incorrect, incomplete, scroll.
+  ThreeFingerScroll(0, -short_scroll, /*complete_scroll=*/false);
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test a correct, incomplete, scroll.
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/false);
+  ASSERT_TRUE(InOverviewSession());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContinuousOverviewAnimationTest,
+                         ::testing::Bool());
 
 class ClamshellScrollOverviewSessionTest : public OverviewTestBase {
  public:
