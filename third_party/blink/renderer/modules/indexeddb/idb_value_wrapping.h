@@ -177,8 +177,9 @@ class MODULES_EXPORT IDBValueWrapper {
  private:
   // Tries to compress `wire_bytes_` via Snappy, storing the output in
   // `wire_data_buffer_`. If the compression effect is small, the compression
-  // will be discarded and an uncompressed value will be stored (mainly to avoid
-  // an extra memory allocation when later reading the value).
+  // will be discarded and an uncompressed value will be stored in
+  // `wire_data_buffer_` (mainly to avoid an extra memory allocation when later
+  // reading the value).
   void MaybeCompress();
 
   // Stores `wire_bytes_` in a Blob if it is over the size threshold.

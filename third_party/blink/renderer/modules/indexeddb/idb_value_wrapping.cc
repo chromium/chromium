@@ -182,14 +182,18 @@ void IDBValueWrapper::MaybeCompress() {
   snappy::RawCompress(reinterpret_cast<const char*>(wire_data_.data()),
                       wire_data_size, wire_data_buffer_.begin() + kHeaderSize,
                       &compressed_length);
-  if (!ShouldTransmitCompressed(wire_data_size, compressed_length)) {
-    wire_data_buffer_.clear();
-    return;
+  if (ShouldTransmitCompressed(wire_data_size, compressed_length)) {
+    // Truncate the excess space that was previously allocated.
+    wire_data_buffer_.resize(kHeaderSize +
+                             static_cast<wtf_size_t>(compressed_length));
+  } else {
+    CHECK_GE(wire_data_buffer_.size(), wire_data_size);
+    // Compression wasn't very successful, but we still allocated a large chunk
+    // of memory, so we can repurpose it. This copy saves us from making another
+    // allocation later on in `MaybeStoreInBlob()` or `TakeWireBytes()`.
+    memcpy(wire_data_buffer_.begin(), wire_data_.data(), wire_data_size);
+    wire_data_buffer_.resize(static_cast<wtf_size_t>(wire_data_size));
   }
-
-  // Truncate the excess space that was previously allocated.
-  wire_data_buffer_.resize(kHeaderSize +
-                           static_cast<wtf_size_t>(compressed_length));
 
   wire_data_ = base::make_span(
       reinterpret_cast<const uint8_t*>(wire_data_buffer_.data()),
@@ -210,6 +214,8 @@ void IDBValueWrapper::MaybeStoreInBlob() {
   wrapper_blob_data->SetContentType(String(kWrapMimeType));
 
   if (wire_data_buffer_.empty()) {
+    DCHECK(!base::FeatureList::IsEnabled(
+        features::kIndexedDBCompressValuesWithSnappy));
     wrapper_blob_data->AppendBytes(wire_data_.data(), wire_data_size);
   } else {
     scoped_refptr<RawData> raw_data = RawData::Create();
@@ -244,6 +250,8 @@ scoped_refptr<SharedBuffer> IDBValueWrapper::TakeWireBytes() {
 #endif  // DCHECK_IS_ON()
 
   if (wire_data_buffer_.empty()) {
+    DCHECK(!base::FeatureList::IsEnabled(
+        features::kIndexedDBCompressValuesWithSnappy));
     // The wire bytes are coming directly from the SSV's GetWireData() call.
     DCHECK_EQ(wire_data_.data(), serialized_value_->GetWireData().data());
     DCHECK_EQ(wire_data_.size(), serialized_value_->GetWireData().size());
