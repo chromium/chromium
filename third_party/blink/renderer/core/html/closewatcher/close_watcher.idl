@@ -9,6 +9,7 @@
 ] interface CloseWatcher : EventTarget {
   [CallWith=ScriptState, RaisesException] constructor(optional CloseWatcherOptions options = {});
 
+  void requestClose();
   void close();
   void destroy();
 

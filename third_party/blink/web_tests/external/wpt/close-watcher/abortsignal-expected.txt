@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-FAIL already-aborted AbortSignal then close() fires no events CloseWatcher is not defined
-FAIL abortController.abort() then close() fires no events CloseWatcher is not defined
-FAIL close() then abortController.abort() fires only one close event CloseWatcher is not defined
+FAIL already-aborted AbortSignal then requestClose() fires no events CloseWatcher is not defined
+FAIL abortController.abort() then requestClose() fires no events CloseWatcher is not defined
+FAIL requestClose() then abortController.abort() fires only one close event CloseWatcher is not defined
 FAIL already-aborted AbortSignal then Esc key fires no events promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
 FAIL abortController.abort() then close via Esc key fires no events promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
 FAIL Esc key then abortController.abort() fires only one close event promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"

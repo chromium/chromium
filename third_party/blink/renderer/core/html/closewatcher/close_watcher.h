@@ -48,7 +48,8 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   bool IsClosed() const { return state_ == State::kClosed; }
   bool IsGroupedWithPrevious() const { return grouped_with_previous_; }
 
-  void close(bool* cancel_skipped = nullptr);
+  void requestClose(bool* cancel_skipped = nullptr);
+  void close();
   void destroy();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
