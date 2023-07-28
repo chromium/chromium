@@ -374,6 +374,9 @@ void CameraDeviceDelegate::StopAndDeAllocate(
     base::OnceClosure device_close_callback) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
+  CameraAppDeviceBridgeImpl::GetInstance()->SetDeviceInUse(
+      device_descriptor_.device_id, false);
+
   if (!device_context_ ||
       device_context_->GetState() == CameraDeviceContext::State::kStopped ||
       (device_context_->GetState() == CameraDeviceContext::State::kError &&
@@ -399,8 +402,6 @@ void CameraDeviceDelegate::StopAndDeAllocate(
   if (camera_app_device) {
     camera_app_device->SetCameraDeviceContext(nullptr);
   }
-  CameraAppDeviceBridgeImpl::GetInstance()->SetDeviceInUse(
-      device_descriptor_.device_id, false);
 
   device_close_callback_ = std::move(device_close_callback);
   device_context_->SetState(CameraDeviceContext::State::kStopping);
