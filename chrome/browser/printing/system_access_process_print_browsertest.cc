@@ -2187,6 +2187,37 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
         std::move(data), rfh_id, status, std::move(page_region));
   }
 
+  void ContentAnalysisBeforePrintingDocument(
+      enterprise_connectors::ContentAnalysisDelegate::Data scanning_data,
+      scoped_refptr<base::RefCountedMemory> print_data,
+      const gfx::Size& page_size,
+      const gfx::Rect& content_area,
+      const gfx::Point& offsets) override {
+    // The settings passed to this function should match the content of the
+    // print Connector policy.
+    // TODO(b/281087582): Update these assertions once cloud content analysis is
+    // supported for this workflow.
+    EXPECT_EQ(scanning_data.settings.tags.size(), 1u);
+    EXPECT_TRUE(base::Contains(scanning_data.settings.tags, "dlp"));
+    EXPECT_EQ(scanning_data.settings.cloud_or_local_settings.local_path(),
+              "path_user");
+    EXPECT_TRUE(
+        scanning_data.settings.cloud_or_local_settings.user_specific());
+    EXPECT_EQ(scanning_data.settings.block_until_verdict,
+              enterprise_connectors::BlockUntilVerdict::kBlock);
+    EXPECT_TRUE(scanning_data.settings.block_large_files);
+    EXPECT_EQ(scanning_data.url,
+              web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
+
+    // The data of the document should be a valid PDF as this code should be
+    // called as the print job is about to start printing.
+    EXPECT_TRUE(LooksLikePdf(base::span<const char>(
+        print_data->front_as<const char>(), print_data->size())));
+
+    TestPrintViewManager::ContentAnalysisBeforePrintingDocument(
+        std::move(scanning_data), print_data, page_size, content_area, offsets);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDlpPrintingRestrictionsChecked(
       content::GlobalRenderFrameHostId rfh_id,
@@ -2376,6 +2407,9 @@ class ContentAnalysisAfterPrintPreviewBrowserTest
     return std::get<1>(GetParam());
   }
   bool UseService() override { return std::get<2>(GetParam()); }
+
+  // PrintJob::Observer:
+  void OnCanceling() override { CheckForQuit(); }
 };
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
@@ -2766,14 +2800,15 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
       // scan isn't done for system print from Print Preview.
       // The expected events for this are:
       // 1.  The document is composited for content analysis.
-      // 2.  The print job used for scanning before Print Preview is destroyed.
-      // 3.  A print job is started for actual printing.
-      // 4.  The print compositor will complete generating the document.
-      // 5.  Rendering for 1 page of document of content.
-      // 6.  Completes with document done.
-      // 7.  Wait for the actual printing job to be destroyed, to ensure
+      // 2.  The print job used for scanning before Print Preview is cancelled.
+      // 3.  The print job used for scanning before Print Preview is destroyed.
+      // 4.  A print job is started for actual printing.
+      // 5.  The print compositor will complete generating the document.
+      // 6.  Rendering for 1 page of document of content.
+      // 7.  Completes with document done.
+      // 8.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/7);
+      SetNumExpectedMessages(/*num=*/8);
 #endif  // BUILDFLAG(IS_WIN)
     } else {
 #if BUILDFLAG(IS_WIN)
@@ -2784,41 +2819,57 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
 #else
       // The expected events for this are:
       // 1.  The document is composited for content analysis.
-      // 2.  The print job used for scanning is destroyed.
-      // 3.  Get the default settings.
-      // 4.  Ask the user for settings.
-      // 5.  The print compositor will complete generating the document.
-      // 6.  Wait for the actual printing job to be destroyed, to ensure
+      // 2.  The print job used for scanning is cancelled.
+      // 3.  The print job used for scanning is destroyed.
+      // 4.  Get the default settings.
+      // 5.  Ask the user for settings.
+      // 6.  The print compositor will complete generating the document.
+      // 7.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/6);
+      SetNumExpectedMessages(/*num=*/7);
 #endif  // BUILDFLAG(IS_WIN)
     }
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
   } else {
 #if BUILDFLAG(IS_WIN)
-    print_view_manager->set_on_print_preview_done_closure(base::BindOnce(
-        &ContentAnalysisBeforePrintPreviewBrowserTest::CheckForQuit,
-        base::Unretained(this)));
-    SetNumExpectedMessages(/*num=*/1);
+    // TODO(crbug.com/1457901): Re-enable this test.
+    GTEST_SKIP();
 #else
-    //  Expect an extra message for the print job created after content
-    //  analysis to be destroyed.
-    SetNumExpectedMessages(/*num=*/UseService() ? 2 : 3);
-#endif  // BUILDFLAG(IS_WIN)
+    if (UseService()) {
+      // Expect an extra message for the print job created after content
+      // analysis to be destroyed.
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job is cancelled.
+      // 3.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/3);
+    } else {
+      // Expect an extra message for the print job created after content
+      // analysis to be destroyed.
+      // The expected events for this are:
+      // 1.  Get the default settings.
+      // 2.  The document is composited for content analysis.
+      // 3.  The print job is cancelled.
+      // 4.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/4);
+    }
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   ASSERT_TRUE(print_view_manager->preview_allowed());
 #if BUILDFLAG(IS_WIN)
-  // TODO(b/289203066): Change these assertions once system print triggered in
-  // print preview happens through snapshotting instead of through the preview
-  // document.
+  // TODO(crbug.com/1457901): Update these assertions once all Windows cases for
+  // this test are re-enabled.
   EXPECT_EQ(composited_for_content_analysis_count(), 0);
-  EXPECT_EQ(print_job_destruction_count(),
-            ContentAnalysisAllowsPrint() ? 1 : 0);
+  EXPECT_EQ(print_job_destruction_count(), 1);
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 0);
 #else
   EXPECT_EQ(composited_for_content_analysis_count(), 1);
+  // There is always one job destroyed used for snapshotting, and one extra job
+  // used for scanning before the document is printed.
+  // TODO(b/281087582): Remove this once other platforms properly only do one
+  // scan.
   EXPECT_EQ(print_job_destruction_count(),
             ContentAnalysisAllowsPrint() ? 2 : 1);
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 1);

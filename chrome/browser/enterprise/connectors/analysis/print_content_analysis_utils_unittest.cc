@@ -271,22 +271,13 @@ TEST_P(PrintContentAnalysisUtilsTest,
   auto data = GetPrintAnalysisData(
       contents(), PrintScanningContext::kSystemPrintAfterPreview);
 
-  // TODO(b/281087582): Update assertions after the cloud policy is added to
-  // tests.
-  if (local_scan_after_preview_feature_enabled()) {
-    ASSERT_TRUE(data);
-    ASSERT_TRUE(data->settings.cloud_or_local_settings.is_local_analysis());
-    ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
-    histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType",
-                                        1);
-    histogram_tester().ExpectUniqueSample(
-        "Enterprise.OnPrint.Local.PrintType",
-        PrintScanningContext::kSystemPrintAfterPreview, 1);
-  } else {
-    ASSERT_FALSE(data);
-    histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType",
-                                        0);
-  }
+  // This enum value should never return a populated `data` since scanning
+  // should either take place before the system dialog with the
+  // `kBeforeSystemDialog` context, or right after it with the
+  // `kSystemPrintBeforePrintDocument` context.
+  ASSERT_FALSE(data);
+
+  histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType", 0);
   histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Cloud.PrintType", 0);
 }
 
@@ -319,8 +310,10 @@ TEST_P(PrintContentAnalysisUtilsTest,
   auto data = GetPrintAnalysisData(
       contents(), PrintScanningContext::kNormalPrintBeforePrintDocument);
 
-  // TODO(b/285048545): Update this test once the `kSystemPrintAfterPreview`
-  // case's logic is used in code.
+  // This enum value should never return a populated `data` since scanning
+  // should either take place before the preview dialog with the
+  // `kBeforePreview` context, or right after it with the
+  // `kNormalPrintAfterPreview` context.
   ASSERT_FALSE(data);
 
   histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType", 0);
@@ -332,13 +325,22 @@ TEST_P(PrintContentAnalysisUtilsTest,
   auto data = GetPrintAnalysisData(
       contents(), PrintScanningContext::kSystemPrintBeforePrintDocument);
 
-  // This enum values should never return a populated `data` since scanning
-  // should either take place before the preview dialog with the
-  // `kBeforePreview` context, or right after it with the
-  // `kNormalPrintAfterPreview` context.
-  ASSERT_FALSE(data);
-
-  histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType", 0);
+  // TODO(b/281087582): Update assertions after the cloud policy is added to
+  // tests.
+  if (local_scan_after_preview_feature_enabled()) {
+    ASSERT_TRUE(data);
+    ASSERT_TRUE(data->settings.cloud_or_local_settings.is_local_analysis());
+    ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+    histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType",
+                                        1);
+    histogram_tester().ExpectUniqueSample(
+        "Enterprise.OnPrint.Local.PrintType",
+        PrintScanningContext::kSystemPrintBeforePrintDocument, 1);
+  } else {
+    ASSERT_FALSE(data);
+    histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType",
+                                        0);
+  }
   histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Cloud.PrintType", 0);
 }
 

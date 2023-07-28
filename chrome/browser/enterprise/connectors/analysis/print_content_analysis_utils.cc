@@ -36,13 +36,14 @@ bool ShouldDoLocalScan(PrintScanningContext context) {
       // For "system dialog" prints, the scanning waits until the user picks
       // settings from the system dialog, and happens right before the document
       // is printed through an existing print job.
-      // TODO(b/285048545): Update the `kSystemPrintBeforePrintDocument` to
-      // return true and `kSystemPrintAfterPreview` to return false.
+      // TODO(b/289131391): Have `kBeforeSystemDialog` return false and instead
+      // trigger with the `kSystemPrintBeforePrintDocument` context.
       case PrintScanningContext::kBeforeSystemDialog:
-      case PrintScanningContext::kSystemPrintAfterPreview:
         return true;
-      case PrintScanningContext::kSystemPrintBeforePrintDocument:
+      case PrintScanningContext::kSystemPrintAfterPreview:
         return false;
+      case PrintScanningContext::kSystemPrintBeforePrintDocument:
+        return true;
     }
   }
 

@@ -229,9 +229,12 @@ void PrintViewManagerBase::PrintForPrintPreview(
     PrinterHandler::PrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  bool show_system_dialog =
+      job_settings.FindBool(kSettingShowSystemDialog).value_or(false);
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
-      job_settings.FindBool(kSettingShowSystemDialog).value_or(false)) {
+      show_system_dialog) {
     if (!RegisterSystemPrintClient()) {
       // Platform unable to support system print dialog at this time, treat
       // this as a cancel.
@@ -256,6 +259,9 @@ void PrintViewManagerBase::PrintForPrintPreview(
       std::move(job_settings),
       base::BindOnce(&PrintViewManagerBase::OnPrintSettingsDone,
                      weak_ptr_factory_.GetWeakPtr(), print_data, page_count,
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+                     show_system_dialog,
+#endif
                      std::move(callback), std::move(printer_query)));
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -275,6 +281,14 @@ void PrintViewManagerBase::PrintDocument(
     const gfx::Size& page_size,
     const gfx::Rect& content_area,
     const gfx::Point& offsets) {
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  if (content_analysis_before_printing_document_) {
+    std::move(content_analysis_before_printing_document_)
+        .Run(print_data, page_size, content_area, offsets);
+    return;
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   const bool source_is_pdf =
       !print_job_->document()->settings().is_modifiable();
@@ -345,6 +359,9 @@ void PrintViewManagerBase::CompleteUpdatePrintSettings(
 void PrintViewManagerBase::OnPrintSettingsDone(
     scoped_refptr<base::RefCountedMemory> print_data,
     uint32_t page_count,
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+    bool show_system_dialog,
+#endif
     PrinterHandler::PrintCallback callback,
     std::unique_ptr<printing::PrinterQuery> printer_query) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -382,17 +399,45 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   int cookie = printer_query->cookie();
   queue_->QueuePrinterQuery(std::move(printer_query));
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&PrintViewManagerBase::StartLocalPrintJob,
-                                weak_ptr_factory_.GetWeakPtr(), print_data,
-                                page_count, cookie, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&PrintViewManagerBase::StartLocalPrintJob,
+                     weak_ptr_factory_.GetWeakPtr(), print_data, page_count,
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+                     show_system_dialog,
+#endif
+                     cookie, std::move(callback)));
 }
 
 void PrintViewManagerBase::StartLocalPrintJob(
     scoped_refptr<base::RefCountedMemory> print_data,
     uint32_t page_count,
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+    bool show_system_dialog,
+#endif
     int cookie,
     PrinterHandler::PrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  // Populating `content_analysis_before_printing_document_` if needed should be
+  // done first in this function's workflow, this way other code can check if
+  // content analysis is going to happen and delay starting `print_job_` to
+  // avoid needlessly prompting the user.
+  using enterprise_connectors::PrintScanningContext;
+  auto context = show_system_dialog
+                     ? PrintScanningContext::kSystemPrintBeforePrintDocument
+                     : PrintScanningContext::kNormalPrintBeforePrintDocument;
+
+  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+      scanning_data =
+          enterprise_connectors::GetPrintAnalysisData(web_contents(), context);
+
+  if (scanning_data) {
+    content_analysis_before_printing_document_ = base::BindOnce(
+        &PrintViewManagerBase::ContentAnalysisBeforePrintingDocument,
+        weak_ptr_factory_.GetWeakPtr(), std::move(*scanning_data));
+  }
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   set_cookie(cookie);
   DidGetPrintedPagesCount(cookie, page_count);
@@ -1110,8 +1155,10 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
   }
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Don't start printing if the print job was created only for snapshotting.
-  if (analyzing_content_) {
+  // Don't start printing if the print job was created only for snapshotting,
+  // or if content analysis is going to take place right before starting
+  // `print_job_`.
+  if (analyzing_content_ || content_analysis_before_printing_document_) {
     return true;
   }
 #endif
@@ -1286,6 +1333,21 @@ void PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis(
   CompleteScriptedPrint(printing_rfh_, std::move(params), std::move(callback));
 }
 
+void PrintViewManagerBase::CompletePrintDocumentAfterContentAnalysis(
+    scoped_refptr<base::RefCountedMemory> print_data,
+    const gfx::Size& page_size,
+    const gfx::Rect& content_area,
+    const gfx::Point& offsets,
+    bool allowed) {
+  if (!allowed || IsCrashed()) {
+    ReleasePrinterQuery();
+    TerminatePrintJob(/*cancel=*/true);
+    return;
+  }
+  print_job_->StartPrinting();
+  PrintDocument(print_data, page_size, content_area, offsets);
+}
+
 void PrintViewManagerBase::OnGotSnapshotCallback(
     base::OnceCallback<void(bool should_proceed)> callback,
     enterprise_connectors::ContentAnalysisDelegate::Data data,
@@ -1347,6 +1409,25 @@ void PrintViewManagerBase::OnCompositedForContentAnalysis(
           },
           std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PRINT);
+}
+
+void PrintViewManagerBase::ContentAnalysisBeforePrintingDocument(
+    enterprise_connectors::ContentAnalysisDelegate::Data scanning_data,
+    scoped_refptr<base::RefCountedMemory> print_data,
+    const gfx::Size& page_size,
+    const gfx::Rect& content_area,
+    const gfx::Point& offsets) {
+  scanning_data.printer_name =
+      base::UTF16ToUTF8(print_job_->document()->settings().device_name());
+
+  auto on_verdict = base::BindOnce(
+      &PrintViewManagerBase::CompletePrintDocumentAfterContentAnalysis,
+      weak_ptr_factory_.GetWeakPtr(), print_data, page_size, content_area,
+      offsets);
+
+  enterprise_connectors::PrintIfAllowedByPolicy(
+      print_data, web_contents()->GetOutermostWebContents(),
+      std::move(scanning_data), std::move(on_verdict));
 }
 
 void PrintViewManagerBase::set_analyzing_content(bool analyzing) {
