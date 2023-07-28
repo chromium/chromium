@@ -1,0 +1,31 @@
+error[E0308]: mismatched types
+  --> tests/ui/mismatched_types.rs:11:19
+   |
+10 | #[distributed_slice(BENCHMARKS)]
+   | -------------------------------- arguments to this function are incorrect
+11 | static BENCH_WTF: usize = 999;
+   |                   ^^^^^ expected fn pointer, found `usize`
+   |
+   = note: expected fn pointer `for<'a> fn(&'a mut Bencher)`
+                    found type `usize`
+note: method defined here
+  --> src/distributed_slice.rs
+   |
+   |     pub unsafe fn private_typecheck(self, element: T) {
+   |                   ^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+  --> tests/ui/mismatched_types.rs:14:1
+   |
+13 | #[distributed_slice(BENCHMARKS)]
+   | -------------------------------- arguments to this function are incorrect
+14 | fn wrong_bench_fn<'a>(_: &'a mut ()) {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Bencher`, found `()`
+   |
+   = note: expected fn pointer `for<'a> fn(&'a mut Bencher)`
+              found fn pointer `for<'a> fn(&'a mut ())`
+note: method defined here
+  --> src/distributed_slice.rs
+   |
+   |     pub unsafe fn private_typecheck(self, element: T) {
+   |                   ^^^^^^^^^^^^^^^^^

@@ -8,6 +8,8 @@
 
 namespace rust_gtest_interop {
 
+extern "C" {
+
 testing::Test* rust_gtest_default_factory(void (*body)(testing::Test*)) {
   return rust_gtest_factory_for_subclass<testing::Test>(body);
 }
@@ -28,5 +30,14 @@ void rust_gtest_add_failure_at(const char* file,
                                const char* message) {
   ADD_FAILURE_AT(reinterpret_cast<const char*>(file), line) << message;
 }
+
+}  // extern "C"
+
+// A static initializer that will register all Rust Gtests before main, in the
+// same way that the TEST() macro will register C++ Gtests before main.
+struct RegisterRustTests {
+  RegisterRustTests() { rust_gtest_interop_register_all_tests(); }
+};
+static RegisterRustTests register_rust_tests;
 
 }  // namespace rust_gtest_interop

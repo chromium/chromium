@@ -6,7 +6,18 @@ import("//build/rust/rust_macro.gni")
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
-if (enable_rust) {
+# TODO(crbug.com/1466674): Fuchsia and Apple-ASAN have problems that need to be
+# fixed.
+# Fuchsia: Missing support for the OS, we have a CL submitted upstream.
+#   https://github.com/dtolnay/linkme/issues/68
+# Apple-ASAN: Panics on startup, we don't know why yet.
+#   https://github.com/dtolnay/linkme/issues/28#issuecomment-1654410071
+# Windows: Can not link with lld-link, also crashes lld-link. Can repro on Linux
+#   with cross-compilation too.
+#   https://github.com/dtolnay/linkme/issues/70
+rust_gtests_work = !is_win && !is_fuchsia && !(is_apple && is_asan)
+
+if (rust_gtests_work) {
   group("rust_gtest_interop") {
     testonly = true
     public_deps = [
@@ -15,7 +26,7 @@ if (enable_rust) {
     ]
   }
 
-  static_library("rust_gtest_interop_cpp") {
+  source_set("rust_gtest_interop_cpp") {
     testonly = true
     visibility = [ ":rust_gtest_interop" ]
     sources = [
@@ -26,6 +37,7 @@ if (enable_rust) {
       "//base",
       "//testing/gtest",
     ]
+    defines = [ "RUST_GTEST_INTEROP_IMPLEMENTATION" ]
   }
 
   rust_static_library("rust_gtest_interop_rust") {
@@ -42,9 +54,10 @@ if (enable_rust) {
       # Macros re-exported from the rust_gtest_interop crate. Can only be
       # accessed through the crate, so not public_deps.
       ":gtest_attribute",
-
+    ]
+    public_deps = [
       # This is re-exported for the gtest_attribute macros.
-      "//third_party/rust/small_ctor/v0_1:test_support",
+      "//third_party/rust/linkme/v0_3:test_support",
     ]
   }
 
@@ -62,7 +75,6 @@ if (enable_rust) {
     # This target's contents are exposed as part of :rust_gtest_interop.
     visibility = [ ":*" ]
   }
-
   test("rust_gtest_interop_unittests") {
     sources = [
       "rust_gtest_interop_unittest.rs",
@@ -74,5 +86,11 @@ if (enable_rust) {
       "//build:blink_buildflags",
       "//testing/gtest",
     ]
+  }
+} else {
+  # An empty placeholder for the platforms where things don't work yet. To be
+  # removed when `rust_gtests_work` is always true.
+  test("rust_gtest_interop_unittests") {
+    deps = [ "//base/test:run_all_unittests" ]
   }
 }

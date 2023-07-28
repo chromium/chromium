@@ -1,0 +1,33 @@
+error[E0433]: failed to resolve: could not find `missing` in `to`
+  --> tests/ui/bad_crate_path.rs:10:28
+   |
+10 | #[linkme(crate = path::to::missing)]
+   |                            ^^^^^^^ could not find `missing` in `to`
+
+error[E0433]: failed to resolve: could not find `missing` in `to`
+  --> tests/ui/bad_crate_path.rs:17:28
+   |
+17 | #[linkme(crate = path::to::missing)]
+   |                            ^^^^^^^ could not find `missing` in `to`
+
+error[E0433]: failed to resolve: could not find `missing` in `to`
+  --> tests/ui/bad_crate_path.rs:10:28
+   |
+10 | #[linkme(crate = path::to::missing)]
+   |                            ^^^^^^^ could not find `missing` in `to`
+   |
+help: consider importing this struct
+   |
+3  + use linkme::DistributedSlice;
+   |
+
+error[E0433]: failed to resolve: could not find `missing` in `to`
+  --> tests/ui/bad_crate_path.rs:17:28
+   |
+17 | #[linkme(crate = path::to::missing)]
+   |                            ^^^^^^^ could not find `missing` in `to`
+   |
+help: consider importing this struct
+   |
+3  + use linkme::DistributedSlice;
+   |

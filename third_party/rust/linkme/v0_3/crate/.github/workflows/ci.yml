@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule: [cron: "40 1 * * *"]
+
+permissions:
+  contents: read
+
+env:
+  RUSTFLAGS: -Dwarnings
+
+jobs:
+  pre_ci:
+    uses: dtolnay/.github/.github/workflows/pre_ci.yml@master
+
+  test:
+    name: ${{matrix.name || format('Rust {0}', matrix.rust)}}
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ${{matrix.os}}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [nightly, beta, stable, 1.62.0]
+        os: [ubuntu]
+        include:
+          - name: macOS
+            os: macos
+            rust: nightly
+          - name: Windows (gnu)
+            os: windows
+            rust: nightly-x86_64-pc-windows-gnu
+          - name: Windows (msvc)
+            os: windows
+            rust: nightly-x86_64-pc-windows-msvc
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+      - name: Enable deny(non_exhaustive_omitted_patterns)
+        run: echo RUSTFLAGS=${RUSTFLAGS}\ --cfg=exhaustive >> $GITHUB_ENV
+        if: matrix.rust == 'nightly'
+      - name: Enable type layout randomization
+        run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout >> $GITHUB_ENV
+        if: matrix.rust == 'nightly'
+      - run: cargo check --manifest-path tests/crate/Cargo.toml
+      - run: cargo test -p linkme -p linkme-impl
+        # windows-gnu: https://github.com/dtolnay/linkme/issues/25
+        continue-on-error: ${{matrix.rust == 'nightly-x86_64-pc-windows-gnu'}}
+      - run: cargo test -p linkme -p linkme-impl --features used_linker
+        if: startsWith(matrix.rust, 'nightly')
+        continue-on-error: ${{matrix.rust == 'nightly-x86_64-pc-windows-gnu'}}
+      - run: cargo test -p linkme -p linkme-impl --release
+        continue-on-error: ${{matrix.rust == 'nightly-x86_64-pc-windows-gnu'}}
+      - run: cargo test -p linkme -p linkme-impl --release --features used_linker
+        if: startsWith(matrix.rust, 'nightly')
+        continue-on-error: ${{matrix.rust == 'nightly-x86_64-pc-windows-gnu'}}
+
+  cortex:
+    name: Cortex-M
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          target: thumbv7m-none-eabi
+      - name: Install QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-arm
+      - run: cargo run --release
+        env:
+          RUSTFLAGS: -C link-arg=-Tlink.x -D warnings
+        working-directory: tests/cortex
+        continue-on-error: true
+      - run: cargo run --release --features used_linker
+        env:
+          RUSTFLAGS: -C link-arg=-Tlink.x -D warnings
+        working-directory: tests/cortex
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@clippy
+      - run: cargo clippy --tests -- -Dclippy::all -Dclippy::pedantic
+
+  outdated:
+    name: Outdated
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/install@cargo-outdated
+      - run: cargo outdated --workspace --exit-code 1

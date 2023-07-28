@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(danakj): Work around https://github.com/dtolnay/linkme/issues/49
+#![feature(used_with_arg)]
+
 use std::pin::Pin;
 
 /// Use `prelude:::*` to get access to all macros defined in this crate.
@@ -23,10 +26,21 @@ pub mod prelude {
     pub use crate::expect_true;
 }
 
-// The gtest_attribute proc-macro crate makes use of small_ctor, with a path
+// The gtest_attribute proc-macro crate makes use of linkme, with a path
 // through this crate here to ensure it's available.
 #[doc(hidden)]
-pub extern crate small_ctor;
+pub extern crate linkme;
+
+#[doc(hidden)]
+#[linkme::distributed_slice]
+pub static GTESTS: [fn()] = [..];
+
+#[no_mangle]
+pub extern "C" fn rust_gtest_interop_register_all_tests() {
+    for t in GTESTS {
+        t()
+    }
+}
 
 /// A marker trait that promises the Rust type is an FFI wrapper around a C++
 /// class which subclasses `testing::Test`. In particular, casting a
@@ -114,9 +128,8 @@ pub mod __private {
         let null_term_message = std::ffi::CString::new(message).unwrap();
 
         extern "C" {
-            // The C++ mangled name for rust_gtest_interop::rust_gtest_add_failure_at().
-            // This comes from `objdump -t` on the C++ object file.
-            fn _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKciS1_(
+            // This C++ function is in rust_gtest_interop.h.
+            fn rust_gtest_add_failure_at(
                 file: *const std::ffi::c_char,
                 line: i32,
                 message: *const std::ffi::c_char,
@@ -124,7 +137,7 @@ pub mod __private {
 
         }
         unsafe {
-            _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKciS1_(
+            rust_gtest_add_failure_at(
                 null_term_file.as_ptr(),
                 line.try_into().unwrap_or(-1),
                 null_term_message.as_ptr(),
@@ -184,14 +197,13 @@ pub mod __private {
         f: extern "C" fn(Pin<&mut OpaqueTestingTest>),
     ) -> Pin<&'static mut OpaqueTestingTest> {
         extern "C" {
-            // The C++ mangled name for rust_gtest_interop::rust_gtest_default_factory().
-            // This comes from `objdump -t` on the C++ object file.
-            fn _ZN18rust_gtest_interop26rust_gtest_default_factoryEPFvPN7testing4TestEE(
+            // This C++ function is in rust_gtest_interop.h.
+            fn rust_gtest_default_factory(
                 f: extern "C" fn(Pin<&mut OpaqueTestingTest>),
             ) -> Pin<&'static mut OpaqueTestingTest>;
 
         }
-        unsafe { _ZN18rust_gtest_interop26rust_gtest_default_factoryEPFvPN7testing4TestEE(f) }
+        unsafe { rust_gtest_default_factory(f) }
     }
 
     /// Wrapper that calls C++ rust_gtest_add_test().
@@ -199,7 +211,8 @@ pub mod __private {
     /// Note that the `factory` parameter is actually a C++ function pointer.
     ///
     /// TODO(danakj): We do this by hand because cxx doesn't support passing raw
-    /// function pointers nor passing `*const c_char`: https://github.com/dtolnay/cxx/issues/1011 and
+    /// function pointers nor passing `*const c_char`:
+    /// https://github.com/dtolnay/cxx/issues/1011 and
     /// https://github.com/dtolnay/cxx/issues/1015.
     unsafe fn rust_gtest_add_test(
         factory: GtestFactoryFunction,
@@ -210,10 +223,8 @@ pub mod __private {
         line: i32,
     ) {
         extern "C" {
-            /// The C++ mangled name for
-            /// rust_gtest_interop::rust_gtest_add_test(). This comes from
-            /// `objdump -t` on the C++ object file.
-            fn _ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvS2_EES4_PKcS8_S8_i(
+            // This C++ function is in rust_gtest_interop.h.
+            fn rust_gtest_add_test(
                 factory: GtestFactoryFunction,
                 run_test_fn: extern "C" fn(Pin<&mut OpaqueTestingTest>),
                 test_suite_name: *const std::os::raw::c_char,
@@ -223,16 +234,7 @@ pub mod __private {
             );
         }
 
-        unsafe {
-            _ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvS2_EES4_PKcS8_S8_i(
-                factory,
-                run_test_fn,
-                test_suite_name,
-                test_name,
-                file,
-                line,
-            )
-        }
+        unsafe { rust_gtest_add_test(factory, run_test_fn, test_suite_name, test_name, file, line) }
     }
 
     /// Information used to register a function pointer as a test with the C++

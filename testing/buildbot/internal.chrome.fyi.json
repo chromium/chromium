@@ -1762,6 +1762,26 @@
           "dimension_sets": [
             {
               "cpu": null,
+              "os": "Windows-11",
+              "pool": "chrome.tests.arm64"
+            }
+          ],
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "rust_gtest_interop_unittests",
+        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimension_sets": [
+            {
+              "cpu": null,
               "integrity": "high",
               "os": "Windows-11",
               "pool": "chrome.tests.arm64"

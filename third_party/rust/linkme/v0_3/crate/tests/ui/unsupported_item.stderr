@@ -1,0 +1,5 @@
+error: distributed element must be either static or function item
+ --> tests/ui/unsupported_item.rs:9:1
+  |
+9 | extern crate std as _std;
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^
