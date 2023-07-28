@@ -35,7 +35,7 @@ void EditorMediator::BindEditorInstance(
 }
 
 void EditorMediator::HandleTrigger() {
-  MakoUntrustedUI::Show();
+  mako_page_handler_ = std::make_unique<ash::MakoPageHandler>();
 }
 
 void EditorMediator::OnFocus(int context_id) {
@@ -53,7 +53,10 @@ void EditorMediator::CommitEditorResult(std::string_view text) {
   text_actuator_.InsertTextOnNextFocus(text);
   // After queuing the text to be inserted, closing the mako web ui should
   // return the focus back to the original input.
-  MakoUntrustedUI::Hide();
+  if (mako_page_handler_ != nullptr) {
+    mako_page_handler_->CloseUI();
+    mako_page_handler_ = nullptr;
+  }
 }
 
 }  // namespace input_method

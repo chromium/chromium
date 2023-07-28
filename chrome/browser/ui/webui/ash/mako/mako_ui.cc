@@ -41,19 +41,24 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
 }
 MakoUntrustedUI::~MakoUntrustedUI() = default;
 
-void MakoUntrustedUI::Show() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void MakoUntrustedUI::Hide() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<input_method::mojom::EditorInstance> receiver) {
   input_method::EditorMediator::Get()->BindEditorInstance(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)
+
+MakoPageHandler::MakoPageHandler() {
+  // TODO(b/289859230): Construct MakoUntrustedUI and show it to the user. Save
+  //   a ref to the constructed view to allow for closing it at a later time.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+MakoPageHandler::~MakoPageHandler() = default;
+
+void MakoPageHandler::CloseUI() {
+  // TODO(b/289859230): Use the ref saved from construction to close the webui.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
 
 }  // namespace ash

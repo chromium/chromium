@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/input_method/editor_instance_impl.h"
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 #include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
+#include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
 namespace ash {
 namespace input_method {
@@ -45,6 +46,10 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
  private:
   EditorInstanceImpl editor_instance_impl_;
   EditorTextActuator text_actuator_;
+
+  // May contain an instance of MakoPageHandler. This is used to control the
+  // lifetime of the Mako WebUI.
+  std::unique_ptr<ash::MakoPageHandler> mako_page_handler_;
 };
 
 }  // namespace input_method

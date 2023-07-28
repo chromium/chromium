@@ -27,9 +27,6 @@ class MakoUntrustedUIConfig : public content::WebUIConfig {
 // The WebUI for chrome://mako
 class MakoUntrustedUI : public ui::MojoWebUIController {
  public:
-  static void Show();
-  static void Hide();
-
   explicit MakoUntrustedUI(content::WebUI* web_ui);
   ~MakoUntrustedUI() override;
 
@@ -37,6 +34,20 @@ class MakoUntrustedUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<input_method::mojom::EditorInstance> receiver);
 
   WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+// Used by consumers to control the lifecycle of MakoUntrustedUI.
+class MakoPageHandler {
+ public:
+  // Constructing an instance of this class will trigger the construction,
+  // bootstrapping and showing of the MakoUntrustedUI WebUi bubble.
+  MakoPageHandler();
+  ~MakoPageHandler();
+
+  // Consumers can use this method to close any currently visible
+  // MakoUntrustedUI. Consumers cannot reshow the UI with this instance after
+  // calling this method, a new instance must be created to reshow the UI.
+  void CloseUI();
 };
 
 }  // namespace ash
