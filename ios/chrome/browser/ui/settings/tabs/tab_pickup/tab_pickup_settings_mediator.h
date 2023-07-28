@@ -12,14 +12,20 @@
 @protocol TabPickupSettingsConsumer;
 class PrefService;
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 // Mediator for the tab pickup settings.
 @interface TabPickupSettingsMediator
     : NSObject <TabPickupSettingsTableViewControllerDelegate>
 
 // Designated initializer. All the parameters should not be null.
 // `localPrefService`: preference service from the application context.
+// `syncService` sync service.
 // `consumer`: consumer that will be notified when the data change.
 - (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
+                                 syncService:(syncer::SyncService*)syncService
                                     consumer:
                                         (id<TabPickupSettingsConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;

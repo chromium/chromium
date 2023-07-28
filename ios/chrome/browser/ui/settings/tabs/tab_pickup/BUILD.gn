@@ -17,6 +17,7 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/settings/utils",
   ]

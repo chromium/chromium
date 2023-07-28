@@ -122,7 +122,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateInactiveTabsItemWithDaysThreshold:threshold];
 }
 
-- (void)tabPickupStateChanged:(bool)enabled {
+- (void)setTabPickupEnabled:(bool)enabled {
   [self updateTabPickupState:enabled];
 }
 

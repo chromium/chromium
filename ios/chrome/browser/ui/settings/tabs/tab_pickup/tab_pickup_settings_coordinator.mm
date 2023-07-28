@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_table_view_controller.h"
 
@@ -37,6 +38,8 @@
   _viewController = [[TabPickupSettingsTableViewController alloc] init];
   _mediator = [[TabPickupSettingsMediator alloc]
       initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
+                       syncService:SyncServiceFactory::GetForBrowserState(
+                                       self.browser->GetBrowserState())
                           consumer:_viewController];
   _viewController.delegate = _mediator;
   _viewController.dispatcher = static_cast<

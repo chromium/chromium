@@ -56,9 +56,18 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // Switch item that tracks the state of the tab pickup feature.
 @property(nonatomic, strong) TableViewSwitchItem* tabPickupSwitchItem;
 
+// Footer that shows a link to open the Sync and Google Services settings.
+@property(nonatomic, strong)
+    TableViewLinkHeaderFooterItem* privacyInformationItem;
+
 @end
 
-@implementation TabPickupSettingsTableViewController
+@implementation TabPickupSettingsTableViewController {
+  // State of the tab pickup feature.
+  bool _tabPickupEnabled;
+  // State of the sync feature.
+  bool _syncEnabled;
+}
 
 #pragma mark - Initialization
 
@@ -68,6 +77,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   if (self) {
     self.title =
         l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_TITLE);
+    _syncEnabled = true;
   }
   return self;
 }
@@ -81,6 +91,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 - (void)loadModel {
   [super loadModel];
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
+  [self updatePrivacyInformationItem];
 
   [model addSectionWithIdentifier:SectionIdentifier::kOptions];
   [model addSectionWithIdentifier:SectionIdentifier::kPrivacy];
@@ -89,19 +100,34 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       toSectionWithIdentifier:SectionIdentifier::kOptions];
   [model setFooter:[self featureInformationItem]
       forSectionWithIdentifier:SectionIdentifier::kOptions];
-  [model setHeader:[self privacyInformationItem]
+  [model setHeader:self.privacyInformationItem
       forSectionWithIdentifier:SectionIdentifier::kPrivacy];
 }
 
 #pragma mark - TabPickupSettingsConsumer
 
-- (void)tabPickupStateChanged:(bool)enabled {
+- (void)setTabPickupEnabled:(bool)enabled {
+  _tabPickupEnabled = enabled;
   TableViewSwitchItem* tabPickupSwitchItem = self.tabPickupSwitchItem;
   if (tabPickupSwitchItem.on == enabled) {
     return;
   }
-  tabPickupSwitchItem.on = enabled;
+  tabPickupSwitchItem.on = _syncEnabled && enabled;
   [self reconfigureCellsForItems:@[ tabPickupSwitchItem ]];
+}
+
+- (void)setSyncEnabled:(bool)enabled {
+  if (_syncEnabled == enabled) {
+    return;
+  }
+  _syncEnabled = enabled;
+  TableViewSwitchItem* tabPickupSwitchItem = self.tabPickupSwitchItem;
+  tabPickupSwitchItem.enabled = enabled;
+  tabPickupSwitchItem.on = _tabPickupEnabled && enabled;
+  [self reconfigureCellsForItems:@[ tabPickupSwitchItem ]];
+
+  [self updatePrivacyInformationItem];
+  [self reconfigureCellsForItems:@[ self.privacyInformationItem ]];
 }
 
 #pragma mark - Properties
@@ -114,6 +140,14 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP);
   }
   return _tabPickupSwitchItem;
+}
+
+- (TableViewHeaderFooterItem*)privacyInformationItem {
+  if (!_privacyInformationItem) {
+    _privacyInformationItem = [[TableViewLinkHeaderFooterItem alloc]
+        initWithType:ItemType::kPrivacyInformation];
+  }
+  return _privacyInformationItem;
 }
 
 #pragma mark - UITableViewDataSource
@@ -152,6 +186,28 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 #pragma mark - Private
 
+// Updates the privacy information item according to the current state of the
+// sync feature.
+- (void)updatePrivacyInformationItem {
+  NSString* privacyFooterText;
+  NSMutableArray* URLs = [[NSMutableArray alloc] init];
+  if (_syncEnabled) {
+    privacyFooterText =
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
+    [URLs addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
+  } else {
+    privacyFooterText =
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER);
+  }
+  [URLs
+      addObject:[[CrURL alloc] initWithGURL:GURL(kGoogleServicesSettingsURL)]];
+
+  TableViewLinkHeaderFooterItem* privacyInformationItem =
+      self.privacyInformationItem;
+  privacyInformationItem.text = privacyFooterText;
+  privacyInformationItem.urls = URLs;
+}
+
 // Updates the switch item value and informs the model.
 - (void)switchChanged:(UISwitch*)switchView {
   self.tabPickupSwitchItem.on = switchView.isOn;
@@ -168,26 +224,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   featureInformationItem.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_FOOTER);
   return featureInformationItem;
-}
-
-// Creates a TableViewHeaderFooterItem that shows a link to open the Sync
-// and Google Services settings.
-- (TableViewHeaderFooterItem*)privacyInformationItem {
-  TableViewLinkHeaderFooterItem* privacyInformationItem =
-      [[TableViewLinkHeaderFooterItem alloc]
-          initWithType:ItemType::kPrivacyInformation];
-
-  NSString* privacyFooterText =
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
-
-  NSMutableArray* URLs = [[NSMutableArray alloc] init];
-  [URLs addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
-  [URLs
-      addObject:[[CrURL alloc] initWithGURL:GURL(kGoogleServicesSettingsURL)]];
-
-  privacyInformationItem.text = privacyFooterText;
-  privacyInformationItem.urls = URLs;
-  return privacyInformationItem;
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate

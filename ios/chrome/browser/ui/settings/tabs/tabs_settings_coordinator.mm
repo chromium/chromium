@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_mediator.h"
@@ -45,6 +47,8 @@
   _viewController = [[TabsSettingsTableViewController alloc] init];
   _mediator = [[TabsSettingsMediator alloc]
       initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
+                       syncService:SyncServiceFactory::GetForBrowserState(
+                                       self.browser->GetBrowserState())
                           consumer:_viewController];
 
   _viewController.delegate = _mediator;

@@ -9,7 +9,9 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_consumer.h"
@@ -19,12 +21,17 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TabsSettingsMediator () <PrefObserverDelegate>
+@interface TabsSettingsMediator () <PrefObserverDelegate,
+                                    SyncObserverModelBridge>
 @end
 
 @implementation TabsSettingsMediator {
   // Preference service from the application context.
   PrefService* _prefs;
+  // Sync service.
+  syncer::SyncService* _syncService;
+  // Observer for changes to the sync state.
+  std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
@@ -34,16 +41,21 @@
 }
 
 - (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
+                                 syncService:(syncer::SyncService*)syncService
                                     consumer:
                                         (id<TabsSettingsConsumer>)consumer {
   self = [super init];
   if (self) {
     CHECK(localPrefService);
+    CHECK(syncService);
     CHECK(consumer);
     _prefs = localPrefService;
+    _syncService = syncService;
     _consumer = consumer;
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
+    _syncObserverBridge =
+        std::make_unique<SyncObserverBridge>(self, _syncService);
     if (IsInactiveTabsAvailable()) {
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
@@ -59,7 +71,8 @@
     if (IsTabPickupEnabled()) {
       _prefObserverBridge->ObserveChangesForPreference(prefs::kTabPickupEnabled,
                                                        &_prefChangeRegistrar);
-      [_consumer tabPickupStateChanged:!IsTabPickupDisabledByUser()];
+      [_consumer setTabPickupEnabled:!IsTabPickupDisabledByUser() &&
+                                     _syncService->IsSyncFeatureEnabled()];
     }
   }
   return self;
@@ -68,6 +81,7 @@
 - (void)disconnect {
   _prefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
+  _syncObserverBridge.reset();
   _prefs = nil;
   _consumer = nil;
 }
@@ -82,8 +96,16 @@
   } else if (preferenceName == prefs::kTabPickupEnabled) {
     CHECK(IsTabPickupEnabled());
     [_consumer
-        tabPickupStateChanged:_prefs->GetBoolean(prefs::kTabPickupEnabled)];
+        setTabPickupEnabled:_prefs->GetBoolean(prefs::kTabPickupEnabled) &&
+                            _syncService->IsSyncFeatureEnabled()];
   }
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  [_consumer setTabPickupEnabled:_prefs->GetBoolean(prefs::kTabPickupEnabled) &&
+                                 _syncService->IsSyncFeatureEnabled()];
 }
 
 #pragma mark - TabsSettingsTableViewControllerDelegate

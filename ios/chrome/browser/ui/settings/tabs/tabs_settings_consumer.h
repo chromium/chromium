@@ -12,7 +12,7 @@
 - (void)inactiveTabsTimeThresholdChanged:(int)threshold;
 
 // Called when the value of prefs::kTabPickupEnabled changed.
-- (void)tabPickupStateChanged:(bool)enabled;
+- (void)setTabPickupEnabled:(bool)enabled;
 
 @end
 
