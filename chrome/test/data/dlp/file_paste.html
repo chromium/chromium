@@ -1,0 +1,43 @@
+<!-- Page to help with testing of copy and paste of files.
+    Input is at (0,0) to (500,500) coordinates. -->
+
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        div {
+            position: absolute;
+            left: 0px;
+            background: green;
+            top: 0px;
+            width: 500px;
+            height: 500px;
+            border: 0px;
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = function () {
+            document.getElementById("pasteTarget").
+                addEventListener("paste", async (e) => {
+                    try {
+                        let file = e.clipboardData.items[0].getAsFile();
+                        const content = await file.text();
+                        console.log(content);
+                    } catch {
+                        console.log("Could not read the file.");
+                    }
+                });
+        };
+    </script>
+</head>
+
+<body>
+    <div id="pasteTarget">
+        Paste here.
+    </div>
+</body>
+
+</html>

@@ -40,6 +40,7 @@
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -50,6 +51,7 @@
 namespace policy {
 namespace {
 const char kInputDragNDropPagePath[] = "/dlp/file_drop.html";
+const char kInputCopyPastePagePath[] = "/dlp/file_paste.html";
 
 const char kFileContent[] = "File content.";
 const char kErrorMessage[] = "Could not read the file.";
@@ -153,6 +155,30 @@ class DlpScopedFileAccessDelegateInteractiveUITest
     return true;
   }
 
+  void ClickOnView(views::View* view) {
+    // Allow the page to be fully rendered before trying to click on it. Without
+    // sleeping the test is flaky.
+    // TODO(b/293274162): Find a better way that does not require sleeping.
+    base::PlatformThread::Sleep(base::Seconds(1));
+
+    // Click a few times to make sure the page has focus.
+    // See also https://crbug.com/59011 and https://crbug.com/35581.
+    ui_test_utils::ClickOnView(view);
+    ui_test_utils::ClickOnView(view);
+  }
+
+  void SimulateFilePaste(content::WebContents* web_contents,
+                         const base::FilePath& file) {
+    // Put files on clipboard.
+    {
+      ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+      writer.WriteFilenames(
+          ui::FileInfosToURIList({ui::FileInfo(file, base::FilePath())}));
+    }
+
+    web_contents->Paste();
+  }
+
  protected:
   base::ScopedTempDir temp_dir_;
 
@@ -208,6 +234,61 @@ IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateInteractiveUITest,
       CreateTestFileInDirectory(temp_dir_.GetPath(), kFileContent);
 
   ASSERT_TRUE(SimulateFileDrop(web_contents(), file, kMiddleOfDropArea));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateInteractiveUITest,
+                       FilePasted_UploadAllowed) {
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  // The console log should contain the actual file content.
+  console_observer.SetPattern(kFileContent);
+
+  chromeos::FakeDlpClient* fake_dlp_client =
+      static_cast<chromeos::FakeDlpClient*>(chromeos::DlpClient::Get());
+  fake_dlp_client->SetFileAccessAllowed(true);
+
+  ASSERT_TRUE(NavigateToTestPage("localhost", kInputCopyPastePagePath));
+
+  base::FilePath file =
+      CreateTestFileInDirectory(temp_dir_.GetPath(), kFileContent);
+
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ClickOnView(browser_view->contents_container());
+
+  SimulateFilePaste(web_contents(), file);
+
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateInteractiveUITest,
+                       FilePasted_UploadDenied) {
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  // The console log should contain an error message because the file is not
+  // accessible.
+  console_observer.SetPattern(kErrorMessage);
+
+  chromeos::FakeDlpClient* fake_dlp_client =
+      static_cast<chromeos::FakeDlpClient*>(chromeos::DlpClient::Get());
+  fake_dlp_client->SetFileAccessAllowed(false);
+
+  ASSERT_TRUE(NavigateToTestPage("localhost", kInputCopyPastePagePath));
+
+  base::FilePath file =
+      CreateTestFileInDirectory(temp_dir_.GetPath(), kFileContent);
+
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ClickOnView(browser_view->contents_container());
+
+  SimulateFilePaste(web_contents(), file);
+
   EXPECT_TRUE(console_observer.Wait());
 }
 
