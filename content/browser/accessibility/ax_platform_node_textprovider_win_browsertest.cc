@@ -199,6 +199,106 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
+                       GetVisibleRangesPositionsOnLeafNodes) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div contenteditable="true" role="textbox" aria-label="text">
+            <div><span>one two</span></div>
+            <div><span>three four</span></div>
+            <div><span>five six</span></div>
+          </div>
+        </body>
+      </html>
+  )HTML"));
+
+  auto* node =
+      FindNode(ax::mojom::Role::kTextField, "text");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextProvider> text_provider;
+  GetTextProviderFromTextNode(text_provider, node);
+
+  base::win::ScopedSafearray text_provider_ranges;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->GetVisibleRanges(text_provider_ranges.Receive()));
+  ASSERT_UIA_SAFEARRAY_OF_TEXTRANGEPROVIDER(text_provider_ranges.Get(), 3U);
+
+  ITextRangeProvider** array_data;
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      text_provider_ranges.Get(), reinterpret_cast<void**>(&array_data)));
+
+  EXPECT_UIA_TEXTRANGE_EQ(array_data[0], L"one two");
+  EXPECT_UIA_TEXTRANGE_EQ(array_data[1], L"three four");
+  EXPECT_UIA_TEXTRANGE_EQ(array_data[2], L"five six");
+
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(text_provider_ranges.Get()));
+  text_provider_ranges.Reset();
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
+                       FindTextOnRangesReturnedByGetVisibleRanges) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div contenteditable="true" role="textbox" aria-label="text">
+            <div><span>one two</span></div>
+            <div><span>three four</span></div>
+            <div><span>five six</span></div>
+          </div>
+        </body>
+      </html>
+  )HTML"));
+
+  auto* node =
+      FindNode(ax::mojom::Role::kTextField, "text");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextProvider> text_provider;
+  GetTextProviderFromTextNode(text_provider, node);
+
+  base::win::ScopedSafearray text_provider_ranges;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->GetVisibleRanges(text_provider_ranges.Receive()));
+  ASSERT_UIA_SAFEARRAY_OF_TEXTRANGEPROVIDER(text_provider_ranges.Get(), 3U);
+
+  ITextRangeProvider** array_data;
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      text_provider_ranges.Get(), reinterpret_cast<void**>(&array_data)));
+
+  EXPECT_UIA_TEXTRANGE_EQ(array_data[0], L"one two");
+  EXPECT_UIA_TEXTRANGE_EQ(array_data[1], L"three four");
+  EXPECT_UIA_TEXTRANGE_EQ(array_data[2], L"five six");
+
+  {
+  base::win::ScopedBstr find_string(L"two");
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
+  EXPECT_HRESULT_SUCCEEDED(array_data[0]->FindText(
+      find_string.Get(), false, false, &text_range_provider_found));
+  ASSERT_TRUE(text_range_provider_found.Get());
+  }
+  {
+    base::win::ScopedBstr find_string(L"three");
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
+  EXPECT_HRESULT_SUCCEEDED(array_data[1]->FindText(
+      find_string.Get(), false, false, &text_range_provider_found));
+  ASSERT_TRUE(text_range_provider_found.Get());
+  }
+  {
+    base::win::ScopedBstr find_string(L"five six");
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
+  EXPECT_HRESULT_SUCCEEDED(array_data[2]->FindText(
+      find_string.Get(), false, false, &text_range_provider_found));
+  ASSERT_TRUE(text_range_provider_found.Get());
+  }
+
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(text_provider_ranges.Get()));
+  text_provider_ranges.Reset();
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
                        GetVisibleRangesInContentEditable) {
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>

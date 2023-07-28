@@ -175,7 +175,8 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
     if (frame_rect.Intersects(current_rect)) {
       Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider;
       AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-          current_line_start->Clone(), current_line_end->Clone(),
+          current_line_start->AsLeafTextPosition(),
+          current_line_end->AsLeafTextPosition(),
           &text_range_provider);
 
       ranges.emplace_back(text_range_provider);
