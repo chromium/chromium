@@ -1,0 +1,218 @@
+<style include="history-clusters-shared-style">
+  :host {
+    background: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    display: inline-flex;
+    height: 100%;
+    width: 100%;
+  }
+
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
+  }
+
+  :host-context(.focus-outline-visible) :focus,
+  :focus-visible {
+    border-radius: var(--ntp-module-item-border-radius);
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
+  #content {
+    flex: 1;
+    position: relative;
+  }
+
+  #label-container {
+    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.4) 69.79%);
+    border-radius: var(--ntp-module-item-border-radius);
+    color: var(--color-new-tab-page-primary-foreground);
+    display: flex;
+    font-size: 11px;
+    position: absolute;
+    height: 40px;
+    margin: 4px;
+    width: calc(100% - 8px); /* Subtract parent margin */
+    z-index: 1;
+  }
+
+  #icon {
+    margin: 12px 0 0 12px;
+  }
+
+  /*TODO: mfacey: Fix label size */
+  #label {
+    margin-top: 12px;
+    max-width: 100px;
+  }
+
+  #images {
+    background: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    margin: 4px;
+    overflow: hidden;
+    position: relative;
+    height: 50%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  #images img {
+    object-fit: cover;
+  }
+
+  .large-image {
+    height: 100%;
+    width: 100%;
+  }
+
+  .small-image {
+    background: var(--color-new-tab-page-dialog-border);
+    border-radius: var(--ntp-module-item-border-radius);
+    height: calc(100%/2 - 2px); /* subtract half of gap for each image */
+    width: calc(100%/2 - 2px); /* subtract half of gap for each image */
+  }
+
+  #extraImageCard {
+    align-items: center;
+    display: inline-flex;
+    color: var(--color-new-tab-page-icon-button-background-active);
+    font-size: 14px;
+    justify-content: center;
+    vertical-align: top;
+  }
+
+  #images page-favicon {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #icon {
+    height: 16px;
+    margin-inline-end: 8px;
+    width: 16px;
+  }
+
+  #title {
+    -webkit-box-orient: vertical;
+    color: var(--color-new-tab-page-primary-foreground);
+    display: -webkit-box;
+    font-size: var(--ntp-module-text-size);
+    line-height: 20px;
+    margin: 16px 16px 4px 16px;
+    white-space: initial;
+  }
+
+  :host([format='wide']) #title {
+    margin: 24px 16px;
+  }
+
+  #titleAnnotation {
+    background: var(--color-sys-tonal-container);
+    color: var(--color-sys-on-tonal-container);
+    min-width: 60px;
+  }
+
+  #annotationContainer {
+    align-items: start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-inline-start: 16px;
+  }
+
+  #discountChip {
+    background: var(--google-green-100);
+    color: var(--color-sys-on-tertiary-container);
+    min-width: 40px;
+  }
+
+  .annotation {
+    align-items: center;
+    border-radius: 4px;
+    display: flex;
+    font-size: 11px;
+    font-weight: 500;
+    height: 17px;
+    justify-content: center;
+    line-height: 16px;
+    padding-inline-end: 4px;
+    padding-inline-start: 4px;
+    text-align: center;
+  }
+
+  #date {
+    color: var(--color-new-tab-page-secondary-foreground);
+    min-width: max-content;
+    bottom: 16px;
+    left: 16px;
+    position: absolute;
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    /* Set focus outline since box-shadow isn't visible in hcm */
+    :host-context(.focus-outline-visible) a:focus {
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    /* Set outline since background isn't visible in hcm */
+    a {
+      border-radius: 12px;
+      outline: var(--cr-border-hcm);
+    }
+  }
+</style>
+<a id="content" href="[[cart.cartUrl.url]]"
+   aria-label$="[[tileLabel_]]">
+  <div id="label-container">
+    <page-favicon id="icon" url="[[cart.cartUrl]]"
+                  is-known-to-sync="[[visit.isKnownToSync]]">
+    </page-favicon>
+    <div id="label" class="truncate">[[cart.domain]]</div>
+  </div>
+  <div id="images">
+    <template is="dom-if" if="[[!hasMultipleImages_()]]" restamp>
+      <template is="dom-if" if="[[cart.productImageUrls.length]]" restamp>
+        <img class="large-image" is="cr-auto-img"
+            auto-src="[[getSingleImageToShow_()]]" draggable="false" alt="">
+        </img>
+      </template>
+      <template is="dom-if" if="[[!cart.productImageUrls.length]]" restamp>
+        <page-favicon id ="fallbackImage" url="[[cart.cartUrl]]"
+            is-known-to-sync="true" size="24">
+        </page-favicon>
+      </template>
+    </template>
+    <template is="dom-if" if="[[hasMultipleImages_()]]" restamp>
+      <template id="imagesRepeat" is="dom-repeat"
+          items="[[getImagesToShow_()]]">
+        <img class="small-image" is="cr-auto-img" auto-src="[[item.url]]"
+            draggable="false" alt="">
+        </img>
+      </template>
+      <template is="dom-if" if="[[shouldShowExtraImagesCard_()]]" restamp>
+        <div id="extraImageCard" class="small-image">
+          [[getExtraImagesCountString_()]]
+        </div>
+      </template>
+    </template>
+  </div>
+  <div id="title" class="truncate">[[cart.merchant]]</div>
+  <div id="annotationContainer">
+    <div id="titleAnnotation" class="annotation" >
+      $i18n{modulesJourneysCartAnnotation}
+    </div>
+    <template is="dom-if" if="[[cart.discountText]]" restamp>
+      <div id="discountChip" class="annotation">[[cart.discountText]]</div>
+    </template>
+  </div>
+  <div id="date">[[cart.relativeDate]]</div>
+</a>

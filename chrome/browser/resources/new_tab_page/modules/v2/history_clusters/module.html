@@ -127,10 +127,18 @@
       visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
       on-aux-click="onVisitTileClick_" format="[[format]]">
   </ntp-history-clusters-visit-tile>
-  <ntp-history-clusters-visit-tile id="last-tile"
-      visit="[[cluster.visits.2]]" on-click="onVisitTileClick_"
-      on-aux-click="onVisitTileClick_" format="[[format]]">
-  </ntp-history-clusters-visit-tile>
+  <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
+    <ntp-history-clusters-cart-tile-v2
+        id="last-tile" cart="[[cart]]"
+        on-click="onCartTileClick_" on-aux-click="onCartTileClick_">
+    </ntp-history-clusters-cart-tile-v2>
+  </template>
+  <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
+    <ntp-history-clusters-visit-tile id="last-tile"
+        visit="[[cluster.visits.2]]" on-click="onVisitTileClick_"
+        on-aux-click="onVisitTileClick_" format="[[format]]">
+    </ntp-history-clusters-visit-tile>
+  </template>
   <div id="related-searches">
     <ntp-history-clusters-suggest-tile-v2 id="first-related-search"
       related-search="[[cluster.relatedSearches.0]]"

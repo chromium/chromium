@@ -4,6 +4,7 @@
 
 # List of files that should be passed to html_to_wrapper().
 history_clusters_v2_web_component_files = [
+  "modules/v2/history_clusters/cart/cart_tile.ts",
   "modules/v2/history_clusters/header_tile.ts",
   "modules/v2/history_clusters/module.ts",
   "modules/v2/history_clusters/suggest_tile.ts",
