@@ -70,6 +70,9 @@ enum ParamType {
 
   // Arguments for sending Visual Search results from browser to iframe.
   VISUAL_SEARCH_PARAMS = 'visualSearchParams',
+
+  // Arguments for sending companion loading state from iframe to browser.
+  COMPANION_LOADING_STATE = 'companionLoadingState',
 }
 
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
@@ -199,22 +202,7 @@ function initialize() {
         const frame = document.body.querySelector('iframe');
         assert(frame);
         if (frame.contentWindow) {
-          // We ensure that frame is done loading before posting the message.
-          if (frame.contentDocument?.readyState === 'complete') {
-            frame.contentWindow.postMessage(message, companionOrigin);
-          } else {
-            // Since frame is not done loading, we postpone it is loaded.
-            frame.addEventListener('load', () => {
-              assert(frame.contentWindow);
-              frame.contentWindow.postMessage(message, companionOrigin);
-            });
-          }
-          // We also repost the same message 2000ms later as a failsafe
-          // to the race condition of loading the iFrame of the companion.
-          window.setTimeout(() => {
-            assert(frame.contentWindow);
-            frame.contentWindow.postMessage(message, companionOrigin);
-          }, 2000);
+          frame.contentWindow.postMessage(message, companionOrigin);
         }
       });
 
@@ -292,6 +280,9 @@ function onCompanionMessageEvent(event: MessageEvent) {
     urlToOpen.url = data[ParamType.URL_TO_OPEN] || '';
     companionProxy.handler.openUrlInBrowser(
         urlToOpen, data[ParamType.USE_NEW_TAB]);
+  } else if (methodType === MethodType.kCompanionLoadingState) {
+    companionProxy.handler.onLoadingState(
+        data[ParamType.COMPANION_LOADING_STATE]);
   }
 }
 

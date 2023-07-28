@@ -17,6 +17,9 @@
 
 namespace companion::visual_search {
 
+// Used to store the last GURL/result pair that was classified.
+using VisualSearchResultPair = std::pair<GURL, std::vector<std::string>>;
+
 // Used to record classification initialization success or one of the various
 // causes for initialization failure.
 // Note: Must be kept in sync with //tools/metrics/histograms/enums.xml.
@@ -94,6 +97,10 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
   // mainly tracks the model fetching step.
   void CancelClassification(const GURL& visible_url);
 
+  // Returns the |VisualSearchResult| for a given url, currently we only cache
+  // the current url that we are processing.
+  absl::optional<VisualSearchResultPair> GetVisualResult(const GURL& url);
+
  private:
   // This method performs the actual mojom IPC to start classifier agent after
   // we have obtained the model from |visual_search_service_|.
@@ -114,6 +121,13 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
 
   // Used to track the time at which StartClassification was invoked.
   base::TimeTicks classification_start_time_;
+
+  // Tracks whether or not we are waiting for result to a request.
+  bool waiting_for_result_ = false;
+
+  // Used to store last |VisualSearchResult|, this is needed for instances where
+  // the result is ready before the WebUI is ready to render it.
+  absl::optional<VisualSearchResultPair> current_result_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
   base::WeakPtrFactory<VisualSearchClassifierHost> weak_ptr_factory_{this};

@@ -66,10 +66,13 @@ class CompanionPageHandler
   void OnCqJumptagClicked(const std::string& text_directive) override;
   void OpenUrlInBrowser(const absl::optional<GURL>& url_to_open,
                         bool use_new_tab) override;
+  void OnLoadingState(side_panel::mojom::LoadingState loading_state) override;
 
   // content::WebContentsObserver overrides.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
 
   // IdentityManager::Observer overrides.
   void OnPrimaryAccountChanged(
@@ -77,8 +80,6 @@ class CompanionPageHandler
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
 
   // UrlKeyedDataCollectionConsentHelper::Observer overrides.
   void OnUrlKeyedDataCollectionConsentStateChanged(

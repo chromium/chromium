@@ -173,8 +173,21 @@ void CompanionPageHandler::HandleVisualSearchResult(
     final_results.emplace_back(
         side_panel::mojom::VisualSearchResult::New(result));
   }
-  if (!final_results.empty()) {
-    page_->OnDeviceVisualClassificationResult(std::move(final_results));
+  page_->OnDeviceVisualClassificationResult(std::move(final_results));
+}
+
+void CompanionPageHandler::OnLoadingState(
+    side_panel::mojom::LoadingState loading_state) {
+  // We mainly use the OnLoadingState function to re-send the last result to
+  // the WebUI to handle cases where we obtain the |VisualSearchResult| before
+  // the UI is ready to render it.
+  if (visual_search_host_ &&
+      loading_state == side_panel::mojom::LoadingState::kStartedLoading) {
+    const auto& visual_result =
+        visual_search_host_->GetVisualResult(web_contents()->GetURL());
+    if (visual_result) {
+      HandleVisualSearchResult(visual_result.value().second);
+    }
   }
 }
 
