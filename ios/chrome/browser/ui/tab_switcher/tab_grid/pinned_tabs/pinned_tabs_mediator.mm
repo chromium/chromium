@@ -174,12 +174,9 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
         [self changePinnedStateForWebState:selectionOnlyChange
                                                .selected_web_state()
                                    atIndex:status.index];
-        return;
+        break;
       }
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason: to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated in didChangeActiveWebState:.
+      // The activation is handled after this switch statement.
       break;
     }
     case WebStateListChange::Type::kDetach:
@@ -205,7 +202,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     }
     case WebStateListChange::Type::kReplace: {
       if (!webStateList->IsWebStatePinnedAt(status.index)) {
-        return;
+        break;
       }
 
       const WebStateListChangeReplace& replaceChange =
@@ -229,7 +226,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
                                  WebStateSearchCriteria{
                                      .pinned_state = PinnedState::kPinned,
                                  })];
-        return;
+        break;
       }
 
       const WebStateListChangeInsert& insertChange =
@@ -249,32 +246,23 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
       break;
     }
   }
-}
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(_webStateList, webStateList);
+  if (status.active_web_state_change()) {
+    // If the selected index changes as a result of the last webstate being
+    // detached, the active index will be kInvalidIndex.
+    if (status.active_index == WebStateList::kInvalidIndex) {
+      [self.consumer selectItemWithID:nil];
+      return;
+    }
 
-  if (webStateList->IsBatchInProgress()) {
-    return;
+    if (!webStateList->IsWebStatePinnedAt(status.active_index)) {
+      [self.consumer selectItemWithID:nil];
+      return;
+    }
+
+    [self.consumer
+        selectItemWithID:status.new_active_web_state->GetStableIdentifier()];
   }
-
-  // If the selected index changes as a result of the last webstate being
-  // detached, atIndex will be kInvalidIndex.
-  if (atIndex == WebStateList::kInvalidIndex) {
-    [self.consumer selectItemWithID:nil];
-    return;
-  }
-
-  if (!webStateList->IsWebStatePinnedAt(atIndex)) {
-    [self.consumer selectItemWithID:nil];
-    return;
-  }
-
-  [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
