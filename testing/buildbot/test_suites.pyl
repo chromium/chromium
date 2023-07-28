@@ -2359,7 +2359,7 @@
     },
     'fieldtrial_webview_tests': {
       'webview_instrumentation_test_apk_no_field_trial': {
-        'args': ['--disable-field-trials'],
+        'args': ['--disable-field-trial-config'],
         'swarming': {
           'shards': 12,
         },
@@ -5552,7 +5552,7 @@
 
     'webview_bot_instrumentation_test_apk_no_field_trial_gtest': {
       'webview_instrumentation_test_apk_no_field_trial': {
-        'args': ['--disable-field-trials'],
+        'args': ['--disable-field-trial-config'],
         'swarming': {
           'shards': 12,
         },
