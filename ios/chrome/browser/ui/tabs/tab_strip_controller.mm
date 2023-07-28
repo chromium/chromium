@@ -1159,10 +1159,7 @@ const CGFloat kSymbolSize = 18;
                        status:(const WebStateListStatus&)status {
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach: {
       // Keep the actual view around while it is animating out.  Once the
@@ -1237,29 +1234,21 @@ const CGFloat kSymbolSize = 18;
       break;
     }
   }
-}
 
-// Observer method, active WebState changed.
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  if (!newWebState)
-    return;
+  if (status.active_web_state_change() && status.new_active_web_state) {
+    for (TabView* view in _tabArray) {
+      [view setSelected:NO];
+    }
 
-  for (TabView* view in _tabArray) {
-    [view setSelected:NO];
+    NSUInteger index = [self indexForWebStateListIndex:status.active_index];
+    TabView* activeView = [_tabArray objectAtIndex:index];
+    [activeView setSelected:YES];
+
+    // No need to animate this change, as selecting a new tab simply changes the
+    // z-ordering of the TabViews.  If a new tab was selected as a result of a
+    // tab closure, then the animated layout has already been scheduled.
+    [_tabStripView setNeedsLayout];
   }
-
-  NSUInteger index = [self indexForWebStateListIndex:atIndex];
-  TabView* activeView = [_tabArray objectAtIndex:index];
-  [activeView setSelected:YES];
-
-  // No need to animate this change, as selecting a new tab simply changes the
-  // z-ordering of the TabViews.  If a new tab was selected as a result of a tab
-  // closure, then the animated layout has already been scheduled.
-  [_tabStripView setNeedsLayout];
 }
 
 - (void)tabViewAnimationCompletion:(UIView*)view {
