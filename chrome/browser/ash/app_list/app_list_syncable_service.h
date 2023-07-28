@@ -251,7 +251,9 @@ class AppListSyncableService : public syncer::SyncableService,
   // ChromeOS devices and sessions for the associated user. This method is safe
   // to call even after completion of the first sync in the session, in which
   // case the `callback` will be run from a task posted immediately.
-  void OnFirstSync(base::OnceCallback<void(bool was_first_sync_ever)> callback);
+  // NOTE: Virtual for testing.
+  virtual void OnFirstSync(
+      base::OnceCallback<void(bool was_first_sync_ever)> callback);
 
   const Profile* profile() const { return profile_; }
   Profile* profile() { return profile_; }

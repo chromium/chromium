@@ -44,6 +44,10 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
               GetElementIdentifierForAppId,
               (const std::string& app_id),
               (const, override));
+  MOCK_METHOD(const absl::optional<bool>&,
+              IsNewUser,
+              (const AccountId& account_id),
+              (const, override));
   MOCK_METHOD(void,
               RegisterTutorial,
               (const AccountId& account_id,

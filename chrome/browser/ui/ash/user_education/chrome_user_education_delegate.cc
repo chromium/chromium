@@ -9,6 +9,8 @@
 #include "ash/user_education/user_education_util.h"
 #include "base/check.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -32,9 +34,26 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
+app_list::AppListSyncableService* GetAppListSyncableService(Profile* profile) {
+  return app_list::AppListSyncableServiceFactory::GetForProfile(profile);
+}
+
+Profile* GetProfile(const AccountId& account_id) {
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+}
+
 bool IsPrimaryProfile(Profile* profile) {
   return user_manager::UserManager::Get()->IsPrimaryUser(
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+}
+
+absl::optional<std::string> ToString(
+    absl::optional<ash::TutorialId> tutorial_id) {
+  return tutorial_id ? absl::make_optional(ash::user_education_util::ToString(
+                           tutorial_id.value()))
+                     : absl::nullopt;
 }
 
 }  // namespace
@@ -58,12 +77,9 @@ ChromeUserEducationDelegate::CreateHelpBubble(
     user_education::HelpBubbleParams help_bubble_params,
     ui::ElementIdentifier element_id,
     ui::ElementContext element_context) {
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id));
-
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
 
   // If a tracked `element` cannot be found for the specified `element_id` and
@@ -98,18 +114,23 @@ ChromeUserEducationDelegate::GetElementIdentifierForAppId(
   return absl::nullopt;
 }
 
+const absl::optional<bool>& ChromeUserEducationDelegate::IsNewUser(
+    const AccountId& account_id) const {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
+  CHECK(IsPrimaryProfile(profile));
+  return is_primary_profile_new_user_;
+}
+
 void ChromeUserEducationDelegate::RegisterTutorial(
     const AccountId& account_id,
     ash::TutorialId tutorial_id,
     user_education::TutorialDescription tutorial_description) {
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id));
-
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
-
   UserEducationServiceFactory::GetForProfile(profile)
       ->tutorial_registry()
       .AddTutorial(ash::user_education_util::ToString(tutorial_id),
@@ -122,14 +143,10 @@ void ChromeUserEducationDelegate::StartTutorial(
     ui::ElementContext element_context,
     base::OnceClosure completed_callback,
     base::OnceClosure aborted_callback) {
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id));
-
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
-
   UserEducationServiceFactory::GetForProfile(profile)
       ->tutorial_service()
       .StartTutorial(ash::user_education_util::ToString(tutorial_id),
@@ -140,23 +157,14 @@ void ChromeUserEducationDelegate::StartTutorial(
 void ChromeUserEducationDelegate::AbortTutorial(
     const AccountId& account_id,
     absl::optional<ash::TutorialId> tutorial_id) {
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id));
-
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
 
   auto& tutorial_service =
       UserEducationServiceFactory::GetForProfile(profile)->tutorial_service();
-
-  const absl::optional<std::string> tutorial_id_string =
-      tutorial_id ? absl::make_optional(
-                        ash::user_education_util::ToString(tutorial_id.value()))
-                  : absl::nullopt;
-
-  if (tutorial_service.IsRunningTutorial(tutorial_id_string)) {
+  if (tutorial_service.IsRunningTutorial(ToString(tutorial_id))) {
     tutorial_service.AbortTutorial(/*abort_step=*/absl::nullopt);
   }
 }
@@ -165,14 +173,10 @@ void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
     const AccountId& account_id,
     ash::SystemWebAppType system_web_app_type,
     int64_t display_id) {
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id));
-
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
-
   ash::LaunchSystemWebAppAsync(profile, system_web_app_type,
                                ash::SystemAppLaunchParams(),
                                std::make_unique<apps::WindowInfo>(display_id));
@@ -181,15 +185,9 @@ void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
 bool ChromeUserEducationDelegate::IsRunningTutorial(
     const AccountId& account_id,
     absl::optional<ash::TutorialId> tutorial_id) const {
-  Profile* const profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id));
-  return UserEducationServiceFactory::GetForProfile(profile)
+  return UserEducationServiceFactory::GetForProfile(GetProfile(account_id))
       ->tutorial_service()
-      .IsRunningTutorial(
-          tutorial_id ? absl::make_optional(
-                            ash::user_education_util::ToString(*tutorial_id))
-                      : absl::nullopt);
+      .IsRunningTutorial(ToString(tutorial_id));
 }
 
 void ChromeUserEducationDelegate::OnProfileAdded(Profile* profile) {
@@ -207,6 +205,20 @@ void ChromeUserEducationDelegate::OnProfileAdded(Profile* profile) {
   RegisterChromeHelpBubbleFactories(
       UserEducationServiceFactory::GetForProfile(profile)
           ->help_bubble_factory_registry());
+
+  // Cache whether the user associated with the primary profile is considered
+  // new, based on whether the first app list sync in the session was the first
+  // sync ever across all ChromeOS devices and sessions for the given user.
+  if (auto* app_list_syncable_service = GetAppListSyncableService(profile)) {
+    app_list_syncable_service->OnFirstSync(base::BindOnce(
+        [](const base::WeakPtr<ChromeUserEducationDelegate>& self,
+           bool was_first_sync_ever) {
+          if (self) {
+            self->is_primary_profile_new_user_ = was_first_sync_ever;
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ChromeUserEducationDelegate::OnProfileManagerDestroying() {

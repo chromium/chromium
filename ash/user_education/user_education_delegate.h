@@ -57,6 +57,15 @@ class ASH_EXPORT UserEducationDelegate {
   virtual absl::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const = 0;
 
+  // If present, indicates whether the user associated with the given
+  // `account_id` is considered new. A user is considered new if the first app
+  // list sync in the session was the first sync ever across all ChromeOS
+  // devices and sessions for the given user. As such, this value is absent
+  // until the first app list sync of the session is completed.
+  // NOTE: Currently only the primary user profile is supported.
+  virtual const absl::optional<bool>& IsNewUser(
+      const AccountId& account_id) const = 0;
+
   // Registers the tutorial defined by the specified `tutorial_id` and
   // `tutorial_description` for the user associated with the given `account_id`.
   // NOTE: Currently only the primary user profile is supported.

@@ -18,7 +18,12 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/one_shot_event.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
@@ -34,6 +39,7 @@
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -47,8 +53,26 @@
 
 namespace {
 
+// Aliases.
+using ::testing::Invoke;
+using ::testing::NiceMock;
+
 // Element identifiers.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementId);
+
+// Mocks -----------------------------------------------------------------------
+
+class MockAppListSyncableService : public app_list::AppListSyncableService {
+ public:
+  explicit MockAppListSyncableService(Profile* profile)
+      : app_list::AppListSyncableService(profile) {}
+
+  // app_list::AppListSyncableService:
+  MOCK_METHOD(void,
+              OnFirstSync,
+              (base::OnceCallback<void(bool was_first_sync_ever)> callback),
+              (override));
+};
 
 }  // namespace
 
@@ -95,7 +119,8 @@ class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
     client->SwitchActiveUser(kUserAccountId);
 
     // Create profile.
-    return profile_manager()->CreateTestingProfile(kUserEmail);
+    return profile_manager()->CreateTestingProfile(kUserEmail,
+                                                   GetTestingFactories());
   }
 
   // User management.
@@ -264,4 +289,80 @@ TEST_F(ChromeUserEducationDelegateTest, AbortSpecificTutorial) {
   // running.
   delegate()->AbortTutorial(account_id(), ash::TutorialId::kTest);
   EXPECT_FALSE(tutorial_service.IsRunningTutorial());
+}
+
+// ChromeUserEducationDelegateNewUserTest --------------------------------------
+
+// Base class for tests of the `ChromeUserEducationDelegate` concerned with
+// new users, parameterized by whether the first app list sync in the session
+// was the first sync ever across all ChromeOS devices and sessions for the
+// given user.
+class ChromeUserEducationDelegateNewUserTest
+    : public ChromeUserEducationDelegateTest,
+      public ::testing::WithParamInterface</*was_first_sync_ever=*/bool> {
+ public:
+  // Returns the event to signal when the first app list sync in the session has
+  // been completed.
+  base::OneShotEvent& on_first_sync() { return on_first_sync_; }
+
+  // Returns whether the first app list sync in the session was the first sync
+  // ever across all ChromeOS devices and sessions for the given user, based on
+  // test parameterization.
+  bool was_first_sync_ever() const { return GetParam(); }
+
+ private:
+  // ChromeUserEducationDelegateTest:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{app_list::AppListSyncableServiceFactory::GetInstance(),
+             base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+               auto app_list_syncable_service =
+                   std::make_unique<NiceMock<MockAppListSyncableService>>(
+                       Profile::FromBrowserContext(context));
+
+               // Mock `app_list::AppListSyncableService::OnFirstSync()` so that
+               // it runs callbacks to inform them if the first app list sync in
+               // the session was the first sync ever across all ChromeOS
+               // devices and sessions for the given user, based on test
+               // parameterization. Callbacks should only run once signaled that
+               // the first app list sync in the session has been completed.
+               ON_CALL(*app_list_syncable_service, OnFirstSync)
+                   .WillByDefault(Invoke(
+                       [&](base::OnceCallback<void(bool was_first_sync_ever)>
+                               callback) {
+                         on_first_sync_.Post(
+                             FROM_HERE, base::BindOnce(std::move(callback),
+                                                       was_first_sync_ever()));
+                       }));
+
+               return app_list_syncable_service;
+             })}};
+  }
+
+  // The event to signal when the first app list sync in the session has been
+  // completed.
+  base::OneShotEvent on_first_sync_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeUserEducationDelegateNewUserTest,
+                         /*was_first_sync_ever=*/::testing::Bool());
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that `IsNewUser()` is working as intended.
+TEST_P(ChromeUserEducationDelegateNewUserTest, IsNewUser) {
+  // Until the first app list sync in the session has been completed, it is
+  // not known whether a given user can be considered new.
+  EXPECT_EQ(delegate()->IsNewUser(account_id()), absl::nullopt);
+
+  // Signal that the first app list sync in the session has been completed.
+  on_first_sync().Signal();
+
+  // Once the first app list sync in the session has been completed, a task will
+  // be posted to the `delegate()` which will cache whether the given user can
+  // be considered new.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return delegate()->IsNewUser(account_id()) == was_first_sync_ever();
+  }));
 }
