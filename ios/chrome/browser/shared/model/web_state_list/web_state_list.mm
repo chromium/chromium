@@ -362,13 +362,28 @@ int WebStateList::InsertWebStateImpl(int index,
     wrapper->SetShouldResetOpenerOnActiveWebStateChange(true);
   }
 
+  WebStateWrapper* old_active_web_state_wrapper = GetActiveWebStateWrapper();
+  if (activating) {
+    if (old_active_web_state_wrapper &&
+        old_active_web_state_wrapper
+            ->ShouldResetOpenerOnActiveWebStateChange()) {
+      // Clear the opener when the active WebState changes.
+      old_active_web_state_wrapper->SetOpener(WebStateOpener());
+    }
+
+    active_index_ = index;
+    OnActiveWebStateChanged();
+  }
+
   const WebStateListChangeInsert insert_change(web_state_ptr);
   const WebStateListStatus status = {
       .index = index,
       .active_index = activating ? index : active_index_,
       .pinned_state_change = false,
-      .old_active_web_state = GetActiveWebState(),
-      .new_active_web_state = activating ? web_state_ptr : GetActiveWebState()};
+      .old_active_web_state = old_active_web_state_wrapper
+                                  ? old_active_web_state_wrapper->web_state()
+                                  : nullptr,
+      .new_active_web_state = GetActiveWebState()};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, insert_change, status);
   }
@@ -378,20 +393,6 @@ int WebStateList::InsertWebStateImpl(int index,
   }
 
   if (activating) {
-    WebStateWrapper* old_active_web_state_wrapper = GetActiveWebStateWrapper();
-    if (old_active_web_state_wrapper &&
-        old_active_web_state_wrapper
-            ->ShouldResetOpenerOnActiveWebStateChange()) {
-      // Clear the opener when the active WebState changes.
-      old_active_web_state_wrapper->SetOpener(WebStateOpener());
-    }
-
-    // TODO(crbug.com/1465845): Update `active_index_` before calling
-    // WebStateListDidChange() so that observers can obtain the current active
-    // index via `WebStateList::active_index()` in WebStateListDidChange().
-    active_index_ = index;
-    OnActiveWebStateChanged();
-
     // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
     // are updated to handle the activation and the insertion in
     // `WebStateListDidChange()`.

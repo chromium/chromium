@@ -1451,7 +1451,15 @@ const CGFloat kSymbolSize = 18;
 
 - (void)updateContentOffsetForWebStateIndex:(int)webStateIndex
                               isNewWebState:(BOOL)isNewWebState {
-  DCHECK_NE(WebStateList::kInvalidIndex, webStateIndex);
+  // Avoid the out-of-range access to `_tabArray`. The `webStateIndex` can be
+  // invalid when traitCollectionDidChange: is called before a TabView is
+  // inserted to `_tabArray` in didChangeWebStateList:change:selection:. In
+  // particular, this occurs when exiting from the fullscreen because it
+  // changes UI and triggers [TabStripView traitCollectionDidChange:], which
+  // reaches here and is called before calling the WebStateListObserver API.
+  if (webStateIndex < 0 || (NSUInteger)webStateIndex >= [_tabArray count]) {
+    return;
+  }
 
   if (isNewWebState) {
     [self scrollTabToVisible:webStateIndex];
@@ -1838,11 +1846,8 @@ const CGFloat kSymbolSize = 18;
   _useTabStacking = useTabStacking;
   [self updateScrollViewFrameForTabSwitcherButton];
   [self updateContentSizeAndRepositionViews];
-  int selectedModelIndex = _webStateList->active_index();
-  if (selectedModelIndex != WebStateList::kInvalidIndex) {
-    [self updateContentOffsetForWebStateIndex:selectedModelIndex
-                                isNewWebState:NO];
-  }
+  [self updateContentOffsetForWebStateIndex:_webStateList->active_index()
+                              isNewWebState:NO];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
