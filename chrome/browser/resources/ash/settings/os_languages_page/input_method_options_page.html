@@ -11,6 +11,10 @@
     padding-inline-start: var(--cr-section-indent-padding);
   }
 
+  .dependent[align-with-options] {
+    padding-inline-start: calc(var(--cr-section-padding) * 2);
+  }
+
   .subtitle {
     display: block;
   }
@@ -74,7 +78,8 @@
         <!--TODO(b/189280771): Reduce this duplication.-->
         <template is="dom-repeat" items="[[option.dependentOptions]]"
             as="dependant" id="dependent-settings">
-          <div class="list-item dependent" >
+          <div class="list-item dependent"
+            align-with-options$="[[!shouldShowTitle(section)]]">
             <div class="start" aria-hidden="true">
               [[dependant.label]]
             </div>
