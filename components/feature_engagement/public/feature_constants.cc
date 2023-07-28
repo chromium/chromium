@@ -562,6 +562,36 @@ BASE_FEATURE(kIPHScalableIphTimerBasedNineFeature,
 BASE_FEATURE(kIPHScalableIphTimerBasedTenFeature,
              "IPH_ScalableIphTimerBasedTen",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedOneFeature,
+             "IPH_ScalableIphUnlockedBasedOne",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedTwoFeature,
+             "IPH_ScalableIphUnlockedBasedTwo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedThreeFeature,
+             "IPH_ScalableIphUnlockedBasedThree",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedFourFeature,
+             "IPH_ScalableIphUnlockedBasedFour",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedFiveFeature,
+             "IPH_ScalableIphUnlockedBasedFive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedSixFeature,
+             "IPH_ScalableIphUnlockedBasedSix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedSevenFeature,
+             "IPH_ScalableIphUnlockedBasedSeven",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedEightFeature,
+             "IPH_ScalableIphUnlockedBasedEight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedNineFeature,
+             "IPH_ScalableIphUnlockedBasedNine",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphUnlockedBasedTenFeature,
+             "IPH_ScalableIphUnlockedBasedTen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -54,6 +54,7 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
       feature_list({
           // This must be sorted from One to Ten. A config expects that IPHs are
           // evaluated in this priority.
+          // Timer based.
           &feature_engagement::kIPHScalableIphTimerBasedOneFeature,
           &feature_engagement::kIPHScalableIphTimerBasedTwoFeature,
           &feature_engagement::kIPHScalableIphTimerBasedThreeFeature,
@@ -64,6 +65,17 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
           &feature_engagement::kIPHScalableIphTimerBasedEightFeature,
           &feature_engagement::kIPHScalableIphTimerBasedNineFeature,
           &feature_engagement::kIPHScalableIphTimerBasedTenFeature,
+          // Unlocked based.
+          &feature_engagement::kIPHScalableIphUnlockedBasedOneFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedTwoFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedThreeFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedFourFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedFiveFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedSixFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedSevenFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedEightFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedNineFeature,
+          &feature_engagement::kIPHScalableIphUnlockedBasedTenFeature,
       });
   return *feature_list;
 }

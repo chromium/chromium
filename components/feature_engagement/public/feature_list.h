@@ -364,6 +364,26 @@ DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedNineFeature,
                        "IPH_ScalableIphTimerBasedNine");
 DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedTenFeature,
                        "IPH_ScalableIphTimerBasedTen");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedOneFeature,
+                       "IPH_ScalableIphUnlockedBasedOne");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedTwoFeature,
+                       "IPH_ScalableIphUnlockedBasedTwo");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedThreeFeature,
+                       "IPH_ScalableIphUnlockedBasedThree");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedFourFeature,
+                       "IPH_ScalableIphUnlockedBasedFour");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedFiveFeature,
+                       "IPH_ScalableIphUnlockedBasedFive");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedSixFeature,
+                       "IPH_ScalableIphUnlockedBasedSix");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedSevenFeature,
+                       "IPH_ScalableIphUnlockedBasedSeven");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedEightFeature,
+                       "IPH_ScalableIphUnlockedBasedEight");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedNineFeature,
+                       "IPH_ScalableIphUnlockedBasedNine");
+DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedTenFeature,
+                       "IPH_ScalableIphUnlockedBasedTen");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -557,6 +577,16 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHScalableIphTimerBasedEightFeature),
         VARIATION_ENTRY(kIPHScalableIphTimerBasedNineFeature),
         VARIATION_ENTRY(kIPHScalableIphTimerBasedTenFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedOneFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedTwoFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedThreeFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedFourFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedFiveFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedSixFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedSevenFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedEightFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedNineFeature),
+        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedTenFeature),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

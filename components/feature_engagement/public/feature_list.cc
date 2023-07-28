@@ -204,6 +204,16 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHScalableIphTimerBasedEightFeature,
     &kIPHScalableIphTimerBasedNineFeature,
     &kIPHScalableIphTimerBasedTenFeature,
+    &kIPHScalableIphUnlockedBasedOneFeature,
+    &kIPHScalableIphUnlockedBasedTwoFeature,
+    &kIPHScalableIphUnlockedBasedThreeFeature,
+    &kIPHScalableIphUnlockedBasedFourFeature,
+    &kIPHScalableIphUnlockedBasedFiveFeature,
+    &kIPHScalableIphUnlockedBasedSixFeature,
+    &kIPHScalableIphUnlockedBasedSevenFeature,
+    &kIPHScalableIphUnlockedBasedEightFeature,
+    &kIPHScalableIphUnlockedBasedNineFeature,
+    &kIPHScalableIphUnlockedBasedTenFeature,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

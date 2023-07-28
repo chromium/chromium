@@ -229,6 +229,16 @@ BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedSevenFeature);
 BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedEightFeature);
 BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedNineFeature);
 BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedTenFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedOneFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedTwoFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedThreeFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedFourFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedFiveFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedSixFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedSevenFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedEightFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedNineFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphUnlockedBasedTenFeature);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
