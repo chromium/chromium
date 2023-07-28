@@ -34,8 +34,24 @@ found in the LICENSE file.
     color: var(--cros-text-color-secondary);
   }
 
+  :host-context(.jelly-enabled) .legal-info {
+    color: var(--oobe-subheader-text-color);
+    font-family: var(--oobe-marketing-opt-in-legal-info-font-family);
+    font-size: var(--oobe-marketing-opt-in-legal-info-font-size);
+    font-weight: var(--oobe-marketing-opt-in-legal-info-font-weight);
+    line-height: var(--oobe-marketing-opt-in-legal-info-line-height);
+  }
+
   .toggle-title {
     color: var(--cros-text-color-primary);
+  }
+
+  :host-context(.jelly-enabled) .toggle-title {
+    color: var(--oobe-text-color);
+    font-family: var(--oobe-marketing-opt-in-legal-title-font-family);
+    font-size: var(--oobe-marketing-opt-in-legal-title-font-size);
+    font-weight: var(--oobe-marketing-opt-in-legal-title-font-weight);
+    line-height: var(--oobe-marketing-opt-in-legal-title-line-height);
   }
 
   #toggleRow {
@@ -72,6 +88,10 @@ found in the LICENSE file.
 
   #googleUrl {
     color: var(--cros-color-prominent);
+  }
+
+  :host-context(.jelly-enabled) #googleUrl {
+    color: var(--cros-sys-primary);
   }
 
   #finalAccessibilityPage oobe-a11y-option {
@@ -132,7 +152,7 @@ found in the LICENSE file.
     <!-- Toggle row -->
     <div class="layout horizontal center"
         hidden="[[!marketingOptInVisible_]]"
-        id="toggleRow" style="[[getMarginTop_(isCloudGamingDevice_)]]">
+        id="toggleRow">
       <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
       <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
           aria-hidden="true">

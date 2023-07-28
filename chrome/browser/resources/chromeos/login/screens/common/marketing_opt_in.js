@@ -217,15 +217,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
     return this.isCloudGamingDevice_ ? 'oobe-32:game-controller' :
                                        'oobe-32:checkmark';
   }
-
-  /**
-   * Returns the src of the margin for the toggle.
-   * @private
-   */
-  getMarginTop_() {
-    return this.isCloudGamingDevice_ ? 'margin-top: 65px;' :
-                                       'margin-top: 20px;';
-  }
 }
 
 customElements.define(MarketingOptIn.is, MarketingOptIn);
