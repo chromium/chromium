@@ -206,6 +206,10 @@ int QuicChromiumClientStream::Handle::ReadBody(
   if (!stream_)
     return net_error_;
 
+  if (stream_->read_side_closed()) {
+    return OK;
+  }
+
   int rv = stream_->Read(buffer, buffer_len);
   if (rv != ERR_IO_PENDING)
     return rv;
