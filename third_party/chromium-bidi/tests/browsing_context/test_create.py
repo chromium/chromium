@@ -174,7 +174,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_withUserGesture_eventsEmitted(
-        websocket, context_id, html, read_sorted_messages, get_cdp_session_id):
+        websocket, context_id, html, read_sorted_messages):
     LINK_WITH_BLANK_TARGET = html(
         '<a href="https://example.com" target="_blank">new tab</a>')
 
@@ -207,19 +207,16 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
         {"method": "browsingContext.domContentLoaded"})
     assert load_event == AnyExtending({"method": "browsingContext.load"})
 
-    session_id = await get_cdp_session_id(context_id)
-
-    # XXX: Execute via BiDi once supported: https://github.com/w3c/webdriver-bidi/issues/359
     command_id = await send_JSON_command(
         websocket, {
-            "method": "cdp.sendCommand",
+            "method": "script.evaluate",
             "params": {
-                "method": "Runtime.evaluate",
-                "params": {
-                    "expression": "document.querySelector('a').click();",
-                    "userGesture": True,
+                "expression": """document.querySelector('a').click();""",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
                 },
-                "session": session_id
+                "userActivation": True
             }
         })
 

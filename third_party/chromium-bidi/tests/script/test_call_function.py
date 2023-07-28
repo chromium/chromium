@@ -479,3 +479,38 @@ async def test_scriptCallFunction_realm(websocket, context_id):
         "exceptionDetails": ANY,
         "realm": realm
     } == result
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_activation", [True, False])
+async def test_script_callFunction_userActivation(websocket, context_id,
+                                                  user_activation):
+    result = await execute_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": """
+                  () => {
+                    document.body.appendChild(document.createTextNode('test'));
+                    document.execCommand('selectAll');
+                    return document.execCommand('copy');
+                  }
+                """,
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root",
+                "userActivation": user_activation
+            }
+        })
+
+    assert {
+        "type": "success",
+        "realm": ANY_STR,
+        "type": "success",
+        "result": {
+            "type": "boolean",
+            "value": user_activation
+        }
+    } == result

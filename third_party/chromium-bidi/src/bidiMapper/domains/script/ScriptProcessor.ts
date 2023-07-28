@@ -98,7 +98,8 @@ export class ScriptProcessor {
       params.arguments ?? [], // `arguments` is `[]` by default.
       params.awaitPromise,
       params.resultOwnership ?? Script.ResultOwnership.None,
-      params.serializationOptions ?? {}
+      params.serializationOptions ?? {},
+      params.userActivation ?? false
     );
   }
 
@@ -110,7 +111,8 @@ export class ScriptProcessor {
       params.expression,
       params.awaitPromise,
       params.resultOwnership ?? Script.ResultOwnership.None,
-      params.serializationOptions ?? {}
+      params.serializationOptions ?? {},
+      params.userActivation ?? false
     );
   }
 

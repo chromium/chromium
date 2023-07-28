@@ -239,7 +239,8 @@ export class Realm {
     expression: string,
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
-    serializationOptions: Script.SerializationOptions
+    serializationOptions: Script.SerializationOptions,
+    userActivation = false
   ): Promise<Script.EvaluateResult> {
     await this.#browsingContextStorage
       .getContext(this.browsingContextId)
@@ -255,6 +256,7 @@ export class Realm {
           Protocol.Runtime.SerializationOptionsSerialization.Deep,
           serializationOptions
         ),
+        userGesture: userActivation,
       }
     );
 
@@ -399,7 +401,8 @@ export class Realm {
     argumentsLocalValues: Script.LocalValue[],
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
-    serializationOptions: Script.SerializationOptions
+    serializationOptions: Script.SerializationOptions,
+    userActivation = false
   ): Promise<Script.EvaluateResult> {
     await this.#browsingContextStorage
       .getContext(this.browsingContextId)
@@ -439,6 +442,7 @@ export class Realm {
             serializationOptions
           ),
           executionContextId: this.executionContextId,
+          userGesture: userActivation,
         }
       );
     } catch (error: any) {
