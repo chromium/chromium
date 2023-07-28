@@ -23,13 +23,6 @@ constexpr auto enabled_by_default_android_only =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-constexpr auto enabled_by_default_ios_only =
-#if BUILDFLAG(IS_IOS)
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#else
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#endif
-
 constexpr auto enabled_by_default_desktop_android =
 #if BUILDFLAG(IS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
@@ -366,7 +359,7 @@ BASE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool,
 // a search result page that does not do search term replacement.
 BASE_FEATURE(kOmniboxMostVisitedTilesOnSrp,
              "OmniboxMostVisitedTilesOnSrp",
-             enabled_by_default_ios_only);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, adds a grey square background to search icons, and makes answer
 // icon square instead of round.

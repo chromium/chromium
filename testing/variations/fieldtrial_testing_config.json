@@ -9786,23 +9786,6 @@
             ]
         }
     ],
-    "OmniboxOnFocusMVCarouseliOSV3": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableSuggestionsScrollingOnIPad",
-                        "OmniboxFocusTriggersContextualWebZeroSuggest",
-                        "OmniboxMostVisitedTiles"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPrerender": [
         {
             "platforms": [
