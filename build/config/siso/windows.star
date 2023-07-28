@@ -19,10 +19,9 @@ def __step_config(ctx, step_config):
     config.check(ctx)
     step_config["platforms"] = {}
 
+    step_config = clang.step_config(ctx, step_config)
     if reproxy.enabled(ctx):
         step_config = reproxy.step_config(ctx, step_config)
-    else:
-        step_config = clang.step_config(ctx, step_config)
     return step_config
 
 chromium = module(
