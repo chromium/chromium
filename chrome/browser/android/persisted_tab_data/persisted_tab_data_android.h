@@ -60,7 +60,7 @@ class PersistedTabDataAndroid
   raw_ptr<PersistedTabDataStorageAndroid> persisted_tab_data_storage_android_;
 
   // Identifier for the PersistedTabData which all keys are prepended with
-  const std::string data_id_;
+  raw_ptr<const char> data_id_;
 
   int tab_id_;
   TAB_ANDROID_USER_DATA_KEY_DECL();

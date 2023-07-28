@@ -4,31 +4,29 @@
 
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 
-#include "base/no_destructor.h"
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
+
+namespace {
+const char kSensitivityId[] = "sensitivity";
+}  // namespace
 
 PersistedTabDataConfigAndroid::~PersistedTabDataConfigAndroid() = default;
 
 PersistedTabDataConfigAndroid::PersistedTabDataConfigAndroid(
-    std::unique_ptr<PersistedTabDataStorageAndroid>
-        persisted_tab_data_storage_android,
-    const std::string* data_id)
-    : persisted_tab_data_storage_(
-          std::move(persisted_tab_data_storage_android)),
+    PersistedTabDataStorageAndroid* persisted_tab_data_storage_android,
+    const char* data_id)
+    : persisted_tab_data_storage_(persisted_tab_data_storage_android),
       data_id_(data_id) {}
 
-PersistedTabDataConfigAndroid* PersistedTabDataConfigAndroid::Get(
-    const void* user_data_key) {
-  static base::NoDestructor<std::unordered_map<
-      const void*, std::unique_ptr<PersistedTabDataConfigAndroid>>>
-      lookup_;
-  if (lookup_.get()->empty()) {
-    lookup_.get()->emplace(
-        SensitivityPersistedTabDataAndroid::UserDataKey(),
-        new PersistedTabDataConfigAndroid(
-            std::make_unique<LevelDBPersistedTabDataStorageAndroid>(),
-            new std::string(kSensitivityId)));
+std::unique_ptr<PersistedTabDataConfigAndroid>
+PersistedTabDataConfigAndroid::Get(const void* user_data_key,
+                                   Profile* profile) {
+  if (user_data_key == SensitivityPersistedTabDataAndroid::UserDataKey()) {
+    return std::make_unique<PersistedTabDataConfigAndroid>(
+        LevelDBPersistedTabDataStorageAndroid::FromProfile(profile),
+        kSensitivityId);
   }
-  return lookup_.get()->find(user_data_key)->second.get();
+  NOTREACHED() << "Unknown UserDataKey";
+  return nullptr;
 }

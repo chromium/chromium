@@ -10,6 +10,9 @@
 
 namespace {
 
+const char kLevelDBPersistedTabDataAndroid[] =
+    "level_db_persisted_tab_data_android";
+
 // Callback for inserting and deleting content.
 void OnUpdateCallback(bool success) {
   if (!success) {
@@ -33,24 +36,36 @@ void OnLoadCallback(
   std::move(restore_callback).Run(res);
 }
 
-const std::string GetKey(int tab_id, const std::string& data_id) {
-  return base::StringPrintf("%d-%s", tab_id, data_id.c_str());
+const std::string GetKey(int tab_id, const char* data_id) {
+  return base::StringPrintf("%d-%s", tab_id, data_id);
 }
 
 }  // namespace
 
-LevelDBPersistedTabDataStorageAndroid::LevelDBPersistedTabDataStorageAndroid()
-    : proto_db_(
-          SessionProtoDBFactory<
-              persisted_state_db::PersistedStateContentProto>::GetInstance()
-              ->GetForProfile(ProfileManager::GetLastUsedProfile())) {}
-
 LevelDBPersistedTabDataStorageAndroid::
     ~LevelDBPersistedTabDataStorageAndroid() = default;
 
+LevelDBPersistedTabDataStorageAndroid*
+LevelDBPersistedTabDataStorageAndroid::FromProfile(Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+
+  LevelDBPersistedTabDataStorageAndroid* level_db_persisted_tab_data_android =
+      static_cast<LevelDBPersistedTabDataStorageAndroid*>(
+          profile->GetUserData(kLevelDBPersistedTabDataAndroid));
+  if (!level_db_persisted_tab_data_android) {
+    level_db_persisted_tab_data_android =
+        new LevelDBPersistedTabDataStorageAndroid(profile);
+    profile->SetUserData(kLevelDBPersistedTabDataAndroid,
+                         base::WrapUnique(level_db_persisted_tab_data_android));
+  }
+  return level_db_persisted_tab_data_android;
+}
+
 void LevelDBPersistedTabDataStorageAndroid::Save(
     int tab_id,
-    const std::string& data_id,
+    const char* data_id,
     const std::vector<uint8_t>& data) {
   persisted_state_db::PersistedStateContentProto proto;
   std::string key = GetKey(tab_id, data_id);
@@ -61,7 +76,7 @@ void LevelDBPersistedTabDataStorageAndroid::Save(
 
 void LevelDBPersistedTabDataStorageAndroid::Restore(
     int tab_id,
-    const std::string& data_id,
+    const char* data_id,
     RestoreCallback restore_callback) {
   proto_db_->LoadContentWithPrefix(
       GetKey(tab_id, data_id),
@@ -69,7 +84,14 @@ void LevelDBPersistedTabDataStorageAndroid::Restore(
 }
 
 void LevelDBPersistedTabDataStorageAndroid::Remove(int tab_id,
-                                                   const std::string& data_id) {
+                                                   const char* data_id) {
   proto_db_->DeleteContentWithPrefix(GetKey(tab_id, data_id),
                                      base::BindOnce(&OnUpdateCallback));
 }
+
+LevelDBPersistedTabDataStorageAndroid::LevelDBPersistedTabDataStorageAndroid(
+    Profile* profile)
+    : proto_db_(
+          SessionProtoDBFactory<
+              persisted_state_db::PersistedStateContentProto>::GetInstance()
+              ->GetForProfile(profile)) {}

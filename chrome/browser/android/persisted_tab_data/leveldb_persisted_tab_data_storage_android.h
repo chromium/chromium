@@ -8,31 +8,35 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/session_proto_db/session_proto_db.h"
 
 // Level DB backed implementation of PersistedTabDataStorage
 class LevelDBPersistedTabDataStorageAndroid
-    : public PersistedTabDataStorageAndroid {
+    : public PersistedTabDataStorageAndroid,
+      public base::SupportsUserData::Data {
  public:
-  LevelDBPersistedTabDataStorageAndroid();
   ~LevelDBPersistedTabDataStorageAndroid() override;
+
+  static LevelDBPersistedTabDataStorageAndroid* FromProfile(Profile* profile);
 
   // Save |data| into the database for a |tab_id| and |data_id| combination.
   void Save(int tab_id,
-            const std::string& data_id,
+            const char* data_id,
             const std::vector<uint8_t>& data) override;
 
   // Restore |data| from  the database for a |tab_id| and |data_id| combination.
   void Restore(int tab_id,
-               const std::string& data_id,
+               const char* data_id,
                RestoreCallback restore_callback) override;
 
   // Remove entry in the database for a given |tab_id| and |data_id|.
-  void Remove(int tab_id, const std::string& data_id) override;
+  void Remove(int tab_id, const char* data_id) override;
 
  private:
+  explicit LevelDBPersistedTabDataStorageAndroid(Profile* profile);
   // Per profile/per proto storage
   raw_ptr<SessionProtoDB<persisted_state_db::PersistedStateContentProto>>
       proto_db_;

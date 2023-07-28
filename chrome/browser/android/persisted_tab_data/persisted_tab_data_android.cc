@@ -23,9 +23,12 @@ void RunCallbackOnUIThread(
 PersistedTabDataAndroid::PersistedTabDataAndroid(TabAndroid* tab_android,
                                                  const void* user_data_key)
     : persisted_tab_data_storage_android_(
-          PersistedTabDataConfigAndroid::Get(user_data_key)
+          PersistedTabDataConfigAndroid::Get(user_data_key,
+                                             tab_android->GetProfile())
               ->persisted_tab_data_storage_android()),
-      data_id_(PersistedTabDataConfigAndroid::Get(user_data_key)->data_id()),
+      data_id_(PersistedTabDataConfigAndroid::Get(user_data_key,
+                                                  tab_android->GetProfile())
+                   ->data_id()),
       tab_id_(tab_android->GetAndroidId()) {}
 
 PersistedTabDataAndroid::~PersistedTabDataAndroid() = default;
@@ -41,8 +44,9 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
                        static_cast<PersistedTabDataAndroid*>(
                            tab_android->GetUserData(user_data_key))));
   } else {
-    PersistedTabDataConfigAndroid* persisted_tab_data_config_android =
-        PersistedTabDataConfigAndroid::Get(user_data_key);
+    std::unique_ptr<PersistedTabDataConfigAndroid>
+        persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
+            user_data_key, tab_android->GetProfile());
     persisted_tab_data_config_android->persisted_tab_data_storage_android()
         ->Restore(
             tab_android->GetAndroidId(),
