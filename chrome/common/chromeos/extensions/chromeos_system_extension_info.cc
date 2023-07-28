@@ -4,6 +4,7 @@
 
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -132,10 +133,43 @@ bool IsChromeOSSystemExtension(const std::string& id) {
   return GetMap()->find(id) != GetMap()->end();
 }
 
-void ReinitializeChromeOSSystemExtensionInfoMapForTesting() {
-  ChromeOSSystemExtensionInfoMap*& map = GetMap();
-  delete map;
-  map = new ChromeOSSystemExtensionInfoMap{ConstructMap()};
+class ScopedChromeOSSystemExtensionInfoImpl
+    : public ScopedChromeOSSystemExtensionInfo {
+ public:
+  ScopedChromeOSSystemExtensionInfoImpl();
+  ScopedChromeOSSystemExtensionInfoImpl(
+      ScopedChromeOSSystemExtensionInfoImpl&) = delete;
+  ScopedChromeOSSystemExtensionInfoImpl& operator=(
+      ScopedChromeOSSystemExtensionInfoImpl&) = delete;
+  ~ScopedChromeOSSystemExtensionInfoImpl() override;
+
+  void ApplyCommandLineSwitchesForTesting() override;  // IN-TEST
+
+ private:
+  base::raw_ptr<ChromeOSSystemExtensionInfoMap> map_;
+};
+
+// static
+std::unique_ptr<ScopedChromeOSSystemExtensionInfo>
+ScopedChromeOSSystemExtensionInfo::CreateForTesting() {
+  return std::make_unique<ScopedChromeOSSystemExtensionInfoImpl>();
+}
+
+ScopedChromeOSSystemExtensionInfoImpl::ScopedChromeOSSystemExtensionInfoImpl() {
+  map_ = GetMap();
+  GetMap() = new ChromeOSSystemExtensionInfoMap{ConstructMap()};
+}
+
+ScopedChromeOSSystemExtensionInfoImpl::
+    ~ScopedChromeOSSystemExtensionInfoImpl() {
+  delete GetMap();
+  GetMap() = map_;
+}
+
+void ScopedChromeOSSystemExtensionInfoImpl::
+    ApplyCommandLineSwitchesForTesting() {
+  delete GetMap();
+  GetMap() = new ChromeOSSystemExtensionInfoMap{ConstructMap()};
 }
 
 }  // namespace chromeos

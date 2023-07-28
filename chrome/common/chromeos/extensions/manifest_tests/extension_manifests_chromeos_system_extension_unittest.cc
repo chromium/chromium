@@ -127,10 +127,12 @@ TEST_P(ExtensionManifestChromeOSSystemExtensionTest,
 
 TEST_P(ExtensionManifestChromeOSSystemExtensionTest,
        ValidChromeOSSystemExtension_Allowlisted_Google_IWA) {
+  auto scoped_info =
+      chromeos::ScopedChromeOSSystemExtensionInfo::CreateForTesting();
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kTelemetryExtensionIwaIdOverrideForTesting,
       "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic");
-  chromeos::ReinitializeChromeOSSystemExtensionInfoMapForTesting();
+  scoped_info->ApplyCommandLineSwitchesForTesting();
 
   if (GetParam().is_iwa_enabled) {
     scoped_refptr<extensions::Extension> extension(

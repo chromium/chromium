@@ -5,6 +5,7 @@
 #ifndef CHROME_COMMON_CHROMEOS_EXTENSIONS_CHROMEOS_SYSTEM_EXTENSION_INFO_H_
 #define CHROME_COMMON_CHROMEOS_EXTENSIONS_CHROMEOS_SYSTEM_EXTENSION_INFO_H_
 
+#include <memory>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -46,8 +47,22 @@ bool IsChromeOSSystemExtension(const std::string& id);
 const ChromeOSSystemExtensionInfo& GetChromeOSExtensionInfoById(
     const std::string& id);
 
-// Export for testing.
-void ReinitializeChromeOSSystemExtensionInfoMapForTesting();
+// Exported for testing.
+// A helper class to restore the allowlist after tests. This should be created
+// before modifying base::CommandLine to avoid changing the original allowlist.
+class ScopedChromeOSSystemExtensionInfo {
+ public:
+  virtual ~ScopedChromeOSSystemExtensionInfo() = default;
+
+  // Creates a instance.
+  static std::unique_ptr<ScopedChromeOSSystemExtensionInfo> CreateForTesting();
+
+  // Applies the change from the related switches in base::CommandLine.
+  virtual void ApplyCommandLineSwitchesForTesting() = 0;
+
+ protected:
+  ScopedChromeOSSystemExtensionInfo() = default;
+};
 
 }  // namespace chromeos
 

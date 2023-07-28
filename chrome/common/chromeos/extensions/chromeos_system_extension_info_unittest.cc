@@ -47,10 +47,12 @@ TEST(ChromeOSSystemExtensionInfo, ASUSExtension) {
 TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {
   constexpr char kManufacturerOverride[] = "TEST_OEM";
 
+  auto scoped_info =
+      chromeos::ScopedChromeOSSystemExtensionInfo::CreateForTesting();
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kTelemetryExtensionManufacturerOverrideForTesting,
       kManufacturerOverride);
-  chromeos::ReinitializeChromeOSSystemExtensionInfoMapForTesting();
+  scoped_info->ApplyCommandLineSwitchesForTesting();
 
   const auto& google_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
@@ -72,10 +74,12 @@ TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {
 TEST(ChromeOSSystemExtensionInfo, PwaOriginOverride) {
   constexpr char kPwaOriginOverride[] = "*://pwa.website.com/*";
 
+  auto scoped_info =
+      chromeos::ScopedChromeOSSystemExtensionInfo::CreateForTesting();
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
       kPwaOriginOverride);
-  chromeos::ReinitializeChromeOSSystemExtensionInfoMapForTesting();
+  scoped_info->ApplyCommandLineSwitchesForTesting();
 
   const auto& google_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
@@ -96,10 +100,12 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
   constexpr char kIwaIdOverride[] =
       "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic";
 
+  auto scoped_info =
+      chromeos::ScopedChromeOSSystemExtensionInfo::CreateForTesting();
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kTelemetryExtensionIwaIdOverrideForTesting,
       kIwaIdOverride);
-  chromeos::ReinitializeChromeOSSystemExtensionInfoMapForTesting();
+  scoped_info->ApplyCommandLineSwitchesForTesting();
 
   const auto& google_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
