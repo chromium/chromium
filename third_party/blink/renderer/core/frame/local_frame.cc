@@ -1690,8 +1690,18 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
   v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
+
+  // There is generally one probe sink per local frame tree, so for root frames
+  // we create a new child sink and for child frames we propagate one from root.
+  // However, if local frame swap is performed, we don't want both frames to be
+  // active at once, so a dummy probe sink is created for provisional frame and
+  // swapped for that of the frame being swapped on in `SwapIn()`. Since we can
+  // only know whether the frame is provisional upon `Initialize()` call which
+  // does a lot of things that may potentially lead to instrumentation calls,
+  // we set provisional probe sink unconditionally here, then possibly replace
+  // it with that of the local root after `Initialize()`.
+  probe_sink_ = MakeGarbageCollected<CoreProbeSink>();
   if (IsLocalRoot()) {
-    probe_sink_ = MakeGarbageCollected<CoreProbeSink>();
     performance_monitor_ =
         MakeGarbageCollected<PerformanceMonitor>(this, isolate);
     inspector_issue_reporter_ = MakeGarbageCollected<InspectorIssueReporter>(
@@ -1708,7 +1718,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
     // it will be updated later.
     UpdateInertIfPossible();
     UpdateInheritedEffectiveTouchActionIfPossible();
-    probe_sink_ = LocalFrameRoot().probe_sink_;
     ad_tracker_ = LocalFrameRoot().ad_tracker_;
     performance_monitor_ = LocalFrameRoot().performance_monitor_;
   }
@@ -1731,8 +1740,13 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
                                      /*out_ad_script=*/&ad_script_on_stack);
-  Initialize();
 
+  Initialize();
+  // Now that we know whether the frame is provisional, inherit the probe
+  // sink from parent if appropriate. See comment above for more details.
+  if (!IsLocalRoot() && !IsProvisional()) {
+    probe_sink_ = LocalFrameRoot().probe_sink_;
+  }
   probe::FrameAttachedToParent(this, ad_script_on_stack);
 }
 
@@ -2721,6 +2735,19 @@ bool LocalFrame::SwapIn() {
   WebLocalFrameClient* client = Client()->GetWebFrame()->Client();
   // Swap in `this`, which is a provisional frame to an existing frame.
   Frame* provisional_owner_frame = GetProvisionalOwnerFrame();
+
+  if (!IsLocalRoot()) {
+    if (auto* local_provisional_owner =
+            DynamicTo<LocalFrame>(provisional_owner_frame)) {
+      // For local roots, the initial probe sink should not be changed. For
+      // others, we use a provisional sink that needs to be swapped with that of
+      // the previous frame. The probes dispatched to provisional sink are lost,
+      // so no events are sent before swap in or after swap out.
+      std::swap(probe_sink_, local_provisional_owner->probe_sink_);
+    } else {
+      probe_sink_ = LocalFrameRoot().probe_sink_;
+    }
+  }
 
   // First, check if there's a previous main frame to be used for a main frame
   // LocalFrame <-> LocalFrame swap.
