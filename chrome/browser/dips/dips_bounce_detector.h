@@ -124,13 +124,13 @@ class DIPSRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
-  bool HasSiteInRedirectChain(const std::string& site) {
-    for (const auto& redirect : redirects_) {
-      if (GetSiteForDIPS(redirect->url) == site) {
-        return true;
+  int GetRedirectChainIndex(const std::string& site) const {
+    for (size_t ind = 0; ind < redirects_.size(); ind++) {
+      if (GetSiteForDIPS(redirects_.at(ind)->url) == site) {
+        return ind;
       }
     }
-    return false;
+    return -1;
   }
 
  private:
@@ -242,6 +242,7 @@ class DIPSBounceDetector {
   DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
+  const base::Clock* GetClock() { return clock_.get(); }
   // The following methods are based on WebContentsObserver, simplified.
   void DidStartNavigation(DIPSNavigationHandle* navigation_handle);
   void OnClientSiteDataAccessed(const GURL& url, CookieOperation op);
@@ -249,8 +250,6 @@ class DIPSBounceDetector {
   void OnServerCookiesAccessed(DIPSNavigationHandle* navigation_handle,
                                const GURL& url,
                                CookieOperation op);
-  void RecordRedirectHeuristic(const ukm::SourceId& source_id,
-                               const content::CookieAccessDetails& details);
   void OnWorkerInitialized(const GURL& url);
   void DidFinishNavigation(DIPSNavigationHandle* navigation_handle);
   // Only records a new user activation event once per
@@ -267,6 +266,10 @@ class DIPSBounceDetector {
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
     committed_redirect_context_.SetRedirectChainHandlerForTesting(handler);
   }
+  const DIPSRedirectContext& CommittedRedirectContext() {
+    return committed_redirect_context_;
+  }
+
   // Makes a call to process the current chain on
   // `client_bounce_detection_timer_`'s timeout.
   void OnClientBounceDetectionTimeout();
@@ -324,6 +327,18 @@ class DIPSWebContentsObserver
   friend class content::WebContentsUserData<DIPSWebContentsObserver>;
 
   void EmitDIPSIssue(const std::set<std::string>& sites);
+
+  // Record a RedirectHeuristic event for a cookie access, if eligible. This
+  // applies when the tracking site has appeared previously in the current
+  // redirect context.
+  void MaybeRecordRedirectHeuristic(
+      const ukm::SourceId& source_id,
+      const content::CookieAccessDetails& details);
+  void RecordRedirectHeuristic(
+      const ukm::SourceId& source_id,
+      const content::CookieAccessDetails& details,
+      const size_t sites_passed_count,
+      absl::optional<base::Time> last_user_interaction_time);
 
   // DIPSBounceDetectorDelegate overrides:
   const GURL& GetLastCommittedURL() const override;
@@ -405,6 +420,7 @@ class DIPSWebContentsObserver
   DIPSIssueReportingCallback issue_reporting_callback_;
 
   absl::optional<std::string> last_committed_site_;
+  absl::optional<base::Time> last_commit_timestamp_;
 
   base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
 

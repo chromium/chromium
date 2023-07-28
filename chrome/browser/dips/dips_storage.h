@@ -84,6 +84,10 @@ class DIPSStorage {
   // Returns true if `url`'s site has had user interaction since `bound`.
   bool DidSiteHaveInteractionSince(const GURL& url, base::Time bound);
 
+  // Returns the timestamp of the last user interaction time on `url`, or
+  // absl::nullopt if there has been no user interaction on `url`.
+  absl::optional<base::Time> LastInteractionTime(const GURL& url);
+
   // Utility Methods -----------------------------------------------------------
 
   static void DeleteDatabaseFiles(base::FilePath path,

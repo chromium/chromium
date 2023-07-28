@@ -101,9 +101,6 @@ class OpenerHeuristicTabHelper
   // Asynchronous callback for reading past interaction timestamps from the
   // DIPSService.
   void GotPopupDipsState(const DIPSState& state);
-  // Returns true iff the current page contains an iframe whose committed URL
-  // belongs to the same site as `url`.
-  bool HasSameSiteIframe(const GURL& url);
 
   // WebContentsObserver overrides:
   void PrimaryPageChanged(content::Page& page) override;

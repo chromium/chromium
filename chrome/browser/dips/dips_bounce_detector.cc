@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <ctime>
 #include <memory>
 #include <vector>
 
@@ -20,6 +21,9 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_metrics.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_utils.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
@@ -576,8 +580,9 @@ bool HasCHIPS(const net::CookieList& cookie_list) {
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  detector_.RecordRedirectHeuristic(render_frame_host->GetPageUkmSourceId(),
-                                    details);
+  // Record a RedirectHeuristic UKM event if applicable.
+  MaybeRecordRedirectHeuristic(render_frame_host->GetPageUkmSourceId(),
+                               details);
 
   // Discard all notifications that are:
   // - From other page types like FencedFrames and Prerendered.
@@ -602,8 +607,9 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
 void DIPSWebContentsObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
-  detector_.RecordRedirectHeuristic(navigation_handle->GetNextPageUkmSourceId(),
-                                    details);
+  // Record a RedirectHeuristic UKM event if applicable.
+  MaybeRecordRedirectHeuristic(navigation_handle->GetNextPageUkmSourceId(),
+                               details);
 
   // Discard all notifications that are:
   // - From other page types like FencedFrames and Prerendered.
@@ -666,27 +672,69 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
   }
 }
 
-void DIPSBounceDetector::RecordRedirectHeuristic(
+void DIPSWebContentsObserver::MaybeRecordRedirectHeuristic(
     const ukm::SourceId& source_id,
     const content::CookieAccessDetails& details) {
   const std::string first_party_site = GetSiteForDIPS(details.first_party_url);
-  const std::string tracker_site = GetSiteForDIPS(details.url);
+  const std::string tracking_site = GetSiteForDIPS(details.url);
 
+  int first_party_site_index =
+      detector_.CommittedRedirectContext().GetRedirectChainIndex(
+          first_party_site);
+  // If the first-party site is not in the list of committed redirects, that
+  // must mean it's in an ongoing navigation.
+  if (first_party_site_index < 0) {
+    first_party_site_index = detector_.CommittedRedirectContext().size();
+  }
+  int tracking_site_index =
+      detector_.CommittedRedirectContext().GetRedirectChainIndex(tracking_site);
+  const int sites_passed_count = first_party_site_index - tracking_site_index;
   // The redirect heuristic only applies when a main frame URL from earlier in
   // the redirect chain is now attempting to access cookies as a tracker on the
   // current main frame URL.
-  if (first_party_site == tracker_site ||
-      !committed_redirect_context_.HasSiteInRedirectChain(tracker_site)) {
+  if (first_party_site == tracking_site || first_party_site_index < 0 ||
+      tracking_site_index < 0 || sites_passed_count < 0) {
     return;
   }
 
-  // TODO(b/291101513): Record other UKM metrics:
-  // - SitesPassedCount
-  // - MillisecondsSinceRedirect
-  // - HoursSinceLastInteraction
-  // - OpenerHasSameSiteIframe
+  dips_service_->storage()
+      ->AsyncCall(&DIPSStorage::LastInteractionTime)
+      .WithArgs(details.url)
+      .Then(base::BindOnce(&DIPSWebContentsObserver::RecordRedirectHeuristic,
+                           weak_factory_.GetWeakPtr(), source_id, details,
+                           sites_passed_count));
+}
+
+void DIPSWebContentsObserver::RecordRedirectHeuristic(
+    const ukm::SourceId& source_id,
+    const content::CookieAccessDetails& details,
+    const size_t sites_passed_count,
+    absl::optional<base::Time> last_user_interaction_time) {
+  // This function can only be reached if the redirect heuristic is satisfied
+  // for the previous recorded redirect.
+  DCHECK(last_commit_timestamp_.has_value());
+  int milliseconds_since_redirect = Bucketize3PCDHeuristicTimeDelta(
+      detector_.GetClock()->Now() - last_commit_timestamp_.value(),
+      base::Days(30), base::BindRepeating(&base::TimeDelta::InMilliseconds));
+
+  int hours_since_last_interaction = -1;
+  if (last_user_interaction_time.has_value()) {
+    hours_since_last_interaction = Bucketize3PCDHeuristicTimeDelta(
+        detector_.GetClock()->Now() - last_user_interaction_time.value(),
+        base::Days(60),
+        base::BindRepeating(&base::TimeDelta::InHours)
+            .Then(base::BindRepeating([](int64_t t) { return t; })));
+  }
+
+  OptionalBool has_same_site_iframe = ToOptionalBool(
+      HasSameSiteIframe(WebContentsObserver::web_contents(), details.url));
+
   ukm::builders::RedirectHeuristic_CookieAccess(source_id)
       .SetAccessAllowed(!details.blocked_by_policy)
+      .SetHoursSinceLastInteraction(hours_since_last_interaction)
+      .SetMillisecondsSinceRedirect(milliseconds_since_redirect)
+      .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_same_site_iframe))
+      .SetSitesPassedCount(sites_passed_count)
       .Record(ukm::UkmRecorder::Get());
 }
 
@@ -769,6 +817,7 @@ void DIPSWebContentsObserver::DidFinishNavigation(
       dips_service_->RemoveOpenSite(last_committed_site_.value());
     }
     last_committed_site_ = GetSiteForDIPS(navigation_handle->GetURL());
+    last_commit_timestamp_ = detector_.GetClock()->Now();
     dips_service_->AddOpenSite(last_committed_site_.value());
   }
 

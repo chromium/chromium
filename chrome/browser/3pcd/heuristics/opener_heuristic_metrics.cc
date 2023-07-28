@@ -4,12 +4,16 @@
 
 #include "chrome/browser/3pcd/heuristics/opener_heuristic_metrics.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "base/debug/leak_annotations.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram.h"
+#include "base/time/time.h"
 
 using base::TimeDelta;
 
@@ -43,38 +47,33 @@ base::Histogram::Sample Bucketize(base::Histogram::Sample value,
   } while (true);
 
   DCHECK_LE(bucket_ranges.range(mid), value);
-  CHECK_GT(bucket_ranges.range(mid + 1), value);
+  if (mid < bucket_ranges.size() - 1) {
+    CHECK_GT(bucket_ranges.range(mid + 1), value);
+  }
   return bucket_ranges.range(mid);
 }
 
 }  // namespace
 
-base::Histogram::Sample BucketizeHoursSinceLastInteraction(TimeDelta td) {
+int32_t Bucketize3PCDHeuristicTimeDelta(
+    base::TimeDelta td,
+    base::TimeDelta maximum,
+    base::RepeatingCallback<int64_t(const base::TimeDelta*)> cast_time_delta) {
   constexpr size_t bucket_count = 50;
-  constexpr TimeDelta maximum = base::Days(30);
 
   // Initialize BucketRanges only once:
   static const base::BucketRanges& bucket_ranges = *[=]() {
-    auto ranges = CreateBucketRanges(bucket_count, maximum.InHours());
+    auto ranges =
+        CreateBucketRanges(bucket_count, cast_time_delta.Run(&maximum));
     ANNOTATE_LEAKING_OBJECT_PTR(ranges.get());
     return ranges.release();
   }();
 
   td = std::clamp(td, TimeDelta(), maximum);
-  return Bucketize(td.InHours(), bucket_ranges);
-}
+  int64_t td_cast = cast_time_delta.Run(&td);
+  if (td_cast > INT32_MAX) {
+    td_cast = INT32_MAX;
+  }
 
-base::Histogram::Sample BucketizeSecondsSinceCommitted(TimeDelta td) {
-  constexpr size_t bucket_count = 50;
-  constexpr TimeDelta maximum = base::Minutes(3);
-
-  // Initialize BucketRanges only once:
-  static const base::BucketRanges& bucket_ranges = *[=]() {
-    auto ranges = CreateBucketRanges(bucket_count, maximum.InSeconds());
-    ANNOTATE_LEAKING_OBJECT_PTR(ranges.get());
-    return ranges.release();
-  }();
-
-  td = std::clamp(td, TimeDelta(), maximum);
-  return Bucketize(td.InSeconds(), bucket_ranges);
+  return Bucketize(td_cast, bucket_ranges);
 }

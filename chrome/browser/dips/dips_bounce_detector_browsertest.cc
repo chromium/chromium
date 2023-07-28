@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/simple_test_clock.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
 #include <memory>
@@ -17,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
@@ -1550,7 +1552,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                   "c.test/title1.html")));
 }
 
-// Tests building and recording the RedirectHeuristic_CookieAccess UKM event.
+// Tests the conditions for recording a RedirectHeuristic_CookieAccess UKM
+// event.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        RecordsRedirectHeuristicCookieAccessEvent) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -1571,12 +1574,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   GURL image_url_pre_target_redirect =
       https_server.GetURL("sub.b.test", "/favicon/icon.png");
 
-  GURL target_url_3pc_allowed =
-      embedded_test_server()->GetURL("d.test", "/title1.html");
-  GURL image_url_3pc_allowed =
+  GURL target_url = embedded_test_server()->GetURL("d.test", "/title1.html");
+  GURL target_image_url =
       https_server.GetURL("sub.d.test", "/favicon/icon.png");
-  GURL target_url_3pc_blocked =
-      embedded_test_server()->GetURL("e.test", "/title1.html");
 
   GURL tracker_url_post_target_redirect =
       embedded_test_server()->GetURL("c.test", "/title1.html");
@@ -1585,19 +1585,13 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   GURL final_url = embedded_test_server()->GetURL("f.test", "/title1.html");
 
-  // Initialize 3PC settings for the target sites.
+  // Initialize 3PC settings for the target site.
   HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
       web_contents->GetBrowserContext());
-  map->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsPattern::FromString(
-                                        "[*.]" + target_url_3pc_allowed.host()),
-                                    ContentSettingsType::COOKIES,
-                                    ContentSetting::CONTENT_SETTING_ALLOW);
-  map->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsPattern::FromString(
-                                        "[*.]" + target_url_3pc_blocked.host()),
-                                    ContentSettingsType::COOKIES,
-                                    ContentSetting::CONTENT_SETTING_BLOCK);
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]" + target_url.host()),
+      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
 
   // Set cookies on image URLs.
   ASSERT_TRUE(NavigateToSetCookie(&https_server, "sub.b.test",
@@ -1613,21 +1607,15 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_pre_target_redirect));
 
-  // Redirect to first target URL.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, target_url_3pc_allowed));
+  // Redirect to target URL.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   target_url));
   // Read a cookie from the tracking URL.
   CreateImageAndWaitForCookieAccess(image_url_pre_target_redirect);
   // Read a cookie from the second tracking URL.
   CreateImageAndWaitForCookieAccess(image_url_post_target_redirect);
-  // Read a cookie from an image with the same domain as the current URL.
-  CreateImageAndWaitForCookieAccess(image_url_3pc_allowed);
-
-  // Redirect to second target URL.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, target_url_3pc_blocked));
-  // Read a cookie from the tracking URL.
-  CreateImageAndWaitForCookieAccess(image_url_pre_target_redirect);
+  // Read a cookie from an image with the same domain as the target URL.
+  CreateImageAndWaitForCookieAccess(target_image_url);
 
   // Redirect to second tracking URL. (This has no effect since the cookie
   // accesses already happened.)
@@ -1640,32 +1628,163 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   EndRedirectChain();
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
-      ukm_recorder.GetEntries("RedirectHeuristic.CookieAccess",
-                              {"AccessAllowed"});
+      ukm_recorder.GetEntries("RedirectHeuristic.CookieAccess", {});
 
-  // Expect two UKM entries.
+  // Expect one UKM entry.
 
-  // Include the cookies reads where:
-  // - A tracking site read cookies while embedded on a site later in the
-  // redirect chain.
-  // - A tracking site attempted to read cookies while embedded on a site later
-  // in the redirect chain, but was blocked.
+  // Include the cookies read where a tracking site read cookies while embedded
+  // on a site later in the redirect chain.
 
   // Exclude the cookies reads where:
   // - The tracking site did not appear in the prior redirect chain.
   // - The tracking and target sites had the same domain.
-  ASSERT_EQ(2u, ukm_entries.size());
+  ASSERT_EQ(1u, ukm_entries.size());
+  EXPECT_THAT(
+      ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
+      Eq(target_url));
+}
 
+// Tests setting different metrics for the RedirectHeuristic_CookieAccess UKM
+// event.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       RedirectHeuristicCookieAccessEvent_AllMetrics) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  WebContents* web_contents = GetActiveWebContents();
+
+  // We host the "image" on an HTTPS server, because for it to write a
+  // cookie, the cookie needs to be SameSite=None and Secure.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  GURL initial_final_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+
+  GURL tracker_url_with_interaction =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL image_url_with_interaction =
+      https_server.GetURL("sub.b.test", "/favicon/icon.png");
+
+  GURL tracker_url_in_iframe =
+      embedded_test_server()->GetURL("c.test", "/title1.html");
+  GURL image_url_in_iframe =
+      https_server.GetURL("sub.c.test", "/favicon/icon.png");
+
+  GURL target_url_3pc_allowed =
+      embedded_test_server()->GetURL("d.test", "/title1.html");
+  GURL target_url_3pc_blocked =
+      embedded_test_server()->GetURL("e.test", "/iframe_blank.html");
+
+  // Initialize 3PC settings for the target sites.
+  HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
+      web_contents->GetBrowserContext());
+  map->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsPattern::FromString(
+                                        "[*.]" + target_url_3pc_allowed.host()),
+                                    ContentSettingsType::COOKIES,
+                                    ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsPattern::FromString(
+                                        "[*.]" + target_url_3pc_blocked.host()),
+                                    ContentSettingsType::COOKIES,
+                                    ContentSetting::CONTENT_SETTING_BLOCK);
+
+  // Record an interaction for the first tracking site.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, tracker_url_with_interaction));
+  UserActivationObserver observer(web_contents,
+                                  web_contents->GetPrimaryMainFrame());
+  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
+  observer.Wait();
+
+  // Set cookies on image URLs.
+  ASSERT_TRUE(NavigateToSetCookie(&https_server, "sub.b.test",
+                                  /*is_secure_cookie_set=*/true));
+  ASSERT_TRUE(NavigateToSetCookie(&https_server, "sub.c.test",
+                                  /*is_secure_cookie_set=*/true));
+
+  // Visit initial page.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_final_url));
+  // Redirect to all tracking URLs.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, tracker_url_in_iframe));
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, tracker_url_with_interaction));
+
+  // Redirect to target URL with cookies allowed.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, target_url_3pc_allowed));
+  // Read a cookie from the tracking URL with interaction.
+  CreateImageAndWaitForCookieAccess(image_url_with_interaction);
+
+  // Redirect to target URL with cookies blocked.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, target_url_3pc_blocked));
+  // Open an iframe of the tracking URL on the target URL.
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents,
+                                           /*iframe_id=*/"test",
+                                           image_url_in_iframe));
+  // Read a cookie from the tracking URL in an iframe on the target page.
+  CreateImageAndWaitForCookieAccess(image_url_in_iframe);
+
+  // Redirect to final URL.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, initial_final_url));
+
+  EndRedirectChain();
+
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
+      ukm_recorder.GetEntries("RedirectHeuristic.CookieAccess",
+                              {"AccessAllowed", "HoursSinceLastInteraction",
+                               "MillisecondsSinceRedirect",
+                               "OpenerHasSameSiteIframe", "SitesPassedCount"});
+
+  // Expect UKM entries from both of the cookie accesses, as well as the iframe
+  // navigation.
+  ASSERT_EQ(3u, ukm_entries.size());
+
+  // Expect reasonable delays between the redirect and cookie access.
+  for (const auto& entry : ukm_entries) {
+    EXPECT_GT(entry.metrics.at("MillisecondsSinceRedirect"), 0);
+    EXPECT_LT(entry.metrics.at("MillisecondsSinceRedirect"), 1000);
+  }
+
+  // The first cookie access was from a tracking site with a user interaction
+  // within the last hour, on a site with 3PC access allowed.
+
+  // 1 site was passed: tracker_url_with_interaction -> target_url_3pc_allowed
   EXPECT_THAT(
       ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
       Eq(target_url_3pc_allowed));
-  EXPECT_THAT(ukm_entries[0].metrics, ElementsAre(Pair("AccessAllowed", true)));
+  EXPECT_EQ(ukm_entries[0].metrics.at("AccessAllowed"), true);
+  EXPECT_EQ(ukm_entries[0].metrics.at("HoursSinceLastInteraction"), 0);
+  EXPECT_EQ(ukm_entries[0].metrics.at("OpenerHasSameSiteIframe"),
+            static_cast<int32_t>(OptionalBool::kFalse));
+  EXPECT_EQ(ukm_entries[0].metrics.at("SitesPassedCount"), 1);
 
+  // The second cookie access was due to the iframe navigation from
+  // target_url_3pc_blocked to tracker_url_in_iframe.
   EXPECT_THAT(
       ukm_recorder.GetSourceForSourceId(ukm_entries[1].source_id)->url(),
       Eq(target_url_3pc_blocked));
-  EXPECT_THAT(ukm_entries[1].metrics,
-              ElementsAre(Pair("AccessAllowed", false)));
+  EXPECT_EQ(ukm_entries[1].metrics.at("AccessAllowed"), false);
+  EXPECT_EQ(ukm_entries[1].metrics.at("HoursSinceLastInteraction"), -1);
+
+  // The third cookie access was from a tracking site in an iframe of the
+  // target, on a site with 3PC access blocked.
+
+  // 3 sites were passed: tracker_url_in_iframe -> tracker_url_with_interaction
+  // -> target_url_3pc_allowed -> target_url_3pc_blocked
+  EXPECT_THAT(
+      ukm_recorder.GetSourceForSourceId(ukm_entries[2].source_id)->url(),
+      Eq(target_url_3pc_blocked));
+  EXPECT_EQ(ukm_entries[2].metrics.at("AccessAllowed"), false);
+  EXPECT_EQ(ukm_entries[2].metrics.at("OpenerHasSameSiteIframe"),
+            static_cast<int32_t>(OptionalBool::kTrue));
+  EXPECT_EQ(ukm_entries[2].metrics.at("SitesPassedCount"), 3);
 }
 
 class DIPSBounceTrackingDevToolsIssueTest

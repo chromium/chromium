@@ -163,6 +163,10 @@ int64_t BucketizeBounceDelay(base::TimeDelta delta);
 // and may change.
 std::string GetSiteForDIPS(const GURL& url);
 
+// Returns true iff `web_contents` contains an iframe whose committed URL
+// belongs to the same site as `url`.
+bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url);
+
 // Returns `True` iff the `navigation_handle` represents a navigation happening
 // in an iframe of the primary frame tree.
 inline bool IsInPrimaryPageIFrame(

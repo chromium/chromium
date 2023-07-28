@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
@@ -18,7 +20,6 @@
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -77,31 +78,6 @@ void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
 
   popup_observer_->SetPastInteractionTime(
       state.user_interaction_times().value().second);
-}
-
-bool OpenerHeuristicTabHelper::HasSameSiteIframe(const GURL& popup_url) {
-  const auto popup_site = net::SiteForCookies::FromUrl(popup_url);
-  bool found = false;
-
-  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
-      [&](RenderFrameHost* frame) {
-        if (frame->IsInPrimaryMainFrame()) {
-          // Continue to look at children of the main frame.
-          return RenderFrameHost::FrameIterationAction::kContinue;
-        }
-
-        if (popup_site.IsFirstPartyWithSchemefulMode(
-                frame->GetLastCommittedURL(), /*compute_schemefully=*/false)) {
-          // We found a same-site iframe -- break out of the ForEach loop.
-          found = true;
-          return RenderFrameHost::FrameIterationAction::kStop;
-        }
-
-        // Not same-site, so skip children and go to the next sibling iframe.
-        return RenderFrameHost::FrameIterationAction::kSkipChildren;
-      });
-
-  return found;
 }
 
 void OpenerHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
@@ -188,8 +164,10 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
   auto has_iframe = GetOpenerHasSameSiteIframe(initial_url_);
   ukm::builders::OpenerHeuristic_PopupPastInteraction(
       initial_source_id_.value())
-      .SetHoursSinceLastInteraction(
-          BucketizeHoursSinceLastInteraction(time_since_interaction_.value()))
+      .SetHoursSinceLastInteraction(Bucketize3PCDHeuristicTimeDelta(
+          time_since_interaction_.value(), base::Days(30),
+          base::BindRepeating(&base::TimeDelta::InHours)
+              .Then(base::BindRepeating([](int64_t t) { return t; }))))
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
       .SetPopupId(popup_id_)
       .Record(ukm::UkmRecorder::Get());
@@ -248,8 +226,9 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
       GetOpenerHasSameSiteIframe(render_frame_host->GetLastCommittedURL());
   ukm::builders::OpenerHeuristic_PopupInteraction(
       render_frame_host->GetPageUkmSourceId())
-      .SetSecondsSinceCommitted(
-          BucketizeSecondsSinceCommitted(time_since_committed))
+      .SetSecondsSinceCommitted(Bucketize3PCDHeuristicTimeDelta(
+          time_since_committed, base::Minutes(3),
+          base::BindRepeating(&base::TimeDelta::InSeconds)))
       .SetUrlIndex(url_index_)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
       .SetPopupId(popup_id_)
@@ -279,7 +258,8 @@ OptionalBool
 OpenerHeuristicTabHelper::PopupObserver::GetOpenerHasSameSiteIframe(
     const GURL& popup_url) {
   if (opener_ && opener_->page_id() == opener_page_id_) {
-    return ToOptionalBool(opener_->HasSameSiteIframe(popup_url));
+    return ToOptionalBool(
+        HasSameSiteIframe(opener_->web_contents(), popup_url));
   }
 
   return OptionalBool::kUnknown;
