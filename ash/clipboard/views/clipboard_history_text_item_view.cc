@@ -23,6 +23,27 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
+namespace {
+
+// NOTE: Returns default display text elide behavior if `item` is `nullptr`.
+gfx::ElideBehavior GetDisplayTextElideBehavior(
+    const ClipboardHistoryItem* item) {
+  constexpr auto kDefaultValue = gfx::ELIDE_TAIL;
+  return item ? item->display_text_elide_behavior().value_or(kDefaultValue)
+              : kDefaultValue;
+}
+
+// NOTE: Returns default display text max lines if `item` is `nullptr`.
+size_t GetDisplayTextMaxLines(const ClipboardHistoryItem* item) {
+  const size_t default_value =
+      chromeos::features::IsClipboardHistoryRefreshEnabled()
+          ? ClipboardHistoryViews::kTextItemMaxLines
+          : 1u;
+  return item ? item->display_text_max_lines().value_or(default_value)
+              : default_value;
+}
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // TextContentsView
@@ -32,6 +53,10 @@ class ClipboardHistoryTextItemView::TextContentsView
  public:
   METADATA_HEADER(TextContentsView);
   explicit TextContentsView(const ClipboardHistoryTextItemView* container) {
+    const auto* item = container->GetClipboardHistoryItem();
+    const auto display_text_elide_behavior = GetDisplayTextElideBehavior(item);
+    const auto display_text_max_lines = GetDisplayTextMaxLines(item);
+
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     layout->set_cross_axis_alignment(
@@ -44,7 +69,10 @@ class ClipboardHistoryTextItemView::TextContentsView
             .SetProperty(views::kFlexBehaviorKey,
                          views::FlexSpecification().WithWeight(1))
             .AddChild(views::Builder<views::Label>(
-                std::make_unique<ClipboardHistoryLabel>(container->text_)))
+                          std::make_unique<ClipboardHistoryLabel>(
+                              container->text_, display_text_elide_behavior,
+                              display_text_max_lines))
+                          .SetID(clipboard_history_util::kDisplayTextLabelID))
             .AfterBuild(base::BindOnce(
                 [](const ClipboardHistoryItem* item,
                    views::BoxLayoutView* labels_container) {
@@ -60,9 +88,10 @@ class ClipboardHistoryTextItemView::TextContentsView
                         .BuildChildren();
                   }
                 },
-                container->GetClipboardHistoryItem()))
+                item))
             .Build());
   }
+
   TextContentsView(const TextContentsView& rhs) = delete;
   TextContentsView& operator=(const TextContentsView& rhs) = delete;
   ~TextContentsView() override = default;

@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/input_method.h"
@@ -62,13 +63,12 @@ ClipboardHistoryResourceManager::ImageModelRequest::~ImageModelRequest() =
 
 void ClipboardHistoryResourceManager::MaybeQueryUrlTitle(
     const ClipboardHistoryItem& item) {
-  GURL url(item.display_text());
-
   // `url_title_fetcher` may be null in tests.
   if (auto* const url_title_fetcher = ClipboardHistoryUrlTitleFetcher::Get();
-      url_title_fetcher && url.is_valid()) {
+      url_title_fetcher &&
+      chromeos::clipboard_history::IsUrl(item.display_text())) {
     url_title_fetcher->QueryHistory(
-        url,
+        GURL(item.display_text()),
         base::BindOnce(&ClipboardHistoryResourceManager::OnHistoryQueryComplete,
                        weak_factory_.GetWeakPtr(), item.id()));
   }

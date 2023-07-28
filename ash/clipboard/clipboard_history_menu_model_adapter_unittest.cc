@@ -7,6 +7,7 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -14,14 +15,24 @@
 #include "base/test/test_future.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
+
+using ::testing::AllOf;
 using ::testing::Bool;
 using ::testing::Combine;
+using ::testing::Eq;
+using ::testing::Property;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
@@ -152,6 +163,52 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
         clipboard_history_util::kFirstItemCommandId + 1);
     FlushMessageLoop();
     EXPECT_TRUE(ctrl_v_label3->GetVisible());
+  }
+}
+
+TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
+       TextItemHasExpectedDisplayTextLabel) {
+  // Write items to clipboard history so that the menu can show.
+  WriteTextToClipboardAndConfirm(u"A");
+  WriteTextToClipboardAndConfirm(u"https://google.com/");
+
+  // Show the clipboard history menu.
+  auto* const controller = GetClipboardHistoryController();
+  ASSERT_TRUE(controller);
+  EXPECT_TRUE(controller->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      ClipboardHistoryControllerShowSource::kDefaultValue));
+  EXPECT_TRUE(controller->IsMenuShowing());
+
+  // Verify the number of items in the menu.
+  const auto* const adapter = controller->context_menu_for_test();
+  ASSERT_THAT(
+      adapter,
+      Property(&ClipboardHistoryMenuModelAdapter::GetMenuItemsCount, Eq(2u)));
+
+  // Verify expected display text labels.
+  const size_t offset = IsClipboardHistoryRefreshEnabled() ? 1u : 0u;
+  for (size_t i = 0u; i < 2u; ++i) {
+    const views::Label* display_text_label = views::AsViewClass<views::Label>(
+        adapter->GetMenuItemViewAtForTest(i + offset)
+            ->GetViewByID(clipboard_history_util::kDisplayTextLabelID));
+
+    gfx::ElideBehavior elide_behavior = gfx::ELIDE_TAIL;
+    size_t max_lines = 1u;
+
+    if (IsClipboardHistoryRefreshEnabled()) {
+      if (chromeos::clipboard_history::IsUrl(display_text_label->GetText())) {
+        elide_behavior = gfx::ELIDE_MIDDLE;
+      } else {
+        max_lines = ClipboardHistoryViews::kTextItemMaxLines;
+      }
+    }
+
+    EXPECT_THAT(
+        display_text_label,
+        AllOf(Property(&views::Label::GetElideBehavior, Eq(elide_behavior)),
+              Property(&views::Label::GetMaxLines, Eq(max_lines)),
+              Property(&views::Label::GetMultiLine, Eq(max_lines > 1u))));
   }
 }
 

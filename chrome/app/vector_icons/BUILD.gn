@@ -122,7 +122,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "keyboard_arrow_up_chrome_refresh.icon",
     "laptop.icon",
     "leading_scroll.icon",
-    "link.icon",
     "link_chrome_refresh.icon",
     "media_controls_arrow_drop_down.icon",
     "media_controls_arrow_drop_up.icon",

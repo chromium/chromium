@@ -147,6 +147,22 @@ std::u16string DetermineDisplayText(const ClipboardHistoryItem& item) {
   }
 }
 
+absl::optional<gfx::ElideBehavior> DetermineDisplayTextElideBehavior(
+    const ClipboardHistoryItem& item) {
+  return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+                 chromeos::clipboard_history::IsUrl(item.display_text())
+             ? absl::make_optional(gfx::ELIDE_MIDDLE)
+             : absl::nullopt;
+}
+
+absl::optional<size_t> DetermineDisplayTextMaxLines(
+    const ClipboardHistoryItem& item) {
+  return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+                 chromeos::clipboard_history::IsUrl(item.display_text())
+             ? absl::make_optional(1u)
+             : absl::nullopt;
+}
+
 absl::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     return chromeos::clipboard_history::GetIconForDescriptor(
@@ -171,6 +187,8 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       display_format_(CalculateDisplayFormat(*this)),
       display_image_(DetermineDisplayImage(*this)),
       display_text_(DetermineDisplayText(*this)),
+      display_text_elide_behavior_(DetermineDisplayTextElideBehavior(*this)),
+      display_text_max_lines_(DetermineDisplayTextMaxLines(*this)),
       file_count_(clipboard_history_util::GetCountOfCopiedFiles(data_)),
       icon_(DetermineIcon(*this)) {}
 
@@ -182,6 +200,8 @@ ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
       display_format_(other.display_format_),
       display_image_(other.display_image_),
       display_text_(other.display_text_),
+      display_text_elide_behavior_(other.display_text_elide_behavior_),
+      display_text_max_lines_(other.display_text_max_lines_),
       file_count_(other.file_count_),
       icon_(other.icon_),
       secondary_display_text_(other.secondary_display_text_) {}
@@ -194,6 +214,9 @@ ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
       display_format_(std::move(other.display_format_)),
       display_image_(std::move(other.display_image_)),
       display_text_(std::move(other.display_text_)),
+      display_text_elide_behavior_(
+          std::move(other.display_text_elide_behavior_)),
+      display_text_max_lines_(std::move(other.display_text_max_lines_)),
       file_count_(std::move(other.file_count_)),
       icon_(std::move(other.icon_)),
       secondary_display_text_(std::move(other.secondary_display_text_)) {}

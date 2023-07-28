@@ -952,8 +952,10 @@ class ClipboardHistoryRefreshDisplayFormatTest
       case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
         WriteTextToClipboardAndConfirm(u"A");
         WriteTextToClipboardAndConfirm(u"B");
+        WriteTextToClipboardAndConfirm(u"https://google.com/");
         if (refresh_feature_enabled) {
-          return {{u"B", get_icon(chromeos::kTextIcon)},
+          return {{u"https://google.com/", get_icon(vector_icons::kLinkIcon)},
+                  {u"B", get_icon(chromeos::kTextIcon)},
                   {u"A", get_icon(chromeos::kTextIcon)},
                   {show_clipboard_menu_label, gfx::Image()}};
         }

@@ -7,11 +7,13 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "url/gurl.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -36,6 +38,10 @@ PasteClipboardItemByIdImpl& GetPasteClipboardItemByIdImpl() {
 }
 
 }  // namespace
+
+bool IsUrl(const std::u16string& text) {
+  return GURL(text).is_valid();
+}
 
 void SetQueryItemDescriptorsImpl(QueryItemDescriptorsImpl impl) {
   QueryItemDescriptorsImpl& old_impl = GetQueryItemDescriptorsImpl();
@@ -65,7 +71,11 @@ ui::ImageModel GetIconForDescriptor(
   const gfx::VectorIcon* icon = nullptr;
   switch (descriptor.display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
-      icon = &kTextIcon;
+      // TODO(http://b/275629173): Consider a new display format for URLs.
+      icon = (features::IsClipboardHistoryRefreshEnabled() &&
+              IsUrl(descriptor.display_text))
+                 ? &vector_icons::kLinkIcon
+                 : &kTextIcon;
       break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
       icon = &kFiletypeImageIcon;

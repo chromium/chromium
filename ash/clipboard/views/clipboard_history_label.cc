@@ -12,11 +12,16 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
-ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
+
+ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text,
+                                             gfx::ElideBehavior elide_behavior,
+                                             size_t max_lines)
     : views::Label(text) {
   SetAutoColorReadabilityEnabled(false);
+  SetElideBehavior(elide_behavior);
   SetEnabledColorId(cros_tokens::kTextColorPrimary);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  SetMaxLines(max_lines);
 
   // Available horizontal space for text item contents.
   const int contents_width =
@@ -24,11 +29,19 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
       ClipboardHistoryViews::kContentsInsets.width();
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *this);
-    SetMultiLine(true);
-    SetMaxLines(ClipboardHistoryViews::kTextItemMaxLines);
+
     // Reduce width to accommodate an icon when the refresh is enabled.
-    SizeToFit(contents_width - ClipboardHistoryViews::kIconSize.width() -
-              ClipboardHistoryViews::kIconMargins.width());
+    const int label_width = contents_width -
+                            ClipboardHistoryViews::kIconSize.width() -
+                            ClipboardHistoryViews::kIconMargins.width();
+
+    if (max_lines != 1u) {
+      SetMultiLine(true);
+      SizeToFit(label_width);
+    } else {
+      SetPreferredSize(
+          gfx::Size(label_width, ClipboardHistoryViews::kLabelPreferredHeight));
+    }
   } else {
     SetPreferredSize(gfx::Size(contents_width,
                                ClipboardHistoryViews::kLabelPreferredHeight));
