@@ -13,17 +13,17 @@ import {PolicyTestTableElement} from './policy_test_table.js';
  * Must be kept in sync with the C++ enums of the same names (see
  * components/policy/core/common/policy_types.h).
  */
-export enum PolicyScope {
+export const enum PolicyScope {
   SCOPE_USER_VAL = 0,
   SCOPE_DEVICE_VAL = 1,
 }
 
-export enum PolicyLevel {
+export const enum PolicyLevel {
   LEVEL_RECOMMENDED_VAL = 0,
   LEVEL_MANDATORY_VAL = 1,
 }
 
-export enum PolicySource {
+export const enum PolicySource {
   SOURCE_ENTERPRISE_DEFAULT = 0,
   SOURCE_COMMAND_LINE_VAL = 1,
   SOURCE_CLOUD_VAL = 2,
@@ -39,7 +39,7 @@ export interface PolicyInfo {
   source: PolicySource;
   scope: PolicyScope;
   level: PolicyLevel;
-  value: string;
+  value: string|number|boolean|any[]|object;
 }
 
 function initialize() {

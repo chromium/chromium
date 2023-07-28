@@ -22,10 +22,12 @@
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_utils.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
@@ -200,7 +202,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     source->AddResourcePath("test/", IDR_POLICY_TEST_POLICY_TEST_HTML);
     source->AddResourcePath("test", IDR_POLICY_TEST_POLICY_TEST_HTML);
 
-    // Create a string policy_name_str of comma-separated policy names
+    // Create a string policy_names_to_types_str mapping policy names to their
+    // input types.
+    policy::Schema chrome_schema =
+        policy::Schema::Wrap(policy::GetChromeSchemaData());
     ChromePoliciesValueProvider value_provider(profile);
     base::Value::List policy_names =
         (*value_provider.GetNames().FindDict("chrome"))
@@ -211,12 +216,36 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
       return policy::IsPolicyNameSensitive(policy.GetString());
     });
 
-    std::string policy_name_str = "";
+    std::string policy_names_to_types_str = "{";
     for (auto& policy_name : policy_names) {
-      policy_name_str += policy_name.GetString() + ",";
+      base::Value::Type policy_type =
+          chrome_schema.GetKnownProperty(policy_name.GetString()).type();
+      std::string policy_type_string;
+      switch (policy_type) {
+        case base::Value::Type::BOOLEAN:
+          policy_type_string = "boolean";
+          break;
+        case base::Value::Type::DICT:
+          policy_type_string = "dictionary";
+          break;
+        case base::Value::Type::INTEGER:
+          policy_type_string = "integer";
+          break;
+        case base::Value::Type::LIST:
+          policy_type_string = "list";
+          break;
+        case base::Value::Type::STRING:
+          policy_type_string = "string";
+          break;
+        default:
+          break;
+      }
+      policy_names_to_types_str +=
+          "\"" + policy_name.GetString() + "\":\"" + policy_type_string + "\",";
     }
-    policy_name_str.pop_back();  // remove last divider
-    source->AddString("policyNames", policy_name_str);
+    policy_names_to_types_str.pop_back();  // remove last divider
+    policy_names_to_types_str += "}";
+    source->AddString("policyNamesToTypes", policy_names_to_types_str);
 
     // Strings for policy levels, scopes and sources.
     static constexpr webui::LocalizedString kPolicyTestTypes[] = {
