@@ -16,6 +16,7 @@ import '../settings_shared.css.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
@@ -40,9 +41,17 @@ class SettingsPersonalizationPageElement extends
         value: Section.kPersonalization,
         readOnly: true,
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+      },
     };
   }
 
+  private isRevampWayfindingEnabled_: boolean;
   private personalizationHubBrowserProxy_: PersonalizationHubBrowserProxy;
   private section_: Section;
 
@@ -51,6 +60,12 @@ class SettingsPersonalizationPageElement extends
 
     this.personalizationHubBrowserProxy_ =
         PersonalizationHubBrowserProxyImpl.getInstance();
+  }
+
+  private getSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        null :
+        this.i18n('personalizationHubSubtitle');
   }
 
   private openPersonalizationHub_() {
