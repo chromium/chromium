@@ -91,15 +91,18 @@ void ClickOnView(views::View* view) {
   view->OnMouseReleased(released_event);
 }
 
-PasswordForm CreateSharedCredentials(const GURL& url) {
+PasswordForm CreateSharedCredentials(
+    const GURL& url,
+    const std::u16string& username = u"username",
+    const std::u16string& sender_name = u"Elisa Becket") {
   PasswordForm shared_credentials;
   shared_credentials.signon_realm = url.GetWithEmptyPath().spec();
   shared_credentials.url = url;
-  shared_credentials.username_value = u"username";
+  shared_credentials.username_value = username;
   shared_credentials.password_value = u"12345";
   shared_credentials.match_type = PasswordForm::MatchType::kExact;
   shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
-  shared_credentials.sender_name = u"Elisa Becket";
+  shared_credentials.sender_name = sender_name;
   return shared_credentials;
 }
 
@@ -1025,17 +1028,82 @@ IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
 
   auto setup_shared_passwords = [&]() {
     GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
-                                          nullptr);
+                                          /*federated_matches=*/nullptr);
   };
 
-  RunTestSequence(Do(setup_shared_passwords),
-                  WaitForShow(SharedPasswordsNotificationView::kTopView),
-                  // Screenshots are supposed only on Windows.
-                  SetOnIncompatibleAction(
-                      OnIncompatibleAction::kIgnoreAndContinue,
-                      "Screenshot can only run in pixel_tests on Windows."),
-                  Screenshot(SharedPasswordsNotificationView::kTopView,
-                             std::string(), "4714696"));
+  RunTestSequence(
+      Do(setup_shared_passwords),
+      WaitForShow(SharedPasswordsNotificationView::kTopView),
+      // Screenshots are supposed only on Windows.
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(SharedPasswordsNotificationView::kTopView,
+                 /*screenshot_name=*/std::string(), /*baseline=*/"4714696"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedPasswordsNotificationBubbleInteractiveUiTest,
+    MultipleSharedPasswordsNotificationUIShowsUpAndTakeScreenshot) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials1 =
+      CreateSharedCredentials(test_url, u"username1");
+  shared_credentials1.sharing_notification_displayed = false;
+
+  PasswordForm shared_credentials2 =
+      CreateSharedCredentials(test_url, u"username2");
+  shared_credentials2.sharing_notification_displayed = false;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials1, &shared_credentials2};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          /*federated_matches=*/nullptr);
+  };
+
+  RunTestSequence(
+      Do(setup_shared_passwords),
+      WaitForShow(SharedPasswordsNotificationView::kTopView),
+      // Screenshots are supposed only on Windows.
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(SharedPasswordsNotificationView::kTopView,
+                 /*screenshot_name=*/std::string(), /*baseline=*/"4727383"));
+}
+
+// Tests the case when there are multiple shared passwords, but only one is not
+// notified yet.
+IN_PROC_BROWSER_TEST_F(
+    SharedPasswordsNotificationBubbleInteractiveUiTest,
+    OnlyUnnotifiedPasswordsNotificationUIShowsUpAndTakeScreenshot) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials1 =
+      CreateSharedCredentials(test_url, u"username1", u"Sender One");
+  shared_credentials1.sharing_notification_displayed = true;
+
+  PasswordForm shared_credentials2 =
+      CreateSharedCredentials(test_url, u"username2", u"Sender Two");
+  shared_credentials2.sharing_notification_displayed = false;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials1, &shared_credentials2};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          /*federated_matches=*/nullptr);
+  };
+
+  RunTestSequence(
+      Do(setup_shared_passwords),
+      WaitForShow(SharedPasswordsNotificationView::kTopView),
+      // Screenshots are supposed only on Windows.
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(SharedPasswordsNotificationView::kTopView,
+                 /*screenshot_name=*/std::string(), /*baseline=*/"4727383"));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1050,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto setup_shared_passwords = [&]() {
     GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
-                                          nullptr);
+                                          /*/*federated_matches=*/nullptr);
   };
 
   RunTestSequence(Do(setup_shared_passwords),
