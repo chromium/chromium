@@ -276,6 +276,26 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // This a proxy API for the tasks that are posted. It is either called
+  // when the task is run and forwards to the corresponding member function
+  // in ExtensionWebRequestEventRouter, or not, if the owning BrowserContext
+  // goes away or the WeakPtr instance bound in the callback is invalidated.
+  void UpdateActiveListener(
+      content::BrowserContext* browser_context,
+      ExtensionWebRequestEventRouter::ListenerUpdateType update_type,
+      const ExtensionId& extension_id,
+      const std::string& sub_event_name,
+      int worker_thread_id,
+      int64_t service_worker_version_id);
+
+  // This a proxy API for the tasks that are posted. It is either called
+  // when the task is run and forwards to the corresponding member function
+  // in ExtensionWebRequestEventRouter, or not, if the owning BrowserContext
+  // goes away or the WeakPtr instance bound in the callback is invalidated.
+  void RemoveLazyListener(content::BrowserContext* browser_context,
+                          const ExtensionId& extension_id,
+                          const std::string& sub_event_name);
+
   // A count of active extensions for this BrowserContext that use web request
   // permissions.
   int web_request_extension_count_ = 0;
@@ -288,6 +308,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // Stores the last result of |MayHaveProxies()|, so it can be used in
   // |UpdateMayHaveProxies()|.
   bool may_have_proxies_;
+
+  base::WeakPtrFactory<WebRequestAPI> weak_factory_{this};
 };
 
 class WebRequestInternalFunction : public ExtensionFunction {

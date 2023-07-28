@@ -337,10 +337,11 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
     // registration shared for both the on- and off-the-record contexts, so we
     // use the original context (associated with this KeyedService) to remove
     // the listener from both contexts.
+    // Note that we unwrap the raw_ptr BrowserContext instance using
+    // raw_ptr::get() so we truly have a raw pointer to bind into the callback.
     remove_listener = base::BindOnce(
-        &ExtensionWebRequestEventRouter::RemoveLazyListener,
-        base::Unretained(ExtensionWebRequestEventRouter::GetInstance()),
-        browser_context_, details.extension_id, sub_event_name);
+        &WebRequestAPI::RemoveLazyListener, weak_factory_.GetWeakPtr(),
+        browser_context_.get(), details.extension_id, sub_event_name);
   } else {
     // This was an active listener registration.
     auto update_type =
@@ -354,9 +355,10 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
           ExtensionWebRequestEventRouter::ListenerUpdateType::kDeactivate;
     }
 
+    // Note that we unwrap the raw_ptr BrowserContext instance using
+    // raw_ptr::get() so we truly have a raw pointer to bind into the callback.
     remove_listener = base::BindOnce(
-        &ExtensionWebRequestEventRouter::UpdateActiveListener,
-        base::Unretained(ExtensionWebRequestEventRouter::GetInstance()),
+        &WebRequestAPI::UpdateActiveListener, weak_factory_.GetWeakPtr(),
         details.browser_context.get(), update_type, details.extension_id,
         sub_event_name, details.worker_thread_id,
         details.service_worker_version_id);
@@ -592,6 +594,31 @@ void WebRequestAPI::OnExtensionUnloaded(
     --web_request_extension_count_;
     UpdateMayHaveProxies();
   }
+}
+
+void WebRequestAPI::UpdateActiveListener(
+    content::BrowserContext* browser_context,
+    ExtensionWebRequestEventRouter::ListenerUpdateType update_type,
+    const ExtensionId& extension_id,
+    const std::string& sub_event_name,
+    int worker_thread_id,
+    int64_t service_worker_version_id) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+    return;
+  }
+  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
+      browser_context, update_type, extension_id, sub_event_name,
+      worker_thread_id, service_worker_version_id);
+}
+
+void WebRequestAPI::RemoveLazyListener(content::BrowserContext* browser_context,
+                                       const ExtensionId& extension_id,
+                                       const std::string& sub_event_name) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+    return;
+  }
+  ExtensionWebRequestEventRouter::GetInstance()->RemoveLazyListener(
+      browser_context, extension_id, sub_event_name);
 }
 
 // Special QuotaLimitHeuristic for WebRequestHandlerBehaviorChangedFunction.
