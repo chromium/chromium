@@ -197,6 +197,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
       "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
       "id": "12345678-9abc-def0-1234-56789abcdef0"
       }]})"));
+  run_loop.Run();
   EXPECT_EQ(2, completed);
 }
 
