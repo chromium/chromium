@@ -508,11 +508,19 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   auto* parent_thread_tcache = root()->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
-#if !BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // iOS and MacOS 15 create worker threads internally(start_wqthread).
   // So thread caches are created for the worker threads, because the threads
   // allocate memory for initialization (_dispatch_calloc is invoked).
   // We cannot assume that there is only 1 thread cache here.
+
+  // Regarding Linux, ChromeOS and Android, some other tests may create
+  // non-joinable threads. E.g. FilePathWatcherTest will create
+  // non-joinable thread at InotifyReader::StartThread(). The thread will
+  // be still running after the tests are finished, and will break
+  // an assumption that there exists only main thread here.
   {
     internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
     EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
@@ -528,7 +536,9 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
                                                    &thread_handle);
   internal::base::PlatformThreadForTesting::Join(thread_handle);
 
-#if !BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
   EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
   EXPECT_EQ(parent_thread_tcache->next_, nullptr);
@@ -632,12 +642,20 @@ class ThreadDelegateForMultipleThreadCachesAccounting
 
 TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
   ThreadCacheStats wqthread_stats{0};
-#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     // iOS and MacOS 15 create worker threads internally(start_wqthread).
     // So thread caches are created for the worker threads, because the threads
     // allocate memory for initialization (_dispatch_calloc is invoked).
     // We need to count worker threads created by iOS and Mac system.
+
+    // Regarding Linux, ChromeOS and Android, some other tests may create
+    // non-joinable threads. E.g. FilePathWatcherTest will create
+    // non-joinable thread at InotifyReader::StartThread(). The thread will
+    // be still running after the tests are finished. We need to count
+    // the joinable threads here.
     ThreadCacheRegistry::Instance().DumpStats(false, &wqthread_stats);
 
     // Remove this thread's thread cache stats from wqthread_stats.
