@@ -80,9 +80,9 @@ enum class SigninPromoAction {
 // Sign-in promo view state.
 @property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
 
-// YES if the sign-in interaction controller is shown.
-@property(nonatomic, assign, readonly, getter=isSigninInProgress)
-    BOOL signinInProgress;
+// YES if the promo spinner should be displayed. Either the sign-in or the
+// initial sync is in progress.
+@property(nonatomic, assign, readonly) BOOL showSpinner;
 
 // Returns YES if the sign-in promo view is `Invalid`, `Closed` or invisible.
 @property(nonatomic, assign, readonly, getter=isInvalidClosedOrNeverVisible)
@@ -90,6 +90,13 @@ enum class SigninPromoAction {
 
 // The action performed when accepting the promo.
 @property(nonatomic, assign) SigninPromoAction signinPromoAction;
+
+// Set the data type that should be synced before the sign-in completes.
+// The default value is `syncer::ModelType::UNSPECIFIED`, therefore the sign-in
+// promo will not wait for the initial sync.
+// This value has to be set while the mediator is being set (right after the
+// init method).
+@property(nonatomic, assign) syncer::ModelType dataTypeToWaitForInitialSync;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
@@ -129,9 +136,6 @@ enum class SigninPromoAction {
 // Called when the sign-in promo view is hidden. If the sign-in promo view has
 // never been shown, or it is already hidden, this method does nothing.
 - (void)signinPromoViewIsHidden;
-
-// Set the data type that should be synced before the sign-in completes.
-- (void)setDataTypeToWaitForInitialSync:(syncer::ModelType)dataType;
 
 // Disconnects the mediator, this method needs to be called when the sign-in
 // promo view is removed from the view hierarchy (it or one of its superviews is

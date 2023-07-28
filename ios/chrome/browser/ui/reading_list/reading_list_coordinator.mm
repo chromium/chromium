@@ -214,8 +214,8 @@
   _signinPromoViewMediator.signinPromoAction =
       SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;
-  [_signinPromoViewMediator
-      setDataTypeToWaitForInitialSync:syncer::ModelType::READING_LIST];
+  _signinPromoViewMediator.dataTypeToWaitForInitialSync =
+      syncer::ModelType::READING_LIST;
   [self updateSignInPromoVisibility];
 
   [super start];
@@ -602,7 +602,7 @@
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (!_signinPromoViewMediator.signinInProgress) {
+      if (!_signinPromoViewMediator.showSpinner) {
         self.shouldShowSignInPromo = NO;
       }
       break;
@@ -642,7 +642,7 @@
     // If the user is signed-in with the promo (thus opted-in for Reading List
     // account storage), the promo should stay visible during the initial sync
     // and a spinner should be shown on it.
-    self.shouldShowSignInPromo = _signinPromoViewMediator.signinInProgress;
+    self.shouldShowSignInPromo = _signinPromoViewMediator.showSpinner;
   } else {
     const std::string lastSignedInGaiaId =
         _prefService->GetString(prefs::kGoogleServicesLastGaiaId);

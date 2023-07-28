@@ -507,8 +507,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Redefined to be readwrite.
 @property(nonatomic, strong, readwrite) id<SystemIdentity> identity;
-@property(nonatomic, assign, readwrite, getter=isSigninInProgress)
-    BOOL signinInProgress;
+
+// YES if the sign-in flow is in progress.
+@property(nonatomic, assign, readwrite) BOOL signinInProgress;
+// YES if the initial sync for a specific data type is in progress. The data
+// type is based on `dataTypeToWaitForInitialSync`.
+@property(nonatomic, assign, readwrite) BOOL initialSyncInProgress;
 
 // Presenter which can show signin UI.
 @property(nonatomic, weak, readonly) id<SigninPresenter> presenter;
@@ -557,8 +561,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // TODO(crbug.com/1448830): This class should not need to block the UI.
   // The UI blocker is only used in kInstantSignin cases.
   std::unique_ptr<ScopedUIBlocker> _uiBlocker;
-  // The type of data that should be synced before the sign-in completes.
-  syncer::ModelType _dataTypeToWaitForInitialSync;
 }
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
@@ -705,7 +707,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
                       userGivenName:self.identity.userGivenName
                           userImage:self.identityAvatar
                      hasCloseButton:hasCloseButton
-                   hasSignInSpinner:self.signinInProgress];
+                   hasSignInSpinner:self.showSpinner];
   }
   if (self.identity) {
     return [[SigninPromoViewConfigurator alloc]
@@ -714,7 +716,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
                       userGivenName:self.identity.userGivenName
                           userImage:self.identityAvatar
                      hasCloseButton:hasCloseButton
-                   hasSignInSpinner:self.signinInProgress];
+                   hasSignInSpinner:self.showSpinner];
   }
   SigninPromoViewConfigurator* configurator =
       [[SigninPromoViewConfigurator alloc]
@@ -723,7 +725,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
                         userGivenName:nil
                             userImage:nil
                        hasCloseButton:hasCloseButton
-                     hasSignInSpinner:self.signinInProgress];
+                     hasSignInSpinner:self.showSpinner];
   switch (self.signinPromoAction) {
     case SigninPromoAction::kSync:
       break;
@@ -785,11 +787,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
   self.signinPromoViewVisible = NO;
 }
 
-- (void)setDataTypeToWaitForInitialSync:(syncer::ModelType)dataType {
-  _dataTypeToWaitForInitialSync = dataType;
-  [self updateSignInProgressWithSyncState];
-}
-
 - (void)disconnect {
   [self signinPromoViewIsRemoved];
   self.consumer = nil;
@@ -807,25 +804,15 @@ const char* AlreadySeenSigninViewPreferenceKey(
          self.signinPromoViewState == SigninPromoViewState::kNeverVisible;
 }
 
+- (BOOL)showSpinner {
+  return self.signinInProgress || self.initialSyncInProgress;
+}
+
 #pragma mark - Private properties
 
 - (BOOL)isInvalidOrClosed {
   return self.signinPromoViewState == SigninPromoViewState::kClosed ||
          self.signinPromoViewState == SigninPromoViewState::kInvalid;
-}
-
-#pragma mark - Private
-
-// Returns the identity for the sync promo. This should be the signed in promo,
-// if the user is signed in. If not signed in, the default identity from
-// AccountManagerService.
-- (id<SystemIdentity>)defaultIdentity {
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    return self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  }
-  DCHECK(self.accountManagerService)
-      << base::SysNSStringToUTF8([self description]);
-  return self.accountManagerService->GetDefaultIdentity();
 }
 
 // Sets the Chrome identity to display in the sign-in promo.
@@ -840,17 +827,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
   }
 }
 
-// Sends the update notification to the consummer if the signin-in is not in
-// progress. This is to avoid to update the sign-in promo view in the
-// background.
-- (void)sendConsumerNotificationWithIdentityChanged:(BOOL)identityChanged {
-  if (self.signinInProgress)
-    return;
-  SigninPromoViewConfigurator* configurator = [self createConfigurator];
-  [self.consumer configureSigninPromoWithConfigurator:configurator
-                                      identityChanged:identityChanged];
-}
-
 // Updates `_signinInProgress` value, and sends a notification the consumer
 // to update the sign-in promo, so the progress indicator can be displayed.
 - (void)setSigninInProgress:(BOOL)signinInProgress {
@@ -858,6 +834,20 @@ const char* AlreadySeenSigninViewPreferenceKey(
     return;
   }
   _signinInProgress = signinInProgress;
+  SigninPromoViewConfigurator* configurator = [self createConfigurator];
+  if ([self.consumer
+          respondsToSelector:@selector(promoProgressStateDidChange)]) {
+    [self.consumer promoProgressStateDidChange];
+  }
+  [self.consumer configureSigninPromoWithConfigurator:configurator
+                                      identityChanged:NO];
+}
+
+- (void)setInitialSyncInProgress:(BOOL)initialSyncInProgress {
+  if (_initialSyncInProgress == initialSyncInProgress) {
+    return;
+  }
+  _initialSyncInProgress = initialSyncInProgress;
   SigninPromoViewConfigurator* configurator = [self createConfigurator];
   if ([self.consumer
           respondsToSelector:@selector(promoProgressStateDidChange)]) {
@@ -877,6 +867,32 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                       identityChanged:NO];
 }
 
+#pragma mark - Private
+
+// Returns the identity for the sync promo. This should be the signed in promo,
+// if the user is signed in. If not signed in, the default identity from
+// AccountManagerService.
+- (id<SystemIdentity>)defaultIdentity {
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  }
+  DCHECK(self.accountManagerService)
+      << base::SysNSStringToUTF8([self description]);
+  return self.accountManagerService->GetDefaultIdentity();
+}
+
+// Sends the update notification to the consummer if the signin-in is not in
+// progress. This is to avoid to update the sign-in promo view in the
+// background.
+- (void)sendConsumerNotificationWithIdentityChanged:(BOOL)identityChanged {
+  if (self.showSpinner) {
+    return;
+  }
+  SigninPromoViewConfigurator* configurator = [self createConfigurator];
+  [self.consumer configureSigninPromoWithConfigurator:configurator
+                                      identityChanged:identityChanged];
+}
+
 // Records in histogram, the number of time the sign-in promo is displayed
 // before the sign-in button is pressed, if the current access point supports
 // it.
@@ -894,11 +910,16 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Finishes the sign-in process.
-- (void)signinCallback {
+- (void)signinCallbackWithResult:(SigninCoordinatorResult)result {
   if (self.signinPromoViewState == SigninPromoViewState::kInvalid) {
     // The mediator owner can remove the view before the sign-in is done.
     return;
   }
+  // We can turn on `self.initialSyncInProgress`, if the sign-in is successful.
+  // We can't call now GetTypesWithPendingDownloadForInitialSync() related to
+  // a post task issue.
+  self.initialSyncInProgress = (result == SigninCoordinatorResultSuccess) &&
+                               [self shouldWaitForInitialSync];
   DCHECK_EQ(SigninPromoViewState::kUsedAtLeastOnce, self.signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(self.signinInProgress) << base::SysNSStringToUTF8([self description]);
@@ -921,7 +942,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
   ShowSigninCommandCompletionCallback completion =
       ^(SigninCoordinatorResult result) {
-        [weakSelf signinCallback];
+        [weakSelf signinCallbackWithResult:result];
         if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
           [weakConsumer signinDidFinish];
         }
@@ -986,22 +1007,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
                    accessPoint:self.accessPoint
               postSignInAction:PostSignInAction::kShowSnackbar
       presentingViewController:_baseViewController];
+  // This mediator might be removed before the sign-in callback is invoked.
+  // (if the owner receive primary account notification).
+  // To make sure -[<SigninPromoViewConsumer> signinDidFinish], we have to save
+  // in a variable and not get it from weakSelf (that might not exist anymore).
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
   __weak __typeof(self) weakSelf = self;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    if (success &&
-        (weakSelf.accessPoint ==
-             signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER ||
-         weakSelf.accessPoint ==
-             signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST)) {
-      [weakSelf optInBookmarkReadingListAccountStorage];
-    }
-
-    [weakSelf signInFlowCompletedForInstantSignin];
-    if ([weakSelf shouldWaitForInitialSync]) {
-      return;
-    }
-    weakSelf.signinInProgress = NO;
+    [weakSelf signInFlowCompletedForInstantSigninWithSuccess:success];
     if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
       [weakConsumer signinDidFinish];
     }
@@ -1010,10 +1023,22 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Called when the sign-in flow is over. This method should only be called
 // when this is an instant sign-in flow.
-- (void)signInFlowCompletedForInstantSignin {
+- (void)signInFlowCompletedForInstantSigninWithSuccess:(BOOL)success {
+  if (success &&
+      (self.accessPoint ==
+           signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER ||
+       self.accessPoint ==
+           signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST)) {
+    [self optInBookmarkReadingListAccountStorage];
+  }
   DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
       << base::SysNSStringToUTF8([self description]);
   _uiBlocker.reset();
+  self.signinInProgress = NO;
+  // We can turn on `self.initialSyncInProgress`, if the sign-in is successful.
+  // We can't call now GetTypesWithPendingDownloadForInitialSync() related to
+  // a post task issue.
+  self.initialSyncInProgress = success && [self shouldWaitForInitialSync];
 }
 
 - (void)startAddAccountForInstantSignin {
@@ -1092,24 +1117,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // Whether the sign-in needs to wait for the end of the initial sync to
 // complete.
 - (BOOL)shouldWaitForInitialSync {
-  return _dataTypeToWaitForInitialSync != syncer::ModelType::UNSPECIFIED;
-}
-
-// If initial sync is needed before the sign-in completes, set the
-// `signinInProgress` according to the initial sync state.
-- (void)updateSignInProgressWithSyncState {
-  if (![self shouldWaitForInitialSync]) {
-    return;
-  }
-  self.signinInProgress = [self isPerformingInitialSync];
-}
-
-// Whether the initial sync of the ModelType given by
-// `_dataTypeToWaitForInitialSync` is in progress.
-- (BOOL)isPerformingInitialSync {
-  CHECK(_dataTypeToWaitForInitialSync != syncer::ModelType::UNSPECIFIED);
-  return _syncService->GetTypesWithPendingDownloadForInitialSync().Has(
-      _dataTypeToWaitForInitialSync);
+  return self.dataTypeToWaitForInitialSync != syncer::ModelType::UNSPECIFIED;
 }
 
 - (void)optInBookmarkReadingListAccountStorage {
@@ -1308,39 +1316,25 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 #pragma mark - SyncObserverModelBridge
 
-// If additional data sync is needed during sign-in, update `signinInProgress`
-// to match the sync progress state when the sync state changes. This is needed
-// especially when the sign-in is undone during initial sync and
-// `onSyncConfigurationCompleted` is not called.
 - (void)onSyncStateChanged {
-  [self updateSignInProgressWithSyncState];
-}
-
-// If additional data sync is needed during sign-in, set `signinInProgress`
-// to NO when the initial sync finishes for the data type.
-- (void)onSyncConfigurationCompleted {
-  if (![self shouldWaitForInitialSync] || [self isPerformingInitialSync]) {
-    return;
-  }
-  // Handle sign-in completion.
-  self.signinInProgress = NO;
-  if ([self.consumer respondsToSelector:@selector(signinDidFinish)]) {
-    [self.consumer signinDidFinish];
-  }
+  self.initialSyncInProgress =
+      [self shouldWaitForInitialSync] &&
+      _syncService->GetTypesWithPendingDownloadForInitialSync().Has(
+          self.dataTypeToWaitForInitialSync);
 }
 
 #pragma mark - NSObject
 
 - (NSString*)description {
   return [NSString
-      stringWithFormat:@"<%@: %p, identity: %p, signinPromoViewState: %d, "
-                       @"signinInProgress: %d, accessPoint: %d, "
-                       @"signinPromoViewVisible: %d, invalidOrClosed %d>",
-                       self.class.description, self, self.identity,
-                       static_cast<int>(self.signinPromoViewState),
-                       self.signinInProgress,
-                       static_cast<int>(self.accessPoint),
-                       self.signinPromoViewVisible, self.invalidOrClosed];
+      stringWithFormat:
+          @"<%@: %p, identity: %p, signinPromoViewState: %d, "
+          @"signinInProgress: %d, initialSyncInProgress %d, accessPoint: %d, "
+          @"signinPromoViewVisible: %d, invalidOrClosed %d>",
+          self.class.description, self, self.identity,
+          static_cast<int>(self.signinPromoViewState), self.signinInProgress,
+          self.initialSyncInProgress, static_cast<int>(self.accessPoint),
+          self.signinPromoViewVisible, self.invalidOrClosed];
 }
 
 @end

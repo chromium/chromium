@@ -441,4 +441,30 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
+// Tests that there is no issue to sign-in only first with an identity using a
+// sync passphrase, and then turn on account storage in bookmarks view, using
+// the sign-in promo.
+// Related to http://crbug.com/1467116.
+- (void)testSigninWithSyncPassphraseAndTurnOnSync {
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:@"Hello"];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Sign-in only.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  // Turn on sync using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kConfirmationAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Verify the sign-in was done.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+}
+
 @end

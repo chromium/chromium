@@ -71,8 +71,8 @@
            baseViewController:baseViewController];
     _signinPromoViewMediator.consumer = self;
     if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      [_signinPromoViewMediator
-          setDataTypeToWaitForInitialSync:syncer::ModelType::BOOKMARKS];
+      _signinPromoViewMediator.dataTypeToWaitForInitialSync =
+          syncer::ModelType::BOOKMARKS;
     }
     [self updateShouldShowSigninPromo];
   }
@@ -159,7 +159,7 @@
     return;
   }
 
-  if (self.signinPromoViewMediator.signinInProgress) {
+  if (self.signinPromoViewMediator.showSpinner) {
     // The user is opted into syncing bookmarks, but the first sync is not
     // finished yet - keep the promo visible to show the spinner.
     self.shouldShowSigninPromo = YES;
@@ -220,7 +220,7 @@
                       consentLevel:(signin::ConsentLevel)consentLevel {
   switch (event.GetEventTypeFor(consentLevel)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (!self.signinPromoViewMediator.signinInProgress) {
+      if (!self.signinPromoViewMediator.showSpinner) {
         self.shouldShowSigninPromo = NO;
       }
       break;

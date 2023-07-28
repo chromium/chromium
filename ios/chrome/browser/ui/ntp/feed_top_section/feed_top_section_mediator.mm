@@ -111,7 +111,7 @@
           : signin::ConsentLevel::kSync;
   switch (event.GetEventTypeFor(consent)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (!self.signinPromoMediator.signinInProgress) {
+      if (!self.signinPromoMediator.showSpinner) {
         // User has signed in, stop showing the promo.
         self.shouldShowSigninPromo = NO;
       }

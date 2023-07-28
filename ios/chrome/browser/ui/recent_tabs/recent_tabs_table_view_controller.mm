@@ -1011,7 +1011,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if ((newSessionState == self.sessionState &&
        self.sessionState !=
            SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS) ||
-      self.signinPromoViewMediator.signinInProgress) {
+      self.signinPromoViewMediator.showSpinner) {
     // No need to refresh the sections since all states other than
     // USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS only have static content. This means
     // that if the previous State is the same as the new one the static content
