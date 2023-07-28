@@ -79,6 +79,10 @@ class ASH_EXPORT AppListBadgeController
 
   base::ScopedObservation<AppListModel, AppListModelObserver>
       model_observation_{this};
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 }  // namespace ash
