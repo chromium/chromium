@@ -89,6 +89,10 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   void OnThemeChanged() override;
   void StateChanged(ButtonState old_state) override;
 
+  absl::optional<ui::ColorId> GetFocusColorIdForTesting() const {
+    return focus_color_id_;
+  }
+
  private:
   // Triggered when the button's enable state gets changed, i.e, the button is
   // updated to disabled from enabled, or enabled from disabled. The button's
