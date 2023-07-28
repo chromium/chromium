@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <set>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +34,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
@@ -43,6 +47,9 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
 #endif
+
+using ::testing::_;
+using ::testing::Eq;
 
 namespace apps {
 
@@ -88,6 +95,27 @@ class TestWebsiteMetrics : public WebsiteMetrics {
   base::OnceClosure quit_closure_;
   bool on_checked_ = false;
   GURL ukm_key_;
+};
+
+// Mock observer for the `WebsiteMetrics` component used for testing purposes.
+class MockObserver : public WebsiteMetrics::Observer {
+ public:
+  MockObserver() = default;
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+  ~MockObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnUrlOpened,
+              (const GURL& gurl, ::content::WebContents* web_contents),
+              (override));
+
+  MOCK_METHOD(void,
+              OnUrlClosed,
+              (const GURL& gurl, ::content::WebContents* web_contents),
+              (override));
+
+  MOCK_METHOD(void, OnWebsiteMetricsDestroyed, (), (override));
 };
 
 class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
@@ -1164,6 +1192,120 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   VerifyUsageTimeUkm(GURL("https://d.example.org"),
                      /*promotable=*/false);
   EXPECT_TRUE(url_infos().empty());
+}
+
+class WebsiteMetricsObserverBrowserTest : public WebsiteMetricsBrowserTest {
+ protected:
+  void TearDownOnMainThread() override {
+    // Unregister observer to prevent noise during teardown.
+    website_metrics()->RemoveObserver(&observer_);
+    WebsiteMetricsBrowserTest::TearDownOnMainThread();
+  }
+
+  MockObserver observer_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest, NotifyOnUrlOpened) {
+  const std::string& kUrl = "https://a.example.org";
+  auto* const browser = CreateBrowser();
+  auto* const window = browser->window()->GetNativeWindow();
+
+  website_metrics()->AddObserver(&observer_);
+  EXPECT_CALL(observer_, OnUrlOpened)
+      .WillOnce([&](const GURL& url, ::content::WebContents* web_contents) {
+        EXPECT_THAT(url, Eq(GURL(kUrl)));
+        EXPECT_THAT(web_contents, Eq(window_to_web_contents()[window]));
+      });
+  InsertForegroundTab(browser, kUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       NotifyOnBackgroundUrlOpened) {
+  const std::string& kUrl = "https://a.example.org";
+  auto* const browser = CreateBrowser();
+  NavigateActiveTab(browser, kUrl);
+  website_metrics()->AddObserver(&observer_);
+
+  const std::string& kBackgroundUrl = "https://b.example.org";
+  EXPECT_CALL(observer_, OnUrlOpened(GURL(kBackgroundUrl), _)).Times(1);
+  InsertBackgroundTab(browser, kBackgroundUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       NotifyUrlOpenedClosedOnContentNavigation) {
+  const std::string& kOldUrl = "https://a.example.org";
+  auto* const browser = CreateBrowser();
+  auto* const window = browser->window()->GetNativeWindow();
+  NavigateActiveTab(browser, kOldUrl);
+  website_metrics()->AddObserver(&observer_);
+
+  // Navigate to a different URL and verify observer is notified.
+  const std::string& kNewUrl = "https://b.example.org";
+  ::content::WebContents* const active_web_contents =
+      window_to_web_contents()[window];
+  EXPECT_CALL(observer_, OnUrlOpened(GURL(kNewUrl), active_web_contents))
+      .Times(1);
+  EXPECT_CALL(observer_, OnUrlClosed(GURL(kOldUrl), active_web_contents))
+      .Times(1);
+  NavigateActiveTab(browser, kNewUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       DoNotNotifyIfUrlAlreadyOpenInRenderFrame) {
+  const std::string& kUrl = "https://a.example.org";
+  auto* const browser = CreateBrowser();
+  NavigateActiveTab(browser, kUrl);
+  website_metrics()->AddObserver(&observer_);
+
+  EXPECT_CALL(observer_, OnUrlOpened).Times(0);
+  NavigateActiveTab(browser, kUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       NotifyUrlClosedOnTabClose) {
+  const std::string& kUrl = "https://a.example.org";
+  auto* const browser = CreateBrowser();
+  auto* const window = browser->window()->GetNativeWindow();
+  NavigateActiveTab(browser, kUrl);
+  website_metrics()->AddObserver(&observer_);
+
+  // Close the tab and verify observer is notified.
+  EXPECT_CALL(observer_,
+              OnUrlClosed(GURL(kUrl), window_to_web_contents()[window]))
+      .Times(1);
+  browser->tab_strip_model()->CloseAllTabs();
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       NotifyUrlClosedOnWindowClose) {
+  // Open URLs in two separate tabs.
+  const std::string& kUrl1 = "https://a.example.org";
+  const std::string& kUrl2 = "https://b.example.org";
+  auto* const browser = CreateBrowser();
+  auto* const window = browser->window()->GetNativeWindow();
+  NavigateActiveTab(browser, kUrl1);
+  InsertBackgroundTab(browser, kUrl2);
+  website_metrics()->AddObserver(&observer_);
+
+  // Simulate window closure and verify observer is notified accordingly.
+  const std::string& kNewUrl = "https://b.example.org";
+  EXPECT_CALL(observer_,
+              OnUrlClosed(GURL(kUrl1), window_to_web_contents()[window]))
+      .Times(1);
+  EXPECT_CALL(observer_, OnUrlClosed(GURL(kUrl2), _)).Times(1);
+  browser->tab_strip_model()->CloseAllTabs();
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       NotifyOnWebsiteMetricsDestroyed) {
+  // Test with a separate instance of website metrics so we do not affect
+  // pre-existing test teardown fixtures.
+  std::unique_ptr<WebsiteMetrics> owned_website_metrics =
+      std::make_unique<WebsiteMetrics>(ProfileManager::GetPrimaryUserProfile(),
+                                       /*user_type_by_device_type=*/0);
+  owned_website_metrics->AddObserver(&observer_);
+  EXPECT_CALL(observer_, OnWebsiteMetricsDestroyed).Times(1);
+  owned_website_metrics.reset();
 }
 
 }  // namespace apps

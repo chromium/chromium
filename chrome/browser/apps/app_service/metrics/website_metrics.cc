@@ -80,6 +80,10 @@ wm::ActivationClient* GetActivationClient(aura::Window* window) {
   return wm::GetActivationClient(root_window);
 }
 
+bool IsSupportedUrl(const GURL& url) {
+  return !url.is_empty() && url.SchemeIsHTTPOrHTTPS();
+}
+
 }  // namespace
 
 namespace apps {
@@ -169,6 +173,11 @@ WebsiteMetrics::WebsiteMetrics(Profile* profile, int user_type_by_device_type)
 
 WebsiteMetrics::~WebsiteMetrics() {
   BrowserList::RemoveObserver(this);
+
+  // Also notify observers.
+  for (auto& observer : observers_) {
+    observer.OnWebsiteMetricsDestroyed();
+  }
 }
 
 void WebsiteMetrics::OnBrowserAdded(Browser* browser) {
@@ -279,6 +288,14 @@ void WebsiteMetrics::OnTwoHours() {
   url_infos.swap(url_infos_);
 }
 
+void WebsiteMetrics::AddObserver(WebsiteMetrics::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebsiteMetrics::RemoveObserver(WebsiteMetrics::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void WebsiteMetrics::MaybeObserveWindowActivationClient(aura::Window* window) {
   auto* activation_client = GetActivationClient(window);
   if (!activation_client) {
@@ -345,20 +362,27 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     TabStripModel* tab_strip_model,
     const TabStripModelChange::Remove& remove,
     const TabStripSelectionChange& selection) {
+  bool active_tab_removed = false;
+  const auto window_it = window_to_web_contents_.find(window);
   for (const auto& removed_tab : remove.contents) {
-    OnTabClosed(removed_tab.contents);
+    ::content::WebContents* const removed_contents = removed_tab.contents;
+    OnTabClosed(removed_contents);
+    if (window_it != window_to_web_contents_.end() &&
+        window_it->second == removed_contents) {
+      active_tab_removed = true;
+    }
   }
 
   // Last tab detached.
   if (tab_strip_model->count() == 0) {
     // The browser window will be closed, so remove the window and the web
     // contents.
-    auto it = window_to_web_contents_.find(window);
-    if (it != window_to_web_contents_.end()) {
-      if (it->second) {
-        OnTabClosed(it->second);
+    if (window_it != window_to_web_contents_.end()) {
+      // Only trigger `OnTabClosed` if it has not been already triggered.
+      if (!active_tab_removed && window_it->second) {
+        OnTabClosed(window_it->second);
       }
-      window_to_web_contents_.erase(it);
+      window_to_web_contents_.erase(window_it);
     }
     MaybeRemoveObserveWindowActivationClient(window);
   }
@@ -406,6 +430,12 @@ void WebsiteMetrics::OnTabClosed(content::WebContents* web_contents) {
   SetTabInActivated(web_contents);
   webcontents_to_ukm_key_.erase(web_contents);
   webcontents_to_observer_map_.erase(web_contents);
+
+  // Also notify observers.
+  const GURL& url = web_contents->GetVisibleURL();
+  for (auto& observer : observers_) {
+    observer.OnUrlClosed(url, web_contents);
+  }
 }
 
 void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
@@ -425,14 +455,39 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   // When the primary page of `web_contents` is changed, call SetTabInActivated
   // to calculate the usage time for the previous ukm key url.
   SetTabInActivated(web_contents);
+  const GURL& url = web_contents->GetVisibleURL();
+
+  // User could have either opened the URL in a new `WebContents` or navigated
+  // from a different URL in a pre-existing `WebContents`. We check for both
+  // scenarios and notify observers accordingly.
+  const auto web_contents_it = webcontents_to_ukm_key_.find(web_contents);
+  if (web_contents_it == webcontents_to_ukm_key_.end() && IsSupportedUrl(url)) {
+    // URL opened in a new `WebContent`.
+    for (auto& observer : observers_) {
+      observer.OnUrlOpened(url, web_contents);
+    }
+  }
+  if (web_contents_it != webcontents_to_ukm_key_.end() &&
+      web_contents_it->second != url) {
+    // Content navigation in a pre-existing `WebContents`.
+    const GURL& previous_url = web_contents_it->second;
+    if (IsSupportedUrl(previous_url)) {
+      for (auto& observer : observers_) {
+        observer.OnUrlClosed(previous_url, web_contents);
+      }
+    }
+    if (IsSupportedUrl(url)) {
+      for (auto& observer : observers_) {
+        observer.OnUrlOpened(url, web_contents);
+      }
+    }
+  }
 
   // When the primary page of `web_contents` is changed called by
   // contents::WebContentsObserver::PrimaryPageChanged(), set the visible url as
   // default value for the ukm key url.
-  auto url = web_contents->GetVisibleURL();
   webcontents_to_ukm_key_[web_contents] = url;
-
-  if (url.is_empty() || !url.SchemeIsHTTPOrHTTPS()) {
+  if (!IsSupportedUrl(url)) {
     return;
   }
 
@@ -440,8 +495,7 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   bool is_activated = wm::IsActiveWindow(window) &&
                       it != window_to_web_contents_.end() &&
                       it->second == web_contents;
-  AddUrlInfo(web_contents->GetVisibleURL(),
-             web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+  AddUrlInfo(url, web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
              base::TimeTicks::Now(), is_activated, /*promotable=*/false);
 }
 

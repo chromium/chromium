@@ -10,6 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -52,6 +54,33 @@ class WebsiteMetrics : public BrowserListObserver,
                        public wm::ActivationChangeObserver,
                        public history::HistoryServiceObserver {
  public:
+  // Observer that is notified on certain website events like URL opened, URL
+  // closed, etc.
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override = default;
+
+    // Invoked when a new URL is opened with specified `WebContents`. We also
+    // return the URL that was opened in case there are further updates to
+    // `WebContents` forcing a new URL opened event that will follow as a
+    // separate notification.
+    virtual void OnUrlOpened(const GURL& url_opened,
+                             ::content::WebContents* web_contents) {}
+
+    // Invoked when a URL is closed with specified `WebContents`. `WebContents`
+    // could reflect current URL in case of content navigation, so we also
+    // return the URL that was closed.
+    virtual void OnUrlClosed(const GURL& url_closed,
+                             ::content::WebContents* web_contents) {}
+
+    // Invoked when the `WebsiteMetrics` component (being observed) is being
+    // destroyed.
+    virtual void OnWebsiteMetricsDestroyed() {}
+  };
+
   WebsiteMetrics(Profile* profile, int user_type_by_device_type);
 
   WebsiteMetrics(const WebsiteMetrics&) = delete;
@@ -87,6 +116,9 @@ class WebsiteMetrics : public BrowserListObserver,
 
   // Records the usage time UKM each 2 hours.
   void OnTwoHours();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   friend class WebsiteMetricsBrowserTest;
@@ -254,6 +286,8 @@ class WebsiteMetrics : public BrowserListObserver,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_observation_{this};
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<WebsiteMetrics> weak_factory_{this};
 };
