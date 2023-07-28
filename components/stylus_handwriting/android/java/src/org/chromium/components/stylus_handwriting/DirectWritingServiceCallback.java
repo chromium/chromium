@@ -95,7 +95,7 @@ class DirectWritingServiceCallback
             switch (msg.what) {
                 case DirectWritingConstants.MSG_SEND_SET_TEXT_SELECTION:
                     mStylusWritingImeCallback.finishComposingText();
-                    mStylusWritingImeCallback.setEditableSelectionOffsets(0, mLastText.length());
+                    mStylusWritingImeCallback.setEditableSelectionOffsets(0, getText().length());
                     mStylusWritingImeCallback.sendCompositionToNative(
                             ((CharSequence) msg.obj), msg.arg1, true);
                     mStylusWritingImeCallback.setEditableSelectionOffsets(msg.arg1, msg.arg1);
