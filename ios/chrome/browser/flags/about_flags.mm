@@ -1345,6 +1345,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFeedSyntheticCapabilitiesName,
      flag_descriptions::kEnableFeedSyntheticCapabilitiesDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableFeedSyntheticCapabilities)},
+    {"enable-friendlier-safe-browsing-settings-enhanced-protection",
+     flag_descriptions::
+         kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName,
+     flag_descriptions::
+         kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)},
     {"enable-friendlier-safe-browsing-settings-standard-protection",
      flag_descriptions::
          kEnableFriendlierSafeBrowsingSettingsStandardProtectionName,

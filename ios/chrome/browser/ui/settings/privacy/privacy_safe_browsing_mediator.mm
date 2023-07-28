@@ -137,11 +137,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     NSInteger enhancedProtectionSummary;
     if (base::FeatureList::IsEnabled(
             safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-      enhancedProtectionSummary = [self
-          chooseLegacyString:
-              IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY
-             orUpdatedString:
-                 IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY];
+      enhancedProtectionSummary =
+          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY;
     } else {
       enhancedProtectionSummary =
           IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY;
@@ -149,11 +146,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     NSInteger standardProtectionSummary;
     if (base::FeatureList::IsEnabled(
             safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
-      standardProtectionSummary = [self
-          chooseLegacyString:
-              IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY
-             orUpdatedString:
-                 IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY];
+      standardProtectionSummary =
+          IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY;
     } else {
       standardProtectionSummary =
           IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY;
@@ -176,10 +170,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     NSInteger noProtectionSummary;
     if (base::FeatureList::IsEnabled(
             safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-      noProtectionSummary = [self
-          chooseLegacyString:IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
-             orUpdatedString:
-                 IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY];
+      noProtectionSummary =
+          IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY;
     } else {
       noProtectionSummary = IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY;
     }
@@ -304,18 +296,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemType type = static_cast<ItemType>(item.type);
   return self.enterpriseEnabled && (![self shouldItemTypeHaveCheckmark:type] ||
                                     type == ItemTypeSafeBrowsingNoProtection);
-}
-
-// Decides on the string ouput based off of if
-// kFriendlierSafeBrowsingSettingsStandardProtection is enabled.
-- (NSInteger)chooseLegacyString:(NSInteger)legacyString
-                orUpdatedString:(NSInteger)updatedString {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
-    return updatedString;
-  }
-
-  return legacyString;
 }
 
 #pragma mark - SafeBrowsingViewControllerDelegate
