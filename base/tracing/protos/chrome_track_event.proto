@@ -807,6 +807,9 @@ message EventLatency {
   // This is same as LatencyInfo's trace_id, using the name event_latency_id to
   // move away from the generic trace_id name used at other places as well.
   optional int64 event_latency_id = 4;
+  // This is set only for scroll updates and is based on the
+  // Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric.
+  optional bool is_janky_scrolled_frame = 5;
 }
 
 message ProcessSingleton {

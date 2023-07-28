@@ -1410,7 +1410,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
   // lead to having multiple scroll events.
-  base::TimeTicks input_generation_ts = base::TimeTicks::Max();
+  EventMetrics* earliest_event = nullptr;
   base::TimeTicks last_coalesced_ts = base::TimeTicks::Min();
   for (const auto& event : events_metrics_) {
     TRACE_EVENT("input", "GestureType", "gesture", event->type());
@@ -1420,10 +1420,16 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     }
 
     total_predicted_delta += scroll_update->predicted_delta();
+    if (!had_gesture_scrolls) {
+      earliest_event = event.get();
+    }
     had_gesture_scrolls = true;
-    input_generation_ts = std::min(
-        input_generation_ts, event->GetDispatchStageTimestamp(
-                                 EventMetrics::DispatchStage::kGenerated));
+    if (earliest_event->GetDispatchStageTimestamp(
+            EventMetrics::DispatchStage::kGenerated) <
+        event->GetDispatchStageTimestamp(
+            EventMetrics::DispatchStage::kGenerated)) {
+      earliest_event = event.get();
+    }
     last_coalesced_ts =
         std::max(last_coalesced_ts, scroll_update->last_timestamp());
 
@@ -1468,8 +1474,9 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   }
   if (global_trackers_.scroll_jank_dropped_frame_tracker) {
     global_trackers_.scroll_jank_dropped_frame_tracker
-        ->ReportLatestPresentationData(input_generation_ts, last_coalesced_ts,
-                                       end_timestamp, args_.interval);
+        ->ReportLatestPresentationData(*(earliest_event->AsScrollUpdate()),
+                                       last_coalesced_ts, end_timestamp,
+                                       args_.interval);
   }
 }
 

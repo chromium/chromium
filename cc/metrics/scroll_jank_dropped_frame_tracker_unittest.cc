@@ -10,6 +10,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -73,16 +74,33 @@ class ScrollJankDroppedFrameTrackerTest : public testing::Test {
       prev_frame.last_input_ts += kVsyncInterval;
       prev_frame.presentation_ts += kVsyncInterval;
 
+      base::SimpleTestTickClock tick_clock;
+      tick_clock.SetNowTicks(prev_frame.first_input_ts);
+
+      auto event = ScrollUpdateEventMetrics::CreateForTesting(
+          ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+          /*is_inertial=*/false,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          /*delta=*/10.0f, prev_frame.first_input_ts, base::TimeTicks(),
+          &tick_clock);
+
       scroll_jank_dropped_frame_tracker_->ReportLatestPresentationData(
-          prev_frame.first_input_ts, prev_frame.last_input_ts,
-          prev_frame.presentation_ts, kVsyncInterval);
+          *event.get(), prev_frame.last_input_ts, prev_frame.presentation_ts,
+          kVsyncInterval);
     }
     return prev_frame;
   }
 
   void ReportLatestPresentationDataToTracker(const FrameTimestamps& frame) {
+    base::SimpleTestTickClock tick_clock;
+    tick_clock.SetNowTicks(frame.first_input_ts);
+    auto event = ScrollUpdateEventMetrics::CreateForTesting(
+        ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+        /*is_inertial=*/false,
+        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+        /*delta=*/10.0f, frame.first_input_ts, base::TimeTicks(), &tick_clock);
     scroll_jank_dropped_frame_tracker_->ReportLatestPresentationData(
-        frame.first_input_ts, frame.last_input_ts, frame.presentation_ts,
+        *event.get(), frame.last_input_ts, frame.presentation_ts,
         kVsyncInterval);
   }
 

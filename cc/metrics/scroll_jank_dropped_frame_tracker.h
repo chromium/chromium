@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/event_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
@@ -18,7 +19,7 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
 
   ScrollJankDroppedFrameTracker(const ScrollJankDroppedFrameTracker&) = delete;
 
-  void ReportLatestPresentationData(base::TimeTicks first_input_generation_ts,
+  void ReportLatestPresentationData(ScrollUpdateEventMetrics& earliest_event,
                                     base::TimeTicks last_input_generation_ts,
                                     base::TimeTicks presentation_ts,
                                     base::TimeDelta vsync_interval);

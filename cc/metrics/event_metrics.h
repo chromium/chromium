@@ -432,6 +432,13 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   std::unique_ptr<EventMetrics> Clone() const override;
 
+  void set_is_janky_scrolled_frame(absl::optional<bool> is_janky) {
+    is_janky_scrolled_frame_ = is_janky;
+  }
+  absl::optional<bool> is_janky_scrolled_frame() const {
+    return is_janky_scrolled_frame_;
+  }
+
  protected:
   ScrollUpdateEventMetrics(EventType type,
                            ScrollType scroll_type,
@@ -463,6 +470,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Total events that were coalesced into this into this ScrollUpdate
   int32_t coalesced_event_count_ = 1;
+
+  absl::optional<bool> is_janky_scrolled_frame_ = absl::nullopt;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {
