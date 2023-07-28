@@ -733,8 +733,7 @@ entry to provide relevant information to interested Chrome developers.
   * You can add multiple obsoletion message tags in one CL.
   * OBSOLETE_HISTOGRAMS messages will be overwritten by histogram-specific ones,
     if present.
-  * OBSOLETE_HISTOGRAMS messages are not applied to already expired or obsolete
-    histograms.
+  * OBSOLETE_HISTOGRAMS messages are not applied to already obsolete histograms.
 * You could also include information about why the histogram has become
   obsolete. For example, you might indicate how the histogram's summary did not
   accurately describe the collected data.
