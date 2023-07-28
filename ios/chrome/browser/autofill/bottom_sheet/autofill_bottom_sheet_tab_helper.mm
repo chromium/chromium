@@ -9,6 +9,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
 #import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_account_storage_notice_handler.h"
@@ -58,6 +60,9 @@ AutofillBottomSheetTabHelper::AutofillBottomSheetTabHelper(
     : password_account_storage_notice_handler_(
           password_account_storage_notice_handler),
       web_state_(web_state) {
+  frames_manager_observation_.Observe(
+      AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state));
   web_state->AddObserver(this);
 }
 
@@ -287,6 +292,61 @@ void AutofillBottomSheetTabHelper::DidFinishNavigation(
 
 void AutofillBottomSheetTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+  frames_manager_observation_.Reset();
+}
+
+// web::WebFramesManager::Observer:
+void AutofillBottomSheetTabHelper::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
+    web::WebFrame* web_frame) {
+  auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+      web_state_, web_frame);
+  if (!driver) {
+    return;
+  }
+  autofill_manager_observations_.AddObservation(driver->autofill_manager());
+}
+
+// autofill::AutofillManager::Observer
+
+void AutofillBottomSheetTabHelper::OnAutofillManagerDestroyed(
+    autofill::AutofillManager& manager) {
+  autofill_manager_observations_.RemoveObservation(&manager);
+}
+
+void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id,
+    FieldTypeSource source) {
+  if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {
+    return;
+  }
+  autofill::FormStructure* form_structure = manager.FindCachedFormById(form_id);
+  if (!form_structure || !form_structure->IsCompleteCreditCardForm()) {
+    return;
+  }
+  if (auto* pdm = manager.client().GetPersonalDataManager();
+      pdm->GetCreditCardsToSuggest().empty()) {
+    return;
+  }
+  std::vector<autofill::FieldRendererId> renderer_ids;
+  for (const auto& field : form_structure->fields()) {
+    if (field->Type().group() == autofill::FieldTypeGroup::kCreditCard) {
+      renderer_ids.push_back(field->unique_renderer_id);
+    }
+  }
+  if (renderer_ids.empty()) {
+    return;
+  }
+  // TODO(crbug.com/1441921): Remove `frame` once `renderer_ids` are
+  // FieldGlobalIds.
+  web::WebFrame* frame =
+      static_cast<autofill::AutofillDriverIOS&>(manager.driver()).web_frame();
+  if (!frame) {
+    return;
+  }
+  AttachListeners(renderer_ids, registered_payments_renderer_ids_,
+                  frame->GetFrameId(), /*must_be_empty=*/true);
 }
 
 // Private methods

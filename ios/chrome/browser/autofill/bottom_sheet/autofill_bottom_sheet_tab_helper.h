@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 
+#import "base/scoped_multi_source_observation.h"
+#import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/unique_ids.h"
+#include "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -24,8 +27,10 @@ class ScriptMessage;
 @protocol PasswordsAccountStorageNoticeHandler;
 
 class AutofillBottomSheetTabHelper
-    : public web::WebStateObserver,
-      public web::WebStateUserData<AutofillBottomSheetTabHelper> {
+    : public web::WebFramesManager::Observer,
+      public web::WebStateObserver,
+      public web::WebStateUserData<AutofillBottomSheetTabHelper>,
+      public autofill::AutofillManager::Observer {
  public:
   // Maximum number of times the password bottom sheet can be
   // dismissed before it gets disabled.
@@ -75,6 +80,16 @@ class AutofillBottomSheetTabHelper
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // web::WebFramesManager::Observer:
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override;
+
+  // autofill::AutofillManager::Observer:
+  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
+  void OnFieldTypesDetermined(autofill::AutofillManager& manager,
+                              autofill::FormGlobalId form_id,
+                              FieldTypeSource source) override;
+
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
@@ -118,10 +133,21 @@ class AutofillBottomSheetTabHelper
   // The WebState with which this object is associated.
   web::WebState* const web_state_;
 
+  // TODO(crbug.com/1441921): Remove once this class uses FormGlobalIds.
+  base::ScopedObservation<web::WebFramesManager,
+                          web::WebFramesManager::Observer>
+      frames_manager_observation_{this};
+
+  base::ScopedMultiSourceObservation<autofill::AutofillManager,
+                                     autofill::AutofillManager::Observer>
+      autofill_manager_observations_{this};
+
   // List of password bottom sheet related renderer ids.
+  // TODO(crbug.com/1441921): Maybe migrate to FieldGlobalIds.
   std::set<autofill::FieldRendererId> registered_password_renderer_ids_;
 
   // List of payments bottom sheet related renderer ids.
+  // TODO(crbug.com/1441921): Migrate to FieldGlobalIds.
   std::set<autofill::FieldRendererId> registered_payments_renderer_ids_;
 
   // List of frames on which listeners have been attached.
