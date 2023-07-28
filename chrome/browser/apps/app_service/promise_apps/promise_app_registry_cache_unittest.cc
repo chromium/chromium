@@ -85,6 +85,30 @@ TEST_F(PromiseAppRegistryCacheTest, GetAllPromiseApps) {
   EXPECT_EQ(promise_app_list[1]->package_id, package_id_2);
 }
 
+TEST_F(PromiseAppRegistryCacheTest, GetPromiseAppForStringPackageId) {
+  // There should be no promise apps registered yet.
+  EXPECT_EQ(cache()->GetAllPromiseApps().size(), 0u);
+
+  std::string valid_package_id_1 = "android:something.example.test";
+  std::string valid_package_id_2 = "android:other.example.test";
+  std::string invalid_package_id = "invalid";
+  apps::PackageId package_id =
+      PackageId::FromString(valid_package_id_1).value();
+
+  // Register a promise app.
+  auto promise_app = std::make_unique<PromiseApp>(package_id);
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Expect nullptr result for invalid string Package ID or when a Package ID
+  // isn't registered.
+  EXPECT_FALSE(cache()->GetPromiseAppForStringPackageId(invalid_package_id));
+  EXPECT_FALSE(cache()->GetPromiseAppForStringPackageId(valid_package_id_2));
+
+  const PromiseApp* promise_app_result =
+      cache()->GetPromiseAppForStringPackageId(valid_package_id_1);
+  EXPECT_EQ(promise_app_result->package_id, package_id);
+}
+
 TEST_F(PromiseAppRegistryCacheTest, RemovePromiseApp) {
   // Register a promise app.
   auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);

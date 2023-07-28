@@ -76,6 +76,20 @@ const PromiseApp* PromiseAppRegistryCache::GetPromiseApp(
   return FindPromiseApp(package_id);
 }
 
+const PromiseApp* PromiseAppRegistryCache::GetPromiseAppForStringPackageId(
+    const std::string& string_package_id) const {
+  absl::optional<apps::PackageId> package_id =
+      apps::PackageId::FromString(string_package_id);
+  if (!package_id.has_value()) {
+    return nullptr;
+  }
+  const PromiseApp* promise_app = GetPromiseApp(package_id.value());
+  if (!promise_app) {
+    return nullptr;
+  }
+  return promise_app;
+}
+
 PromiseApp* PromiseAppRegistryCache::FindPromiseApp(
     const PackageId& package_id) const {
   auto promise_iter = promise_app_map_.find(package_id);

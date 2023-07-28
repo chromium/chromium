@@ -69,6 +69,13 @@ class PromiseAppRegistryCache {
   // the pointer as the promise app may be destroyed at any time.
   const PromiseApp* GetPromiseApp(const PackageId& package_id) const;
 
+  // Retrieve a read-only pointer to the promise app with the specified
+  // string_package_id. Returns nullptr if the promise app does not exist or if
+  // `string_package_id` cannot be converted into a legitimate package ID. Do
+  // not store the pointer as the promise app may be destroyed at any time.
+  const PromiseApp* GetPromiseAppForStringPackageId(
+      const std::string& string_package_id) const;
+
  private:
   // Retrieve the registered promise app with the specified package_id. Returns
   // nullptr if the promise app does not exist.
