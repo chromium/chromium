@@ -115,9 +115,9 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
 // AutofillPopupController implementation.
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
-  // Suggestions inside the keyboard accessory adapter are accepted without
-  // requiring a minimum time threshold.
-  NOTREACHED();
+  if (controller_) {
+    controller_->AcceptSuggestion(OffsetIndexFor(index));
+  }
 }
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestionWithoutThreshold(

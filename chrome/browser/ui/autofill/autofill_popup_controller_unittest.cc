@@ -577,6 +577,7 @@ TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
 }
 
 TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
+  base::HistogramTester histogram_tester;
   ShowSuggestions({PopupItemId::kAddressEntry});
 
   // Calls before the threshold are ignored.
@@ -588,18 +589,25 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
   EXPECT_CALL(*delegate(), DidAcceptSuggestion);
   task_environment()->FastForwardBy(base::Milliseconds(400));
   popup_controller().AcceptSuggestion(0);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
 }
 
 TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionWithoutThreshold) {
+  base::HistogramTester histogram_tester;
   ShowSuggestions({PopupItemId::kAddressEntry});
 
   // Calls are accepted immediately.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
   popup_controller().AcceptSuggestionWithoutThreshold(0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 0);
 }
 
 TEST_F(AutofillPopupControllerUnitTest,
        AcceptSuggestionTimeoutIsUpdatedOnPopupMove) {
+  base::HistogramTester histogram_tester;
   ShowSuggestions({PopupItemId::kAddressEntry});
 
   // Calls before the threshold are ignored.
@@ -608,6 +616,8 @@ TEST_F(AutofillPopupControllerUnitTest,
   task_environment()->FastForwardBy(base::Milliseconds(100));
   popup_controller().AcceptSuggestion(0);
 
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
   task_environment()->FastForwardBy(base::Milliseconds(400));
   // Show the suggestions again (simulating, e.g., a click somewhere slightly
   // different).
@@ -615,11 +625,15 @@ TEST_F(AutofillPopupControllerUnitTest,
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
   popup_controller().AcceptSuggestion(0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion);
   // After waiting, suggestions are accepted again.
   task_environment()->FastForwardBy(base::Milliseconds(500));
   popup_controller().AcceptSuggestion(0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 }
 
 #if BUILDFLAG(IS_ANDROID)

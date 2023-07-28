@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -296,9 +297,14 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
   DCHECK(!time_view_shown_.is_null());
-  if ((base::TimeTicks::Now() - time_view_shown_ <
-       kIgnoreEarlyClicksOnPopupDuration) &&
+  const base::TimeDelta time_elapsed =
+      base::TimeTicks::Now() - time_view_shown_;
+  if ((time_elapsed < kIgnoreEarlyClicksOnPopupDuration) &&
       !disable_threshold_for_testing_) {
+    base::UmaHistogramCustomTimes(
+        "Autofill.Popup.AcceptanceDelayThresholdNotMet", time_elapsed,
+        base::Milliseconds(0), kIgnoreEarlyClicksOnPopupDuration,
+        /*buckets=*/50);
     return;
   }
 

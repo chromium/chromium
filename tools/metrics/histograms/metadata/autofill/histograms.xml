@@ -3375,6 +3375,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.Popup.AcceptanceDelayThresholdNotMet" units="ms"
+    expires_after="2024-04-01">
+  <owner>jkeitel@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <owner>derinel@google.com</owner>
+  <summary>
+    Records instances in which the user attempted to accept an Autofill
+    suggestion within less than the acceptance threshold (500ms). For those
+    cases, it measures how long the user took to interact.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
     expires_after="2023-11-12">
   <owner>koerber@google.com</owner>

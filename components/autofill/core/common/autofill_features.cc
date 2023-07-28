@@ -621,6 +621,13 @@ BASE_FEATURE(kAutofillManualFallbackAndroid,
              "AutofillManualFallbackAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, Autofill suggestions from keyboard accessory chips are only
+// accepted if at least 500ms have passed between showing the accessory and
+// interacting with the accessory chip.
+BASE_FEATURE(kAutofillKeyboardAccessoryAcceptanceDelayThreshold,
+             "AutofillKeyboardAccessoryAcceptanceDelayThreshold",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the touch to fill surface is shown for credit cards on
 // Android.
 BASE_FEATURE(kAutofillTouchToFillForCreditCardsAndroid,
