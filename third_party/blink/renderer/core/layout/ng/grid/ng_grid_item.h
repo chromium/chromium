@@ -168,6 +168,13 @@ struct CORE_EXPORT GridItemData {
                : is_opposite_direction_in_root_grid_rows;
   }
 
+  bool MustCachePlacementIndices(
+      GridTrackSizingDirection track_direction) const {
+    return !is_subgridded_to_parent_grid ||
+           IsConsideredForSizing(track_direction) ||
+           MustConsiderGridItemsForSizing(track_direction);
+  }
+
   bool MustConsiderGridItemsForSizing(
       GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)

@@ -297,6 +297,8 @@ void GridItemData::ComputeSetIndices(
   DCHECK(!IsOutOfFlow());
 
   const auto track_direction = track_collection.Direction();
+  DCHECK(MustCachePlacementIndices(track_direction));
+
   auto& range_indices = RangeIndices(track_direction);
 
 #if DCHECK_IS_ON()
