@@ -281,12 +281,6 @@ const char kTextBasedAudioDescriptionDescription[] =
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-const char kEnableSupervisionOnDesktopName[] =
-    "Enable parental supervision infrastructure";
-const char kEnableSupervisionOnDesktopDescription[] =
-    "Enables the infrastructure for Family Link supervision features. "
-    "Individual features are controlled by separate flags.";
-
 const char kFilterWebsitesForSupervisedUsersOnDesktopName[] =
     "Enable website filtering for supervised users";
 const char kFilterWebsitesForSupervisedUsersOnDesktopDescription[] =

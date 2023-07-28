@@ -73,8 +73,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {supervised_user::kEnableSupervisionOnDesktopAndIOS,
-         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
+        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
         {});
   }
 

@@ -27,8 +27,6 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      supervised_user::kEnableSupervisionOnDesktopAndIOS);
-  config.features_enabled.push_back(
       supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   return config;
 }

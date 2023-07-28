@@ -91,9 +91,6 @@ class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
  private:
   InProcessBrowserTestMixinHost mixin_host_;
 
-  base::test::ScopedFeatureList feature_list_{
-      supervised_user::kEnableSupervisionOnDesktopAndIOS};
-
   // In order to simulate supervision removal and re-authentication use
   // supervised account in the PRE test and regular account afterwards.
   supervised_user::SupervisionMixin supervision_mixin_{

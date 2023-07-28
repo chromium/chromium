@@ -379,8 +379,7 @@ void AccountTrackerService::SetAccountCapabilities(
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
   // Set the child account status based on the account capabilities.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
+  if (supervised_user::IsChildAccountSupervisionEnabled()) {
     modified =
         UpdateAccountInfoChildStatus(
             account_info,

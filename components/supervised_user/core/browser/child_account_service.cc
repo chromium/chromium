@@ -190,7 +190,7 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   // We deliberately don't check for that, as we are only interested in the
   // child account status.
 
-  if (!IsChildAccountDetectionEnabled()) {
+  if (!supervised_user::IsChildAccountSupervisionEnabled()) {
     SetSupervisionStatusAndNotifyObservers(false);
     return;
   }

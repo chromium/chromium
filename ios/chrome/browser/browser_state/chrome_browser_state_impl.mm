@@ -132,8 +132,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
       ->RegisterBrowserStatePrefsForServices(pref_registry_.get());
 
   scoped_refptr<SupervisedUserPrefStore> supervised_user_prefs;
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
+  if (supervised_user::IsChildAccountSupervisionEnabled()) {
     // Create a SupervisedUserPrefStore and initialize it with empty data.
     // The pref store will load SupervisedUserSettingsService disk data after
     // the creation of PrefService.
@@ -168,8 +167,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   supervised_user_settings->Init(state_path_, GetIOTaskRunner(),
                                  /*load_synchronously=*/true);
 
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
+  if (supervised_user::IsChildAccountSupervisionEnabled()) {
     supervised_user_prefs->Init(supervised_user_settings);
   }
 

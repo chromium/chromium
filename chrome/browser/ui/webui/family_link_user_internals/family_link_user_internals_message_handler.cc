@@ -23,6 +23,7 @@
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_thread.h"
@@ -189,9 +190,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   base::Value::List section_list;
 
   base::Value::List* section_general = AddSection(&section_list, "General");
-  AddSectionEntry(
-      section_general, "Child detection enabled",
-      supervised_user::ChildAccountService::IsChildAccountDetectionEnabled());
+  AddSectionEntry(section_general, "Child detection enabled",
+                  supervised_user::IsChildAccountSupervisionEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui());
 

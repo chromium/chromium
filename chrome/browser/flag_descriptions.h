@@ -196,9 +196,6 @@ extern const char kUseClientGmbInterfaceDescription[];
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-extern const char kEnableSupervisionOnDesktopName[];
-extern const char kEnableSupervisionOnDesktopDescription[];
-
 extern const char kFilterWebsitesForSupervisedUsersOnDesktopName[];
 extern const char kFilterWebsitesForSupervisedUsersOnDesktopDescription[];
 

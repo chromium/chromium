@@ -42,16 +42,6 @@ class ChildAccountService : public KeyedService,
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
 
-  static bool IsChildAccountDetectionEnabled() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    // Supervision features are fully supported on Android and ChromeOS.
-    return true;
-#else
-    // Supervision features are under development on other platforms.
-    return base::FeatureList::IsEnabled(kEnableSupervisionOnDesktopAndIOS);
-#endif
-  }
-
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
     registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
   }

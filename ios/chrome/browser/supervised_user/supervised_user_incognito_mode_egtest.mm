@@ -35,7 +35,7 @@ using chrome_test_util::ToolsMenuView;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      supervised_user::kEnableSupervisionOnDesktopAndIOS);
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   return config;
 }
 

@@ -78,20 +78,9 @@ bool IsProtoApiForClassifyUrlEnabled() {
 }
 
 // The following flags control whether supervision features are enabled on
-// desktop and iOS. These are structured as follows:
-//
-// * EnableSupervisionOnDesktopAndIOS controls whether *any* supervision
-// features are enabled at all.
-// * Individual granular per-feature flags that control whether individual
-// features are enabled. These should only be enabled if
-// EnableSupervisionOnDesktopAndIOS is also enabled.
-//
-// For a feature to be enabled:
-// * EnableSupervisionOnDesktopAndIOS must be enabled
-// * If that feature has a granular feature flag, it must also be enabled
-BASE_FEATURE(kEnableSupervisionOnDesktopAndIOS,
-             "EnableSupervisionOnDesktopAndIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// desktop and iOS. There are granular sub-feature flags, which control
+// particular aspects. If one or more of these sub-feature flags are enabled,
+// then child account detection logic is implicitly enabled.
 BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
              "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -113,9 +102,8 @@ BASE_FEATURE(kEnableManagedByParentUi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CanDisplayFirstTimeInterstitialBanner() {
-  return base::FeatureList::IsEnabled(kEnableSupervisionOnDesktopAndIOS) &&
-         base::FeatureList::IsEnabled(
-             kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+  return base::FeatureList::IsEnabled(
+      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 }
 
 // When enabled non-syncing signed in supervised users will not be signed out of
@@ -137,4 +125,25 @@ constexpr base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl{
 bool IsLocalExtensionApprovalsV2Enabled() {
   return base::FeatureList::IsEnabled(kLocalExtensionApprovalsV2);
 }
+
+bool IsChildAccountSupervisionEnabled() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  // Supervision features are fully supported on Android and ChromeOS.
+  return true;
+#else
+  return base::FeatureList::IsEnabled(
+             supervised_user::
+                 kFilterWebsitesForSupervisedUsersOnDesktopAndIOS) ||
+         base::FeatureList::IsEnabled(
+             supervised_user::
+                 kEnableExtensionsPermissionsForSupervisedUsersOnDesktop) ||
+         base::FeatureList::IsEnabled(
+             supervised_user::kSupervisedPrefsControlledBySupervisedStore) ||
+         base::FeatureList::IsEnabled(
+             supervised_user::kEnableManagedByParentUi) ||
+         base::FeatureList::IsEnabled(
+             supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+#endif
+}
+
 }  // namespace supervised_user

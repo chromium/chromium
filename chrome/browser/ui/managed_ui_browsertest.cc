@@ -48,11 +48,7 @@ class ManagedUiTest : public InProcessBrowserTest,
  public:
   ManagedUiTest() {
     const std::vector<base::test::FeatureRef> features_to_toggle = {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      supervised_user::kEnableSupervisionOnDesktopAndIOS,
-#endif
-      supervised_user::kEnableManagedByParentUi
-    };
+        supervised_user::kEnableManagedByParentUi};
 
     if (IsManagedUiEnabledForSupervisedUsers()) {
       scoped_feature_list_.InitWithFeatures(features_to_toggle, {});

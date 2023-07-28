@@ -64642,7 +64642,6 @@ from previous Chrome versions.
       label="AutofillUpstreamUseAlternateSecureDataType:disabled"/>
   <int value="365068212" label="PiexWasm:disabled"/>
   <int value="365467768" label="prefetch-search-results"/>
-  <int value="365581200" label="EnableSupervisionOnDesktopAndIOS:disabled"/>
   <int value="365737168" label="SingleTouchSelect:disabled"/>
   <int value="366524741"
       label="ArcTrackpadScrollTouchscreenEmulation:disabled"/>
@@ -66123,7 +66122,6 @@ from previous Chrome versions.
   <int value="1138345742" label="PreferConstantFrameRate:disabled"/>
   <int value="1138349838" label="EnableMDRoundedCornersOnDialogs:disabled"/>
   <int value="1138690502" label="PreconnectToSearch:enabled"/>
-  <int value="1139053286" label="EnableSupervisionOnDesktopAndIOS:enabled"/>
   <int value="1139226452" label="enable-nacl-debug"/>
   <int value="1139363314" label="disable-supervised-user-blacklist"/>
   <int value="1139756271" label="WebOTPCrossDevice:enabled"/>

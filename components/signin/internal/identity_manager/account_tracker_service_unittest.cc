@@ -513,10 +513,10 @@ void AccountTrackerServiceTest::
   base::test::ScopedFeatureList scoped_feature_list;
   if (enable_supervision_on_desktop) {
     scoped_feature_list.InitAndEnableFeature(
-        supervised_user::kEnableSupervisionOnDesktopAndIOS);
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   } else {
     scoped_feature_list.InitAndDisableFeature(
-        supervised_user::kEnableSupervisionOnDesktopAndIOS);
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
   SimulateTokenAvailable(kAccountKeyChild);
@@ -720,7 +720,7 @@ TEST_F(AccountTrackerServiceTest,
   // Now enable the flag, and repeat the fetch.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kEnableSupervisionOnDesktopAndIOS);
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 
   ResetAccountTracker();
 

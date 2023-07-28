@@ -15,7 +15,6 @@ extern const char kLocalWebApprovalsPreferredButtonLocal[];
 extern const char kLocalWebApprovalsPreferredButtonRemote[];
 
 // Flags related to supervision features on Desktop and iOS platforms.
-BASE_DECLARE_FEATURE(kEnableSupervisionOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 BASE_DECLARE_FEATURE(kSupervisedPrefsControlledBySupervisedStore);
@@ -51,6 +50,13 @@ bool IsProtoApiForClassifyUrlEnabled();
 
 // Returns whether the new local extension approval experience is enabled.
 bool IsLocalExtensionApprovalsV2Enabled();
+
+// Returns true if child account supervision features should be enabled for this
+// client.
+//
+// This method does not take into account whether the user is actually a child;
+// that must be handled by calling code.
+bool IsChildAccountSupervisionEnabled();
 
 }  // namespace supervised_user
 

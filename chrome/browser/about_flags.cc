@@ -7761,12 +7761,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-    {"enable-family-link-supervision",
-     flag_descriptions::kEnableSupervisionOnDesktopName,
-     flag_descriptions::kEnableSupervisionOnDesktopDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(supervised_user::kEnableSupervisionOnDesktopAndIOS)},
-
     {"enable-family-link-website-filtering",
      flag_descriptions::kFilterWebsitesForSupervisedUsersOnDesktopName,
      flag_descriptions::kFilterWebsitesForSupervisedUsersOnDesktopDescription,

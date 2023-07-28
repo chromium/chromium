@@ -95,15 +95,6 @@ bool ShouldDisplayManagedByParentUi(Profile* profile) {
   return false;
 #else
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // The EnableManagedByParentUiOnDesktop flag depends on
-  // EnableSupervisionOnDesktopAndIOS.
-  CHECK(
-      base::FeatureList::IsEnabled(
-          supervised_user::kEnableSupervisionOnDesktopAndIOS) ||
-      !base::FeatureList::IsEnabled(supervised_user::kEnableManagedByParentUi));
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
   const auto* const supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   return supervised_user_service &&
