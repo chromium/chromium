@@ -49,9 +49,12 @@ class BringAndroidTabsToIOSService : public KeyedService {
 
   ~BringAndroidTabsToIOSService() override;
 
-  //  Loads the list of recent tabs brought from the user's last Android device
+  //  Loads a list of recent tabs brought from the user's last Android device
   //  into the service on demand. Could be called repeatedly to retrieve updated
   //  results.
+  //
+  //  Note that the recency of the session the tab is in takes precedence over
+  //  the recency of the tab.
   void LoadTabs();
 
   // Returns the number of recent tabs / the tab at the given index.
