@@ -10,6 +10,7 @@
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
 #include "chrome/browser/companion/core/utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -118,6 +119,19 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
   url_params.set_has_msbb_enabled(is_msbb_enabled);
   url_params.set_is_sign_in_allowed(signin_delegate_->AllowedSignin());
   url_params.set_is_signed_in(signin_delegate_->IsSignedIn());
+  url_params.set_links_open_in_new_tab(
+      !companion::ShouldOpenLinksInCurrentTab());
+
+// Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
+// does not exist on Android and will break try-bots
+#if (!BUILDFLAG(IS_ANDROID))
+  bool is_entry_point_default_pinned =
+      pref_service_ &&
+      pref_service_
+          ->GetDefaultPrefValue(prefs::kSidePanelCompanionEntryPinnedToToolbar)
+          ->GetBool();
+  url_params.set_is_entrypoint_pinned_by_default(is_entry_point_default_pinned);
+#endif
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
   promo_state->set_signin_promo_denial_count(

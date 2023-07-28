@@ -24,7 +24,7 @@ message PromoState {
 
 // This proto file is shared between Chrome and Server side and used to pack the
 // URL query params for the companion URL request.
-// Next ID: 8
+// Next ID: 10
 message CompanionUrlParams {
   reserved 4, 5;
 
@@ -42,4 +42,10 @@ message CompanionUrlParams {
 
   // Whether user is allowed to sign in.
   bool is_sign_in_allowed = 7;
+
+  // Whether the Search Companion entrypoint is pinned to the toolbar.
+  optional bool is_entrypoint_pinned_by_default = 8;
+
+  // Whether link clicks in Search Companion open a new tab.
+  optional bool links_open_in_new_tab = 9;
 }
