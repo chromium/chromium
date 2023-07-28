@@ -1885,8 +1885,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartBasicPrintConcurrent) {
-  // Linux allows concurrent printing, so regular setup for printing is needed.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
+  // If concurrent printing is allowed, then regular setup for printing is
+  // needed.
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 #endif
@@ -1906,7 +1907,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   // The expected events for this are:
   // 1.  Start the print job.
   // 2.  Rendering for 1 page of document of content.
@@ -1922,14 +1923,13 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // Now initiate a system print that would exist concurrently with that.
   StartBasicPrint(web_contents);
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   WaitUntilCallbackReceived();
 #endif
 
   const absl::optional<bool>& result = print_view_manager->print_now_result();
   ASSERT_TRUE(result.has_value());
-  // With the exception of Linux, concurrent system print is not allowed.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   EXPECT_TRUE(*result);
 #else
   // The denied concurrent print is silent without an error.
@@ -1964,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   ASSERT_TRUE(client_id.has_value());
 
   // Now do a print preview which will try to switch to doing system print.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   // The expected events for this are:
   // 1.  Start the print job.
   // 2.  Rendering for 1 page of document of content.
@@ -1987,7 +1987,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   // With the exception of Linux, concurrent system print is not allowed.
   ASSERT_TRUE(system_print_registration_succeeded().has_value());
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   EXPECT_TRUE(*system_print_registration_succeeded());
 #else
   // The denied concurrent print is silent without an error.

@@ -691,7 +691,7 @@ PrintBackendServiceManager::RegisterClient(
       query_clients_.insert(client_id);
       break;
     case ClientType::kQueryWithUi:
-#if !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
       if (!query_with_ui_clients_.empty())
         return absl::nullopt;
 #endif
@@ -967,7 +967,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
       break;
 
     case ClientType::kQueryWithUi:
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
       // No need to update if there were other query with UI clients.
       if (query_with_ui_clients_.size() > 1)
         return absl::nullopt;
