@@ -6581,6 +6581,25 @@ function reportResult(auctionConfig, browserSignals) {
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
+// Test that shows we reliably wait for promises to resolve even if nothing
+// participates in the IG.
+TEST_F(AuctionRunnerTest, PromiseCheckNoBidders) {
+  use_promise_for_auction_signals_ = true;
+
+  StartAuction(kSellerUrl, /*bidders=*/{});
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Emulate the renderer aborting things.
+  abortable_ad_auction_->Abort();
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_descriptor);
+  EXPECT_TRUE(result_.manually_aborted);
+}
+
 // An auction that passes auctionSignals via promises. This makes sure to
 // order worklet process creation before promise delivery (compare to
 // PromiseAuctionSignalsDeliveredBeforeWorklet).

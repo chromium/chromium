@@ -1571,7 +1571,7 @@ class InterestGroupAuction::BuyerHelper
       // doing in one place.
       ClosePipes();
 
-      auction_->OnBidSourceDone();
+      auction_->OnScoringDependencyDone();
     }
   }
 
@@ -1959,13 +1959,15 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
     }
   }
 
-  // Fail if there are no pending loads.
   if (num_pending_loads_ == 0) {
+    // There is nothing to load.  We move on to the bidding and scoring phase
+    // anyway, since it may need to wait for config promises to be resolved
+    // (and checked) and also potentially deal with additional_bids.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete,
-            weak_ptr_factory_.GetWeakPtr(), AuctionResult::kNoInterestGroups));
+            weak_ptr_factory_.GetWeakPtr(), AuctionResult::kSuccess));
   }
 }
 
@@ -1973,7 +1975,6 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
     base::OnceClosure on_seller_receiver_callback,
     AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback) {
   DCHECK(bidding_and_scoring_phase_callback);
-  DCHECK(!buyer_helpers_.empty() || !component_auctions_.empty());
   DCHECK(!on_seller_receiver_callback_);
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
@@ -1991,15 +1992,28 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
   bidding_and_scoring_phase_start_time_ = base::TimeTicks::Now();
 
-  outstanding_bid_sources_ = buyer_helpers_.size() + component_auctions_.size();
+  num_scoring_dependencies_ =
+      buyer_helpers_.size() + component_auctions_.size();
+
+  // Also wait for config to resolve.
+  if (!config_promises_resolved_) {
+    ++num_scoring_dependencies_;
+  }
+
+  // TODO(morlovich): If the config already resolved additional_bids here,
+  // may start work on it.
 
   // Need to start loading worklets before any bids can be generated or scored.
-
   if (component_auctions_.empty()) {
-    // If there are no component auctions, request the seller worklet.
-    // Otherwise, the seller worklet will be requested once all component
-    // auctions have received their own seller worklets.
-    RequestSellerWorklet();
+    // If there are no component auctions, request the seller worklet if we may
+    // need it. (The case for component auctions is handled below, there the
+    // seller worklet will be requested once all component auctions have
+    // received their own seller worklets).
+    //
+    // TODO(morlovich): We may need it based on additional_bids, too.
+    if (!buyer_helpers_.empty()) {
+      RequestSellerWorklet();
+    }
   } else {
     // Since component auctions may invoke OnComponentSellerWorkletReceived()
     // synchronously, it's important to set this to the total number of
@@ -2021,6 +2035,10 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   for (const auto& buyer_helper : buyer_helpers_) {
     buyer_helper->StartGeneratingBids();
   }
+
+  // It's possible that we actually have nothing to do here at this point ---
+  // neither bids from interest groups, nor configuration promises to wait for.
+  MaybeCompleteBiddingAndScoringPhase();
 }
 
 void InterestGroupAuction::StartFromServerResponse(
@@ -2305,6 +2323,12 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
     }
   }
 
+  // TODO(morlovich): If additional_bids show up, we may need to set up
+  // an additional scoring dependency here.
+
+  // Config resolution is done.
+  OnScoringDependencyDone();
+
   ScoreQueuedBidsIfReady();
 }
 
@@ -2573,6 +2597,18 @@ bool InterestGroupAuction::NonKAnonWinnerIsKAnon() const {
          top_non_kanon_enforced_bid()
                  ->bid->auction->top_non_kanon_enforced_bid()
                  ->bid->bid_role == Bid::BidRole::kBothKAnonModes;
+}
+
+bool InterestGroupAuction::HasInterestGroups() const {
+  if (!buyer_helpers_.empty()) {
+    return true;
+  }
+  for (const auto& kv : component_auctions_) {
+    if (!kv.second->buyer_helpers_.empty()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 SubresourceUrlBuilder* InterestGroupAuction::SubresourceUrlBuilderIfReady() {
@@ -3008,9 +3044,10 @@ void InterestGroupAuction::OnComponentInterestGroupsRead(
   num_owners_with_interest_groups_ +=
       component_auction->second->num_owners_with_interest_groups_;
 
-  // Erase component auctions that failed to load anything, so they won't be
-  // invoked in the generate bid phase. This is not a problem in the reporting
-  // phase, as the top-level auction knows which component auction, if any, won.
+  // Erase component auctions that failed their interest group loading phase,
+  // so they won't be invoked in the generate bid phase. This is not a problem
+  // in the reporting phase, as the top-level auction knows which component
+  // auction, if any, won.
   if (!success) {
     component_auctions_.erase(component_auction);
   }
@@ -3033,7 +3070,12 @@ void InterestGroupAuction::OnOneLoadCompleted() {
     // theoretically participate in the auction.
     if (num_owners_loaded_ > 0) {
       size_t num_interest_groups = NumPotentialBidders();
-      size_t num_sellers_with_bidders = component_auctions_.size();
+      size_t num_sellers_with_bidders = 0;
+      for (const auto& [unused, component] : component_auctions_) {
+        if (!component->buyer_helpers_.empty()) {
+          ++num_sellers_with_bidders;
+        }
+      }
 
       // If the top-level seller either has interest groups itself, or any of
       // the component auctions do, then the top-level seller also has bidders.
@@ -3059,17 +3101,20 @@ void InterestGroupAuction::OnOneLoadCompleted() {
     }
   }
 
-  // If there are no potential bidders in this auction and no component auctions
-  // with bidders, either, fail the auction.
-  if (buyer_helpers_.empty() && component_auctions_.empty()) {
-    OnStartLoadInterestGroupsPhaseComplete(AuctionResult::kNoInterestGroups);
-    return;
+  // We generally proceed even if there is seemingly nothing to do since we
+  // still may need to wait for promises to resolve and deal with
+  // `additional_bids`.
+  AuctionResult result = AuctionResult::kSuccess;
+
+  // If the config had components, but none survived the loading phase,
+  // they must all have failed permissions checks, so there is no reason
+  // to proceed.
+  if (!config_->non_shared_params.component_auctions.empty() &&
+      component_auctions_.empty()) {
+    result = AuctionResult::kNoInterestGroups;
   }
 
-  // There are bidders that can generate bids, so complete without a final
-  // result.
-  OnStartLoadInterestGroupsPhaseComplete(
-      /*auction_result=*/AuctionResult::kSuccess);
+  OnStartLoadInterestGroupsPhaseComplete(result);
 }
 
 void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
@@ -3081,7 +3126,8 @@ void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
     auction_metrics_recorder_->OnLoadInterestGroupPhaseComplete();
   }
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "load_groups_phase", *trace_id_);
-  if (auction_result == AuctionResult::kNoInterestGroups) {
+
+  if (!HasInterestGroups()) {
     UMA_HISTOGRAM_TIMES("Ads.InterestGroup.Auction.LoadNoGroupsTime",
                         base::TimeTicks::Now() - creation_time_);
   } else {
@@ -3180,8 +3226,8 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
 
   // If no further bids are outstanding, now is the time to send a coalesced
   // request for all the trusted seller signals (if some still are pending,
-  // OnBidSourceDone() will take care of it).
-  if (outstanding_bid_sources_ == 0) {
+  // OnScoringDependencyDone() will take care of it).
+  if (num_scoring_dependencies_ == 0) {
     seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
   }
 
@@ -3209,8 +3255,11 @@ void InterestGroupAuction::OnSellerWorkletFatalError(
 void InterestGroupAuction::OnComponentAuctionComplete(
     InterestGroupAuction* component_auction,
     bool success) {
-  auction_metrics_recorder_->RecordComponentAuctionLatency(
-      base::TimeTicks::Now() - bidding_and_scoring_phase_start_time_);
+  // TODO(morlovich): Also record if it has additional_bids?
+  if (!component_auction->buyer_helpers_.empty()) {
+    auction_metrics_recorder_->RecordComponentAuctionLatency(
+        base::TimeTicks::Now() - bidding_and_scoring_phase_start_time_);
+  }
 
   // TODO(morlovich): Can try to consolidate these as kBothKAnonModes when
   // possible.
@@ -3229,7 +3278,7 @@ void InterestGroupAuction::OnComponentAuctionComplete(
         kanon_bid, Bid::BidRole::kEnforcedKAnon));
   }
 
-  OnBidSourceDone();
+  OnScoringDependencyDone();
 }
 
 // static
@@ -3267,12 +3316,12 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       component_bid->bid_ad, component_bid->bid_state, component_bid->auction);
 }
 
-void InterestGroupAuction::OnBidSourceDone() {
-  --outstanding_bid_sources_;
+void InterestGroupAuction::OnScoringDependencyDone() {
+  --num_scoring_dependencies_;
 
   // If we issued the final set of bids to a seller worklet, tell it to send any
   // pending scoring signals request to complete the auction more quickly.
-  if (outstanding_bid_sources_ == 0 && ReadyToScoreBids()) {
+  if (num_scoring_dependencies_ == 0 && ReadyToScoreBids()) {
     seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
   }
 
@@ -3641,24 +3690,33 @@ absl::optional<base::TimeDelta> InterestGroupAuction::SellerTimeout() {
 }
 
 void InterestGroupAuction::MaybeCompleteBiddingAndScoringPhase() {
-  if (!AllBidsScored()) {
+  if (!IsBiddingAndScoringPhaseComplete()) {
     return;
   }
 
   all_bids_scored_ = true;
 
+  AuctionResult result = AuctionResult::kSuccess;
+
   // If there's no winning bid, fail with kAllBidsRejected if there were any
-  // bids. Otherwise, fail with kNoBids.
+  // bids. Otherwise, fail with kNoBids or kNoInterestGroups.
   if (!top_bid()) {
     if (any_bid_made_) {
-      OnBiddingAndScoringComplete(AuctionResult::kAllBidsRejected);
+      result = AuctionResult::kAllBidsRejected;
     } else {
-      OnBiddingAndScoringComplete(AuctionResult::kNoBids);
+      result = HasInterestGroups() ? AuctionResult::kNoBids
+                                   : AuctionResult::kNoInterestGroups;
     }
-    return;
   }
 
-  OnBiddingAndScoringComplete(AuctionResult::kSuccess);
+  // This needs to be asynchronous since it can happens inside
+  // StartBiddingAndScoringPhase if there is actually nothing to do, and we
+  // don't want to delete the auction while we're in process of starting it.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&InterestGroupAuction::OnBiddingAndScoringComplete,
+                     weak_ptr_factory_.GetWeakPtr(), result,
+                     std::vector<std::string>()));
 }
 
 void InterestGroupAuction::OnBiddingAndScoringComplete(

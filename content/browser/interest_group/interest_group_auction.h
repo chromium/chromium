@@ -788,9 +788,10 @@ class CONTENT_EXPORT InterestGroupAuction
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors);
 
-  // True if all bids have been generated and scored.
-  bool AllBidsScored() const {
-    return outstanding_bid_sources_ == 0 && bids_being_scored_ == 0 &&
+  // True if all bids have been generated (or decoded from additional_bids) and
+  // scored and all config promises resolved.
+  bool IsBiddingAndScoringPhaseComplete() const {
+    return num_scoring_dependencies_ == 0 && bids_being_scored_ == 0 &&
            unscored_bids_.empty();
   }
 
@@ -803,16 +804,17 @@ class CONTENT_EXPORT InterestGroupAuction
       const ScoredBid* scored_bid,
       Bid::BidRole bid_role);
 
-  // Called when a potential source of bids has finished generating bids. This
-  // could be either a component auction completing (with or without generating
-  // a bid) or a BuyerHelper that has finished generating bids. Must be called
-  // only after ScoreBidIfReady() has been called for all bids the bidder
-  // generated.
+  // Called when a potential source of bids or other scoring dependency has
+  // finished. This could be a component auction completing (with or without
+  // generating a bid) or a BuyerHelper that has finished generating bids.
+  // Bid scores should pass their bids to ScoreBidIfReady() before calling this.
+  // It can also be called when all the config promises got resolved, if that
+  // happens during the bidding and scoring phase.
   //
-  // Updates `outstanding_bid_sources_`, flushes pending scoring signals
+  // Updates `num_scoring_dependencies_`, flushes pending scoring signals
   // requests, and advances to the next state of the auction, if the bidding and
   // scoring phase is complete.
-  void OnBidSourceDone();
+  void OnScoringDependencyDone();
 
   // Calls into the seller asynchronously to score the passed in bid.
   void ScoreBidIfReady(std::unique_ptr<Bid> bid);
@@ -872,7 +874,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
   absl::optional<base::TimeDelta> SellerTimeout();
 
-  // If AllBidsScored() is true, completes the bidding and scoring phase.
+  // If IsBiddingAndScoringPhaseComplete() is true, completes the bidding and
+  // scoring phase.
   void MaybeCompleteBiddingAndScoringPhase();
 
   // Invoked when the bidding and scoring phase of an auction completes.
@@ -955,6 +958,10 @@ class CONTENT_EXPORT InterestGroupAuction
   bool HasNonKAnonWinner() const;
   // Returns true if the non-k-anonymous winner of the auction is k-anonymous.
   bool NonKAnonWinnerIsKAnon() const;
+
+  // Returns true if this auction (or one of its component auctions)
+  // successfully loaded some interest groups.
+  bool HasInterestGroups() const;
 
   // Returns the subresource builder if the promise configuring it has resolved,
   // creating it if needed.
@@ -1041,14 +1048,17 @@ class CONTENT_EXPORT InterestGroupAuction
   // AuctionWorkletManager.
   bool seller_worklet_received_ = false;
 
-  // Number of bidders that are still attempting to generate bids. This includes
+  // Number of things that are pending that are needed to score everything.
+  // This includes bidders that are still attempting to generate bids ---
   // both BuyerHelpers and component auctions. BuyerHelpers may generate
-  // multiple bids (or no bids).
+  // multiple bids (or no bids). It also includes waiting for promises in
+  // configuration to resolve.
+  // TODO(morlovich): And will wait for additional_bids.
   //
   // When this reaches 0, the SellerWorklet's SendPendingSignalsRequests()
   // method should be invoked, so it can send any pending scoring signals
   // requests.
-  int outstanding_bid_sources_ = 0;
+  int num_scoring_dependencies_ = 0;
 
   // Number of bids that have been send to the seller worklet to score, but
   // that haven't yet had their score received from the seller worklet.
