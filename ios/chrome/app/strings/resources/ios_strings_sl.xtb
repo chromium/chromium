@@ -279,6 +279,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2702801445560668637">Reading List</translation>
 <translation id="2704491540504985681">Prenosi</translation>
 <translation id="2704606927547763573">Kopirano</translation>
+<translation id="2708051474374549906">Proaktivna sprotna zaščita pred nevarnimi spletnimi mesti, prenosi in razširitvami, ki temelji na podatkih brskanja, poslanih Googlu</translation>
 <translation id="2709516037105925701">Samodejno izpolnjevanje</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712127207578915686">Datoteke ni mogoče odpreti</translation>
@@ -341,6 +342,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3020183492814296499">Bližnjice</translation>
 <translation id="3037605927509011580">Ti šment!</translation>
 <translation id="3039722182465315531">Brez prijave</translation>
+<translation id="3053332585453689122">V Google Varno brskanje pošilja URL-je, ki jih obiščete, in majhen vzorec vsebine strani, prenose, dejavnost razširitve in podatke o sistemu, da preveri, ali so škodljivi.</translation>
 <translation id="3074499504015191586">Prevedi celotno stran</translation>
 <translation id="3076846064362030967">Iz računa Google ne boste odjavljeni. Ko ste prijavljeni, se v računu Google morda shranjujejo <ph name="BEGIN_LINK" />druge oblike dejavnosti<ph name="END_LINK" />. Izbrišete jih lahko kadar koli.
 
@@ -572,6 +574,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4587589328781138893">Spletna mesta</translation>
 <translation id="4588014171431912783">Nastavitve sinhronizacije bodo obnovljene na podlagi zadnjega varnostnega kopiranja. <ph name="BEGIN_LINK" />Oglejte si, kaj lahko sinhronizirate.<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tipkovnica</translation>
+<translation id="4601095002996233687">Poglobljeni pregledi za sumljive prenose.</translation>
 <translation id="4606247758155004938">Vaš brskalnik upravlja organizacija.</translation>
 <translation id="461440297010471931">Iskanje z Googlom</translation>
 <translation id="4616391354457235490">Razveljavi</translation>
@@ -642,7 +645,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4958444002117714549">Razširi seznam</translation>
 <translation id="4971735654804503942">Hitrejša, še boljša zaščita proti nevarnim spletnim mestom, prenosom in razširitvam. Opozori vas glede kršitev gesel. Zahteva pošiljanje podatkov brskanja Googlu.</translation>
 <translation id="4979397965658815378">Prijavite se z Google Računom, da boste zaznamke, gesla, zgodovino in druge nastavitve imeli na voljo v vseh napravah.</translation>
-<translation id="4986678885919050584">Odstrani iz te naprave</translation>
 <translation id="498985224078955265">Če želite ta zavihek poslati v drugo napravo, se v obeh napravah prijavite v Chrome.</translation>
 <translation id="4996567535980789550">Vklopite sinhronizacijo, če želite upravljati prikazano vsebino</translation>
 <translation id="5005498671520578047">Kopiranje gesla</translation>
@@ -928,6 +930,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Odprite spletno mesto in kliknite »Spremljaj« v Chromovem meniju</translation>
 <translation id="6550675742724504774">Možnosti</translation>
+<translation id="6550891580932862748">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. To ne vpliva na vaše nastavitve varnega brskanja v drugih Googlovih izdelkih.</translation>
 <translation id="6561262006871132942">Povečaj</translation>
 <translation id="6579867704846662339">V anonimnem načinu lahko odprete dohodne URL-je iz drugih aplikacij.</translation>
 <translation id="6583087784430677195">Če želite izklopiti, odprite <ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" /> in nato »Samodejno izpolnjevanje gesel«.</translation>
@@ -1150,6 +1153,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov.</translation>
 <translation id="7971521879845308059">Blokiraj pojavna okna</translation>
 <translation id="7975036700432177008">Preskus</translation>
+<translation id="7977451675950311423">Opozori vas, če uporabite geslo, ki je ogroženo zaradi podatkovne kršitve.</translation>
 <translation id="7978018860671536736">3. Dotaknite se »Samodejno izpolnjevanje gesel«.</translation>
 <translation id="7982789257301363584">Omrežje</translation>
 <translation id="7987685713885608670">Zaradi dodatne varnosti šifrirajte gesla v napravi, preden se shranijo v Google Upravitelju gesel.</translation>

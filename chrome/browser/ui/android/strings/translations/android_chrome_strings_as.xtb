@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1011749477052068769">ইয়ালৈ আনক</translation>
 <translation id="1016498331642356377">আপোনাৰ কণ্ঠস্বৰৰ দ্বাৰা ক্ষিপ্ৰভাৱে সন্ধান কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
 <translation id="103269572468856066">এই ছাইট আৰু এপৰ পৰাও ডেটা মচিবনে?</translation>
@@ -589,6 +590,7 @@
 <translation id="4198423547019359126">ডাউনল’ড কৰিবলৈ কোনো অৱস্থান নাই</translation>
 <translation id="4202218894997543208">আপুনি অৱৰোধ কৰা বিষয়বস্তুসমূহ</translation>
 <translation id="4214315110991671325">আপুনি যদি কুকিৰ অনুমতি দিয়ে Chromeএ সেয়া আগতীয়াকৈ ল’ড কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="4216511743389425832">এই পৃষ্ঠাটো শুনক</translation>
 <translation id="4225725533026049334">ফ’ল’ কৰি আছে</translation>
 <translation id="4225895483398857530">টুলবাৰৰ শ্বৰ্টকাট</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
@@ -606,6 +608,7 @@
 <translation id="4296252229500326964">নতুন ইনক’গনিট’ টেব</translation>
 <translation id="4298388696830689168">লিংক হৈ থকা ছাইটবোৰ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
 <translation id="4307992518367153382">মৌলিক</translation>
 <translation id="4320177379694898372">ইণ্টাৰনেট সংযোগ নাই</translation>
 <translation id="4321739720395210191">আপোনাৰ কেমেৰাটো খুলিব নোৱাৰি। আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
@@ -983,7 +986,6 @@
 <translation id="6324997754869598316">(আসোঁৱাহ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />ৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="6337234675334993532">এনক্ৰিপশ্বন</translation>
-<translation id="6340910702212418132">Password Manager <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">ফাইল ক’ত ছেভ কৰিব লাগে সোধক</translation>
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}}</translation>
@@ -1522,6 +1524,7 @@
 <translation id="8998729206196772491">আপুনি <ph name="MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিছে আৰু সেইটোৰ প্ৰশাসকে আপোনাৰ Chrome ডেটা নিয়ন্ত্ৰণ কৰিবলৈ সুবিধা দিছে। আপোনাৰ ডেটা এই একাউণ্টটোৰ সৈতে স্থায়ীভাৱে সংযুক্তহৈ থাকিব। Chromeৰ পৰা ছাইন আউট কৰিলে আপোনাৰ ডেটা মচা যাব কিন্ত সেইবোৰ আপোনাৰ Google একাউণ্টত জমা হৈয়ে থাকিব।</translation>
 <translation id="9022774213089566801">সঘনাই যোৱা</translation>
 <translation id="9022871169049522985">ছাইট আৰু বিজ্ঞাপনদাতাসকলে তেওঁলোকৰ বিজ্ঞাপনৰ পাৰদৰ্শিতা জোখ-মাখ কৰিব পাৰে</translation>
+<translation id="9035378196785279980">ইয়ালৈ নিয়ক\u2026</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{#টা ভিডিঅ’}one{#টা ভিডিঅ’}other{#টা ভিডিঅ’}}</translation>
 <translation id="9042893549633094279">গোপনীয়তা আৰু সুৰক্ষা</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>

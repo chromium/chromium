@@ -608,6 +608,7 @@
 <translation id="4296252229500326964">Жаңа инкогнито қойындысы</translation>
 <translation id="4298388696830689168">Байланыстырылған сайттар</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Құпия сөздер реттегіші</translation>
 <translation id="4307992518367153382">Негізгілер</translation>
 <translation id="4320177379694898372">Интернет байланысы жоқ</translation>
 <translation id="4321739720395210191">Камера ашылмайды. Құрылғыны қайта қосып, әрекетті қайталаңыз.</translation>
@@ -985,7 +986,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6324997754869598316">(<ph name="ERROR_CODE" /> қатесі)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> арқылы бөлісу</translation>
 <translation id="6337234675334993532">Шифрлау</translation>
-<translation id="6340910702212418132">Password Manager <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">Файл сақталатын орынды сұрау</translation>
 <translation id="6342069812937806050">Қазір ғана</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>

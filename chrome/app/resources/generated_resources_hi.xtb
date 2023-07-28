@@ -1479,6 +1479,7 @@
 <translation id="2178614541317717477">CA समझौता</translation>
 <translation id="2179416702468739594">उपलब्ध प्रोफ़ाइलें खोजी जा रही हैं. इसकी वजह से, थोड़ी देर के लिए आपका मोबाइल नेटवर्क डिसकनेक्ट हो सकता है.</translation>
 <translation id="2180620921879609685">यह एक्सटेंशन, किसी भी पेज पर कॉन्टेंट ब्लॉक कर सकता है</translation>
+<translation id="2181821976797666341">नीतियां</translation>
 <translation id="2182058453334755893">आपके क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="2183570493397356669">'जारी रखें' बटन को बंद किया गया</translation>
 <translation id="2184515124301515068">Chrome को चुनने दें कि साइटें कब आवाज़ चला सकती हैं (सुझाव)</translation>
@@ -2748,6 +2749,7 @@
 <translation id="3234978181857588512">डिवाइस में सेव करें</translation>
 <translation id="3238192140106069382">डिवाइस कनेक्ट कर रहा है और पुष्टि हो रही है</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> के लिए समयसीमा हटा दी गई है</translation>
+<translation id="3240426699337459095">लिंक कॉपी की गई</translation>
 <translation id="3241638166094654466">हर एक पंक्ति में सेल:</translation>
 <translation id="3241680850019875542">पैक के एक्सटेंशन की 'रूट निर्देशिका' को चुनें. किसी एक्स्टेंशन को अपडेट करने के लिए, फिर से इस्तेमाल करने के लिए 'निजी कुंजी फ़ाइल' को भी चुनें.</translation>
 <translation id="3242289508736283383">'kiosk_only' मेनिफ़ेस्ट एट्रिब्यूट वाला ऐप्लिकेशन ChromeOS कीऑस्क मोड में इंस्टॉल किया जाना चाहिए</translation>
@@ -2763,6 +2765,7 @@
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> को "Ok Google" बोलकर Google Assistant ऐक्सेस करने की अनुमति दें</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्र का भाग नहीं है&gt;</translation>
 <translation id="325238099842880997">घर पर खेलने, नई चीज़ें सीखने, और स्कूल का काम करने में मदद करने में बच्चों की मदद करने के बुनियादी नियम तय करें.</translation>
+<translation id="3253225298092156258">उपलब्ध नहीं है</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{इस फ़ाइल को कॉपी करने के लिए, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें}one{इस फ़ाइल को कॉपी करने के लिए, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें}other{इन फ़ाइलों को कॉपी करने के लिए, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें}}</translation>
 <translation id="3253448572569133955">अनजान खाता</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{सुरक्षा से जुड़ी कोई भी समस्या नहीं मिली}=1{सुरक्षा से जुड़ी {COUNT} समस्या मिली}one{सुरक्षा से जुड़ी {COUNT} समस्या मिली}other{सुरक्षा से जुड़ी {COUNT} समस्याएं मिलीं}}</translation>
@@ -3479,7 +3482,6 @@
 <translation id="3838085852053358637">एक्सटेंशन लोड नहीं हो सका</translation>
 <translation id="3838486795898716504">ज़्यादा <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">कोई भी साइट ज़ूम इन या ज़ूम आउट नहीं की गई है</translation>
-<translation id="3839509547554145593">माउस से स्क्रोल करने की रफ़्तार बढ़ाने की सुविधा चालू करें</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> को क्लिपबोर्ड देखने से हमेशा ब्लॉक करें</translation>
 <translation id="3841282988425489367">Steam for Chromebook (बीटा वर्शन) को सेट अप नहीं किया जा सकता</translation>
 <translation id="3841319830220785495">डिफ़ॉल्ट के तौर पर सेट की गई अच्छी क्वालिटी वाली आवाज़</translation>
@@ -4640,7 +4642,6 @@
 <translation id="4827970183019354123">यूआरएल चेकर</translation>
 <translation id="4828567746430452681">"<ph name="EXTENSION_NAME" />" अब उपलब्ध नहीं है.</translation>
 <translation id="482952334869563894"><ph name="VENDOR_ID" /> वेंडर के यूएसबी डिवाइस</translation>
-<translation id="4829768588131278040">पिन सेट करें</translation>
 <translation id="4830502475412647084">OS अपडेट इंस्टॉल किया जा रहा है</translation>
 <translation id="4833683849865011483">प्रिंट सर्वर पर एक प्रिंटर मिला</translation>
 <translation id="4836504898754963407">फ़िंगरप्रिंट प्रबंधित करें</translation>
@@ -5887,7 +5888,6 @@
 <translation id="5906732635754427568">इस ऐप्लिकेशन से जुड़े डेटा को इस डिवाइस से हटा दिया जाएगा.</translation>
 <translation id="5906974869830879618">कृपया एक पिन डालें</translation>
 <translation id="5908474332780919512">साइन इन करने पर ऐप्लिकेशन को चालू करें</translation>
-<translation id="5908695239556627796">माउस से स्क्रोल करने की रफ़्तार</translation>
 <translation id="5909379458939060601">क्या इस प्रोफ़ाइल और ब्राउज़िंग डेटा को मिटाना है?</translation>
 <translation id="5910363049092958439">इमेज को इस रूप में सेव करें...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ऑफ़लाइन है</translation>

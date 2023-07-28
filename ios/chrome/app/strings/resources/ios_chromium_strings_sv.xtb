@@ -123,6 +123,7 @@
 <translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="786327964234957808">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chromium hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Börja använda Chromium som skanner</translation>
+<translation id="7905064834449738336">När du använder ett lösenord visas en varning i Chromium om det har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="7928628054454574139">Öppna Chromium varje gång du trycker på länkar i andra appar</translation>
 <translation id="7931842119211730154">Lås inkognitoflikar när du stänger Chromium</translation>
 <translation id="7980860476903281594">Chromium delar din plats med webbplatser du tillåter.</translation>

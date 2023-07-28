@@ -1466,6 +1466,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2178614541317717477">Compromís de CA</translation>
 <translation id="2179416702468739594">S'estan cercant perfils disponibles. Això pot fer que la xarxa mòbil es desconnecti durant uns minuts.</translation>
 <translation id="2180620921879609685">Bloqueja el contingut en qualsevol pàgina</translation>
+<translation id="2181821976797666341">Polítiques</translation>
 <translation id="2182058453334755893">S'ha copiat al porta-retalls</translation>
 <translation id="2183570493397356669">Botó Continua desactivat</translation>
 <translation id="2184515124301515068">Deixa que Chrome triï quan poden reproduir so els llocs web (opció recomanada)</translation>
@@ -2732,6 +2733,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3234978181857588512">Desa al dispositiu</translation>
 <translation id="3238192140106069382">S'està connectant i verificant</translation>
 <translation id="3239373508713281971">S'ha suprimit el límit de temps per a <ph name="APP_NAME" /></translation>
+<translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
 <translation id="3241638166094654466">Cel·les en cada línia:</translation>
 <translation id="3241680850019875542">Seleccioneu el directori arrel de l'extensió que voleu empaquetar. Per actualitzar una extensió, cal que seleccioneu també el fitxer de clau privada que s'utilitzarà.</translation>
 <translation id="3242289508736283383">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar en mode quiosc a Chrome OS</translation>
@@ -2747,6 +2749,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3251714896659475029">Permet que <ph name="SUPERVISED_USER_NAME" /> accedeixi a l'Assistent de Google amb "Hey Google"</translation>
 <translation id="3251759466064201842">&lt;No forma part del certificat&gt;</translation>
 <translation id="325238099842880997">Defineix regles digitals bàsiques per ajudar els nens a jugar, explorar i fer el treball escolar a casa</translation>
+<translation id="3253225298092156258">No disponible</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Allibera espai a <ph name="CLOUD_PROVIDER" /> per copiar aquest fitxer}other{Allibera espai a <ph name="CLOUD_PROVIDER" /> per copiar aquests fitxers}}</translation>
 <translation id="3253448572569133955">Compte desconegut</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{No s'han trobat problemes de seguretat}=1{S'ha trobat {COUNT} problema de seguretat}other{S'han trobat {COUNT} problemes de seguretat}}</translation>
@@ -3463,7 +3466,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3838085852053358637">No s'ha pogut carregar l'extensió</translation>
 <translation id="3838486795898716504">Més <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">No s'ha ampliat ni reduït cap lloc</translation>
-<translation id="3839509547554145593">Activa l'acceleració de desplaçament del ratolí tàctil</translation>
 <translation id="3839516600093027468">No permetis mai que <ph name="HOST" /> vegi el porta-retalls</translation>
 <translation id="3841282988425489367">No es pot configurar Steam per a Chromebook (beta)</translation>
 <translation id="3841319830220785495">Veu natural predeterminada</translation>
@@ -4623,7 +4625,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4827970183019354123">Comprovador d'URL</translation>
 <translation id="4828567746430452681">"<ph name="EXTENSION_NAME" />" ja no s'admet</translation>
 <translation id="482952334869563894">Dispositius USB del proveïdor <ph name="VENDOR_ID" /></translation>
-<translation id="4829768588131278040">Configura un PIN</translation>
 <translation id="4830502475412647084">S'està instal·lant l'actualització del sistema operatiu</translation>
 <translation id="4833683849865011483">S'ha trobat 1 impressora al servidor d'impressió</translation>
 <translation id="4836504898754963407">Gestiona les empremtes digitals</translation>
@@ -5870,7 +5871,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5906732635754427568">Les dades associades a aquesta aplicació se suprimiran del dispositiu.</translation>
 <translation id="5906974869830879618">Introdueix un PIN</translation>
 <translation id="5908474332780919512">Obre l'aplicació en iniciar la sessió</translation>
-<translation id="5908695239556627796">Velocitat de desplaçament del ratolí</translation>
 <translation id="5909379458939060601">Vols suprimir aquest perfil i les dades de navegació?</translation>
 <translation id="5910363049092958439">De&amp;sa la imatge com a...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> no té connexió</translation>

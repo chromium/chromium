@@ -1478,6 +1478,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2178614541317717477">CA Mencurigakan</translation>
 <translation id="2179416702468739594">Mencari profil yang tersedia. Hal ini dapat menyebabkan jaringan seluler Anda terputus selama beberapa menit.</translation>
 <translation id="2180620921879609685">Memblokir konten di halaman mana pun</translation>
+<translation id="2181821976797666341">Kebijakan</translation>
 <translation id="2182058453334755893">Disalin ke Papan Klip Anda</translation>
 <translation id="2183570493397356669">Tombol Lanjutkan dinonaktifkan</translation>
 <translation id="2184515124301515068">Izinkan Chrome memilih kapan situs dapat memutar suara (direkomendasikan)</translation>
@@ -2747,6 +2748,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3234978181857588512">Simpan ke perangkat</translation>
 <translation id="3238192140106069382">Menghubungkan dan memverifikasi</translation>
 <translation id="3239373508713281971">Batas waktu <ph name="APP_NAME" /> dihapus</translation>
+<translation id="3240426699337459095">Tautan disalin</translation>
 <translation id="3241638166094654466">Sel di tiap baris:</translation>
 <translation id="3241680850019875542">Pilih direktori akar ekstensi untuk dipaket. Untuk memperbarui ekstensi, pilih juga file kunci pribadi untuk dipakai ulang.</translation>
 <translation id="3242289508736283383">Aplikasi dengan atribut manifes 'kiosk_only' harus diinstal dalam mode kios ChromeOS</translation>
@@ -2762,6 +2764,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3251714896659475029">Izinkan <ph name="SUPERVISED_USER_NAME" /> mengakses Asisten Google dengan “Ok Google”</translation>
 <translation id="3251759466064201842">&lt;Bukan Bagian Dari Sertifikat&gt;</translation>
 <translation id="325238099842880997">Tetapkan aturan dasar penggunaan perangkat digital untuk membantu anak-anak bermain, menjelajah, dan mengerjakan tugas sekolah di rumah</translation>
+<translation id="3253225298092156258">Tidak tersedia</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Kosongkan ruang penyimpanan di <ph name="CLOUD_PROVIDER" /> untuk menyalin file ini}other{Kosongkan ruang penyimpanan di <ph name="CLOUD_PROVIDER" /> untuk menyalin file ini}}</translation>
 <translation id="3253448572569133955">Akun tidak dikenal</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Tidak ditemukan masalah keamanan}=1{{COUNT} masalah keamanan ditemukan}other{{COUNT} masalah keamanan ditemukan}}</translation>
@@ -3478,7 +3481,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3838085852053358637">Gagal memuat ekstensi</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> Lainnya</translation>
 <translation id="383891835335927981">Tidak ada situs yang telah diperbesar atau diperkecil</translation>
-<translation id="3839509547554145593">Aktifkan akselerasi scroll mouse</translation>
 <translation id="3839516600093027468">Selalu blokir <ph name="HOST" /> dari melihat papan klip</translation>
 <translation id="3841282988425489367">Tidak dapat menyiapkan Steam untuk Chromebook (Beta)</translation>
 <translation id="3841319830220785495">Suara alami default</translation>
@@ -4640,7 +4642,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4827970183019354123">Pemeriksa URL</translation>
 <translation id="4828567746430452681">"<ph name="EXTENSION_NAME" />" tidak lagi didukung</translation>
 <translation id="482952334869563894">Perangkat USB dari vendor <ph name="VENDOR_ID" /></translation>
-<translation id="4829768588131278040">Siapkan PIN</translation>
 <translation id="4830502475412647084">Menginstal update OS</translation>
 <translation id="4833683849865011483">Menemukan 1 printer dari server cetak</translation>
 <translation id="4836504898754963407">Mengelola sidik jari</translation>
@@ -5887,7 +5888,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5906732635754427568">Data yang dikaitkan dengan aplikasi ini akan dihapus dari perangkat ini.</translation>
 <translation id="5906974869830879618">Harap masukkan pin</translation>
 <translation id="5908474332780919512">Mulai Aplikasi Saat Login</translation>
-<translation id="5908695239556627796">Kecepatan scroll mouse</translation>
 <translation id="5909379458939060601">Hapus profil dan data penjelajahan ini?</translation>
 <translation id="5910363049092958439">Sim&amp;pan Gambar Sebagai...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> sedang offline</translation>

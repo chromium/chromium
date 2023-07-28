@@ -279,6 +279,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2702801445560668637">Läslista</translation>
 <translation id="2704491540504985681">Nedladdningar</translation>
 <translation id="2704606927547763573">Kopierat</translation>
+<translation id="2708051474374549906">Proaktivt skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på din webbinformation som skickas till Google</translation>
 <translation id="2709516037105925701">Autofyll</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2712127207578915686">Det gick inte att öppna filen</translation>
@@ -341,6 +342,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3020183492814296499">Genvägar</translation>
 <translation id="3037605927509011580">Oj, ett fel har uppstått!</translation>
 <translation id="3039722182465315531">Logga inte in</translation>
+<translation id="3053332585453689122">Webbadresser som du besöker och ett litet urval av sidans innehåll, nedladdningar, tilläggsaktivitet och systeminformation skickas till Google Säker webbsökning, som kontrollerar om webbadresserna är skadliga.</translation>
 <translation id="3074499504015191586">Översätt hela sidan</translation>
 <translation id="3076846064362030967">Du loggas inte ut från Google-kontot. <ph name="BEGIN_LINK" />Annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.
 
@@ -572,6 +574,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4588014171431912783">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. <ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tangentbord</translation>
+<translation id="4601095002996233687">Ingående genomsökningar efter misstänkta nedladdningar.</translation>
 <translation id="4606247758155004938">Webbläsaren hanteras av din organisation.</translation>
 <translation id="461440297010471931">Söker med Google</translation>
 <translation id="4616391354457235490">Ångra</translation>
@@ -642,7 +645,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4958444002117714549">Expandera lista</translation>
 <translation id="4971735654804503942">Snabbare, proaktivt skydd mot farliga webbplatser, nedladdningar och tillägg. Du får varningar om lösenordsläckor. Kräver att webbinformationen skickas till Google.</translation>
 <translation id="4979397965658815378">Logga in med ditt Google-konto så att du kan använda bokmärken, lösenord, historik med mera på alla dina enheter</translation>
-<translation id="4986678885919050584">Ta bort från den här enheten</translation>
 <translation id="498985224078955265">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på båda enheterna.</translation>
 <translation id="4996567535980789550">Aktivera synkronisering om du vill hantera innehållet som visas</translation>
 <translation id="5005498671520578047">Kopiera lösenord</translation>
@@ -928,6 +930,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Besök en webbplats och klicka på Följ i Chrome-menyn</translation>
 <translation id="6550675742724504774">Alternativ</translation>
+<translation id="6550891580932862748">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Inställningarna för Säker webbsökning i andra produkter från Google påverkas inte.</translation>
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6579867704846662339">Du kan välja att öppna inkommande webbadresser från andra appar i inkognitoläget.</translation>
 <translation id="6583087784430677195">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Autofyll lösenord.</translation>
@@ -1150,6 +1153,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
 <translation id="7971521879845308059">Blockera popup-fönster</translation>
 <translation id="7975036700432177008">Testa</translation>
+<translation id="7977451675950311423">Varnar dig om du använder ett lösenord som har läckt ut i samband med ett dataintrång.</translation>
 <translation id="7978018860671536736">3. Tryck på Autofyll lösenord</translation>
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="7987685713885608670">Öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering</translation>

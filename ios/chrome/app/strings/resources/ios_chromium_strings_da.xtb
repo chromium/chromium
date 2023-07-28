@@ -123,6 +123,7 @@
 <translation id="7859018312476869945">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="786327964234957808">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chromium-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver gemt på <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Begynd at bruge Chromium-scanner</translation>
+<translation id="7905064834449738336">Når du bruger en adgangskode, advarer Chromium dig, hvis den er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="7928628054454574139">Åbn Chromium, hver gang du trykker på links i andre apps</translation>
 <translation id="7931842119211730154">Lås inkognitofaner, når du lukker Chromium</translation>
 <translation id="7980860476903281594">Chromium deler din lokation med godkendte websites.</translation>

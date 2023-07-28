@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1011749477052068769">移至这里</translation>
 <translation id="1016498331642356377">使用语音快速搜索。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="1028699632127661925">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">一并清除来自这些网站和应用的数据？</translation>
@@ -589,6 +590,7 @@
 <translation id="4198423547019359126">没有可用的下载内容保存位置</translation>
 <translation id="4202218894997543208">您已屏蔽的主题</translation>
 <translation id="4214315110991671325">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载。</translation>
+<translation id="4216511743389425832">读出此网页的内容</translation>
 <translation id="4225725533026049334">已关注</translation>
 <translation id="4225895483398857530">工具栏中的快捷方式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -606,6 +608,7 @@
 <translation id="4296252229500326964">打开新的无痕式标签页</translation>
 <translation id="4298388696830689168">已关联的网站</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4307992518367153382">基本</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="4321739720395210191">无法打开您的摄像头。请重启设备，然后重试。</translation>
@@ -983,7 +986,6 @@
 <translation id="6324997754869598316">（错误 <ph name="ERROR_CODE" />）</translation>
 <translation id="6333140779060797560">通过<ph name="APPLICATION" />分享</translation>
 <translation id="6337234675334993532">加密</translation>
-<translation id="6340910702212418132">密码管理工具<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">询问文件保存位置</translation>
 <translation id="6342069812937806050">刚刚</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
@@ -1522,6 +1524,7 @@
 <translation id="8998729206196772491">您正要登录由 <ph name="MANAGED_DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此帐号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="9022774213089566801">经常访问</translation>
 <translation id="9022871169049522985">网站和广告主可以衡量其广告的效果</translation>
+<translation id="9035378196785279980">移至\u2026</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 个视频}other{# 个视频}}</translation>
 <translation id="9042893549633094279">隐私和安全</translation>
 <translation id="9050666287014529139">密码</translation>

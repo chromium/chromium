@@ -58,7 +58,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
 <translation id="1217633719248931900">Ir para a app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicação da Play Store</translation>
-<translation id="1219309685806246869">Regressar a <ph name="APP_TITLE" /></translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
@@ -1812,6 +1811,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8921624153894383499">O Assistente Google não fala este idioma.</translation>
 <translation id="8924458948354692166">Prima Enter para fazer uma captura de ecrã da janela</translation>
 <translation id="8926951137623668982">Prateleira sempre oculta</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desativada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>
 <translation id="8940956008527784070">Bateria fraca (<ph name="PERCENTAGE" />%)</translation>

@@ -93,6 +93,9 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede otomatik dü
 <translation id="1063860513136880926">Politika, Etkin değerine ayarlandığında klavye kısayolları veya uzantı API'leriyle ekran görüntüsü alınmasına izin verilmez. Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ekran görüntülerine izin verilir.
 
 Bu politikanın <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name="LINUX_OS_NAME" /> üzerinde işletim sistemi veya üçüncü taraf uygulamalarıyla alınan ekran görüntülerini engellemediğini unutmayın.</translation>
+<translation id="1065175969514496951">Politikanın ayarlanması <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, kimlik doğrulama sırasında (ör. giriş ekranında ve kilit ekranında) listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikasını <ph name="WILDCARD_VALUE" /> olarak ayarlamak tüm istekleri engeller. Bu durumda bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Bu ayarı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini, en spesifik filtre belirler. <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
+
+Politika ayarlanmadan bırakılırsa <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.</translation>
 <translation id="1069489575852947981">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa cihaz yerel hesabı sıfır gecikmeyle otomatik oturum açmaya ayarlanır. <ph name="PRODUCT_OS_NAME" />, otomatik oturum açmayı atlayıp oturum açma ekranını göstermek için Ctrl+Alt+S klavye kısayolunu kullanır.
 
       Politika Devre dışı değerine ayarlanırsa kullanıcılar sıfır gecikmeyle otomatik oturum açmayı (yapılandırılmışsa) atlayamaz.</translation>
@@ -1148,6 +1151,13 @@ Politika ayarlanmadan bırakılırsa başlangıçta Yeni Sekme sayfası açılı
       Bu politika false (yanlış) değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
       True (doğru) değerine ayarlanırsa cihazın ayarlandığı geçerli saat dilimi raporlanır.</translation>
 <translation id="1990784382342293892">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />" politikasını kullanın.</translation>
+<translation id="1995744620192427843">Politika ayarlanırsa yasaklı URL'leri olan web sayfalarının, kullanıcı kimlik doğrulaması sırasında (ör. giriş ekranında ve kilit ekranında) yüklenmesi önlenir. Yasaklı URL'leri belirten URL kalıpları listesi sağlar. Politika ayarlanmadan bırakılırsa kimlik doğrulama sırasında hiçbir URL yasaklanmaz. URL kalıbını şu biçime göre biçimlendirin (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Bu kalıplarla ilgili istisnalar, ilgili <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> politikasında tanımlanabilir.
+
+Kimlik doğrulamanın başarılı olması için accounts.google.com gibi belirli URL'ler gereklidir. Dolayısıyla, çevrimiçi oturum açma gerekliyse bu URL'ler engellenmemelidir.
+
+Not: Bu politika, dinamik olarak yüklenmiş verilere sahip sayfa içi JavaScript URL'leri için geçerli değildir. example.com/abc URL'sini engellediyseniz example.com bunu XMLHTTPRequest kullanarak yine yükleyebilir.</translation>
 <translation id="199764499252435679"><ph name="PRODUCT_NAME" /> ürününde bileşen güncellemelerini etkinleştir</translation>
 <translation id="1997943707974344423">Smart Lock'a izin ver</translation>
 <translation id="1998504583649140526">Özel ağ istek ayarları</translation>
@@ -4801,6 +4811,7 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Politika, Etkin değerine ayarlanırsa cihaz etkinliği durumu sunucuya raporlanır ve böylece, kullanıcı ilişkili olduğu sürece cihazın çevrimdışı olup olmadığını algılamasını sağlar.</translation>
 <translation id="5238275681097851753">Belirli <ph name="FLASH_PLUGIN_NAME" /> içeriklerinin engellenmesine izin ver</translation>
 <translation id="5238976843489093540">Hızlı Eşleme'yi (hızlı Bluetooth eşleme) etkinleştirmeye zorla.</translation>
+<translation id="5239277956452384929">Kimlik doğrulama sırasında URL listesine erişime izin ver</translation>
 <translation id="5245647012663146075">Telefon Merkezi'nin etkinleştirilmesine izin verme</translation>
 <translation id="5245671702326993331">Yerel bildirimlere izin verir</translation>
 <translation id="524637053580639111">Bu politika M82'de kullanımdan kaldırılmıştır. Bunun yerine lütfen MinimumChromeVersionEnforced politikasını kullanın.
@@ -8199,6 +8210,7 @@ Bu politika, Gizli moda uygulanır. Dolayısıyla, tarayıcıda Gizli mod etkinl
 <translation id="8244171102276095471">TLS'deki RC4 şifre paketlerini etkinleştir</translation>
 <translation id="8244525275280476362">Bir politika iptal edildikten sonra maksimum getirme gecikmesi</translation>
 <translation id="8245574649143980200">Politika ayarlanmadan bırakılır veya Etkin değerine ayarlanırsa kullanıcıların <ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge arama menü öğesini içerik menüsünde görüntüleyip kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa <ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge arama desteklendiğinde kullanıcılar <ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge arama menü öğesini içerik menüsünde görmez.</translation>
+<translation id="8247143534027746614">Kimlik doğrulama sırasında URL kalıpları listesine erişimi engelle</translation>
 <translation id="824818544897669723">Tarayıcı ve indirme geçmişinin silinmesini devre dışı bırak</translation>
 <translation id="8250048892729838843">Bu politika kullanımdan kaldırılmıştır. Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa cihaz, ayrıntılı raporlama kontrolleri alabilir.
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar ayrıntılı raporlama kontrolleri alamaz.</translation>

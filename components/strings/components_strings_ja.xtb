@@ -230,6 +230,7 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1432187715652018471">このページはサービス ハンドラのインストールを求めています。</translation>
 <translation id="1432581352905426595">検索エンジンを管理</translation>
+<translation id="1433225466058025572">ファイルをもう一度移動してみてください</translation>
 <translation id="1435940442311036198">別のデバイスのパスキーを使用する</translation>
 <translation id="1436185428532214179">デバイスのファイルやフォルダの編集を要求できる</translation>
 <translation id="1442386063175183758">右観音折り</translation>
@@ -682,6 +683,7 @@
 <translation id="2396249848217231973">削除の取り消し（&amp;U）</translation>
 <translation id="2397836504670957718">ラップトップ、ノートパソコン</translation>
 <translation id="2400600116338235695">シリアルポートへの接続を要求できる</translation>
+<translation id="2404884497378469141">ファイルをもう一度コピーしてみてください</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="2414886740292270097">暗</translation>
@@ -838,6 +840,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> でパスワードを入力しようとしています</translation>
 <translation id="2764001903315068341">コミック</translation>
 <translation id="2765217105034171413">小</translation>
+<translation id="2770159525358613612">ファイルをもう一度アップロードしてみてください</translation>
 <translation id="277133753123645258">配送方法</translation>
 <translation id="277499241957683684">デバイス レコードがありません</translation>
 <translation id="2775884851269838147">最初の印刷ページ</translation>
@@ -1227,6 +1230,7 @@
 <translation id="3632892046558972264">画面共有を一時停止しました</translation>
 <translation id="3634530185120165534">トレイ 5</translation>
 <translation id="3634567936866541746">偽のサイトでパスワードを入力しました。アカウントを保護するため、保存したパスワードをすぐに確認することをおすすめします。</translation>
+<translation id="3642196846309122856">ファイルをもう一度ダウンロードしてみてください</translation>
 <translation id="3642638418806704195">アプリケーション:</translation>
 <translation id="3646643500201740985">広告効果の測定</translation>
 <translation id="3647286794400715637">各 urls 文字列エントリには 1 つまたは 2 つの URL を含める必要があります。</translation>
@@ -1349,6 +1353,7 @@
 <translation id="3890664840433101773">メールを追加</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3901925938762663762">カードの有効期限が切れています</translation>
+<translation id="390391808978419508">開く処理がタイムアウトしました</translation>
 <translation id="3906095212874392000">変換されたテキストの最後</translation>
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1360,6 +1365,7 @@
 <translation id="393316646445601645">インターネット、通信</translation>
 <translation id="3939773374150895049">CVC の代わりに WebAuthn を使用しますか？</translation>
 <translation id="3941630233824954464">必須の再認証を有効にする</translation>
+<translation id="3942048175062210325">ファイルをもう一度開いてみてください</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3946209740501886391">このサイトでは常に確認</translation>
 <translation id="3947595700203588284">MIDI デバイスへの接続を要求できる</translation>
@@ -1387,7 +1393,6 @@
 <translation id="3990250421422698716">ジョグ オフセット</translation>
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="3995639283717357522">ポリシーを適用</translation>
-<translation id="399952081411886534">広告のプライバシーを強化するその他の機能</translation>
 <translation id="4000598935132966791">管理対象ブラウザのサイト制限の詳細</translation>
 <translation id="4006465311664329701">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4010758435855888356">ストレージへのアクセスを許可しますか？</translation>
@@ -1442,6 +1447,7 @@
 <translation id="4117700440116928470">ポリシーの適用範囲がサポートされていません。</translation>
 <translation id="4121428309786185360">有効期限</translation>
 <translation id="4123572138124678573">3 穴パンチ（下）</translation>
+<translation id="412601465078863288">アップロードがタイムアウトしました</translation>
 <translation id="4127317221386336246">服飾雑貨</translation>
 <translation id="4127575959421463246">ChromeOS のフラグをお探しですか？次にアクセスしてください:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
@@ -1658,6 +1664,7 @@
 <translation id="4540780316273593836">エラーが発生しました</translation>
 <translation id="4541810033354695636">拡張現実</translation>
 <translation id="4542971377163063093">トレイ 6</translation>
+<translation id="4546730006268514143">転送がタイムアウトしました</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">パスワード入力で画面ロックを使用しています</translation>
 <translation id="4558551763791394412">拡張機能を無効にしてみてください。</translation>
@@ -2090,6 +2097,7 @@
 <translation id="5470230812924696184">土木</translation>
 <translation id="5470861586879999274">編集のやり直し（&amp;R）</translation>
 <translation id="5471337644440862957">コメディー映画</translation>
+<translation id="547963486735802022">ファイルをもう一度転送してみてください</translation>
 <translation id="5481076368049295676">アクセス先のコンテンツによって、個人情報を入手したり削除したりする危険なソフトウェアがインストールされる可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">有効なアドレスを追加</translation>
 <translation id="5483838506518938965">以上で完了です</translation>
@@ -2778,6 +2786,7 @@
 <translation id="6961733224437895943">住宅保険</translation>
 <translation id="6961844873822989059">デバイスにインストールされたフォントの使用を要求できる</translation>
 <translation id="6961980518585973432">記念日</translation>
+<translation id="6962858948849099922">移動がタイムアウトしました</translation>
 <translation id="6963520811470373926">優先</translation>
 <translation id="6963574715554809750">小売業</translation>
 <translation id="6963693576491380224">行政機関の求人情報</translation>
@@ -2855,6 +2864,7 @@
 <translation id="7111507312244504964">不動産調査、査定</translation>
 <translation id="7112327784801341716">最新の情報が表示されていない場合は、カード発行会社に連絡して更新してください。</translation>
 <translation id="7118618213916969306">クリップボードにある URL（<ph name="SHORT_URL" />）を検索します</translation>
+<translation id="7119371694555167493">コピーがタイムアウトしました</translation>
 <translation id="7119414471315195487">他のタブやプログラムを閉じる</translation>
 <translation id="7124354851782353862">CVC を入力してください</translation>
 <translation id="7129355289156517987">Chromium のシークレット タブをすべて閉じると、シークレット タブでの以下のアクティビティがこのデバイスから削除されます。
@@ -3107,6 +3117,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> 未満</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> では現在このリクエストを処理できません。</translation>
+<translation id="7599089013883397081">ダウンロードがタイムアウトしました</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="7601297359530599375">通常はこのサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">値（<ph name="VALUE" />）が範囲外です。</translation>

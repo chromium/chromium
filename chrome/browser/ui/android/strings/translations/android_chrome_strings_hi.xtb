@@ -608,6 +608,7 @@
 <translation id="4296252229500326964">नया गुप्त टैब</translation>
 <translation id="4298388696830689168">लिंक की हुई साइटें</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Password Manager</translation>
 <translation id="4307992518367153382">बुनियादी चीज़ें</translation>
 <translation id="4320177379694898372">कोई इंटरनेट कनेक्‍शन नहीं</translation>
 <translation id="4321739720395210191">कैमरा खाेला नहीं जा सकता. अपने डिवाइस को रीस्टार्ट करके, फिर से कोशिश करें.</translation>
@@ -985,7 +986,6 @@
 <translation id="6324997754869598316">(गड़बड़ी <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
-<translation id="6340910702212418132">Password Manager <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">फ़ाइलें सेव करने की जगह पूछें</translation>
 <translation id="6342069812937806050">अभी</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>

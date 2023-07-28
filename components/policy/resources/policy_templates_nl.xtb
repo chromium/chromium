@@ -93,6 +93,9 @@ Als je dit beleid niet toepast, is de functie voor autocorrectie op het fysieke 
 <translation id="1063860513136880926">Als je het beleid toepast, zijn screenshots die worden gemaakt met sneltoetsen of extensie-API's niet toegestaan. Als je het beleid niet toepast of niet instelt, zijn screenshots toegestaan.
 
 Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" /> voorkomt dit niet dat screenshots worden gemaakt met het besturingssysteem of apps van derden.</translation>
+<translation id="1065175969514496951">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's tijdens de verificatie (bijvoorbeeld het inlog- en vergrendelscherm), als uitzonderingen op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Zie de beschrijving van dat beleid voor de indeling van items in deze lijst. Als je <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op <ph name="WILDCARD_VALUE" />, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
+
+Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1069489575852947981">Als je het beleid toepast of niet instelt, wordt een lokaal account op het apparaat ingesteld voor automatisch inloggen zonder vertraging. <ph name="PRODUCT_OS_NAME" /> behoudt de sneltoets Ctrl+Alt+S waarmee automatisch inloggen wordt omzeild en het inlogscherm wordt getoond.
 
       Als je het beleid niet toepast, kunnen gebruikers automatisch inloggen zonder vertraging (indien geconfigureerd) niet omzeilen.</translation>
@@ -1148,6 +1151,13 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als het beleid is ingesteld op False of niet is ingesteld, wordt de informatie niet gerapporteerd.
       Als het beleid is ingesteld op True, wordt de momenteel ingestelde tijdzone van het apparaat gerapporteerd.</translation>
 <translation id="1990784382342293892">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1995744620192427843">Als je dit beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen tijdens gebruikersverificatie (bijvoorbeeld op het inlog- en vergrendelscherm). Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden tijdens de verificatie. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Uitzonderingen op deze patronen kunnen worden gedefinieerd in het gerelateerde beleid <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />.
+
+Bepaalde URL's zijn noodzakelijk voor verificatie, waaronder accounts.google.com. Deze moeten dus niet worden geblokkeerd als je online moet inloggen.
+
+Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dynamisch geladen gegevens. Als je example.com/abc hebt geblokkeerd, kan example.com de pagina nog steeds laden met XMLHTTPRequest.</translation>
 <translation id="199764499252435679">Componentupdates in <ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="1997943707974344423">Smart Lock toestaan</translation>
 <translation id="1998504583649140526">Instellingen voor privénetwerkverzoeken</translation>
@@ -4736,6 +4746,7 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
       Als je het beleid toepast, wordt de apparaatactiviteitsstatus gerapporteerd aan de server zodat deze kan waarnemen of het apparaat offline is, op voorwaarde dat de gebruiker aangesloten is.</translation>
 <translation id="5238275681097851753">Toestaan dat bepaalde <ph name="FLASH_PLUGIN_NAME" />-content wordt geblokkeerd</translation>
 <translation id="5238976843489093540">Snel koppelen (snelle bluetooth-koppeling) geforceerd aanzetten.</translation>
+<translation id="5239277956452384929">Toegang geven tot een lijst met URL's tijdens verificatie</translation>
 <translation id="5245647012663146075">Niet toestaan dat Telefoonhub wordt aangezet</translation>
 <translation id="5245671702326993331">Staat native meldingen toe</translation>
 <translation id="524637053580639111">Dit beleid is verwijderd in M82. Gebruik in plaats daarvan DeviceMinimumVersion.
@@ -8076,6 +8087,7 @@ Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de table
 <translation id="8244171102276095471">RC4-coderingssuites in TLS aanzetten</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
 <translation id="8245574649143980200">Als je dit beleid toepast of niet instelt, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> in het contextmenu zien en gebruiken. Als je dit beleid niet toepast, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet zien in het contextmenu als regio doorzoeken voor <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.</translation>
+<translation id="8247143534027746614">Toegang tot een lijst met URL-patronen blokkeren tijdens verificatie</translation>
 <translation id="824818544897669723">Verwijdering van browser- en downloadgeschiedenis uitzetten</translation>
 <translation id="8250048892729838843">Dit beleid is beëindigd. Als je dit beleid toepast of niet instelt, kan het apparaat opties voor gedetailleerde rapportage krijgen.
       Als je het beleid niet toepast, kunnen ingeschreven apparaten geen opties voor gedetailleerde rapportage krijgen.</translation>

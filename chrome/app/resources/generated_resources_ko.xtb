@@ -1479,6 +1479,7 @@
 <translation id="2178614541317717477">CA 손상</translation>
 <translation id="2179416702468739594">사용 가능한 프로필을 찾는 중입니다. 이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
 <translation id="2180620921879609685">모든 페이지에서 콘텐츠 차단</translation>
+<translation id="2181821976797666341">정책</translation>
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
 <translation id="2183570493397356669">계속 버튼 사용 중지됨</translation>
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
@@ -2749,6 +2750,7 @@
 <translation id="3234978181857588512">기기에 저장</translation>
 <translation id="3238192140106069382">연결 및 확인 중</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" />의 시간제한이 삭제되었습니다.</translation>
+<translation id="3240426699337459095">링크 복사됨</translation>
 <translation id="3241638166094654466">각 행의 셀 수:</translation>
 <translation id="3241680850019875542">압축할 확장 프로그램의 루트 디렉터리를 선택합니다. 확장 프로그램을 업데이트하려면 다시 사용할 비공개 키 파일도 선택합니다.</translation>
 <translation id="3242289508736283383">'kiosk_only' 매니페스트 속성을 사용하는 앱은 ChromeOS 키오스크 모드에 설치되어야 합니다.</translation>
@@ -2764,6 +2766,7 @@
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" />님이 “Hey Google”을 통해 Google 어시스턴트에 액세스하도록 허용</translation>
 <translation id="3251759466064201842">&lt;인증서에 속하지 않음&gt;</translation>
 <translation id="325238099842880997">자녀가 집에서 놀고, 탐험하고, 학교 과제를 할 수 있도록 디지털 기기 사용 규칙을 설정하세요.</translation>
+<translation id="3253225298092156258">사용할 수 없음</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{파일을 복사하려면 <ph name="CLOUD_PROVIDER" />에서 여유 공간을 확보하세요.}other{파일을 복사하려면 <ph name="CLOUD_PROVIDER" />에서 여유 공간을 확보하세요.}}</translation>
 <translation id="3253448572569133955">알 수 없는 계정</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{보안 문제 없음}=1{보안 문제 {COUNT}개 발견됨}other{보안 문제 {COUNT}개 발견됨}}</translation>
@@ -3480,7 +3483,6 @@
 <translation id="3838085852053358637">확장 프로그램을 로드하지 못함</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> 더보기</translation>
 <translation id="383891835335927981">확대 또는 축소된 사이트가 없음</translation>
-<translation id="3839509547554145593">마우스 스크롤 가속 사용</translation>
 <translation id="3839516600093027468"><ph name="HOST" />에서 클립보드를 볼 수 없도록 항상 차단</translation>
 <translation id="3841282988425489367">Chromebook용 Steam(베타)을 설정할 수 없음</translation>
 <translation id="3841319830220785495">기본 자연 음성</translation>
@@ -4640,7 +4642,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4827970183019354123">URL 검사기</translation>
 <translation id="4828567746430452681">"<ph name="EXTENSION_NAME" />" 앱이 더 이상 지원되지 않습니다</translation>
 <translation id="482952334869563894">USB 기기(업체 ID: <ph name="VENDOR_ID" />)</translation>
-<translation id="4829768588131278040">PIN 설정</translation>
 <translation id="4830502475412647084">OS 업데이트 설치 중</translation>
 <translation id="4833683849865011483">인쇄 서버에 프린터 1대가 있습니다.</translation>
 <translation id="4836504898754963407">지문 관리</translation>
@@ -5887,7 +5888,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5906732635754427568">이 앱과 관련된 데이터가 이 기기에서 삭제됩니다.</translation>
 <translation id="5906974869830879618">PIN 입력</translation>
 <translation id="5908474332780919512">로그인 시 앱 실행</translation>
-<translation id="5908695239556627796">마우스 스크롤 속도</translation>
 <translation id="5909379458939060601">이 프로필과 인터넷 사용 기록을 삭제하시겠습니까?</translation>
 <translation id="5910363049092958439">이미지를 다른 이름으로 저장(&amp;V)...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 기기가 오프라인 상태임</translation>

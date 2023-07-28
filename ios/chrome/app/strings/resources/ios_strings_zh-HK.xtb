@@ -279,7 +279,7 @@
 <translation id="2702801445560668637">閱讀清單</translation>
 <translation id="2704491540504985681">下載</translation>
 <translation id="2704606927547763573">已複製</translation>
-<translation id="2708051474374549906">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
+<translation id="2708051474374549906">系統會根據你向 Google 傳送的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充程式</translation>
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2712127207578915686">無法開啟檔案</translation>
@@ -342,7 +342,7 @@
 <translation id="3020183492814296499">快速鍵</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039722182465315531">不登入</translation>
-<translation id="3053332585453689122">將你造訪的網址和網頁內容、下載內容、擴充功能活動和系統資訊的少許樣本傳送給 Google 安全瀏覽服務，檢查是否有害。</translation>
+<translation id="3053332585453689122">將你瀏覽的網址和少量網頁內容、下載檔案、擴充程式活動和系統資料的樣本傳送給「Google 安全瀏覽」，檢查是否有害。</translation>
 <translation id="3074499504015191586">翻譯完整網頁</translation>
 <translation id="3076846064362030967">您不會因此登出 Google 帳戶。在您登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。
 
@@ -574,7 +574,7 @@
 <translation id="4587589328781138893">網站</translation>
 <translation id="4588014171431912783">系統會根據上次的備份還原同步處理設定。<ph name="BEGIN_LINK" />查看您可同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">鍵盤</translation>
-<translation id="4601095002996233687">提供深入掃描功能，檢查是否有可疑的下載內容。</translation>
+<translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4606247758155004938">您的瀏覽器由機構管理。</translation>
 <translation id="461440297010471931">目前嘅搜尋引擎係 Google</translation>
 <translation id="4616391354457235490">復原</translation>
@@ -645,7 +645,6 @@
 <translation id="4958444002117714549">展開清單</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
-<translation id="4986678885919050584">從此裝置中移除</translation>
 <translation id="498985224078955265">如要將此分頁傳送至其他裝置，請在要傳送的兩部裝置上登入 Chrome。</translation>
 <translation id="4996567535980789550">開啟同步功能可管理看到的內容</translation>
 <translation id="5005498671520578047">複製密碼</translation>
@@ -929,7 +928,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">前往網站並按一下 Chrome 選單中的「追蹤」</translation>
 <translation id="6550675742724504774">選項</translation>
-<translation id="6550891580932862748">無法防範危險的網站、下載內容和擴充功能。其他 Google 產品的安全瀏覽設定不會受到影響。</translation>
+<translation id="6550891580932862748">無法防範危險網站、下載檔案和擴充程式。其他 Google 產品的「安全瀏覽」設定不會受影響。</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6579867704846662339">你可選擇在無痕模式中開啟從其他應用程式收到的網址。</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」。</translation>
@@ -1152,7 +1151,7 @@
 網站可使用 Cookie 來查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="7971521879845308059">封鎖彈出式視窗</translation>
 <translation id="7975036700432177008">試用</translation>
-<translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
+<translation id="7977451675950311423">如果你使用在資料外洩中被盜用的密碼，系統便會向你發出警告。</translation>
 <translation id="7978018860671536736">3. 輕按 [自動填入密碼]</translation>
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7987685713885608670">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具。</translation>

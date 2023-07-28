@@ -195,6 +195,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1153636665119721804">Programa de Protección Avanzada de Google</translation>
 <translation id="1155545602507378023">No, solo en este dispositivo</translation>
 <translation id="1155816283571436363">Se está estableciendo conexión con tu teléfono</translation>
+<translation id="1157952955648710254">Cerrar el panel lateral de la Búsqueda de Google</translation>
 <translation id="1158080958325422608">Convertir a mayúsculas</translation>
 <translation id="1158238185437008462">Ver recuerdos</translation>
 <translation id="1159879754517035595">Administrar la configuración de extensiones</translation>
@@ -1462,6 +1463,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2178614541317717477">Compromiso de entidad de certificación</translation>
 <translation id="2179416702468739594">Se están buscando perfiles disponibles. Es posible que se desconecte tu red móvil por unos minutos.</translation>
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
+<translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Se copió en tu portapapeles</translation>
 <translation id="2183570493397356669">Se inhabilitó el botón Continuar</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonido (recomendado)</translation>
@@ -2125,6 +2127,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2719936478972253983">Se bloquearon las siguientes cookies</translation>
 <translation id="2721037002783622288">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
+<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Los permisos que habilites para "<ph name="APP_NAME" />" también se permitirán para esta app.}other{Los permisos que habilites para "<ph name="APP_NAME" />" también se permitirán para estas apps.}}</translation>
 <translation id="2721695630904737430">El administrador inhabilitó a los usuarios supervisados.</translation>
 <translation id="2722540561488096675">El dispositivo se apagará en <ph name="TIME_LEFT" />. Quita el USB antes de volver a prender el dispositivo. Luego, podrás empezar a usar <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -2474,6 +2477,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3001614333383288217">{COUNT,plural, =0{No hay teclas personalizadas}=1{1 tecla personalizada}other{{COUNT} teclas personalizadas}}</translation>
 <translation id="3001835006423291524">Toca el sensor de huellas dactilares en la esquina inferior derecha del teclado. Los datos de las huellas dactilares se almacenan de forma segura y no salen nunca de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Redes preferidas</translation>
+<translation id="3003253259757197230">Se enviarán a Google las URLs que visites para predecir los sitios que posiblemente vayas a visitar y mostrarte información adicional sobre la página que estés visitando</translation>
 <translation id="3003623123441819449">Caché CSS</translation>
 <translation id="3003828226041301643">No se puede unir el dispositivo al dominio. Asegúrate de que tu cuenta tenga privilegios para agregarlos.</translation>
 <translation id="3003967365858406397">Tu número <ph name="PHONE_NAME" /> creará una conexión de Wi-Fi privada.</translation>
@@ -2726,6 +2730,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3234978181857588512">Guardar en el dispositivo</translation>
 <translation id="3238192140106069382">Conectando y verificando</translation>
 <translation id="3239373508713281971">Se quitó el límite de tiempo para <ph name="APP_NAME" /></translation>
+<translation id="3240426699337459095">Vínculo copiado</translation>
 <translation id="3241638166094654466">Celdas en cada línea:</translation>
 <translation id="3241680850019875542">Seleccionar el directorio de raíz de la extensión que debe empaquetarse. Para actualizar una extensión, también debes seleccionar el archivo de clave privada que será reutilizado.</translation>
 <translation id="3242289508736283383">La app con el atributo del manifiesto "kiosk_only" se debe instalar en el modo kiosco del ChromeOS.</translation>
@@ -2741,6 +2746,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3251714896659475029">Permite que <ph name="SUPERVISED_USER_NAME" /> acceda a Asistente de Google con "Hey Google"</translation>
 <translation id="3251759466064201842">&lt;No forma parte de un certificado&gt;</translation>
 <translation id="325238099842880997">Establece reglas digitales básicas que permitan que los niños jueguen, exploren y hagan tarea en el hogar</translation>
+<translation id="3253225298092156258">No disponible</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Libera espacio en <ph name="CLOUD_PROVIDER" /> para copiar este archivo}other{Libera espacio en <ph name="CLOUD_PROVIDER" /> para copiar estos archivos}}</translation>
 <translation id="3253448572569133955">Cuenta desconocida</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{No se encontraron problemas de seguridad}=1{Se encontró {COUNT} problema de seguridad}other{Se encontraron {COUNT} problemas de seguridad}}</translation>
@@ -3457,7 +3463,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3838085852053358637">Se produjo un error al cargar la extensión</translation>
 <translation id="3838486795898716504">Más <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">No se configuró el zoom para ningún sitio</translation>
-<translation id="3839509547554145593">Habilitar la aceleración de desplazamiento del mouse</translation>
 <translation id="3839516600093027468">Nunca permitir que <ph name="HOST" /> vea el portapapeles</translation>
 <translation id="3841282988425489367">No se puede configurar Steam for Chromebook (beta)</translation>
 <translation id="3841319830220785495">Voz natural predeterminada</translation>
@@ -4618,7 +4623,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4827970183019354123">Verificador de URL</translation>
 <translation id="4828567746430452681">Ya no se admite "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="482952334869563894">Dispositivos USB del proveedor <ph name="VENDOR_ID" /></translation>
-<translation id="4829768588131278040">Configurar PIN</translation>
 <translation id="4830502475412647084">Instalando la actualización del SO</translation>
 <translation id="4833683849865011483">Se encontró 1 impresora en el servidor de impresión</translation>
 <translation id="4836504898754963407">Administrar huellas dactilares</translation>
@@ -5865,7 +5869,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5906732635754427568">Los datos asociados a esta app se quitarán de este dispositivo.</translation>
 <translation id="5906974869830879618">Ingresa un PIN</translation>
 <translation id="5908474332780919512">Iniciar la app al acceder</translation>
-<translation id="5908695239556627796">Velocidad de desplazamiento del mouse</translation>
 <translation id="5909379458939060601">¿Quieres borrar este perfil y los datos de navegación?</translation>
 <translation id="5910363049092958439">Gu&amp;ardar imagen como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está sin conexión</translation>
@@ -6610,6 +6613,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para ayudar a determinar la ubicación de tu dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar la ubicación de tu dispositivo Android en cualquier momento a través de Configuración &gt; Apps &gt; Google Play Store &gt; Administrar las preferencias de Android &gt; Seguridad y ubicación &gt; Ubicación. Además, si quieres desactivar el uso de Wi-Fi, redes móviles y sensores para la ubicación de este dispositivo Android, desactiva "Precisión de la ubicación de Google" en el mismo menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">¿Deseas activar la navegación por cursor de texto?</translation>
+<translation id="6548945820758901244">Abrir el panel lateral de la Búsqueda de Google</translation>
 <translation id="6549038875972762904">Rehacer la configuración</translation>
 <translation id="6550675742724504774">Opciones</translation>
 <translation id="65513682072153627">Verás este ícono de Administrado cuando un parámetro de configuración o una función esté gestionado por el administrador.</translation>
@@ -6935,6 +6939,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6820079682647046800">Se produjo un error al autenticar Kerberos</translation>
 <translation id="6823174134746916417">Tocar para hacer clic del panel táctil</translation>
 <translation id="6823429960180594870">Administra los archivos mientras se descargan y ábrelos cuando hayan terminado</translation>
+<translation id="6823561724060793716">En la barra de direcciones, puedes abrir la información de la página para ver información adicional sobre la página estás visitando</translation>
 <translation id="6824564591481349393">Copiar la dir&amp;ección de correo electrónico</translation>
 <translation id="6824584962142919697">Analizar elementos</translation>
 <translation id="6824725898506587159">Administrar idiomas</translation>
@@ -7465,6 +7470,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280649757394340890">Configuración de la voz en la función de texto a voz</translation>
 <translation id="7280877790564589615">Permiso solicitado</translation>
+<translation id="7281166215790160128">Modo</translation>
 <translation id="7282056103720203738">Leer la información y los datos del dispositivo conectado</translation>
 <translation id="7282547042039404307">Fluida</translation>
 <translation id="7282992757463864530">Barra de información</translation>
@@ -8767,6 +8773,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que envió muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que enviaron muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
+<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) quiere instalar la siguiente app en este dispositivo:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) quiere instalar las siguientes apps en este dispositivo:}}</translation>
 <translation id="8345848587667658367">Ahora puedes ver las apps, las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="834785183489258869">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
@@ -9364,6 +9371,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8856028055086294840">Restablecer apps y páginas</translation>
 <translation id="885701979325669005">Almacenamiento</translation>
 <translation id="885746075120788020">Tu actividad y tus preferencias guardadas estarán listas en cualquier dispositivo con ChromeOS cuando accedes con tu Cuenta de Google. En Configuración, podrás elegir los datos que quieras sincronizar.</translation>
+<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{¿Quieres instalar la app?}other{¿Quieres instalar las apps?}}</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>
 <translation id="8859174528519900719">Submarco: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">No se pudieron cargar las Condiciones del Servicio</translation>

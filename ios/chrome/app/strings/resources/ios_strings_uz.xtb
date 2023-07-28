@@ -279,6 +279,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2702801445560668637">Mutolaa ro‘yxati</translation>
 <translation id="2704491540504985681">Yuklanmalar</translation>
 <translation id="2704606927547763573">Nusxa olindi</translation>
+<translation id="2708051474374549906">Googlega yuborilgan koʻrish maʼlumotlaringiz asosida xavfli saytlar, yuklanmalar va kengaytmalardan real vaqtda faol himoya.</translation>
 <translation id="2709516037105925701">Avtoto‘ldirish</translation>
 <translation id="271033894570825754">Yangi</translation>
 <translation id="2712127207578915686">Faylni ochib bo‘lmadi</translation>
@@ -341,6 +342,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3020183492814296499">Yorliqlar</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
 <translation id="3039722182465315531">Kirilmasin</translation>
+<translation id="3053332585453689122">Siz tashrif buyurgan URL manzillar va sahifa kontenti, yuklab olishlar, kengaytmalar faoliyati va tizim maʼlumotlarining kichik namunasini ular zararli yoki yoʻqligini tekshirish uchun Google Saytlarni xavfsiz kezish xizmatiga yuboradi.</translation>
 <translation id="3074499504015191586">Toʻliq sahifani tarjima qilish</translation>
 <translation id="3076846064362030967">Google hisobingizdan chiqmaysiz. Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.
 
@@ -572,6 +574,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">Sinxronizatsiya sozlamalari oxirgi zaxiraviy fayl asosida tiklanadi. <ph name="BEGIN_LINK" />Nimalarni sinxronlash mumkin<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klaviatura</translation>
+<translation id="4601095002996233687">Shubhali yuklanmalarni chuqur tekshirish</translation>
 <translation id="4606247758155004938">Brauzeringiz tashkilotingiz boshqaruvida.</translation>
 <translation id="461440297010471931">Google orqali qidiruv</translation>
 <translation id="4616391354457235490">Bekor qilish</translation>
@@ -642,7 +645,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4958444002117714549">Ro‘yxatni yoyish</translation>
 <translation id="4971735654804503942">Zararli sayt, yuklanma va kengaytmalarga qarshi tez va mustahkam himoya. Oshkor etilgan parollar haqida ogohlantiradi. Brauzer maʼlumotlari Google serverlariga yuborilishini talab qiladi.</translation>
 <translation id="4979397965658815378">Xatcho‘plar, tarix, parollar va boshqa sozlamalarni barcha qurilmalaringizda sinxronlash uchun Google hisobingizga kiring.</translation>
-<translation id="4986678885919050584">Shu qurilmadan olib tashlash</translation>
 <translation id="498985224078955265">Bu varaqni boshqa qurilmaga yuborish uchun har ikki qurilmada Chrome hisobiga kiring.</translation>
 <translation id="4996567535980789550">Chiqadigan kontentni boshqarish uchun sinxronizatsiyani yoqing</translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
@@ -928,6 +930,7 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Saytni oching va Chrome menyusida Kuzatish ustiga bosing</translation>
 <translation id="6550675742724504774">Parametrlar</translation>
+<translation id="6550891580932862748">Zararli sayt, yuklanma va kengaytmalardan himoya qila olmaydi. Saytlarni xavfsiz kezish sozlamalari boshqa Google mahsulotlariga taʼsir qilmaydi.</translation>
 <translation id="6561262006871132942">Yaqinlashtirish</translation>
 <translation id="6579867704846662339">Boshqa ilovalardan kelgan URL manzillar Inkognitoda ochilishini tanlash mumkin.</translation>
 <translation id="6583087784430677195">Faolsizlantirish uchun avval <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" />, keyin Parollarni avtomatik kiritish sahifasini oching.</translation>
@@ -1150,6 +1153,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzatishi mumkin</translation>
 <translation id="7971521879845308059">Qalqib chiquvchi oynalarni bloklash</translation>
 <translation id="7975036700432177008">Quyidagilarni bajaring:</translation>
+<translation id="7977451675950311423">Maʼlumotlar sizishi natijasida oshkor boʻlgan paroldan foydalansangiz, sizni ogohlantiradi.</translation>
 <translation id="7978018860671536736">3. Parollarni avtomatik kiritish uchun bosing</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7987685713885608670">Xavfsizlikni yanada oshirish uchun parolingizni Google Parollar menejeriga saqlashdan oldin qurilmangizda shifrlang</translation>

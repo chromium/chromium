@@ -197,6 +197,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1153636665119721804">Avancerat skydd från Google</translation>
 <translation id="1155545602507378023">Nej, bara på den här enheten</translation>
 <translation id="1155816283571436363">Ansluter till telefonen</translation>
+<translation id="1157952955648710254">Stäng sidopanelen i Google Sök</translation>
 <translation id="1158080958325422608">Ändra till versaler</translation>
 <translation id="1158238185437008462">Se minnen</translation>
 <translation id="1159879754517035595">Hantera inställningar för tillägg</translation>
@@ -1477,6 +1478,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2178614541317717477">CA-kompromiss</translation>
 <translation id="2179416702468739594">Söker efter tillgängliga profiler. Mobilnätverket kan kopplas från i några minuter.</translation>
 <translation id="2180620921879609685">Blockera innehåll på alla sidor</translation>
+<translation id="2181821976797666341">Policyer</translation>
 <translation id="2182058453334755893">Kopierat till urklipp</translation>
 <translation id="2183570493397356669">Fortsätt-knappen har inaktiverats</translation>
 <translation id="2184515124301515068">Låt Chrome välja när webbplatser kan spela upp ljud (rekommenderas)</translation>
@@ -2143,6 +2145,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2719936478972253983">Följande cookies blockerades</translation>
 <translation id="2721037002783622288">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter bild</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
+<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för den här appen.}other{Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för dessa appar.}}</translation>
 <translation id="2721695630904737430">Kontrollerade användare har inaktiverats av administratören.</translation>
 <translation id="2722540561488096675">Enheten stängs av om <ph name="TIME_LEFT" />. Ta bort USB-minnet innan du startar om enheten. Sedan kan du börja använda <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">Id: <ph name="EXTENSION_ID" /></translation>
@@ -2492,6 +2495,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3001614333383288217">{COUNT,plural, =0{Inga anpassade tangenter}=1{1 anpassad tangent}other{{COUNT} anpassade tangenter}}</translation>
 <translation id="3001835006423291524">Tryck på fingeravtryckssensorn nere till höger på tangentbordet. Din fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Prioriterade nätverk</translation>
+<translation id="3003253259757197230">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst och för att visa mer information om den sida du besöker</translation>
 <translation id="3003623123441819449">CSS-cacheminne</translation>
 <translation id="3003828226041301643">Det gick inte att ansluta enheten till domänen. Kontrollera att du använder ett konto med behörighet att lägga till enheter.</translation>
 <translation id="3003967365858406397">En privat wifi-anslutning skapas i <ph name="PHONE_NAME" />.</translation>
@@ -2744,6 +2748,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3234978181857588512">Spara på enhet</translation>
 <translation id="3238192140106069382">Ansluter och verifierar</translation>
 <translation id="3239373508713281971">Tidsgränsen för <ph name="APP_NAME" /> har tagits bort</translation>
+<translation id="3240426699337459095">Länken har kopierats</translation>
 <translation id="3241638166094654466">Celler i varje rad:</translation>
 <translation id="3241680850019875542">Välj rotkatalogen för tillägget som ska paketeras. Om du vill uppdatera ett tillägg väljer du också den privata nyckel som ska återanvändas.</translation>
 <translation id="3242289508736283383">En app med manifestattributet kiosk_only måste installeras i kioskläget i Chrome OS</translation>
@@ -2759,6 +2764,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3251714896659475029">Låt <ph name="SUPERVISED_USER_NAME" /> få åtkomst till Google Assistent med ”Hey Google”</translation>
 <translation id="3251759466064201842">&lt;ingår inte i certifikat&gt;</translation>
 <translation id="325238099842880997">Skapa digitala regler för hur barnen får spela, utforska och göra skolarbetet hemifrån</translation>
+<translation id="3253225298092156258">Inte tillgängligt</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Frigör utrymme på <ph name="CLOUD_PROVIDER" /> om du vill kopiera den här filen}other{Frigör utrymme på <ph name="CLOUD_PROVIDER" /> om du vill kopiera de här filerna}}</translation>
 <translation id="3253448572569133955">Okänt konto</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Inga säkerhetsproblem hittades}=1{{COUNT} säkerhetsproblem hittades}other{{COUNT} säkerhetsproblem hittades}}</translation>
@@ -3475,7 +3481,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3838085852053358637">Det gick inte att läsa in tillägget</translation>
 <translation id="3838486795898716504">Mer <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Inga webbplatser har zoomats in eller ut</translation>
-<translation id="3839509547554145593">Aktivera scrollningsacceleration för musen</translation>
 <translation id="3839516600093027468">Blockera alltid tillgången till Urklipp för <ph name="HOST" /></translation>
 <translation id="3841282988425489367">Det går inte att konfigurera Steam för Chromebook (beta)</translation>
 <translation id="3841319830220785495">Naturlig standardröst</translation>
@@ -4637,7 +4642,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4827970183019354123">Webbadresskontroll</translation>
 <translation id="4828567746430452681"><ph name="EXTENSION_NAME" /> stöds inte längre</translation>
 <translation id="482952334869563894">USB-enheter från leverantören <ph name="VENDOR_ID" /></translation>
-<translation id="4829768588131278040">Konfigurera pinkod</translation>
 <translation id="4830502475412647084">Uppdateringen för operativsystemet installeras</translation>
 <translation id="4833683849865011483">1 skrivare från utskriftsservern hittades</translation>
 <translation id="4836504898754963407">Hantera fingeravtryck</translation>
@@ -5884,7 +5888,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5906732635754427568">Data kopplad till den här appen tas bort från enheten.</translation>
 <translation id="5906974869830879618">Ange en pinkod</translation>
 <translation id="5908474332780919512">Starta appen när du loggar in</translation>
-<translation id="5908695239556627796">Scrollningshastighet för musen</translation>
 <translation id="5909379458939060601">Vill du radera den här profilen och tillhörande webbinformation?</translation>
 <translation id="5910363049092958439">S&amp;para bild som...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> är offline</translation>
@@ -6629,6 +6632,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Med Googles platstjänst används källor som wifi, mobila nätverk och sensorer för att avgöra enhetens plats.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera plats för Android-enheten när du vill via Inställningar &gt; Appar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Säkerhet och plats &gt; Plats. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för platstjänsten genom att inaktivera Platsangivelsens exakthet i samma meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Vill du aktivera textmarkörläge?</translation>
+<translation id="6548945820758901244">Öppna sidopanelen i Google Sök</translation>
 <translation id="6549038875972762904">Gör om konfigurationen</translation>
 <translation id="6550675742724504774">Alternativ</translation>
 <translation id="65513682072153627">Denna ikon visas när en inställning eller funktion hanteras av administratören.</translation>
@@ -6954,6 +6958,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6820079682647046800">Kerberos-autentiseringen misslyckades</translation>
 <translation id="6823174134746916417">Lätt klick på styrplattan</translation>
 <translation id="6823429960180594870">Hantera filer när de laddas ned och öppna dem när de är klara</translation>
+<translation id="6823561724060793716">Från adressfältet kan du öppna sidinformationen för att läsa mer om den sida du besöker</translation>
 <translation id="6824564591481349393">Kopiera &amp;e-postadress</translation>
 <translation id="6824584962142919697">&amp;Inspektera element</translation>
 <translation id="6824725898506587159">Hantera språk</translation>
@@ -7484,6 +7489,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="727952162645687754">Nedladdningsfel</translation>
 <translation id="7280649757394340890">Röstinställningar för text till tal</translation>
 <translation id="7280877790564589615">Tillstånd begärt</translation>
+<translation id="7281166215790160128">Läge</translation>
 <translation id="7282056103720203738">Läs bifogad enhetsinformation och -data</translation>
 <translation id="7282547042039404307">Jämn</translation>
 <translation id="7282992757463864530">Informationsfält</translation>
@@ -8786,6 +8792,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Granska <ph name="BEGIN_BOLD" />1 webbplats<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}other{Granska <ph name="BEGIN_BOLD" />{NUM_SITES} webbplatser<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}}</translation>
 <translation id="8342221978608739536">Jag försökte inte</translation>
 <translation id="8342861492835240085">Välj en samling</translation>
+<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) vill installera följande app på den här enheten:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) vill installera följande appar på den här enheten:}}</translation>
 <translation id="8345848587667658367">Nu kan du se de senaste bilderna, mediefilerna, aviseringarna och apparna från telefonen</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="834785183489258869">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
@@ -9383,6 +9390,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8856028055086294840">Återställa appar och sidor</translation>
 <translation id="885701979325669005">Lagring</translation>
 <translation id="885746075120788020">När du är inloggad med ditt Google-konto har du tillgång till dina sparade inställningar och din sparade aktivitet på alla Chrome OS-enheter. Du kan välja vad som ska synkroniseras i inställningarna.</translation>
+<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Vill du installera appen?}other{Vill du installera apparna?}}</translation>
 <translation id="8858369206579825206">Integritetsinställningar</translation>
 <translation id="8859174528519900719">Underram: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Det gick inte att läsa in användarvillkoren</translation>

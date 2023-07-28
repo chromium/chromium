@@ -224,6 +224,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Slika za prijavo</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> je bil izbran</translation>
+<translation id="2652403576514495859">omogočanje ali preklapljanje nareka</translation>
 <translation id="267442004702508783">osvežitev</translation>
 <translation id="268270014981824665">zatemnitev osvetlitve tipkovnice</translation>
 <translation id="2712812801627182647">Ključ za preverjanje pristnost TLS</translation>
@@ -589,6 +590,7 @@
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5655283760733841251">Povečanje svetlosti osvetlitve tipkovnice</translation>
+<translation id="5655296450510165335">Včlanitev naprave</translation>
 <translation id="5655776422854483175">Ni tiskalnih opravil</translation>
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5662240986744577912">preklop zaslona za zasebnost</translation>
@@ -802,6 +804,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Vprašajte strokovnjake v forumu s pomočjo za Chromebook.</translation>
 <translation id="7311368985037279727">barva tipkovnice</translation>
+<translation id="7317831949569936035">Vpis v šolo</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite tipko za iskanje in preslednico, če si želite rezultat ogledati v Iskanju Google.</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>

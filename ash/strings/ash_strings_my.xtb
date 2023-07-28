@@ -58,7 +58,6 @@
 <translation id="121097972571826261">စာလုံးအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="1217633719248931900">အက်ပ်သို့ သွားရန်</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />၊ Play Store အက်ပ်</translation>
-<translation id="1219309685806246869"><ph name="APP_TITLE" /> သို့ ပြန်သွားရန်။</translation>
 <translation id="1225748608451425081">သိထားသည့် ပြဿနာတစ်ခုကြောင့် သင့် Chromebook လော့ခ်ကျသွားသည်။ <ph name="TIME_LEFT" /> နောက်ပိုင်းတွင် လက်မှတ်ထိုးဝင်နိုင်ပါမည်။</translation>
 <translation id="1229194443904279055">ရွေးချယ်ခြင်းကို ရပ်ရန်</translation>
 <translation id="1235458158152011030">သိထားသည့် ကွန်ရက်များ</translation>
@@ -1812,6 +1811,7 @@
 <translation id="8921624153894383499">Google Assistant သည် ဤဘာသာစကားကို မသိပါ။</translation>
 <translation id="8924458948354692166">ဝင်းဒိုးဖန်သားပြင်ဓာတ်ပုံကို ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="8926951137623668982">စင်ကို အမြဲ ဖျောက်ထားလိုက်ပါပြီ</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{ဖိုင် ၁ ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="8936501819958976551">ရပ်ထားသည်</translation>
 <translation id="8938800817013097409">USB-C ကိရိယာ (ကျောဘက် ညာ ပို့တ်)</translation>
 <translation id="8940956008527784070">ဓာတ်ခဲအားနည်း (<ph name="PERCENTAGE" />%)</translation>

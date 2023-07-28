@@ -608,6 +608,7 @@
 <translation id="4296252229500326964">Новая вкладка инкогнито</translation>
 <translation id="4298388696830689168">Связанные сайты</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
 <translation id="4321739720395210191">Не удается открыть камеру. Перезапустите устройство и повторите попытку.</translation>
@@ -985,7 +986,6 @@
 <translation id="6324997754869598316">(Ошибка <ph name="ERROR_CODE" />.)</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифрование</translation>
-<translation id="6340910702212418132">Менеджер паролей <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">Спрашивать, куда сохранять файлы</translation>
 <translation id="6342069812937806050">только что</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес доставки}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес доставки}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса доставки}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адресов доставки}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса доставки}}</translation>

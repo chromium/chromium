@@ -58,7 +58,6 @@
 <translation id="121097972571826261">ഒരു വാക്ക് മുന്നിലേക്ക് പോവുക</translation>
 <translation id="1217633719248931900">ആപ്പിലേക്ക് പോകുക</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ആപ്പ്</translation>
-<translation id="1219309685806246869"><ph name="APP_TITLE" /> എന്നതിലേക്ക് മടങ്ങുക.</translation>
 <translation id="1225748608451425081">അറിയപ്പെടുന്ന ഒരു പ്രശ്‌നം കാരണം നിങ്ങളുടെ Chromebook ലോക്ക് ചെയ്‌തിരിക്കുന്നു. ഇനിപ്പറയുന്ന സമയത്തിന് ശേഷം നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യാനാകും: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">തിരഞ്ഞെടുക്കുന്നത് നിർത്തുക</translation>
 <translation id="1235458158152011030">അറിയാവുന്ന നെറ്റ്‌വർക്കുകൾ</translation>
@@ -1812,6 +1811,7 @@
 <translation id="8921624153894383499">Google അസിസ്‌റ്റന്‍റ് ഈ ഭാഷ സംസാരിക്കില്ല.</translation>
 <translation id="8924458948354692166">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കാൻ Enter അമർത്തുക</translation>
 <translation id="8926951137623668982">ഷെൽഫ് എപ്പോഴും അദൃശ്യമാണ്</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="8936501819958976551">നിർജീവമാക്കി</translation>
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>
 <translation id="8940956008527784070">ബാറ്ററി കുറവാണ് (<ph name="PERCENTAGE" />%)</translation>

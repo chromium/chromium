@@ -277,6 +277,7 @@
 <translation id="2702801445560668637">阅读清单</translation>
 <translation id="2704491540504985681">下载内容</translation>
 <translation id="2704606927547763573">已复制</translation>
+<translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动保护您免受危险网站、下载内容和扩展程序的侵害</translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2712127207578915686">无法打开该文件</translation>
@@ -339,6 +340,7 @@
 <translation id="3020183492814296499">快捷方式</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3039722182465315531">不登录</translation>
+<translation id="3053332585453689122">将您访问过的网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
 <translation id="3074499504015191586">翻译整页内容</translation>
 <translation id="3076846064362030967">您不会因此而退出自己的 Google 帐号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 帐号中。您可以随时删除这些记录。
 
@@ -570,6 +572,7 @@
 <translation id="4587589328781138893">网站</translation>
 <translation id="4588014171431912783">系统将根据上次备份来恢复您的同步设置。<ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">键盘</translation>
+<translation id="4601095002996233687">针对可疑的下载内容进行深入扫描。</translation>
 <translation id="4606247758155004938">您的浏览器由贵单位管理。</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
 <translation id="4616391354457235490">撤消</translation>
@@ -640,7 +643,6 @@
 <translation id="4958444002117714549">展开列表</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="4979397965658815378">登录 Google 帐号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
-<translation id="4986678885919050584">从此设备中移除</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
 <translation id="4996567535980789550">开启同步功能即可管理您看到的内容</translation>
 <translation id="5005498671520578047">复制密码</translation>
@@ -922,6 +924,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">不妨访问一个网站并在 Chrome 菜单中点击“关注”</translation>
 <translation id="6550675742724504774">选项</translation>
+<translation id="6550891580932862748">不会保护您免受危险网站、下载内容和扩展程序的侵害。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6579867704846662339">您可选择在无痕模式下打开来自其他应用的传入网址。</translation>
 <translation id="6583087784430677195">如需关闭此功能，请打开<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />，然后转至“自动填充密码”。</translation>
@@ -1144,6 +1147,7 @@
 网站还可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="7971521879845308059">拦截弹出式窗口</translation>
 <translation id="7975036700432177008">试用</translation>
+<translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
 <translation id="7978018860671536736">3. 点按“自动填充密码”</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理器中。</translation>

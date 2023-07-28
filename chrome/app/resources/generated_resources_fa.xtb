@@ -197,6 +197,7 @@
 <translation id="1153636665119721804">‏برنامه محافظت پیشرفته Google</translation>
 <translation id="1155545602507378023">نه، فقط این دستگاه</translation>
 <translation id="1155816283571436363">درحال اتصال به تلفن</translation>
+<translation id="1157952955648710254">‏بستن پانل کناری «جستجوی Google»</translation>
 <translation id="1158080958325422608">تبدیل به حروف بزرگ</translation>
 <translation id="1158238185437008462">دیدن خاطرات</translation>
 <translation id="1159879754517035595">مدیریت تنظیمات افزونه</translation>
@@ -1474,6 +1475,7 @@
 <translation id="2178614541317717477">‏بی اعتبارشدن CA</translation>
 <translation id="2179416702468739594">درحال جستجوی نمایه‌های دردسترس. ممکن است درحین جستجو، اتصال شبکه تلفن همراه برای چند دقیقه قطع شود.</translation>
 <translation id="2180620921879609685">محتوای موجود در همه صفحه‌ها را مسدود کند</translation>
+<translation id="2181821976797666341">خط‌ مشی‌ها</translation>
 <translation id="2182058453334755893">در بریده‌دان کپی شد</translation>
 <translation id="2183570493397356669">دکمه ادامه غیرفعال شد</translation>
 <translation id="2184515124301515068">‏Chrome انتخاب کند سایت‌ها چه موقع صدا پخش کنند (توصیه می‌شود)</translation>
@@ -2140,6 +2142,7 @@
 <translation id="2719936478972253983">کوکی‌های زیر مسدود شدند</translation>
 <translation id="2721037002783622288">&amp;جستجوی <ph name="SEARCH_ENGINE" /> برای تصویر</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
+<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{اجازه‌هایی که به «<ph name="APP_NAME" />» اعطا می‌کنید به این برنامه نیز اعطا خواهد شد.}one{اجازه‌هایی که به «<ph name="APP_NAME" />» اعطا می‌کنید به این برنامه نیز اعطا خواهد شد.}other{اجازه‌هایی که به «<ph name="APP_NAME" />» اعطا می‌کنید به این برنامه‌ها نیز اعطا خواهد شد.}}</translation>
 <translation id="2721695630904737430">سرپرست سیستم شما کاربران تحت نظارت را غیرفعال کرده است.</translation>
 <translation id="2722540561488096675">‏دستگاه <ph name="TIME_LEFT" /> دیگر خاموش خواهد شد. قبل‌از روشن کردن مجدد دستگاه، USB را جدا کنید. سپس می‌توانید بااستفاده از <ph name="DEVICE_OS" /> شروع کنید.</translation>
 <translation id="2722547199758472013">شناسه: <ph name="EXTENSION_ID" /></translation>
@@ -2489,6 +2492,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{کلیدی سفارشی‌سازی نشده است}=1{یک کلید سفارشی‌سازی شده است}one{{COUNT} کلید سفارشی‌سازی شده است}other{{COUNT} کلید سفارشی‌سازی شده است}}</translation>
 <translation id="3001835006423291524">حسگر اثر انگشت را در پایین گوشه سمت راست صفحه‌کلید لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
 <translation id="3003144360685731741">شبکه‌های برگزیده</translation>
+<translation id="3003253259757197230">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید و همچنین اطلاعات بیشتری درباره صفحه‌ای که بازدید می‌کنید به شما نشان داده می‌شود</translation>
 <translation id="3003623123441819449">‏حافظهٔ پنهان CSS</translation>
 <translation id="3003828226041301643">نمی‌توان دستگاه را به دامنه وصل کرد. حسابتان را بررسی کنید تا مطمئن شوید برای اضافه کردن دستگاه مجاز هستید.</translation>
 <translation id="3003967365858406397">‏<ph name="PHONE_NAME" /> شما اتصال Wi-Fi خصوصی ایجاد خواهد کرد.</translation>
@@ -2741,6 +2745,7 @@
 <translation id="3234978181857588512">ذخیره کردن در دستگاه</translation>
 <translation id="3238192140106069382">درحال اتصال و تأیید</translation>
 <translation id="3239373508713281971">محدودیت زمانی برای <ph name="APP_NAME" /> برداشته شده است</translation>
+<translation id="3240426699337459095">پیوند کپی شد</translation>
 <translation id="3241638166094654466">تعداد سلول‌ها در هر خط:</translation>
 <translation id="3241680850019875542">دایرکتوری ریشه برنامهٔ افزودنی را برای فشرده کردن انتخاب کنید. همچنین برای به‌روزرسانی برنامهٔ افزودنی، فایل کلید خصوصی را برای استفاده مجدد انتخاب کنید.</translation>
 <translation id="3242289508736283383">‏برنامه‌ای با مشخصه مانیفست «kiosk_only» باید در حالت کیوسک ChromeOS نصب شود</translation>
@@ -2756,6 +2761,7 @@
 <translation id="3251714896659475029">‏به <ph name="SUPERVISED_USER_NAME" /> اجازه دهید با گفتن «Ok Google» به «دستیار Google» دسترسی پیدا کند</translation>
 <translation id="3251759466064201842">&lt;جزئی از گواهی نیست&gt;</translation>
 <translation id="325238099842880997">تنظیم قوانین پایه دیجیتال برای کمک به فرزندان در زمینه بازی، کاوش، و انجام تکالیف مدرسه در خانه</translation>
+<translation id="3253225298092156258">موجود نیست</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{برای کپی کردن این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}one{برای کپی کردن این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}other{برای کپی کردن این فایل‌ها در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}}</translation>
 <translation id="3253448572569133955">حساب نامشخص</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{هیچ مشکل امنیتی پیدا نشد}=1{{COUNT} مشکل امنیتی پیدا شد}one{{COUNT} مشکل امنیتی پیدا شد}other{{COUNT} مشکل امنیتی پیدا شد}}</translation>
@@ -3472,7 +3478,6 @@
 <translation id="3838085852053358637">افزونه بار نشد</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> بیشتر</translation>
 <translation id="383891835335927981">هیچ سایتی بزرگ‌نمایی یا کوچک‌نمایی نشده است</translation>
-<translation id="3839509547554145593">فعال کردن شتاب پیمایش موشواره</translation>
 <translation id="3839516600093027468">دسترسی <ph name="HOST" /> به بریده‌‌دان همیشه مسدود باشد</translation>
 <translation id="3841282988425489367">‏Steam ویژه Chromebook (بتا) نصب نشد</translation>
 <translation id="3841319830220785495">صدای طبیعی پیش‌فرض</translation>
@@ -4634,7 +4639,6 @@
 <translation id="4827970183019354123">بررسی‌کننده نشانی وب</translation>
 <translation id="4828567746430452681">«<ph name="EXTENSION_NAME" />» دیگر پشتیبانی نمی‌شود</translation>
 <translation id="482952334869563894">‏دستگاه‌های USB از فروشنده <ph name="VENDOR_ID" /></translation>
-<translation id="4829768588131278040">تنظیم پین</translation>
 <translation id="4830502475412647084">درحال نصب به‌روزرسانی سیستم‌عامل</translation>
 <translation id="4833683849865011483">۱ چاپگر از این سرور چاپ پیدا شد</translation>
 <translation id="4836504898754963407">مدیریت اثر انگشت</translation>
@@ -5881,7 +5885,6 @@
 <translation id="5906732635754427568">داده‌های مرتبط با این برنامه از این دستگاه پاک می‌شوند.</translation>
 <translation id="5906974869830879618">لطفاً پین را وارد کنید</translation>
 <translation id="5908474332780919512">راه‌اندازی برنامه هنگام ورود به سیستم</translation>
-<translation id="5908695239556627796">سرعت پیمایش موشواره</translation>
 <translation id="5909379458939060601">این نمایه و داده‌های مرور حذف شود؟</translation>
 <translation id="5910363049092958439">ذ&amp;خیره فایل تصویری به‌عنوان...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آفلاین است</translation>
@@ -6626,6 +6629,7 @@
 <translation id="6547854317475115430">‏<ph name="BEGIN_PARAGRAPH1" />«خدمات مکان Google» از منابعی مانند Wi-Fi، شبکه‌های تلفن همراه، و حسگرها برای کمک به تخمین مکان دستگاهتان استفاده می‌کند.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />هرزمان خواستید می‌توانید با رفتن به «تنظیمات &gt; برنامه‌ها &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; امنیت و مکان &gt; مکان»، مکان Android را در دستگاهتان خاموش کنید. همچنین می‌توانید با خاموش کردن «دقت مکان Google» در همان منو، استفاده از Wi-Fi، شبکه‌های تلفن همراه، و حسگرها را برای مکان Android خاموش کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">«مرور با نشانگر نوشتار» روشن شود؟</translation>
+<translation id="6548945820758901244">‏باز کردن پانل کناری «جستجوی Google»</translation>
 <translation id="6549038875972762904">راه‌اندازی مجدد</translation>
 <translation id="6550675742724504774">گزینه‌ها</translation>
 <translation id="65513682072153627">وقتی سرپرستتان یک تنظیم یا ویژگی را مدیریت می‌کند، این نماد «مدیریت‌شده» را خواهد دید.</translation>
@@ -6953,6 +6957,7 @@
 <translation id="6820079682647046800">‏اصالت‌سنجی Kerberos انجام نشد</translation>
 <translation id="6823174134746916417">ضربه به‌جای کلیک برای صفحه لمسی</translation>
 <translation id="6823429960180594870">فایل‌ها را هنگام بارگیری مدیریت کنید و آن‌ها را بعداز بارگیری باز کنید</translation>
+<translation id="6823561724060793716">در نوار نشانی می‌توانید اطلاعات صفحه را باز کنید تا اطلاعات بیشتری درباره صفحه‌ای که از آن بازدید می‌کنید ببینید</translation>
 <translation id="6824564591481349393">کپی آدرس &amp;ایمیل</translation>
 <translation id="6824584962142919697">&amp;بازرسی عناصر</translation>
 <translation id="6824725898506587159">مدیریت زبان‌ها</translation>
@@ -7483,6 +7488,7 @@
 <translation id="727952162645687754">خطای بارگیری</translation>
 <translation id="7280649757394340890">تنظیمات صدای نوشتار به گفتار</translation>
 <translation id="7280877790564589615">مجوز درخواست شد</translation>
+<translation id="7281166215790160128">حالت</translation>
 <translation id="7282056103720203738">خواندن داده‌ها و اطلاعات دستگاه‌های پیوست‌شده</translation>
 <translation id="7282547042039404307">روان</translation>
 <translation id="7282992757463864530">نوار اطلاعات</translation>
@@ -8784,6 +8790,7 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{مرور <ph name="BEGIN_BOLD" />سایتی<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}one{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}other{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="8342221978608739536">امتحان نکرده‌ام</translation>
 <translation id="8342861492835240085">انتخاب مجموعه</translation>
+<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) می‌خواهد برنامه زیر را در این دستگاه نصب کند:}one{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) می‌خواهد برنامه زیر را در این دستگاه نصب کند:}other{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) می‌خواهد برنامه‌های زیر را در این دستگاه نصب کند:}}</translation>
 <translation id="8345848587667658367">اکنون می‌توانید عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="834785183489258869">در «حالت ناشناس»، سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
@@ -9382,6 +9389,7 @@
 <translation id="8856028055086294840">بازیابی برنامه‌ها و صفحه‌ها</translation>
 <translation id="885701979325669005">فضای ذخیره‌سازی</translation>
 <translation id="885746075120788020">‏وقتی با «حساب Google» خودتان به سیستم وارد شوید، فعالیت‌ها و اولویت‌هایی که ذخیره کرده‌اید در همه دستگاه‌های ChromeOS آماده خواهد بود. می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در «تنظیمات» انتخاب کنید.</translation>
+<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{برنامه نصب شود؟}one{برنامه نصب شود؟}other{برنامه‌ها نصب شود؟}}</translation>
 <translation id="8858369206579825206">تنظیمات حریم خصوصی</translation>
 <translation id="8859174528519900719">قاب فرعی: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">«شرایط خدمات» بارگیری نشد</translation>

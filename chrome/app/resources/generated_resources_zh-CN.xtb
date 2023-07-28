@@ -195,6 +195,7 @@
 <translation id="1153636665119721804">Google 高级保护计划</translation>
 <translation id="1155545602507378023">否，仅限此设备</translation>
 <translation id="1155816283571436363">正在连接到您的手机</translation>
+<translation id="1157952955648710254">关闭 Google 搜索侧边栏</translation>
 <translation id="1158080958325422608">转换为大写</translation>
 <translation id="1158238185437008462">查看回忆</translation>
 <translation id="1159879754517035595">管理扩展程序设置</translation>
@@ -1458,6 +1459,7 @@
 <translation id="2178614541317717477">CA 泄漏</translation>
 <translation id="2179416702468739594">正在查找可用的配置文件。这可能会导致您的移动网络连接断开几分钟。</translation>
 <translation id="2180620921879609685">屏蔽所有页面上的内容</translation>
+<translation id="2181821976797666341">政策</translation>
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
 <translation id="2183570493397356669">已停用“继续”按钮</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
@@ -2120,6 +2122,7 @@
 <translation id="2719936478972253983">已拦截以下 Cookie</translation>
 <translation id="2721037002783622288">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
+<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{您向“<ph name="APP_NAME" />”授予的权限也会授给此应用。}other{您向“<ph name="APP_NAME" />”授予的权限也会授给这些应用。}}</translation>
 <translation id="2721695630904737430">受监管用户已被您的管理员停用。</translation>
 <translation id="2722540561488096675">您的设备将在 <ph name="TIME_LEFT" />后关闭。届时，请先拔掉 USB，再重新开启您的设备。然后，您便可开始使用 <ph name="DEVICE_OS" /> 了。</translation>
 <translation id="2722547199758472013">ID：<ph name="EXTENSION_ID" /></translation>
@@ -2469,6 +2472,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{未自定义任何键}=1{1 个自定义键}other{{COUNT} 个自定义键}}</translation>
 <translation id="3001835006423291524">轻触键盘右下角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3003144360685731741">首选网络</translation>
+<translation id="3003253259757197230">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站，并向您显示有关当前所访问网页的更多信息</translation>
 <translation id="3003623123441819449">CSS 缓存</translation>
 <translation id="3003828226041301643">无法将此设备加入到该网域中。请检查您的帐号以确保您有权添加设备。</translation>
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
@@ -2721,6 +2725,7 @@
 <translation id="3234978181857588512">保存到设备</translation>
 <translation id="3238192140106069382">正在连接并验证</translation>
 <translation id="3239373508713281971">“<ph name="APP_NAME" />”的使用时限已被移除</translation>
+<translation id="3240426699337459095">已复制链接</translation>
 <translation id="3241638166094654466">每行中的单元格数：</translation>
 <translation id="3241680850019875542">选择要打包的扩展程序的根目录。要更新某个扩展程序，还需选择要再次使用的私有密钥文件。</translation>
 <translation id="3242289508736283383">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
@@ -2736,6 +2741,7 @@
 <translation id="3251714896659475029">允许<ph name="SUPERVISED_USER_NAME" />使用“Hey Google”指令启动 Google 助理</translation>
 <translation id="3251759466064201842">&lt;未包含在证书中&gt;</translation>
 <translation id="325238099842880997">设置数字设备基本使用规则，以方便孩子在家中玩乐、探索和完成学校作业</translation>
+<translation id="3253225298092156258">无法选择</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{请先释放 <ph name="CLOUD_PROVIDER" />中的空间，然后才能复制此文件}other{请先释放 <ph name="CLOUD_PROVIDER" />中的空间，然后才能复制这些文件}}</translation>
 <translation id="3253448572569133955">未知帐号</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{未发现任何安全问题}=1{发现了 {COUNT} 个安全问题}other{发现了 {COUNT} 个安全问题}}</translation>
@@ -3452,7 +3458,6 @@
 <translation id="3838085852053358637">未能成功加载扩展程序</translation>
 <translation id="3838486795898716504">更多“<ph name="PAGE_TITLE" />”</translation>
 <translation id="383891835335927981">未对任何网站设置缩放级别</translation>
-<translation id="3839509547554145593">启用鼠标滚屏加速</translation>
 <translation id="3839516600093027468">始终禁止 <ph name="HOST" /> 查看剪贴板</translation>
 <translation id="3841282988425489367">无法设置 Steam for Chromebook（Beta 版）</translation>
 <translation id="3841319830220785495">默认自然语音</translation>
@@ -4610,7 +4615,6 @@
 <translation id="4827970183019354123">网址检查工具</translation>
 <translation id="4828567746430452681">“<ph name="EXTENSION_NAME" />”不再受支持</translation>
 <translation id="482952334869563894">由供应商 <ph name="VENDOR_ID" /> 提供的 USB 设备</translation>
-<translation id="4829768588131278040">设置 PIN 码</translation>
 <translation id="4830502475412647084">正在安装操作系统更新</translation>
 <translation id="4833683849865011483">通过打印服务器找到了 1 台打印机</translation>
 <translation id="4836504898754963407">管理指纹</translation>
@@ -5855,7 +5859,6 @@
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
 <translation id="5906974869830879618">请输入 PIN 码</translation>
 <translation id="5908474332780919512">在您登录时启动应用</translation>
-<translation id="5908695239556627796">鼠标滚屏速度</translation>
 <translation id="5909379458939060601">删除这份个人资料及相关浏览数据？</translation>
 <translation id="5910363049092958439">图片存储为(&amp;V)...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 处于离线状态</translation>
@@ -6599,6 +6602,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测您设备所在的位置。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在此设备上关闭 Android 位置信息，方法是依次转到“设置”&gt;“应用”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“安全性和位置信息”&gt;“位置信息”。您还可在同一菜单中关闭“Google 位置信息精确度”，以禁止使用 WLAN、移动网络和传感器获取 Android 位置信息。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">要开启光标浏览模式吗？</translation>
+<translation id="6548945820758901244">打开 Google 搜索侧边栏</translation>
 <translation id="6549038875972762904">重新设置</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="65513682072153627">如果某项设置或功能由您的管理员管理，您将会看到此“受管”图标。</translation>
@@ -6924,6 +6928,7 @@
 <translation id="6820079682647046800">Kerberos 身份验证失败</translation>
 <translation id="6823174134746916417">触控板点按即点击</translation>
 <translation id="6823429960180594870">管理下载期间的文件，并在下载完成后打开</translation>
+<translation id="6823561724060793716">在地址栏中，您可打开网页信息，查看当前所访问网页的更多信息</translation>
 <translation id="6824564591481349393">复制电子邮件地址(&amp;E)</translation>
 <translation id="6824584962142919697">检查元素(&amp;I)</translation>
 <translation id="6824725898506587159">管理语言</translation>
@@ -7454,6 +7459,7 @@
 <translation id="727952162645687754">下载错误</translation>
 <translation id="7280649757394340890">文字转语音的语音设置</translation>
 <translation id="7280877790564589615">已请求权限</translation>
+<translation id="7281166215790160128">模式</translation>
 <translation id="7282056103720203738">读取所连设备的相关信息和数据</translation>
 <translation id="7282547042039404307">流畅</translation>
 <translation id="7282992757463864530">信息栏</translation>
@@ -8756,6 +8762,7 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />1 个网站<ph name="END_BOLD" />}other{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />{NUM_SITES} 个网站<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
+<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />”(<ph name="DOMAIN" />) 想在此设备上安装以下应用：}other{“<ph name="APP_NAME" />”(<ph name="DOMAIN" />) 想在此设备上安装以下应用：}}</translation>
 <translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="834785183489258869">不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
@@ -9353,6 +9360,7 @@
 <translation id="8856028055086294840">恢复应用和网页</translation>
 <translation id="885701979325669005">存储数据</translation>
 <translation id="885746075120788020">无论是在哪部 Chrome 操作系统设备上，您只需登录自己的 Google 帐号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
+<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{安装应用？}other{安装应用？}}</translation>
 <translation id="8858369206579825206">隐私控制</translation>
 <translation id="8859174528519900719">辅助框架：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">无法加载《服务条款》</translation>

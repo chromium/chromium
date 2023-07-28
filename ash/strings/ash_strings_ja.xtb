@@ -58,7 +58,6 @@
 <translation id="121097972571826261">1 語進む</translation>
 <translation id="1217633719248931900">アプリに移動</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />、Play ストア アプリ</translation>
-<translation id="1219309685806246869"><ph name="APP_TITLE" /> に戻ります。</translation>
 <translation id="1225748608451425081">既知の問題により、Chromebook はロックされています。<ph name="TIME_LEFT" /> 後にログインできるようになります。</translation>
 <translation id="1229194443904279055">選択を終了</translation>
 <translation id="1235458158152011030">既知のネットワーク</translation>
@@ -1812,6 +1811,7 @@
 <translation id="8921624153894383499">Google アシスタントはこの言語に対応していません。</translation>
 <translation id="8924458948354692166">ウィンドウのスクリーンショットを撮影するには Enter キーを押してください</translation>
 <translation id="8926951137623668982">シェルフは常に非表示です</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 件のファイル}other{# 件のファイル}}</translation>
 <translation id="8936501819958976551">無効</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
 <translation id="8940956008527784070">バッテリー残量: 少（<ph name="PERCENTAGE" />%）</translation>

@@ -1391,7 +1391,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3990250421422698716">Langsom offsetkørsel</translation>
 <translation id="3992684624889376114">Om denne side</translation>
 <translation id="3995639283717357522">Anvend politikker</translation>
-<translation id="399952081411886534">Andre funktioner, der gør annoncer mere private</translation>
 <translation id="4000598935132966791">Få flere oplysninger om websitebegrænsninger i administrerede browsere</translation>
 <translation id="4006465311664329701">Betalingsmetoder, tilbud og adresser, der bruger Google Pay</translation>
 <translation id="4010758435855888356">Vil du give adgang til lagerpladsen?</translation>
@@ -2135,6 +2134,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="555128936272638662">Tilbehør til mobiltelefoner og trådløse enheder</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
+<translation id="5554520618550346933">Når du bruger en adgangskode, underretter Chrome dig, hvis den er blevet afsløret online. I forbindelse med dette krypteres dine adgangskoder og brugernavne, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5558083606899411167">Airconditionanlæg</translation>
 <translation id="5558125320634132440">Dette website er blokeret, fordi indholdet kan være uegnet for børn</translation>
@@ -3434,6 +3434,7 @@ Yderligere oplysninger:
 <translation id="827820107214076967">Opdater logs</translation>
 <translation id="8279611986089885641">Chrome-notifikationer skal være aktiveret. Du kan aktivere dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Bakke 11</translation>
+<translation id="8281730697546299650">Andre privatlivsfunktioner til annoncer er nu tilgængelige</translation>
 <translation id="8281886186245836920">Spring over</translation>
 <translation id="8282409409360764263">Havepleje</translation>
 <translation id="8282947398454257691">Kende dit unikke enheds-id</translation>

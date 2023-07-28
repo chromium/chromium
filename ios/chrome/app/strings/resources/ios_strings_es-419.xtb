@@ -279,6 +279,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704491540504985681">Descargas</translation>
 <translation id="2704606927547763573">Copiado</translation>
+<translation id="2708051474374549906">Protección proactiva y en tiempo real contra descargas, extensiones y sitios peligrosos que se basa en el envío de tus datos de navegación a Google</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2712127207578915686">Error al abrir el archivo</translation>
@@ -341,6 +342,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
 <translation id="3039722182465315531">No acceder</translation>
+<translation id="3053332585453689122">Envía a la Navegación segura de Google las URLs que visitas y una pequeña muestra del contenido de la página, las descargas, la actividad de las extensiones y la información del sistema para revisar si las URLs son dañinas.</translation>
 <translation id="3074499504015191586">Traducir la página completa</translation>
 <translation id="3076846064362030967">No saldrás de tu Cuenta de Google. Es posible que se guarden <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.
 
@@ -572,6 +574,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4588014171431912783">La configuración de sincronización se restablecerá en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" />.</translation>
 <translation id="4592368184551360546">Teclado</translation>
+<translation id="4601095002996233687">Análisis detallados de descargas sospechosas.</translation>
 <translation id="4606247758155004938">Tu organización administra el navegador.</translation>
 <translation id="461440297010471931">Búsqueda con Google</translation>
 <translation id="4616391354457235490">Deshacer</translation>
@@ -642,7 +645,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4958444002117714549">Mostrar lista</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva contra descargas, extensiones y sitios web peligrosos. Te advierte sobre violaciones de la seguridad de las contraseñas. Requiere que se envíen datos de navegación a Google.</translation>
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
-<translation id="4986678885919050584">Quitar de este dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
 <translation id="4996567535980789550">Activa la sincronización para administrar el contenido que ves</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
@@ -928,6 +930,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6537746030088321027">ejemplo.com</translation>
 <translation id="6540120577248033958">Ve a un sitio y haz clic en Seguir en el Menú de Chrome</translation>
 <translation id="6550675742724504774">Opciones</translation>
+<translation id="6550891580932862748">No te protege contra descargas, extensiones ni sitios web peligrosos. La configuración de la Navegación segura en otros productos de Google no se verá afectada.</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6579867704846662339">Puedes abrir las URLs entrantes de otras apps en el modo Incógnito.</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>
@@ -1150,6 +1153,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 También pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="7971521879845308059">Bloquear ventanas emergentes</translation>
 <translation id="7975036700432177008">Probar</translation>
+<translation id="7977451675950311423">Te advierte si usas una contraseña hackeada en una violación de la seguridad de los datos.</translation>
 <translation id="7978018860671536736">3. Presiona Autorrelleno de contraseñas.</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7987685713885608670">Para más seguridad, encripta las contraseñas en tu dispositivo antes de que se guarden en el Administrador de contraseñas de Google.</translation>

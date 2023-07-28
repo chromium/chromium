@@ -58,7 +58,6 @@
 <translation id="121097972571826261">Уперед на одне слово</translation>
 <translation id="1217633719248931900">Перейти в додаток</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, додаток із Play Маркету</translation>
-<translation id="1219309685806246869">Повернутися в додаток <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Ваш пристрій Chromebook заблоковано через відому проблему. Ви зможете ввійти через <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Припинити вибір</translation>
 <translation id="1235458158152011030">Відомі мережі</translation>
@@ -1237,7 +1236,7 @@
 <translation id="6288235558961782912">Користувача <ph name="USER_EMAIL_ADDRESS" /> можна буде знову додати з дозволу батьків.</translation>
 <translation id="6291221004442998378">Не заряджається</translation>
 <translation id="6309219492973062892">Натиснути значки 1–8 на панелі запуску</translation>
-<translation id="6315170314923504164">Аудіо</translation>
+<translation id="6315170314923504164">Голос</translation>
 <translation id="6330012934079202188">Показано вікна всіх робочих столів. Щоб показати вікна поточного робочого столу, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Пристрій <ph name="DEVICE_NAME" /> під’єднано</translation>

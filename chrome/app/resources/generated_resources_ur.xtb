@@ -1467,6 +1467,7 @@
 <translation id="2178614541317717477">‏CA سمجھوتہ</translation>
 <translation id="2179416702468739594">دستیاب پروفائلز کو تلاش کیا جا رہا ہے۔ اس سے آپ کا موبائل نیٹ ورک کچھ منٹ کے لیے منقطع ہو سکتا ہے۔</translation>
 <translation id="2180620921879609685">کسی بھی صفحے پر مواد کو مسدود کریں</translation>
+<translation id="2181821976797666341">پالیسیاں</translation>
 <translation id="2182058453334755893">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
 <translation id="2183570493397356669">جاری رکھیں بٹن کو غیر فعال کیا گیا</translation>
 <translation id="2184515124301515068">‏Chrome کو منتخب کرنے دیں کہ سائٹس کب آواز چلا سکتی ہیں (تجویز کردہ)</translation>
@@ -2734,6 +2735,7 @@
 <translation id="3234978181857588512">آلہ پر محفوظ کریں</translation>
 <translation id="3238192140106069382">منسلک ہونے اور تصدیق کرنے کی کوشش کر رہا ہے</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> کے لیے وقت کی حد ہٹا دی گئی</translation>
+<translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3241638166094654466">ہر لائن میں سیلز:</translation>
 <translation id="3241680850019875542">پیک کرنے کیلئے ایکسٹینشن کی روٹ ڈائریکٹری منتخب کریں۔ ایک ایکسٹینشن کو اپ ڈیٹ کرنے کیلئے، دوبارہ استعمال کرنے کیلئے نجی کلیدی فائل بھی منتخب کریں۔</translation>
 <translation id="3242289508736283383">‏'kiosk_only' مینی فیسٹ انتساب والی ایپ کا ChromeOS کیوسک وضع میں انسٹال ہونا ضروری ہے</translation>
@@ -2749,6 +2751,7 @@
 <translation id="3251714896659475029">‏<ph name="SUPERVISED_USER_NAME" /> کو "Ok Google" کے ساتھ Google اسسٹنٹ تک رسائی حاصل کرنے دیں</translation>
 <translation id="3251759466064201842">&lt;سرٹیفکیٹ کا حصہ نہیں ہے&gt;</translation>
 <translation id="325238099842880997">بچوں کو گھر میں کھیلنے، دریافت کرنے اور اسکول کا کام کرنے میں مدد کے لئے ڈیجیٹل گراؤنڈ رولز سیٹ کریں</translation>
+<translation id="3253225298092156258">دستیاب نہیں ہے</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{اس فائل کو کاپی کرنے کے لیے <ph name="CLOUD_PROVIDER" /> میں اسپیس خالی کریں}other{ان فائلز کو کاپی کرنے کے لیے <ph name="CLOUD_PROVIDER" /> میں اسپیس خالی کریں}}</translation>
 <translation id="3253448572569133955">نامعلوم اکاؤنٹ</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{سیکیورٹی کا کوئی مسئلہ نہیں ملا}=1{سیکیورٹی کا {COUNT} مسئلہ ملا}other{سیکیورٹی کے {COUNT} مسائل ملے}}</translation>
@@ -3465,7 +3468,6 @@
 <translation id="3838085852053358637">ایکسٹیشن لوڈ کرنے میں ناکام</translation>
 <translation id="3838486795898716504">مزید <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">کسی بھی سائٹ کو زوم ان یا زوم آؤٹ نہیں کیا گیا ہے</translation>
-<translation id="3839509547554145593">ماؤس کے اسکرول ایکسلریٹر کو فعال کریں</translation>
 <translation id="3839516600093027468">کلپ بورڈ کو دیکھنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں</translation>
 <translation id="3841282988425489367">‏Chromebook (بی ٹا) کے لیے Steam سیٹ اپ نہیں کیا جا سکتا</translation>
 <translation id="3841319830220785495">ڈیفالٹ قدرتی آواز</translation>
@@ -4626,7 +4628,6 @@
 <translation id="4827970183019354123">‏URL جانچ کنندہ</translation>
 <translation id="4828567746430452681">"<ph name="EXTENSION_NAME" />" اب مزید تعاون یافتہ نہیں ہے</translation>
 <translation id="482952334869563894">‏<ph name="VENDOR_ID" /> وینڈر کی جانب سے USB آلات</translation>
-<translation id="4829768588131278040">‏PIN ترتیب دیں</translation>
 <translation id="4830502475412647084">‏OS اپ ڈیٹ انسٹال کیا جا رہا ہے</translation>
 <translation id="4833683849865011483">پرنٹ سرور سے 1 پرنٹر ملا</translation>
 <translation id="4836504898754963407">فنگر پرنٹس کا نظم کریں</translation>
@@ -5872,7 +5873,6 @@
 <translation id="5906732635754427568">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹا دیا جائے گا۔</translation>
 <translation id="5906974869830879618">براہ کرم پِن درج کریں</translation>
 <translation id="5908474332780919512">اپنے سائن ان کرتے وقت ایپ شروع کریں</translation>
-<translation id="5908695239556627796">ماؤس کے اسکرول کی رفتار</translation>
 <translation id="5909379458939060601">اس پروفائل اور براؤزنگ ڈیٹا کو حذف کریں؟</translation>
 <translation id="5910363049092958439">تصویر مح&amp;فوظ کریں بطور…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آف لائن ہے</translation>

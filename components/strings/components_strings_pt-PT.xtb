@@ -231,6 +231,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">A página quer instalar um controlador de serviço.</translation>
 <translation id="1432581352905426595">Gerir motores de pesquisa</translation>
+<translation id="1433225466058025572">Tente mover os ficheiros novamente</translation>
 <translation id="1435940442311036198">Usar uma token de acesso num dispositivo diferente</translation>
 <translation id="1436185428532214179">Pode solicitar a edição de ficheiros e pastas no seu dispositivo</translation>
 <translation id="1442386063175183758">Dobra simétrica à direita</translation>
@@ -683,6 +684,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2396249848217231973">&amp;Anular eliminação</translation>
 <translation id="2397836504670957718">Portáteis e notebooks</translation>
 <translation id="2400600116338235695">Pode solicitar a ligação a portas de série</translation>
+<translation id="2404884497378469141">Tente copiar os ficheiros novamente</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="2414886740292270097">Escuro</translation>
@@ -839,6 +841,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2759825833388495838">preencher a sua palavra-passe na app <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Banda desenhada</translation>
 <translation id="2765217105034171413">Pequeno</translation>
+<translation id="2770159525358613612">Tente carregar os ficheiros novamente</translation>
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="277499241957683684">Registo do dispositivo em falta</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
@@ -1229,6 +1232,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3632892046558972264">Partilha de ecrã em pausa</translation>
 <translation id="3634530185120165534">Tabuleiro 5</translation>
 <translation id="3634567936866541746">Acabou de introduzir a sua palavra-passe num site fraudulento. Para proteger as suas contas, o Chrome recomenda verificar as palavras-passe guardadas.</translation>
+<translation id="3642196846309122856">Tente transferir os ficheiros novamente</translation>
 <translation id="3642638418806704195">Aplicação:</translation>
 <translation id="3646643500201740985">Medir o desempenho de um anúncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URLs tem de conter entre 1 e 2 URLs.</translation>
@@ -1352,6 +1356,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3890664840433101773">Adicionar email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
+<translation id="390391808978419508">A abertura excedeu o tempo limite</translation>
 <translation id="3905894480064208252">{0,plural, =1{A transferência do ficheiro foi bloqueada}other{A transferência de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
 <translation id="3906095212874392000">Fim do texto convertido</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1364,6 +1369,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="393316646445601645">Internet e telecomunicações</translation>
 <translation id="3939773374150895049">Quer utilizar o WebAuthn em vez do CVC?</translation>
 <translation id="3941630233824954464">Ative a reautenticação obrigatória</translation>
+<translation id="3942048175062210325">Tente abrir os ficheiros novamente</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3946209740501886391">Perguntar sempre neste site</translation>
 <translation id="3947595700203588284">Pode solicitar a ligação a dispositivos MIDI</translation>
@@ -1391,7 +1397,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3990250421422698716">Separar conjuntos</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
 <translation id="3995639283717357522">Aplicar políticas</translation>
-<translation id="399952081411886534">Outras funcionalidades que tornam os anúncios mais privados</translation>
 <translation id="4000598935132966791">Saiba mais sobre restrições de sites em navegadores geridos</translation>
 <translation id="4006465311664329701">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
 <translation id="4010758435855888356">Permitir o acesso ao armazenamento?</translation>
@@ -1446,6 +1451,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4117700440116928470">O âmbito da política não é suportado.</translation>
 <translation id="4121428309786185360">Expira em</translation>
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
+<translation id="412601465078863288">O carregamento excedeu o tempo limite</translation>
 <translation id="4127317221386336246">Acessórios de vestuário</translation>
 <translation id="4127575959421463246">Está à procura das sinalizações do Chrome OS? Visite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
@@ -1662,6 +1668,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4540780316273593836">Algo correu mal</translation>
 <translation id="4541810033354695636">realidade aumentada</translation>
 <translation id="4542971377163063093">Tabuleiro 6</translation>
+<translation id="4546730006268514143">A transferência excedeu o tempo limite</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Está a usar o bloqueio de ecrã para preencher palavras-passe</translation>
 <translation id="4558551763791394412">Experimente desativar as extensões.</translation>
@@ -2095,6 +2102,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5470230812924696184">Engenharia civil</translation>
 <translation id="5470861586879999274">&amp;Refazer edição</translation>
 <translation id="5471337644440862957">Filmes de comédia</translation>
+<translation id="547963486735802022">Tente transferir os ficheiros novamente</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar software perigoso no dispositivo que rouba ou elimina as suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
 <translation id="5483838506518938965">O processo está concluído</translation>
@@ -2784,6 +2792,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6961733224437895943">Seguro de habitação</translation>
 <translation id="6961844873822989059">Pode solicitar a utilização de tipos de letra instalados no seu dispositivo</translation>
 <translation id="6961980518585973432">Aniversários</translation>
+<translation id="6962858948849099922">A movimentação excedeu o tempo limite</translation>
 <translation id="6963520811470373926">A substituir</translation>
 <translation id="6963574715554809750">Comércio de retalho</translation>
 <translation id="6963693576491380224">Cargos públicos e do setor público</translation>
@@ -2861,6 +2870,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7111507312244504964">Inspeções e avaliações de propriedades</translation>
 <translation id="7112327784801341716">Não vê as suas informações atuais? Contacte o banco para as atualizar.</translation>
 <translation id="7118618213916969306">Pesquisar URL da área de transferência, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">A cópia excedeu o tempo limite</translation>
 <translation id="7119414471315195487">Fechar outros separadores ou programas</translation>
 <translation id="7124354851782353862">Introduza o Código de Segurança/CVC</translation>
 <translation id="7129355289156517987">Quando fechar todos os separadores de navegação anónima do Chromium, a sua atividade nesses separadores será limpa neste dispositivo:
@@ -3112,6 +3122,7 @@ Detalhes adicionais:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Menos de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue processar este pedido de momento.</translation>
+<translation id="7599089013883397081">A transferência excedeu o tempo limite</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Costuma estabelecer ligação a este site em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">O valor está fora do intervalo <ph name="VALUE" /> .</translation>

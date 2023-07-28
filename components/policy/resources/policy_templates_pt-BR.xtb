@@ -95,6 +95,9 @@ ou as APIs de extensão. Se ela for desativada ou deixada sem definição, será
 
 No <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />,
 isso não impede capturas de tela com apps do sistema operacional ou de terceiros.</translation>
+<translation id="1065175969514496951">A definição da política fornece acesso aos URLs listados durante a autenticação (por exemplo, na tela de login e de bloqueio), como exceções a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para saber o formato das entradas dessa lista. Por exemplo, se <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> for definida como <ph name="WILDCARD_VALUE" />, todas as solicitações serão bloqueadas, e você poderá usar a política para limitar o acesso a uma lista de URLs. Ela pode abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). O filtro mais específico determina se um URL vai ser bloqueado ou permitido. A política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
+
+Se a política não for definida, nenhuma exceção a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> será permitida.</translation>
 <translation id="1069489575852947981">Definir a política como "Ativada" ou deixá-la sem definição faz com que uma conta local do dispositivo seja configurada para login automático sem atraso. O <ph name="PRODUCT_OS_NAME" /> aplica o atalho de teclado Ctrl+Alt+S para ignorar o login automático e mostrar a tela de login.
 
       Definir a política como "Desativada" faz com que os usuários não possam ignorar o login automático sem atraso (se configurado).</translation>
@@ -1157,6 +1160,13 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se ela for definida como verdadeira, o fuso horário atual do dispositivo será enviado.</translation>
 <translation id="1990784382342293892">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1995744620192427843">A definição da política impede que as páginas da Web com URLs proibidos sejam carregadas durante a autenticação do usuário (por exemplo, nas telas de login e de bloqueio). Ela fornece uma lista de padrões de URL que especificam URLs proibidos. Se a política não for definida, nenhum URL será proibido durante a autenticação. Formate o padrão de URL de acordo com este modelo ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Exceções a esses padrões podem ser definidas na política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> relacionada.
+
+Alguns URLs, como accounts.google.com, são necessários para a autenticação e não podem ser bloqueados caso seja preciso fazer login on-line.
+
+Observação: esta política não se aplica a URLs de JavaScript in-page com dados carregados dinamicamente. Se você bloqueou example.com/abc, ainda é possível carregar example.com usando XMLHTTPRequest.</translation>
 <translation id="199764499252435679">Ativar atualizações de componentes no <ph name="PRODUCT_NAME" /></translation>
 <translation id="1997943707974344423">Permitir o Smart Lock</translation>
 <translation id="1998504583649140526">Configurações de solicitações de rede particulares</translation>
@@ -4865,6 +4875,7 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se a política for ativada e o usuário for afiliado, o estado será informado ao servidor, permitindo que ele detecte se o dispositivo está off-line.</translation>
 <translation id="5238275681097851753">Permitir que determinados conteúdos do <ph name="FLASH_PLUGIN_NAME" /> sejam bloqueados</translation>
 <translation id="5238976843489093540">Forçar a ativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
+<translation id="5239277956452384929">Permitir acesso a uma lista de URLs durante a autenticação</translation>
 <translation id="5245647012663146075">Não permitir a ativação do recurso "Seu smartphone"</translation>
 <translation id="5245671702326993331">Permite notificações nativas</translation>
 <translation id="524637053580639111">Esta política foi removida no M82. Use DeviceMinimumVersion.
@@ -8319,6 +8330,7 @@ Esta política é válida para o modo de navegação anônima. Isso significa qu
 <translation id="8244171102276095471">Ativar pacotes de criptografia RC4 em TLS</translation>
 <translation id="8244525275280476362">Atraso máximo de busca após a invalidação de uma política</translation>
 <translation id="8245574649143980200">Se a política for deixada sem definição ou for ativada, os usuários poderão ver e usar o item de menu da pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto. Se ela for desativada, os usuários não verão a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto quando a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> estiver disponível.</translation>
+<translation id="8247143534027746614">Bloquear o acesso a uma lista de padrões de URL durante a autenticação</translation>
 <translation id="824818544897669723">Desativar exclusão do histórico do navegador e de downloads</translation>
 <translation id="8250048892729838843">Esta política foi descontinuada. Se ela for ativada ou deixada sem definição, o dispositivo poderá receber controles de geração de relatórios granulares.
       Se ela for desativada, os dispositivos registrados não vão receber controles de geração de relatórios granulares.</translation>

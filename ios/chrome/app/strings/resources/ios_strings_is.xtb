@@ -279,6 +279,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2702801445560668637">Leslisti</translation>
 <translation id="2704491540504985681">Niðurhal</translation>
 <translation id="2704606927547763573">Afritað</translation>
+<translation id="2708051474374549906">Forvirk vörn í rauntíma gegn hættulegum vefsvæðum, niðurhali og viðbótum sem byggir á vefskoðunargögnunum þínum sem eru send til Google</translation>
 <translation id="2709516037105925701">Sjálfvirk útfylling</translation>
 <translation id="271033894570825754">Nýtt</translation>
 <translation id="2712127207578915686">Ekki er hægt að opna skrá</translation>
@@ -341,6 +342,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3020183492814296499">Flýtileiðir</translation>
 <translation id="3037605927509011580">Rækallinn!</translation>
 <translation id="3039722182465315531">Ekki skrá inn</translation>
+<translation id="3053332585453689122">Sendir vefslóðirnar sem þú heimsækir og sýnishorn af efni á síðu, niðurhal, virkni viðbótar og kerfisupplýsingum til öruggrar vefskoðunar Google til að athuga hvort þær séu skaðlegar.</translation>
 <translation id="3074499504015191586">Þýða alla síðuna</translation>
 <translation id="3076846064362030967">Þú verður ekki skráð(ur) út af Google reikningnum þínum. <ph name="BEGIN_LINK" />Aðrar aðgerðir<ph name="END_LINK" /> kunna að vera vistaðar á Google reikningnum þínum þegar þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.
 
@@ -572,6 +574,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4587589328781138893">Svæði</translation>
 <translation id="4588014171431912783">Samstillingarkostirnir þínir verða endurheimtir í samræmi við síðustu öryggisafritun. <ph name="BEGIN_LINK" />Sjáðu hvað þú getur samstillt<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Lyklaborð</translation>
+<translation id="4601095002996233687">Ítarleg leit að grunsamlegu niðurhali.</translation>
 <translation id="4606247758155004938">Vafranum er stjórnað af fyrirtækinu þínu.</translation>
 <translation id="461440297010471931">Leitar með Google</translation>
 <translation id="4616391354457235490">Afturkalla</translation>
@@ -642,7 +645,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4958444002117714549">Stækka lista</translation>
 <translation id="4971735654804503942">Hraðari forvirk vörn gegn hættulegum vefsvæðum, niðurhali og viðbótum. Varar þig við berskjölduðum aðgangsorðum. Krefst þess að vefskoðunargögn verði send til Google.</translation>
 <translation id="4979397965658815378">Skráðu þig inn með Google reikningnum þínum til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
-<translation id="4986678885919050584">Fjarlægja úr þessu tæki</translation>
 <translation id="498985224078955265">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chrome í báðum tækjum.</translation>
 <translation id="4996567535980789550">Kveiktu á samstillingu til að stjórna efninu sem þú sérð</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
@@ -928,6 +930,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Farðu á vefsvæði og smelltu á „Fylgja“ í valmynd Chrome</translation>
 <translation id="6550675742724504774">Valkostir</translation>
+<translation id="6550891580932862748">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þetta hefur ekki áhrif á stillingar fyrir örugga vefskoðun í öðrum Google-vörum.</translation>
 <translation id="6561262006871132942">Auka aðdrátt</translation>
 <translation id="6579867704846662339">Þú getur valið að opna mótteknar vefslóðir frá öðrum forritum í huliðsstillingu.</translation>
 <translation id="6583087784430677195">Opnaðu <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" /> og síðan „Sjálfvirk útfylling aðgangsorða“ til að slökkva.</translation>
@@ -1150,6 +1153,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi vefsvæðum, til dæmis til að sérsníða auglýsingar.</translation>
 <translation id="7971521879845308059">Útiloka sprettiglugga</translation>
 <translation id="7975036700432177008">Prófa</translation>
+<translation id="7977451675950311423">Varar þig við ef þú notar aðgangsorð í hættu vegna öryggisbrots.</translation>
 <translation id="7978018860671536736">3. Ýttu á „Sjálfvirk útfylling aðgangsorða“</translation>
 <translation id="7982789257301363584">Net</translation>
 <translation id="7987685713885608670">Dulkóðaðu aðgangsorðin þín í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google til að auka öryggið.</translation>

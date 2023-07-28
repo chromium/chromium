@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1011749477052068769">Перемістити сюди</translation>
 <translation id="1016498331642356377">Швидко шукайте за допомогою голосу. Щоб змінити функцію цієї кнопки, натисніть і втримуйте її.</translation>
 <translation id="1028699632127661925">Надсилання на пристрій "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Видалити дані з цих сайтів і додатків?</translation>
@@ -589,6 +590,7 @@
 <translation id="4198423547019359126">Немає доступних місць для завантаження</translation>
 <translation id="4202218894997543208">Теми, які ви заблокували</translation>
 <translation id="4214315110991671325">Якщо ви дозволите файли cookie, Chrome може використовувати їх для попереднього завантаження.</translation>
+<translation id="4216511743389425832">Прослухати цю сторінку</translation>
 <translation id="4225725533026049334">Ви підписалися</translation>
 <translation id="4225895483398857530">Кнопка на панелі інструментів</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -606,6 +608,7 @@
 <translation id="4296252229500326964">Нова анонімна вкладка</translation>
 <translation id="4298388696830689168">Зв’язані сайти</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4307992518367153382">Основні</translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
 <translation id="4321739720395210191">Не вдається відкрити камеру. Перезапустіть пристрій і повторіть спробу.</translation>
@@ -983,7 +986,6 @@
 <translation id="6324997754869598316">(Помилка <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Надіслати через <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифрування</translation>
-<translation id="6340910702212418132">Менеджер паролів <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">Запитувати, де зберігати файли</translation>
 <translation id="6342069812937806050">Щойно</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
@@ -1522,6 +1524,7 @@
 <translation id="8998729206196772491">Ви входите в обліковий запис, зареєстрований у домені <ph name="MANAGED_DOMAIN" />, і надаєте його адміністратору доступ до своїх даних Chrome. Ваші дані буде назавжди зв’язано з цим обліковим записом. Якщо ви вийдете з облікового запису в Chrome, дані буде видалено з цього пристрою, але вони залишаться у вашому обліковому записі Google.</translation>
 <translation id="9022774213089566801">Часто відвідувані</translation>
 <translation id="9022871169049522985">Сайти й рекламодавці можуть оцінювати ефективність своєї реклами</translation>
+<translation id="9035378196785279980">Перемістити в\u2026</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# відео}one{# відео}few{# відео}many{# відео}other{# відео}}</translation>
 <translation id="9042893549633094279">Конфіденційність і безпека</translation>
 <translation id="9050666287014529139">Парольна фраза</translation>

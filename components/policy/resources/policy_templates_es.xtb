@@ -93,6 +93,9 @@ Si se inhabilita esta política, no se permitirá la función de autocorrección
 <translation id="1063860513136880926">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
 
 Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />, esta política no impedirá que se hagan capturas de pantalla mediante aplicaciones del sistema operativo o de terceros.</translation>
+<translation id="1065175969514496951">Si se define esta política, se permite acceder a las URLs incluidas en la lista, las cuales se consideran excepciones de <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />, durante la autenticación (por ejemplo, en la pantalla de inicio de sesión y en la de bloqueo). Consulta la descripción de la política para conocer el formato de las entradas de esta lista. Por ejemplo, si se le asigna el valor <ph name="WILDCARD_VALUE" /> a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes, y esta política se podrá usar para permitir el acceso a una lista limitada de URLs. También se puede usar para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está bloqueada o permitida. La política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> prevalece frente a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Esta política está limitada a 1000 entradas.
+
+Si no se define esta política, no se permitirán excepciones de <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1069489575852947981">Si se asigna el valor "Enabled" a esta política o no se le asigna ninguno, se definirá una cuenta local del dispositivo para el inicio de sesión automático sin retardo. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl + Alt + S para omitir el inicio de sesión automático y mostrar la pantalla de inicio de sesión.
 
       Si se le asigna el valor "Disabled", los usuarios no podrán omitir el inicio de sesión automático sin retardo (si se ha configurado).</translation>
@@ -1147,6 +1150,13 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se asigna el valor "false" a esta política o no se establece, no se enviará ninguna información.
       Si se le asigna el valor "true", se informará sobre la zona horaria establecida en el dispositivo.</translation>
 <translation id="1990784382342293892">Esta política está obsoleta y no se admite. Usa la política <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" /> en su lugar.</translation>
+<translation id="1995744620192427843">Si se define esta política, se impide que las páginas web con URLs prohibidas se carguen durante la autenticación del usuario (por ejemplo, en la pantalla de inicio de sesión y en la de bloqueo). Contiene una lista de patrones de URL que especifican las URLs prohibidas. Si esta política no se define, no se prohibirá ninguna URL durante la autenticación. Los patrones de URL deben tener el formato que se indica en la página https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Las excepciones a estos patrones se pueden definir en la política relacionada <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />.
+
+Algunas URLs son necesarias para que la autenticación se realice correctamente, como accounts.google.com, por lo que no deben bloquearse si es necesario iniciar sesión online.
+
+Nota: Esta política no se aplica a las URLs de JavaScript dentro de la página con datos cargados dinámicamente. Si has bloqueado example.com/abc, la página example.com podría cargarlo igualmente con XMLHTTPRequest.</translation>
 <translation id="199764499252435679">Habilitar las actualizaciones de componentes en <ph name="PRODUCT_NAME" /></translation>
 <translation id="1997943707974344423">Permitir Smart Lock</translation>
 <translation id="1998504583649140526">Configuración de solicitudes de redes privadas</translation>
@@ -4766,6 +4776,7 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
       Si se habilita, se enviarán informes sobre el estado de actividad de los dispositivos al servidor, por lo que podrá detectar si el dispositivo está sin conexión siempre y cuando el usuario esté afiliado.</translation>
 <translation id="5238275681097851753">Permitir que se bloquee un contenido concreto de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forzar que se habilite Emparejamiento rápido (función que permite emparejar rápidamente mediante Bluetooth).</translation>
+<translation id="5239277956452384929">Permitir el acceso a una lista de URLs durante la autenticación</translation>
 <translation id="5245647012663146075">Impedir que se habilite Mi teléfono</translation>
 <translation id="5245671702326993331">Permite las notificaciones nativas</translation>
 <translation id="524637053580639111">Esta política se eliminará en la versión M82. Utiliza MinimumChromeVersionEnforced en su lugar.
@@ -8150,6 +8161,7 @@ Esta política se aplica al modo Incógnito. Esto quiere decir que el modo Incó
 <translation id="8244171102276095471">Habilita los conjuntos de cifrado de RC4 en TLS</translation>
 <translation id="8244525275280476362">Retraso de recuperación máximo después de validar una política</translation>
 <translation id="8245574649143980200">Si se habilita esta política o no se establece, los usuarios podrán ver y usar la opción de menú de búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si se inhabilita la política, los usuarios no verán la opción de menú de búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual (si se admite la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />).</translation>
+<translation id="8247143534027746614">Bloquear el acceso a una lista de patrones de URL durante la autenticación</translation>
 <translation id="824818544897669723">Inhabilitar eliminación de historial de navegación y de descargas</translation>
 <translation id="8250048892729838843">Esta política está obsoleta. Si se habilita esta política o no se establece, el dispositivo podrá recibir controles de informes granulares.
       Si se inhabilita esta política, los dispositivos registrados no recibirán controles de informes granulares.</translation>

@@ -58,7 +58,6 @@
 <translation id="121097972571826261">ទៅមុខមួយពាក្យ</translation>
 <translation id="1217633719248931900">ចូលទៅកាន់​កម្មវិធី</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, កម្មវិធី​នៅលើ Play Store</translation>
-<translation id="1219309685806246869">ត្រឡប់ទៅ <ph name="APP_TITLE" />។</translation>
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
 <translation id="1235458158152011030">បណ្តាញដែលស្គាល់</translation>
@@ -1812,6 +1811,7 @@
 <translation id="8921624153894383499">Google ជំនួយការមិននិយាយភាសានេះទេ។</translation>
 <translation id="8924458948354692166">ចុច enter ដើម្បីថតរូប​អេក្រង់នៃវិនដូ</translation>
 <translation id="8926951137623668982">លាក់​ធ្នើ​ជានិច្ច</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{ឯកសារ 1}other{ឯកសារ #}}</translation>
 <translation id="8936501819958976551">បាន​បិទដំណើរការ</translation>
 <translation id="8938800817013097409">ឧបករណ៍ USB-C (រន្ធស្តាំផ្នែកខាងក្រោយ)</translation>
 <translation id="8940956008527784070">ថ្មខ្សោយ (<ph name="PERCENTAGE" />%)</translation>

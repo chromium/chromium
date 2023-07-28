@@ -47,6 +47,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="122699739164161391">Fechar todos os separadores</translation>
 <translation id="1229222343402087523">Pesquise ${searchPhrase} no Chrome</translation>
 <translation id="1242044645101871359">Inicie sessão novamente</translation>
+<translation id="1248276223555153952">Gerir contas neste dispositivo…</translation>
 <translation id="1254117744268754948">Escolher Pasta</translation>
 <translation id="1254424942107648268">Encontrar anterior</translation>
 <translation id="1258491128795710625">Novidades</translation>
@@ -109,6 +110,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1580783302095112590">Correio enviado.</translation>
 <translation id="1582732959743469162">Esta ação vai interromper totalmente o progresso da transferência atual.</translation>
 <translation id="1594034544529347967">Início</translation>
+<translation id="160275202205869636">Quando esta opção está ativada, use e guarde os dados na sua Conta Google. Quando está desativada, os dados são guardados apenas neste dispositivo.</translation>
 <translation id="1605405588277479165">Desativada – Não recomendado</translation>
 <translation id="1605658421715042784">Copiar imagem</translation>
 <translation id="1608337082864370066">Pesquisar imagem copiada</translation>
@@ -290,6 +292,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2773292004659987824">Pesquisa anónima</translation>
 <translation id="277771892408211951">Selecionar idioma</translation>
 <translation id="2780046210906776326">Sem Contas de Email</translation>
+<translation id="2780326741858434269">Contas neste dispositivo</translation>
 <translation id="2781325423985810933">ANULAR</translation>
 <translation id="2781331604911854368">Ativado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
 <translation id="3577555362230509265">Use o Chrome noutras apps.</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
+<translation id="3587885837929752825">A sua organização limita o que pode guardar na sua Conta Google.</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
 <translation id="3595252146048399851">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3603009562372709545">Copiar URL do Link</translation>
@@ -645,7 +649,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="4971735654804503942">Proteção proativa mais rápida contra transferências, extensões e Webistes perigosos. Envia-lhe avisos sobre violações de palavras-passe. Requer o envio de dados de navegação para a Google.</translation>
 <translation id="4979397965658815378">Inicie sessão com a sua Conta Google para aceder aos marcadores, às palavras-passe, ao histórico e a outras definições em todos os dispositivos</translation>
-<translation id="4986678885919050584">Remover deste dispositivo</translation>
 <translation id="498985224078955265">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="4996567535980789550">Ative a sincronização para gerir o conteúdo que vê</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
@@ -694,6 +697,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está vazio. Preencha-o antes de guardar.}other{Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar palavra-passe</translation>
 <translation id="5283494734135414249">Toque no atalho apresentado abaixo da barra de endereço.</translation>
+<translation id="5292723732574094123">Sessão terminada. Volte a iniciar sessão para ver os marcadores, as palavras-passe e muito mais na sua conta.</translation>
 <translation id="5295239312320826323">Quer remover a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -737,6 +741,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
 <translation id="5626245204502895507">De momento não é possível transferir o ficheiro.</translation>
 <translation id="5631164295104953411">Adicionar método de pagamento</translation>
+<translation id="5649795523408334796">Detetar moradas</translation>
 <translation id="5652623411397330904">Os produtos que monitorizar aparecem aqui.</translation>
 <translation id="5657859710142657190">Aceder à grelha de separadores</translation>
 <translation id="5659593005791499971">Email</translation>
@@ -1298,6 +1303,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8843129975935593190">A sua organização limita o que pode sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">Não diminui consideravelmente a velocidade do navegador ou dispositivo.</translation>
+<translation id="8863431381414769983">Obtenha direções e informações locais do Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} separador}other{{count} separadores}}</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8876882697946675716">Mantenha os seus dispositivos sincronizados</translation>

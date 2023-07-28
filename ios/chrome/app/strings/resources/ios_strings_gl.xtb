@@ -279,6 +279,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704491540504985681">Descargas</translation>
 <translation id="2704606927547763573">Copiada</translation>
+<translation id="2708051474374549906">Protección proactiva e en tempo real contra sitios, descargas e extensións perigosos baseada nos teus datos de navegación enviados a Google</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712127207578915686">Non se pode abrir o ficheiro</translation>
@@ -341,6 +342,7 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="3020183492814296499">Atallos</translation>
 <translation id="3037605927509011580">Vaia!</translation>
 <translation id="3039722182465315531">Non iniciar sesión</translation>
+<translation id="3053332585453689122">Envía a Navegación segura de Google os URL que visites e unha pequena mostra do contido da páxina, das descargas, da actividade das extensións e da información do sistema para comprobar se son daniños.</translation>
 <translation id="3074499504015191586">Traducir páxina completa</translation>
 <translation id="3076846064362030967">Non se pechará sesión na túa Conta de Google. Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.
 
@@ -572,6 +574,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4588014171431912783">Restaurarase a configuración de sincronización segundo a última copia de seguranza. <ph name="BEGIN_LINK" />Consulta o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Teclado</translation>
+<translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606247758155004938">A túa organización xestiona o teu navegador.</translation>
 <translation id="461440297010471931">Realizando buscas con Google</translation>
 <translation id="4616391354457235490">Desfacer</translation>
@@ -642,7 +645,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4958444002117714549">Ampliar lista</translation>
 <translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
-<translation id="4986678885919050584">Quitar deste dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="4996567535980789550">Activa a sincronización para xestionar o contido que ves</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
@@ -928,6 +930,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Visita un sitio e, no menú de Chrome, fai clic en Seguir</translation>
 <translation id="6550675742724504774">Opcións</translation>
+<translation id="6550891580932862748">Non te protexe contra sitios web, descargas nin extensións perigosos. A configuración de Navegación segura noutros produtos de Google non se verá afectada.</translation>
 <translation id="6561262006871132942">Achegar</translation>
 <translation id="6579867704846662339">Podes decidir abrir os URL entrantes desde outras aplicacións no modo de incógnito.</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a AutoFill Passwords (Autocompletar contrasinais).</translation>
@@ -1150,6 +1153,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 Tamén poden utilizalas para ver a túa actividade de navegación en varios sitios (por exemplo, co fin de personalizar os anuncios).</translation>
 <translation id="7971521879845308059">Bloq. ventás em.</translation>
 <translation id="7975036700432177008">Probar</translation>
+<translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
 <translation id="7978018860671536736">3. Toca AutoFill Passwords (Autocompletar contrasinais)</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7987685713885608670">Para dispoñer dunha maior seguranza, os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
