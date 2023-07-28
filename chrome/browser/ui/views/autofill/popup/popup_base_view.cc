@@ -86,51 +86,48 @@ int PopupBaseView::GetHorizontalPadding() {
 // The widget that the PopupBaseView will be attached to.
 class PopupBaseView::Widget : public views::Widget {
  public:
-  explicit Widget(PopupBaseView* autofill_popup_base_view)
-      : autofill_popup_base_view_(autofill_popup_base_view) {
+  explicit Widget(PopupBaseView* autofill_popup_base_view) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-    params.delegate = autofill_popup_base_view_;
-    params.parent = autofill_popup_base_view_->GetParentNativeView();
+    params.delegate = autofill_popup_base_view;
+    params.parent = autofill_popup_base_view->GetParentNativeView();
     // Ensure the popup border is not painted on an opaque background.
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     Init(std::move(params));
-    AddObserver(autofill_popup_base_view_);
+    AddObserver(popup_base_view());
 
     // No animation for popup appearance (too distracting).
     SetVisibilityAnimationTransition(views::Widget::ANIMATE_HIDE);
   }
 
-  ~Widget() override = default;
+  PopupBaseView* popup_base_view() const {
+    // This cast is always safe since we pass the base view as a delegate.
+    return static_cast<PopupBaseView*>(widget_delegate());
+  }
 
   // views::Widget:
   const ui::ThemeProvider* GetThemeProvider() const override {
-    if (!autofill_popup_base_view_ ||
-        !autofill_popup_base_view_->GetBrowser()) {
+    if (!popup_base_view() || popup_base_view()->GetBrowser()) {
       return nullptr;
     }
 
     return &ThemeService::GetThemeProviderForProfile(
-        autofill_popup_base_view_->GetBrowser()->profile());
+        popup_base_view()->GetBrowser()->profile());
   }
 
   views::Widget* GetPrimaryWindowWidget() override {
-    if (!autofill_popup_base_view_ ||
-        !autofill_popup_base_view_->GetBrowser()) {
+    if (!popup_base_view() || !popup_base_view()->GetBrowser()) {
       return nullptr;
     }
 
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
-        autofill_popup_base_view_->GetBrowser());
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(popup_base_view()->GetBrowser());
     if (!browser_view) {
       return nullptr;
     }
 
     return browser_view->GetWidget()->GetPrimaryWindowWidget();
   }
-
- private:
-  const raw_ptr<PopupBaseView, DanglingUntriaged> autofill_popup_base_view_;
 };
 
 PopupBaseView::PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
