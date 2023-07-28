@@ -6410,6 +6410,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Commerce.AddToCart">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>Triggered when the user adds a product to cart.</description>
+</action>
+
 <action name="Commerce.PriceAlertsMessageCard.Dismissed">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -6761,6 +6767,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.Purchase">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>Triggered when the user makes the purchase.</description>
+</action>
+
 <action name="Commerce.TabGridSwitched.HasPriceDrop">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
@@ -6783,6 +6795,18 @@ should be able to be added at any place in this file.
     previously known price is identified. This metric records when the user
     clicks the Tab Grid Card which does not contain a price drop.
   </description>
+</action>
+
+<action name="Commerce.VisitCart">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>Triggered when the user visits the cart page.</description>
+</action>
+
+<action name="Commerce.VisitCheckout">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>Triggered when ther user visits the checkout page.</description>
 </action>
 
 <action name="ConfirmNotToOrderSpringCharger">
