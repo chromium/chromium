@@ -77,6 +77,7 @@ BASE_DECLARE_FEATURE(kVmmSwapPolicy);
 extern const base::FeatureParam<int> kVmmSwapOutDelaySecond;
 extern const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond;
 extern const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond;
+BASE_DECLARE_FEATURE(kXdgMode);
 BASE_DECLARE_FEATURE(kPriorityAppLmkDelay);
 extern const base::FeatureParam<int> kPriorityAppLmkDelaySecond;
 extern const base::FeatureParam<std::string> kPriorityAppLmkDelayList;

@@ -367,6 +367,9 @@ const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
 const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
     &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
 
+// When enabled, ARC uses XDG-based Wayland protocols.
+BASE_FEATURE(kXdgMode, "ArcXdgMode", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the feature to delay low memory kills of high priority apps when the
 // memory pressure is below foreground.
 BASE_FEATURE(kPriorityAppLmkDelay,

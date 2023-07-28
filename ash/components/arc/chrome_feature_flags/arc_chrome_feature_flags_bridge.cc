@@ -90,6 +90,7 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
                                          kLeftRightBottomGesture)))
           : mojom::RoundedWindowCompatStrategy::kDisabled;
   flags->rounded_window_radius = chromeos::features::RoundedWindowsRadius();
+  flags->xdg_mode = base::FeatureList::IsEnabled(kXdgMode);
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }

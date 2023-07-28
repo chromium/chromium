@@ -381,6 +381,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "arc-xdg-mode",
+    "owners": [ "takise" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ash-capture-mode-audio-mixing",
     "owners": [ "afakhry", "gzadina" ],
     "expiry_milestone": 127

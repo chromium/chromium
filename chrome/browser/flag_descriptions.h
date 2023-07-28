@@ -3063,6 +3063,9 @@ extern const char kArcTrackpadScrollTouchscreenEmulationDesc[];
 extern const char kArcVmmSwapKBShortcutName[];
 extern const char kArcVmmSwapKBShortcutDesc[];
 
+extern const char kArcXdgModeName[];
+extern const char kArcXdgModeDesc[];
+
 extern const char kArcEnableAAudioMMAPName[];
 extern const char kArcEnableAAudioMMAPDescription[];
 

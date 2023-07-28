@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module arc.mojom;
 
@@ -29,6 +29,8 @@ struct FeatureFlags {
   [MinVersion=3] RoundedWindowCompatStrategy rounded_window_compat_strategy;
   // chrome://flags#rounded-windows
   [MinVersion=3] int32 rounded_window_radius;
+  // chrome://flags#arc-xdg-mode
+  [MinVersion=4] bool xdg_mode = true;
 };
 
 // This interface provides methods to propagate the feature flag status to

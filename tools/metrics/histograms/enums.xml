@@ -59907,6 +59907,7 @@ from previous Chrome versions.
   <int value="-2032292269" label="ImprovedIncognitoScreenshot:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
+  <int value="-2031537967" label="ArcXdgMode:enabled"/>
   <int value="-2030972455"
       label="AutofillSuggestServerCardInsteadOfLocalCard:enabled"/>
   <int value="-2030255112" label="Bruschetta:disabled"/>
@@ -62122,6 +62123,7 @@ from previous Chrome versions.
   <int value="-923422400" label="DiscardOccludedBitmaps:enabled"/>
   <int value="-921755651" label="EnableManagedByParentUi:disabled"/>
   <int value="-920483976" label="AccessCodeCastRememberDevices:disabled"/>
+  <int value="-920404312" label="ArcXdgMode:disabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-920001827" label="NearbySharingSelfShareAutoAccept:disabled"/>
   <int value="-919300982" label="ArcSwitchToKeyMintOnT:disabled"/>
