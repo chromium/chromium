@@ -306,11 +306,12 @@ gfx::Size Display::GetSizeInPixel() const {
 std::string Display::ToString() const {
   return base::StringPrintf(
       "Display[%lld] bounds=[%s], workarea=[%s], scale=%g, rotation=%s, "
-      "panel_rotation=%s %s.",
+      "panel_rotation=%s %s %s",
       static_cast<long long int>(id_), bounds_.ToString().c_str(),
       work_area_.ToString().c_str(), device_scale_factor_,
       ToRotationString(rotation_), ToRotationString(panel_rotation()),
-      IsInternal() ? "internal" : "external");
+      IsInternal() ? "internal" : "external",
+      detected() ? "detected" : "not-detected");
 }
 
 bool Display::IsInternal() const {
@@ -326,7 +327,7 @@ int64_t Display::InternalDisplayId() {
 
 bool Display::operator==(const Display& rhs) const {
   return id_ == rhs.id_ && bounds_ == rhs.bounds_ &&
-         size_in_pixels_ == rhs.size_in_pixels_ &&
+         size_in_pixels_ == rhs.size_in_pixels_ && detected_ == rhs.detected_ &&
          work_area_ == rhs.work_area_ &&
          device_scale_factor_ == rhs.device_scale_factor_ &&
          rotation_ == rhs.rotation_ && touch_support_ == rhs.touch_support_ &&

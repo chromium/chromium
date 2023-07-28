@@ -739,6 +739,7 @@ void DisplayManager::OnNativeDisplaysChanged(
       DisplayInfoList init_displays;
       init_displays.push_back(
           ManagedDisplayInfo::CreateFromSpec(std::string()));
+      init_displays[0].set_detected(false);
       MaybeInitInternalDisplay(&init_displays[0]);
       OnNativeDisplaysChanged(init_displays);
     } else {
@@ -752,6 +753,17 @@ void DisplayManager::OnNativeDisplaysChanged(
       //   disconnected.
       // The display will be updated when one of displays is turned on, and the
       // display list will be updated correctly.
+
+      for (auto& display : active_display_list_) {
+        if (display.detected()) {
+          ManagedDisplayInfo info = GetDisplayInfo(display.id());
+          info.set_detected(false);
+          display.set_detected(false);
+          InsertAndUpdateDisplayInfo(info);
+          NotifyMetricsChanged(display,
+                               DisplayObserver::DISPLAY_METRIC_DETECTED);
+        }
+      }
     }
     return;
   }
@@ -982,6 +994,10 @@ void DisplayManager::UpdateDisplaysWith(
       if (current_display.label() != new_display.label())
         metrics |= DisplayObserver::DISPLAY_METRIC_LABEL;
 
+      if (current_display_info.detected() != new_display_info.detected()) {
+        metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
+      }
+
       if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
         display_changes.insert(
             std::pair<size_t, uint32_t>(new_displays.size(), metrics));
@@ -1005,8 +1021,20 @@ void DisplayManager::UpdateDisplaysWith(
     }
   }
   Display old_primary;
-  if (delegate_)
-    old_primary = screen_->GetPrimaryDisplay();
+  if (delegate_) {
+    // Get old primary from current resolved layout, because we could be in the
+    // middle of updating the primary display, so screen_->GetPrimaryDisplay()
+    // may already point to the new primary.
+    if (current_resolved_layout_) {
+      Display* primary = FindDisplayForId(current_resolved_layout_->primary_id);
+      if (primary){
+        old_primary = *primary;
+      }
+    }
+    if (!old_primary.is_valid()){
+      old_primary = screen_->GetPrimaryDisplay();
+    }
+  }
 
   // Clear focus if the display has been removed, but don't clear focus if
   // the destkop has been moved from one display to another
@@ -1068,12 +1096,16 @@ void DisplayManager::UpdateDisplaysWith(
   for (auto iter = display_changes.begin(); iter != display_changes.end();
        ++iter) {
     uint32_t metrics = iter->second;
-    const Display& updated_display = active_display_list_[iter->first];
+    Display& updated_display = active_display_list_[iter->first];
 
     if (notify_primary_change &&
         updated_display.id() == screen_->GetPrimaryDisplay().id()) {
       metrics |= DisplayObserver::DISPLAY_METRIC_PRIMARY;
       notify_primary_change = false;
+    }
+    if (!updated_display.detected()) {
+      updated_display.set_detected(true);
+      metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
     }
     NotifyMetricsChanged(updated_display, metrics);
   }
@@ -2061,6 +2093,7 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   new_display.set_color_spaces(display_info.display_color_spaces());
   new_display.set_display_frequency(display_info.refresh_rate());
   new_display.set_label(display_info.name());
+  new_display.set_detected(display_info.detected());
 
   constexpr uint32_t kNormalBitDepthNumBitsPerChannel = 8u;
   if (display_info.bits_per_channel() > kNormalBitDepthNumBitsPerChannel) {

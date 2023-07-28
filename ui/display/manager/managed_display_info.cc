@@ -429,6 +429,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   is_interlaced_ = native_info.is_interlaced_;
   native_ = native_info.native_;
   rounded_corners_radii_ = native_info.rounded_corners_radii_;
+  detected_ = native_info.detected_;
 
   // Rotation, color_profile and overscan are given by preference,
   // or unit tests. Don't copy if this native_info came from
@@ -529,14 +530,14 @@ std::string ManagedDisplayInfo::ToString() const {
   std::string result = base::StringPrintf(
       "ManagedDisplayInfo[%lld] native bounds=%s, size=%s, device-scale=%g, "
       "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
-      "corner_radii=%s",
+      "corner_radii=%s, detected=%s",
       static_cast<long long int>(id_), bounds_in_native_.ToString().c_str(),
       size_in_pixel_.ToString().c_str(), device_scale_factor_, zoom_factor_,
       overscan_insets_in_dip_.ToString().c_str(), rotation_degree,
       touch_support_ == Display::TouchSupport::AVAILABLE     ? "yes"
       : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
                                                              : "unknown",
-      rounded_corners_radii_.ToString().c_str());
+      rounded_corners_radii_.ToString().c_str(), detected_ ? "true" : "false");
 
   return result;
 }
