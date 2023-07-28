@@ -1473,7 +1473,13 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
   }
 }
 
-TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
+// Disabled on Android until crbug.com/1468330 is fixed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_TestKnownRoot DISABLED_TestKnownRoot
+#else
+#define MAYBE_TestKnownRoot TestKnownRoot
+#endif
+TEST_P(CertVerifyProcInternalTest, MAYBE_TestKnownRoot) {
   base::FilePath certs_dir = GetTestCertsDirectory();
   scoped_refptr<X509Certificate> cert_chain = CreateCertificateChainFromFile(
       certs_dir, "leaf_from_known_root.pem", X509Certificate::FORMAT_AUTO);
