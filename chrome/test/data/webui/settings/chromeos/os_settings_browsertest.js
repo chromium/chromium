@@ -493,6 +493,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_a11y_page/manage_a11y_subpage_test.js',
  ],
  [
+   'OsA11yPageSelectToSpeakSubpage',
+   'os_a11y_page/select_to_speak_subpage_test.js',
+ ],
+ [
    'OsA11yPageSwitchAccessActionAssignmentDialog',
    'os_a11y_page/switch_access_action_assignment_dialog_test.js',
  ],
@@ -741,10 +745,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'SettingsSchedulerSlider',
    'settings_scheduler_slider/settings_scheduler_slider_test.js'
- ],
- [
-   'SelectToSpeakSubpage',
-   'select_to_speak_subpage_tests.js',
  ],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],

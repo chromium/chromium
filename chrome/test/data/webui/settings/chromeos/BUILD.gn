@@ -66,7 +66,6 @@ build_webui_tests("build") {
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
     "search_engine_test.js",
-    "select_to_speak_subpage_tests.js",
     "settings_traffic_counters_test.js",
     "switch_access_setup_guide_dialog_test.js",
     "switch_access_subpage_tests.js",
@@ -84,7 +83,6 @@ build_webui_tests("build") {
     "test_os_sync_browser_proxy.ts",
     "test_personalization_hub_browser_proxy.js",
     "test_profile_info_browser_proxy.js",
-    "test_select_to_speak_subpage_browser_proxy.js",
     "utils.ts",
 
     # Subfolder files.
@@ -176,9 +174,11 @@ build_webui_tests("build") {
     "os_a11y_page/keyboard_and_text_input_page_test.ts",
     "os_a11y_page/manage_a11y_subpage_test.ts",
     "os_a11y_page/os_a11y_page_test.ts",
+    "os_a11y_page/select_to_speak_subpage_test.ts",
     "os_a11y_page/switch_access_action_assignment_dialog_test.ts",
     "os_a11y_page/test_chromevox_subpage_browser_proxy.ts",
     "os_a11y_page/test_os_a11y_page_browser_proxy.ts",
+    "os_a11y_page/test_select_to_speak_subpage_browser_proxy.ts",
     "os_a11y_page/text_to_speech_subpage_test.ts",
     "os_a11y_page/tts_voice_subpage_test.ts",
 

@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import 'chrome://os-settings/os_settings.js';
+
+import {SelectToSpeakSubpageBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {SelectToSpeakSubpageBrowserProxy} */
-export class TestSelectToSpeakSubpageBrowserProxy extends TestBrowserProxy {
+export class TestSelectToSpeakSubpageBrowserProxy extends TestBrowserProxy
+    implements SelectToSpeakSubpageBrowserProxy {
   constructor() {
     super([
       'getAllTtsVoiceData',
@@ -16,7 +19,7 @@ export class TestSelectToSpeakSubpageBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  getAllTtsVoiceData() {
+  getAllTtsVoiceData(): void {
     const voices = [
       {
         displayLanguage: 'English',
@@ -81,15 +84,15 @@ export class TestSelectToSpeakSubpageBrowserProxy extends TestBrowserProxy {
     webUIListenerCallback('all-sts-voice-data-updated', voices);
   }
 
-  getAppLocale() {
+  getAppLocale(): void {
     this.methodCalled('getAppLocale');
   }
 
-  previewTtsVoice(previewText, previewVoice) {
+  previewTtsVoice(previewText: string, previewVoice: string): void {
     this.methodCalled('previewTtsVoice', [previewText, previewVoice]);
   }
 
-  refreshTtsVoices() {
+  refreshTtsVoices(): void {
     this.methodCalled('refreshTtsVoices');
   }
 }

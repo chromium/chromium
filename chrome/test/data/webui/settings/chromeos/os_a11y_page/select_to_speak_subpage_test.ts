@@ -4,10 +4,11 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrSettingsPrefs, Router, routes, SelectToSpeakSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
-import {addWebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {HandlerVoice, SettingsSelectToSpeakSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {CrSettingsPrefs, SelectToSpeakSubpageBrowserProxyImpl, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSelectToSpeakSubpageBrowserProxy} from './test_select_to_speak_subpage_browser_proxy.js';
@@ -17,18 +18,16 @@ import {TestSelectToSpeakSubpageBrowserProxy} from './test_select_to_speak_subpa
  */
 const ENHANCED_TTS_EXTENSION_ID = 'jacnkoglebceckolkoapelihnglgaicd';
 
-suite('SelectToSpeakSubpageTests', function() {
-  /** @type {SettingsSelectToSpeakSubpageElement} */
-  let page = null;
-  let browserProxy = null;
+suite('<settings-select-to-speak-subpage>', () => {
+  let page: SettingsSelectToSpeakSubpageElement;
+  let browserProxy: TestSelectToSpeakSubpageBrowserProxy;
+  let prefElement: SettingsPrefsElement;
 
-  setup(async function() {
+  setup(async () => {
     browserProxy = new TestSelectToSpeakSubpageBrowserProxy();
     SelectToSpeakSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    PolymerTest.clearBody();
-
-    const prefElement = document.createElement('settings-prefs');
+    prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
 
     await CrSettingsPrefs.initialized;
@@ -38,18 +37,24 @@ suite('SelectToSpeakSubpageTests', function() {
     flush();
   });
 
-  teardown(function() {
+  teardown(() => {
     page.remove();
+    prefElement.remove();
+    browserProxy.reset();
   });
 
   // TODO(crbug.com/1354821): Add tests that the language filter works for
   // enhanced and device voices.
 
-  test('voice pref and dropdown synced', async function() {
+  test('voice pref and dropdown synced', async () => {
     // Make sure voice dropdown is system voice, matching default pref state.
-    const voiceDropdown = page.shadowRoot.querySelector('#voiceDropdown');
+    const voiceDropdown =
+        page.shadowRoot!.querySelector<HTMLElement>('#voiceDropdown');
+    assertTrue(!!voiceDropdown);
     await waitAfterNextRender(voiceDropdown);
-    const voiceSelectElement = voiceDropdown.shadowRoot.querySelector('select');
+    const voiceSelectElement =
+        voiceDropdown.shadowRoot!.querySelector('select');
+    assertTrue(!!voiceSelectElement);
     assertEquals('select_to_speak_system_voice', voiceSelectElement.value);
 
     // Change voice to Chrome OS US English, and verify pref is also changed.
@@ -63,22 +68,28 @@ suite('SelectToSpeakSubpageTests', function() {
   test('voice preview text field and button sends sample message', async () => {
     // Make sure preview input exists, and write a sample message into it.
     const voicePreviewInput =
-        page.shadowRoot.querySelector('#voicePreviewInput');
+        page.shadowRoot!.querySelector<HTMLInputElement>('#voicePreviewInput');
     assertTrue(!!voicePreviewInput);
     voicePreviewInput.value = 'The quick brown fox jumped over the lazy dog.';
 
     // Click preview button, expect sample message to be sent.
-    page.shadowRoot.querySelector('#voicePreviewButton').click();
+    const voicePreviewButton =
+        page.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#voicePreviewButton');
+    assertTrue(!!voicePreviewButton);
+    voicePreviewButton.click();
     const [previewText, previewVoice] =
         await browserProxy.whenCalled('previewTtsVoice');
-    assertEquals(previewText, 'The quick brown fox jumped over the lazy dog.');
-    assertEquals(previewVoice, '{"name":"","extension":""}');
+    assertEquals('The quick brown fox jumped over the lazy dog.', previewText);
+    assertEquals('{"name":"","extension":""}', previewVoice);
   });
 
-  test('voice switching pref and toggle synced', function() {
+  test('voice switching pref and toggle synced', () => {
     // Make sure voice switching toggle is off, matching default pref state.
     const voiceSwitchingToggle =
-        page.shadowRoot.querySelector('#voiceSwitchingToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#voiceSwitchingToggle');
+    assertTrue(!!voiceSwitchingToggle);
     assertFalse(voiceSwitchingToggle.checked);
 
     // Toggle voice switching on, and verify voice_switching pref is enabled.
@@ -88,11 +99,13 @@ suite('SelectToSpeakSubpageTests', function() {
     assertTrue(voiceSwitchingPref.value);
   });
 
-  test('enhanced network voices pref and toggle synced', function() {
+  test('enhanced network voices pref and toggle synced', () => {
     // Make sure enhanced network voices toggle is off, matching default pref
     // state.
     const enhancedNetworkVoicesToggle =
-        page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enhancedNetworkVoicesToggle');
+    assertTrue(!!enhancedNetworkVoicesToggle);
     assertFalse(enhancedNetworkVoicesToggle.checked);
 
     // Toggle enhanced network voices on, and verify voice_switching pref is
@@ -103,12 +116,14 @@ suite('SelectToSpeakSubpageTests', function() {
     assertTrue(enhancedNetworkVoicesPref.value);
   });
 
-  test('enhanced network voices toggle respects enterprise policy', function() {
+  test('enhanced network voices toggle respects enterprise policy', () => {
     // Make sure enhanced network voices toggle is togglable and off, matching
     // default pref state, and verify enterprise managed icon + controls are not
     // present.
     const enhancedNetworkVoicesToggle =
-        page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enhancedNetworkVoicesToggle');
+    assertTrue(!!enhancedNetworkVoicesToggle);
     assertFalse(
         enhancedNetworkVoicesToggle.controlDisabled(),
         'enhanced voices toggle should be togglable');
@@ -116,13 +131,14 @@ suite('SelectToSpeakSubpageTests', function() {
         enhancedNetworkVoicesToggle.checked,
         'enhanced voices toggle should be off');
     const getManagedIcon = () =>
-        enhancedNetworkVoicesToggle.shadowRoot.querySelector(
+        enhancedNetworkVoicesToggle.shadowRoot!.querySelector(
             'cr-policy-pref-indicator');
-    const managedIconVisible = () => getManagedIcon().style.display !== 'none';
+    const managedIconVisible = () => getManagedIcon()!.style.display !== 'none';
     const getEnhancedVoiceControls = () =>
-        page.shadowRoot.querySelector('#enhancedNetworkVoiceControls');
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#enhancedNetworkVoiceControls');
     const enhancedVoiceControlsVisible = () =>
-        getEnhancedVoiceControls().style.display !== 'none';
+        getEnhancedVoiceControls()!.style.display !== 'none';
     assertEquals(null, getManagedIcon(), 'managed icon should not be present');
     assertEquals(
         null, getEnhancedVoiceControls(),
@@ -192,20 +208,26 @@ suite('SelectToSpeakSubpageTests', function() {
         'enhanced voice controls should be visible again');
   });
 
-  test('enhanced network voice pref and dropdown synced', async function() {
+  test('enhanced network voice pref and dropdown synced', async () => {
     // Turn on enhanced network voices.
     const enhancedNetworkVoicesToggle =
-        page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enhancedNetworkVoicesToggle');
+    assertTrue(!!enhancedNetworkVoicesToggle);
     enhancedNetworkVoicesToggle.click();
     flush();
 
     // Make sure enhanced network voice dropdown is default voice, matching
     // default pref state.
     const enhancedNetworkVoiceDropdown =
-        page.shadowRoot.querySelector('#enhancedNetworkVoiceDropdown');
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#enhancedNetworkVoiceDropdown');
+    assertTrue(!!enhancedNetworkVoiceDropdown);
     await waitAfterNextRender(enhancedNetworkVoiceDropdown);
     const enhancedNetworkVoiceSelectElement =
-        enhancedNetworkVoiceDropdown.shadowRoot.querySelector('select');
+        enhancedNetworkVoiceDropdown.shadowRoot!
+            .querySelector<HTMLInputElement>('select');
+    assertTrue(!!enhancedNetworkVoiceSelectElement);
     assertEquals('default-wavenet', enhancedNetworkVoiceSelectElement.value);
 
     // Change voice to Bangla (India) 1, and verify pref is also changed.
@@ -219,95 +241,131 @@ suite('SelectToSpeakSubpageTests', function() {
   test('enhanced network voices not in primary voice dropdown', async () => {
     // Turn on enhanced network voices.
     const enhancedNetworkVoicesToggle =
-        page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enhancedNetworkVoicesToggle');
+    assertTrue(!!enhancedNetworkVoicesToggle);
     enhancedNetworkVoicesToggle.click();
     flush();
 
     // Get all of the voices from the primary voice dropdown.
-    const voiceDropdown = page.shadowRoot.querySelector('#voiceDropdown');
+    const voiceDropdown =
+        page.shadowRoot!.querySelector<HTMLElement>('#voiceDropdown');
+    assertTrue(!!voiceDropdown);
     await waitAfterNextRender(voiceDropdown);
-    const voiceSelectElement = voiceDropdown.shadowRoot.querySelector('select');
+    const voiceSelectElement =
+        voiceDropdown.shadowRoot!.querySelector('select');
+    assertTrue(!!voiceSelectElement);
     const voices = [...voiceSelectElement.options].map(({value}) => value);
 
     // Make sure none of the voices are enhanced network voices.
-    page.voices_
+    page.get('voices_')
         .filter(
-            pageVoice => voices.find(voice => voice === pageVoice.voiceName))
+            (pageVoice: HandlerVoice) =>
+                voices.find(voice => voice === pageVoice.voiceName))
         .forEach(
-            ({extensionId}) =>
-                assertNotEquals(extensionId, ENHANCED_TTS_EXTENSION_ID));
+            ({extensionId}: HandlerVoice) =>
+                assertNotEquals(ENHANCED_TTS_EXTENSION_ID, extensionId));
   });
 
   test('enhanced network voice preview sends sample message', async () => {
     // Turn on enhanced network voices.
     const enhancedNetworkVoicesToggle =
-        page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enhancedNetworkVoicesToggle');
+    assertTrue(!!enhancedNetworkVoicesToggle);
     enhancedNetworkVoicesToggle.click();
     flush();
 
     // Make sure enhanced network preview input exists, and write a sample
     // message into it.
     const enhancedNetworkVoicePreviewInput =
-        page.shadowRoot.querySelector('#enhancedNetworkVoicePreviewInput');
+        page.shadowRoot!.querySelector<HTMLInputElement>(
+            '#enhancedNetworkVoicePreviewInput');
     assertTrue(!!enhancedNetworkVoicePreviewInput);
     enhancedNetworkVoicePreviewInput.value =
         'The quick brown fox jumped over the lazy dog.';
 
     // Click preview button, expect sample message to be sent.
-    page.shadowRoot.querySelector('#enhancedNetworkVoicePreviewButton').click();
+    const enhancedNetworkVoicePreviewButton =
+        page.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#enhancedNetworkVoicePreviewButton');
+    assertTrue(!!enhancedNetworkVoicePreviewButton);
+    enhancedNetworkVoicePreviewButton.click();
     const [previewText, previewVoice] =
         await browserProxy.whenCalled('previewTtsVoice');
     assertEquals(previewText, 'The quick brown fox jumped over the lazy dog.');
     assertEquals(
-        previewVoice,
-        '{"name":"default-wavenet","extension":"jacnkoglebceckolkoapelihnglgaicd"}');
+        '{"name":"default-wavenet","extension":"jacnkoglebceckolkoapelihnglgaicd"}',
+        previewVoice);
   });
 
   test(
       'voice preview buttons and inputs enabled when not speaking and disabled when speaking',
-      async () => {
+      () => {
         // Turn on enhanced network voices.
         const enhancedNetworkVoicesToggle =
-            page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#enhancedNetworkVoicesToggle');
+        assertTrue(!!enhancedNetworkVoicesToggle);
         enhancedNetworkVoicesToggle.click();
         flush();
 
         // Get all voice preview buttons and inputs.
-        const voicePreviewElements = [
-          page.shadowRoot.querySelector('#voicePreviewButton'),
-          page.shadowRoot.querySelector('#voicePreviewInput'),
-          page.shadowRoot.querySelector('#enhancedNetworkVoicePreviewButton'),
-          page.shadowRoot.querySelector('#enhancedNetworkVoicePreviewInput'),
-        ];
+        const voicePreviewElements:
+            Array<HTMLInputElement|HTMLButtonElement|null> = [
+              page.shadowRoot!.querySelector('#voicePreviewButton'),
+              page.shadowRoot!.querySelector('#voicePreviewInput'),
+              page.shadowRoot!.querySelector(
+                  '#enhancedNetworkVoicePreviewButton'),
+              page.shadowRoot!.querySelector(
+                  '#enhancedNetworkVoicePreviewInput'),
+            ];
 
         // Make sure voice preview buttons and inputs are not disabled.
-        voicePreviewElements.forEach(button => assertFalse(button.disabled));
+        voicePreviewElements.forEach(button => {
+          assertTrue(!!button);
+          assertFalse(button.disabled);
+        });
 
         // Simulate TTS voice speaking.
         webUIListenerCallback('tts-preview-state-changed', true);
 
         // Make sure voice preview buttons and inputs are disabled.
-        voicePreviewElements.forEach(button => assertTrue(button.disabled));
+        voicePreviewElements.forEach(button => {
+          assertTrue(!!button);
+          assertTrue(button.disabled);
+        });
       });
 
   test(
       'voice preview buttons and inputs enabled when not empty and disabled when empty',
-      async () => {
+      () => {
         // Turn on enhanced network voices.
         const enhancedNetworkVoicesToggle =
-            page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#enhancedNetworkVoicesToggle');
+        assertTrue(!!enhancedNetworkVoicesToggle);
         enhancedNetworkVoicesToggle.click();
         flush();
 
         // Get voice preview buttons and inputs.
         const voicePreviewButton =
-            page.shadowRoot.querySelector('#voicePreviewButton');
+            page.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#voicePreviewButton');
         const voicePreviewInput =
-            page.shadowRoot.querySelector('#voicePreviewInput');
+            page.shadowRoot!.querySelector<HTMLInputElement>(
+                '#voicePreviewInput');
         const enhancedNetworkVoicePreviewButton =
-            page.shadowRoot.querySelector('#enhancedNetworkVoicePreviewButton');
+            page.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#enhancedNetworkVoicePreviewButton');
         const enhancedNetworkVoicePreviewInput =
-            page.shadowRoot.querySelector('#enhancedNetworkVoicePreviewInput');
+            page.shadowRoot!.querySelector<HTMLInputElement>(
+                '#enhancedNetworkVoicePreviewInput');
+
+        assertTrue(!!voicePreviewButton);
+        assertTrue(!!voicePreviewInput);
+        assertTrue(!!enhancedNetworkVoicePreviewButton);
+        assertTrue(!!enhancedNetworkVoicePreviewInput);
 
         // Make sure voice preview buttons and inputs are not disabled.
         assertFalse(voicePreviewButton.disabled);
@@ -349,10 +407,12 @@ suite('SelectToSpeakSubpageTests', function() {
         assertFalse(enhancedNetworkVoicePreviewInput.disabled);
       });
 
-  test('word highlight pref and toggle synced', function() {
+  test('word highlight pref and toggle synced', () => {
     // Make sure word highlight toggle is on, matching default pref state.
     const wordHighlightToggle =
-        page.shadowRoot.querySelector('#wordHighlightToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#wordHighlightToggle');
+    assertTrue(!!wordHighlightToggle);
     assertTrue(wordHighlightToggle.checked);
 
     // Toggle word highlighting off, and verify word_highlight pref is enabled.
@@ -362,10 +422,12 @@ suite('SelectToSpeakSubpageTests', function() {
     assertFalse(wordHighlightPref.value);
   });
 
-  test('background shading pref and toggle synced', function() {
+  test('background shading pref and toggle synced', () => {
     // Make sure background shading toggle is off, matching default pref state.
     const backgroundShadingToggle =
-        page.shadowRoot.querySelector('#backgroundShadingToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#backgroundShadingToggle');
+    assertTrue(!!backgroundShadingToggle);
     assertFalse(backgroundShadingToggle.checked);
 
     // Toggle background shading on, and verify pref is enabled.
@@ -375,10 +437,12 @@ suite('SelectToSpeakSubpageTests', function() {
     assertTrue(backgroundShadingPref.value);
   });
 
-  test('navigation controls pref and toggle synced', function() {
+  test('navigation controls pref and toggle synced', () => {
     // Make sure navigation controls toggle is on, matching default pref state.
     const navigationControlsToggle =
-        page.shadowRoot.querySelector('#navigationControlsToggle');
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#navigationControlsToggle');
+    assertTrue(!!navigationControlsToggle);
     assertTrue(navigationControlsToggle.checked);
 
     // Toggle navigation controls off, and verify pref is enabled.
@@ -388,13 +452,15 @@ suite('SelectToSpeakSubpageTests', function() {
     assertFalse(navigationControlsPref.value);
   });
 
-  test('highlight color pref and dropdown synced', async function() {
+  test('highlight color pref and dropdown synced', async () => {
     // Make sure highlight color dropdown is blue, matching default pref state.
     const highlightColorDropdown =
-        page.shadowRoot.querySelector('#highlightColorDropdown');
+        page.shadowRoot!.querySelector<HTMLElement>('#highlightColorDropdown');
+    assertTrue(!!highlightColorDropdown);
     await waitAfterNextRender(highlightColorDropdown);
     const highlightColorSelectElement =
-        highlightColorDropdown.shadowRoot.querySelector('select');
+        highlightColorDropdown.shadowRoot!.querySelector('select');
+    assertTrue(!!highlightColorSelectElement);
     assertEquals('#5e9bff', highlightColorSelectElement.value);
 
     // Turn highlight color to orange, and verify pref is also orange.

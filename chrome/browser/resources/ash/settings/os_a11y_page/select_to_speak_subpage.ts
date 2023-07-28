@@ -64,7 +64,7 @@ enum EventType {
   CANCELLED = 'cancelled',
 }
 
-interface HandlerVoice {
+export interface HandlerVoice {
   eventTypes: EventType[];
   extensionId: string;
   lang: string;
@@ -75,7 +75,7 @@ interface HandlerVoice {
   languageCode?: string;
 }
 
-interface SettingsSelectToSpeakSubpageElement {
+export interface SettingsSelectToSpeakSubpageElement {
   $: {
     enhancedNetworkVoicesToggle: SettingsToggleButtonElement,
   };
@@ -85,7 +85,7 @@ const SettingsSelectToSpeakSubpageElementBase =
     DeepLinkingMixin(RouteOriginMixin(
         PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsSelectToSpeakSubpageElement extends
+export class SettingsSelectToSpeakSubpageElement extends
     SettingsSelectToSpeakSubpageElementBase {
   static get is() {
     return 'settings-select-to-speak-subpage';
