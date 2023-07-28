@@ -545,16 +545,6 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   auto obj = WebAXObject::FromWebDocumentByID(document, event.id);
   DCHECK(!obj.IsDetached());
 
-#if BUILDFLAG(IS_ANDROID)
-  // Inline text boxes are needed to support moving by character/word/line.
-  // On Android, we don't load inline text boxes by default, only on-demand, or
-  // when part of the focused object. So, when focus moves to an editable text
-  // field, ensure we re-serialize the whole thing including its inline text
-  // boxes.
-  if (event.event_type == ax::mojom::Event::kFocus && obj.IsEditable())
-    obj.MarkSerializerSubtreeDirty();
-#endif
-
   if (!ax_context_->AddPendingEvent(event)) {
     DCHECK(ax_context_);
     return;
