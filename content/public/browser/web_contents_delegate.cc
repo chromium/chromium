@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
@@ -278,12 +279,12 @@ WebContentsDelegate::~WebContentsDelegate() {
 }
 
 void WebContentsDelegate::Attach(WebContents* web_contents) {
-  DCHECK(attached_contents_.find(web_contents) == attached_contents_.end());
+  DCHECK(!base::Contains(attached_contents_, web_contents));
   attached_contents_.insert(web_contents);
 }
 
 void WebContentsDelegate::Detach(WebContents* web_contents) {
-  DCHECK(attached_contents_.find(web_contents) != attached_contents_.end());
+  DCHECK(base::Contains(attached_contents_, web_contents));
   attached_contents_.erase(web_contents);
 }
 
