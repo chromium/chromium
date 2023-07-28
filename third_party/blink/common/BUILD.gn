@@ -19,9 +19,9 @@ blink_python_runner("make_generated_permissions_policy_features") {
   inputs = scripts_for_json5_files + [
              "../renderer/build/scripts/make_permissions_policy_features.py",
              "../renderer/core/permissions_policy/permissions_policy_features.json5",
-             "../renderer/build/scripts/templates/permissions_policy_features.cc.tmpl",
+             "../renderer/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
            ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features.cc" ]
+  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features_generated.cc" ]
 
   args = [
     rebase_path(
@@ -261,6 +261,8 @@ source_set("common") {
     "permissions_policy/origin_with_possible_wildcards.cc",
     "permissions_policy/permissions_policy.cc",
     "permissions_policy/permissions_policy_declaration.cc",
+    "permissions_policy/permissions_policy_features.cc",
+    "permissions_policy/permissions_policy_features_generated.h",
     "permissions_policy/permissions_policy_mojom_traits.cc",
     "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",

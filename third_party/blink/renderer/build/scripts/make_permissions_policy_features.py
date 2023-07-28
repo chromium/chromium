@@ -7,7 +7,7 @@ import template_expander
 
 
 class PermissionsPolicyFeatureWriter(json5_generator.Writer):
-    file_basename = 'permissions_policy_features'
+    file_basename = 'permissions_policy_features_generated'
 
     def __init__(self, json5_file_path, output_dir):
         super(PermissionsPolicyFeatureWriter,
