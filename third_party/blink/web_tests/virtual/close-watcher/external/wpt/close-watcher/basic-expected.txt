@@ -4,9 +4,7 @@ PASS destroy() then requestClose() fires no events
 PASS close() then requestClose() fires only one close event
 PASS requestClose() then destroy() fires only one close event
 PASS close() then destroy() fires only one close event
-PASS Esc key does not count as user activation, so it fires close but not cancel
-PASS destroy() then close via Esc key fires no events
-PASS Esc key then destroy() fires only one close event
-PASS close via synthesized Esc key should not work
+PASS destroy() then close signal fires no events
+PASS Close signal then destroy() fires only one close event
 Harness: the test ran to completion.
 

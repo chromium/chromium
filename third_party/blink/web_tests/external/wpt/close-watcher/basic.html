@@ -64,20 +64,11 @@ promise_test(async t => {
   let events = [];
   let watcher = createRecordingCloseWatcher(t, events);
 
-  await sendCloseSignal();
-
-  assert_array_equals(events, ["close"]);
-}, "Esc key does not count as user activation, so it fires close but not cancel");
-
-promise_test(async t => {
-  let events = [];
-  let watcher = createRecordingCloseWatcher(t, events);
-
   watcher.destroy();
   await sendCloseSignal();
 
   assert_array_equals(events, []);
-}, "destroy() then close via Esc key fires no events");
+}, "destroy() then close signal fires no events");
 
 promise_test(async t => {
   let events = [];
@@ -87,23 +78,5 @@ promise_test(async t => {
   watcher.destroy();
 
   assert_array_equals(events, ["close"]);
-}, "Esc key then destroy() fires only one close event");
-
-test(t => {
-  let events = [];
-  let watcher = createRecordingCloseWatcher(t, events);
-
-  let keydown = new KeyboardEvent('keydown', {'key': 'Escape', 'keyCode': 27});
-  window.dispatchEvent(keydown);
-  let keyup = new KeyboardEvent('keyup', {'key': 'Escape', 'keyCode': 27});
-  window.dispatchEvent(keyup);
-
-  assert_array_equals(events, []);
-
-  let keyup2 = document.createEvent("Event");
-  keyup2.initEvent("keyup", true);
-  window.dispatchEvent(keyup2);
-
-  assert_array_equals(events, []);
-}, "close via synthesized Esc key should not work");
+}, "Close signal then destroy() fires only one close event");
 </script>

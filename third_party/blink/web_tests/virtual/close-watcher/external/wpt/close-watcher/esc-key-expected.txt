@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Esc key does not count as user activation, so if it is the sole user interaction, that fires close but not cancel
+PASS A keydown listener can prevent the Esc keypress from being interpreted as a close signal
+PASS A keyup listener can prevent the Esc keypress from being interpreted as a close signal
+PASS A keypress listener can prevent the Esc keypress from being interpreted as a close signal
+PASS close via synthesized Esc key must not work
+Harness: the test ran to completion.
+

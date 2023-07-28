@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Esc key does not count as user activation, so if it is the sole user interaction, that fires close but not cancel promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL A keydown listener can prevent the Esc keypress from being interpreted as a close signal promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL A keyup listener can prevent the Esc keypress from being interpreted as a close signal promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL A keypress listener can prevent the Esc keypress from being interpreted as a close signal promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL close via synthesized Esc key must not work CloseWatcher is not defined
+Harness: the test ran to completion.
+
