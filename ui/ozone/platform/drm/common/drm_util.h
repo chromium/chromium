@@ -61,7 +61,7 @@ constexpr char kVrrEnabledPropertyName[] = "VRR_ENABLED";
 template <typename InternalType>
 struct DrmPropertyEnumToInternalTypeMapping {
   const char* drm_enum;
-  const InternalType& internal_state;
+  const InternalType internal_state;
 };
 
 constexpr std::array<
