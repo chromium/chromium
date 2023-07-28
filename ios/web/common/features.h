@@ -86,9 +86,6 @@ BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
 // error pages.
 bool IsLoadSimulatedRequestAPIEnabled();
 
-// When true, the fullscreen API should be used to enable fullscreen mode.
-bool IsFullscreenAPIEnabled();
-
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();
 

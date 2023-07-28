@@ -104,7 +104,7 @@ enum class PermissionRequest {
       break;
   }
   base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
-  if (web::features::IsFullscreenAPIEnabled()) {
+  if (web::GetWebClient()->EnableFullscreenAPI()) {
     if (@available(iOS 16, *)) {
       if (webView.fullscreenState == WKFullscreenStateInFullscreen ||
           webView.fullscreenState == WKFullscreenStateEnteringFullscreen) {

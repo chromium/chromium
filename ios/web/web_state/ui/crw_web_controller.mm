@@ -406,7 +406,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         @"microphoneCaptureState" : @"webViewMicrophoneCaptureStateDidChange",
       }];
 
-  if (web::features::IsFullscreenAPIEnabled()) {
+  if (web::GetWebClient()->EnableFullscreenAPI()) {
     [observers addEntriesFromDictionary:@{
       @"fullscreenState" : @"fullscreenStateDidChange"
     }];

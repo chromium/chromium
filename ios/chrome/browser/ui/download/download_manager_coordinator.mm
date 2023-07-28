@@ -46,6 +46,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/download/download_task.h"
+#import "ios/web/public/web_client.h"
 #import "net/base/net_errors.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -142,7 +143,7 @@
   BOOL replacingExistingDownload = _downloadTask ? YES : NO;
   _downloadTask = download;
 
-  if (web::features::IsFullscreenAPIEnabled()) {
+  if (web::GetWebClient()->EnableFullscreenAPI()) {
     // Exit fullscreen since download UI will be behind fullscreen mode.
     web::WebState* webState = download->GetWebState();
     webState->CloseMediaPresentations();
@@ -176,7 +177,7 @@
       }));
 
   web::WebState* webState = download->GetWebState();
-  if (web::features::IsFullscreenAPIEnabled()) {
+  if (web::GetWebClient()->EnableFullscreenAPI()) {
     // Close fullscreen mode in the event that a download is attempting to
     // replace a pending download request.
     webState->CloseMediaPresentations();

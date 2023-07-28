@@ -94,6 +94,10 @@ UIView* WebClient::GetWindowedContainer() {
   return nullptr;
 }
 
+bool WebClient::EnableFullscreenAPI() const {
+  return false;
+}
+
 bool WebClient::EnableLongPressUIContextMenu() const {
   return false;
 }

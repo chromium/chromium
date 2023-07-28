@@ -128,7 +128,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
 
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
-    if (web::features::IsFullscreenAPIEnabled()) {
+    if (GetWebClient()->EnableFullscreenAPI()) {
       [[configuration_ preferences] setElementFullscreenEnabled:YES];
     }
   }

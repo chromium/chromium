@@ -452,6 +452,13 @@ UIView* ChromeWebClient::GetWindowedContainer() {
   return windowed_container_;
 }
 
+bool ChromeWebClient::EnableFullscreenAPI() const {
+  // Only use the Fullscreen API on iOS 16.4+, which fixes serious crashes in
+  // earlier versions.
+  return base::ios::IsRunningOnOrLater(16, 4, 0) &&
+         base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI);
+}
+
 bool ChromeWebClient::EnableLongPressUIContextMenu() const {
   return true;
 }

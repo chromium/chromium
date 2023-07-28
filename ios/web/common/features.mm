@@ -102,13 +102,6 @@ bool IsLoadSimulatedRequestAPIEnabled() {
   return false;
 }
 
-bool IsFullscreenAPIEnabled() {
-  if (@available(iOS 16.4, *)) {
-    return base::FeatureList::IsEnabled(kEnableFullscreenAPI);
-  }
-  return false;
-}
-
 bool IsWebInspectorSupportEnabled() {
   if (@available(iOS 16.4, *)) {
     return base::FeatureList::IsEnabled(kEnableWebInspector);
