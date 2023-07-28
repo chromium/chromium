@@ -85,6 +85,24 @@ class GPU_EXPORT SharedImageInterface {
                                     base::StringPiece debug_label,
                                     base::span<const uint8_t> pixel_data) = 0;
 
+  // Same behavior as above methods, except that this version is specifically
+  // used by clients which intend to create a shared image back by either a
+  // native buffer (if supported) or shared memory which are CPU mappable.
+  // We are currently passing BufferUsage to this method for simplicity since
+  // as of now we dont have a clear way to map BufferUsage to SharedImageUsage.
+  // TODO(crbug.com/1467584): Merge this method to above existing methods once
+  // we figure out mapping between BufferUsage and SharedImageUsage and
+  // eliminate all usages of BufferUsage.
+  virtual Mailbox CreateSharedImage(viz::SharedImageFormat format,
+                                    const gfx::Size& size,
+                                    const gfx::ColorSpace& color_space,
+                                    GrSurfaceOrigin surface_origin,
+                                    SkAlphaType alpha_type,
+                                    uint32_t usage,
+                                    base::StringPiece debug_label,
+                                    gpu::SurfaceHandle surface_handle,
+                                    gfx::BufferUsage buffer_usage);
+
   // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based `format` and `size. `usage` is a
   // combination of |SharedImageUsage| bits that describes which API(s) the

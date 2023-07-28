@@ -623,6 +623,11 @@ void GpuChannel::Init(IPC::ChannelHandle channel_handle,
   channel_ = sync_channel_.get();
 }
 
+void GpuChannel::SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
+  CHECK(shared_image_stub_);
+  shared_image_stub_->SetGpuExtraInfo(gpu_extra_info);
+}
+
 base::WeakPtr<GpuChannel> GpuChannel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

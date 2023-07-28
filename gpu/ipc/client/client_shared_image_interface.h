@@ -68,6 +68,15 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                             SkAlphaType alpha_type,
                             uint32_t usage,
                             base::StringPiece debug_label,
+                            gpu::SurfaceHandle surface_handle,
+                            gfx::BufferUsage buffer_usage) override;
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
+                            const gfx::Size& size,
+                            const gfx::ColorSpace& color_space,
+                            GrSurfaceOrigin surface_origin,
+                            SkAlphaType alpha_type,
+                            uint32_t usage,
+                            base::StringPiece debug_label,
                             gfx::GpuMemoryBufferHandle buffer_handle) override;
   // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
   // single planar eg. RGB BufferFormats. Please use the equivalent method above

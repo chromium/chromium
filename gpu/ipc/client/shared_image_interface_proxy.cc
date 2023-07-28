@@ -120,6 +120,41 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::StringPiece debug_label,
+    gfx::BufferUsage buffer_usage) {
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto params = mojom::CreateSharedImageBackedByBufferParams::New();
+  params->mailbox = mailbox;
+  params->format = format;
+  params->size = size;
+  params->color_space = color_space;
+  params->usage = usage;
+  params->debug_label = std::string(debug_label);
+  params->surface_origin = surface_origin;
+  params->alpha_type = alpha_type;
+  params->buffer_usage = buffer_usage;
+  {
+    base::AutoLock lock(lock_);
+    AddMailbox(mailbox, usage);
+    params->release_id = ++next_release_id_;
+    // Note: we enqueue the IPC under the lock to guarantee monotonicity of the
+    // release ids as seen by the service.
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::
+                NewCreateSharedImageBackedByBuffer(std::move(params))));
+  }
+
+  return mailbox;
+}
+
+Mailbox SharedImageInterfaceProxy::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::StringPiece debug_label,
     base::span<const uint8_t> pixel_data) {
   // Pixel data's size must fit into a uint32_t to be sent in
   // CreateSharedImageWithDataParams.

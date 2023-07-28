@@ -14,6 +14,7 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
+#include "ui/gfx/gpu_extra_info.h"
 
 namespace gpu {
 class SharedContextState;
@@ -82,10 +83,14 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                                       bool register_with_image_pipe);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
+
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
 
   void OnCreateSharedImage(mojom::CreateSharedImageParamsPtr params);
+  void OnCreateSharedImageBackedByBuffer(
+      mojom::CreateSharedImageBackedByBufferParamsPtr params);
   void OnCreateSharedImageWithData(
       mojom::CreateSharedImageWithDataParamsPtr params);
   void OnCreateSharedImageWithBuffer(

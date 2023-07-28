@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gpu_preference.h"
@@ -80,6 +81,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   void Init(IPC::ChannelHandle channel_handle,
             base::WaitableEvent* shutdown_event);
 
+  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
   void InitForTesting(IPC::Channel* channel);
 
   base::WeakPtr<GpuChannel> AsWeakPtr();

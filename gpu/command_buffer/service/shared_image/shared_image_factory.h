@@ -19,8 +19,10 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -58,6 +60,16 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          SurfaceHandle surface_handle,
                          uint32_t usage,
                          std::string debug_label);
+  bool CreateSharedImage(const Mailbox& mailbox,
+                         viz::SharedImageFormat si_format,
+                         const gfx::Size& size,
+                         const gfx::ColorSpace& color_space,
+                         GrSurfaceOrigin surface_origin,
+                         SkAlphaType alpha_type,
+                         SurfaceHandle surface_handle,
+                         uint32_t usage,
+                         std::string debug_label,
+                         gfx::BufferUsage buffer_usage);
   bool CreateSharedImage(const Mailbox& mailbox,
                          viz::SharedImageFormat si_format,
                          const gfx::Size& size,
@@ -128,6 +140,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #endif
 
+  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_info);
+
   void RegisterSharedImageBackingFactoryForTesting(
       SharedImageBackingFactory* factory);
 
@@ -144,6 +158,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                            viz::SharedImageFormat format,
                            gfx::GpuMemoryBufferType gmb_type,
                            const std::string& debug_label);
+  bool IsNativeBufferSupported(gfx::BufferFormat format,
+                               gfx::BufferUsage usage);
 
   raw_ptr<SharedImageManager, DanglingUntriaged> shared_image_manager_;
   raw_ptr<SharedContextState> shared_context_state_;
@@ -175,6 +191,10 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #if BUILDFLAG(IS_FUCHSIA)
   viz::VulkanContextProvider* vulkan_context_provider_;
 #endif  // BUILDFLAG(IS_FUCHSIA)
+
+  gfx::GpuExtraInfo gpu_extra_info_;
+  gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
+  bool supported_gmb_configurations_inited_ = false;
 
   raw_ptr<SharedImageBackingFactory> backing_factory_for_testing_ = nullptr;
 };

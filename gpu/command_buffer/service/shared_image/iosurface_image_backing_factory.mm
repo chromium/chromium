@@ -224,6 +224,24 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
       std::move(handle), io_surface_plane, plane, /*is_plane_format=*/true);
 }
 
+std::unique_ptr<SharedImageBacking>
+IOSurfaceImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    SurfaceHandle surface_handle,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    std::string debug_label,
+    bool is_thread_safe,
+    gfx::BufferUsage buffer_usage) {
+  return CreateSharedImage(mailbox, format, surface_handle, size, color_space,
+                           surface_origin, alpha_type, usage, debug_label,
+                           is_thread_safe);
+}
+
 bool IOSurfaceImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::SharedImageFormat format,

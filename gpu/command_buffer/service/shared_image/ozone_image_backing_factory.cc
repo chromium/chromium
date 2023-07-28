@@ -88,7 +88,8 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    absl::optional<gfx::BufferUsage> buffer_usage) {
   gfx::BufferFormat buffer_format = ToBufferFormat(format);
   VulkanDeviceQueue* device_queue = nullptr;
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -100,8 +101,12 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
 #endif  // BUILDFLAG(ENABLE_VULKAN)
   ui::SurfaceFactoryOzone* surface_factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+
+  // Note that when |buffer_usage| is passed as a parameter and is not null, it
+  // should be used instead of converting |usage| to it via GetBufferUsage().
   scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
-      surface_handle, device_queue, size, buffer_format, GetBufferUsage(usage));
+      surface_handle, device_queue, size, buffer_format,
+      buffer_usage.value_or(GetBufferUsage(usage)));
   // Fallback to GPU_READ if cannot create pixmap with SCANOUT
   if (!pixmap) {
     pixmap = surface_factory->CreateNativePixmap(surface_handle, device_queue,
@@ -233,6 +238,24 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   backing->SetCleared();
 
   return backing;
+}
+
+std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    SurfaceHandle surface_handle,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    std::string debug_label,
+    bool is_thread_safe,
+    gfx::BufferUsage buffer_usage) {
+  DCHECK(!is_thread_safe);
+  return CreateSharedImageInternal(mailbox, format, surface_handle, size,
+                                   color_space, surface_origin, alpha_type,
+                                   usage, buffer_usage);
 }
 
 bool OzoneImageBackingFactory::IsSupported(

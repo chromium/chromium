@@ -8,6 +8,20 @@
 
 namespace gpu {
 
+Mailbox SharedImageInterface::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::StringPiece debug_label,
+    gpu::SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage) {
+  NOTREACHED();
+  return Mailbox();
+}
+
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return 0u;
 }

@@ -87,6 +87,12 @@ void SharedImageStub::ExecuteDeferredRequest(
       OnCreateSharedImage(std::move(request->get_create_shared_image()));
       break;
 
+    case mojom::DeferredSharedImageRequest::Tag::
+        kCreateSharedImageBackedByBuffer:
+      OnCreateSharedImageBackedByBuffer(
+          std::move(request->get_create_shared_image_backed_by_buffer()));
+      break;
+
     case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithData:
       OnCreateSharedImageWithData(
           std::move(request->get_create_shared_image_with_data()));
@@ -251,6 +257,11 @@ bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
   return true;
 }
 
+void SharedImageStub::SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
+  CHECK(factory_);
+  factory_->SetGpuExtraInfo(gpu_extra_info);
+}
+
 void SharedImageStub::OnCreateSharedImage(
     mojom::CreateSharedImageParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
@@ -271,6 +282,34 @@ void SharedImageStub::OnCreateSharedImage(
           params->mailbox, params->format, params->size, params->color_space,
           params->surface_origin, params->alpha_type, gpu::kNullSurfaceHandle,
           params->usage, GetLabel(params->debug_label))) {
+    LOG(ERROR) << kSICreationFailureError;
+    OnError();
+    return;
+  }
+
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
+}
+
+void SharedImageStub::OnCreateSharedImageBackedByBuffer(
+    mojom::CreateSharedImageBackedByBufferParamsPtr params) {
+  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
+               params->size.width(), "height", params->size.height());
+  if (!params->mailbox.IsSharedImage()) {
+    LOG(ERROR) << kInvalidMailboxOnCreateError;
+    OnError();
+    return;
+  }
+
+  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
+    OnError();
+    return;
+  }
+
+  if (!factory_->CreateSharedImage(
+          params->mailbox, params->format, params->size, params->color_space,
+          params->surface_origin, params->alpha_type, gpu::kNullSurfaceHandle,
+          params->usage, GetLabel(params->debug_label), params->buffer_usage)) {
     LOG(ERROR) << kSICreationFailureError;
     OnError();
     return;
