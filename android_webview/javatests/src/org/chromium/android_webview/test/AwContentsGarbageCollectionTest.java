@@ -50,7 +50,7 @@ import java.util.concurrent.Callable;
  * AwContents garbage collection tests. Most apps relies on WebView being
  * garbage collected to release memory. These tests ensure that nothing
  * accidentally prevents AwContents from garbage collected, leading to leaks.
- * See crbug.com/544098 for why @DisableHardwareAccelerationForTest is needed.
+ * See crbug.com/544098 for why @DisableHardwareAcceleration is needed.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "GC tests require full restarts")
@@ -108,7 +108,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCreateAndGcOneTime() throws Throwable {
@@ -124,7 +124,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testHoldKeyboardResultReceiver() throws Throwable {
@@ -150,7 +150,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testAccessibility() throws Throwable {
@@ -175,7 +175,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testReferenceFromClient() throws Throwable {
@@ -193,7 +193,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testReferenceFromContext() throws Throwable {
@@ -215,7 +215,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @LargeTest
     @Feature({"AndroidWebView"})
     public void testCreateAndGcManyTimes() throws Throwable {
@@ -251,7 +251,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testGcAfterUsingJavascriptObject() throws Throwable {
@@ -292,7 +292,7 @@ public class AwContentsGarbageCollectionTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @LargeTest
     public void testActivityDoesNotLeak() throws Throwable {
         // Test that Activity should not leak if view is still attached after activity is destroyed.

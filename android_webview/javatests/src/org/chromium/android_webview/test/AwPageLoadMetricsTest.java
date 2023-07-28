@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
@@ -30,6 +31,7 @@ import java.util.concurrent.Callable;
  * Integration test for PageLoadMetrics.
  */
 @Batch(Batch.PER_CLASS)
+@RunWith(AwJUnit4ClassRunner.class)
 public class AwPageLoadMetricsTest {
     private static final String MAIN_FRAME_FILE = "/main_frame.html";
 

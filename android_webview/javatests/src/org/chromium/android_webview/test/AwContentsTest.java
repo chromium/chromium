@@ -617,7 +617,7 @@ public class AwContentsTest {
 
     // This is a meta test that we don't accidentally turn off hardware
     // acceleration in instrumentation tests without notice. Do not add the
-    // @DisableHardwareAccelerationForTest annotation for this test.
+    // @DisableHardwareAcceleration annotation for this test.
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
@@ -1794,7 +1794,7 @@ public class AwContentsTest {
     // removes frame metrics listener. This code should do nothing when hardware acceleration is
     // disabled.
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNoCrashWithoutHardwareAcceleration() throws Throwable {

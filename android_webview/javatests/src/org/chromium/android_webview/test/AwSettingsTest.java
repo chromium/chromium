@@ -3230,7 +3230,7 @@ public class AwSettingsTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @LargeTest
     @Feature({"AndroidWebView", "Preferences"})
     public void testMediaPlaybackWithoutUserGesture() throws Throwable {
@@ -3239,7 +3239,7 @@ public class AwSettingsTest {
     }
 
     @Test
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     public void testMediaPlaybackWithUserGesture() throws Throwable {

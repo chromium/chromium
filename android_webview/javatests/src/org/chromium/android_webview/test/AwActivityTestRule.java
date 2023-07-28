@@ -467,7 +467,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     public boolean isHardwareAcceleratedTest() {
-        return !testMethodHasAnnotation(DisableHardwareAccelerationForTest.class);
+        return !testMethodHasAnnotation(DisableHardwareAcceleration.class);
     }
 
     public AwTestContainerView createAwTestContainerViewOnMainSync(final AwContentsClient client) {

@@ -75,7 +75,7 @@ public class AwContentsClientFullScreenTest {
 
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @Test
     public void testFullscreenVideoInSoftwareModeDoesNotDeadlock() throws Throwable {
         // Although fullscreen video is not supported without hardware acceleration
@@ -89,7 +89,7 @@ public class AwContentsClientFullScreenTest {
 
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisableHardwareAccelerationForTest
+    @DisableHardwareAcceleration
     @Test
     public void testFullscreenForNonVideoElementIsSupportedInSoftwareMode() throws Throwable {
         // Fullscreen for non-video elements is supported and works as expected. Note that
