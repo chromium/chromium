@@ -23,8 +23,6 @@ namespace gl {
 
 namespace {
 bool IsFormatSupported(gfx::BufferFormat format) {
-  // Before adding a format here, verify that GLImageEGLPixmap::Initialize() can
-  // import it correctly.
   switch (format) {
     case gfx::BufferFormat::BGRA_8888:
       return true;
@@ -214,7 +212,6 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
   }
 
   if (target != GL_TEXTURE_2D) {
-    // gl::GLImageEGLPixmap requires GL_TEXTURE_2D.
     VLOG(1) << "GL target " << target << " is unsupported";
     return nullptr;
   }
