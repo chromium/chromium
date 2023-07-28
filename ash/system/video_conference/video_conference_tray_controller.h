@@ -184,6 +184,9 @@ class ASH_EXPORT VideoConferenceTrayController
   virtual void HandleClientUpdate(
       crosapi::mojom::VideoConferenceClientUpdatePtr update);
 
+  // Handles showing the shelf when a new app is added.
+  void OnAppAdded();
+
   // Gets `disable_shelf_autohide_timer_`, used for testing.
   base::OneShotTimer& GetShelfAutoHideTimerForTest();
 
@@ -212,10 +215,6 @@ class ASH_EXPORT VideoConferenceTrayController
   // Updates the state of the camera icons across all `VideoConferenceTray`.
   void UpdateCameraIcons();
 
-  // Callback passed to `VideoConferenceManagerAsh` which reacts to the number
-  // of active `MediaApp`'s to force the shelf to show or hide.
-  void UpdateShelfAutoHide(MediaApps apps);
-
   // Records repeated shows metric when the timer is stop.
   void RecordRepeatedShows();
 
@@ -228,9 +227,6 @@ class ASH_EXPORT VideoConferenceTrayController
 
   UsedWhileDisabledNudgeType GetUsedWhileDisabledNudgeType(
       crosapi::mojom::VideoConferenceMediaDevice device);
-
-  // The number of capturing apps, fetched from `VideoConferenceManagerAsh`.
-  int capturing_apps_ = 0;
 
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.

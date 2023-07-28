@@ -597,7 +597,46 @@ void VideoConferenceTrayController::OnShellDestroying() {
 
 void VideoConferenceTrayController::HandleClientUpdate(
     crosapi::mojom::VideoConferenceClientUpdatePtr update) {
-  // TODO(b/285795457): Implement logic to handle client updates.
+  // Use `HandleClientUpdate()` to detect apps being
+  // added because this function is guaranteed to be called when an app is
+  // added, even if the `VideoConferecenMediaState` does not change.
+
+  if (update->added_or_removed_app ==
+      crosapi::mojom::VideoConferenceAppUpdate::kAppAdded) {
+    OnAppAdded();
+  }
+}
+
+void VideoConferenceTrayController::OnAppAdded() {
+  // If any `Shelf` is auto hidden, the `Shelf` needs to be forced shown, or
+  // allowed to hide, depending on the current number of capturing applications.
+  if (!IsAnyShelfAutoHidden()) {
+    return;
+  }
+
+  // If a new app has begun capturing, lock all shelfs to force them to show.
+  // This lock will apply until whichever comes first:
+  // `disable_shelf_autohide_timer_` fires, or the number of capturing apps
+  // drops to 0 (handled at `UpdateWithMediaState()`).
+  if (disable_shelf_autohide_locks_.empty()) {
+    for (auto* root_window_controller :
+         Shell::Get()->GetAllRootWindowControllers()) {
+      CHECK(root_window_controller);
+      CHECK(root_window_controller->shelf());
+
+      disable_shelf_autohide_locks_.emplace_back(
+          root_window_controller->shelf());
+    }
+  }
+
+  disable_shelf_autohide_timer_.Start(
+      FROM_HERE, base::Seconds(6),
+      base::BindOnce(
+          [](std::list<Shelf::ScopedDisableAutoHide>&
+                 disable_shelf_autohide_locks) {
+            disable_shelf_autohide_locks.clear();
+          },
+          std::ref(disable_shelf_autohide_locks_)));
 }
 
 base::OneShotTimer&
@@ -662,30 +701,17 @@ void VideoConferenceTrayController::UpdateWithMediaState(
     }
   }
 
-  // If any `Shelf` is auto hidden, request a new list of `MediaApps` because
-  // the `Shelf` needs to be forced shown, or allowed to hide, depending on the
-  // current number of capturing applications.
-  if (!IsAnyShelfAutoHidden()) {
+  if (state_.has_media_app) {
     return;
   }
 
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  if (!state_.has_media_app) {
-    if (disable_shelf_autohide_timer_.IsRunning()) {
-      disable_shelf_autohide_timer_.Stop();
-    }
-    disable_shelf_autohide_locks_.clear();
-    return;
+  // If no more apps are capturing, release all shelf autohide locks. These
+  // locks are created when a new app begins capturing at
+  // `VideoConferenceTrayController::HandleClientUpdate()`.
+  if (disable_shelf_autohide_timer_.IsRunning()) {
+    disable_shelf_autohide_timer_.Stop();
   }
-
-  // The `Shelf` may need to be forced shown if a new app has started accessing
-  // the sensors, also `UpdateWithMediaState()` may be called with no change to
-  // `state_.has_media_app`, and if a new app is capturing the shelf needs to be
-  // re-shown.
-  GetMediaApps(
-      base::BindOnce(&VideoConferenceTrayController::UpdateShelfAutoHide,
-                     weak_ptr_factory_.GetWeakPtr()));
+  disable_shelf_autohide_locks_.clear();
 }
 
 bool VideoConferenceTrayController::HasCameraPermission() const {
@@ -743,39 +769,6 @@ void VideoConferenceTrayController::UpdateCameraIcons() {
                             camera_muted_by_software_switch_);
     camera_icon->UpdateCapturingState();
   }
-}
-
-void VideoConferenceTrayController::UpdateShelfAutoHide(MediaApps media_apps) {
-  const int old_capturing_apps = capturing_apps_;
-  capturing_apps_ = media_apps.size();
-
-  // Don't force show the `Shelf` if the number of apps accessing the sensors
-  // has decreased. Also do not force hide the shelf when the number of
-  // capturing apps decreases, that will be done only if the number of capturing
-  // apps drops to zero and is handled elsewhere.
-  if (old_capturing_apps >= capturing_apps_) {
-    return;
-  }
-
-  if (disable_shelf_autohide_locks_.empty()) {
-    for (auto* root_window_controller :
-         Shell::Get()->GetAllRootWindowControllers()) {
-      CHECK(root_window_controller);
-      CHECK(root_window_controller->shelf());
-
-      disable_shelf_autohide_locks_.emplace_back(
-          root_window_controller->shelf());
-    }
-  }
-
-  disable_shelf_autohide_timer_.Start(
-      FROM_HERE, base::Seconds(6),
-      base::BindOnce(
-          [](std::list<Shelf::ScopedDisableAutoHide>&
-                 disable_shelf_autohide_locks) {
-            disable_shelf_autohide_locks.clear();
-          },
-          std::ref(disable_shelf_autohide_locks_)));
 }
 
 void VideoConferenceTrayController::RecordRepeatedShows() {
