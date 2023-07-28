@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/arc/tracing/arc_graphics_jank_detector.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
@@ -1975,8 +1976,7 @@ bool ArcTracingGraphicsModel::EventsContainer::operator==(
 
 std::ostream& operator<<(std::ostream& os,
                          ArcTracingGraphicsModel::BufferEventType event_type) {
-  return os << static_cast<typename std::underlying_type<
-             ArcTracingGraphicsModel::BufferEventType>::type>(event_type);
+  return os << base::to_underlying(event_type);
 }
 
 }  // namespace arc

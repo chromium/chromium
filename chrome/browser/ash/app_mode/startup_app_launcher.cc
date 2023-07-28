@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -106,9 +107,7 @@ void StartupAppLauncher::Initialize() {
 
 void StartupAppLauncher::ContinueWithNetworkReady() {
   SYSLOG(INFO) << "ContinueWithNetworkReady"
-               << ", state_="
-               << static_cast<typename std::underlying_type<LaunchState>::type>(
-                      state_);
+               << ", state_=" << base::to_underlying(state_);
 
   if (state_ != LaunchState::kInitializingNetwork &&
       state_ != LaunchState::kNotStarted) {
