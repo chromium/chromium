@@ -676,7 +676,7 @@ public class CustomTabActivityTest {
         Intent intent = createMinimalCustomTabIntent();
 
         Bitmap expectedIcon = createVectorDrawableBitmap(R.drawable.ic_credit_card_black, 77, 48);
-        PendingIntent pi = CustomTabsIntentTestUtils.addActionButtonToIntent(
+        CustomTabsIntentTestUtils.addActionButtonToIntent(
                 intent, expectedIcon, "Good test", sIdToIncrement++);
 
         // Create a RemoteViews. The layout used here is pretty much arbitrary, but with the
@@ -1300,7 +1300,7 @@ public class CustomTabActivityTest {
         Assert.assertFalse(tab.canGoForward());
         Assert.assertFalse(tab.canGoBack());
 
-        // TODO(ahemery):
+        // TODO(https://crbug.com/1467857):
         // Fragment misses will trigger two history entries
         // - url#speculated and url#actual are both inserted
         // This should ideally not be the case.

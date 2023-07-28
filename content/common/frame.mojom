@@ -783,8 +783,8 @@ interface FrameHost {
   // issuing this mojo call, there is no need to pass
   // |initiator_policy_container_keep_alive_handle|, since the initiator
   // PolicyContainerHost is kept alive by LocalFrame's PolicyContainer.
-  // TODO(ahemery): |navigation_client| should not be optional. Make it
-  // mandatory.
+  // TODO(https://crbug.com/1467502): |navigation_client| should not be
+  // optional. Make it mandatory.
   // |renderer_cancellation_listener| is a per-navigation interface used to
   // listen to the end of the renderer-initiated navigation cancelation window
   // for this navigation. See comment for NavigationRendererCancellationListener

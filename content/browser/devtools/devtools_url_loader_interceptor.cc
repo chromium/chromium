@@ -777,9 +777,9 @@ bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
       target_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
 
-  // TODO(ahemery): Using 0 as the process id for navigations can lead to
-  // collisions between multiple navigations/service workers main script fetch.
-  // It should be replaced by the more robust
+  // TODO(https://crbug.com/1467851): Using 0 as the process id for navigations
+  // can lead to collisions between multiple navigations/service workers main
+  // script fetch. It should be replaced by the more robust
   // GlobalRequestID::MakeBrowserInitiated().
   int process_id_override = process_id;
   if (is_navigation)

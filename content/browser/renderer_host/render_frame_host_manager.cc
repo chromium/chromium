@@ -2920,8 +2920,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // If we haven't used our SiteInstance yet, then we can use it for this
   // navigation.  We won't commit the SiteInstance to this site until the
   // response is received (in OnResponseStarted).
-  // TODO(ahemery): In theory we should be able to go for an unused
-  // SiteInstance with the same web exposed isolation status.
+  // TODO(https://crbug.com/1467849): In theory we should be able to go for an
+  // unused SiteInstance with the same web exposed isolation status.
   if (!current_instance->HasSite() && !dest_url_info.IsIsolated() &&
       !current_instance->IsCrossOriginIsolated()) {
     // If we've already created a SiteInstance for our destination, we don't

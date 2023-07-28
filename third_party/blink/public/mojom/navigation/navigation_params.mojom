@@ -268,7 +268,8 @@ struct CommonNavigationParams {
   // Whether this is a history navigation in a newly created child frame, in
   // which case the browser process is instructing the renderer process to load
   // a URL from a session history item.  Defaults to false.
-  // TODO(ahemery): Move this to BeginNavigationParams.
+  // TODO(https://crbug.com/962518, https://crbug.com/1467502): Move this to
+  // BeginNavigationParams.
   bool is_history_navigation_in_new_child_frame = false;
 
   // The time the input event leading to the navigation occurred. This will

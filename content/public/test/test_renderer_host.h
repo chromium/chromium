@@ -102,7 +102,6 @@ class RenderFrameHostTester {
                                     const IPC::Message& msg);
 
   // Commit the load pending in the given |controller| if any.
-  // TODO(ahemery): This should take a WebContents directly.
   static void CommitPendingLoad(NavigationController* controller);
 
   virtual ~RenderFrameHostTester() {}

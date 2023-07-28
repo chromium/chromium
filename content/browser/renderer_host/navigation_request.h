@@ -2443,9 +2443,10 @@ class CONTENT_EXPORT NavigationRequest
   // They have some default values and get updated via inheritance or network
   // responses/redirects. Finally they get passed down to the
   // RenderFrameHostImpl at commit time.
-  // TODO(ahemery, titouan): Move some elements to the policy container or
-  // rework inheritance.
-  // https://crbug.com/1154729
+  //
+  // The policy to apply to private network requests for subresources of the
+  // document we are navigating to. Influenced by the document's policy
+  // container, origin, and `ContentBrowserClient`.
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kWarn;
 
