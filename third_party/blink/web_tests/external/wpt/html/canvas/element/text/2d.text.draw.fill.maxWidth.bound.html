@@ -23,22 +23,22 @@
 <p class="output expectedtext">Expected output:<p><img src="/images/green-100x50.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
-var t = async_test("fillText handles maxWidth based on line size, not bounding box size");
-_addTest(function(canvas, ctx) {
+promise_test(async t => {
 
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
+
+  await document.fonts.ready;
   ctx.font = '50px CanvasTest';
-  deferTest();
-  step_timeout(t.step_func_done(function () {
-      ctx.fillStyle = '#f00';
-      ctx.fillRect(0, 0, 100, 50);
-      ctx.fillStyle = '#0f0';
-      ctx.fillText('DD', 0, 37.5, 100);
-      _assertPixelApprox(canvas, 5,5, 0,255,0,255, 2);
-      _assertPixelApprox(canvas, 95,5, 0,255,0,255, 2);
-      _assertPixelApprox(canvas, 25,25, 0,255,0,255, 2);
-      _assertPixelApprox(canvas, 75,25, 0,255,0,255, 2);
-  }), 500);
+  ctx.fillStyle = '#f00';
+  ctx.fillRect(0, 0, 100, 50);
+  ctx.fillStyle = '#0f0';
+  ctx.fillText('DD', 0, 37.5, 100);
+  _assertPixelApprox(canvas, 5,5, 0,255,0,255, 2);
+  _assertPixelApprox(canvas, 95,5, 0,255,0,255, 2);
+  _assertPixelApprox(canvas, 25,25, 0,255,0,255, 2);
+  _assertPixelApprox(canvas, 75,25, 0,255,0,255, 2);
 
-});
+}, "fillText handles maxWidth based on line size, not bounding box size");
 </script>
 

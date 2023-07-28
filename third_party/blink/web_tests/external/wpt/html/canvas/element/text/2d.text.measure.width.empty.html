@@ -23,19 +23,15 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("The empty string has zero width");
-_addTest(function(canvas, ctx) {
+promise_test(async t => {
 
-  deferTest();
-  var f = new FontFace("CanvasTest", "/fonts/CanvasTest.ttf");
-  document.fonts.add(f);
-  document.fonts.ready.then(() => {
-      step_timeout(t.step_func_done(function () {
-          ctx.font = '50px CanvasTest';
-          _assertSame(ctx.measureText("").width, 0, "ctx.measureText(\"\").width", "0");
-      }), 500);
-  });
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
 
-});
+  await document.fonts.ready;
+  ctx.font = '50px CanvasTest';
+  _assertSame(ctx.measureText("").width, 0, "ctx.measureText(\"\").width", "0");
+
+}, "The empty string has zero width");
 </script>
 

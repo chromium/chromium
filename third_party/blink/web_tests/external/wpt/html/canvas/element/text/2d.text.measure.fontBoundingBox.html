@@ -14,7 +14,7 @@
 <body class="show_output">
 
 <h1>2d.text.measure.fontBoundingBox</h1>
-<p class="desc">Testing fontBoundingBox</p>
+<p class="desc">Testing fontBoundingBox measurements</p>
 
 
 <span style="font-family: CanvasTest; position: absolute; visibility: hidden">A</span>
@@ -23,26 +23,22 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("Testing fontBoundingBox");
-_addTest(function(canvas, ctx) {
+promise_test(async t => {
 
-  deferTest();
-  var f = new FontFace("CanvasTest", "/fonts/CanvasTest.ttf");
-  document.fonts.add(f);
-  document.fonts.ready.then(() => {
-      step_timeout(t.step_func_done(function () {
-          ctx.font = '50px CanvasTest';
-          ctx.direction = 'ltr';
-          ctx.align = 'left'
-          // approx_equals because font metrics may be rounded slightly differently by different platforms/browsers.
-          assert_approx_equals(ctx.measureText('A').fontBoundingBoxAscent, 50 * 1745 / 1024, 1, "unexpected fontBoundingBoxAscent");
-          assert_approx_equals(ctx.measureText('A').fontBoundingBoxDescent, 50 * 805 / 1024, 1, "unexpected fontBoundingBoxDescent");
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
 
-          assert_approx_equals(ctx.measureText('ABCD').fontBoundingBoxAscent, 50 * 1745 / 1024, 1, "unexpected fontBoundingBoxAscent");
-          assert_approx_equals(ctx.measureText('ABCD').fontBoundingBoxDescent, 50 * 805 / 1024, 1, "unexpected fontBoundingBoxDescent");
-      }), 500);
-  });
+  await document.fonts.ready;
+  ctx.font = '50px CanvasTest';
+  ctx.direction = 'ltr';
+  ctx.align = 'left'
+  // approx_equals because font metrics may be rounded slightly differently by different platforms/browsers.
+  assert_approx_equals(ctx.measureText('A').fontBoundingBoxAscent, 50 * 1745 / 1024, 1, "unexpected fontBoundingBoxAscent");
+  assert_approx_equals(ctx.measureText('A').fontBoundingBoxDescent, 50 * 805 / 1024, 1, "unexpected fontBoundingBoxDescent");
 
-});
+  assert_approx_equals(ctx.measureText('ABCD').fontBoundingBoxAscent, 50 * 1745 / 1024, 1, "unexpected fontBoundingBoxAscent");
+  assert_approx_equals(ctx.measureText('ABCD').fontBoundingBoxDescent, 50 * 805 / 1024, 1, "unexpected fontBoundingBoxDescent");
+
+}, "Testing fontBoundingBox measurements");
 </script>
 

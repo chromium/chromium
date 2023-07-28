@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Testing if word spacing is working properly with font-relative length assert_approx_equals: word spacing doesn't work. expected 120 +/- 0.1 but got 108
-Harness: the test ran to completion.
-
