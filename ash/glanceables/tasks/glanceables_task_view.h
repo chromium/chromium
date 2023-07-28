@@ -29,7 +29,7 @@ namespace ash {
 // | |                 | | |'tasks_title_view_'                | | |
 // | |                 | | +-----------------------------------+ | |
 // | |                 | | +---------------------------------  + | |
-// | |                 | | |'tasks_due_date_view_'             | | |
+// | |                 | | |'tasks_details_view_'              | | |
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
@@ -54,8 +54,7 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   raw_ptr<views::ImageButton> button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> contents_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_title_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_due_date_view_ =
-      nullptr;
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_details_view_ = nullptr;
 
   // Whether the task shown by this view is being marked as completed.
   bool completed_ = false;

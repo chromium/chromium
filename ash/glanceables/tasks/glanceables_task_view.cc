@@ -94,6 +94,8 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
 
   tasks_title_view_ =
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  tasks_details_view_ =
+      contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
 
   views::Label* tasks_label = SetupLabel(tasks_title_view_);
   tasks_label->SetText(base::UTF8ToUTF16(task->title));
@@ -108,12 +110,10 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   }
 
   if (task->due.has_value()) {
-    tasks_due_date_view_ =
-        contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
-    views::ImageView* time_icon_view = tasks_due_date_view_->AddChildView(
-        std::make_unique<views::ImageView>());
+    views::ImageView* time_icon_view =
+        tasks_details_view_->AddChildView(std::make_unique<views::ImageView>());
 
-    views::Label* due_date_label = SetupLabel(tasks_due_date_view_);
+    views::Label* due_date_label = SetupLabel(tasks_details_view_);
     due_date_label->SetText(GetFormattedDueDate(task->due.value()));
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(
@@ -131,6 +131,19 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
           kGlanceablesTasksDueDateIcon, kColorAshTextColorSecondary,
           kIconSize));
       due_date_label->SetEnabledColorId(kColorAshTextColorSecondary);
+    }
+  }
+
+  if (task->has_subtasks) {
+    views::ImageView* has_subtask_icon_view =
+        tasks_details_view_->AddChildView(std::make_unique<views::ImageView>());
+    if (chromeos::features::IsJellyEnabled()) {
+      has_subtask_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+          kGlanceablesSubtaskIcon, cros_tokens::kCrosSysOnSurfaceVariant,
+          kIconSize));
+    } else {
+      has_subtask_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+          kGlanceablesSubtaskIcon, kColorAshTextColorSecondary, kIconSize));
     }
   }
 
