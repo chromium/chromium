@@ -36,6 +36,8 @@ shared_library("libcontent_native") {
     "browser/vr/moz_external_vr.h",
     "browser/vr/wolvic_xr_integration_client.cc",
     "browser/vr/wolvic_xr_integration_client.h",
+    "browser/vr/wvr_api.cc",
+    "browser/vr/wvr_api.h",
     "browser/vr/wvr_device.cc",
     "browser/vr/wvr_device.h",
     "browser/vr/wvr_device_provider.cc",

@@ -4,11 +4,12 @@
 
 #include "wolvic/browser/vr/wvr_manager.h"
 
-#include "base/android/jni_string.h"
+#include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
-#include "wolvic/jni_headers/VRManager_jni.h"
+#include "wolvic/browser/vr/wvr_api.h"
+
 
 namespace wolvic {
 
@@ -133,15 +134,10 @@ std::vector<device::mojom::XRViewPtr> CreateViews(
 
 }  // namespace
 
-WvrManager::WvrManager(WvrGraphicsDelegate* graphics)
-    : graphics_(graphics),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  shmem_ = reinterpret_cast<mozilla::gfx::VRExternalShmem*>(
-      content::Java_VRManager_getExternalContext(env));
-  memset((void*)&browser_state_, 0, sizeof(mozilla::gfx::VRBrowserState));
-  memset((void*)&system_state_, 0, sizeof(mozilla::gfx::VRSystemState));
-}
+WvrManager::WvrManager(WvrApi *wvr_api, WvrGraphicsDelegate* graphics)
+    : wvr_api_(wvr_api),
+      graphics_(graphics),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 WvrManager::~WvrManager() {
   ClosePresentationBindings();
@@ -157,18 +153,7 @@ void WvrManager::StartWebXRPresentation(
 
   exit_vr_callback_ = std::move(exit_callback);
 
-  // Indicate that we are ready to start immersive mode
-  browser_state_.presentationActive = true;
-  browser_state_.layerState[0].type =
-      mozilla::gfx::VRLayerType::LayerType_Stereo_Immersive;
-  PushState();
-
-  PullState([&]() {
-    return !system_state_.displayState.suppressFrames &&
-           system_state_.displayState.isConnected;
-  });
-
-  presenting_generation_ = system_state_.displayState.presentingGeneration;
+  wvr_api_->StartWebXR();
 
   ConnectPresentingService(std::move(options), std::move(callback));
 }
@@ -176,10 +161,7 @@ void WvrManager::StartWebXRPresentation(
 void WvrManager::ExitWebXRPresentation(base::OnceClosure callback) {
   DCHECK(IsOnWvrThread());
 
-  browser_state_.presentationActive = false;
-  browser_state_.layerState[0].type =
-      mozilla::gfx::VRLayerType::LayerType_None;
-  PushState(true);
+  wvr_api_->ExitWebXR();
 
   if (callback)
     std::move(callback).Run();
@@ -229,7 +211,7 @@ void WvrManager::ConnectPresentingService(
   ClosePresentationBindings();
 
   std::vector<device::mojom::XRViewPtr> views =
-      CreateViews(system_state_.displayState, nullptr /*pose*/,
+      CreateViews(wvr_api_->get_system_state().displayState, nullptr /*pose*/,
                   graphics_->get_screen_size());
   int width = 0;
   int height = 0;
@@ -276,7 +258,7 @@ void WvrManager::ConnectPresentingService(
   session->enviroment_blend_mode =
       device::mojom::XREnvironmentBlendMode::kOpaque;
   config->default_framebuffer_scale =
-      system_state_.displayState.nativeFramebufferScaleFactor;
+      wvr_api_->get_system_state().displayState.nativeFramebufferScaleFactor;
   session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
 
   std::move(callback).Run(std::move(session));
@@ -337,7 +319,7 @@ WvrManager::GetInputSourceState() {
   std::vector<device::mojom::XRInputSourceStatePtr> input_sources;
 
   for (uint32_t i = 0; i < mozilla::gfx::kVRControllerMaxCount; ++i) {
-    const auto& controller = system_state_.controllerState[i];
+    const auto& controller = wvr_api_->get_system_state().controllerState[i];
     if (controller.type == mozilla::gfx::VRControllerType::_empty)
       continue;
 
@@ -456,17 +438,20 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
   }
 
   device::mojom::XRFrameDataPtr frame_data = device::mojom::XRFrameData::New();
+  mozilla::gfx::VRSystemState system_state = wvr_api_->get_system_state();
+  const mozilla::gfx::VRPose* pose = &system_state.sensorState.pose;
+
   frame_data->frame_id = webxr_.StartFrameAnimating();
   frame_data->views =
-      CreateViews(system_state_.displayState, &system_state_.sensorState.pose,
+      CreateViews(wvr_api_->get_system_state().displayState,
+                  pose,
                   graphics_->webxr_surface_size());
 
   frame_data->mojo_space_reset = true;
 
   frame_data->input_state = GetInputSourceState();
 
-  frame_data->mojo_from_viewer =
-      PoseToVRPosePtr(&system_state_.sensorState.pose);  // std::move(pose);
+  frame_data->mojo_from_viewer = PoseToVRPosePtr(pose);
 
   frame_data->time_delta = pending_time_ - base::TimeTicks();
 
@@ -494,7 +479,7 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
 
   // Force exit WebXR before pushing the frame if the presenting generation is
   // changed by stopping presenting in Wolvic.
-  if (presenting_generation_ != system_state_.displayState.presentingGeneration) {
+  if (wvr_api_->PresentingGenerationChanged()) {
     if (!get_frame_data_callback_.is_null())
       std::move(get_frame_data_callback_).Run(nullptr);
 
@@ -503,36 +488,13 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
     return false;
   }
 
-  auto& layer = browser_state_.layerState[0].layer_stereo_immersive;
-  layer.frameId = frame_index;
-  layer.textureSize.width = graphics_->webxr_surface_size().width();
-  layer.textureSize.height = graphics_->webxr_surface_size().height();
-  layer.textureHandle = graphics_->webxr_texture_handle();
-
-  // for (auto& view: views) {
-  for (int i = 0; i < 2; ++i) {
-    auto& externalRect = i == 0 ? layer.leftEyeRect : layer.rightEyeRect;
-
-    // TODO : How to get this values?
-    externalRect.x = i == 0 ? 0 : 0.5f;
-    externalRect.y = 0;
-    externalRect.width = 0.5f;
-    externalRect.height = 1.0f;
-  }
-
   last_frame_index_ = frame_index;
-  PushState(true);
-  PullState([this]() {
-    return (system_state_.displayState.lastSubmittedFrameId ==
-            last_frame_index_) ||
-           system_state_.displayState.suppressFrames ||
-           !system_state_.displayState.isConnected;
-  });
 
-  // Avoid racing texture between processing in chromium and consuming in
-  // wolvic.
-  layer.textureHandle = 0;
-  PushState(true);
+  if (!wvr_api_->SyncState(frame_index,
+                           graphics_->webxr_texture_handle(),
+                           graphics_->webxr_surface_size().width(),
+                           graphics_->webxr_surface_size().height()))
+    return false;
 
   return true;
 }
@@ -634,45 +596,6 @@ void WvrManager::UpdateLayerBounds(int16_t frame_index,
                                    const gfx::RectF& right_bounds,
                                    const gfx::Size& source_size) {
   CreateOrResizeWebXrSurface(source_size);
-}
-
-void WvrManager::PushState(bool notify_cond) {
-  DCHECK(shmem_);
-
-  if (pthread_mutex_lock((pthread_mutex_t*)&(shmem_->geckoMutex)) == 0) {
-    memcpy((void*)&(shmem_->geckoState), (void*)&browser_state_,
-           sizeof(mozilla::gfx::VRBrowserState));
-    if (notify_cond)
-      pthread_cond_signal((pthread_cond_t*)&(shmem_->geckoCond));
-    pthread_mutex_unlock((pthread_mutex_t*)&(shmem_->geckoMutex));
-  }
-}
-
-void WvrManager::PullState(const std::function<bool()>& wait_condition) {
-  DCHECK(shmem_);
-
-  bool done = false;
-  while (!done) {
-    if (pthread_mutex_lock((pthread_mutex_t*)&shmem_->systemMutex) == 0) {
-      while (true) {
-        memcpy(&system_state_, (void*)&shmem_->state,
-               sizeof(mozilla::gfx::VRSystemState));
-        if (!wait_condition || wait_condition()) {
-          done = true;
-          break;
-        }
-        // Block current thead using the condition variable until data
-        // changes
-        pthread_cond_wait((pthread_cond_t*)&shmem_->systemCond,
-                          (pthread_mutex_t*)&shmem_->systemMutex);
-      }
-      pthread_mutex_unlock((pthread_mutex_t*)&(shmem_->systemMutex));
-    } else if (!wait_condition) {
-      // pthread_mutex_lock failed and we are not waiting for a condition to
-      // exit from PullState call.
-      return;
-    }
-  }
 }
 
 }  // namespace wolvic

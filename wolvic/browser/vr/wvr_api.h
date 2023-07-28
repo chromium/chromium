@@ -1,0 +1,49 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef WOLVIC_BROWSER_VR_WVR_API_H_
+#define WOLVIC_BROWSER_VR_WVR_API_H_
+
+#include <cstdint>
+#include <functional>
+
+#include "base/memory/raw_ptr.h"
+#include "wolvic/browser/vr/moz_external_vr.h"
+
+namespace wolvic {
+
+class WvrApi {
+ public:
+  WvrApi();
+
+  WvrApi(const WvrApi&) = delete;
+  WvrApi& operator=(const WvrApi&) = delete;
+
+  ~WvrApi() = default;
+
+  void StartWebXR();
+  void ExitWebXR();
+  bool PresentingGenerationChanged();
+  bool SyncState(uint64_t frame_index,
+                 int32_t texture_handle,
+                 int32_t width,
+                 int32_t height);
+
+  mozilla::gfx::VRSystemState get_system_state() { return system_state_; }
+
+ private:
+  void PushState(bool notifyCond = false);
+  void PullState(const std::function<bool()>& waitCondition = {});
+
+  // Communicate via mozilla shared memory.
+  mozilla::gfx::VRBrowserState browser_state_;
+  mozilla::gfx::VRSystemState system_state_;
+  raw_ptr<mozilla::gfx::VRExternalShmem> shmem_;
+
+  uint32_t presenting_generation_;
+};
+
+}  // namespace wolvic
+
+#endif  // WOLVIC_BROWSER_VR_WVR_API_H_
