@@ -21,6 +21,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/rust_buildflags.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -2239,11 +2240,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
             "https://example.com/render");
 }
 
-// UpdateJSONParserCrash fails on Android because Android doesn't use a separate
-// process to parse JSON -- instead, it validates JSON in-process in Java, then,
-// if validation succeeded, uses the C++ JSON parser, also in-proc. On other
-// platforms, the C++ parser runs out-of-proc for safety.
-#if !BUILDFLAG(IS_ANDROID)
+// UpdateJSONParserCrash fails on Android or with the Rust parser because in
+// those conditions the data decoder doesn't use a separate process to parse
+// JSON. On other platforms, the C++ parser runs out-of-proc for safety.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(BUILD_RUST_JSON_READER)
 
 // The server response is valid, but we simulate the JSON parser (which may
 // run in a separate process) crashing, so the update doesn't happen.
