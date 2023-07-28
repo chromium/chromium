@@ -265,3 +265,7 @@ page, which gives you commands to:
 [borg]: https://ai.google/research/pubs/pub43438
 [kubernetes]: https://kubernetes.io/
 [swarming bot list]: https://chromium-swarm.appspot.com/botlist
+
+To find out repo checkout, gn args, etc for local compile, you can use
+[how to repro bot failures](../testing/how_to_repro_bot_failures.md)
+as a reference.
