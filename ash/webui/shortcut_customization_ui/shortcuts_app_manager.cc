@@ -20,7 +20,8 @@
 namespace ash::shortcut_ui {
 
 ShortcutsAppManager::ShortcutsAppManager(
-    local_search_service::LocalSearchServiceProxy* local_search_service_proxy) {
+    local_search_service::LocalSearchServiceProxy* local_search_service_proxy,
+    PrefService* pref_service) {
   if (features::IsSearchInShortcutsAppEnabled()) {
     search_concept_registry_ =
         std::make_unique<SearchConceptRegistry>(*local_search_service_proxy);
@@ -28,7 +29,7 @@ ShortcutsAppManager::ShortcutsAppManager(
         search_concept_registry_.get(), local_search_service_proxy);
   }
   accelerator_configuration_provider_ =
-      std::make_unique<AcceleratorConfigurationProvider>();
+      std::make_unique<AcceleratorConfigurationProvider>(pref_service);
 
   accelerator_configuration_provider_->AddObserver(this);
 

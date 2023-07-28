@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
+#include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,13 +34,14 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/keyboard_device.h"
 
+class PrefService;
+
 namespace ash::shortcut_ui {
 
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,
       public input_method::InputMethodManager::Observer,
-      public ui::KeyboardCapability::Observer,
       public InputDeviceSettingsController::Observer {
  public:
   using ActionIdToAcceleratorsInfoMap =
@@ -58,7 +60,7 @@ class AcceleratorConfigurationProvider
     virtual void OnAcceleratorsUpdated(AcceleratorConfigurationMap config) = 0;
   };
 
-  AcceleratorConfigurationProvider();
+  explicit AcceleratorConfigurationProvider(PrefService* pref_service);
   AcceleratorConfigurationProvider(const AcceleratorConfigurationProvider&) =
       delete;
   AcceleratorConfigurationProvider& operator=(
@@ -111,9 +113,6 @@ class AcceleratorConfigurationProvider
   void InputMethodChanged(input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
-
-  // ui::KeyboardCapability::Observer:
-  void OnTopRowKeysAreFKeysChanged() override;
 
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const mojom::Keyboard& keyboard) override;
@@ -201,6 +200,8 @@ class AcceleratorConfigurationProvider
   // This is initialized only once along with `layout_infos_`.
   base::flat_map<std::string, AcceleratorLayoutDetails>
       accelerator_layout_lookup_;
+
+  std::unique_ptr<BooleanPrefMember> send_function_keys_pref_;
 
   AcceleratorConfigurationMap cached_configuration_;
 

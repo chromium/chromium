@@ -13,6 +13,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
@@ -28,6 +29,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
+#include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -501,14 +503,12 @@ void LogAddAccelerator(mojom::AcceleratorSource source,
 
 namespace shortcut_ui {
 
-AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
+AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
+    PrefService* pref_service)
     : ash_accelerator_configuration_(
           Shell::Get()->ash_accelerator_configuration()) {
   // Observe keyboard input method changes.
   input_method::InputMethodManager::Get()->AddObserver(this);
-
-  // Observe top row keys are f-keys preference changes.
-  Shell::Get()->keyboard_capability()->AddObserver(this);
 
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     // `InputDeviceSettingsController` provides updates whenever a device is
@@ -518,6 +518,13 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
   } else {
     // Observe connected keyboard events.
     ui::DeviceDataManager::GetInstance()->AddObserver(this);
+
+    send_function_keys_pref_ = std::make_unique<BooleanPrefMember>();
+    send_function_keys_pref_->Init(
+        ash::prefs::kSendFunctionKeys, pref_service,
+        base::BindRepeating(
+            &AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated,
+            base::Unretained(this)));
   }
 
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
@@ -550,7 +557,6 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
 
   // In unit tests, the Shell instance may already be deleted at this point.
   if (Shell::HasInstance()) {
-    Shell::Get()->keyboard_capability()->RemoveObserver(this);
     Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
         /*prevent_processing_accelerators=*/false);
     if (features::IsInputDeviceSettingsSplitEnabled()) {
@@ -687,10 +693,6 @@ void AcceleratorConfigurationProvider::InputMethodChanged(
     bool show_message) {
   // Accelerators are updated to match the current input method, e.g. positional
   // shortcuts.
-  NotifyAcceleratorsUpdated();
-}
-
-void AcceleratorConfigurationProvider::OnTopRowKeysAreFKeysChanged() {
   NotifyAcceleratorsUpdated();
 }
 

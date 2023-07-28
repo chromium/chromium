@@ -38,8 +38,9 @@ class ShortcutsAppManager
     : public KeyedService,
       public AcceleratorConfigurationProvider::AcceleratorsUpdatedObserver {
  public:
-  explicit ShortcutsAppManager(local_search_service::LocalSearchServiceProxy*
-                                   local_search_service_proxy);
+  ShortcutsAppManager(
+      local_search_service::LocalSearchServiceProxy* local_search_service_proxy,
+      PrefService* pref_service);
   ShortcutsAppManager(const ShortcutsAppManager& other) = delete;
   ShortcutsAppManager& operator=(const ShortcutsAppManager& other) = delete;
   ~ShortcutsAppManager() override;

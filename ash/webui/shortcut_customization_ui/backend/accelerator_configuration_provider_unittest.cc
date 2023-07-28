@@ -328,7 +328,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
-    provider_ = std::make_unique<AcceleratorConfigurationProvider>();
+    provider_ = std::make_unique<AcceleratorConfigurationProvider>(
+        Shell::Get()->session_controller()->GetActivePrefService());
     provider_->AddObserver(&observer_);
     // After the provider is constructed, the observer should not have been
     // notified yet.
