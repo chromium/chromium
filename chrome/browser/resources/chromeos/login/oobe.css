@@ -186,7 +186,7 @@ Styles related to the `md-screen-container`
 
 #outer-container {
   display: flex;
-  height: 100%;
+  min-height: 100%;
   z-index: 1;
 }
 
