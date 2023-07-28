@@ -67,6 +67,10 @@ TEST(BorealisTokenHardwareCheckerTest, Draco) {
   EXPECT_EQ(check("draco", "", "", 0, ""), AllowStatus::kAllowed);
 }
 
+TEST(BorealisTokenHardwareCheckerTest, Myst) {
+  EXPECT_EQ(check("myst", "", "", 0, ""), AllowStatus::kAllowed);
+}
+
 TEST(BorealisTokenHardwareCheckerTest, Nissa) {
   auto check_nissa = []() {
     return check("nissa", "", "Intel(R) Core(TM) i3-X105", 8, "");
