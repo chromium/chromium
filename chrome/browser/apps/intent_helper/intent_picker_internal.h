@@ -21,11 +21,6 @@ namespace apps {
 
 bool ShouldCheckAppsForUrl(content::WebContents* web_contents);
 
-std::vector<IntentPickerAppInfo> FindPwaForUrl(
-    content::WebContents* web_contents,
-    const GURL& url,
-    std::vector<IntentPickerAppInfo> apps);
-
 void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
                                    std::vector<IntentPickerAppInfo> apps,
                                    bool show_stay_in_chrome,
