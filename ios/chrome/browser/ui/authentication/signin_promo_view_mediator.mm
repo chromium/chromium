@@ -18,8 +18,6 @@
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -30,16 +28,12 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -502,7 +496,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }  // namespace
 
 @interface SigninPromoViewMediator () <ChromeAccountManagerServiceObserver,
-                                       IdentityChooserCoordinatorDelegate,
                                        SyncObserverModelBridge>
 
 // Redefined to be readwrite.
@@ -545,22 +538,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
 @implementation SigninPromoViewMediator {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
-  Browser* _browser;
   // View used to present sign-in UI.
   UIViewController* _baseViewController;
-  // Sign-in flow, used only when `self.signinPromoAction` is `kInstantSignin`.
-  AuthenticationFlow* _authenticationFlow;
   // Sync service.
   syncer::SyncService* _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
-  // Coordinator for the user to select an account.
-  IdentityChooserCoordinator* _identityChooserCoordinator;
-  // Coordinator to add an account.
-  SigninCoordinator* _signinCoordinator;
-  // TODO(crbug.com/1448830): This class should not need to block the UI.
-  // The UI blocker is only used in kInstantSignin cases.
-  std::unique_ptr<ScopedUIBlocker> _uiBlocker;
 }
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
@@ -644,20 +627,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
   return YES;
 }
 
-- (instancetype)initWithBrowser:(Browser*)browser
-          accountManagerService:
-              (ChromeAccountManagerService*)accountManagerService
-                    authService:(AuthenticationService*)authService
-                    prefService:(PrefService*)prefService
-                    syncService:(syncer::SyncService*)syncService
-                    accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      presenter:(id<SigninPresenter>)presenter
-             baseViewController:(UIViewController*)baseViewController {
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                        presenter:(id<SigninPresenter>)presenter
+               baseViewController:(UIViewController*)baseViewController {
   self = [super init];
   if (self) {
     DCHECK(accountManagerService);
     DCHECK(IsSupportedAccessPoint(accessPoint));
-    _browser = browser;
     _accountManagerService = accountManagerService;
     _authService = authService;
     _prefService = prefService;
@@ -930,8 +912,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
 - (void)showSigninWithIdentity:(id<SystemIdentity>)identity
                      operation:(AuthenticationOperation)operation
                    promoAction:(signin_metrics::PromoAction)promoAction {
-  DCHECK_NE(self.signinPromoAction, SigninPromoAction::kInstantSignin);
-
   self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
   self.signinInProgress = YES;
   __weak SigninPromoViewMediator* weakSelf = self;
@@ -963,122 +943,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                          promoAction:promoAction
                                             callback:completion];
     [self.presenter showSignin:command];
-  }
-}
-
-// Triggers the primary action when `signinPromoAction` is at kInstantSignin:
-// starts sign-in flow.
-- (void)primaryActionForInstantSignin {
-  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
-      << base::SysNSStringToUTF8([self description]);
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
-  self.signinInProgress = YES;
-  [self startInstantSignInFlow];
-}
-
-// Triggers the secondary action when `signinPromoAction` is at kInstantSignin:
-// starts the add account dialog.
-- (void)secondaryActionForInstantSignin {
-  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
-      << base::SysNSStringToUTF8([self description]);
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
-  self.signinInProgress = YES;
-  _identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
-      initWithBaseViewController:_baseViewController
-                         browser:_browser];
-  _identityChooserCoordinator.delegate = self;
-  [_identityChooserCoordinator start];
-}
-
-// Starts the instant sign-in flow.
-- (void)startInstantSignInFlow {
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  _authenticationFlow = [[AuthenticationFlow alloc]
-               initWithBrowser:_browser
-                      identity:self.identity
-                   accessPoint:self.accessPoint
-              postSignInAction:PostSignInAction::kShowSnackbar
-      presentingViewController:_baseViewController];
-  // This mediator might be removed before the sign-in callback is invoked.
-  // (if the owner receive primary account notification).
-  // To make sure -[<SigninPromoViewConsumer> signinDidFinish], we have to save
-  // in a variable and not get it from weakSelf (that might not exist anymore).
-  __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
-  __weak __typeof(self) weakSelf = self;
-  [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf signInFlowCompletedForInstantSigninWithSuccess:success];
-    if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
-      [weakConsumer signinDidFinish];
-    }
-  }];
-}
-
-// Called when the sign-in flow is over. This method should only be called
-// when this is an instant sign-in flow.
-- (void)signInFlowCompletedForInstantSigninWithSuccess:(BOOL)success {
-  if (success &&
-      (self.accessPoint ==
-           signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER ||
-       self.accessPoint ==
-           signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST)) {
-    [self optInBookmarkReadingListAccountStorage];
-  }
-  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
-      << base::SysNSStringToUTF8([self description]);
-  _uiBlocker.reset();
-  self.signinInProgress = NO;
-  // We can turn on `self.initialSyncInProgress`, if the sign-in is successful.
-  // We can't call now GetTypesWithPendingDownloadForInitialSync() related to
-  // a post task issue.
-  self.initialSyncInProgress = success && [self shouldWaitForInitialSync];
-}
-
-- (void)startAddAccountForInstantSignin {
-  DCHECK(!_signinCoordinator)
-      << base::SysNSStringToUTF8([_signinCoordinator description]) << " "
-      << base::SysNSStringToUTF8([self description]);
-  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
-      << base::SysNSStringToUTF8([self description]);
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
-  self.signinInProgress = YES;
-  _signinCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:_baseViewController
-                                          browser:_browser
-                                      accessPoint:_accessPoint];
-  __weak __typeof(self) weakSelf = self;
-  _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
-        [weakSelf addAccountDoneWithResult:result info:info];
-      };
-  [_signinCoordinator start];
-}
-
-- (void)addAccountDoneWithResult:(SigninCoordinatorResult)result
-                            info:(SigninCompletionInfo*)info {
-  DCHECK(_signinCoordinator) << base::SysNSStringToUTF8([self description]);
-  _signinCoordinator = nil;
-  switch (result) {
-    case SigninCoordinatorResultSuccess:
-      self.identity = info.identity;
-      [self startInstantSignInFlow];
-      break;
-    case SigninCoordinatorResultDisabled:
-    case SigninCoordinatorResultInterrupted:
-    case SigninCoordinatorResultCanceledByUser:
-      _uiBlocker.reset();
-      self.signinInProgress = NO;
-      break;
   }
 }
 
@@ -1176,7 +1040,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
-      [self startAddAccountForInstantSignin];
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::InstantSignin
+                       promoAction:promoAction];
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:nil
@@ -1201,7 +1067,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
   [self sendImpressionsTillSigninButtonsHistogram];
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
-      [self primaryActionForInstantSignin];
+      [self showSigninWithIdentity:self.identity
+                         operation:AuthenticationOperation::InstantSignin
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:self.identity
@@ -1230,7 +1099,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
-      [self secondaryActionForInstantSignin];
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::InstantSignin
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_NOT_DEFAULT];
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:nil
@@ -1274,44 +1146,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
                      (signinPromoViewMediatorCloseButtonWasTapped:)]) {
     [self.consumer signinPromoViewMediatorCloseButtonWasTapped:self];
   }
-}
-
-#pragma mark - IdentityChooserCoordinatorDelegate
-
-- (void)identityChooserCoordinatorDidClose:
-    (IdentityChooserCoordinator*)coordinator {
-  // `_identityChooserCoordinator.delegate` was set to nil before calling this
-  // method since `identityChooserCoordinatorDidTapOnAddAccount:` or
-  // `identityChooserCoordinator:didSelectIdentity:` have been called before.
-  NOTREACHED() << base::SysNSStringToUTF8([self description]);
-}
-
-- (void)identityChooserCoordinatorDidTapOnAddAccount:
-    (IdentityChooserCoordinator*)coordinator {
-  DCHECK_EQ(coordinator, _identityChooserCoordinator)
-      << base::SysNSStringToUTF8([self description]);
-  _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
-  [self startAddAccountForInstantSignin];
-}
-
-- (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(id<SystemIdentity>)identity {
-  DCHECK_EQ(coordinator, _identityChooserCoordinator)
-      << base::SysNSStringToUTF8([self description]);
-  _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
-  if (!identity) {
-    self.signinInProgress = NO;
-    _uiBlocker.reset();
-    return;
-  }
-  self.identity = identity;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
-  [self startInstantSignInFlow];
 }
 
 #pragma mark - SyncObserverModelBridge

@@ -730,17 +730,16 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // Init|_signinPromoViewMediator` if nil.
   if (!self.signinPromoViewMediator && self.browserState) {
     self.signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-              initWithBrowser:self.browser
-        accountManagerService:ChromeAccountManagerServiceFactory::
-                                  GetForBrowserState(self.browserState)
-                  authService:AuthenticationServiceFactory::GetForBrowserState(
-                                  self.browserState)
-                  prefService:self.browserState->GetPrefs()
-                  syncService:self.syncService
-                  accessPoint:signin_metrics::AccessPoint::
-                                  ACCESS_POINT_RECENT_TABS
-                    presenter:self
-           baseViewController:self];
+        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                          GetForBrowserState(self.browserState)
+                          authService:AuthenticationServiceFactory::
+                                          GetForBrowserState(self.browserState)
+                          prefService:self.browserState->GetPrefs()
+                          syncService:self.syncService
+                          accessPoint:signin_metrics::AccessPoint::
+                                          ACCESS_POINT_RECENT_TABS
+                            presenter:self
+                   baseViewController:self];
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       self.signinPromoViewMediator.signinPromoAction =

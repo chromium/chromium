@@ -64,17 +64,16 @@
            prefService:browserState->GetPrefs()];
 
   self.signinPromoMediator = [[SigninPromoViewMediator alloc]
-            initWithBrowser:self.browser
-      accountManagerService:ChromeAccountManagerServiceFactory::
-                                GetForBrowserState(browserState)
-                authService:AuthenticationServiceFactory::GetForBrowserState(
-                                browserState)
-                prefService:browserState->GetPrefs()
-                syncService:syncService
-                accessPoint:signin_metrics::AccessPoint::
-                                ACCESS_POINT_NTP_FEED_TOP_PROMO
-                  presenter:self
-         baseViewController:self.feedTopSectionViewController];
+      initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForBrowserState(browserState)
+                        authService:AuthenticationServiceFactory::
+                                        GetForBrowserState(browserState)
+                        prefService:browserState->GetPrefs()
+                        syncService:syncService
+                        accessPoint:signin_metrics::AccessPoint::
+                                        ACCESS_POINT_NTP_FEED_TOP_PROMO
+                          presenter:self
+                 baseViewController:self.feedTopSectionViewController];
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     self.signinPromoMediator.signinPromoAction =

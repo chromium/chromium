@@ -58,17 +58,16 @@
         new signin::IdentityManagerObserverBridge(
             IdentityManagerFactory::GetForBrowserState(browserState), self));
     _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-              initWithBrowser:browser
-        accountManagerService:ChromeAccountManagerServiceFactory::
-                                  GetForBrowserState(browserState)
-                  authService:AuthenticationServiceFactory::GetForBrowserState(
-                                  browserState)
-                  prefService:browserState->GetPrefs()
-                  syncService:syncService
-                  accessPoint:signin_metrics::AccessPoint::
-                                  ACCESS_POINT_BOOKMARK_MANAGER
-                    presenter:presenter
-           baseViewController:baseViewController];
+        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                          GetForBrowserState(browserState)
+                          authService:AuthenticationServiceFactory::
+                                          GetForBrowserState(browserState)
+                          prefService:browserState->GetPrefs()
+                          syncService:syncService
+                          accessPoint:signin_metrics::AccessPoint::
+                                          ACCESS_POINT_BOOKMARK_MANAGER
+                            presenter:presenter
+                   baseViewController:baseViewController];
     _signinPromoViewMediator.consumer = self;
     if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
       _signinPromoViewMediator.dataTypeToWaitForInitialSync =

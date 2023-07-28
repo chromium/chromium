@@ -9,6 +9,9 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_mediator.h"
@@ -64,11 +67,21 @@
 
 - (void)start {
   [super start];
-  _mediator = [[InstantSigninMediator alloc] initWithAccessPoint:_accessPoint];
+  ChromeBrowserState* chromeState = self.browser->GetBrowserState();
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(chromeState);
+  _mediator = [[InstantSigninMediator alloc] initWithSyncService:syncService
+                                                     accessPoint:_accessPoint];
   _mediator.delegate = self;
   if (_identity) {
     // If an identity was selected, sign-in can start now.
     [self startSignInOnlyFlow];
+    return;
+  }
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(chromeState);
+  if (!accountManagerService->HasIdentities()) {
+    [self startAddAccountForSignInOnly];
     return;
   }
   // Otherwise, the user needs to choose an identity.

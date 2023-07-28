@@ -202,15 +202,14 @@
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-            initWithBrowser:(Browser*)self.browser
-      accountManagerService:accountManagerService
-                authService:_authService
-                prefService:_prefService
-                syncService:_syncService
-                accessPoint:signin_metrics::AccessPoint::
-                                ACCESS_POINT_READING_LIST
-                  presenter:self
-         baseViewController:self.tableViewController];
+      initWithAccountManagerService:accountManagerService
+                        authService:_authService
+                        prefService:_prefService
+                        syncService:_syncService
+                        accessPoint:signin_metrics::AccessPoint::
+                                        ACCESS_POINT_READING_LIST
+                          presenter:self
+                 baseViewController:self.tableViewController];
   _signinPromoViewMediator.signinPromoAction =
       SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;

@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 
 class AuthenticationService;
-class Browser;
 class ChromeAccountManagerService;
 class PrefService;
 @protocol SigninPresenter;
@@ -115,15 +114,15 @@ enum class SigninPromoAction {
 
 // Designated initializer.
 // `baseViewController` is the view to present UI for sign-in.
-- (instancetype)initWithBrowser:(Browser*)browser
-          accountManagerService:
-              (ChromeAccountManagerService*)accountManagerService
-                    authService:(AuthenticationService*)authService
-                    prefService:(PrefService*)prefService
-                    syncService:(syncer::SyncService*)syncService
-                    accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      presenter:(id<SigninPresenter>)presenter
-             baseViewController:(UIViewController*)baseViewController
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                        presenter:(id<SigninPresenter>)presenter
+               baseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

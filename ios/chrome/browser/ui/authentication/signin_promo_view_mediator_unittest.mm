@@ -79,7 +79,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = builder.Build();
     // Set up the test browser and attach the browser agents.
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -106,16 +105,15 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void CreateMediator(signin_metrics::AccessPoint access_point) {
     consumer_ = OCMStrictProtocolMock(@protocol(SigninPromoViewConsumer));
     mediator_ = [[SigninPromoViewMediator alloc]
-              initWithBrowser:browser_.get()
-        accountManagerService:ChromeAccountManagerServiceFactory::
-                                  GetForBrowserState(
-                                      chrome_browser_state_.get())
-                  authService:GetAuthenticationService()
-                  prefService:chrome_browser_state_.get()->GetPrefs()
-                  syncService:GetSyncService()
-                  accessPoint:access_point
-                    presenter:nil
-           baseViewController:nil];
+        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                          GetForBrowserState(
+                                              chrome_browser_state_.get())
+                          authService:GetAuthenticationService()
+                          prefService:chrome_browser_state_.get()->GetPrefs()
+                          syncService:GetSyncService()
+                          accessPoint:access_point
+                            presenter:nil
+                   baseViewController:nil];
     mediator_.consumer = consumer_;
 
     signin_promo_view_ = OCMStrictClassMock([SigninPromoView class]);
@@ -348,7 +346,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  std::unique_ptr<TestBrowser> browser_;
 
   // Mediator used for the tests.
   SigninPromoViewMediator* mediator_;

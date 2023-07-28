@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_mediator.h"
 
+#import "components/sync/base/features.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -18,6 +21,7 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @implementation InstantSigninMediator {
+  syncer::SyncService* _syncService;
   AuthenticationFlow* _authenticationFlow;
   AccessPoint _accessPoint;
   // YES if the sign-in is interrupted.
@@ -27,9 +31,12 @@ using signin_metrics::PromoAction;
   ProceduralBlock _interruptionCompletion;
 }
 
-- (instancetype)initWithAccessPoint:(AccessPoint)accessPoint {
+- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
+                        accessPoint:(signin_metrics::AccessPoint)accessPoint {
   self = [super init];
   if (self) {
+    CHECK(syncService);
+    _syncService = syncService;
     _accessPoint = accessPoint;
   }
   return self;
@@ -51,6 +58,7 @@ using signin_metrics::PromoAction;
 - (void)disconnect {
   CHECK(!_authenticationFlow);
   CHECK(!_interruptionCompletion);
+  _syncService = nullptr;
 }
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
@@ -72,6 +80,7 @@ using signin_metrics::PromoAction;
   _interruptionCompletion = nil;
   SigninCoordinatorResult result;
   if (success) {
+    [self enableBookmarkAndReadingListAccountStorageOptInIfNeeded];
     result = SigninCoordinatorResultSuccess;
   } else if (_interrupted) {
     result = SigninCoordinatorResultInterrupted;
@@ -82,6 +91,30 @@ using signin_metrics::PromoAction;
   if (interruptionCompletion) {
     interruptionCompletion();
   }
+}
+
+// Enables bookmark and reading list storage opt-in only if the sign-in has been
+// triggered from bookmark or reading list.
+- (void)enableBookmarkAndReadingListAccountStorageOptInIfNeeded {
+  if (_accessPoint !=
+          signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER &&
+      _accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+    return;
+  }
+  bool bookmarksAccountStorageEnabled =
+      base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage);
+  bool dualReadingListModelEnabled = base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableDualReadingListModel);
+  bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableSyncTransportModeUponSignIn);
+  CHECK(bookmarksAccountStorageEnabled ||
+        (dualReadingListModelEnabled && readingListTransportUponSignInEnabled))
+      << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled
+      << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
+      << ", readingListTransportUponSignInEnabled: "
+      << readingListTransportUponSignInEnabled;
+  _syncService->GetUserSettings()
+      ->SetBookmarksAndReadingListAccountStorageOptIn(true);
 }
 
 @end
