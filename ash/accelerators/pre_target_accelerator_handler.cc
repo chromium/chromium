@@ -9,50 +9,12 @@
 #include "ash/wm/window_state.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "media/base/media_switches.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-
-namespace {
-
-// Returns true if |key_code| is a key usually handled directly by the shell.
-bool IsSystemKey(ui::KeyboardCode key_code) {
-  switch (key_code) {
-    case ui::VKEY_ASSISTANT:
-    case ui::VKEY_ZOOM:               // Fullscreen button.
-    case ui::VKEY_MEDIA_LAUNCH_APP1:  // Overview button.
-    case ui::VKEY_BRIGHTNESS_DOWN:
-    case ui::VKEY_BRIGHTNESS_UP:
-    case ui::VKEY_KBD_BRIGHTNESS_DOWN:
-    case ui::VKEY_KBD_BRIGHTNESS_UP:
-    case ui::VKEY_VOLUME_MUTE:
-    case ui::VKEY_VOLUME_DOWN:
-    case ui::VKEY_VOLUME_UP:
-    case ui::VKEY_POWER:
-    case ui::VKEY_SLEEP:
-    case ui::VKEY_F13:  // Lock button on some chromebooks emits F13.
-    case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
-    case ui::VKEY_SETTINGS:
-      return true;
-    case ui::VKEY_MEDIA_NEXT_TRACK:
-    case ui::VKEY_MEDIA_PAUSE:
-    case ui::VKEY_MEDIA_PLAY:
-    case ui::VKEY_MEDIA_PLAY_PAUSE:
-    case ui::VKEY_MEDIA_PREV_TRACK:
-    case ui::VKEY_MEDIA_STOP:
-    case ui::VKEY_OEM_103:  // KEYCODE_MEDIA_REWIND
-    case ui::VKEY_OEM_104:  // KEYCODE_MEDIA_FAST_FORWARD
-      return base::FeatureList::IsEnabled(media::kHardwareMediaKeyHandling);
-    default:
-      return false;
-  }
-}
-
-}  // namespace
 
 PreTargetAcceleratorHandler::PreTargetAcceleratorHandler() = default;
 
@@ -68,7 +30,7 @@ bool PreTargetAcceleratorHandler::ProcessAccelerator(
   // special way. However, some windows can override this behavior
   // (e.g. Chrome v1 apps by default and Chrome v2 apps with
   // permission) by setting a window property.
-  if (IsSystemKey(key_event.key_code()) &&
+  if (AcceleratorController::IsSystemKey(key_event.key_code()) &&
       !CanConsumeSystemKeys(target, key_event)) {
     // System keys are always consumed regardless of whether they trigger an
     // accelerator to prevent windows from seeing unexpected key up events.

@@ -85,6 +85,11 @@ class Keyboard : public ui::EventHandler,
   Surface* focused_surface_for_testing() const { return focus_; }
 
  private:
+  // Returns a set of keys with keys that should not be handled by the surface
+  // filtered out from pressed_keys_.
+  base::flat_map<ui::DomCode, KeyState> GetPressedKeysForSurface(
+      Surface* surface);
+
   // Change keyboard focus to |surface|.
   void SetFocus(Surface* surface);
 

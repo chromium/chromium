@@ -4,8 +4,10 @@
 
 #include "ash/public/cpp/accelerators.h"
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "media/base/media_switches.h"
 
 namespace ash {
 
@@ -457,6 +459,39 @@ void AcceleratorController::SetVolumeAdjustmentSoundCallback(
 void AcceleratorController::PlayVolumeAdjustmentSound() {
   if (*GetVolumeAdjustmentCallback())
     GetVolumeAdjustmentCallback()->Run();
+}
+
+// static
+bool AcceleratorController::IsSystemKey(ui::KeyboardCode key_code) {
+  switch (key_code) {
+    case ui::VKEY_ASSISTANT:
+    case ui::VKEY_ZOOM:               // Fullscreen button.
+    case ui::VKEY_MEDIA_LAUNCH_APP1:  // Overview button.
+    case ui::VKEY_BRIGHTNESS_DOWN:
+    case ui::VKEY_BRIGHTNESS_UP:
+    case ui::VKEY_KBD_BRIGHTNESS_DOWN:
+    case ui::VKEY_KBD_BRIGHTNESS_UP:
+    case ui::VKEY_VOLUME_MUTE:
+    case ui::VKEY_VOLUME_DOWN:
+    case ui::VKEY_VOLUME_UP:
+    case ui::VKEY_POWER:
+    case ui::VKEY_SLEEP:
+    case ui::VKEY_F13:  // Lock button on some chromebooks emits F13.
+    case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
+    case ui::VKEY_SETTINGS:
+      return true;
+    case ui::VKEY_MEDIA_NEXT_TRACK:
+    case ui::VKEY_MEDIA_PAUSE:
+    case ui::VKEY_MEDIA_PLAY:
+    case ui::VKEY_MEDIA_PLAY_PAUSE:
+    case ui::VKEY_MEDIA_PREV_TRACK:
+    case ui::VKEY_MEDIA_STOP:
+    case ui::VKEY_OEM_103:  // KEYCODE_MEDIA_REWIND
+    case ui::VKEY_OEM_104:  // KEYCODE_MEDIA_FAST_FORWARD
+      return base::FeatureList::IsEnabled(media::kHardwareMediaKeyHandling);
+    default:
+      return false;
+  }
 }
 
 void AcceleratorController::AddObserver(Observer* observer) {

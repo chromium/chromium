@@ -1551,5 +1551,80 @@ TEST_F(KeyboardTest, OnKeyboardKey_ChangeFocusInPreTargetHandler) {
   wm_helper()->RemovePreTargetHandler(&handler);
 }
 
+TEST_F(KeyboardTest, SystemKeysNotSentAsPressedKeys) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  Seat seat;
+
+  // Pressing keys before Keyboard instance is created and surface has
+  // received focus.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::US_A);
+  generator->PressKey(ui::VKEY_A, ui::EF_SHIFT_DOWN);
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::LAUNCH_APP1);
+  generator->PressKey(ui::VKEY_MEDIA_LAUNCH_APP1, 0);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  auto keyboard = std::make_unique<Keyboard>(std::move(delegate), &seat);
+  ON_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
+      .WillByDefault(testing::Return(true));
+
+  // LAUNCH_APP1 should be filtered out before sending OnKeyboardEnter.
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>(
+                                   {{ui::DomCode::US_A,
+                                     KeyState{ui::DomCode::US_A, false}}})));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
+
+TEST_F(KeyboardTest, CanConsumeSystemKeysSentAsPressedKeys) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+  ash::WindowState::Get(surface->window()->GetToplevelWindow())
+      ->SetCanConsumeSystemKeys(true);
+  Seat seat;
+
+  // Pressing keys before Keyboard instance is created and surface has
+  // received focus.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::US_A);
+  generator->PressKey(ui::VKEY_A, ui::EF_SHIFT_DOWN);
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::LAUNCH_APP1);
+  generator->PressKey(ui::VKEY_MEDIA_LAUNCH_APP1, 0);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  auto keyboard = std::make_unique<Keyboard>(std::move(delegate), &seat);
+  ON_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
+      .WillByDefault(testing::Return(true));
+
+  // LAUNCH_APP1 should not be filtered out before sending OnKeyboardEnter.
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(
+          surface, base::flat_map<ui::DomCode, KeyState>({
+                       {ui::DomCode::US_A, KeyState{ui::DomCode::US_A, false}},
+                       {ui::DomCode::LAUNCH_APP1,
+                        KeyState{ui::DomCode::LAUNCH_APP1, false}},
+                   })));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
 }  // namespace
 }  // namespace exo
