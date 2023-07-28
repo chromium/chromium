@@ -2135,7 +2135,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
     // writer is set with the same type originally.
     socket_found_in_writer |=
         static_cast<QuicChromiumPacketWriter*>(connection()->writer())
-            ->OnSocketClosed(std::move(socket));
+            ->OnSocketClosed(socket.get());
   }
   CHECK(socket_found_in_writer);
   DCHECK(!HasActiveRequestStreams());
