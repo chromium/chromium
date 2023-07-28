@@ -669,7 +669,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that leading image in omnibox changes based on the suggestion
 // highlighted.
-- (void)testOmniboxLeadingImage {
+// TODO(crbug.com/1455347): Test is flaky on both device and simulator.
+- (void)DISABLED_testOmniboxLeadingImage {
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
