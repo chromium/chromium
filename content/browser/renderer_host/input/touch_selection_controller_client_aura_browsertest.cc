@@ -838,6 +838,61 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->Wait();
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
+
+// Tests that the insertion handle and menu are hidden when a mouse event
+// occurs, then can be shown again by tapping on the caret.
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       HandleVisibilityAfterMouseEvent) {
+  // Set the test page up.
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController(true);
+
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  const gfx::NativeView native_view = rwhva->GetNativeView();
+  ui::test::EventGenerator generator(native_view->GetRootWindow());
+
+  // Tap inside the textfield to place a caret and show an insertion handle.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_SHOWN);
+  gfx::Point caret_location = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  generator.delegate()->ConvertPointFromTarget(native_view, &caret_location);
+  generator.GestureTapAt(caret_location);
+  selection_controller_client()->Wait();
+
+  const gfx::RectF caret_bounds =
+      rwhva->selection_controller()->GetVisibleRectBetweenBounds();
+  EXPECT_NE(caret_bounds, gfx::RectF());
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::INSERTION_ACTIVE);
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Move the mouse to hide the insertion handle.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_CLEARED);
+  generator.SendMouseEnter();
+  generator.MoveMouseBy(100, 100);
+  selection_controller_client()->Wait();
+
+  EXPECT_EQ(rwhva->selection_controller()->GetVisibleRectBetweenBounds(),
+            gfx::RectF());
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::INACTIVE);
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Tap the caret to show the menu and make the insertion handle reappear. We
+  // advance the clock before tapping to avoid it being treated as a double tap.
+  generator.AdvanceClock(base::Milliseconds(1000));
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_SHOWN);
+  generator.GestureTapAt(caret_location);
+  selection_controller_client()->Wait();
+
+  EXPECT_EQ(rwhva->selection_controller()->GetVisibleRectBetweenBounds(),
+            caret_bounds);
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::INSERTION_ACTIVE);
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+}
 #endif
 
 // Tests that the quick menu is hidden whenever a touch point is active.

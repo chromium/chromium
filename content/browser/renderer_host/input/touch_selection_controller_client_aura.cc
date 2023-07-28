@@ -174,6 +174,16 @@ bool TouchSelectionControllerClientAura::HandleContextMenu(
       params.source_type == ui::MENU_SOURCE_TOUCH && params.is_editable &&
       params.selection_text.empty()) {
     if (IsQuickMenuAvailable()) {
+      // The selection controller might have been reset between the last
+      // selection bound update and the current context menu event (e.g. if
+      // handles were hidden because the mouse moved). In this case, re-notify
+      // the selection controller of the most recently used selection bounds and
+      // show the handles and menu at these bounds.
+      if (rwhva_->selection_controller()->active_status() ==
+          ui::TouchSelectionController::INACTIVE) {
+        rwhva_->selection_controller()->OnSelectionBoundsChanged(
+            manager_selection_start_, manager_selection_end_);
+      }
       quick_menu_requested_ = !quick_menu_requested_;
     } else {
       rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
