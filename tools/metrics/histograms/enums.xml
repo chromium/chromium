@@ -43328,6 +43328,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4607" label="PaymentRequestActivationlessShow"/>
   <int value="4608" label="WebAppTabbed"/>
   <int value="4609" label="FetchLater"/>
+  <int value="4610" label="URLPatternReliantOnImplicitURLComponentsInString"/>
+  <int value="4611" label="URLPatternReliantOnLaterComponentFromBaseURL"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -7,7 +7,9 @@
 
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/types/strong_alias.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -24,8 +26,6 @@ class URLPatternInit;
 class URLPatternOptions;
 
 namespace url_pattern {
-
-class Component;
 
 // A helper class to parse the first string passed to the URLPattern
 // constructor.  In general the parser works by using the liburlpattern
@@ -57,6 +57,14 @@ class Parser final {
   // input string.  This should only be called after `Parse()` succeeds.
   // This will return nullptr if the input was a relative pattern string.
   Component* GetProtocolComponent() const { return protocol_component_; }
+
+  // Returns which of the components were actually present.
+  // This is currently only used for data analysis to evaluate potential
+  // evolution of the URL pattern syntax.
+  using ComponentSet = base::EnumSet<Component::Type,
+                                     Component::Type::kProtocol,
+                                     Component::Type::kHash>;
+  ComponentSet GetPresentComponents() { return present_components_; }
 
  private:
   enum class StringParseState {
@@ -200,6 +208,9 @@ class Parser final {
   // True if we should apply parse rules as if this is a "standard" URL.  If
   // false then this is treated as a "not a base URL" or "path" URL.
   bool should_treat_as_standard_url_ = false;
+
+  // Track which components were actually present.
+  ComponentSet present_components_;
 };
 
 }  // namespace url_pattern
