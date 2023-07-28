@@ -130,6 +130,21 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   AddLiveCaptionSectionStrings(html_source);
 }
 
+// Live Caption subtitle depends on whether multi-language is supported, and on
+// Ash also depends on whether system-wide live caption is enabled.
+int GetLiveCaptionSubtitle(const bool multi_language) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(ash::features::kSystemLiveCaption)) {
+    return multi_language
+               ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_BROWSER_ONLY
+               : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_BROWSER_ONLY_ENGLISH_ONLY;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return multi_language
+             ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE
+             : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY;
+}
+
 void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString(
       "captionsEnableLiveCaptionTitle",
@@ -151,9 +166,8 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(media::kLiveTranslate);
 
   const int live_caption_subtitle_message =
-      liveCaptionMultiLanguageEnabled
-          ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE
-          : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY;
+      GetLiveCaptionSubtitle(liveCaptionMultiLanguageEnabled);
+
   html_source->AddLocalizedString("captionsEnableLiveCaptionSubtitle",
                                   live_caption_subtitle_message);
   html_source->AddBoolean("enableLiveCaption",
