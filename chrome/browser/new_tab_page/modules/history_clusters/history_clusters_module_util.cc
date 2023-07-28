@@ -145,7 +145,9 @@ size_t GetMaxClusters() {
   return static_cast<size_t>(max_clusters);
 }
 
-history::Cluster GenerateSampleCluster(int num_visits, int num_images) {
+history::Cluster GenerateSampleCluster(int64_t cluster_id,
+                                       int num_visits,
+                                       int num_images) {
   const base::Time current_time = base::Time::Now();
   const std::vector<std::tuple<std::string, GURL, base::Time>>
       kSampleUrlVisitData = {
@@ -184,7 +186,7 @@ history::Cluster GenerateSampleCluster(int num_visits, int num_images) {
           false));
 
   return history::Cluster(
-      0, sample_visits, {},
+      cluster_id, sample_visits, {},
       /*should_show_on_prominent_ui_surfaces=*/true,
       /*label=*/
       l10n_util::GetStringFUTF16(

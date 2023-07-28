@@ -42,6 +42,8 @@ size_t GetMaxClusters();
 
 // Generates mock history clusters to be used for testing and demos of the
 // module.
-history::Cluster GenerateSampleCluster(int num_visits, int num_images);
+history::Cluster GenerateSampleCluster(int64_t cluster_id,
+                                       int num_visits,
+                                       int num_images);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_HISTORY_CLUSTERS_HISTORY_CLUSTERS_MODULE_UTIL_H_

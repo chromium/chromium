@@ -88,6 +88,11 @@ export class HistoryClustersModuleElement extends I18nMixin
       detail: {
         message: loadTimeData.getStringF(
             'dismissModuleToastMessage', this.cluster.label),
+        restoreCallback: () => {
+          HistoryClustersProxyImpl.getInstance()
+              .handler.updateClusterVisitsInteractionState(
+                  this.cluster.visits, InteractionState.kDefault);
+        },
       },
     }));
   }

@@ -1,4 +1,4 @@
-<style>
+<style include="cr-hidden-style">
   #container {
     display: flex;
     flex-flow: row wrap;
@@ -9,7 +9,21 @@
   }
 </style>
 <div id="container">
-  <template is="dom-repeat" items="[[moduleInstances_]]">
-    <ntp-module-wrapper module="[[item]]">
-  </template>
 </div>
+<template>
+  <ntp-module-wrapper module="[[item]]"
+      hidden="[[moduleDisabled_(disabledModules_, item)]]"
+      on-disable-module="onDisableModule_"
+      on-dismiss-module-instance="onDismissModuleInstance_">
+  </ntp-module-wrapper>
+</template>
+<cr-toast id="undoToast" duration="10000">
+  <div id="undoToastMessage">[[undoData_.message]]</div>
+  <template is="dom-if" if="[[undoData_.undo]]">
+    <cr-button id="undoButton"
+        aria-label="$i18n{undoDescription}"
+        on-click="onUndoButtonClick_">
+      $i18n{undo}
+    </cr-button>
+  </template>
+</cr-toast>

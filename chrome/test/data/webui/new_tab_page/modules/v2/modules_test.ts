@@ -5,15 +5,19 @@
 import {MAX_COLUMN_COUNT, Module, ModuleDescriptor, ModuleRegistry, ModulesV2Element, ModuleWrapperElement, NamedWidth, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
 import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-import {createElement, initNullModule, installMock} from '../../test_support.js';
+import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../../test_support.js';
+
+const SAMPLE_SCREEN_WIDTH = 1080;
 
 suite('NewTabPageModulesModulesV2Test', () => {
-  let handler: TestMock<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
+  let handler: TestMock<PageHandlerRemote>;
+  let metrics: MetricsTracker;
   let moduleRegistry: TestMock<ModuleRegistry>;
 
   setup(async () => {
@@ -22,6 +26,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
         PageHandlerRemote,
         (mock: PageHandlerRemote) =>
             NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+    metrics = fakeMetricsPrivate();
     moduleRegistry = installMock(ModuleRegistry);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
@@ -46,6 +51,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
     width: number;
     count: number;
     rows: NamedWidth[][];
+  }
+
+  interface LayoutChangeScenario {
+    setup: Array<{name: string, count: number}>;
+    before: Scenario;
+    after: Scenario;
   }
 
   function generateScenarioCompactName(scenario: Scenario): string {
@@ -131,7 +142,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
         ],
       });
 
-      const launchpadElement = await createModulesElement(
+      const modulesElement = await createModulesElement(
           [
             {
               descriptor: fooDescriptor,
@@ -141,17 +152,17 @@ suite('NewTabPageModulesModulesV2Test', () => {
           scenario.width);
       callbackRouterRemote.setDisabledModules(false, []);
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(launchpadElement);
+      await waitAfterNextRender(modulesElement);
 
-      const wrappers =
-          launchpadElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+      const wrappers = modulesElement.shadowRoot!.querySelectorAll(
+          'ntp-module-wrapper:not([hidden])');
       assertEquals(scenario.count, wrappers.length);
 
       let index = 0;
       scenario.rows.forEach((expectedRowWidths, i) => {
         expectedRowWidths.forEach((expectedWidth, j) => {
           const wrapper = wrappers[index]! as ModuleWrapperElement;
-          const instance = (wrapper.$.moduleElement.lastChild! as HTMLElement);
+          const instance = wrapper.$.moduleElement.lastChild! as HTMLElement;
           assertEquals(expectedWidth.name, instance.getAttribute('format'));
           assertEquals(
               expectedWidth.value, wrapper.clientWidth,
@@ -172,7 +183,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
       ],
     });
 
-    const launchpadElement = await createModulesElement(
+    const modulesElement = await createModulesElement(
         [
           {
             descriptor: fooDescriptor,
@@ -183,12 +194,411 @@ suite('NewTabPageModulesModulesV2Test', () => {
             elements: [createElement()],
           },
         ],
-        1080);
+        SAMPLE_SCREEN_WIDTH);
     callbackRouterRemote.setDisabledModules(false, []);
     await callbackRouterRemote.$.flushForTesting();
 
     const moduleWrappers =
-        launchpadElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
     assertEquals(4, moduleWrappers.length);
+  });
+
+  enum UndoStrategy {
+    BUTTON_ACTIVATION = 'button activation',
+    SHORTCUT_KEY = 'shortcut key',
+  }
+
+  [UndoStrategy.BUTTON_ACTIVATION, UndoStrategy.SHORTCUT_KEY].forEach(
+      (undoStrategy: UndoStrategy) => {
+        test(
+            `modules can be disabled and restored via ${undoStrategy}`,
+            async () => {
+              // Arrange.
+              const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+              handler.setResultFor('getModulesIdNames', {
+                data: [
+                  {id: fooDescriptor.id, name: fooDescriptor.id},
+                ],
+              });
+              const modulesElement = await createModulesElement(
+                  [{
+                    descriptor: fooDescriptor,
+                    elements: [createElement()],
+                  }],
+                  SAMPLE_SCREEN_WIDTH);
+              callbackRouterRemote.setDisabledModules(false, []);
+              await callbackRouterRemote.$.flushForTesting();
+
+              // Assert.
+              const moduleWrappers =
+                  modulesElement.shadowRoot!.querySelectorAll(
+                      'ntp-module-wrapper');
+              assertEquals(1, moduleWrappers.length);
+              assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+              assertFalse(modulesElement.$.undoToast.open);
+
+              // Act.
+              let restoreCalled = false;
+              moduleWrappers[0]!.dispatchEvent(
+                  new CustomEvent('disable-module', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                      message: 'Foo',
+                      restoreCallback: () => {
+                        restoreCalled = true;
+                      },
+                    },
+                  }));
+
+              // Assert.
+              assertDeepEquals(
+                  ['foo', true], handler.getArgs('setModuleDisabled')[0]);
+
+              // Act.
+              callbackRouterRemote.setDisabledModules(false, ['foo']);
+              await callbackRouterRemote.$.flushForTesting();
+
+              // Assert.
+              assertStyle(moduleWrappers[0]!, 'display', 'none');
+              assertTrue(modulesElement.$.undoToast.open);
+              assertEquals(
+                  'Foo', modulesElement.$.undoToastMessage.textContent!.trim());
+              assertEquals(
+                  1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
+              assertEquals(
+                  1,
+                  metrics.count(
+                      'NewTabPage.Modules.Disabled.ModuleRequest', 'foo'));
+              assertFalse(restoreCalled);
+
+              // Act.
+              await waitAfterNextRender(modulesElement);
+              if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {
+                const undoButton = modulesElement.shadowRoot!.querySelector(
+                                       '#undoButton') as HTMLElement;
+                undoButton.click();
+              } else if (undoStrategy === UndoStrategy.SHORTCUT_KEY) {
+                window.dispatchEvent(new KeyboardEvent('keydown', {
+                  key: 'z',
+                  ctrlKey: true,
+                }));
+              }
+
+              // Assert.
+              assertDeepEquals(
+                  ['foo', false], handler.getArgs('setModuleDisabled')[1]);
+
+              // Act.
+              callbackRouterRemote.setDisabledModules(false, []);
+              await callbackRouterRemote.$.flushForTesting();
+
+              // Assert.
+              assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+              assertFalse(modulesElement.$.undoToast.open);
+              assertTrue(restoreCalled);
+              assertEquals(
+                  1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
+              assertEquals(
+                  1, metrics.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
+            });
+
+        test(
+            `modules can be dismissed and restored via ${undoStrategy}`,
+            async () => {
+              const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+              handler.setResultFor('getModulesIdNames', {
+                data: [
+                  {id: fooDescriptor.id, name: fooDescriptor.id},
+                ],
+              });
+              const modulesElement = await createModulesElement(
+                  [{
+                    descriptor: fooDescriptor,
+                    elements: [createElement()],
+                  }],
+                  SAMPLE_SCREEN_WIDTH);
+              callbackRouterRemote.setDisabledModules(false, []);
+              await callbackRouterRemote.$.flushForTesting();
+
+              let moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+                  'ntp-module-wrapper');
+              assertEquals(1, moduleWrappers.length);
+              assertFalse(modulesElement.$.undoToast.open);
+
+              let restoreCalled = false;
+              moduleWrappers[0]!.dispatchEvent(
+                  new CustomEvent('dismiss-module-instance', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                      message: 'Foo',
+                      restoreCallback: () => {
+                        restoreCalled = true;
+                      },
+                    },
+                  }));
+
+              assertEquals(
+                  0,
+                  modulesElement.shadowRoot!
+                      .querySelectorAll('ntp-module-wrapper')
+                      .length);
+              assertTrue(modulesElement.$.undoToast.open);
+              assertFalse(restoreCalled);
+
+              await waitAfterNextRender(modulesElement);
+              if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {
+                const undoButton = modulesElement.shadowRoot!.querySelector(
+                                       '#undoButton') as HTMLElement;
+                undoButton.click();
+              } else if (undoStrategy === UndoStrategy.SHORTCUT_KEY) {
+                window.dispatchEvent(new KeyboardEvent('keydown', {
+                  key: 'z',
+                  ctrlKey: true,
+                }));
+              }
+
+              moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+                  'ntp-module-wrapper');
+              assertEquals(1, moduleWrappers.length);
+              assertFalse(modulesElement.$.undoToast.open);
+              assertTrue(restoreCalled);
+            });
+      });
+
+  test('Undo shortcut ignored if no undo state', async () => {
+    // Arrange
+    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+      ],
+    });
+    const modulesElement = await createModulesElement(
+        [{
+          descriptor: fooDescriptor,
+          elements: [createElement()],
+        }],
+        SAMPLE_SCREEN_WIDTH);
+    callbackRouterRemote.setDisabledModules(false, []);
+    await callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(modulesElement);
+
+    // Act.
+    window.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'z',
+      ctrlKey: true,
+    }));
+
+    // Assert: no crash.
+  });
+
+  function assertContainerLayout(
+      moduleWrappers: ModuleWrapperElement[], scenario: Scenario) {
+    assertEquals(scenario.count, moduleWrappers.length);
+
+    let index = 0;
+    scenario.rows.forEach((expectedRowWidths, i) => {
+      expectedRowWidths.forEach((expectedWidth, j) => {
+        const wrapper = moduleWrappers[index]!;
+        const instance = wrapper.$.moduleElement.lastChild! as HTMLElement;
+        assertEquals(expectedWidth.name, instance.getAttribute('format'));
+        assertEquals(
+            expectedWidth.value, wrapper.clientWidth,
+            `Element at row ${i} column ${j}`);
+        index++;
+      });
+    });
+
+    assertEquals(
+        scenario.rows.length,
+        new Set(moduleWrappers.map(wrapper => wrapper.offsetTop)).size);
+  }
+
+  [{
+    setup: [
+      {name: 'foo', count: 3},
+      {name: 'bar', count: 2},
+      {name: 'baz', count: 1},
+    ],
+    before: {
+      width: 1080,
+      count: 6,
+      rows: [
+        [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+        [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+      ],
+    },
+    after: {
+      width: 1080,
+      count: 3,
+      rows: [
+        [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+      ],
+    },
+  },
+   {
+     setup: [
+       {name: 'foo', count: 1},
+       {name: 'bar', count: 2},
+       {name: 'baz', count: 3},
+     ],
+     before: {
+       width: 1080,
+       count: 6,
+       rows: [
+         [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+         [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+       ],
+     },
+     after: {
+       width: 1080,
+       count: 5,
+       rows: [
+         [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+         [MEDIUM_WIDTH, MEDIUM_WIDTH],
+       ],
+     },
+   }].forEach((layoutChangeScenario: LayoutChangeScenario, index) => {
+    test(
+        `Disabling one of many modules updates layout correctly ${index}`,
+        async () => {
+          const modules = layoutChangeScenario.setup.map(details => {
+            return {
+              descriptor: new ModuleDescriptor(details.name, initNullModule),
+              elements: Array(details.count).fill(0).map(() => createElement()),
+            };
+          });
+          handler.setResultFor('getModulesIdNames', {
+            data: modules.map((module) => {
+              return {id: module.descriptor.id, name: module.descriptor.id};
+            }),
+          });
+          const modulesElement =
+              await createModulesElement(modules, SAMPLE_SCREEN_WIDTH);
+          callbackRouterRemote.setDisabledModules(false, []);
+          await callbackRouterRemote.$.flushForTesting();
+
+          const moduleWrappers =
+              Array.from(
+                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                      'ntp-module-wrapper')) as ModuleWrapperElement[];
+          assertContainerLayout(moduleWrappers, layoutChangeScenario.before);
+
+          moduleWrappers[0]!.dispatchEvent(new CustomEvent('disable-module', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              message: 'Foo',
+            },
+          }));
+          assertDeepEquals(
+              ['foo', true], handler.getArgs('setModuleDisabled')[0]);
+          callbackRouterRemote.setDisabledModules(false, ['foo']);
+          await callbackRouterRemote.$.flushForTesting();
+          await waitAfterNextRender(modulesElement);
+
+          assertContainerLayout(
+              Array.from(
+                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                      'ntp-module-wrapper:not([hidden])')) as
+                  ModuleWrapperElement[],
+              layoutChangeScenario.after);
+        });
+  });
+
+  [{
+    setup: [
+      {name: 'foo', count: 3},
+      {name: 'bar', count: 2},
+      {name: 'baz', count: 1},
+    ],
+    before: {
+      width: 1080,
+      count: 6,
+      rows: [
+        [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+        [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+      ],
+    },
+    after: {
+      width: 1080,
+      count: 5,
+      rows: [
+        [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+        [MEDIUM_WIDTH, MEDIUM_WIDTH],
+      ],
+    },
+  },
+   {
+     setup: [
+       {name: 'foo', count: 1},
+       {name: 'bar', count: 2},
+       {name: 'baz', count: 3},
+     ],
+     before: {
+       width: 1080,
+       count: 6,
+       rows: [
+         [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+         [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+       ],
+     },
+     after: {
+       width: 1080,
+       count: 5,
+       rows: [
+         [NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH],
+         [MEDIUM_WIDTH, MEDIUM_WIDTH],
+       ],
+     },
+   }].forEach((layoutChangeScenario: LayoutChangeScenario, index) => {
+    test(
+        `Dismissing one of many modules updates layout correctly ${index}`,
+        async () => {
+          const modules = layoutChangeScenario.setup.map(details => {
+            return {
+              descriptor: new ModuleDescriptor(details.name, initNullModule),
+              elements: Array(details.count).fill(0).map(() => createElement()),
+            };
+          });
+          handler.setResultFor('getModulesIdNames', {
+            data: modules.map((module) => {
+              return {id: module.descriptor.id, name: module.descriptor.id};
+            }),
+          });
+          const modulesElement =
+              await createModulesElement(modules, SAMPLE_SCREEN_WIDTH);
+          callbackRouterRemote.setDisabledModules(false, []);
+          await callbackRouterRemote.$.flushForTesting();
+
+          const moduleWrappers =
+              Array.from(
+                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                      'ntp-module-wrapper')) as ModuleWrapperElement[];
+          assertContainerLayout(moduleWrappers, layoutChangeScenario.before);
+
+          let restoreCalled = false;
+          moduleWrappers[0]!.dispatchEvent(
+              new CustomEvent('dismiss-module-instance', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                  message: 'Foo',
+                  restoreCallback: () => {
+                    restoreCalled = true;
+                  },
+                },
+              }));
+          assertFalse(restoreCalled);
+          await waitAfterNextRender(modulesElement);
+
+          assertContainerLayout(
+              Array.from(
+                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                      'ntp-module-wrapper')) as ModuleWrapperElement[],
+              layoutChangeScenario.after);
+        });
   });
 });

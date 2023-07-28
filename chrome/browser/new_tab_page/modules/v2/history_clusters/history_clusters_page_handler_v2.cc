@@ -119,7 +119,7 @@ void HistoryClustersPageHandlerV2::GetClusters(GetClustersCallback callback) {
     for (int i = 0; i < num_clusters; i++) {
       clusters_mojom.push_back(history_clusters::ClusterToMojom(
           TemplateURLServiceFactory::GetForProfile(profile_),
-          GenerateSampleCluster(num_visits, num_images)));
+          GenerateSampleCluster(i, num_visits, num_images)));
     }
     std::move(callback).Run(std::move(clusters_mojom));
     return;

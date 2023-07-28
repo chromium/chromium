@@ -66,6 +66,18 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
     return moduleElements;
   }
 
+  async function assertUpdateClusterVisitsInteractionStateCall(
+      state: InteractionState, count: number) {
+    const [visits, interactionState] =
+        await handler.whenCalled('updateClusterVisitsInteractionState');
+
+    assertEquals(count, visits.length);
+    visits.forEach((visit: URLVisit, index: number) => {
+      assertEquals(index, Number(visit.visitId));
+    });
+    assertEquals(state, interactionState);
+  }
+
   suite('Core', () => {
     test('No module created if no history cluster data', async () => {
       // Arrange.
@@ -141,34 +153,42 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertEquals((suggestionChip as HTMLElement).hidden, false);
     });
 
-    test('Backend is notified when module is dismissed', async () => {
-      // Arrange.
-      const sampleClusterLabel = '"Sample Journey"';
-      const sampleCluster = createSampleCluster(2, {label: sampleClusterLabel});
-      const moduleElements = await initializeModule([sampleCluster]);
-      const moduleElement = moduleElements[0];
-      assertTrue(!!moduleElement);
+    test(
+        'Backend is notified when module is dismissed and restored',
+        async () => {
+          // Arrange.
+          const sampleClusterLabel = '"Sample Journey"';
+          const sampleCluster =
+              createSampleCluster(2, {label: sampleClusterLabel});
+          const moduleElements = await initializeModule([sampleCluster]);
+          const moduleElement = moduleElements[0];
+          assertTrue(!!moduleElement);
 
-      // Act.
-      const waitForDismissEvent =
-          eventToPromise('dismiss-module-instance', moduleElement);
-      const dismissButton =
-          moduleElement.shadowRoot!.querySelector('history-clusters-header-v2')!
-              .shadowRoot!.querySelector<HTMLElement>('#dismissButton')!;
-      dismissButton.click();
+          // Act.
+          const waitForDismissEvent =
+              eventToPromise('dismiss-module-instance', moduleElement);
+          const dismissButton =
+              moduleElement.shadowRoot!
+                  .querySelector('history-clusters-header-v2')!.shadowRoot!
+                  .querySelector<HTMLElement>('#dismissButton')!;
+          dismissButton.click();
 
-      // Assert.
-      const dismissEvent: DismissModuleInstanceEvent =
-          await waitForDismissEvent;
-      assertEquals(
-          `${sampleCluster.label!} hidden`, dismissEvent.detail.message);
-      const [visits, interactionState] =
-          await handler.whenCalled('updateClusterVisitsInteractionState');
-      assertEquals(3, visits.length);
-      visits.forEach((visit: URLVisit, index: number) => {
-        assertEquals(index, Number(visit.visitId));
-      });
-      assertEquals(InteractionState.kHidden, interactionState);
-    });
+          // Assert.
+          const dismissEvent: DismissModuleInstanceEvent =
+              await waitForDismissEvent;
+          assertEquals(
+              `${sampleCluster.label!} hidden`, dismissEvent.detail.message);
+          assertTrue(!!dismissEvent.detail.restoreCallback);
+          assertUpdateClusterVisitsInteractionStateCall(
+              InteractionState.kHidden, 3);
+
+          // Act.
+          const restoreCallback = dismissEvent.detail.restoreCallback!;
+          restoreCallback();
+
+          // Assert.
+          assertUpdateClusterVisitsInteractionStateCall(
+              InteractionState.kDefault, 3);
+        });
   });
 });
