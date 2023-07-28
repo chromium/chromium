@@ -1025,6 +1025,10 @@ ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
   return render_frame_host->GetPageUkmSourceId();
 }
 
+bool IsMhtmlMimeType(const std::string& mime_type) {
+  return mime_type == "multipart/related" || mime_type == "message/rfc822";
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -2607,6 +2611,10 @@ void NavigationRequest::
             &NavigationRequest::
                 SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader,
             weak_factory_.GetWeakPtr());
+        frame_tree_node_->render_manager()
+            ->speculative_frame_host()
+            ->RecordMetricsForBlockedGetFrameHostAttempt(
+                /* commit_attempt=*/true);
         return;
     }
   }
@@ -3903,8 +3911,7 @@ void NavigationRequest::OnResponseStarted(
   // a reason or another.
   RecordAddressSpaceFeature();
 
-  bool is_mhtml_archive = response_head_->mime_type == "multipart/related" ||
-                          response_head_->mime_type == "message/rfc822";
+  const bool is_mhtml_archive = IsMhtmlMimeType(response_head_->mime_type);
   if (is_mhtml_archive)
     is_mhtml_or_subframe_ = true;
 
@@ -4170,6 +4177,10 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
               weak_factory_.GetWeakPtr(),
               std::move(url_loader_client_endpoints), is_download,
               std::move(subresource_loader_params));
+          frame_tree_node_->render_manager()
+              ->speculative_frame_host()
+              ->RecordMetricsForBlockedGetFrameHostAttempt(
+                  /* commit_attempt=*/true);
           return;
       }
     }
@@ -4603,6 +4614,10 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
             &NavigationRequest::SelectFrameHostForOnRequestFailedInternal,
             weak_factory_.GetWeakPtr(), exists_in_cache, skip_throttles,
             error_page_content);
+        frame_tree_node_->render_manager()
+            ->speculative_frame_host()
+            ->RecordMetricsForBlockedGetFrameHostAttempt(
+                /* commit_attempt=*/true);
         return;
     }
   }
@@ -6948,6 +6963,32 @@ void NavigationRequest::DidCommitNavigation(
     subresource_proxying_url_loader_service_bind_context_
         ->OnDidCommitNavigation(GetRenderFrameHost()->GetWeakDocumentPtr());
   }
+
+  if (!pending_commit_metrics_.start_time.is_null()) {
+    const bool is_for_mhtml = IsMhtmlMimeType(GetMimeType());
+    base::UmaHistogramTimes(
+        is_for_mhtml ? "Navigation.PendingCommit.Duration.MHTML"
+                     : "Navigation.PendingCommit.Duration.Regular",
+        base::TimeTicks::Now() - pending_commit_metrics_.start_time);
+    const bool did_block_get_frame_host_for_navigation =
+        pending_commit_metrics_.blocked_count > 0;
+    base::UmaHistogramBoolean(
+        is_for_mhtml
+            ? "Navigation.PendingCommit.DidBlockGetFrameHostForNavigation.MHTML"
+            : "Navigation.PendingCommit.DidBlockGetFrameHostForNavigation."
+              "Regular",
+        did_block_get_frame_host_for_navigation);
+    if (did_block_get_frame_host_for_navigation) {
+      base::UmaHistogramCounts100(
+          is_for_mhtml ? "Navigation.PendingCommit.BlockedCount.MHTML"
+                       : "Navigation.PendingCommit.BlockedCount.Regular",
+          pending_commit_metrics_.blocked_count);
+      base::UmaHistogramCounts100(
+          is_for_mhtml ? "Navigation.PendingCommit.BlockedCommitCount.MHTML"
+                       : "Navigation.PendingCommit.BlockedCommitCount.Regular",
+          pending_commit_metrics_.blocked_commit_count);
+    }
+  }
 }
 
 SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL() {
@@ -7109,6 +7150,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     DCHECK(!IsSameDocument() && !IsPageActivation());
     GetRenderFrameHost()->SetLifecycleState(
         RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit);
+    pending_commit_metrics_.start_time = base::TimeTicks::Now();
   }
 
   // Reset the source location information, which is not needed anymore. This
@@ -9396,6 +9438,15 @@ bool NavigationRequest::ShouldQueueDueToExistingPendingCommitRFH() const {
     return speculative_rfh->HasPendingCommitForCrossDocumentNavigation();
   }
   return false;
+}
+
+void NavigationRequest::RecordMetricsForBlockedGetFrameHostAttempt(
+    bool commit_attempt) {
+  DCHECK(!pending_commit_metrics_.start_time.is_null());
+  ++pending_commit_metrics_.blocked_count;
+  if (commit_attempt) {
+    ++pending_commit_metrics_.blocked_commit_count;
+  }
 }
 
 void NavigationRequest::PostResumeCommitTask() {

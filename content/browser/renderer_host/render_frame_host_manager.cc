@@ -1305,6 +1305,12 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     auto result = GetFrameHostForNavigation(request, &ignored_bcg_swap_info);
     if (result.has_value()) {
       DCHECK(result.value());
+    } else if (result.error() ==
+               GetFrameHostForNavigationFailed::kBlockedByPendingCommit) {
+      frame_tree_node_->render_manager()
+          ->speculative_frame_host()
+          ->RecordMetricsForBlockedGetFrameHostAttempt(
+              /* commit_attempt=*/false);
     }
   }
 }
