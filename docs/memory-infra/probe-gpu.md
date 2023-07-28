@@ -58,10 +58,10 @@ GPU process:
 
 Many of the objects listed above are shared between multiple processes.
 Consider a GL texture used by CC --- this texture is shared between a renderer
-and the GPU process. Additionally, the texture may be backed by a GLImage which
-was created from a GPUMemoryBuffer, which is also shared between the renderer
-and GPU process. This means that the single texture may show up in the memory
-logs of two different processes multiple times.
+and the GPU process. Additionally, the texture may be backed by a SharedImage
+which was created from a GPUMemoryBuffer, which is also shared between the
+renderer and GPU process. This means that the single texture may show up in the
+memory logs of two different processes multiple times.
 
 To make things easier to understand, each GPU allocation is only ever "owned"
 by a single process and category. For instance, in the above example, the
