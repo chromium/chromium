@@ -13,6 +13,8 @@ on Android.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
+      let numWindowRafs = 0;
+
       function stepVerifyBeforePresent() {
         window.requestAnimationFrame( () => {
           console.log('Got window frame before presentation');
