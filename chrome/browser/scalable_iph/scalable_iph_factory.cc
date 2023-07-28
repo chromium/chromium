@@ -25,10 +25,26 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
+
 constexpr char kScalableIphServiceName[] = "ScalableIphKeyedService";
+
+const user_manager::User* GetUser(content::BrowserContext* browser_context) {
+  return ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      browser_context);
 }
+
+bool NotSupportedEmailDomain(content::BrowserContext* browser_context) {
+  const std::string email =
+      GetUser(browser_context)->GetAccountId().GetUserEmail();
+  DCHECK(!email.empty());
+
+  return !gaia::IsGoogleInternalAccountEmail(email);
+}
+
+}  // namespace
 
 ScalableIphFactory::ScalableIphFactory()
     : BrowserContextKeyedServiceFactory(
@@ -101,7 +117,8 @@ content::BrowserContext* ScalableIphFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+  if (profile->GetProfilePolicyConnector()->IsManaged() &&
+      NotSupportedEmailDomain(browser_context)) {
     return nullptr;
   }
 
@@ -112,8 +129,7 @@ content::BrowserContext* ScalableIphFactory::GetBrowserContextToUse(
   if (user_manager::UserManager::Get()->GetOwnerAccountId() !=
           EmptyAccountId() &&
       !user_manager::UserManager::Get()->IsOwnerUser(
-          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-              browser_context))) {
+          GetUser(browser_context))) {
     return nullptr;
   }
 
