@@ -1185,6 +1185,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Works for all nodes, and may return nodes that are accessibility ignored.
   AXObject* ParentObjectIncludedInTree() const;
 
+  // Return true if the node is connected to the document, and any owner
+  // shadow hosts are also connected. This is an improvement over using
+  // isConnected(), because isConnected() unfortunately returns true even when
+  // its shadow host is disconnected.
+  // TODO(crbug.com/1468264) remove once isConnected() works in shadow content.
+  static bool IsConnectedIncludingShadowHosts(const Node*);
+
   // Looks for the first ancestor AXObject (inclusive) that has an element, and
   // returns that element.
   Element* GetClosestElement() const;

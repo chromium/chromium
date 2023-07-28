@@ -799,6 +799,9 @@ void AXObject::SetParent(AXObject* new_parent) const {
               << "\n  LayoutObject=" << node->GetLayoutObject();
       if (AXObject* obj = AXObjectCache().Get(node))
         message << "\n  " << obj->ToString(true, true);
+      if (!IsConnectedIncludingShadowHosts(node)) {
+        break;
+      }
     }
     NOTREACHED() << message.str();
   }
@@ -934,7 +937,7 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     return nullptr;
   }
 
-  DCHECK(node->isConnected())
+  DCHECK(IsConnectedIncludingShadowHosts(node))
       << "Should not call with disconnected node: " << node;
 
   // A document's parent should be the page popup owner, if any, otherwise null.
@@ -994,6 +997,18 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   }
 
   return CanComputeAsNaturalParent(parent) ? parent : nullptr;
+}
+
+// static
+bool AXObject::IsConnectedIncludingShadowHosts(const Node* node) {
+  DCHECK(node);
+  if (!node->isConnected()) {
+    return false;
+  }
+  if (node->OwnerShadowHost()) {
+    return IsConnectedIncludingShadowHosts(node->OwnerShadowHost());
+  }
+  return true;
 }
 
 // static
@@ -6688,8 +6703,9 @@ bool AXObject::InternalClearAccessibilityFocusAction() {
 
 LayoutObject* AXObject::GetLayoutObjectForNativeScrollAction() const {
   Node* node = GetNode();
-  if (!node || !node->isConnected())
+  if (!node || !IsConnectedIncludingShadowHosts(node)) {
     return nullptr;
+  }
 
   // Node might not have a LayoutObject due to the fact that it is in a locked
   // subtree. Force the update to create the LayoutObject (and update position
@@ -7436,6 +7452,11 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
             GetDocument()->GetFrame()->PagePopupOwner()) {
           string_builder = string_builder + " isPopup";
         }
+      }
+      if (!IsConnectedIncludingShadowHosts(GetNode())) {
+        // TODO(accessibility) Do we have a handy helper for determining whether
+        // a node is still in the flat tree? That would be useful to log.
+        string_builder = string_builder + " nodeDisconnected";
       }
     }
 

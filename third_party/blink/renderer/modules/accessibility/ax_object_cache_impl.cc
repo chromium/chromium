@@ -621,8 +621,9 @@ AXObjectType DetermineAXObjectType(const Node* node,
   bool is_node_relevant = false;
 
   if (node) {
-    if (!node->isConnected())
+    if (!AXObject::IsConnectedIncludingShadowHosts(node)) {
       return kPruneSubtree;
+    }
 
     if (node->ContainingShadowRoot() &&
         !IsShadowContentRelevantForAccessibility(node)) {
@@ -1347,7 +1348,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
 #if DCHECK_IS_ON()
   if (node) {
     DCHECK(layout_object || ax_type != kAXLayoutObject);
-    DCHECK(node->isConnected());
+    DCHECK(AXObject::IsConnectedIncludingShadowHosts(node));
     DCHECK(node->GetDocument().GetFrame())
         << "Creating AXObject in a dead document: " << node;
     DCHECK(node->IsElementNode() || node->IsTextNode() ||
@@ -1616,6 +1617,13 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
     if (node->IsPseudoElement()) {
       DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromRemove, node);
     }
+    // Shadow root subtrees that don't have layout objects for the assigned
+    // nodes will not reach Node::RemovedFromFlatTree() and therefore the
+    // safest thing to do is ensure everything under a shadow host is removed
+    // when the host itself is removed.
+    if (node->GetShadowRoot()) {
+      RemoveSubtreeWhenSafe(node);
+    }
     if (layout_object->Style() &&
         !layout_object->Style()->IsContentVisibilityVisible()) {
       // If a content-visibility: auto/hidden node is removed, remove the entire
@@ -1746,7 +1754,7 @@ void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node) {
 }
 
 void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node, bool remove_root) {
-  if (!node || !node->isConnected()) {
+  if (!node || !AXObject::IsConnectedIncludingShadowHosts(node)) {
     return;
   }
   if (AXObject::CanSafelyUseFlatTreeTraversalNow(node->GetDocument())) {
@@ -1760,7 +1768,10 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(Node* node,
                                                        bool remove_root,
                                                        bool notify_parent) {
   DCHECK(node);
-  DCHECK(AXObject::CanSafelyUseFlatTreeTraversalNow(node->GetDocument()));
+  // Previously used DCHECK(AXObject::CanSafelyUseFlatTreeTraversalNow()) but
+  // failed because document had pending slot assignment in
+  // external/wpt/dom/nodes/node-appendchild-crash.html.
+  DCHECK(!node->GetDocument().IsFlatTreeTraversalForbidden());
   AXObject* object = SafeGet(node);
   if (!object && !remove_root) {
     // Nothing remaining to do for this subtree. Already removed.
@@ -2284,8 +2295,9 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
 
 void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     Node* node) {
-  if (!node || !node->isConnected())
+  if (!node || !AXObject::IsConnectedIncludingShadowHosts(node)) {
     return;
+  }
 
   Element* element = DynamicTo<Element>(node);
 
