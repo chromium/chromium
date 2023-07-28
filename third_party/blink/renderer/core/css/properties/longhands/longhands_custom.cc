@@ -8547,9 +8547,7 @@ const CSSValue* TransitionAnimationType::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* TransitionAnimationType::InitialValue() const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  list->Append(*CSSIdentifierValue::Create(CSSValueID::kNormal));
-  return list;
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
 const CSSValue* TransitionTimingFunction::ParseSingleValue(

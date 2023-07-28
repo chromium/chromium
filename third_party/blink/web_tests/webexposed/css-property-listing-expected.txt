@@ -804,6 +804,7 @@ All changes to this list should go through Blink's feature review process: http:
         toggle-root
         toggle-trigger
     transition
+        transition-animation-type
         transition-delay
         transition-duration
         transition-property

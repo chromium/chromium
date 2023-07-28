@@ -7397,7 +7397,8 @@
       name: "transition",
       longhands: [
         "transition-property", "transition-duration",
-        "transition-timing-function", "transition-delay"
+        "transition-timing-function", "transition-delay",
+        "transition-animation-type",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },

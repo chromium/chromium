@@ -530,6 +530,7 @@ CSSValue* ConsumeTransformList(CSSParserTokenRange&,
 CSSValue* ConsumeTransitionProperty(CSSParserTokenRange&,
                                     const CSSParserContext&);
 bool IsValidPropertyList(const CSSValueList&);
+bool IsValidTransitionAnimationType(const CSSValueID&);
 bool IsValidTransitionAnimationTypeList(const CSSValueList&);
 
 CSSValue* ConsumeBorderColorSide(CSSParserTokenRange&,
