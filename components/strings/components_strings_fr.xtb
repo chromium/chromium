@@ -2578,7 +2578,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6721678857435001674">Voir la marque et le modèle de votre clé de sécurité</translation>
 <translation id="6726832600570791992">(émulation 32 bits)</translation>
 <translation id="6727094998759448074">SRA4</translation>
-<translation id="6732087373923685049">appareil photo</translation>
+<translation id="6732087373923685049">la caméra</translation>
 <translation id="6737708609449480586">Viennoiseries</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="674375294223700098">Erreur inconnue liée au certificat du serveur.</translation>
@@ -3524,7 +3524,7 @@ Informations supplémentaires :
 <translation id="8785658048882205566">Motos</translation>
 <translation id="8790007591277257123">&amp;Rétablir la suppression</translation>
 <translation id="8792621596287649091">Vous risquez de perdre l'accès à votre compte <ph name="ORG_NAME" /> ou d'être victime d'usurpation d'identité. L'équipe Chromium vous recommande de modifier votre mot de passe maintenant.</translation>
-<translation id="8792626944327216835">micro</translation>
+<translation id="8792626944327216835">le micro</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> a activé ces connecteurs dans votre navigateur, lesquels ont accès à certaines de vos données.</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798739476508189189">Vous recherchez les indicateurs de navigateur ? Les consulter</translation>

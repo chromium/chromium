@@ -948,7 +948,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils.</translation>
 <translation id="6730682669179532099">Impossible d'exporter les mots de passe</translation>
-<translation id="6732087373923685049">appareil photo</translation>
+<translation id="6732087373923685049">la caméra</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6753469262000681876">Mode Blocage</translation>
 <translation id="6760509555861141183">Revenir au dernier onglet</translation>
@@ -1260,7 +1260,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8775144690796719618">URL non valide.</translation>
 <translation id="8780076847684176174">{count,plural, =1{Consulter l'onglet…}one{Consulter l'onglet…}other{Consulter tous les onglets…}}</translation>
 <translation id="8787968206789828143">Rechercher sur le Web</translation>
-<translation id="8792626944327216835">micro</translation>
+<translation id="8792626944327216835">le micro</translation>
 <translation id="8803639129939845298">Sécurisé</translation>
 <translation id="8806823403540278281">Votre organisation exige que vous utilisiez le mode navigation privée. Lorsque ce mode est utilisé, les onglets ne sont pas enregistrés.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

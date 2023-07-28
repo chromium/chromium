@@ -1305,7 +1305,7 @@ Nouvelle installation</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6727969043791803658">Connecté, batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="6732087373923685049">appareil photo</translation>
+<translation id="6732087373923685049">la caméra</translation>
 <translation id="6732800389263199929">et <ph name="COUNT" /> autre(s)</translation>
 <translation id="6737983188036277605">Caméra et micro utilisés</translation>
 <translation id="6739144137573853180">ACCÉDER AUX PARAMÈTRES</translation>
@@ -1750,7 +1750,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790998409862094015">Intense</translation>
-<translation id="8792626944327216835">micro</translation>
+<translation id="8792626944327216835">le micro</translation>
 <translation id="8806053966018712535">Dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Aide"</translation>
 <translation id="8814190375133053267">Wi-Fi </translation>
