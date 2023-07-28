@@ -198,6 +198,10 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
 void NigoriModelTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (model_error_ || !bridge_) {
+    return;
+  }
   model_type_state_.mutable_invalidations()->Assign(
       invalidations_to_store.begin(), invalidations_to_store.end());
   // ApplyIncrementalSyncChanges does actually query and persist the

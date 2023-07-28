@@ -833,8 +833,13 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
 void ClientTagBasedModelTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsConnected());
-  DCHECK(!model_error_);
+  CHECK(IsConnected());
+  CHECK(bridge_);
+  if (model_error_ || !entity_tracker_) {
+    // It's possible to have incoming invalidations while the data type is not
+    // fully initialized (e.g. before the initial sync).
+    return;
+  }
 
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();

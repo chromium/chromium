@@ -268,6 +268,11 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
 void BookmarkModelTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!bookmark_tracker_) {
+    // It's possible to receive invalidations while bookmarks are not syncing,
+    // e.g. if invalidation system is initialized earlier than bookmark model.
+    return;
+  }
   sync_pb::ModelTypeState model_type_state =
       bookmark_tracker_->model_type_state();
   model_type_state.mutable_invalidations()->Assign(
