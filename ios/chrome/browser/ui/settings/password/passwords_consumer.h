@@ -24,12 +24,6 @@ class AffiliatedGroup;
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
          insecurePasswordsCount:(NSInteger)insecureCount;
 
-// Displays password and blocked forms.
-// TODO(crbug.com/1359392): Remove this.
-- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
-        blockedSites:
-            (std::vector<password_manager::CredentialUIEntry>)blockedSites;
-
 // Updates whether passwords are being saved to an account or only locally.
 - (void)setSavingPasswordsToAccount:(BOOL)savingPasswordsToAccount;
 

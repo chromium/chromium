@@ -132,7 +132,6 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
         GetPasswordManagerViewController();
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
-    [passwords_controller setPasswords:{} blockedSites:{}];
 
     // Set up handler. Use strict mock to ensure `showPasswordCheckup (or
     // `showPasswordIssues` when kIOSPasswordCheckup is disabled) isn't called
