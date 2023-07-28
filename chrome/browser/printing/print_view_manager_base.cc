@@ -1324,7 +1324,7 @@ void PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis(
     mojom::ScriptedPrintParamsPtr params,
     ScriptedPrintCallback callback,
     bool allowed) {
-  set_analyzing_content(/*analyzing*/ false);
+  set_analyzing_content(/*analyzing=*/false);
   if (!allowed || !printing_rfh_ || IsCrashed() ||
       !printing_rfh_->IsRenderFrameLive()) {
     std::move(callback).Run(nullptr);
@@ -1433,6 +1433,19 @@ void PrintViewManagerBase::ContentAnalysisBeforePrintingDocument(
 void PrintViewManagerBase::set_analyzing_content(bool analyzing) {
   DVLOG(1) << (analyzing ? "Starting" : "Completed") << " content analysis";
   analyzing_content_ = analyzing;
+
+  // A print job for actually printing should not have started before content
+  // analysis is completed, since once started a dialog could be displayed to
+  // the user.  It would be confusing for that to occur while analysis is in
+  // progress and potentially even denies the user of the ability to print.
+  //
+  // A print job might be used for a snapshot to analyze contents, but such a
+  // job should be both created and destroyed while `analyzing_content_` is
+  // true.
+  //
+  // At any point where the analysis state is changing, a print job should not
+  // set for the manager.
+  CHECK(!print_job_);
 }
 
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
