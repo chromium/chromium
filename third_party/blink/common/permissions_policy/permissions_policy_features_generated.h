@@ -10,9 +10,11 @@
 // Headers for the generated code from permissions_policy_features.cc.tmpl.
 namespace blink {
 
+PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList();
 void UpdatePermissionsPolicyFeatureListFlagDefaults(
     PermissionsPolicyFeatureList& mutable_feature_list);
-PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList();
+PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadNone();
+PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadAll();
 
 }  // namespace blink
 

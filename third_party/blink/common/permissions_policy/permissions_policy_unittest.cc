@@ -3137,4 +3137,34 @@ TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
               testing::ContainerEq(origins4));
 }
 
+// Tests that "unload"'s default is controlled by the deprecation flag.
+TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAll) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures({},
+                                         {blink::features::kDeprecateUnload});
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    EXPECT_EQ(PermissionsPolicyFeatureDefault::EnableForAll,
+              GetPermissionsPolicyFeatureList()
+                  .find(mojom::PermissionsPolicyFeature::kUnload)
+                  ->second);
+  }
+}
+
+// Tests that "unload"'s default is controlled by the deprecation flag.
+TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForNone) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({blink::features::kDeprecateUnload},
+                                  /*disabled_features=*/{});
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    EXPECT_EQ(PermissionsPolicyFeatureDefault::EnableForNone,
+              GetPermissionsPolicyFeatureList()
+                  .find(mojom::PermissionsPolicyFeature::kUnload)
+                  ->second);
+  }
+}
+
 }  // namespace blink

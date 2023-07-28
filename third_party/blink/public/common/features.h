@@ -371,6 +371,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnablePenetratingImageSelection);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEstablishGpuChannelAsync);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEventTimingMatchPresentationIndex);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnload);
 
 // This feature (EventTimingReportAllEarlyEntriesOnPaintedPresentation) is
 // having an effect only when EventTimingMatchPresentationIndex is turned on.

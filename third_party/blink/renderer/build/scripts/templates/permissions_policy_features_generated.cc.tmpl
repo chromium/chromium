@@ -12,6 +12,7 @@
 
 namespace blink {
 
+// Applies new defaults based on flags.
 void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList& mutable_feature_list) {
   {% for feature in features %}
   {%- if feature.default_value_behind_flag %}
@@ -31,6 +32,7 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList
   {%- endfor %}
 }
 
+// The base list with no flags or special cases.
 PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
   static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
     PermissionsPolicyFeatureList map({
@@ -41,6 +43,44 @@ PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
         },
       {%- endfor %}
     });
+
+    return map;
+  }());
+  return *feature_list;
+}
+
+// Defaults with "unload" using EnabledForNone.
+PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadNone() {
+  static base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map = GetBasePermissionsPolicyFeatureList();
+    UpdatePermissionsPolicyFeatureListFlagDefaults(map);
+
+{# Apply special case for unload if present. #}
+{% for feature in features %}
+  {% if feature.name.original is equalto "Unload" %}
+    map.find(mojom::PermissionsPolicyFeature::kUnload)->second =
+        PermissionsPolicyFeatureDefault::EnableForNone;
+  {% endif %}
+{% endfor %}
+
+    return map;
+  }());
+  return *feature_list;
+}
+
+// Defaults with "unload" using EnabledForAll.
+PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadAll() {
+  static base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map = GetBasePermissionsPolicyFeatureList();
+    UpdatePermissionsPolicyFeatureListFlagDefaults(map);
+
+{# Apply special case for unload if present. #}
+{% for feature in features %}
+  {% if feature.name.original is equalto "Unload" %}
+    map.find(mojom::PermissionsPolicyFeature::kUnload)->second =
+        PermissionsPolicyFeatureDefault::EnableForAll;
+  {% endif %}
+{% endfor %}
 
     return map;
   }());

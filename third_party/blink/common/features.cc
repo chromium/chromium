@@ -732,6 +732,12 @@ BASE_FEATURE(kEventTimingReportAllEarlyEntriesOnPaintedPresentation,
              "EventTimingReportAllEarlyEntriesOnPaintedPresentation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables unload handler deprecation via Permissions-Policy.
+// https://crbug.com/1324111
+BASE_FEATURE(kDeprecateUnload,
+             "DeprecateUnload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
 // minimum number of bits of encoded image data used to encode each rendered
