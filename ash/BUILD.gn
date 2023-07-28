@@ -3953,6 +3953,7 @@ test("ash_pixeltests") {
     "system/unified/date_tray_pixeltest.cc",
     "system/unified/feature_tile_pixeltest.cc",
     "system/unified/power_button_pixeltest.cc",
+    "system/unified/quick_settings_footer_pixeltest.cc",
     "system/unified/unified_slider_view_pixeltest.cc",
     "system/unified/unified_system_tray_pixeltest.cc",
     "system/update/eol_notice_quick_settings_view_pixeltest.cc",

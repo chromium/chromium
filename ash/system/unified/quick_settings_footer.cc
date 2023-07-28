@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
@@ -63,8 +64,11 @@ bool ShouldShowSignOutButton() {
     return true;
   }
 
-  const bool more_than_one_logged_in_user =
-      session_controller->NumberOfLoggedInUsers() > 1;
+  // More than one user logged in.
+  if (session_controller->NumberOfLoggedInUsers() > 1) {
+    // In this state, UX wants to only show the user avatar button.
+    return false;
+  }
 
   absl::optional<int> number_of_users_that_could_be_logged_in =
       session_controller->GetExistingUsersCount();
@@ -72,10 +76,6 @@ bool ShouldShowSignOutButton() {
       number_of_users_that_could_be_logged_in.has_value() &&
       number_of_users_that_could_be_logged_in.value() > 1;
 
-  if (more_than_one_logged_in_user) {
-    // In this state, UX wants to only show the user avatar button.
-    return false;
-  }
   // Show the sign out button if only one account is logged in, but multiple are
   // on the device.
   return multiple_past_accounts;
@@ -282,7 +282,9 @@ QuickSettingsFooter::QuickSettingsFooter(
   auto* spacing = AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(spacing, 1);
 
+  views::View* end_container = nullptr;
   if (PowerStatus::Get()->IsBatteryPresent()) {
+    end_container = CreateEndContainer();
     const bool use_smart_charging_ui =
         ash::features::IsAdaptiveChargingEnabled() &&
         Shell::Get()
@@ -290,14 +292,19 @@ QuickSettingsFooter::QuickSettingsFooter(
             ->is_adaptive_delaying_charge();
 
     if (use_smart_charging_ui) {
-      AddChildView(std::make_unique<QsBatteryIconView>(controller));
+      end_container->AddChildView(
+          std::make_unique<QsBatteryIconView>(controller));
     } else {
-      AddChildView(std::make_unique<QsBatteryLabelView>(controller));
+      end_container->AddChildView(
+          std::make_unique<QsBatteryLabelView>(controller));
     }
   }
 
   if (TrayPopupUtils::CanOpenWebUISettings()) {
-    settings_button_ = AddChildView(std::make_unique<IconButton>(
+    if (!end_container) {
+      end_container = CreateEndContainer();
+    }
+    settings_button_ = end_container->AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(
             [](UnifiedSystemTrayController* controller) {
               quick_settings_metrics_util::RecordQsButtonActivated(
@@ -336,6 +343,17 @@ void QuickSettingsFooter::UpdateSettingsButtonState() {
   settings_button_->SetState(settings_icon_enabled
                                  ? views::Button::STATE_NORMAL
                                  : views::Button::STATE_DISABLED);
+}
+
+views::View* QuickSettingsFooter::CreateEndContainer() {
+  auto* end_container = AddChildView(std::make_unique<views::View>());
+  auto* end_container_layout =
+      end_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          kQuickSettingFooterItemBetweenSpacing));
+  end_container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  return end_container;
 }
 
 BEGIN_METADATA(QuickSettingsFooter, views::View)

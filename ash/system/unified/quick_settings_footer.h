@@ -105,6 +105,10 @@ class ASH_EXPORT QuickSettingsFooter : public views::View {
   // pref.
   void UpdateSettingsButtonState();
 
+  // Creates the container to carry the battery and settings button if there's
+  // any.
+  views::View* CreateEndContainer();
+
   // Owned.
   raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
 
