@@ -628,6 +628,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_people_page/fingerprint_list_subpage_test.js'
  ],
  [
+   'OsPeoplePageOsSyncControlsSubpage',
+   'os_people_page/os_sync_controls_subpage_test.js'
+ ],
+ [
    'OsPeoplePagePersonalizationOptions',
    'os_people_page/personalization_options_test.js',
  ],
@@ -704,7 +708,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsSettingsMain', 'os_settings_main_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
- ['OsSyncControlsSubpage', 'os_sync_controls_subpage_test.js'],
  [
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'

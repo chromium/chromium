@@ -103,6 +103,7 @@ export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+export {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 export {CrSearchableDropDownElement} from 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';

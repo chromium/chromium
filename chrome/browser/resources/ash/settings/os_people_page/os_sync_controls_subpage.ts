@@ -53,7 +53,8 @@ const SyncPrefsIndividualDataTypes: Array<keyof OsSyncPrefs> = [
 const OsSyncControlsSubpageElementBase = DeepLinkingMixin(
     WebUiListenerMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
-class OsSyncControlsSubpageElement extends OsSyncControlsSubpageElementBase {
+export class OsSyncControlsSubpageElement extends
+    OsSyncControlsSubpageElementBase {
   static get is() {
     return 'os-sync-controls-subpage' as const;
   }

@@ -212,6 +212,7 @@ export {SettingsFingerprintListSubpageElement} from './os_people_page/fingerprin
 export {SettingsLockScreenElement} from './os_people_page/lock_screen_subpage.js';
 export {OsSettingsPersonalizationOptionsElement} from './os_people_page/os_personalization_options.js';
 export {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_people_page/os_sync_browser_proxy.js';
+export {OsSyncControlsSubpageElement} from './os_people_page/os_sync_controls_subpage.js';
 export {FingerprintSetupStep, SettingsSetupFingerprintDialogElement} from './os_people_page/setup_fingerprint_dialog.js';
 export {SettingsUserListElement} from './os_people_page/user_list.js';
 export {AddPrintServerDialogElement} from './os_printing_page/cups_add_print_server_dialog.js';
