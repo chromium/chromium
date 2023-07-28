@@ -156,7 +156,11 @@ class ExtensionReadyObserver : public extensions::ExtensionRegistryObserver {
 // Kiosk tests with a fake device owner setup.
 class KioskDeviceOwnedTest : public KioskBaseTest {
  public:
-  KioskDeviceOwnedTest() { login_manager_.AppendRegularUsers(1); }
+  KioskDeviceOwnedTest() {
+    settings_helper_.Set(kDeviceOwner,
+                         base::Value(test_owner_account_id_.GetUserEmail()));
+    login_manager_.AppendRegularUsers(1);
+  }
 
   void SetUp() override {
     KioskBaseTest::SetUp();
