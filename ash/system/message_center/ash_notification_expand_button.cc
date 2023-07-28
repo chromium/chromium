@@ -4,6 +4,8 @@
 
 #include "ash/system/message_center/ash_notification_expand_button.h"
 
+#include <string>
+
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -77,9 +79,7 @@ AshNotificationExpandButton::AshNotificationExpandButton() {
   views::InstallRoundRectHighlightPathGenerator(this, kFocusInsets,
                                                 kCornerRadius);
 
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
+  UpdateTooltip();
 
   message_center_utils::InitLayerForAnimations(label_);
   message_center_utils::InitLayerForAnimations(image_);
@@ -106,13 +106,8 @@ void AshNotificationExpandButton::SetExpanded(bool expanded) {
   label_->SetVisible(ShouldShowLabel());
 
   image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
-  image_->SetTooltipText(l10n_util::GetStringUTF16(
-      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
 
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
+  UpdateTooltip();
 }
 
 bool AshNotificationExpandButton::ShouldShowLabel() const {
@@ -249,6 +244,7 @@ void AshNotificationExpandButton::SetExpandCollapseEnabled(bool enabled) {
 
   UpdateIcons();
   UpdateBackgroundColor();
+  UpdateTooltip();
 }
 
 void AshNotificationExpandButton::AnimateBoundsChange(
@@ -306,6 +302,21 @@ void AshNotificationExpandButton::UpdateBackgroundColor() {
           : AshColorProvider::Get()->GetControlsLayerColor(
                 AshColorProvider::ControlsLayerType::
                     kControlBackgroundColorInactive));
+}
+
+void AshNotificationExpandButton::UpdateTooltip() {
+  std::u16string tooltip_text;
+  if (disable_expand_collapse_) {
+    tooltip_text =
+        l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_DISABLED_TOOLTIP);
+  } else {
+    tooltip_text = l10n_util::GetStringUTF16(
+        expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
+                  : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP);
+  }
+
+  image_->SetTooltipText(tooltip_text);
+  SetAccessibleName(tooltip_text);
 }
 
 }  // namespace ash

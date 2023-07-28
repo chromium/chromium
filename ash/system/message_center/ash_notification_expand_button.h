@@ -72,6 +72,8 @@ class AshNotificationExpandButton : public views::Button {
 
   void UpdateBackgroundColor();
 
+  void UpdateTooltip();
+
   // Owned by views hierarchy.
   raw_ptr<views::Label, ExperimentalAsh> label_;
   raw_ptr<views::ImageView, ExperimentalAsh> image_;
