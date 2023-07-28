@@ -630,6 +630,7 @@ buildflag_header("partition_alloc_buildflags") {
   flags = [
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
 
+    "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
     "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
 
