@@ -101,7 +101,7 @@ class FakeTabSlotController : public TabSlotController {
   }
 
  private:
-  raw_ptr<TabStripController, LeakedDanglingUntriaged> tab_strip_controller_;
+  raw_ptr<TabStripController> tab_strip_controller_;
   raw_ptr<TabContainer, DanglingUntriaged> tab_container_;
   ui::ListSelectionModel selection_model_;
   raw_ptr<Tab, DanglingUntriaged> active_tab_ = nullptr;
