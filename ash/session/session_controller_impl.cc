@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "components/account_id/account_id.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -69,7 +70,9 @@ SessionControllerImpl::~SessionControllerImpl() {
 // static
 void SessionControllerImpl::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kTimeOfLastSessionActivation, base::Time());
+  registry->RegisterTimePref(
+      prefs::kTimeOfLastSessionActivation, base::Time(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterTimePref(ash::prefs::kAshLoginSessionStartedTime,
                              base::Time());
   registry->RegisterBooleanPref(

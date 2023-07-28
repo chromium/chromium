@@ -270,6 +270,7 @@ enum {
   kSixPackKeyPageDownNotificationsRemaining = 100215,
   kSixPackKeyInsertNotificationsRemaining = 100216,
   kLiveCaptionMaskOffensiveWords = 100217,
+  kTimeOfLastSessionActivation = 100218,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -619,6 +620,9 @@ const auto& SyncablePreferences() {
         {ash::prefs::kTapToClickEnabled,
          {syncable_prefs_ids::kTapToClickEnabled,
           syncer::OS_PRIORITY_PREFERENCES, false}},
+        {ash::prefs::kTimeOfLastSessionActivation,
+         {syncable_prefs_ids::kTimeOfLastSessionActivation,
+          syncer::OS_PREFERENCES, false}},
         {ash::prefs::kTouchpadAcceleration,
          {syncable_prefs_ids::kTouchpadAcceleration,
           syncer::OS_PRIORITY_PREFERENCES, false}},
