@@ -39,7 +39,9 @@ class TrayEventFilter;
 // Base class for some children of StatusAreaWidget. This class handles setting
 // and animating the background when the Launcher is shown/hidden. It also
 // inherits from ActionableView so that the tray items can override
-// PerformAction when clicked on.
+// PerformAction when clicked on. Note that events targeting a
+// `TrayBackgroundView`'s view hierarchy are ignored while the
+// `TrayBackgroundView`'s hide animation is running.
 class ASH_EXPORT TrayBackgroundView : public ActionableView,
                                       public views::ContextMenuController,
                                       public ShelfBackgroundAnimatorObserver,
@@ -223,6 +225,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Callbacks for Animations
   void OnAnimationAborted();
   virtual void OnAnimationEnded();
+  void OnHideAnimationStarted();
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }

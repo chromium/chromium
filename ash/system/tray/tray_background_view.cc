@@ -543,6 +543,7 @@ void TrayBackgroundView::UpdateAfterLockStateChange(bool locked) {
 void TrayBackgroundView::OnVisibilityAnimationFinished(
     bool should_log_visible_pod_count,
     bool aborted) {
+  SetCanProcessEventsWithinSubtree(true);
   if (aborted && is_starting_animation_) {
     return;
   }
@@ -691,6 +692,12 @@ void TrayBackgroundView::UpdateBackground() {
   if (features::IsUserEducationEnabled()) {
     SetProperty(kPingInsetsKey, GetBackgroundInsets());
   }
+}
+
+void TrayBackgroundView::OnHideAnimationStarted() {
+  // Disable event handling while the hide animation is running. It will be
+  // re-enabled when the animation is finished or aborted.
+  SetCanProcessEventsWithinSubtree(false);
 }
 
 void TrayBackgroundView::OnAnimationAborted() {
@@ -868,6 +875,13 @@ void TrayBackgroundView::HideAnimation() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnStarted(base::BindOnce(
+          [](base::WeakPtr<TrayBackgroundView> view) {
+            if (view) {
+              view->OnHideAnimationStarted();
+            }
+          },
+          weak_factory_.GetWeakPtr()))
       .OnAborted(base::BindOnce(
           [](base::WeakPtr<TrayBackgroundView> view) {
             if (view) {

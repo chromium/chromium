@@ -124,6 +124,35 @@ TEST_F(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
   EXPECT_FALSE(test_api()->IsTrayShown());
 }
 
+// Tests that clicking on the tray immediately after all notifications have been
+// removed does not result in an empty bubble being shown. This addresses
+// b/293174118.
+TEST_F(NotificationCenterTrayTest, ClickOnTrayAfterRemovingNotifications) {
+  // Add a notification to make the tray visible. Note that animations complete
+  // immediately in this part of the test.
+  std::string id = test_api()->AddNotification();
+  auto* tray = test_api()->GetTray();
+
+  // Make sure animations don't complete immediately for the rest of the test,
+  // so that we can click on the tray while its running its hide animation.
+  ui::ScopedAnimationDurationScaleMode animation_duration_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove all notifications and verify that the tray's hide animation is
+  // running.
+  test_api()->RemoveNotification(id);
+  ASSERT_EQ(0u, test_api()->GetNotificationCount());
+  EXPECT_TRUE(test_api()->IsTrayAnimating());
+  EXPECT_FALSE(test_api()->GetTray()->layer()->GetTargetVisibility());
+  EXPECT_EQ(test_api()->GetTray()->layer()->GetTargetOpacity(), 0);
+
+  // Click on the tray and verify that notification bubble does not show (we do
+  // not need to wait for animations here because if the bubble were to be shown
+  // it would happen immediately, without animation, after clicking the tray).
+  LeftClickOn(tray);
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+}
+
 // Tests that opening the bubble results in existing popups being dismissed
 // and no new ones being created.
 TEST_F(NotificationCenterTrayTest, NotificationPopupsHiddenWithBubble) {

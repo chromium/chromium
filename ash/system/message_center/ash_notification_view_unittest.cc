@@ -1059,6 +1059,7 @@ TEST_F(AshNotificationViewTest, SingleToGroupAnimationsRecordSmoothness) {
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+  auto notification = CreateTestNotification();
   notification_center_test_api()->ToggleBubble();
 
   auto notification1 = CreateTestNotificationInAGroup();

@@ -227,7 +227,7 @@ TEST_F(TrayBackgroundViewTest, InitiallyHidden) {
 
 TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Starts showing up animation.
   test_tray_background_view()->SetVisiblePreferred(true);
@@ -257,9 +257,31 @@ TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
 }
 
+// Tests that a `TrayBackgroundView` doesn't get notified of events during its
+// hide animation.
+TEST_F(TrayBackgroundViewTest, EventsDisabledForHideAnimation) {
+  // Initially show the tray. Note that animations complete immediately in this
+  // part of the test.
+  test_tray_background_view()->SetVisiblePreferred(true);
+
+  // Ensure animations don't complete immediately for the rest of the test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start the tray's hide animation and verify that it can't process events.
+  test_tray_background_view()->SetVisiblePreferred(false);
+  ASSERT_TRUE(test_tray_background_view()->IsDrawn());
+  EXPECT_FALSE(test_tray_background_view()->GetCanProcessEventsWithinSubtree());
+
+  // Interrupt the hide animation with a show animation and verify that the tray
+  // can process events again.
+  test_tray_background_view()->SetVisiblePreferred(true);
+  EXPECT_TRUE(test_tray_background_view()->GetCanProcessEventsWithinSubtree());
+}
+
 TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Not showing animation after logging in.
   GetSessionControllerClient()->SetSessionState(
@@ -530,7 +552,7 @@ TEST_F(TrayBackgroundViewTest, AutoHideShelfWithContextMenu) {
 // OnAnyBubbleVisibilityChanged is called.
 TEST_F(TrayBackgroundViewTest, OnAnyBubbleVisibilityChanged) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   test_tray_background_view()->SetVisiblePreferred(true);
 

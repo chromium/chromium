@@ -52,12 +52,24 @@ class NotificationCenterTestApi {
       delete;
   ~NotificationCenterTestApi() = default;
 
-  // Toggles the `NotificationCenterBubble` by simulating a click on the
-  // `NotificationCenterTray` on the primary display.
+  // Toggles the `UnifiedMessageCenterBubble` or `NotificationCenterBubble`
+  // (depending on whether QsRevamp is disabled or enabled, respectively) by
+  // simulating a click on the `UnifiedSystemTray` or `NotificationCenterTray`
+  // on the primary display. Note: This API does not wait for any tray
+  // animations to finish before clicking on the tray - that responsibility is
+  // left to the caller (this becomes relevant, for instance, when the tray's
+  // hide animation is running, as events are disabled for the duration of that
+  // animation).
   void ToggleBubble();
 
-  // Toggles the `NotificationCenterBubble` by simulating a click on the
-  // `NotificationCenterTray` on the specified display.
+  // Toggles the `UnifiedMessageCenterBubble` or `NotificationCenterBubble`
+  // (depending on whether QsRevamp is disabled or enabled, respectively) by
+  // simulating a click on the `UnifiedSystemTray` or `NotificationCenterTray`
+  // on the specified display. Note: This API does not wait for any tray
+  // animations to finish before clicking on the tray - that responsibility is
+  // left to the caller (this becomes relevant, for instance, when the tray's
+  // hide animation is running, as events are disabled for the duration of that
+  // animation).
   void ToggleBubbleOnDisplay(int64_t dispay_id);
 
   // Adds a notification with custom parameters and returns the associated id.
