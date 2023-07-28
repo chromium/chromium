@@ -29,8 +29,8 @@ source_set("public") {
     "tracker.h",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//build:branding_buildflags",
     "//components/feed:feature_list",
     "//components/flags_ui",
