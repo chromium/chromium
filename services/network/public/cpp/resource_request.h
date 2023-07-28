@@ -158,6 +158,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool originated_from_service_worker = false;
   bool skip_service_worker = false;
   bool corb_detachable = false;
+  // `kNoCors` mode is the default request mode for legacy reasons, however this
+  // mode is highly discouraged for new requests made on the web platform;
+  // please consider using another mode like `kCors` instead, and only use
+  // `kNoCors` with strong rationale and approval from security experts. See
+  // https://fetch.spec.whatwg.org/#concept-request-mode.
   mojom::RequestMode mode = mojom::RequestMode::kNoCors;
   mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
