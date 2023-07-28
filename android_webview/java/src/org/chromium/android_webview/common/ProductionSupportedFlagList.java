@@ -407,8 +407,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.RENDER_BLOCKING_FONTS,
                     "When enabled, blocks rendering on font preloads to reduce CLS. "
                             + "See go/critical-font-analysis"),
-            Flag.baseFeature(AwFeatures.WEBVIEW_SERVER_SIDE_SAMPLING,
-                    "If enabled, the client side sampling for user metrics will be turned off."
+            Flag.baseFeature(AwFeatures.WEBVIEW_METRICS_FILTERING,
+                    "If enabled, clients used to be out-sampled will report filtered metrics."
                             + " This has no effect if metrics reporting is disabled"),
             Flag.baseFeature("SafeBrowsingOnUIThread"),
             Flag.baseFeature(BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,

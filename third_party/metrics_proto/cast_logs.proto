@@ -75,6 +75,7 @@ message CastLogsProto {
     }
     optional HardwareInfo hardware_info = 6;
   }
+
   // The device sends this information at least once per day.
   optional CastDeviceInfo cast_device_info = 1;
 

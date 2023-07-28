@@ -587,9 +587,12 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/gfx/RootBeginFrameSourceWebView.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsLogUploader.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsServiceClient.java",
+    "java/src/org/chromium/android_webview/metrics/AwMetricsUtils.java",
     "java/src/org/chromium/android_webview/metrics/AwNonembeddedUmaReplayer.java",
     "java/src/org/chromium/android_webview/metrics/AwOriginVisitLogger.java",
     "java/src/org/chromium/android_webview/metrics/AwSiteVisitLogger.java",
+    "java/src/org/chromium/android_webview/metrics/HistogramsAllowlist.java",
+    "java/src/org/chromium/android_webview/metrics/MetricsFilteringDecorator.java",
     "java/src/org/chromium/android_webview/permission/AwGeolocationCallback.java",
     "java/src/org/chromium/android_webview/permission/AwPermissionRequest.java",
     "java/src/org/chromium/android_webview/policy/AwPolicyProvider.java",
@@ -648,6 +651,7 @@ android_library("browser_java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/metrics_proto:metrics_proto_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -965,6 +969,7 @@ android_resources("resources") {
     "java/res/drawable-xhdpi/ic_play_circle_outline_black_48dp.png",
     "java/res/drawable-xxhdpi/ic_play_circle_outline_black_48dp.png",
     "java/res/drawable-xxxhdpi/ic_play_circle_outline_black_48dp.png",
+    "java/res/raw/histograms_allowlist.txt",
   ]
   deps = [ ":strings_grd" ]
 }

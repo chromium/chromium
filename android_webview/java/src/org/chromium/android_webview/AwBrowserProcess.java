@@ -29,6 +29,7 @@ import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.AwNonembeddedUmaReplayer;
+import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
@@ -54,6 +55,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.metrics.AndroidMetricsFeatures;
+import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.policy.CombinedPolicyProvider;
@@ -526,12 +528,13 @@ public final class AwBrowserProcess {
             // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
             // nonembedded ":webview_service" twice.
             uploader.initialize();
-            AndroidMetricsLogUploader.setConsumer(uploader);
+            AndroidMetricsLogUploader.setConsumer(new MetricsFilteringDecorator(uploader));
         } else {
-            AndroidMetricsLogUploader.setConsumer((byte[] data) -> {
+            AndroidMetricsLogConsumer directUploader = data -> {
                 PlatformServiceBridge.getInstance().logMetrics(data, useDefaultUploadQos);
                 return HttpURLConnection.HTTP_OK;
-            });
+            };
+            AndroidMetricsLogUploader.setConsumer(new MetricsFilteringDecorator(directUploader));
         }
     }
 

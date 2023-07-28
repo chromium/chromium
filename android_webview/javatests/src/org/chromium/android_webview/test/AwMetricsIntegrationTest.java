@@ -28,6 +28,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
+import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
@@ -94,10 +96,11 @@ public class AwMetricsIntegrationTest {
             // MetricsUploadService to avoid unexpected failures due to service connections, IPCs
             // ... etc in tests as testing the service behaviour is outside the scope of these
             // integeration tests.
-            AndroidMetricsLogUploader.setConsumer((byte[] data) -> {
+            AndroidMetricsLogConsumer directUploader = data -> {
                 PlatformServiceBridge.getInstance().logMetrics(data, true);
                 return HttpURLConnection.HTTP_OK;
-            });
+            };
+            AndroidMetricsLogUploader.setConsumer(new MetricsFilteringDecorator(directUploader));
 
             // Need to configure the metrics delay first, because
             // handleMinidumpsAndSetMetricsConsent() triggers MetricsService initialization. The
