@@ -80,6 +80,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeTest) {
   RunTestURL("foreground/js/ui/directory_tree_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveBulkPinningBanner) {
+  RunTestURL("foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveSyncHandlerTest) {
   RunTestURL("background/js/drive_sync_handler_unittest.js");
 }

@@ -17,11 +17,11 @@ export function setUp() {
 // Gets the <xf-bulk-pinning-dialog> element.
 async function getDialog(): Promise<XfBulkPinningDialog> {
   const dialog =
-      document.querySelector<XfBulkPinningDialog>('xf-bulk-pinning-dialog');
+      document.querySelector<XfBulkPinningDialog>('xf-bulk-pinning-dialog')!;
   assertNotEquals(null, dialog);
-  assertEquals('XF-BULK-PINNING-DIALOG', dialog!.tagName);
-  await waitForElementUpdate(dialog!);
-  return dialog!;
+  assertEquals('XF-BULK-PINNING-DIALOG', dialog.tagName);
+  await waitForElementUpdate(dialog);
+  return dialog;
 }
 
 
