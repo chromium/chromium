@@ -40,8 +40,7 @@ found in the LICENSE file.
     aria-live="polite" footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">
-    [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
-                    'productName')]]
+    [[i18nDynamic(locale, 'consumerUpdateScreenCellularTitle')]]
   </h1>
   <p slot="subtitle">
     [[i18nDynamic(locale, 'updateOverCellularPromptMessage')]]
@@ -51,14 +50,21 @@ found in the LICENSE file.
         class="update-illustration  illustration-jelly">
     </iron-icon>
   </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="updateCellularBackButton" on-click="onBackClicked_">
+    </oobe-back-button>
+  </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="declineButton"
-        text-key="consumerUpdateScreenDecline"
+        text-key="consumerUpdateScreenSkipButton"
         on-click="onDeclineCellularClicked_"
         border>
     </oobe-text-button>
-    <oobe-next-button id="acceptButton" inverse
-        on-click="onAcceptCellularClicked_"></oobe-next-button>
+    <oobe-text-button id="acceptButton" inverse
+        text-key="consumerUpdateScreenAcceptButton"
+        on-click="onAcceptCellularClicked_"
+        border>
+    </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
 <oobe-adaptive-dialog footer-shrinkable id="consumerUpdateCheckingDialog"
@@ -77,20 +83,22 @@ found in the LICENSE file.
 </oobe-adaptive-dialog>
 <oobe-adaptive-dialog footer-shrinkable id="consumerUpdateInProgressDialog"
     for-step="update" aria-live="polite">
-  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <iron-icon slot="icon" icon="oobe-32:update-progress"></iron-icon>
   <h1 slot="title">
-    [[i18nDynamic(locale, 'updateStatusTitle')]]
+    [[i18nDynamic(locale, 'consumerUpdateScreenInProgressTitle')]]
   </h1>
   <div slot="subtitle">
+    <p>[[i18nDynamic(locale, 'consumerUpdateScreenInProgressSubtitle')]]</p>
+    <p>[[i18nDynamic(locale,
+                    'consumerUpdateScreenInProgressAdditionalSubtitle')]]</p>
     <span id="betterUpdatePercent">[[updateStatusMessagePercent]]</span>
     <span> | </span>
     <span id="betterUpdateTimeleft">
       [[updateStatusMessageTimeLeft]]
     </span>
+    <paper-progress id="update-progress" value="[[betterUpdateProgressValue]]">
+    </paper-progress>
   </div>
-  <paper-progress slot="progress" id="update-progress"
-      value="[[betterUpdateProgressValue]]">
-  </paper-progress>
   <div hidden="[[!showLowBatteryWarning]]" id="battery-warning"
       class="slide-view" slot="content">
     <oobe-slide is-warning>
@@ -156,7 +164,7 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="skipButton" hidden="[[isUpdateMandatory]]"
-        text-key="consumerUpdateScreenSkip" on-click="onSkip_" border>
+        text-key="consumerUpdateScreenSkipButton" on-click="onSkip_" border>
     </oobe-text-button>
 </div>
 </oobe-adaptive-dialog>

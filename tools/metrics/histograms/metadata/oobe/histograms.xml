@@ -140,6 +140,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Consolidated-consent.AcceptedDemo"/>
   <variant name="Consolidated-consent.AcceptedRegular"/>
   <variant name="Consolidated-consent.BackDemo"/>
+  <variant name="Consumer-update.Back"/>
   <variant name="Consumer-update.Updated"/>
   <variant name="Consumer-update.UpdateDeclineCellular"/>
   <variant name="Consumer-update.UpdateError"/>

@@ -33,6 +33,7 @@ class ConsumerUpdateScreen : public BaseScreen,
   using TView = ConsumerUpdateScreenView;
 
   enum class Result {
+    BACK,
     UPDATED,
     SKIPPED,
     DECLINE_CELLULAR,

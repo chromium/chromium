@@ -32,9 +32,18 @@ ConsumerUpdateScreenHandler::~ConsumerUpdateScreenHandler() = default;
 
 void ConsumerUpdateScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("consumerUpdateScreenDecline",
-               IDS_CONSUMER_UPDATE_DECLINE_BUTTON);
-  builder->Add("consumerUpdateScreenSkip", IDS_CONSUMER_UPDATE_SKIP_BUTTON);
+  builder->Add("consumerUpdateScreenAcceptButton",
+               IDS_CONSUMER_UPDATE_ACCEPT_BUTTON);
+  builder->Add("consumerUpdateScreenSkipButton",
+               IDS_CONSUMER_UPDATE_SKIP_BUTTON);
+  builder->Add("consumerUpdateScreenCellularTitle",
+               IDS_CONSUMER_UPDATE_CELLULAR_TITLE);
+  builder->Add("consumerUpdateScreenInProgressTitle",
+               IDS_CONSUMER_UPDATE_PROGRESS_TITLE);
+  builder->Add("consumerUpdateScreenInProgressSubtitle",
+               IDS_CONSUMER_UPDATE_PROGRESS_SUBTITLE);
+  builder->Add("consumerUpdateScreenInProgressAdditionalSubtitle",
+               IDS_CONSUMER_UPDATE_PROGRESS_ADDITIONAL_SUBTITLE);
 }
 
 void ConsumerUpdateScreenHandler::Show() {

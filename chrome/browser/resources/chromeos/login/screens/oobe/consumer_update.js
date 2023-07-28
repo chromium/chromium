@@ -75,6 +75,7 @@ const ConsumerUpdateStep = {
  * @enum {string}
  */
 const UserAction = {
+  BACK: 'back',
   SKIP: 'skip-consumer-update',
   DECLINE_CELLULAR: 'consumer-update-reject-cellular',
   ACCEPT_CELLULAR: 'consumer-update-accept-cellular',
@@ -276,6 +277,10 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
    */
   getAutoTransition_(step, autoTransition) {
     return step == ConsumerUpdateStep.UPDATE && autoTransition;
+  }
+
+  onBackClicked_() {
+    this.userActed(UserAction.BACK);
   }
 
   /**

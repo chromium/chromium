@@ -45,6 +45,7 @@ constexpr const char kUserActionAcceptUpdateOverCellular[] =
 constexpr const char kUserActionRejectUpdateOverCellular[] =
     "consumer-update-reject-cellular";
 constexpr const char kUserActionSkipUpdate[] = "skip-consumer-update";
+constexpr const char kUserActionBackButton[] = "back";
 
 // Time in seconds after which we initiate reboot.
 constexpr const base::TimeDelta kWaitBeforeRebootTime = base::Seconds(2);
@@ -55,6 +56,8 @@ const double kInsufficientBatteryPercent = 50;
 // static
 std::string ConsumerUpdateScreen::GetResultString(Result result) {
   switch (result) {
+    case Result::BACK:
+      return "Back";
     case Result::UPDATED:
       return "Updated";
     case Result::UPDATE_NOT_REQUIRED:
@@ -176,6 +179,9 @@ void ConsumerUpdateScreen::OnUserAction(const base::Value::List& args) {
     exit_callback_.Run(Result::DECLINE_CELLULAR);
   } else if (action_id == kUserActionSkipUpdate) {
     exit_callback_.Run(Result::SKIPPED);
+  } else if (action_id == kUserActionBackButton) {
+    version_updater_->RejectUpdateOverCellular();
+    exit_callback_.Run(Result::BACK);
   } else {
     BaseScreen::OnUserAction(args);
   }

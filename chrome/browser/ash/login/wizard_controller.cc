@@ -1333,6 +1333,12 @@ void WizardController::OnConsumerUpdateScreenExit(
     ConsumerUpdateScreen::Result result) {
   OnScreenExit(ConsumerUpdateScreenView::kScreenId,
                ConsumerUpdateScreen::GetResultString(result));
+
+  if (result == ConsumerUpdateScreen::Result::BACK) {
+    AdvanceToScreen(UserCreationView::kScreenId);
+    return;
+  }
+
   const std::string screen_name =
       GetLocalState()->GetString(prefs::kOobeScreenAfterConsumerUpdate);
   if (screen_name == GaiaView::kScreenId.name) {

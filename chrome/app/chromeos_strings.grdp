@@ -925,12 +925,23 @@
   </message>
 
   <!-- Strings for the OOBE consumer update screen -->
-  <!-- TODO(b/290598534): Add final string and remove translateable tags -->
-  <message name="IDS_CONSUMER_UPDATE_DECLINE_BUTTON" translateable="false" desc="Label on the button that decline using cellular data for the consumer update screen">
-    No thanks
+  <message name="IDS_CONSUMER_UPDATE_ACCEPT_BUTTON" desc="Label on the button that accept using cellular data for the consumer update screen">
+    Install update
   </message>
-  <message name="IDS_CONSUMER_UPDATE_SKIP_BUTTON" translateable="false" desc="Label on the button that skip the consumer update screen.">
-    Skip
+  <message name="IDS_CONSUMER_UPDATE_CELLULAR_TITLE" desc="Title of the dialog shown to the user in ChromeOS OOBE before consumer update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges.">
+    Software update available
+  </message>
+  <message name="IDS_CONSUMER_UPDATE_SKIP_BUTTON" desc="Label on the button that skip the consumer update screen.">
+    Skip and remind me later
+  </message>
+  <message name="IDS_CONSUMER_UPDATE_PROGRESS_TITLE" desc="Title of the dialog shown to the user  consumer update screen when update in progress.">
+    Installing the latest update
+  </message>
+   <message name="IDS_CONSUMER_UPDATE_PROGRESS_SUBTITLE" desc="Subtitle of the dialog shown to the user consumer update screen when update in progress.">
+    You’re getting the latest software update for enhanced security and the newest Chromebook features. This update includes an improved setup experience to help you get off to a smooth start on your Chromebook.
+  </message>
+   <message name="IDS_CONSUMER_UPDATE_PROGRESS_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog shown to the user  consumer update screen when update in progress.">
+    Your Chromebook will restart once the download is complete and you can continue setup.
   </message>
 
    <!-- Strings for the OOBE demo setup flow -->
