@@ -428,19 +428,6 @@ def DownloadPinnedClang():
                            PINNED_CLANG_VERSION)
 
 
-# TODO(crbug.com/1013560): Consider linking with libc++ instead of libstdc++.
-def MaybeDownloadHostGcc(args):
-  """Download the libstdc++ packaged with GCC, which we must link into the clang
-  we are building on Linux."""
-  assert sys.platform.startswith('linux')
-  if args.gcc_toolchain:
-    return
-  gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc-10.2.0-bionic')
-  if not os.path.exists(gcc_dir):
-    DownloadAndUnpack(CDS_URL + '/tools/gcc-10.2.0-bionic.tgz', gcc_dir)
-  args.gcc_toolchain = gcc_dir
-
-
 def VerifyVersionOfBuiltClangMatchesVERSION():
   """Checks that `clang --version` outputs RELEASE_VERSION. If this
   fails, update.RELEASE_VERSION is out-of-date and needs to be updated (possibly
@@ -478,22 +465,6 @@ def VerifyZlibSupport():
   else:
     print(('Failed to detect zlib support!\n\n(driver output: %s)') % clang_out)
     sys.exit(1)
-
-
-# TODO(https://crbug.com/1286289): remove once Chrome targets don't rely on
-# libstdc++.so existing in the clang package.
-def CopyLibstdcpp(args, build_dir):
-  if not args.gcc_toolchain:
-    return
-  # Find libstdc++.so.6
-  libstdcpp = subprocess.check_output([
-      os.path.join(args.gcc_toolchain, 'bin', 'g++'),
-      '-print-file-name=libstdc++.so.6'
-  ],
-                                      universal_newlines=True).rstrip()
-
-  EnsureDirExists(os.path.join(build_dir, 'lib'))
-  CopyFile(libstdcpp, os.path.join(build_dir, 'lib'))
 
 
 def DownloadDebianSysroot(platform_name):
@@ -571,9 +542,6 @@ def main():
   parser.add_argument('--host-cxx',
                       help='build with host C++ compiler, requires --host-cc '
                       'as well')
-  parser.add_argument('--gcc-toolchain', help='what gcc toolchain to use for '
-                      'building; --gcc-toolchain=/opt/foo picks '
-                      '/opt/foo/bin/gcc')
   parser.add_argument('--pgo', action='store_true', help='build with PGO')
   parser.add_argument('--thinlto',
                       action='store_true',
@@ -813,7 +781,6 @@ def main():
       cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang++')
 
     if sys.platform.startswith('linux'):
-      MaybeDownloadHostGcc(args)
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
 
   if sys.platform.startswith('linux'):
@@ -1339,7 +1306,6 @@ def main():
   RunCommand(['cmake'] + cmake_args + [os.path.join(LLVM_DIR, 'llvm')],
              setenv=True,
              env=deployment_env)
-  CopyLibstdcpp(args, LLVM_BUILD_DIR)
   RunCommand(['ninja'] + goma_ninja_args, setenv=True)
 
   if chrome_tools:

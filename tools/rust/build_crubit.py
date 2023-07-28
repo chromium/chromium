@@ -30,7 +30,7 @@ sys.path.append(
                  'scripts'))
 
 from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR)
-from build import (LLVM_BOOTSTRAP_INSTALL_DIR, MaybeDownloadHostGcc)
+from build import (LLVM_BOOTSTRAP_INSTALL_DIR, DownloadDebianSysroot)
 
 from update_rust import (CHROMIUM_DIR, CRUBIT_REVISION, THIRD_PARTY_DIR)
 
@@ -94,7 +94,7 @@ def CheckoutCrubit(commit, dir):
     sys.exit(1)
 
 
-def BuildCrubit(build_mac_arm, gcc_toolchain_path):
+def BuildCrubit(build_mac_arm):
     # TODO(https://crbug.com/1337346): Use locally built Rust instead of having
     # Bazel always download the whole Rust toolchain from the internet.
     # TODO(https://crbug.com/1337348): Use crates from chromium/src/third_party/rust.
@@ -122,12 +122,13 @@ def BuildCrubit(build_mac_arm, gcc_toolchain_path):
         f"--repo_env=CC={clang_path}",
     ]
 
-    # Include and link against the C++ stdlib from the GCC toolchain.
-    gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}'
-                          if gcc_toolchain_path else '')
-    env["BAZEL_CXXOPTS"] = gcc_toolchain_flag
-    env["BAZEL_LINKOPTS"] = f"{gcc_toolchain_flag}:-static-libstdc++"
-    env["BAZEL_LINKLIBS"] = f"{gcc_toolchain_path}/lib64/libstdc++.a:-lm"
+    if sys.platform.startswith('linux'):
+        # Include and link against the C++ stdlib from the sysroot.
+        sysroot = DownloadDebianSysroot('amd64')
+        sysroot_flag = (f'--sysroot={sysroot}' if sysroot else '')
+        env["BAZEL_CXXOPTS"] = sysroot_flag
+        env["BAZEL_LINKOPTS"] = f"{sysroot_flag}:-static-libstdc++"
+        env["BAZEL_LINKLIBS"] = f"-lm"
 
     # Run bazel build ...
     args = [
@@ -208,13 +209,6 @@ def main():
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
 
-    args.gcc_toolchain = None
-    if sys.platform.startswith('linux'):
-        # Fetch GCC package to build against same libstdc++ as Clang. This
-        # function will only download it if necessary, and it will set the
-        # `args.gcc_toolchain` if so.
-        MaybeDownloadHostGcc(args)
-
     if not args.skip_checkout:
         CheckoutCrubit(CRUBIT_REVISION, CRUBIT_SRC_DIR)
 
@@ -222,7 +216,7 @@ def main():
         if not args.skip_clean:
             CleanBazel(args.build_mac_arm)
 
-        BuildCrubit(args.build_mac_arm, args.gcc_toolchain)
+        BuildCrubit(args.build_mac_arm)
 
         if args.install_to:
             InstallCrubit(args.install_to)

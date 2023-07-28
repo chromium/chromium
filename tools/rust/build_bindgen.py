@@ -25,7 +25,7 @@ sys.path.append(
                  'scripts'))
 
 from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
-                   DownloadDebianSysroot, MaybeDownloadHostGcc, RunCommand)
+                   DownloadDebianSysroot, RunCommand)
 from update import (RmTree)
 
 # The git hash to use.
@@ -95,18 +95,6 @@ def main():
     if args.build_mac_arm and platform.machine() == 'arm64':
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
-
-    args.gcc_toolchain = None
-    debian_sysroot = None
-    if sys.platform.startswith('linux'):
-        # Fetch GCC package to build against same libstdc++ as Clang. This
-        # function will only download it if necessary, and it will set the
-        # `args.gcc_toolchain` if so.
-        MaybeDownloadHostGcc(args)
-
-        # Fetch debian sysroot, so that we don't require system dylibs to be
-        # newer than our minimum supported build host.
-        debian_sysroot = DownloadDebianSysroot('amd64')
 
     ncursesw_dir = None
     if sys.platform.startswith('linux'):
@@ -198,19 +186,15 @@ def main():
     env['LD'] = linker
     env['RUSTFLAGS'] += f' -Clinker={linker}'
 
-    if debian_sysroot:
-        sysroot_flag = f'--sysroot={debian_sysroot}'
+    if sys.platform.startswith('linux'):
+        # We use these flags to avoid linking with the system libstdc++.
+        sysroot = DownloadDebianSysroot('amd64')
+        sysroot_flag = f'--sysroot={sysroot}'
         env['CFLAGS'] += f' {sysroot_flag}'
         env['CXXFLAGS'] += f' {sysroot_flag}'
         env['LDFLAGS'] += f' {sysroot_flag}'
-        env['RUSTFLAGS'] += f' -Clink-arg={sysroot_flag} -L native={debian_sysroot}/usr/lib/gcc/x86_64-linux-gnu/10/'
-    if args.gcc_toolchain:
-        # We use these flags to avoid linking with the system libstdc++.
-        gcc_toolchain_flag = f'--gcc-toolchain={args.gcc_toolchain}'
-        env['CFLAGS'] += f' {gcc_toolchain_flag}'
-        env['CXXFLAGS'] += f' {gcc_toolchain_flag}'
-        env['LDFLAGS'] += f' {gcc_toolchain_flag}'
-        env['RUSTFLAGS'] += f' -Clink-arg={gcc_toolchain_flag}'
+        env['RUSTFLAGS'] += f' -Clink-arg={sysroot_flag}'
+
     if ncursesw_dir:
         env['CFLAGS'] += f' -I{ncursesw_dir}/include'
         env['CXXFLAGS'] += f' -I{ncursesw_dir}/include'
