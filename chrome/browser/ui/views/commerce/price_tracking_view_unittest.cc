@@ -41,8 +41,7 @@ class PriceTrackingViewTestBase : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    anchor_widget_ =
-        views::UniqueWidgetPtr(std::make_unique<ChromeTestWidget>());
+    anchor_widget_ = std::make_unique<ChromeTestWidget>();
     views::Widget::InitParams widget_params(
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_params.context = GetContext();
@@ -52,6 +51,7 @@ class PriceTrackingViewTestBase : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    price_tracking_view_ = nullptr;
     anchor_widget_.reset();
 
     BrowserWithTestWindowTest::TearDown();
@@ -140,7 +140,7 @@ class PriceTrackingViewTestBase : public BrowserWithTestWindowTest {
   raw_ptr<PriceTrackingView> price_tracking_view_;
 
  private:
-  views::UniqueWidgetPtr anchor_widget_;
+  std::unique_ptr<views::Widget> anchor_widget_;
 };
 
 class PriceTrackingViewTest : public PriceTrackingViewTestBase {
