@@ -15,6 +15,7 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -400,8 +401,9 @@ std::string RenderThreadImpl::HistogramCustomizer::ConvertToCustomHistogramName(
     const char* histogram_name) const {
   std::string name(histogram_name);
   if (!common_host_histogram_suffix_.empty() &&
-      custom_histograms_.find(name) != custom_histograms_.end())
+      base::Contains(custom_histograms_, name)) {
     name += common_host_histogram_suffix_;
+  }
   return name;
 }
 

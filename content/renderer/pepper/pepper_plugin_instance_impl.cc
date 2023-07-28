@@ -1804,8 +1804,7 @@ void PepperPluginInstanceImpl::OnDestruct() {
 }
 
 void PepperPluginInstanceImpl::AddPluginObject(PluginObject* plugin_object) {
-  DCHECK(live_plugin_objects_.find(plugin_object) ==
-         live_plugin_objects_.end());
+  DCHECK(!base::Contains(live_plugin_objects_, plugin_object));
   live_plugin_objects_.insert(plugin_object);
 }
 
