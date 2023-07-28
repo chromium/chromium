@@ -224,6 +224,8 @@ static_library("content_shell_lib") {
       "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.mm",
       "browser/bluetooth/shell_bluetooth_delegate_impl_client.cc",
       "browser/bluetooth/shell_bluetooth_delegate_impl_client.h",
+      "browser/color_chooser/shell_color_chooser_ios.h",
+      "browser/color_chooser/shell_color_chooser_ios.mm",
       "browser/shell_browser_main_parts_ios.mm",
       "browser/shell_file_select_helper.cc",
       "browser/shell_file_select_helper.h",
