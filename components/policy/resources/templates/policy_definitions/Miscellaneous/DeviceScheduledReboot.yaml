@@ -21,7 +21,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- sanjaperisic@chromium.org
+- rbock@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   properties:
     day_of_month:
