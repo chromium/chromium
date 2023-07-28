@@ -262,13 +262,17 @@ void ScalableIphDelegateImpl::ShowBubble(
       params.bubble_id, NudgeCatalogName::kScalableIphBubble,
       base::UTF8ToUTF16(params.text), /*anchor_view=*/nullptr);
 
-  nudge_data.first_button_text = base::UTF8ToUTF16(params.button.text);
-  nudge_data.first_button_callback = base::BindRepeating(
-      &ScalableIphDelegateImpl::OnNudgeButtonClicked,
-      weak_ptr_factory_.GetWeakPtr(), params.bubble_id, params.button.action);
+  if (!params.button.text.empty()) {
+    nudge_data.first_button_text = base::UTF8ToUTF16(params.button.text);
+    nudge_data.first_button_callback = base::BindRepeating(
+        &ScalableIphDelegateImpl::OnNudgeButtonClicked,
+        weak_ptr_factory_.GetWeakPtr(), params.bubble_id, params.button.action);
+  }
+
   nudge_data.dismiss_callback =
       base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeDismissed,
                           weak_ptr_factory_.GetWeakPtr(), params.bubble_id);
+
   if (params.icon != BubbleIcon::kNoIcon) {
     gfx::ImageSkia* image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(

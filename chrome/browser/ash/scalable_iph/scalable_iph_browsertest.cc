@@ -421,6 +421,10 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIph_Bubble) {
   expected_params.text = ScalableIphBrowserTestBase::kTestBubbleText;
   expected_params.button.text =
       ScalableIphBrowserTestBase::kTestBubbleButtonText;
+  expected_params.button.action.action_type =
+      scalable_iph::ActionType::kOpenGoogleDocs;
+  expected_params.button.action.iph_event_name =
+      ScalableIphBrowserTestBase::kTestButtonActionEvent;
   expected_params.icon =
       scalable_iph::ScalableIphDelegate::BubbleIcon::kGoogleDocsIcon;
 
@@ -444,6 +448,10 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, DISABLED_ShowBubble) {
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
+  // The action is not performed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
   // Default nudge duration is 6 seconds.
@@ -458,6 +466,10 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, RemoveBubble) {
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
+  // The action is not performed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
   ash::AnchoredNudgeManager::Get()->Cancel(kTestBubbleId);

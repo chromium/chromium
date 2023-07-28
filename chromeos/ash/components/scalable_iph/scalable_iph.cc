@@ -225,11 +225,31 @@ BubbleParams ParseBubbleParams(const base::Feature& feature) {
   param.text = GetParamValue(feature, kCustomBubbleTextParamName);
   CHECK(!param.text.empty())
       << kCustomBubbleTextParamName << " is a required field";
+
+  // Button and action:
+  // Some nudge may not have a button and action.
   param.button.text = GetParamValue(feature, kCustomBubbleButtonTextParamName);
-  CHECK(!param.button.text.empty())
-      << kCustomBubbleButtonTextParamName << " is a required field";
+  if (!param.button.text.empty()) {
+    std::string action_type =
+        GetParamValue(feature, kCustomButtonActionTypeParamName);
+    CHECK(!action_type.empty())
+        << kCustomButtonActionTypeParamName << " is a required field";
+
+    param.button.action.action_type = ParseActionType(action_type);
+    CHECK(param.button.action.action_type != ActionType::kInvalid)
+        << " action type cannot be parsed";
+
+    std::string event_used =
+        GetParamValue(feature, kCustomButtonActionEventParamName);
+    CHECK(!event_used.empty())
+        << kCustomButtonActionEventParamName << " is a required field";
+    param.button.action.iph_event_name = ParseActionEventName(event_used);
+    CHECK(!event_used.empty()) << " ihp_event_name cannot be parsed";
+  }
+
   auto icon_string = GetParamValue(feature, kCustomBubbleIconParamName);
   param.icon = ParseBubbleIcon(icon_string);
+
   return param;
 }
 

@@ -167,7 +167,7 @@ void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
       kTestNotificationButtonText;
   params[FullyQualified(kScalableIphTest,
                         scalable_iph::kCustomButtonActionTypeParamName)] =
-      kTestButtonActionType;
+      kTestButtonActionTypeOpenChrome;
   params[FullyQualified(kScalableIphTest,
                         scalable_iph::kCustomButtonActionEventParamName)] =
       kTestActionEventName;
@@ -187,6 +187,12 @@ void ScalableIphBrowserTestBase::AppendFakeUiParamsBubble(
   params[FullyQualified(kScalableIphTest,
                         scalable_iph::kCustomBubbleButtonTextParamName)] =
       kTestBubbleButtonText;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomButtonActionTypeParamName)] =
+      kTestButtonActionTypeOpenGoogleDocs;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomButtonActionEventParamName)] =
+      kTestActionEventName;
   params[FullyQualified(kScalableIphTest,
                         scalable_iph::kCustomBubbleIconParamName)] =
       kTestBubbleIconString;
