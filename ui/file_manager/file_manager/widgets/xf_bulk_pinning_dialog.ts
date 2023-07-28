@@ -146,6 +146,8 @@ export class XfBulkPinningDialog extends XfBase {
     return this.$dialog_.open;
   }
 
+  // Shows the dialog and starts calculating the required space for
+  // bulk-pinning.
   async show() {
     this.stage_ = BulkPinStage.LISTING_FILES;
     this.state = DialogState.LISTING;
@@ -164,6 +166,7 @@ export class XfBulkPinningDialog extends XfBase {
     this.store_.unsubscribe(this);
   }
 
+  // Called when the "Continue" button is clicked.
   private onContinue() {
     this.$dialog_.close();
     chrome.fileManagerPrivate.setPreferences(
@@ -171,6 +174,7 @@ export class XfBulkPinningDialog extends XfBase {
         chrome.fileManagerPrivate.PreferencesChange);
   }
 
+  // Called when the "Cancel" button is clicked.
   private onCancel() {
     this.$dialog_.cancel();
   }

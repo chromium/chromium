@@ -47,7 +47,7 @@ export async function testOnStateChange() {
     let n = 0;
     chrome.fileManagerPrivate.calculateBulkPinRequiredSpace =
         (callback: () => void) => {
-          ++n;
+          n++;
           setTimeout(callback, 0);
         };
 
@@ -98,12 +98,7 @@ export async function testOnStateChange() {
     stage: BulkPinStage.GETTING_FREE_SPACE,
     freeSpaceBytes: 2000,
     requiredSpaceBytes: 1000,
-    bytesToPin: 500,
-    pinnedBytes: 0,
-    filesToPin: 50,
-    remainingSeconds: 20,
-    emptiedQueue: false,
-  };
+  } as chrome.fileManagerPrivate.BulkPinProgress;
 
   dialog.onStateChanged(state);
   await waitForElementUpdate(dialog);
@@ -253,24 +248,8 @@ export async function testOnBulkPinningEnabled() {
   assertTrue(dialog.is_open);
 
   const state = getEmptyState();
-  state.preferences = {
-    // This is the only relevant member.
-    driveFsBulkPinningEnabled: true,
-
-    // The other members are supplied in order to silence the TypeScript
-    // compiler.
-    driveEnabled: false,
-    cellularDisabled: false,
-    searchSuggestEnabled: false,
-    use24hourClock: false,
-    timezone: '',
-    arcEnabled: false,
-    arcRemovableMediaAccessEnabled: false,
-    folderShortcuts: [],
-    trashEnabled: false,
-    officeFileMovedOneDrive: 0,
-    officeFileMovedGoogleDrive: 0,
-  };
+  state.preferences = {driveFsBulkPinningEnabled: true} as
+      chrome.fileManagerPrivate.Preferences;
 
   dialog.onStateChanged(state);
   await waitForElementUpdate(dialog);
@@ -294,6 +273,63 @@ export async function testCancel() {
   await waitForElementUpdate(dialog);
 
   // The dialog should now be closed.
+  assertFalse(dialog.is_open);
+}
+
+// Tests that clicking the "Continue" button enables bulk-pinning and closes the
+// XfBulkPinningDialog.
+export async function testContinue() {
+  const dialog = await getDialog();
+  assertNotEquals(null, dialog);
+  assertFalse(dialog.is_open);
+
+  {
+    const saved = chrome.fileManagerPrivate.calculateBulkPinRequiredSpace;
+    try {
+      chrome.fileManagerPrivate.calculateBulkPinRequiredSpace =
+          (callback: () => void) => setTimeout(callback, 0);
+
+      // Show the dialog.
+      await dialog.show();
+    } finally {
+      chrome.fileManagerPrivate.calculateBulkPinRequiredSpace = saved;
+    }
+  }
+
+  assertTrue(dialog.is_open);
+
+  // Make sure the dialog is ready to continue.
+  const state = getEmptyState();
+  state.bulkPinning = {
+    stage: BulkPinStage.SUCCESS,
+    freeSpaceBytes: 455314615,
+    requiredSpaceBytes: 202679148,
+  } as chrome.fileManagerPrivate.BulkPinProgress;
+  dialog.onStateChanged(state);
+  await waitForElementUpdate(dialog);
+
+  {
+    const saved = chrome.fileManagerPrivate.setPreferences;
+    try {
+      let n = 0;
+      chrome.fileManagerPrivate.setPreferences =
+          (pref: Partial<chrome.fileManagerPrivate.PreferencesChange>) => {
+            n++;
+            assertTrue(pref.driveFsBulkPinningEnabled === true);
+          };
+
+      // Click the "Continue" button.
+      const button = getButton(dialog, 'continue-button');
+      assertFalse(button.disabled);
+      button.click();
+      assertEquals(1, n);
+    } finally {
+      chrome.fileManagerPrivate.setPreferences = saved;
+    }
+  }
+
+  // The dialog should now be closed.
+  await waitForElementUpdate(dialog);
   assertFalse(dialog.is_open);
 }
 
