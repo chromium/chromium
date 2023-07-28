@@ -251,6 +251,7 @@ struct MEDIA_EXPORT AVCDecoderConfigurationRecord : Box {
 
  private:
   bool ParseInternal(BufferReader* reader, MediaLog* media_log);
+  bool ParseREXT(BufferReader* reader, MediaLog* media_log);
 };
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 

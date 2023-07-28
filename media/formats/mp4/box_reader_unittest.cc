@@ -535,6 +535,40 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromMp4) {
   ASSERT_THAT(output, testing::ElementsAreArray(test_data));
 }
 
+TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordInvalidREXT) {
+  std::vector<uint8_t> test_data{
+      0x1,        // configurationVersion = 1
+      0x64,       // AVCProfileIndication = 100
+      0x0,        // profile_compatibility = 0
+      0xc,        // AVCLevelIndication = 10
+      0xff,       // lengthSizeMinusOne = 3
+      0xe1,       // numOfSequenceParameterSets = 1
+      0x0, 0x19,  // sequenceParameterSetLength = 25
+
+      // sequenceParameterSet
+      0x67, 0x64, 0x0, 0xc, 0xac, 0xd9, 0x41, 0x41, 0xfb, 0x1, 0x10, 0x0, 0x0,
+      0x3, 0x0, 0x10, 0x0, 0x0, 0x3, 0x1, 0x40, 0xf1, 0x42, 0x99, 0x60,
+
+      0x1,       // numOfPictureParameterSets
+      0x0, 0x6,  // pictureParameterSetLength = 6
+      0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0,
+
+      0xfe,  // chroma_format = 2
+      0xfc,  // bit_depth_luma_minus8 = 4
+      0xfe,  // bit_depth_chroma_minus8 = 6
+      0x0,   // numOfSequanceParameterSetExt = 0
+  };
+
+  AVCDecoderConfigurationRecord record;
+  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+
+  // Default values should be used.
+  EXPECT_EQ(record.chroma_format, 0);
+  EXPECT_EQ(record.bit_depth_luma_minus8, 0);
+  EXPECT_EQ(record.bit_depth_chroma_minus8, 0);
+  EXPECT_EQ(record.sps_ext_list.size(), 0ull);
+}
+
 TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromStream) {
   std::vector<uint8_t> test_data{
       0x01, 0x4D, 0x00, 0x15, 0xff, 0xe1, 0x00, 0x2F, 0x67, 0x4D, 0x40,
