@@ -167,6 +167,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       const absl::optional<blink::DirectFromSellerSignals>&
           direct_from_seller_signals) override;
+  void ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+      const absl::optional<std::string>&
+          direct_from_seller_signals_header_ad_slot) override;
   void ResolvedAuctionAdResponsePromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       mojo_base::BigBuffer response) override;

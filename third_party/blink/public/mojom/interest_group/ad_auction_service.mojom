@@ -77,6 +77,12 @@ interface AbortableAdAuction {
       AuctionAdConfigAuctionId auction,
       DirectFromSellerSignals? direct_from_seller_signals);
 
+  // Used to provide result of resolving a promise specifying
+  // `direct_from_seller_signals_ad_slot` field of an AuctionConfig.
+  ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      AuctionAdConfigAuctionId auction,
+      string? direct_from_seller_signals_header_ad_slot);
+
   // Used to provide result of resolving a promise specifying the Server
   // Response for an AuctionConfig that uses AuctionAdServerResponseConfig.
   // `result` is an encrypted payload containing the response from the bidding

@@ -1579,6 +1579,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       auction_config.direct_from_seller_signals = blink::AuctionConfig::
           MaybePromiseDirectFromSellerSignals::FromPromise();
     }
+    auction_config.expects_direct_from_seller_signals_header_ad_slot =
+        pass_promise_for_direct_from_seller_signals_header_ad_slot_;
 
     if (server_response_request_id_) {
       auction_config.server_response.emplace();
@@ -2775,6 +2777,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   // Unlike others, this is only test with promises at this level.
   bool pass_promise_for_direct_from_seller_signals_ = false;
+  bool pass_promise_for_direct_from_seller_signals_header_ad_slot_ = false;
   absl::optional<uint16_t> seller_experiment_group_id_;
   absl::optional<uint16_t> all_buyer_experiment_group_id_;
   std::map<url::Origin, uint16_t> per_buyer_experiment_group_id_;
@@ -7613,6 +7616,50 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionIdAdditionalBids) {
   EXPECT_EQ("Invalid auction ID in ResolvedAdditionalBids", TakeBadMessage());
 }
 
+TEST_F(AuctionRunnerTest,
+       PromiseSignalsBadAuctionIdDirectFromSellerSignalsHeaderAdSlot) {
+  base::test::ScopedFeatureList direct_from_seller_signals_header_ad_slot_on;
+  direct_from_seller_signals_header_ad_slot_on.InitAndEnableFeature(
+      blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot);
+
+  pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in directFromSellerSignalsHeaderAdSlot with wrong component ID.
+  abortable_ad_auction_->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0), "slot1");
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("Invalid auction ID in ResolvedDirectFromSellerSignalsHeaderAdSlot",
+            TakeBadMessage());
+}
+
 TEST_F(AuctionRunnerTest, PromiseInvalidDirectFromSellerSignals) {
   pass_promise_for_direct_from_seller_signals_ = true;
 
@@ -7655,6 +7702,52 @@ TEST_F(AuctionRunnerTest, PromiseInvalidDirectFromSellerSignals) {
   auction_run_loop_->RunUntilIdle();
   EXPECT_EQ("ResolvedDirectFromSellerSignalsPromise with invalid signals",
             TakeBadMessage());
+}
+
+// An auction that passes directFromSellerSignalsHeaderAdSlot via a promise.
+TEST_F(AuctionRunnerTest, PromiseDirectFromSellerSignalsHeaderAdSlot) {
+  base::test::ScopedFeatureList direct_from_seller_signals_header_ad_slot_on;
+  direct_from_seller_signals_header_ad_slot_on.InitAndEnableFeature(
+      blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot);
+
+  pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in directFromSellerSignalsHeaderAdSlot.
+  abortable_ad_auction_->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 // Trying to update auctionSignals which wasn't originally passed in as a
@@ -8236,6 +8329,104 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateAdditionalBidsFeatureOff) {
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAdditionalBids with FledgeNegativeTargeting off",
             TakeBadMessage());
+}
+
+// Trying to update directFromSellerSignalsHeaderAdSlot twice.
+TEST_F(AuctionRunnerTest,
+       PromiseSignalsUpdateNonPromiseDirectFromSellerSignalsHeaderAdSlot) {
+  base::test::ScopedFeatureList direct_from_seller_signals_header_ad_slot_on;
+  direct_from_seller_signals_header_ad_slot_on.InitAndEnableFeature(
+      blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot);
+
+  // Have two kind of promises so we don't just finish after first
+  // directFromSellerSignalsHeaderAdSlot update
+  use_promise_for_per_buyer_signals_ = true;
+  pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in directFromSellerSignalsHeaderAdSlot bids twice.
+  blink::AuctionConfig::BuyerCurrencies buyer_currencies;
+  abortable_ad_auction_->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
+  abortable_ad_auction_->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ("ResolvedDirectFromSellerSignalsHeaderAdSlot updating non-promise",
+            TakeBadMessage());
+}
+
+// Trying to pass directFromSellerSignalsHeaderAdSlot when the
+// directFromSellerSignalsHeaderAdSlot feature is off.
+TEST_F(AuctionRunnerTest,
+       PromiseDirectFromSellerSignalsHeaderAdSlotFeatureOff) {
+  base::test::ScopedFeatureList direct_from_seller_signals_header_ad_slot_off;
+  direct_from_seller_signals_header_ad_slot_off.InitAndDisableFeature(
+      blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot);
+
+  pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  abortable_ad_auction_->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(
+      "ResolvedDirectFromSellerSignalsHeaderAdSlot with "
+      "FledgeDirectFromSellerSignalsHeaderAdSlot off",
+      TakeBadMessage());
 }
 
 // Test the case where the ProcessManager initially prevents creating worklets,

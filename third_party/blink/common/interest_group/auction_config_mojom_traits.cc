@@ -239,6 +239,9 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
 
   out->expects_additional_bids = data.expects_additional_bids();
 
+  out->expects_direct_from_seller_signals_header_ad_slot =
+      data.expects_direct_from_seller_signals_header_ad_slot();
+
   if (data.has_seller_experiment_group_id())
     out->seller_experiment_group_id = data.seller_experiment_group_id();
 
@@ -275,6 +278,16 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
       (out->trusted_scoring_signals_url &&
        !out->IsHttpsAndMatchesSellerOrigin(
            *out->trusted_scoring_signals_url))) {
+    return false;
+  }
+
+  if ((out->direct_from_seller_signals.is_promise() ||
+       out->direct_from_seller_signals.value() != absl::nullopt) &&
+      out->expects_direct_from_seller_signals_header_ad_slot) {
+    // `direct_from_seller_signals` and
+    // `expects_direct_from_seller_signals_header_ad_slot` may not be both used
+    // in the same component auction, top-level auction, or non-component
+    // auction.
     return false;
   }
 

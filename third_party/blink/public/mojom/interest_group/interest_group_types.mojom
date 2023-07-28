@@ -439,6 +439,22 @@ struct AuctionAdConfig {
   // renderer process. See details in the DirectFromSellerSignals comment.
   AuctionAdConfigMaybePromiseDirectFromSellerSignals direct_from_seller_signals;
 
+  // Like `direct_from_seller_signals`, but passed from the page via a different
+  // mechanism. `direct_from_seller_signals` searches for the contents of
+  // subresource bundles to find signals, whereas
+  // `expects_direct_from_signals_header_ad_slot` looks for the values of
+  // Ad-Auction-Signals response headers provided to fetch() requests with the
+  // {adAuctionHeaders: true} option made by frames on the page.
+  //
+  // The signals are delivered to worklets using the same JavaScript object as
+  // used for `direct_from_seller_signals`, so it is not valid for both
+  // `direct_from_seller_signals` and
+  // `expects_direct_from_seller_signals_header_ad_slot` to be non-null.
+  //
+  // The actual ad slot string is passed via
+  // ResolvedDirectFromSellerSignalsHeaderAdSlotPromise().
+  bool expects_direct_from_seller_signals_header_ad_slot = false;
+
   // Optional identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).
   // TODO(https://crbug.com/657632): Update when optional integers supported.

@@ -568,6 +568,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kFledge, blink::features::kAllowURNsInIframes,
          blink::features::kFledgeNegativeTargeting,
          blink::features::kBiddingAndScoringDebugReportingAPI,
+         blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
          features::kBackForwardCache},
         /*disabled_features=*/
         {blink::features::kFencedFrames});
@@ -6049,6 +6050,74 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         &observer);
     EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       InvalidDirectFromSellerSignalsHeaderAdSlot) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("Uncaught (in promise) Error!");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignalsHeaderAdSlot: Promise.resolve((() => {
+        function CantConvertToString() {}
+        CantConvertToString.prototype.toString = function () {
+          throw 'Error!';
+        };
+        return new CantConvertToString();
+      })()),
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       InvalidDirectFromSellerSignalsHeaderAdSlotAndBundles) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': The auction "
+      "config fields directFromSellerSignals and "
+      "directFromSellerSignalsHeaderAdSlot must not both be specified for a "
+      "given component auction, top-level auction, or non-component auction.",
+      RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignals: Promise.resolve($3),
+      directFromSellerSignalsHeaderAdSlot: Promise.resolve("adSlot1"),
+      interestGroupBuyers: [$1]
+  })",
+                                  test_origin, decision_url, test_origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

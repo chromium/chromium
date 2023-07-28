@@ -177,6 +177,21 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
         interest_group_buyers_;
   };
 
+  class DirectFromSellerSignalsHeaderAdSlotResolved
+      : public AuctionHandleFunction {
+   public:
+    DirectFromSellerSignalsHeaderAdSlotResolved(
+        AuctionHandle* auction_handle,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name);
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+
+   private:
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const String seller_name_;
+  };
+
   class ServerResponseResolved : public AuctionHandleFunction {
    public:
     ServerResponseResolved(AuctionHandle* auction_handle,
@@ -1329,6 +1344,18 @@ ConvertDirectFromSellerSignalsFromV8ToMojo(
   return mojo_direct_from_seller_signals;
 }
 
+String ConvertIDLStringFromV8ToMojo(const ScriptState& script_state,
+                                    ExceptionState& exception_state,
+                                    v8::Local<v8::Value> value) {
+  String result = NativeValueTraits<IDLString>::NativeValue(
+      script_state.GetIsolate(), value, exception_state);
+  if (exception_state.HadException()) {
+    return String();
+  }
+
+  return result;
+}
+
 void CopyDirectFromSellerSignalsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
@@ -1349,6 +1376,25 @@ void CopyDirectFromSellerSignalsFromIdlToMojo(
           output.auction_ad_config_non_shared_params->interest_group_buyers));
   output.direct_from_seller_signals = mojom::blink::
       AuctionAdConfigMaybePromiseDirectFromSellerSignals::NewPromise(0);
+}
+
+void CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    const mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    ScriptState& script_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasDirectFromSellerSignalsHeaderAdSlot()) {
+    output.expects_direct_from_seller_signals_header_ad_slot = false;
+    return;
+  }
+
+  auction_handle->AttachPromiseHandler(
+      script_state, input.directFromSellerSignalsHeaderAdSlot(),
+      MakeGarbageCollected<NavigatorAuction::AuctionHandle::
+                               DirectFromSellerSignalsHeaderAdSlotResolved>(
+          auction_handle, auction_id->Clone(), input.seller()));
+  output.expects_direct_from_seller_signals_header_ad_slot = true;
 }
 
 void CopyAdditionalBidsFromIdlToMojo(
@@ -1908,12 +1954,24 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     return mojom::blink::AuctionAdConfigPtr();
   }
 
+  if (config.hasDirectFromSellerSignals() &&
+      config.hasDirectFromSellerSignalsHeaderAdSlot()) {
+    exception_state.ThrowTypeError(
+        "The auction config fields directFromSellerSignals and "
+        "directFromSellerSignalsHeaderAdSlot must not both be specified for a "
+        "given component auction, top-level "
+        "auction, or non-component auction.");
+    return mojom::blink::AuctionAdConfigPtr();
+  }
+
   CopyAuctionSignalsFromIdlToMojo(auction_handle, auction_id.get(),
                                   script_state, config, *mojo_config);
   CopySellerSignalsFromIdlToMojo(auction_handle, auction_id.get(), script_state,
                                  config, *mojo_config);
   CopyDirectFromSellerSignalsFromIdlToMojo(auction_handle, auction_id.get(),
                                            script_state, config, *mojo_config);
+  CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
+      auction_handle, auction_id.get(), script_state, config, *mojo_config);
   CopyPerBuyerSignalsFromIdlToMojo(auction_handle, auction_id.get(),
                                    script_state, config, *mojo_config);
   CopyPerBuyerTimeoutsFromIdlToMojo(auction_handle, auction_id.get(),
@@ -2469,6 +2527,48 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::Call(
   if (!exception_state.HadException()) {
     auction_handle()->mojo_pipe()->ResolvedDirectFromSellerSignalsPromise(
         auction_id_->Clone(), std::move(direct_from_seller_signals));
+  } else {
+    auction_handle()->Abort();
+  }
+
+  return ScriptValue();
+}
+
+NavigatorAuction::AuctionHandle::DirectFromSellerSignalsHeaderAdSlotResolved::
+    DirectFromSellerSignalsHeaderAdSlotResolved(
+        AuctionHandle* auction_handle,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name)
+    : AuctionHandleFunction(auction_handle),
+      auction_id_(std::move(auction_id)),
+      seller_name_(seller_name) {}
+
+ScriptValue NavigatorAuction::AuctionHandle::
+    DirectFromSellerSignalsHeaderAdSlotResolved::Call(ScriptState* script_state,
+                                                      ScriptValue value) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context) {
+    return ScriptValue();
+  }
+
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "NavigatorAuction", "runAdAuction");
+  String direct_from_seller_signals_header_ad_slot;
+  if (!value.IsEmpty()) {
+    v8::Local<v8::Value> v8_value = value.V8Value();
+    if (!v8_value->IsUndefined() && !v8_value->IsNull()) {
+      direct_from_seller_signals_header_ad_slot = ConvertIDLStringFromV8ToMojo(
+          *script_state, exception_state, v8_value);
+    }
+  }
+
+  if (!exception_state.HadException()) {
+    auction_handle()
+        ->mojo_pipe()
+        ->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+            auction_id_->Clone(),
+            std::move(direct_from_seller_signals_header_ad_slot));
   } else {
     auction_handle()->Abort();
   }

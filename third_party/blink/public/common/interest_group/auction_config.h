@@ -327,6 +327,17 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // direct_from_seller_signals responses for the seller and buyers.
   MaybePromiseDirectFromSellerSignals direct_from_seller_signals;
 
+  // Like `direct_from_seller_signals`, but passed from the page via a different
+  // mechanism. `direct_from_seller_signals` searches for the contents of
+  // subresource bundles to find signals, whereas
+  // `expects_direct_from_signals_header_ad_slot` looks for the values of
+  // Ad-Auction-Signals response headers provided to fetch() requests with the
+  // {adAuctionHeaders: true} option made by frames on the page.
+  //
+  // The actual ad slot string is passed via
+  // ResolvedDirectFromSellerSignalsHeaderAdSlotPromise().
+  bool expects_direct_from_seller_signals_header_ad_slot = false;
+
   // Identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).
   absl::optional<uint16_t> seller_experiment_group_id;

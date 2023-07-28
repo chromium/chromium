@@ -365,6 +365,11 @@ struct BLINK_COMMON_EXPORT
     return params.direct_from_seller_signals;
   }
 
+  static bool expects_direct_from_seller_signals_header_ad_slot(
+      const blink::AuctionConfig& params) {
+    return params.expects_direct_from_seller_signals_header_ad_slot;
+  }
+
   static bool has_seller_experiment_group_id(
       const blink::AuctionConfig& config) {
     return config.seller_experiment_group_id.has_value();

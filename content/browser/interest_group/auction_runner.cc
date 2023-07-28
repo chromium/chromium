@@ -262,6 +262,40 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsPromise(
   NotifyPromiseResolved(auction_id.get(), config);
 }
 
+void AuctionRunner::ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    const absl::optional<std::string>&
+        direct_from_seller_signals_header_ad_slot) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot)) {
+    mojo::ReportBadMessage(
+        "ResolvedDirectFromSellerSignalsHeaderAdSlot with "
+        "FledgeDirectFromSellerSignalsHeaderAdSlot off");
+    return;
+  }
+
+  if (state_ == State::kFailed) {
+    return;
+  }
+
+  blink::AuctionConfig* config =
+      LookupAuction(*owned_auction_config_, auction_id);
+  if (!config) {
+    mojo::ReportBadMessage(
+        "Invalid auction ID in ResolvedDirectFromSellerSignalsHeaderAdSlot");
+    return;
+  }
+
+  if (!config->expects_direct_from_seller_signals_header_ad_slot) {
+    mojo::ReportBadMessage(
+        "ResolvedDirectFromSellerSignalsHeaderAdSlot updating non-promise");
+    return;
+  }
+
+  config->expects_direct_from_seller_signals_header_ad_slot = false;
+  NotifyPromiseResolved(auction_id.get(), config);
+}
+
 void AuctionRunner::ResolvedAuctionAdResponsePromise(
     blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
     mojo_base::BigBuffer response) {
