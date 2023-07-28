@@ -699,7 +699,7 @@ ANDROID_PIXEL2_WEBVIEW_PGO = PerfPlatform(
 ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
                               'Android R',
                               _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
-                              28,
+                              44,
                               'android',
                               executables=_ANDROID_PIXEL4_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL4_PGO = PerfPlatform(
@@ -712,7 +712,7 @@ ANDROID_PIXEL4_PGO = PerfPlatform(
     pinpoint_only=True)
 ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
     'android-pixel4_webview-perf', 'Android R',
-    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 21, 'android')
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 48, 'android')
 ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               'Android T',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
