@@ -14745,7 +14745,8 @@
     "UseMultiPlaneFormatForHardwareVideo": [
         {
             "platforms": [
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
