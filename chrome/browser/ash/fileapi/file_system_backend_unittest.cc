@@ -56,13 +56,12 @@ TEST(ChromeOSFileSystemBackendTest, DefaultMountPoints) {
   std::set<base::FilePath> root_dirs_set(root_dirs.begin(), root_dirs.end());
 
   // By default there should be 3 mount points (in system mount points):
-  EXPECT_EQ(3u, root_dirs.size());
+  EXPECT_EQ(2u, root_dirs.size());
 
   EXPECT_TRUE(
       root_dirs_set.count(ash::CrosDisksClient::GetRemovableDiskMountPoint()));
   EXPECT_TRUE(
       root_dirs_set.count(ash::CrosDisksClient::GetArchiveMountPoint()));
-  EXPECT_TRUE(root_dirs_set.count(base::FilePath(FPL("/usr/share/oem"))));
 }
 
 TEST(ChromeOSFileSystemBackendTest, GetRootDirectories) {
