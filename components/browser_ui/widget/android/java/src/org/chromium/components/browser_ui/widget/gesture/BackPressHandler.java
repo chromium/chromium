@@ -37,9 +37,10 @@ public interface BackPressHandler {
         int BOTTOM_SHEET = 4;
         int START_SURFACE = 5;
         int TAB_SWITCHER = 6;
-        int SELECTION_POPUP = 7;
-        int MANUAL_FILLING = 8;
-        int FULLSCREEN = 9;
+        // Fullscreen must be before selection popup. crbug.com/1454817.
+        int FULLSCREEN = 7;
+        int SELECTION_POPUP = 8;
+        int MANUAL_FILLING = 9;
         int LOCATION_BAR = 10;
         int TAB_MODAL_HANDLER = 11;
         int CLOSE_WATCHER = 12;

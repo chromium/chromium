@@ -2245,6 +2245,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
         }
 
+        // Fullscreen must be before selection popup. crbug.com/1454817.
+        if (exitFullscreenIfShowing()) {
+            BackPressManager.record(Type.FULLSCREEN);
+            return true;
+        }
+
         SelectionPopupController controller = getSelectionPopupController();
         if (controller != null && controller.isSelectActionBarShowing()) {
             controller.clearSelection();
@@ -2254,11 +2260,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (getManualFillingComponent().onBackPressed()) {
             BackPressManager.record(Type.MANUAL_FILLING);
-            return true;
-        }
-
-        if (exitFullscreenIfShowing()) {
-            BackPressManager.record(Type.FULLSCREEN);
             return true;
         }
 
