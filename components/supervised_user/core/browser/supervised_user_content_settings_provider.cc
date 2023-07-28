@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/content_settings/content_settings_supervised_provider.h"
+#include "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
 
 #include <string>
 #include <utility>
@@ -46,32 +46,34 @@ const ContentSettingsFromSupervisedSettingsEntry
 
 }  // namespace
 
-namespace content_settings {
+namespace supervised_user {
 
-SupervisedProvider::SupervisedProvider(
+SupervisedUserContentSettingsProvider::SupervisedUserContentSettingsProvider(
     supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service) {
-  // The SupervisedProvider is owned by the HostContentSettingsMap which
-  // DependsOn the SupervisedUserSettingsService (through their factories).
-  // This means this will get destroyed before the SUSS and will be
-  // unsubscribed from it.
+  // The SupervisedUserContentSettingsProvider is owned by the
+  // HostContentSettingsMap which DependsOn the SupervisedUserSettingsService
+  // (through their factories). This means this will get destroyed before the
+  // SUSS and will be unsubscribed from it.
   user_settings_subscription_ =
       supervised_user_settings_service->SubscribeForSettingsChange(
-          base::BindRepeating(&content_settings::SupervisedProvider::
+          base::BindRepeating(&SupervisedUserContentSettingsProvider::
                                   OnSupervisedSettingsAvailable,
                               base::Unretained(this)));
 }
 
-SupervisedProvider::~SupervisedProvider() = default;
+SupervisedUserContentSettingsProvider::
+    ~SupervisedUserContentSettingsProvider() = default;
 
-std::unique_ptr<RuleIterator> SupervisedProvider::GetRuleIterator(
+std::unique_ptr<content_settings::RuleIterator>
+SupervisedUserContentSettingsProvider::GetRuleIterator(
     ContentSettingsType content_type,
     bool incognito) const {
   base::AutoLock auto_lock(lock_);
   return value_map_.GetRuleIterator(content_type);
 }
 
-void SupervisedProvider::OnSupervisedSettingsAvailable(
+void SupervisedUserContentSettingsProvider::OnSupervisedSettingsAvailable(
     const base::Value::Dict& settings) {
   std::vector<ContentSettingsType> to_notify;
   // Entering locked scope to update content settings.
@@ -81,8 +83,9 @@ void SupervisedProvider::OnSupervisedSettingsAvailable(
       ContentSetting new_setting = CONTENT_SETTING_DEFAULT;
       if (settings.Find(entry.setting_name)) {
         DCHECK(settings.Find(entry.setting_name)->is_bool());
-        if (settings.FindBool(entry.setting_name).value_or(false))
+        if (settings.FindBool(entry.setting_name).value_or(false)) {
           new_setting = entry.content_setting;
+        }
       }
       if (new_setting != value_map_.GetContentSetting(entry.content_type)) {
         to_notify.push_back(entry.content_type);
@@ -96,25 +99,25 @@ void SupervisedProvider::OnSupervisedSettingsAvailable(
   }
 }
 
-// Since the SupervisedProvider is a read only content settings provider, all
-// methods of the ProviderInterface that set or delete any settings do nothing.
-bool SupervisedProvider::SetWebsiteSetting(
+// Since the SupervisedUserContentSettingsProvider is a read only content
+// settings provider, all methods of the ProviderInterface that set or delete
+// any settings do nothing.
+bool SupervisedUserContentSettingsProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const ContentSettingConstraints& constraints) {
+    const content_settings::ContentSettingConstraints& constraints) {
   return false;
 }
 
-void SupervisedProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
-}
+void SupervisedUserContentSettingsProvider::ClearAllContentSettingsRules(
+    ContentSettingsType content_type) {}
 
-void SupervisedProvider::ShutdownOnUIThread() {
+void SupervisedUserContentSettingsProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   RemoveAllObservers();
   user_settings_subscription_ = {};
 }
 
-}  // namespace content_settings
+}  // namespace supervised_user

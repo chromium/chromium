@@ -7580,8 +7580,6 @@ static_library("browser") {
 
   if (enable_supervised_users) {
     sources += [
-      "content_settings/content_settings_supervised_provider.cc",
-      "content_settings/content_settings_supervised_provider.h",
       "supervised_user/child_accounts/child_account_service_factory.cc",
       "supervised_user/child_accounts/child_account_service_factory.h",
       "supervised_user/child_accounts/list_family_members_service_factory.cc",

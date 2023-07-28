@@ -133,3 +133,13 @@ source_set("unit_tests") {
     ]
   }
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "content_settings_mock_observer.cc",
+    "content_settings_mock_observer.h",
+  ]
+  public_deps = [ ":browser" ]
+  deps = [ "//testing/gmock" ]
+}

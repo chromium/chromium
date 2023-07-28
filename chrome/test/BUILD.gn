@@ -5744,8 +5744,6 @@ test("unit_tests") {
     "../browser/component_updater/trust_token_key_commitments_component_installer_unittest.cc",
     "../browser/content_index/content_index_provider_unittest.cc",
     "../browser/content_settings/content_settings_default_provider_unittest.cc",
-    "../browser/content_settings/content_settings_mock_observer.cc",
-    "../browser/content_settings/content_settings_mock_observer.h",
     "../browser/content_settings/content_settings_origin_identifier_value_map_unittest.cc",
     "../browser/content_settings/content_settings_policy_provider_unittest.cc",
     "../browser/content_settings/content_settings_pref_provider_unittest.cc",
@@ -6372,6 +6370,7 @@ test("unit_tests") {
     "//components/content_settings/browser",
     "//components/content_settings/browser:test_support",
     "//components/content_settings/browser/ui",
+    "//components/content_settings/core/browser:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/country_codes",
     "//components/custom_handlers",
@@ -9517,7 +9516,6 @@ test("unit_tests") {
   }
   if (enable_supervised_users) {
     sources += [
-      "../browser/content_settings/content_settings_supervised_provider_unittest.cc",
       "../browser/supervised_user/child_accounts/permission_request_creator_apiary_unittest.cc",
       "../browser/supervised_user/kids_chrome_management/kids_management_service_unittest.cc",
       "../browser/supervised_user/kids_chrome_management/kids_profile_manager_unittest.cc",
