@@ -185,8 +185,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     [self.verticalStackView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
     [self.verticalStackView.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor
-                       constant:content_suggestions::HeaderBottomPadding()],
+        constraintEqualToAnchor:self.view.topAnchor],
     [self.verticalStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor
                        constant:-bottomSpacing]

@@ -78,7 +78,7 @@
   [self.view addSubview:feedView];
   [self.feedViewController didMoveToParentViewController:self];
   feedView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(feedView, self.view.safeAreaLayoutGuide);
+  AddSameConstraints(feedView, self.view);
 }
 
 // If the feed is not visible, we prepare the empty collection view to be used
@@ -95,7 +95,7 @@
       IsMagicStackEnabled() ? [UIColor clearColor]
                             : ntp_home::NTPBackgroundColor();
   self.contentCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(self.contentCollectionView, self.view.safeAreaLayoutGuide);
+  AddSameConstraints(self.contentCollectionView, self.view);
 }
 
 @end

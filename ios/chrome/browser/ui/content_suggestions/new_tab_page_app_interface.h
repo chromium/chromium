@@ -26,9 +26,6 @@
 // Returns the fake omnibox.
 + (UIView*)fakeOmnibox;
 
-// Returns the NTP logo.
-+ (UIView*)NTPLogo;
-
 // Returns the Discover header label.
 + (UILabel*)discoverHeaderLabel;
 

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -24,7 +23,6 @@
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -116,10 +114,6 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
   return top_margin;
 }
 
-CGFloat HeaderSeparatorHeight() {
-  return ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
-}
-
 CGFloat SearchFieldTopMargin() {
   return ShouldShrinkLogoForStartSurface() ? kShrunkLogoSearchFieldTopMargin
                                            : kSearchFieldTopMargin;
@@ -135,20 +129,17 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
       std::min(kSearchFieldSmall, width - kSearchFieldMinMargin * 2));
 }
 
-CGFloat FakeOmniboxHeight() {
-  return ToolbarExpandedHeight(
-      [UIApplication sharedApplication].preferredContentSizeCategory);
-}
-
 CGFloat HeightForLogoHeader(BOOL logo_is_showing,
                             BOOL doodle_is_showing,
+                            CGFloat top_inset,
                             UITraitCollection* trait_collection) {
   CGFloat header_height =
-      DoodleTopMargin(0, trait_collection) +
+      DoodleTopMargin(top_inset, trait_collection) +
       DoodleHeight(logo_is_showing, doodle_is_showing, trait_collection) +
-      SearchFieldTopMargin() + FakeOmniboxHeight() +
-      ntp_header::kScrolledToTopOmniboxBottomMargin +
-      ceil(HeaderSeparatorHeight());
+      SearchFieldTopMargin() +
+      ToolbarExpandedHeight(
+          [UIApplication sharedApplication].preferredContentSizeCategory) +
+      HeaderBottomPadding();
   if (!IsRegularXRegularSizeClass(trait_collection)) {
     return header_height;
   }

@@ -69,11 +69,6 @@ UIView* FakeOmnibox() {
                                             GetAnyKeyWindow());
 }
 
-UIView* NTPLogo() {
-  return SubviewWithAccessibilityIdentifier(NTPLogoAccessibilityID(),
-                                            GetAnyKeyWindow());
-}
-
 UILabel* DiscoverHeaderLabel() {
   return base::mac::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
       DiscoverHeaderTitleAccessibilityID(), GetAnyKeyWindow()));
