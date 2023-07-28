@@ -1883,14 +1883,12 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(print_job_construction_count(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
-                       StartBasicPrintConcurrent) {
 #if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
-  // If concurrent printing is allowed, then regular setup for printing is
-  // needed.
+
+IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
+                       StartBasicPrintConcurrentAllowed) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
-#endif
 
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
@@ -1907,7 +1905,6 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 
-#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   // The expected events for this are:
   // 1.  Start the print job.
   // 2.  Rendering for 1 page of document of content.
@@ -1918,24 +1915,15 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // 5.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/5);
-#endif
 
   // Now initiate a system print that would exist concurrently with that.
   StartBasicPrint(web_contents);
 
-#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   WaitUntilCallbackReceived();
-#endif
 
   const absl::optional<bool>& result = print_view_manager->print_now_result();
   ASSERT_TRUE(result.has_value());
-#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   EXPECT_TRUE(*result);
-#else
-  // The denied concurrent print is silent without an error.
-  EXPECT_EQ(error_dialog_shown_count(), 0u);
-  EXPECT_FALSE(*result);
-#endif
 
   // Cleanup before test shutdown.
   PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
@@ -1943,7 +1931,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
-                       SystemPrintFromPrintPreviewConcurrent) {
+                       SystemPrintFromPrintPreviewConcurrentAllowed) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
@@ -1964,7 +1952,6 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   ASSERT_TRUE(client_id.has_value());
 
   // Now do a print preview which will try to switch to doing system print.
-#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   // The expected events for this are:
   // 1.  Start the print job.
   // 2.  Rendering for 1 page of document of content.
@@ -1976,29 +1963,89 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/5);
 
-  constexpr bool kWaitForCallback = true;
-#else
-  // Inability to support this should be detected immediately without needing
-  // to wait for callback.
-  constexpr bool kWaitForCallback = false;
-#endif
+  SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
-  SystemPrintFromPreviewOnceReadyAndLoaded(kWaitForCallback);
-
-  // With the exception of Linux, concurrent system print is not allowed.
+  // Concurrent system print is allowed.
   ASSERT_TRUE(system_print_registration_succeeded().has_value());
-#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
   EXPECT_TRUE(*system_print_registration_succeeded());
-#else
-  // The denied concurrent print is silent without an error.
-  EXPECT_FALSE(*system_print_registration_succeeded());
-  EXPECT_EQ(error_dialog_shown_count(), 0u);
-#endif
 
   // Cleanup before test shutdown.
   PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+#else  // BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
+
+IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
+                       StartBasicPrintConcurrentNotAllowed) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  TestPrintViewManager* print_view_manager =
+      SetUpAndReturnPrintViewManager(web_contents);
+
+  // Pretend that a window has started a system print.
+  absl::optional<PrintBackendServiceManager::ClientId> client_id =
+      PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
+  ASSERT_TRUE(client_id.has_value());
+
+  // Now initiate a system print that would exist concurrently with that.
+  StartBasicPrint(web_contents);
+
+  // Concurrent system print is not allowed.
+  const absl::optional<bool>& result = print_view_manager->print_now_result();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(*result);
+  // The denied concurrent print is silent without an error.
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+
+  // Cleanup before test shutdown.
+  PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
+}
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
+                       SystemPrintFromPrintPreviewConcurrentNotAllowed) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // Pretend that another tab has started a system print.
+  // TODO(crbug.com/809738)  Improve on this test by using a persistent fake
+  // system print dialog.
+  absl::optional<PrintBackendServiceManager::ClientId> client_id =
+      PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
+  ASSERT_TRUE(client_id.has_value());
+
+  // Now do a print preview which will try to switch to doing system print.
+  // Inability to support this should be detected immediately without needing
+  // to wait for callback.
+  SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/false);
+
+  // Concurrent system print is not allowed.
+  ASSERT_TRUE(system_print_registration_succeeded().has_value());
+  EXPECT_FALSE(*system_print_registration_succeeded());
+  // The denied concurrent print is silent without an error.
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+
+  // Cleanup before test shutdown.
+  PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+#endif  // BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
                        StartBasicPrintUseDefaultFails) {
