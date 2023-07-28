@@ -222,6 +222,56 @@ export class PolicyTestRowElement extends CustomElement {
     }
     return inputElement.value;
   }
+
+  // Class method for returning the string value of the given attribute in this
+  // row. Should only be used for enum attributes (level, scope and source).
+  getStringPolicyAttribute(attributeName: string): string {
+    const intVal: number =
+        parseInt(String(this.getPolicyAttribute(`${attributeName}`)));
+    switch (attributeName) {
+      case 'level':
+        switch (intVal) {
+          case PolicyLevel.LEVEL_RECOMMENDED_VAL:
+            return 'recommended';
+          case PolicyLevel.LEVEL_MANDATORY_VAL:
+            return 'mandatory';
+        }
+        break;
+      case 'scope':
+        switch (intVal) {
+          case PolicyScope.SCOPE_USER_VAL:
+            return 'user';
+          case PolicyScope.SCOPE_DEVICE_VAL:
+            return 'machine';
+        }
+        break;
+      case 'source':
+        switch (intVal) {
+          case PolicySource.SOURCE_ENTERPRISE_DEFAULT:
+            return 'sourceEnterpriseDefault';
+          case PolicySource.SOURCE_COMMAND_LINE_VAL:
+            return 'commandLine';
+          case PolicySource.SOURCE_CLOUD_VAL:
+            return 'cloud';
+          case PolicySource.SOURCE_ACTIVE_DIRECTORY_VAL:
+            return 'sourceActiveDirectory';
+          case PolicySource.SOURCE_PLATFORM_VAL:
+            return 'platform';
+          case PolicySource.SOURCE_MERGED_VAL:
+            return 'merged';
+          case PolicySource.SOURCE_CLOUD_FROM_ASH_VAL:
+            return 'cloud_from_ash';
+          case PolicySource
+              .SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL:
+            return 'restrictedManagedGuestSessionOverride';
+        }
+        break;
+      default:
+        break;
+    }
+    this.setInErrorState_(this.getRequiredElement(`.${attributeName}`));
+    return '';
+  }
 }
 
 // Declare the custom element.

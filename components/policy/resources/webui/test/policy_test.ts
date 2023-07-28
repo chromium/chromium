@@ -34,12 +34,33 @@ export const enum PolicySource {
   SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL = 9,
 }
 
+
+// Simple object containing all policy information as a map between information
+// type and value.
 export interface PolicyInfo {
   name: string;
   source: PolicySource;
   scope: PolicyScope;
   level: PolicyLevel;
   value: string|number|boolean|any[]|object;
+}
+
+// Object mapping policy detail types to their values.
+export interface PolicyInfoForExport {
+  source: string;
+  scope: string;
+  level: string;
+  value: any;
+}
+
+// Object mapping policy names to their corresponding PolicyDetails objects.
+export interface PoliciesForExport {
+  policyValues: {
+    chrome: {
+      name: 'Chrome Test Policies',
+      policies: {[key: string]: PolicyInfoForExport},
+    },
+  };
 }
 
 function initialize() {
@@ -49,6 +70,8 @@ function initialize() {
   getRequiredElement('revert-applied-policies')
       .addEventListener('click', resetPolicies);
   getRequiredElement('clear-policies').addEventListener('click', clearPolicies);
+  getRequiredElement('export-policies-json')
+      .addEventListener('click', exportAndDownloadPolicies);
 }
 
 function uploadPoliciesFile() {
@@ -95,7 +118,7 @@ function applyPoliciesFromFile(jsonFile: File) {
 function applyPolicies() {
   const jsonString =
       getRequiredElement<PolicyTestTableElement>('policy-test-table')
-          .getTestPoliciesAsJsonString();
+          .getTestPoliciesJsonString();
   if (jsonString) {
     // Disable the Apply policies button and re-enable after sending, to ensure
     // that the JSON string is not accidentally sent twice.
@@ -114,7 +137,25 @@ function clearPolicies() {
 function resetPolicies(event: Event) {
   sendWithPromise('revertLocalTestPolicies');
   (event.target as HTMLButtonElement).disabled = true;
-  sendWithPromise('revertLocalTestPolicies');
+}
+
+function exportAndDownloadPolicies() {
+  const jsonString =
+      getRequiredElement<PolicyTestTableElement>('policy-test-table')
+          .getTestPoliciesJsonStringForExport();
+  if (jsonString) {
+    const blob = new Blob([jsonString], {type: 'application/json'});
+    const blobUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = 'test_policies.json';
+
+    document.body.appendChild(link);
+
+    link.dispatchEvent(new MouseEvent(
+        'click', {bubbles: true, cancelable: true, view: window}));
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
