@@ -257,6 +257,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                                                    settings_map
                                loadingNotifier:urlLoadingNotifier_
                                     sceneState:scene_state_
+                       tabStripCommandsHandler:nil
                                        tracker:(feature_engagement::Tracker*)
                                                    tracker
                                   webStateList:browser_->GetWebStateList()];
