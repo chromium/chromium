@@ -203,6 +203,8 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
   if (sync_service->GetAccountInfo().IsEmpty()) {
     return false;
   }
+  // TODO(crbug.com/1462552): Remove this after UNO phase 3. See
+  // ConsentLevel::kSync documentation for more details.
   if (sync_service->HasSyncConsent()) {
     return false;
   }
