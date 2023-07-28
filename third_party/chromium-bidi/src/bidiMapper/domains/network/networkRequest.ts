@@ -29,6 +29,7 @@ import {
   type BrowsingContext,
   ChromiumBidi,
 } from '../../../protocol/protocol.js';
+import type {Result} from '../../../utils/result.js';
 
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
@@ -52,8 +53,8 @@ export class NetworkRequest {
   #responseReceivedEvent?: Protocol.Network.ResponseReceivedEvent;
   #responseReceivedExtraInfoEvent?: Protocol.Network.ResponseReceivedExtraInfoEvent;
 
-  #beforeRequestSentDeferred = new Deferred<void>();
-  #responseReceivedDeferred = new Deferred<void>();
+  #beforeRequestSentDeferred = new Deferred<Result<void>>();
+  #responseReceivedDeferred = new Deferred<Result<void>>();
 
   constructor(requestId: Network.Request, eventManager: IEventManager) {
     this.requestId = requestId;
@@ -68,7 +69,10 @@ export class NetworkRequest {
     this.#requestWillBeSentEvent = event;
 
     if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
-      this.#beforeRequestSentDeferred.resolve();
+      this.#beforeRequestSentDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
 
     this.#sendBeforeRequestEvent();
@@ -84,7 +88,10 @@ export class NetworkRequest {
     this.#requestWillBeSentExtraInfoEvent = event;
 
     if (this.#requestWillBeSentEvent !== undefined) {
-      this.#beforeRequestSentDeferred.resolve();
+      this.#beforeRequestSentDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
   }
 
@@ -98,7 +105,10 @@ export class NetworkRequest {
     this.#responseReceivedExtraInfoEvent = event;
 
     if (this.#responseReceivedEvent !== undefined) {
-      this.#responseReceivedDeferred.resolve();
+      this.#responseReceivedDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
   }
 
@@ -115,7 +125,10 @@ export class NetworkRequest {
       !responseReceivedEvent.hasExtraInfo &&
       !this.#beforeRequestSentDeferred.isFinished
     ) {
-      this.#beforeRequestSentDeferred.resolve();
+      this.#beforeRequestSentDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
 
     if (
@@ -123,7 +136,10 @@ export class NetworkRequest {
       this.#responseReceivedExtraInfoEvent !== undefined ||
       this.#servedFromCache
     ) {
-      this.#responseReceivedDeferred.resolve();
+      this.#responseReceivedDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
 
     this.#sendResponseReceivedEvent();
@@ -131,19 +147,31 @@ export class NetworkRequest {
 
   onServedFromCache() {
     if (this.#requestWillBeSentEvent !== undefined) {
-      this.#beforeRequestSentDeferred.resolve();
+      this.#beforeRequestSentDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
 
     if (this.#responseReceivedEvent !== undefined) {
-      this.#responseReceivedDeferred.resolve();
+      this.#responseReceivedDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
 
     this.#servedFromCache = true;
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#beforeRequestSentDeferred.resolve();
-    this.#responseReceivedDeferred.reject(event);
+    this.#beforeRequestSentDeferred.resolve({
+      kind: 'success',
+      value: undefined,
+    });
+    this.#responseReceivedDeferred.resolve({
+      kind: 'error',
+      error: new Error('Loading Failed'),
+    });
 
     this.#eventManager.registerEvent(
       {
@@ -159,9 +187,12 @@ export class NetworkRequest {
   }
 
   dispose() {
-    const error = new Error('Network processor detached');
-    this.#responseReceivedDeferred.reject(error);
-    this.#beforeRequestSentDeferred.reject(error);
+    const result = {
+      kind: 'error' as const,
+      error: new Error('Network processor detached'),
+    };
+    this.#responseReceivedDeferred.resolve(result);
+    this.#beforeRequestSentDeferred.resolve(result);
   }
 
   #getBaseEventParams(): Network.BaseParameters {
@@ -248,9 +279,17 @@ export class NetworkRequest {
   #sendBeforeRequestEvent() {
     if (!this.#isIgnoredEvent()) {
       this.#eventManager.registerPromiseEvent(
-        this.#beforeRequestSentDeferred.then(() =>
-          Object.assign(this.#getBeforeRequestEvent(), {type: 'event' as const})
-        ),
+        this.#beforeRequestSentDeferred.then((result) => {
+          if (result.kind === 'success') {
+            return {
+              kind: 'success',
+              value: Object.assign(this.#getBeforeRequestEvent(), {
+                type: 'event' as const,
+              }),
+            };
+          }
+          return result;
+        }),
         this.#requestWillBeSentEvent?.frameId ?? null,
         ChromiumBidi.Network.EventNames.BeforeRequestSentEvent
       );
@@ -278,11 +317,17 @@ export class NetworkRequest {
   #sendResponseReceivedEvent() {
     if (!this.#isIgnoredEvent()) {
       this.#eventManager.registerPromiseEvent(
-        this.#responseReceivedDeferred.then(() =>
-          Object.assign(this.#getResponseReceivedEvent(), {
-            type: 'event' as const,
-          })
-        ),
+        this.#responseReceivedDeferred.then((result) => {
+          if (result.kind === 'success') {
+            return {
+              kind: 'success',
+              value: Object.assign(this.#getResponseReceivedEvent(), {
+                type: 'event' as const,
+              }),
+            };
+          }
+          return result;
+        }),
         this.#responseReceivedEvent?.frameId ?? null,
         ChromiumBidi.Network.EventNames.ResponseCompletedEvent
       );

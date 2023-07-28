@@ -24,6 +24,7 @@ import {
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
+import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {IBidiParser} from './BidiParser.js';
@@ -39,7 +40,7 @@ import type {RealmStorage} from './domains/script/realmStorage.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
 
 type CommandProcessorEvents = {
-  response: Promise<OutgoingBidiMessage>;
+  response: Promise<Result<OutgoingBidiMessage>>;
 };
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
@@ -228,7 +229,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
 
       this.emit(
         'response',
-        OutgoingBidiMessage.createResolved(response, command.channel ?? null)
+        OutgoingBidiMessage.createResolved(response, command.channel)
       );
     } catch (e) {
       if (e instanceof Exception) {
@@ -237,7 +238,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
           'response',
           OutgoingBidiMessage.createResolved(
             errorResponse.toErrorResponse(command.id),
-            command.channel ?? null
+            command.channel
           )
         );
       } else {
@@ -250,7 +251,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
               error.message,
               error.stack
             ).toErrorResponse(command.id),
-            command.channel ?? null
+            command.channel
           )
         );
       }

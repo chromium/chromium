@@ -23,6 +23,7 @@ import {
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {Buffer} from '../../../utils/buffer.js';
 import {IdWrapper} from '../../../utils/idWrapper.js';
+import type {Result} from '../../../utils/result.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
 
@@ -31,10 +32,10 @@ import {SubscriptionManager} from './SubscriptionManager.js';
 class EventWrapper {
   readonly #idWrapper = new IdWrapper();
   readonly #contextId: BrowsingContext.BrowsingContext | null;
-  readonly #event: Promise<ChromiumBidi.Event>;
+  readonly #event: Promise<Result<ChromiumBidi.Event>>;
 
   constructor(
-    event: Promise<ChromiumBidi.Event>,
+    event: Promise<Result<ChromiumBidi.Event>>,
     contextId: BrowsingContext.BrowsingContext | null
   ) {
     this.#event = event;
@@ -49,7 +50,7 @@ class EventWrapper {
     return this.#contextId;
   }
 
-  get event(): Promise<ChromiumBidi.Event> {
+  get event(): Promise<Result<ChromiumBidi.Event>> {
     return this.#event;
   }
 }
@@ -61,7 +62,7 @@ export interface IEventManager {
   ): void;
 
   registerPromiseEvent(
-    event: Promise<ChromiumBidi.Event>,
+    event: Promise<Result<ChromiumBidi.Event>>,
     contextId: BrowsingContext.BrowsingContext | null,
     eventName: ChromiumBidi.EventNames
   ): void;
@@ -134,14 +135,17 @@ export class EventManager implements IEventManager {
     contextId: BrowsingContext.BrowsingContext | null
   ): void {
     this.registerPromiseEvent(
-      Promise.resolve(event),
+      Promise.resolve({
+        kind: 'success',
+        value: event,
+      }),
       contextId,
       event.method as ChromiumBidi.EventNames
     );
   }
 
   registerPromiseEvent(
-    event: Promise<ChromiumBidi.Event>,
+    event: Promise<Result<ChromiumBidi.Event>>,
     contextId: BrowsingContext.BrowsingContext | null,
     eventName: ChromiumBidi.EventNames
   ): void {

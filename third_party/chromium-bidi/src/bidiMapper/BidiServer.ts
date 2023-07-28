@@ -20,6 +20,7 @@ import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
+import type {Result} from '../utils/result.js';
 
 import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
@@ -82,7 +83,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
     this.#commandProcessor.on(
       'response',
-      (response: Promise<OutgoingBidiMessage>) => {
+      (response: Promise<Result<OutgoingBidiMessage>>) => {
         this.emitOutgoingMessage(response);
       }
     );
@@ -121,7 +122,9 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   /**
    * Sends BiDi message.
    */
-  emitOutgoingMessage(messageEntry: Promise<OutgoingBidiMessage>): void {
+  emitOutgoingMessage(
+    messageEntry: Promise<Result<OutgoingBidiMessage>>
+  ): void {
     this.#messageQueue.add(messageEntry);
   }
 

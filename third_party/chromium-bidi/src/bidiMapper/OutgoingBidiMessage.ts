@@ -16,30 +16,43 @@
  */
 
 import type {ChromiumBidi} from '../protocol/protocol.js';
+import type {Result} from '../utils/result.js';
 
 export class OutgoingBidiMessage {
   readonly #message: ChromiumBidi.Message;
   readonly #channel: string | null;
 
-  private constructor(message: ChromiumBidi.Message, channel: string | null) {
+  private constructor(
+    message: ChromiumBidi.Message,
+    channel: string | null = null
+  ) {
     this.#message = message;
     this.#channel = channel;
   }
 
-  static async createFromPromise(
-    messagePromise: Promise<ChromiumBidi.Message>,
+  static createFromPromise(
+    messagePromise: Promise<Result<ChromiumBidi.Message>>,
     channel: string | null
-  ): Promise<OutgoingBidiMessage> {
-    return messagePromise.then(
-      (message) => new OutgoingBidiMessage(message, channel)
-    );
+  ): Promise<Result<OutgoingBidiMessage>> {
+    return messagePromise.then((message) => {
+      if (message.kind === 'success') {
+        return {
+          kind: 'success',
+          value: new OutgoingBidiMessage(message.value, channel),
+        };
+      }
+      return message;
+    });
   }
 
   static createResolved(
     message: ChromiumBidi.Message,
-    channel: string | null
-  ): Promise<OutgoingBidiMessage> {
-    return Promise.resolve(new OutgoingBidiMessage(message, channel));
+    channel?: string | null
+  ): Promise<Result<OutgoingBidiMessage>> {
+    return Promise.resolve({
+      kind: 'success',
+      value: new OutgoingBidiMessage(message, channel),
+    });
   }
 
   get message(): ChromiumBidi.Message {

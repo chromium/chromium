@@ -105,21 +105,24 @@ export class LogManager {
 
         this.#eventManager.registerPromiseEvent(
           argsPromise.then((args) => ({
-            type: 'event',
-            method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
-            params: {
-              level: getLogLevel(params.type),
-              source: {
-                realm: realm?.realmId ?? 'UNKNOWN',
-                context: realm?.browsingContextId ?? 'UNKNOWN',
+            kind: 'success',
+            value: {
+              type: 'event',
+              method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+              params: {
+                level: getLogLevel(params.type),
+                source: {
+                  realm: realm?.realmId ?? 'UNKNOWN',
+                  context: realm?.browsingContextId ?? 'UNKNOWN',
+                },
+                text: getRemoteValuesText(args, true),
+                timestamp: Math.round(params.timestamp),
+                stackTrace: getBidiStackTrace(params.stackTrace),
+                type: 'console',
+                // Console method is `warn`, not `warning`.
+                method: params.type === 'warning' ? 'warn' : params.type,
+                args,
               },
-              text: getRemoteValuesText(args, true),
-              timestamp: Math.round(params.timestamp),
-              stackTrace: getBidiStackTrace(params.stackTrace),
-              type: 'console',
-              // Console method is `warn`, not `warning`.
-              method: params.type === 'warning' ? 'warn' : params.type,
-              args,
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',
@@ -151,18 +154,23 @@ export class LogManager {
 
         this.#eventManager.registerPromiseEvent(
           textPromise.then((text) => ({
-            type: 'event',
-            method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
-            params: {
-              level: Log.Level.Error,
-              source: {
-                realm: realm?.realmId ?? 'UNKNOWN',
-                context: realm?.browsingContextId ?? 'UNKNOWN',
+            kind: 'success',
+            value: {
+              type: 'event',
+              method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+              params: {
+                level: Log.Level.Error,
+                source: {
+                  realm: realm?.realmId ?? 'UNKNOWN',
+                  context: realm?.browsingContextId ?? 'UNKNOWN',
+                },
+                text,
+                timestamp: Math.round(params.timestamp),
+                stackTrace: getBidiStackTrace(
+                  params.exceptionDetails.stackTrace
+                ),
+                type: 'javascript',
               },
-              text,
-              timestamp: Math.round(params.timestamp),
-              stackTrace: getBidiStackTrace(params.exceptionDetails.stackTrace),
-              type: 'javascript',
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',

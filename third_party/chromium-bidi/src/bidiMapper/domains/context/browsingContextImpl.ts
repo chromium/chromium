@@ -31,6 +31,7 @@ import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
+import type {Result} from '../../../utils/result.js';
 
 import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import type {CdpTarget} from './cdpTarget.js';
@@ -51,7 +52,6 @@ export class BrowsingContextImpl {
   readonly #browsingContextStorage: BrowsingContextStorage;
 
   readonly #deferreds = {
-    documentInitialized: new Deferred<void>(),
     Page: {
       navigatedWithinDocument:
         new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>(),
@@ -246,7 +246,7 @@ export class BrowsingContextImpl {
     await this.#deferreds.Page.lifecycleEvent.load;
   }
 
-  targetUnblocked(): Promise<void> {
+  targetUnblocked(): Promise<Result<void>> {
     return this.#cdpTarget.targetUnblocked;
   }
 
@@ -372,7 +372,6 @@ export class BrowsingContextImpl {
 
         if (params.name === 'init') {
           this.#documentChanged(params.loaderId);
-          this.#deferreds.documentInitialized.resolve();
           return;
         }
 
@@ -555,15 +554,6 @@ export class BrowsingContextImpl {
   }
 
   #resetDeferredsIfFinished() {
-    if (this.#deferreds.documentInitialized.isFinished) {
-      this.#deferreds.documentInitialized = new Deferred<void>();
-    } else {
-      this.#logger?.(
-        LogType.browsingContexts,
-        'Document changed (document initialized)'
-      );
-    }
-
     if (this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
       this.#deferreds.Page.lifecycleEvent.DOMContentLoaded =
         new Deferred<Protocol.Page.LifecycleEventEvent>();

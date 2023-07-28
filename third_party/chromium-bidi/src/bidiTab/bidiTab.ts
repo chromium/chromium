@@ -71,7 +71,9 @@ void (async () => {
   log(LogType.system, 'Launched');
 
   bidiServer.emitOutgoingMessage(
-    OutgoingBidiMessage.createResolved({launched: true}, null)
+    OutgoingBidiMessage.createResolved({
+      launched: true,
+    })
   );
 })();
 

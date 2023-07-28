@@ -26,6 +26,7 @@ import {NetworkManager} from '../network/NetworkManager.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import type {Result} from '../../../utils/result.js';
 
 export class CdpTarget {
   readonly #targetId: Protocol.Target.TargetID;
@@ -34,7 +35,7 @@ export class CdpTarget {
   readonly #eventManager: IEventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
 
-  readonly #targetUnblocked = new Deferred<void>();
+  readonly #targetUnblocked = new Deferred<Result<void>>();
 
   static create(
     targetId: Protocol.Target.TargetID,
@@ -79,7 +80,7 @@ export class CdpTarget {
   }
 
   /** Returns a promise that resolves when the target is unblocked. */
-  get targetUnblocked(): Deferred<void> {
+  get targetUnblocked(): Deferred<Result<void>> {
     return this.#targetUnblocked;
   }
 
@@ -134,7 +135,10 @@ export class CdpTarget {
       }
     }
 
-    this.#targetUnblocked.resolve();
+    this.#targetUnblocked.resolve({
+      kind: 'success',
+      value: undefined,
+    });
   }
 
   #setEventListeners() {

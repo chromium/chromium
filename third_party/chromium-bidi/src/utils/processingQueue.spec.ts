@@ -20,14 +20,15 @@ import * as sinon from 'sinon';
 
 import {Deferred} from './deferred.js';
 import {ProcessingQueue} from './processingQueue.js';
+import type {Result} from './result.js';
 
 describe('ProcessingQueue', () => {
   it('should wait and call processor in order', async () => {
     const processor = sinon.stub().returns(Promise.resolve());
     const queue = new ProcessingQueue<number>(processor);
-    const deferred1 = new Deferred<number>();
-    const deferred2 = new Deferred<number>();
-    const deferred3 = new Deferred<number>();
+    const deferred1 = new Deferred<Result<number>>();
+    const deferred2 = new Deferred<Result<number>>();
+    const deferred3 = new Deferred<Result<number>>();
 
     queue.add(deferred1);
     await wait(1);
@@ -38,31 +39,40 @@ describe('ProcessingQueue', () => {
     await wait(1);
     sinon.assert.notCalled(processor);
 
-    deferred3.resolve(3);
-    deferred2.resolve(2);
+    deferred3.resolve({
+      kind: 'success',
+      value: 3,
+    });
+    deferred2.resolve({
+      kind: 'success',
+      value: 2,
+    });
     await wait(1);
     sinon.assert.notCalled(processor);
 
-    deferred1.resolve(1);
+    deferred1.resolve({
+      kind: 'success',
+      value: 1,
+    });
     await wait(1);
 
     const processedValues = processor.getCalls().map((c) => c.firstArg);
     expect(processedValues).to.deep.equal([1, 2, 3]);
   });
 
-  it('rejects should not stop processing', async () => {
+  it('rejects should not stop processing with rejects from processor', async () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.reject(error));
     const logger = sinon.spy();
     const queue = new ProcessingQueue<number>(processor, logger);
-    const deferred1 = new Deferred<number>();
-    const deferred2 = new Deferred<number>();
+    const deferred2 = new Deferred<Result<number>>();
 
-    queue.add(deferred1);
     queue.add(deferred2);
 
-    deferred1.reject(1);
-    deferred2.resolve(2);
+    deferred2.resolve({
+      kind: 'success',
+      value: 2,
+    });
     await wait(1);
 
     // Assert processor was called with successful value.
@@ -70,19 +80,84 @@ describe('ProcessingQueue', () => {
 
     // Assert `_catch` was called for waiting entry and processor call.
     const processedValues = logger.getCalls().map((c) => c.args[2]);
-    expect(processedValues).to.deep.equal([1, error]);
+    expect(processedValues).to.deep.equal([error]);
+  });
+
+  it('rejects should not stop processing with rejects from queue', async () => {
+    const error = new Error('Processor reject');
+    const processor = sinon.stub().returns(Promise.resolve());
+    const logger = sinon.spy();
+    const queue = new ProcessingQueue<number>(processor, logger);
+    const deferred1 = new Deferred<Result<number>>();
+    const deferred2 = new Deferred<Result<number>>();
+
+    queue.add(deferred1);
+    queue.add(deferred2);
+
+    deferred1.reject(error);
+    deferred2.resolve({
+      kind: 'success',
+      value: 2,
+    });
+    await wait(1);
+
+    // Assert processor was called with successful value.
+    sinon.assert.calledOnceWithExactly(processor, 2);
+
+    // Assert `_catch` was called for waiting entry and processor call.
+    const processedValues = logger.getCalls().map((c) => c.args[2]);
+    expect(processedValues).to.deep.equal([error]);
+  });
+
+  it('rejects should not stop processing for queue events with result errors', async () => {
+    const error = new Error('Processor reject');
+    const processor = sinon.stub().returns(Promise.resolve());
+    const logger = sinon.spy();
+    const queue = new ProcessingQueue<number>(processor, logger);
+    const deferred1 = new Deferred<Result<number>>();
+    const deferred2 = new Deferred<Result<number>>();
+
+    queue.add(deferred1);
+    queue.add(deferred2);
+
+    deferred1.resolve({
+      kind: 'error',
+      error,
+    });
+    deferred2.resolve({
+      kind: 'success',
+      value: 2,
+    });
+    await wait(1);
+
+    // Assert processor was called with successful value.
+    sinon.assert.calledOnceWithExactly(processor, 2);
+
+    // Assert `_catch` was called for waiting entry and processor call.
+    const processedValues = logger.getCalls().map((c) => c.args[2]);
+    expect(processedValues).to.deep.equal([error]);
   });
 
   it('processing starts over when new values are added', async () => {
     const processor = sinon.stub().returns(Promise.resolve());
     const queue = new ProcessingQueue<number>(processor);
 
-    queue.add(Promise.resolve(1));
+    queue.add(
+      Promise.resolve({
+        kind: 'success',
+        value: 1,
+      })
+    );
     await wait(1);
     sinon.assert.calledOnceWithExactly(processor, 1);
     processor.reset();
 
-    queue.add(Promise.resolve(2));
+    queue.add(
+      Promise.resolve({
+        kind: 'success',
+        value: 2,
+      })
+    );
     await wait(1);
     sinon.assert.calledOnceWithExactly(processor, 2);
 
