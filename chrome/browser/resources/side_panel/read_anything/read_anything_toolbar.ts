@@ -47,6 +47,41 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     anchorAlignmentY: AnchorAlignment.AFTER_END,
   };
 
+  private onDefaultTheme_() {
+    this.updateTheme_('');
+  }
+
+  private onLightTheme_() {
+    this.updateTheme_('-light');
+  }
+
+  private onDarkTheme_() {
+    this.updateTheme_('-dark');
+  }
+
+  private onBlueTheme_() {
+    this.updateTheme_('-blue');
+  }
+
+  private onYellowTheme_() {
+    this.updateTheme_('-yellow');
+  }
+
+  private updateTheme_(colorSuffix: string) {
+    if (this.contentPage) {
+      this.contentPage.updateThemeFromWebUi(colorSuffix);
+    }
+    this.closeMenus_();
+  }
+
+  private closeMenus_() {
+    this.$.menu.close();
+    this.$.colorSubmenu.close();
+    this.$.lineSpacingSubmenu.close();
+    this.$.letterSpacingSubmenu.close();
+    this.$.fontSubmenu.close();
+  }
+
   private onShowSettingsMenuClick_() {
     this.openMenu_(this.$.menu);
   }
@@ -72,11 +107,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private openMenu_(menuToOpen: CrActionMenuElement) {
-    this.$.menu.close();
-    this.$.colorSubmenu.close();
-    this.$.lineSpacingSubmenu.close();
-    this.$.letterSpacingSubmenu.close();
-    this.$.fontSubmenu.close();
+    this.closeMenus_();
 
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);

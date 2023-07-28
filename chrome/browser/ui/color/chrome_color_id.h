@@ -658,6 +658,21 @@
   E_CPONLY(kColorReadAnythingDropdownSelectedDark) \
   E_CPONLY(kColorReadAnythingDropdownSelectedLight) \
   E_CPONLY(kColorReadAnythingDropdownSelectedYellow) \
+  E_CPONLY(kColorReadAnythingTextSelection) \
+  E_CPONLY(kColorReadAnythingTextSelectionBlue) \
+  E_CPONLY(kColorReadAnythingTextSelectionDark) \
+  E_CPONLY(kColorReadAnythingTextSelectionLight) \
+  E_CPONLY(kColorReadAnythingTextSelectionYellow) \
+  E_CPONLY(kColorReadAnythingLinkDefault) \
+  E_CPONLY(kColorReadAnythingLinkDefaultBlue) \
+  E_CPONLY(kColorReadAnythingLinkDefaultDark) \
+  E_CPONLY(kColorReadAnythingLinkDefaultLight) \
+  E_CPONLY(kColorReadAnythingLinkDefaultYellow) \
+  E_CPONLY(kColorReadAnythingLinkVisited) \
+  E_CPONLY(kColorReadAnythingLinkVisitedBlue) \
+  E_CPONLY(kColorReadAnythingLinkVisitedDark) \
+  E_CPONLY(kColorReadAnythingLinkVisitedLight) \
+  E_CPONLY(kColorReadAnythingLinkVisitedYellow) \
   E_CPONLY(kColorReadAnythingFocusRingBackground) \
   E_CPONLY(kColorReadAnythingFocusRingBackgroundBlue) \
   E_CPONLY(kColorReadAnythingFocusRingBackgroundDark) \

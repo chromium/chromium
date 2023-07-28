@@ -771,6 +771,27 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorReadAnythingDropdownSelectedDark] = {gfx::kGoogleGrey800};
   mixer[kColorReadAnythingDropdownSelectedLight] = {gfx::kGoogleGrey200};
   mixer[kColorReadAnythingDropdownSelectedYellow] = {gfx::kGoogleYellow200};
+  mixer[kColorReadAnythingTextSelection] = {
+      dark_mode ? kColorReadAnythingTextSelectionDark
+                : kColorReadAnythingTextSelectionLight};
+  mixer[kColorReadAnythingTextSelectionBlue] = {gfx::kGoogleYellow100};
+  mixer[kColorReadAnythingTextSelectionDark] = {gfx::kGoogleBlue200};
+  mixer[kColorReadAnythingTextSelectionLight] = {gfx::kGoogleYellow100};
+  mixer[kColorReadAnythingTextSelectionYellow] = {gfx::kGoogleBlue100};
+  mixer[kColorReadAnythingLinkDefault] = {
+      dark_mode ? kColorReadAnythingLinkDefaultDark
+                : kColorReadAnythingLinkDefaultLight};
+  mixer[kColorReadAnythingLinkDefaultBlue] = {gfx::kGoogleBlue900};
+  mixer[kColorReadAnythingLinkDefaultDark] = {gfx::kGoogleBlue300};
+  mixer[kColorReadAnythingLinkDefaultLight] = {gfx::kGoogleBlue800};
+  mixer[kColorReadAnythingLinkDefaultYellow] = {gfx::kGoogleBlue900};
+  mixer[kColorReadAnythingLinkVisited] = {
+      dark_mode ? kColorReadAnythingLinkVisitedDark
+                : kColorReadAnythingLinkVisitedLight};
+  mixer[kColorReadAnythingLinkVisitedBlue] = {gfx::kGooglePurple900};
+  mixer[kColorReadAnythingLinkVisitedDark] = {gfx::kGooglePurple200};
+  mixer[kColorReadAnythingLinkVisitedLight] = {gfx::kGooglePurple900};
+  mixer[kColorReadAnythingLinkVisitedYellow] = {gfx::kGooglePurple900};
   // Read Anything UX has decided to prefer hard-coded blue values over the
   // adaptive focus ring color to ensure that the contrast with our custom
   // colors is always correct.

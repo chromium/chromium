@@ -23,6 +23,8 @@ interface LinkColor {
   default: string;
   visited: string;
 }
+// TODO(crbug.com/1465029): Remove colors defined here once the Views toolbar is
+// removed.
 const style = getComputedStyle(document.body);
 const darkThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
@@ -379,6 +381,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
                     defaultThemeEmptyStateBodyColor;
   }
 
+  // TODO(crbug.com/1465029): This method should be renamed to
+  // getEmptyStateBodyColor_() and replace the one above once we've removed the
+  // Views toolbar.
+  private getEmptyStateBodyColorFromWebUi_(colorSuffix: string): string {
+    const isDark = colorSuffix.includes('dark');
+    return isDark ? darkThemeEmptyStateBodyColor :
+                    defaultThemeEmptyStateBodyColor;
+  }
+
   private getSelectionColor_(backgroundSkColor: SkColor): string {
     switch (backgroundSkColor.value) {
       case darkThemeBackgroundSkColor.value:
@@ -405,6 +416,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   updateFont(fontName: string) {
     this.updateStyles({
       '--font-family': this.validatedFontNameFromName_(fontName),
+    });
+  }
+
+  // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
+  // and replace the one below once we've removed the Views toolbar.
+  updateThemeFromWebUi(colorSuffix: string) {
+    const emptyStateBodyColor = colorSuffix ?
+        this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :
+        'var(--color-side-panel-card-secondary-foreground)';
+    this.updateStyles({
+      '--background-color':
+          `var(--color-read-anything-background${colorSuffix})`,
+      '--foreground-color':
+          `var(--color-read-anything-foreground${colorSuffix})`,
+      '--sp-empty-state-heading-color':
+          `var(--color-read-anything-foreground${colorSuffix})`,
+      '--sp-empty-state-body-color': emptyStateBodyColor,
+      '--selection-color':
+          `var(--color-read-anything-text-selection${colorSuffix})`,
+      '--link-color': `var(--color-read-anything-link-default${colorSuffix})`,
+      '--visited-link-color':
+          `var(--color-read-anything-link-visited${colorSuffix})`,
     });
   }
 
