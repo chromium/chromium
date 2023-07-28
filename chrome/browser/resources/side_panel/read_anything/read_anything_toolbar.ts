@@ -121,39 +121,42 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   // numbers consistent with the numbers defined for View in
   // ReadAnythingAppModel#GetLineSpacingValue.
   private onLineSpacingStandardClick_() {
-    if (this.contentPage) {
-      this.contentPage.updateLineSpacing('1.35');
-    }
+    this.onLineSpacingClick_('1.35');
   }
 
   private onLineSpacingLooseClick_() {
-    if (this.contentPage) {
-      this.contentPage.updateLineSpacing('1.5');
-    }
+    this.onLineSpacingClick_('1.5');
   }
 
   private onLineSpacingVeryLooseClick_() {
+    this.onLineSpacingClick_('2');
+  }
+
+  private onLineSpacingClick_(lineSpacing: string) {
     if (this.contentPage) {
-      this.contentPage.updateLineSpacing('2');
+      this.contentPage.updateLineSpacing(lineSpacing);
     }
+
+    this.closeMenus_();
   }
 
   private onLetterSpacingStandardClick_() {
-    if (this.contentPage) {
-      this.contentPage.updateLetterSpacing('0');
-    }
+    this.onLetterSpacingClick_('0');
   }
 
   private onLetterSpacingWideClick_() {
-    if (this.contentPage) {
-      this.contentPage.updateLetterSpacing('.05');
-    }
+    this.onLetterSpacingClick_('.05');
   }
 
   private onLetterSpacingVeryWideClick_() {
+    this.onLetterSpacingClick_('.1');
+  }
+
+  private onLetterSpacingClick_(letterSpacing: string) {
     if (this.contentPage) {
-      this.contentPage.updateLetterSpacing('.1');
+      this.contentPage.updateLetterSpacing(letterSpacing);
     }
+    this.closeMenus_();
   }
 
   private onPoppinsClick_() {
@@ -188,6 +191,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     if (this.contentPage) {
       this.contentPage.updateFont(fontName);
     }
+
+    this.closeMenus_();
   }
 }
 
