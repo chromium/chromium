@@ -12,6 +12,7 @@
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 
 class GURL;
@@ -33,7 +34,7 @@ class AggregatableReportRequest;
 class BrowserContext;
 
 // External interface for the aggregation service.
-class AggregationService {
+class CONTENT_EXPORT AggregationService {
  public:
   using AssemblyStatus = AggregatableReportAssembler::AssemblyStatus;
   using AssemblyCallback = AggregatableReportAssembler::AssemblyCallback;

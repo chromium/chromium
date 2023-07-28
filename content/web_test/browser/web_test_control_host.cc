@@ -37,6 +37,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -710,7 +711,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   SetBluetoothManualChooser(false);
   SetDatabaseQuota(content::kDefaultDatabaseQuota);
 
-  // Delete all cookies and Attribution Reporting data.
+  // Delete all cookies, Attribution Reporting data and Aggregation service data
   {
     BrowserContext* browser_context =
         ShellContentBrowserClient::Get()->browser_context();
@@ -719,13 +720,21 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
 
-    if (auto* manager =
+    if (auto* attribution_manager =
             AttributionManager::FromBrowserContext(browser_context)) {
-      manager->ClearData(
+      attribution_manager->ClearData(
           /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
           /*filter=*/StoragePartition::StorageKeyMatcherFunction(),
           /*filter_builder=*/nullptr,
           /*delete_rate_limit_data=*/true,
+          /*done=*/base::DoNothing());
+    }
+
+    if (auto* aggregation_service =
+            AggregationService::GetService(browser_context)) {
+      aggregation_service->ClearData(
+          /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
+          /*filter=*/StoragePartition::StorageKeyMatcherFunction(),
           /*done=*/base::DoNothing());
     }
   }
