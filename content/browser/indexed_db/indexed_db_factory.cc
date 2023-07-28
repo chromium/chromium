@@ -353,7 +353,7 @@ void IndexedDBFactory::DeleteDatabase(
 
   if (!base::Contains(names, name)) {
     const int64_t version = 0;
-    callbacks->OnSuccess(version);
+    callbacks->OnDeleteSuccess(version);
     return;
   }
 

@@ -62,17 +62,17 @@ class MockMojoIndexedDBFactoryClient : public blink::mojom::IDBFactoryClient {
                         data_loss_message, metadata);
   }
 
-  MOCK_METHOD2(MockedSuccessDatabase,
+  MOCK_METHOD2(MockedOpenSuccess,
                void(mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>*
                         pending_database,
                     const blink::IndexedDBDatabaseMetadata& metadata));
-  void SuccessDatabase(
+  void OpenSuccess(
       mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database,
       const blink::IndexedDBDatabaseMetadata& metadata) override {
-    MockedSuccessDatabase(&pending_database, metadata);
+    MockedOpenSuccess(&pending_database, metadata);
   }
 
-  MOCK_METHOD1(SuccessInteger, void(int64_t value));
+  MOCK_METHOD1(DeleteSuccess, void(int64_t old_version));
   MOCK_METHOD0(Success, void());
 
  private:

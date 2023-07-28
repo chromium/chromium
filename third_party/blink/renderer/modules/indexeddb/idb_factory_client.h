@@ -59,10 +59,10 @@ class MODULES_EXPORT IDBFactoryClient final
   void DetachRequest();
 
   void Error(mojom::blink::IDBException code, const String& message) override;
-  void SuccessDatabase(
+  void OpenSuccess(
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
       const IDBDatabaseMetadata& metadata) override;
-  void SuccessInteger(int64_t) override;
+  void DeleteSuccess(int64_t) override;
   void Blocked(int64_t old_version) override;
   void UpgradeNeeded(
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,

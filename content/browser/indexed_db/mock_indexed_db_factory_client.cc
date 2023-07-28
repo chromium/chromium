@@ -36,9 +36,9 @@ void MockIndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
   error_called_ = true;
 }
 
-void MockIndexedDBFactoryClient::OnSuccess(int64_t result) {}
+void MockIndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {}
 
-void MockIndexedDBFactoryClient::OnSuccess(
+void MockIndexedDBFactoryClient::OnOpenSuccess(
     std::unique_ptr<IndexedDBConnection> connection,
     const IndexedDBDatabaseMetadata& metadata) {
   if (!upgrade_called_) {
@@ -93,14 +93,14 @@ void ThunkFactoryClient::OnUpgradeNeeded(
                             data_loss_info);
 }
 
-void ThunkFactoryClient::OnSuccess(
+void ThunkFactoryClient::OnOpenSuccess(
     std::unique_ptr<IndexedDBConnection> connection,
     const blink::IndexedDBDatabaseMetadata& metadata) {
-  wrapped_->OnSuccess(std::move(connection), metadata);
+  wrapped_->OnOpenSuccess(std::move(connection), metadata);
 }
 
-void ThunkFactoryClient::OnSuccess(int64_t value) {
-  wrapped_->OnSuccess(value);
+void ThunkFactoryClient::OnDeleteSuccess(int64_t old_version) {
+  wrapped_->OnDeleteSuccess(old_version);
 }
 
 }  // namespace content

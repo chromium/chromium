@@ -441,8 +441,8 @@ class ForceCloseDBCallbacks : public IndexedDBFactoryClient {
   ForceCloseDBCallbacks(const ForceCloseDBCallbacks&) = delete;
   ForceCloseDBCallbacks& operator=(const ForceCloseDBCallbacks&) = delete;
 
-  void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
-                 const IndexedDBDatabaseMetadata& metadata) override {
+  void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
+                     const IndexedDBDatabaseMetadata& metadata) override {
     connection_ = std::move(connection);
     idb_context_->ConnectionOpened(bucket_locator_);
   }

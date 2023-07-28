@@ -231,7 +231,7 @@ class MockCallbacks : public IndexedDBFactoryClient {
   MockCallbacks& operator=(const MockCallbacks&) = delete;
 
   void OnBlocked(int64_t existing_version) override { blocked_called_ = true; }
-  void OnSuccess(int64_t result) override { success_called_ = true; }
+  void OnDeleteSuccess(int64_t old_version) override { success_called_ = true; }
   void OnError(const IndexedDBDatabaseError& error) override {
     error_called_ = true;
   }

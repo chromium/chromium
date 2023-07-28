@@ -177,7 +177,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       // For unit tests only - skip upgrade steps. (Calling from script with
       // DEFAULT_VERSION throws exception.)
       DCHECK(is_new_database);
-      pending_->factory_client->OnSuccess(
+      pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
                                 pending_->database_callbacks,
                                 std::move(client_state_checker_)),
@@ -189,7 +189,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     if (!is_new_database &&
         (new_version == old_version ||
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
-      pending_->factory_client->OnSuccess(
+      pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
                                 pending_->database_callbacks,
                                 std::move(client_state_checker_)),
@@ -336,7 +336,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     // Ownership of connection was already passed along in OnUpgradeNeeded.
     if (committed) {
       DCHECK_EQ(pending_->version, db_->metadata_.version);
-      pending_->factory_client->OnSuccess(nullptr, db_->metadata());
+      pending_->factory_client->OnOpenSuccess(nullptr, db_->metadata());
     } else {
       DCHECK_NE(pending_->version, db_->metadata_.version);
       pending_->factory_client->OnError(
@@ -503,7 +503,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     // backing store be a nullptr, so report deleted here.
     if (on_database_deleted_)
       std::move(on_database_deleted_).Run();
-    factory_client_->OnSuccess(old_version);
+    factory_client_->OnDeleteSuccess(old_version);
 
     state_ = RequestState::kDone;
     tasks_available_callback_.Run();

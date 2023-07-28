@@ -49,6 +49,7 @@ class IndexedDBBucketState;
 class IndexedDBBucketStateHandle;
 class IndexedDBClassFactory;
 class IndexedDBContextImpl;
+class IndexedDBDatabase;
 class TransactionalLevelDBFactory;
 class TransactionalLevelDBDatabase;
 

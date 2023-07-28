@@ -334,7 +334,7 @@ TEST_F(IndexedDBDispatcherHostTest, CloseAfterUpgrade) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(
             *connection->open_callbacks,
-            MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
+            MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
             .Times(1)
             .WillOnce(RunClosure(std::move(quit_closure2)));
 
@@ -416,12 +416,12 @@ TEST_F(IndexedDBDispatcherHostTest, MAYBE_OpenNewConnectionWhileUpgrading) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(
             *connection1->open_callbacks,
-            MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
+            MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(
             *connection2->open_callbacks,
-            MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(true), _))
+            MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(true), _))
             .WillOnce(testing::DoAll(MoveArgPointee<0>(&pending_database2),
                                      testing::SaveArg<1>(&metadata2),
                                      RunClosure(std::move(quit_closure2))));
@@ -632,9 +632,9 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
                       Complete(kTransactionId1))
               .Times(1)
               .WillOnce(RunClosure(quit_closure));
-          EXPECT_CALL(*connection1->open_callbacks,
-                      MockedSuccessDatabase(
-                          IsAssociatedInterfacePtrInfoValid(false), _))
+          EXPECT_CALL(
+              *connection1->open_callbacks,
+              MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
               .Times(1)
               .WillOnce(RunClosure(std::move(quit_closure)));
 
@@ -704,9 +704,9 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
                       Complete(kTransactionId2))
               .Times(1)
               .WillOnce(RunClosure(quit_closure));
-          EXPECT_CALL(*connection2->open_callbacks,
-                      MockedSuccessDatabase(
-                          IsAssociatedInterfacePtrInfoValid(false), _))
+          EXPECT_CALL(
+              *connection2->open_callbacks,
+              MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
               .Times(1)
               .WillOnce(RunClosure(std::move(quit_closure)));
 
@@ -767,9 +767,9 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
                       Complete(kTransactionId3))
               .Times(1)
               .WillOnce(RunClosure(quit_closure));
-          EXPECT_CALL(*connection3->open_callbacks,
-                      MockedSuccessDatabase(
-                          IsAssociatedInterfacePtrInfoValid(false), _))
+          EXPECT_CALL(
+              *connection3->open_callbacks,
+              MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
               .Times(1)
               .WillOnce(RunClosure(std::move(quit_closure)));
 
@@ -864,7 +864,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(
             *connection1->open_callbacks,
-            MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
+            MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
             .Times(1)
             .WillOnce(RunClosure(std::move(quit_closure2)));
 
@@ -947,7 +947,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
             .WillOnce(RunClosure(quit_closure5));
         EXPECT_CALL(
             *connection2->open_callbacks,
-            MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
+            MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
             .Times(1)
             .WillOnce(RunClosure(quit_closure5));
 
@@ -1030,7 +1030,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_DatabaseOperationSequencing) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(
             *connection->open_callbacks,
-            MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
+            MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
             .Times(1)
             .WillOnce(testing::DoAll(testing::SaveArg<1>(&metadata2),
                                      RunClosure(std::move(quit_closure2))));

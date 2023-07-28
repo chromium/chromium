@@ -178,7 +178,7 @@ void IndexedDBFactoryClient::OnUpgradeNeeded(
                          metadata);
 }
 
-void IndexedDBFactoryClient::OnSuccess(
+void IndexedDBFactoryClient::OnOpenSuccess(
     std::unique_ptr<IndexedDBConnection> connection,
     const IndexedDBDatabaseMetadata& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -211,11 +211,11 @@ void IndexedDBFactoryClient::OnSuccess(
         std::move(database),
         pending_remote.InitWithNewEndpointAndPassReceiver());
   }
-  remote_->SuccessDatabase(std::move(pending_remote), metadata);
+  remote_->OpenSuccess(std::move(pending_remote), metadata);
   complete_ = true;
 }
 
-void IndexedDBFactoryClient::OnSuccess(int64_t value) {
+void IndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
@@ -226,7 +226,7 @@ void IndexedDBFactoryClient::OnSuccess(int64_t value) {
     OnConnectionError();
     return;
   }
-  remote_->SuccessInteger(value);
+  remote_->DeleteSuccess(old_version);
   complete_ = true;
 }
 

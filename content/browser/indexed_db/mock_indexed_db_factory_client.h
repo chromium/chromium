@@ -33,9 +33,9 @@ class MockIndexedDBFactoryClient : public IndexedDBFactoryClient {
 
   void OnError(const IndexedDBDatabaseError& error) override;
 
-  void OnSuccess(int64_t result) override;
-  void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
-                 const blink::IndexedDBDatabaseMetadata& metadata) override;
+  void OnDeleteSuccess(int64_t old_version) override;
+  void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
+                     const blink::IndexedDBDatabaseMetadata& metadata) override;
   IndexedDBConnection* connection() { return connection_.get(); }
 
   std::unique_ptr<IndexedDBConnection> TakeConnection() {
@@ -87,9 +87,9 @@ class ThunkFactoryClient : public MockIndexedDBFactoryClient {
                        std::unique_ptr<IndexedDBConnection> connection,
                        const blink::IndexedDBDatabaseMetadata& metadata,
                        const IndexedDBDataLossInfo& data_loss_info) override;
-  void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
-                 const blink::IndexedDBDatabaseMetadata& metadata) override;
-  void OnSuccess(int64_t value) override;
+  void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
+                     const blink::IndexedDBDatabaseMetadata& metadata) override;
+  void OnDeleteSuccess(int64_t old_version) override;
 
  private:
   const raw_ref<IndexedDBFactoryClient> wrapped_;

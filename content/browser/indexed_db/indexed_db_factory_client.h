@@ -34,7 +34,6 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 class IndexedDBConnection;
-class IndexedDBDatabase;
 struct IndexedDBDataLossInfo;
 
 // This class wraps the remote (renderer-side) object for handling database open
@@ -52,9 +51,8 @@ class CONTENT_EXPORT IndexedDBFactoryClient {
   IndexedDBFactoryClient(const IndexedDBFactoryClient&) = delete;
   IndexedDBFactoryClient& operator=(const IndexedDBFactoryClient&) = delete;
 
-  virtual void OnError(const IndexedDBDatabaseError& error);
-
   // IndexedDBFactory::Open / DeleteDatabase
+  virtual void OnError(const IndexedDBDatabaseError& error);
   virtual void OnBlocked(int64_t existing_version);
 
   // IndexedDBFactory::Open
@@ -62,14 +60,11 @@ class CONTENT_EXPORT IndexedDBFactoryClient {
                                std::unique_ptr<IndexedDBConnection> connection,
                                const blink::IndexedDBDatabaseMetadata& metadata,
                                const IndexedDBDataLossInfo& data_loss_info);
-  virtual void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
-                         const blink::IndexedDBDatabaseMetadata& metadata);
+  virtual void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
+                             const blink::IndexedDBDatabaseMetadata& metadata);
 
-  // IndexedDBDatabase::Count
   // IndexedDBFactory::DeleteDatabase
-  // IndexedDBDatabase::DeleteRange
-  // IndexedDBDatabase::GetKeyGeneratorCurrentNumber
-  virtual void OnSuccess(int64_t value);
+  virtual void OnDeleteSuccess(int64_t old_version);
 
   void OnConnectionError();
 
@@ -81,10 +76,11 @@ class CONTENT_EXPORT IndexedDBFactoryClient {
 
   // Depending on whether the database needs upgrading, we create connections in
   // different spots. This stores if we've already created the connection so
-  // OnSuccess(Connection) doesn't create an extra one.
+  // OnOpenSuccess() doesn't create an extra one.
   bool connection_created_ = false;
 
-  // Used to assert that OnSuccess is only called if there was no data loss.
+  // Used to assert that OnOpenSuccess() is only called if there was no data
+  // loss.
   blink::mojom::IDBDataLoss data_loss_;
 
   // The "blocked" event should be sent at most once per request.

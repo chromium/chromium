@@ -102,7 +102,7 @@ void IDBFactoryClient::Error(mojom::blink::IDBException code,
       static_cast<DOMExceptionCode>(code), message));
 }
 
-void IDBFactoryClient::SuccessDatabase(
+void IDBFactoryClient::OpenSuccess(
     mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
     const IDBDatabaseMetadata& metadata) {
   std::unique_ptr<WebIDBDatabase> db;
@@ -124,7 +124,7 @@ void IDBFactoryClient::SuccessDatabase(
   }
 }
 
-void IDBFactoryClient::SuccessInteger(int64_t value) {
+void IDBFactoryClient::DeleteSuccess(int64_t old_version) {
   if (!request_) {
     return;
   }
@@ -133,7 +133,7 @@ void IDBFactoryClient::SuccessInteger(int64_t value) {
                               &async_task_context_, "success");
   IDBRequest* request = request_.Get();
   Detach();
-  request->HandleResponse(value);
+  request->HandleResponse(old_version);
 }
 
 void IDBFactoryClient::Blocked(int64_t old_version) {
@@ -148,7 +148,7 @@ void IDBFactoryClient::Blocked(int64_t old_version) {
 #endif  // DCHECK_IS_ON()
   request_->EnqueueBlocked(old_version);
   // Not resetting |request_|.  In this instance we will have to forward at
-  // least one other call in the set UpgradeNeeded() / Success() /
+  // least one other call in the set UpgradeNeeded() / OpenSuccess() /
   // Error().
 }
 
@@ -173,7 +173,7 @@ void IDBFactoryClient::UpgradeNeeded(
                                    IDBDatabaseMetadata(metadata), data_loss,
                                    data_loss_message);
     // Not resetting |request_|.  In this instance we will have to forward at
-    // least one other call in the set UpgradeNeeded() / Success() /
+    // least one other call in the set UpgradeNeeded() / OpenSuccess() /
     // Error().
   } else if (db) {
     db->Close();

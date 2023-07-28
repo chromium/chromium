@@ -235,11 +235,11 @@ interface IDBFactoryClient {
   UpgradeNeeded(pending_associated_remote<IDBDatabase> pending_database,
                 int64 old_version, IDBDataLoss data_loss,
                 string data_loss_message, IDBDatabaseMetadata db_metadata);
-  SuccessDatabase(pending_associated_remote<IDBDatabase>? pending_database,
-                  IDBDatabaseMetadata metadata);
+  OpenSuccess(pending_associated_remote<IDBDatabase>? pending_database,
+              IDBDatabaseMetadata metadata);
 
   // Called after a successful DeleteDatabase operation.
-  SuccessInteger(int64 value);
+  DeleteSuccess(int64 old_version);
 };
 
 // The IDBDatabaseCallbacks interface is used to notification of events out of

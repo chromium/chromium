@@ -449,7 +449,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         request->CreateFactoryClient();
 
     scope.GetExecutionContext()->NotifyContextDestroyed();
-    factory_client->SuccessDatabase(remote.Unbind(), metadata);
+    factory_client->OpenSuccess(remote.Unbind(), metadata);
     platform_->RunUntilIdle();
   }
 }
