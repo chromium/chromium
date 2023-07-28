@@ -78,15 +78,13 @@ class MainThreadMetricsHelperTest : public testing::Test {
     base::TimeTicks start_time = queue_time + queue_duration;
     base::TimeTicks end_time = start_time + task_duration;
     FastForwardTo(end_time);
-    scoped_refptr<MainThreadTaskQueue> queue;
-    if (queue_type != MainThreadTaskQueue::QueueType::kDetached) {
-      queue = scheduler_->GetHelper().NewTaskQueue(
-          MainThreadTaskQueue::QueueCreationParams(queue_type));
-    }
+    scoped_refptr<MainThreadTaskQueue> queue =
+        scheduler_->GetHelper().NewTaskQueue(
+            MainThreadTaskQueue::QueueCreationParams(queue_type));
 
     FakeTask task;
     task.queue_time = queue_time;
-    metrics_helper_->RecordTaskMetrics(queue.get(), task,
+    metrics_helper_->RecordTaskMetrics(*queue.get(), task,
                                        FakeTaskTiming(start_time, end_time));
   }
 

@@ -2341,32 +2341,25 @@ void MainThreadSchedulerImpl::BroadcastIntervention(const String& message) {
 }
 
 void MainThreadSchedulerImpl::OnTaskStarted(
-    MainThreadTaskQueue* queue,
+    MainThreadTaskQueue& queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
   if (scheduling_settings().mbi_override_task_runner_handle) {
-    BeginAgentGroupSchedulerScope(queue ? queue->GetAgentGroupScheduler()
-                                        : nullptr);
+    BeginAgentGroupSchedulerScope(queue.GetAgentGroupScheduler());
   }
 
-  main_thread_only().running_queues.push(queue);
+  main_thread_only().running_queues.push(base::WrapRefCounted(&queue));
   if (helper_.IsInNestedRunloop())
     return;
 
   main_thread_only().current_task_start_time = task_timing.start_time();
   main_thread_only().task_description_for_tracing = TaskDescriptionForTracing{
-      static_cast<TaskType>(task.task_type),
-      queue
-          ? absl::optional<MainThreadTaskQueue::QueueType>(queue->queue_type())
-          : absl::nullopt};
-
-  main_thread_only().task_priority_for_tracing =
-      queue ? absl::optional<TaskPriority>(queue->GetQueuePriority())
-            : absl::nullopt;
+      static_cast<TaskType>(task.task_type), queue.queue_type()};
+  main_thread_only().task_priority_for_tracing = queue.GetQueuePriority();
 }
 
 void MainThreadSchedulerImpl::OnTaskCompleted(
-    base::WeakPtr<MainThreadTaskQueue> queue,
+    MainThreadTaskQueue& queue,
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
     base::LazyNow* lazy_now) {
@@ -2377,10 +2370,10 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
   DCHECK_LE(task_timing->start_time(), task_timing->end_time());
   DCHECK(!main_thread_only().running_queues.empty());
-  DCHECK(!queue ||
-         main_thread_only().running_queues.top().get() == queue.get());
-  if (task_timing->has_wall_time() && queue && queue->GetFrameScheduler())
-    queue->GetFrameScheduler()->AddTaskTime(task_timing->wall_duration());
+  DCHECK(main_thread_only().running_queues.top().get() == &queue);
+  if (task_timing->has_wall_time() && queue.GetFrameScheduler()) {
+    queue.GetFrameScheduler()->AddTaskTime(task_timing->wall_duration());
+  }
   main_thread_only().running_queues.pop();
 
   // The overriding TaskRunnerHandle scope ends here.
@@ -2392,35 +2385,31 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
   DispatchOnTaskCompletionCallbacks();
 
-  if (queue) {
-    queue->OnTaskRunTimeReported(task_timing);
+  queue.OnTaskRunTimeReported(task_timing);
 
-    if (FrameSchedulerImpl* frame_scheduler = queue->GetFrameScheduler()) {
-      frame_scheduler->OnTaskCompleted(task_timing,
-                                       task.GetDesiredExecutionTime());
-    }
+  if (FrameSchedulerImpl* frame_scheduler = queue.GetFrameScheduler()) {
+    frame_scheduler->OnTaskCompleted(task_timing,
+                                     task.GetDesiredExecutionTime());
   }
 
   // TODO(altimin): Per-page metrics should also be considered.
-  main_thread_only().metrics_helper.RecordTaskMetrics(queue.get(), task,
+  main_thread_only().metrics_helper.RecordTaskMetrics(queue, task,
                                                       *task_timing);
   main_thread_only().task_description_for_tracing = absl::nullopt;
 
   // Unset the state of |task_priority_for_tracing|.
   main_thread_only().task_priority_for_tracing = absl::nullopt;
 
-  RecordTaskUkm(queue.get(), task, *task_timing);
+  RecordTaskUkm(queue, task, *task_timing);
 
-  MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(queue.get(),
-                                                        *task_timing);
+  MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(queue, *task_timing);
+  find_in_page_budget_pool_controller_->OnTaskCompleted(queue, *task_timing);
 
-  find_in_page_budget_pool_controller_->OnTaskCompleted(queue.get(),
-                                                        task_timing);
   ShutdownEmptyDetachedTaskQueues();
 }
 
 void MainThreadSchedulerImpl::RecordTaskUkm(
-    MainThreadTaskQueue* queue,
+    const MainThreadTaskQueue& queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
   if (!helper_.ShouldRecordTaskUkm(task_timing.has_thread_time()))
@@ -2437,7 +2426,7 @@ void MainThreadSchedulerImpl::RecordTaskUkm(
 }
 
 UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
-    MainThreadTaskQueue* queue,
+    const MainThreadTaskQueue& queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing,
     FrameSchedulerImpl* frame_scheduler,
@@ -2466,10 +2455,9 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
   builder.SetUseCase(
       static_cast<int>(main_thread_only().current_use_case.get()));
   builder.SetTaskType(task.task_type);
-  builder.SetQueueType(static_cast<int>(
-      queue ? queue->queue_type() : MainThreadTaskQueue::QueueType::kDetached));
-  builder.SetFrameStatus(static_cast<int>(
-      GetFrameStatus(queue ? queue->GetFrameScheduler() : nullptr)));
+  builder.SetQueueType(static_cast<int>(queue.queue_type()));
+  builder.SetFrameStatus(
+      static_cast<int>(GetFrameStatus(queue.GetFrameScheduler())));
   builder.SetTaskDuration(task_timing.wall_duration().InMicroseconds());
   builder.SetIsOOPIF(!frame_scheduler->GetPageScheduler()->IsMainFrameLocal());
 
@@ -2645,12 +2633,11 @@ void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
 
 void MainThreadSchedulerImpl::
     MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(
-        MainThreadTaskQueue* queue,
+        const MainThreadTaskQueue& queue,
         const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   RenderingPrioritizationState old_state =
       main_thread_only().main_frame_prioritization_state;
-  if (queue &&
-      queue->GetQueuePriority() == TaskPriority::kExtremelyHighPriority) {
+  if (queue.GetQueuePriority() == TaskPriority::kExtremelyHighPriority) {
     main_thread_only().rendering_blocking_duration_since_last_frame +=
         task_timing.wall_duration();
   }
@@ -2659,8 +2646,7 @@ void MainThreadSchedulerImpl::
   // the scheduler is waiting for a frame because of discrete input, the state
   // will only change once a main frame happens. Otherwise, compute the state in
   // descending priority order.
-  if (queue &&
-      queue->queue_type() == MainThreadTaskQueue::QueueType::kCompositor &&
+  if (queue.queue_type() == MainThreadTaskQueue::QueueType::kCompositor &&
       main_thread_only().is_current_task_main_frame) {
     main_thread_only().last_frame_time = task_timing.end_time();
     main_thread_only().is_current_task_main_frame = false;
@@ -2670,8 +2656,7 @@ void MainThreadSchedulerImpl::
         RenderingPrioritizationState::kNone;
   } else if (main_thread_only().main_frame_prioritization_state !=
              RenderingPrioritizationState::kWaitingForInputResponse) {
-    if (queue &&
-        queue->queue_type() == MainThreadTaskQueue::QueueType::kInput &&
+    if (queue.queue_type() == MainThreadTaskQueue::QueueType::kInput &&
         main_thread_only().is_current_task_discrete_input) {
       // Assume this input will result in a frame, which we want to show ASAP.
       main_thread_only().main_frame_prioritization_state =

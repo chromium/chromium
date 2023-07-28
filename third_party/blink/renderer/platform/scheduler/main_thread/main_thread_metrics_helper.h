@@ -48,7 +48,7 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   ~MainThreadMetricsHelper();
 
   void RecordTaskMetrics(
-      MainThreadTaskQueue* queue,
+      const MainThreadTaskQueue& queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 

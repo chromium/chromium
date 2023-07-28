@@ -800,13 +800,13 @@ class MainThreadSchedulerImplTest : public testing::Test {
     FakeTask fake_task;
     fake_task.set_enqueue_order(
         base::sequence_manager::EnqueueOrder::FromIntForTesting(42));
-    scheduler_->OnTaskStarted(fake_queue.get(), fake_task,
+    scheduler_->OnTaskStarted(*fake_queue.get(), fake_task,
                               FakeTaskTiming(start, base::TimeTicks()));
     std::move(task).Run();
     base::TimeTicks end = Now();
     FakeTaskTiming task_timing(start, end);
-    scheduler_->OnTaskCompleted(fake_queue->weak_ptr_factory_.GetWeakPtr(),
-                                fake_task, &task_timing, nullptr);
+    scheduler_->OnTaskCompleted(*fake_queue.get(), fake_task, &task_timing,
+                                nullptr);
   }
 
   void RunSlowCompositorTask() {
@@ -3530,10 +3530,11 @@ TEST_F(MainThreadSchedulerImplTest, FindInPageTasksChangeToNormalPriority) {
   fake_task.set_enqueue_order(
       base::sequence_manager::EnqueueOrder::FromIntForTesting(42));
   FakeTaskTiming task_timing(task_start_time, task_end_time);
-  scheduler_->OnTaskStarted(find_in_page_task_queue(), fake_task, task_timing);
+  MainThreadTaskQueue* queue = find_in_page_task_queue();
+  EXPECT_TRUE(queue);
+  scheduler_->OnTaskStarted(*queue, fake_task, task_timing);
   AdvanceMockTickClockTo(task_start_time + base::Milliseconds(1000));
-  scheduler_->OnTaskCompleted(find_in_page_task_queue()->AsWeakPtr(), fake_task,
-                              &task_timing, nullptr);
+  scheduler_->OnTaskCompleted(*queue, fake_task, &task_timing, nullptr);
 
   // Now the find-in-page tasks have normal priority (same priority as default
   // tasks, so we will do them in order).

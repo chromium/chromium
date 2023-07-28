@@ -50,19 +50,20 @@ FindInPageBudgetPoolController::FindInPageBudgetPoolController(
 FindInPageBudgetPoolController::~FindInPageBudgetPoolController() = default;
 
 void FindInPageBudgetPoolController::OnTaskCompleted(
-    MainThreadTaskQueue* queue,
-    TaskQueue::TaskTiming* task_timing) {
-  if (!queue || best_effort_budget_experiment_enabled_)
+    const MainThreadTaskQueue& queue,
+    const TaskQueue::TaskTiming& task_timing) {
+  if (best_effort_budget_experiment_enabled_) {
     return;
+  }
   DCHECK(find_in_page_budget_pool_);
-  if (queue->GetPrioritisationType() ==
+  if (queue.GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kFindInPage) {
-    find_in_page_budget_pool_->RecordTaskRunTime(task_timing->start_time(),
-                                                 task_timing->end_time());
+    find_in_page_budget_pool_->RecordTaskRunTime(task_timing.start_time(),
+                                                 task_timing.end_time());
   }
 
   bool is_exhausted =
-      !find_in_page_budget_pool_->CanRunTasksAt(task_timing->end_time());
+      !find_in_page_budget_pool_->CanRunTasksAt(task_timing.end_time());
   TaskPriority task_priority = is_exhausted
                                    ? kFindInPageBudgetExhaustedPriority
                                    : kFindInPageBudgetNotExhaustedPriority;

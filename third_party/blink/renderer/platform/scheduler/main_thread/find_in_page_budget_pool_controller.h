@@ -29,8 +29,8 @@ class PLATFORM_EXPORT FindInPageBudgetPoolController {
   explicit FindInPageBudgetPoolController(MainThreadSchedulerImpl* scheduler);
   ~FindInPageBudgetPoolController();
 
-  void OnTaskCompleted(MainThreadTaskQueue* queue,
-                       TaskQueue::TaskTiming* task_timing);
+  void OnTaskCompleted(const MainThreadTaskQueue& queue,
+                       const TaskQueue::TaskTiming& task_timing);
 
   TaskPriority CurrentTaskPriority() { return task_priority_; }
 

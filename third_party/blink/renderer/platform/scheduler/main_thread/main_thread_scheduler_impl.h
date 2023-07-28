@@ -319,17 +319,13 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void OnShutdownTaskQueue(const scoped_refptr<MainThreadTaskQueue>& queue);
   void OnDetachTaskQueue(MainThreadTaskQueue&);
 
-  // TODO(crbug.com/1143007): Pass `queue` by reference now that the queue is
-  // guaranteed to be alive.
   void OnTaskStarted(
-      MainThreadTaskQueue* queue,
+      MainThreadTaskQueue& queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
-  // TODO(crbug.com/1143007): Pass `queue` by reference now that the queue is
-  // guaranteed to be alive.
   void OnTaskCompleted(
-      base::WeakPtr<MainThreadTaskQueue> queue,
+      MainThreadTaskQueue& queue,
       const base::sequence_manager::Task& task,
       base::sequence_manager::TaskQueue::TaskTiming* task_timing,
       base::LazyNow* lazy_now);
@@ -654,7 +650,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Called from OnTaskCompleted, this method checks to see if the compositor
   // task queue priority needs to be updated.
   void MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(
-      MainThreadTaskQueue* queue,
+      const MainThreadTaskQueue& queue,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   // Computes the priority for compositing based on the current use case.
@@ -671,12 +667,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // If task belongs to a per-frame queue, this task is attributed to
   // a particular Page, otherwise it's attributed to all Pages in the process.
   void RecordTaskUkm(
-      MainThreadTaskQueue* queue,
+      const MainThreadTaskQueue& queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   UkmRecordingStatus RecordTaskUkmImpl(
-      MainThreadTaskQueue* queue,
+      const MainThreadTaskQueue& queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing,
       FrameSchedulerImpl* frame_scheduler,

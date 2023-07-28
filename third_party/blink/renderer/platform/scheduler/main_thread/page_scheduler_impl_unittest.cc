@@ -930,11 +930,14 @@ TEST_F(PageSchedulerImplTest, NestedMessageLoop_DETERMINISTIC_LOADING) {
   vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
 
+  scoped_refptr<MainThreadTaskQueue> fake_queue =
+      scheduler_->NewLoadingTaskQueue(
+          MainThreadTaskQueue::QueueType::kFrameLoading, nullptr);
   FakeTask fake_task;
   fake_task.set_enqueue_order(
       base::sequence_manager::EnqueueOrder::FromIntForTesting(42));
   const base::TimeTicks start = scheduler_->NowTicks();
-  scheduler_->OnTaskStarted(nullptr, fake_task,
+  scheduler_->OnTaskStarted(*fake_queue.get(), fake_task,
                             FakeTaskTiming(start, base::TimeTicks()));
   scheduler_->GetSchedulerHelperForTesting()->OnBeginNestedRunLoop();
   EXPECT_FALSE(scheduler_->VirtualTimeAllowedToAdvance());
@@ -942,7 +945,8 @@ TEST_F(PageSchedulerImplTest, NestedMessageLoop_DETERMINISTIC_LOADING) {
   scheduler_->GetSchedulerHelperForTesting()->OnExitNestedRunLoop();
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
   FakeTaskTiming task_timing(start, scheduler_->NowTicks());
-  scheduler_->OnTaskCompleted(nullptr, fake_task, &task_timing, nullptr);
+  scheduler_->OnTaskCompleted(*fake_queue.get(), fake_task, &task_timing,
+                              nullptr);
 }
 
 TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
@@ -1078,11 +1082,14 @@ TEST_F(PageSchedulerImplTest,
   vtc->SetMaxVirtualTimeTaskStarvationCount(100);
   vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
+  scoped_refptr<MainThreadTaskQueue> fake_queue =
+      scheduler_->NewLoadingTaskQueue(
+          MainThreadTaskQueue::QueueType::kFrameLoading, nullptr);
   FakeTask fake_task;
   fake_task.set_enqueue_order(
       base::sequence_manager::EnqueueOrder::FromIntForTesting(42));
   const base::TimeTicks start = scheduler_->NowTicks();
-  scheduler_->OnTaskStarted(nullptr, fake_task,
+  scheduler_->OnTaskStarted(*fake_queue.get(), fake_task,
                             FakeTaskTiming(start, base::TimeTicks()));
   scheduler_->GetSchedulerHelperForTesting()->OnBeginNestedRunLoop();
 

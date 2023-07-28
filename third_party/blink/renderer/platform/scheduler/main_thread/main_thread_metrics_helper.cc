@@ -129,7 +129,7 @@ void MainThreadMetricsHelper::ResetForTest(base::TimeTicks now) {
 }
 
 void MainThreadMetricsHelper::RecordTaskMetrics(
-    MainThreadTaskQueue* queue,
+    const MainThreadTaskQueue& queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   if (ShouldDiscardTask(task, task_timing))
@@ -156,10 +156,10 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   background_main_thread_load_tracker_.RecordTaskTime(task_timing.start_time(),
                                                       task_timing.end_time());
 
-  if (queue && base::TimeTicks::IsHighResolution()) {
+  if (base::TimeTicks::IsHighResolution()) {
     base::TimeDelta elapsed =
         task_timing.start_time() - task.GetDesiredExecutionTime();
-    queueing_delay_histograms_[static_cast<size_t>(queue->GetQueuePriority())]
+    queueing_delay_histograms_[static_cast<size_t>(queue.GetQueuePriority())]
         .CountMicroseconds(elapsed);
   }
 }
