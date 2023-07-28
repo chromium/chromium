@@ -434,6 +434,36 @@ IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, Performance) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('Performance')");
 }
 
+using SettingsClearBrowsingDataTest = SettingsBrowserTest;
+
+// TODO(crbug.com/1107652): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClearBrowsingDataAllPlatforms \
+  DISABLED_ClearBrowsingDataAllPlatforms
+#else
+#define MAYBE_ClearBrowsingDataAllPlatforms ClearBrowsingDataAllPlatforms
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
+                       MAYBE_ClearBrowsingDataAllPlatforms) {
+  RunTest("settings/clear_browsing_data_test.js",
+          "runMochaSuite('ClearBrowsingDataAllPlatforms')");
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
+                       ClearBrowsingDataDesktop) {
+  RunTest("settings/clear_browsing_data_test.js",
+          "runMochaSuite('ClearBrowsingDataDesktop')");
+}
+#endif
+
+// TODO(crbug.com/1468253): Test is failing consistently on all platforms.
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
+                       DISABLED_ClearBrowsingDataForSupervisedUsers) {
+  RunTest("settings/clear_browsing_data_test.js",
+          "runMochaSuite('ClearBrowsingDataForSupervisedUsers')");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 using SettingsLanguagePageTest = SettingsBrowserTest;
 
@@ -668,6 +698,16 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
           "runMochaSuite('AdMeasurementSubpage')");
 }
 
+class SettingsReviewNotificationPermissionsTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSafetyCheckNotificationPermissions};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsReviewNotificationPermissionsTest, All) {
+  RunTest("settings/review_notification_permissions_test.js", "mocha.run()");
+}
+
 using SettingsRouteTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsRouteTest, Basic) {
@@ -717,6 +757,16 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyCheckPermissionsTest, All) {
   RunTest("settings/safety_check_permissions_test.js", "mocha.run()");
 }
 
+class SettingsSafetyHubUnusedSitePermissionsTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubUnusedSitePermissionsTest, All) {
+  RunTest("settings/safety_hub_unused_site_permissions_module_test.js",
+          "mocha.run()");
+}
+
 using SettingsSecurityPageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
@@ -758,6 +808,23 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
           "runMochaSuite('SpellCheck OfficialBuild')");
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+class SettingsSiteDetailsTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      privacy_sandbox::kPrivacySandboxSettings4};
+};
+
+// Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
+// https://crbug.com/825304 - later for other platforms in crbug.com/1021219.
+#if !defined(NDEBUG)
+#define MAYBE_SiteDetails DISABLED_SiteDetails
+#else
+#define MAYBE_SiteDetails SiteDetails
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSiteDetailsTest, MAYBE_SiteDetails) {
+  RunTest("settings/site_details_test.js", "mocha.run()");
+}
 
 class SettingsSiteListTest : public SettingsBrowserTest {
  private:
@@ -827,3 +894,13 @@ IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, MetricsBrowser) {
   RunTest("settings/translate_page_metrics_test_browser.js", "mocha.run()");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class SettingsUnusedSitePermissionsTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      content_settings::features::kSafetyCheckUnusedSitePermissions};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsUnusedSitePermissionsTest, All) {
+  RunTest("settings/unused_site_permissions_test.js", "mocha.run()");
+}

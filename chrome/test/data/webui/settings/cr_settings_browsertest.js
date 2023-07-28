@@ -48,39 +48,6 @@ var CrSettingsBrowserTest = class extends PolymerTest {
   }
 };
 
-var CrSettingsClearBrowsingDataTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/clear_browsing_data_test.js';
-  }
-};
-
-// TODO(crbug.com/1107652): Flaky on Mac.
-GEN('#if BUILDFLAG(IS_MAC)');
-GEN('#define MAYBE_ClearBrowsingDataAllPlatforms DISABLED_ClearBrowsingDataAllPlatforms');
-GEN('#else');
-GEN('#define MAYBE_ClearBrowsingDataAllPlatforms ClearBrowsingDataAllPlatforms');
-GEN('#endif');
-TEST_F(
-    'CrSettingsClearBrowsingDataTest', 'MAYBE_ClearBrowsingDataAllPlatforms',
-    function() {
-      runMochaSuite('ClearBrowsingDataAllPlatforms');
-    });
-
-GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
-TEST_F(
-    'CrSettingsClearBrowsingDataTest', 'ClearBrowsingDataDesktop', function() {
-      runMochaSuite('ClearBrowsingDataDesktop');
-    });
-GEN('#endif');
-
-// TODO(crbug.com/1468253): Test is failing consistently on all platforms.
-TEST_F(
-    'CrSettingsClearBrowsingDataTest',
-    'DISABLED_ClearBrowsingDataForSupervisedUsers', function() {
-      runMochaSuite('ClearBrowsingDataForSupervisedUsers');
-    });
-
 var CrSettingsAutofillSectionCompanyEnabledTest =
     class extends CrSettingsBrowserTest {
   /** @override */
@@ -90,35 +57,6 @@ var CrSettingsAutofillSectionCompanyEnabledTest =
 };
 
 TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
-  mocha.run();
-});
-
-var CrSettingsSiteDetailsTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/site_details_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'privacy_sandbox::kPrivacySandboxSettings4',
-      ],
-    };
-  }
-};
-
-// Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
-// https://crbug.com/825304 - later for other platforms in crbug.com/1021219.
-// Disabling on Linux CFI due to flaky timeout (crbug.com/1031960).
-GEN('#if (!defined(NDEBUG)) || ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(IS_CFI))');
-GEN('#define MAYBE_SiteDetails DISABLED_SiteDetails');
-GEN('#else');
-GEN('#define MAYBE_SiteDetails SiteDetails');
-GEN('#endif');
-
-TEST_F('CrSettingsSiteDetailsTest', 'MAYBE_SiteDetails', function() {
   mocha.run();
 });
 
@@ -297,68 +235,6 @@ GEN('#else');
 GEN('#define MAYBE_Load Load');
 GEN('#endif');
 TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
-  mocha.run();
-});
-
-var CrSettingsReviewNotificationPermissionsTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/review_notification_permissions_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kSafetyCheckNotificationPermissions',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsReviewNotificationPermissionsTest', 'All', function() {
-  mocha.run();
-});
-
-var CrSettingsUnusedSitePermissionsTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/unused_site_permissions_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'content_settings::features::kSafetyCheckUnusedSitePermissions',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsUnusedSitePermissionsTest', 'All', function() {
-  mocha.run();
-});
-
-var CrSettingsSafetyHubUnusedSitePermissionsTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/safety_hub_unused_site_permissions_module_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kSafetyHub',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsSafetyHubUnusedSitePermissionsTest', 'All', function() {
   mocha.run();
 });
 
