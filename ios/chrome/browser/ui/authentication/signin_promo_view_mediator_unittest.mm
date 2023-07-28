@@ -92,8 +92,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
     if (mediator_) {
       [mediator_ disconnect];
-      EXPECT_EQ(ios::SigninPromoViewState::Invalid,
-                mediator_.signinPromoViewState);
+      EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
       EXPECT_EQ(nil, mediator_.consumer);
       mediator_ = nil;
     }
@@ -465,11 +464,11 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithWarmAndCold) {
 TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateVisible) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   // Test initial state.
-  EXPECT_EQ(ios::SigninPromoViewState::NeverVisible,
+  EXPECT_EQ(SigninPromoViewState::kNeverVisible,
             mediator_.signinPromoViewState);
   [mediator_ signinPromoViewIsVisible];
   // Test state once the sign-in promo view is visible.
-  EXPECT_EQ(ios::SigninPromoViewState::Unused, mediator_.signinPromoViewState);
+  EXPECT_EQ(SigninPromoViewState::kUnused, mediator_.signinPromoViewState);
 }
 
 // Tests the view state while signing in.
@@ -494,7 +493,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   EXPECT_TRUE(mediator_.signinInProgress);
-  EXPECT_EQ(ios::SigninPromoViewState::UsedAtLeastOnce,
+  EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
   EXPECT_NE(nil, (id)completion);
   // Stop sign-in.
@@ -503,7 +502,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   ExpectConfiguratorNotification(NO /* identity changed */);
   completion(SigninCoordinatorResultSuccess);
   EXPECT_FALSE(mediator_.signinInProgress);
-  EXPECT_EQ(ios::SigninPromoViewState::UsedAtLeastOnce,
+  EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
 }
 
@@ -641,7 +640,7 @@ TEST_F(SigninPromoViewMediatorTest,
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
   // Remove the sign-in promo.
   [mediator_ disconnect];
-  EXPECT_EQ(ios::SigninPromoViewState::Invalid, mediator_.signinPromoViewState);
+  EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
   // Dealloc the mediator.
   mediator_ = nil;
   EXPECT_EQ(weak_mediator, nil);
@@ -674,7 +673,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
   // Remove the sign-in promo.
   [mediator_ disconnect];
-  EXPECT_EQ(ios::SigninPromoViewState::Invalid, mediator_.signinPromoViewState);
+  EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
   completion(SigninCoordinatorResultSuccess);

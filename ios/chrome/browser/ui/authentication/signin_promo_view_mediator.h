@@ -32,25 +32,22 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ios {
-// TODO(crbug.com/1447012): Remove from ios namespace.
 // Enums for the sign-in promo view state. Those states are sequential, with no
 // way to go backwards. All states can be skipped except `NeverVisible` and
 // `Invalid`.
 enum class SigninPromoViewState {
   // Initial state. When -[SigninPromoViewMediator disconnect] is called with
   // that state, no metrics is recorded.
-  NeverVisible = 0,
+  kNeverVisible = 0,
   // None of the buttons has been used yet.
-  Unused,
+  kUnused,
   // Sign-in buttons have been used at least once.
-  UsedAtLeastOnce,
+  kUsedAtLeastOnce,
   // Sign-in promo has been closed.
-  Closed,
+  kClosed,
   // Sign-in promo view has been removed.
-  Invalid,
+  kInvalid,
 };
-}  // namespace ios
 
 // The action performed when accepting the promo.
 enum class SigninPromoAction {
@@ -82,7 +79,7 @@ enum class SigninPromoAction {
 @property(nonatomic, strong, readonly) id<SystemIdentity> identity;
 
 // Sign-in promo view state.
-@property(nonatomic, assign) ios::SigninPromoViewState signinPromoViewState;
+@property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
 
 // YES if the sign-in interaction controller is shown.
 @property(nonatomic, assign, readonly, getter=isSigninInProgress)

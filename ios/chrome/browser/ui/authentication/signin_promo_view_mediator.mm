@@ -683,7 +683,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)dealloc {
-  DCHECK_EQ(ios::SigninPromoViewState::Invalid, _signinPromoViewState)
+  DCHECK_EQ(SigninPromoViewState::kInvalid, _signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
 }
 
@@ -741,8 +741,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
   if (self.signinPromoViewVisible) {
     return;
   }
-  if (self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible) {
-    self.signinPromoViewState = ios::SigninPromoViewState::Unused;
+  if (self.signinPromoViewState == SigninPromoViewState::kNeverVisible) {
+    self.signinPromoViewState = SigninPromoViewState::kUnused;
   }
   self.signinPromoViewVisible = YES;
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
@@ -804,14 +804,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (BOOL)isInvalidClosedOrNeverVisible {
   return self.invalidOrClosed ||
-         self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible;
+         self.signinPromoViewState == SigninPromoViewState::kNeverVisible;
 }
 
 #pragma mark - Private properties
 
 - (BOOL)isInvalidOrClosed {
-  return self.signinPromoViewState == ios::SigninPromoViewState::Closed ||
-         self.signinPromoViewState == ios::SigninPromoViewState::Invalid;
+  return self.signinPromoViewState == SigninPromoViewState::kClosed ||
+         self.signinPromoViewState == SigninPromoViewState::kInvalid;
 }
 
 #pragma mark - Private
@@ -895,12 +895,11 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Finishes the sign-in process.
 - (void)signinCallback {
-  if (self.signinPromoViewState == ios::SigninPromoViewState::Invalid) {
+  if (self.signinPromoViewState == SigninPromoViewState::kInvalid) {
     // The mediator owner can remove the view before the sign-in is done.
     return;
   }
-  DCHECK_EQ(ios::SigninPromoViewState::UsedAtLeastOnce,
-            self.signinPromoViewState)
+  DCHECK_EQ(SigninPromoViewState::kUsedAtLeastOnce, self.signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(self.signinInProgress) << base::SysNSStringToUTF8([self description]);
   self.signinInProgress = NO;
@@ -912,7 +911,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
                    promoAction:(signin_metrics::PromoAction)promoAction {
   DCHECK_NE(self.signinPromoAction, SigninPromoAction::kInstantSignin);
 
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
+  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
   self.signinInProgress = YES;
   __weak SigninPromoViewMediator* weakSelf = self;
   // This mediator might be removed before the sign-in callback is invoked.
@@ -955,7 +954,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
       SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
+  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
   self.signinInProgress = YES;
   [self startInstantSignInFlow];
 }
@@ -969,7 +968,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
       SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
+  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
   self.signinInProgress = YES;
   _identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:_baseViewController
@@ -1026,7 +1025,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
+  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
   self.signinInProgress = YES;
   _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:_baseViewController
@@ -1060,13 +1059,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Changes the promo view state, and records the metrics.
 - (void)signinPromoViewIsRemoved {
-  DCHECK_NE(ios::SigninPromoViewState::Invalid, self.signinPromoViewState)
+  DCHECK_NE(SigninPromoViewState::kInvalid, self.signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
   BOOL wasNeverVisible =
-      self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible;
-  BOOL wasUnused =
-      self.signinPromoViewState == ios::SigninPromoViewState::Unused;
-  self.signinPromoViewState = ios::SigninPromoViewState::Invalid;
+      self.signinPromoViewState == SigninPromoViewState::kNeverVisible;
+  BOOL wasUnused = self.signinPromoViewState == SigninPromoViewState::kUnused;
+  self.signinPromoViewState = SigninPromoViewState::kInvalid;
   self.signinPromoViewVisible = NO;
   if (wasNeverVisible)
     return;
@@ -1250,7 +1248,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
          self.accessPoint ==
              signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO)
       << base::SysNSStringToUTF8([self description]);
-  self.signinPromoViewState = ios::SigninPromoViewState::Closed;
+  self.signinPromoViewState = SigninPromoViewState::kClosed;
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint);
   DCHECK(alreadySeenSigninViewPreferenceKey)
