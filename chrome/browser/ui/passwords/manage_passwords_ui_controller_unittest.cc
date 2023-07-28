@@ -2062,6 +2062,10 @@ TEST_F(ManagePasswordsUIControllerWithBrowserTest,
   EXPECT_EQ(controller()->GetState(),
             password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
   EXPECT_TRUE(controller()->IsAutomaticallyOpeningBubble());
+  // All interactions with the bubble will close it and invoke OnBubbleHidden().
+  controller()->OnBubbleHidden();
+  // The bubble should transition to the manage state upon any interaction.
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerWithBrowserTest,
