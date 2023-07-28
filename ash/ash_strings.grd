@@ -2057,9 +2057,6 @@ Style notes:
       <message name="IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER" desc="Keyword of device slow in launcher search that should trigger a CPU answer card result.">
         device slow
       </message>
-      <message name="IDS_ASH_WHY_IS_MY_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER" desc="Keyword of why is my device slow in launcher search that should trigger a CPU answer card result.">
-        why is my device slow
-      </message>
       <message name="IDS_ASH_MEMORY_KEYWORD_FOR_LAUNCHER" desc="Keyword of memory in launcher search that should trigger a memory answer card result.">
         memory
       </message>

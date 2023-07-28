@@ -328,11 +328,7 @@ std::vector<SystemInfoKeywordInput> GetSystemInfoKeywordVector() {
           l10n_util::GetStringUTF16(IDS_ASH_CPU_USAGE_KEYWORD_FOR_LAUNCHER)),
       SystemInfoKeywordInput(
           SystemInfoInputType::kCPU,
-          l10n_util::GetStringUTF16(IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kCPU,
-          l10n_util::GetStringUTF16(
-              IDS_ASH_WHY_IS_MY_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER))};
+          l10n_util::GetStringUTF16(IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER))};
 }
 
 }  // namespace app_list
