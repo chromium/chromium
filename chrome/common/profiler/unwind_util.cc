@@ -82,10 +82,10 @@ class ChromeUnwinderCreator {
 
     base::MemoryMappedFile::Region cfi_region;
     int fd = base::android::OpenApkAsset(kCfiFileName, kSplitName, &cfi_region);
-    DCHECK_GE(fd, 0);
+    CHECK_GE(fd, 0);
     bool mapped_file_ok =
         chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
-    DCHECK(mapped_file_ok);
+    CHECK(mapped_file_ok);
   }
   ChromeUnwinderCreator(const ChromeUnwinderCreator&) = delete;
   ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
@@ -123,7 +123,7 @@ class ChromeUnwinderCreator {
 #if ANDROID_UNWINDING_SUPPORTED
 std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
     stack_unwinder::Module* const stack_unwinder_module) {
-  DCHECK_NE(getpid(), gettid());
+  CHECK_NE(getpid(), gettid());
 
   static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate(
       stack_unwinder_module);
@@ -143,7 +143,7 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
 
 std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders(
     stack_unwinder::Module* const stack_unwinder_module) {
-  DCHECK_NE(getpid(), gettid());
+  CHECK_NE(getpid(), gettid());
   std::vector<std::unique_ptr<base::Unwinder>> unwinders;
   unwinders.push_back(stack_unwinder_module->CreateLibunwindstackUnwinder());
   return unwinders;
@@ -236,7 +236,7 @@ bool AreUnwindPrerequisitesAvailable(
 
 #if ANDROID_UNWINDING_SUPPORTED
 stack_unwinder::Module* GetOrLoadModule() {
-  DCHECK(AreUnwindPrerequisitesAvailable(chrome::GetChannel()));
+  CHECK(AreUnwindPrerequisitesAvailable(chrome::GetChannel()));
   static base::NoDestructor<std::unique_ptr<stack_unwinder::Module>>
       stack_unwinder_module(stack_unwinder::Module::Load());
   return stack_unwinder_module.get()->get();
