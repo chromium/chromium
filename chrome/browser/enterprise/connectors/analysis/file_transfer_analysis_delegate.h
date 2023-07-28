@@ -98,6 +98,8 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Calling this function is only allowed after the scan is complete!
   virtual FileTransferAnalysisResult GetAnalysisResultAfterScan(
       storage::FileSystemURL url);
+  // Calling this function is only allowed after the scan is complete!
+  virtual std::vector<storage::FileSystemURL> GetWarnedFiles() const;
 
   // ContentAnalysisDelegateBase:
   void BypassWarnings(
@@ -135,6 +137,8 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   storage::FileSystemURL destination_url_;
   base::OnceClosure callback_;
   std::vector<RequestHandlerResult> results_;
+  std::vector<size_t> warned_file_indices_;
+  bool warning_is_bypassed_{false};
 
   std::unique_ptr<storage::RecursiveOperationDelegate> get_file_urls_delegate_;
   std::unique_ptr<FilesRequestHandler> request_handler_;

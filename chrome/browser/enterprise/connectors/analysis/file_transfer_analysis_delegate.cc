@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 
+#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -130,8 +131,9 @@ bool IsInSameFileSystem(Profile* profile,
                         storage::FileSystemURL source_url,
                         storage::FileSystemURL destination_url) {
   // Cheap check: source file system url.
-  if (!source_url.IsInSameFileSystem(destination_url))
+  if (!source_url.IsInSameFileSystem(destination_url)) {
     return false;
+  }
 
   // For some URLs FileSystemURL's IsInSameFileSystem function returns false
   // positives. Which `volume_manager` is able to properly determine.
@@ -230,14 +232,35 @@ FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(
     storage::FileSystemURL url) {
   // Should only be called for blocking scans.
   DCHECK_EQ(settings_.block_until_verdict, BlockUntilVerdict::kBlock);
+  DCHECK_EQ(results_.size(), scanning_urls_.size());
+
   for (size_t i = 0; i < scanning_urls_.size(); ++i) {
     if (scanning_urls_[i] == url) {
-      // TODO(crbug.com/1340312): Support warning mode.
-      return results_[i].complies ? FileTransferAnalysisResult::RESULT_ALLOWED
-                                  : FileTransferAnalysisResult::RESULT_BLOCKED;
+      if (results_[i].complies ||
+          (warning_is_bypassed_ &&
+           results_[i].final_result == FinalContentAnalysisResult::WARNING)) {
+        return FileTransferAnalysisResult::RESULT_ALLOWED;
+      }
+      return FileTransferAnalysisResult::RESULT_BLOCKED;
     }
   }
   return FileTransferAnalysisResult::RESULT_UNKNOWN;
+}
+
+std::vector<storage::FileSystemURL>
+FileTransferAnalysisDelegate::GetWarnedFiles() const {
+  // Should only be called for blocking scans.
+  DCHECK_EQ(settings_.block_until_verdict, BlockUntilVerdict::kBlock);
+  DCHECK_EQ(results_.size(), scanning_urls_.size());
+
+  std::vector<storage::FileSystemURL> warned_files;
+  for (size_t i = 0; i < scanning_urls_.size(); ++i) {
+    if (!results_[i].complies &&
+        results_[i].final_result == FinalContentAnalysisResult::WARNING) {
+      warned_files.push_back(scanning_urls_[i]);
+    }
+  }
+  return warned_files;
 }
 
 void FileTransferAnalysisDelegate::UploadData(
@@ -285,33 +308,35 @@ FileTransferAnalysisDelegate::FileTransferAnalysisDelegate(
 
 void FileTransferAnalysisDelegate::BypassWarnings(
     absl::optional<std::u16string> user_justification) {
-  // TODO(crbug.com/1340312)
+  if (!warned_file_indices_.empty()) {
+    request_handler_->ReportWarningBypass(user_justification);
+    warning_is_bypassed_ = true;
+  }
 }
 void FileTransferAnalysisDelegate::Cancel(bool warning) {
   // TODO(crbug.com/1340313)
 }
 absl::optional<std::u16string> FileTransferAnalysisDelegate::GetCustomMessage()
     const {
-  // TODO(crbug.com/1340312)
+  // TODO(b/293556628): Adapt for custom messaging.
   return absl::nullopt;
 }
 absl::optional<GURL> FileTransferAnalysisDelegate::GetCustomLearnMoreUrl()
     const {
-  // TODO(crbug.com/1340312)
+  // TODO(b/293556628): Adapt for custom messaging.
   return absl::nullopt;
 }
 bool FileTransferAnalysisDelegate::BypassRequiresJustification() const {
-  // TODO(crbug.com/1340312)
+  // TODO(b/293556628): Adapt for custom messaging.
   return false;
 }
 std::u16string FileTransferAnalysisDelegate::GetBypassJustificationLabel()
     const {
-  // TODO(crbug.com/1340312)
+  // TODO(b/293556628): Adapt for custom messaging.
   return u"";
 }
 absl::optional<std::u16string>
 FileTransferAnalysisDelegate::OverrideCancelButtonText() const {
-  // TODO(crbug.com/1340313)
   return absl::nullopt;
 }
 
@@ -371,6 +396,16 @@ void FileTransferAnalysisDelegate::ContentAnalysisCompleted(
     std::vector<RequestHandlerResult> results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   results_ = std::move(results);
+
+  // Don't show warning here, as we use multiple FileTransferAnalysisDelegate's
+  // and only want to show one warning.
+  for (size_t index = 0; index < results_.size(); ++index) {
+    FinalContentAnalysisResult result = results_[index].final_result;
+    if (result == FinalContentAnalysisResult::WARNING) {
+      warned_file_indices_.push_back(index);
+    }
+  }
+
   DCHECK(!callback_.is_null());
   std::move(callback_).Run();
 }
