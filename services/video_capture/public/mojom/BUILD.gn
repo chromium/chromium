@@ -13,6 +13,7 @@ mojom("mojom") {
     "producer.mojom",
     "testing_controls.mojom",
     "video_capture_service.mojom",
+    "video_effects_manager.mojom",
     "video_frame_handler.mojom",
     "video_source.mojom",
     "video_source_provider.mojom",

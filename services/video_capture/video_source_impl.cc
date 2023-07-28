@@ -81,6 +81,11 @@ void VideoSourceImpl::CreatePushSubscription(
   }
 }
 
+void VideoSourceImpl::RegisterVideoEffectsManager(
+    mojo::PendingRemote<mojom::VideoEffectsManager> remote) {
+  pending_video_effects_manager_ = std::move(remote);
+}
+
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receivers_.empty()) {
