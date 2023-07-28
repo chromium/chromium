@@ -4346,21 +4346,31 @@ void AXNodeObject::LoadInlineTextBoxes() {
 }
 
 void AXNodeObject::ForceAddInlineTextBoxChildren() {
-  AddInlineTextBoxChildren(true /*force*/);
-  children_dirty_ = false;  // Avoid adding these children twice.
+  // The inline textbox children start empty.
+  DCHECK(CachedChildrenIncludingIgnored().empty());
+  AddInlineTextBoxChildren();
+  // Avoid adding these children twice.
+  children_dirty_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  // Keep inline text box children up-to-date for this object in the future.
+  // This is only necessary on Android, which tries to skip inline text boxes
+  // for most objects.
+  always_load_inline_text_boxes_ = true;
+#endif
+
+  // If inline text box children were added, mark the node dirty so that the
+  // results are serialized.
+  if (!CachedChildrenIncludingIgnored().empty()) {
+    AXObjectCache().MarkAXObjectDirty(this);
+  }
 }
 
-void AXNodeObject::AddInlineTextBoxChildren(bool force) {
+void AXNodeObject::AddInlineTextBoxChildren() {
   DCHECK(GetDocument());
-
-  Settings* settings = GetDocument()->GetSettings();
-  if (!force &&
-      (!settings || !settings->GetInlineTextBoxAccessibilityEnabled())) {
+  DCHECK(ui::CanHaveInlineTextBoxChildren(RoleValue()));
+  if (!GetLayoutObject() || !GetLayoutObject()->IsText()) {
     return;
   }
-
-  if (!GetLayoutObject() || !GetLayoutObject()->IsText())
-    return;
 
   DCHECK(!GetLayoutObject()->NeedsLayout());
 
@@ -4532,9 +4542,21 @@ void AXNodeObject::AddChildrenImpl() {
   }
 
   if (ui::CanHaveInlineTextBoxChildren(RoleValue())) {
-    AddInlineTextBoxChildren();
-    CHECK_ATTACHED();
-    return;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, once an object has loaded inline text boxes, it will keep
+    // them refreshed.
+    bool load_inline_text_box_children = always_load_inline_text_boxes_;
+#else
+    // Other platforms keep all inline text boxes in the tree and refreshed.
+    bool load_inline_text_box_children =
+        GetDocument()->GetSettings() &&
+        GetDocument()->GetSettings()->GetInlineTextBoxAccessibilityEnabled();
+#endif
+    if (load_inline_text_box_children) {
+      AddInlineTextBoxChildren();
+      CHECK_ATTACHED();
+      return;
+    }
   }
 
   if (IsA<HTMLImageElement>(GetNode())) {

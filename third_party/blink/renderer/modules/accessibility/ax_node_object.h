@@ -342,9 +342,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddNodeChildren();
   void AddPseudoElementChildrenFromLayoutTree();
   bool CanAddLayoutChild(LayoutObject& child);
-  // Add inline textbox children, if either force == true or
-  // AXObjectCache().InlineTextBoxAccessibilityEnabled().
-  void AddInlineTextBoxChildren(bool force = false);
+  void AddInlineTextBoxChildren();
   void AddImageMapChildren();
   void AddPopupChildren();
   bool HasValidHTMLTableStructureAndLayout() const;
@@ -361,6 +359,10 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   static bool IsNameFromLabelElement(HTMLElement* control);
   static bool IsRedundantLabel(HTMLLabelElement* label);
+
+#if BUILDFLAG(IS_ANDROID)
+  bool always_load_inline_text_boxes_ = false;
+#endif
 
   Member<Node> node_;
 };

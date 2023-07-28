@@ -227,7 +227,8 @@ void WebAXObject::MarkAXObjectDirtyWithDetails(
 void WebAXObject::OnLoadInlineTextBoxes() const {
   if (IsDetached())
     return;
-  private_->AXObjectCache().OnLoadInlineTextBoxes(*private_);
+
+  private_->LoadInlineTextBoxes();
 }
 
 BLINK_EXPORT void WebAXObject::SetImageAsDataNodeId(

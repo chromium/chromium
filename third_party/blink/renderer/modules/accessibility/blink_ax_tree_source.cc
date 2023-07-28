@@ -58,52 +58,6 @@ BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache)
 
 BlinkAXTreeSource::~BlinkAXTreeSource() = default;
 
-bool BlinkAXTreeSource::ShouldLoadInlineTextBoxes(const AXObject* obj) const {
-#if !BUILDFLAG(IS_ANDROID)
-  // If inline text boxes are enabled globally, no need to explicitly load them.
-  if (ax_object_cache_->GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes))
-    return false;
-#endif
-
-  // On some platforms, like Android, we only load inline text boxes for
-  // a subset of nodes:
-  //
-  // Within the subtree of a focused editable text area.
-  // When specifically enabled for a subtree via |load_inline_text_boxes_ids_|.
-
-  AXObject* focused_object = GetFocusedObject();
-  AXID focus_id = -1;
-  if (focused_object && !focused_object->IsDetached())
-    focus_id = focused_object->AXObjectID();
-  const AXObject* ancestor = obj;
-  while (ancestor && !ancestor->IsDetached()) {
-    AXID ancestor_id = ancestor->AXObjectID();
-    if (load_inline_text_boxes_ids_.Contains(ancestor_id) ||
-        (ancestor_id == focus_id && ancestor->IsEditable())) {
-      return true;
-    }
-    ancestor = ancestor->ParentObjectIncludedInTree();
-  }
-
-  return false;
-}
-
-void BlinkAXTreeSource::SetLoadInlineTextBoxesForId(int32_t id) {
-  // Keeping stale IDs in the set is harmless but we don't want it to keep
-  // growing without bound, so clear out any unnecessary IDs whenever this
-  // method is called.
-  WTF::Vector<int32_t> to_remove;
-  for (auto iter : load_inline_text_boxes_ids_) {
-    auto* obj = GetFromId(iter);
-    if (!obj || obj->IsDetached())
-      to_remove.push_back(iter);
-  }
-  for (auto iter : to_remove)
-    load_inline_text_boxes_ids_.erase(iter);
-
-  load_inline_text_boxes_ids_.insert(id);
-}
-
 static ax::mojom::blink::TextAffinity ToAXAffinity(TextAffinity affinity) {
   switch (affinity) {
     case TextAffinity::kUpstream:
@@ -293,15 +247,6 @@ int32_t BlinkAXTreeSource::GetId(AXObject* node) const {
 }
 
 size_t BlinkAXTreeSource::GetChildCount(AXObject* node) const {
-  // TODO(aleventhal) This is work that should have done earlier. The call
-  // to load inline textboxes can just ClearChildren and mark the inline text
-  // box parent dirty. That would allow removal of a lot of specialized inline
-  // textbox methods.
-  if (ui::CanHaveInlineTextBoxChildren(node->RoleValue()) &&
-      ShouldLoadInlineTextBoxes(node)) {
-    node->LoadInlineTextBoxes();
-  }
-
   return node->ChildCountIncludingIgnored();
 }
 
@@ -449,15 +394,6 @@ void BlinkAXTreeSource::Trace(Visitor* visitor) const {
   visitor->Trace(ax_object_cache_);
   visitor->Trace(root_);
   visitor->Trace(focus_);
-}
-
-void BlinkAXTreeSource::OnLoadInlineTextBoxes(AXObject& obj) {
-  if (ShouldLoadInlineTextBoxes(&obj))
-    return;
-
-  SetLoadInlineTextBoxesForId(obj.AXObjectID());
-
-  ax_object_cache_->MarkSerializerSubtreeDirty(obj);
 }
 
 AXObject* BlinkAXTreeSource::GetPluginRoot() {
