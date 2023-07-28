@@ -359,3 +359,7 @@ iron-list,
 :host-context(body.jelly-enabled) cr-dialog>[slot='title'] {
   font: var(--cros-title-1-font);
 }
+
+:host-context(body.jelly-enabled) cr-button {
+  font: var(--cros-button-2-font);
+}
