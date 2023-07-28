@@ -73,7 +73,7 @@ interface Section {
 interface OptionDomRepeatModel {
   section: Section;
   option: Option;
-  dependant?: Option;
+  dependent?: Option;
 }
 
 type OptionDomRepeatEvent<T = unknown, E extends Event = Event> =
@@ -400,7 +400,7 @@ export class SettingsInputMethodOptionsPageElement extends
   private onToggleButtonOrDropdownChange_(e: OptionDomRepeatEvent): void {
     // e.model isn't correctly set for dependent options, due to nested
     // dom-repeat, so figure out what option was actually set.
-    const option = e.model.dependant ? e.model.dependant : e.model.option;
+    const option = e.model.dependent ? e.model.dependent : e.model.option;
     // The value of dropdown is not updated immediately when the event is fired.
     // Wait for the polymer state to update to make sure we write the latest
     // to Cros Prefs.
