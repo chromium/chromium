@@ -124,9 +124,25 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                   UIPointerInteractionDelegate>
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
+// The cell registration for grid cells.
+@property(nonatomic, strong)
+    UICollectionViewCellRegistration* gridCellRegistration;
+// The cell registration for the Suggested Actions cell.
+@property(nonatomic, strong)
+    UICollectionViewCellRegistration* suggestedActionsCellRegistration;
+// The supplementary view registration for the grid header.
+@property(nonatomic, strong)
+    UICollectionViewSupplementaryRegistration* gridHeaderRegistration;
+// The supplementary view registration for the Inactive Tabs button header.
+@property(nonatomic, strong) UICollectionViewSupplementaryRegistration*
+    inactiveTabsButtonHeaderRegistration;
+// The supplementary view registration for the Inactive Tabs preamble header.
+@property(nonatomic, strong) UICollectionViewSupplementaryRegistration*
+    inactiveTabsPreambleHeaderRegistration;
 // The collection view's data source.
 @property(nonatomic, strong)
-    UICollectionViewDiffableDataSource* diffableDataSource;
+    UICollectionViewDiffableDataSource<NSString*, NSString*>*
+        diffableDataSource;
 // A view to obscure incognito content when the user isn't authorized to
 // see it.
 @property(nonatomic, strong) IncognitoReauthView* blockingView;
@@ -231,20 +247,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
                          collectionViewLayout:self.currentLayout];
-  [collectionView registerClass:[GridCell class]
-      forCellWithReuseIdentifier:kCellIdentifier];
-  [collectionView registerClass:[SuggestedActionsGridCell class]
-      forCellWithReuseIdentifier:kSuggestedActionsCellIdentifier];
-  [collectionView registerClass:[GridHeader class]
-      forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-             withReuseIdentifier:kGridHeaderIdentifier];
-  [collectionView registerClass:[InactiveTabsButtonHeader class]
-      forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-             withReuseIdentifier:kInactiveTabsButtonHeaderIdentifier];
-  [collectionView registerClass:[InactiveTabsPreambleHeader class]
-      forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-             withReuseIdentifier:kInactiveTabsPreambleHeaderIdentifier];
-
   // During deletion (in horizontal layout) the backgroundView can resize,
   // revealing temporarily the collectionView background. This makes sure
   // both are the same color.
@@ -253,25 +255,38 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+    [self createRegistrations];
+
     __weak __typeof(self) weakSelf = self;
     self.diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
         initWithCollectionView:collectionView
                   cellProvider:^UICollectionViewCell*(
                       UICollectionView* innerCollectionView,
-                      NSIndexPath* indexPath, id itemIdentifier) {
-                    return [weakSelf collectionView:innerCollectionView
-                             cellForItemAtIndexPath:indexPath];
+                      NSIndexPath* indexPath, NSString* itemIdentifier) {
+                    return [weakSelf cellForItemAtIndexPath:indexPath
+                                             itemIdentifier:itemIdentifier];
                   }];
     self.diffableDataSource.supplementaryViewProvider =
         ^UICollectionReusableView*(UICollectionView* innerCollectionView,
                                    NSString* elementKind,
                                    NSIndexPath* indexPath) {
-      return [weakSelf collectionView:innerCollectionView
-          viewForSupplementaryElementOfKind:elementKind
-                                atIndexPath:indexPath];
+      return [weakSelf headerForSectionAtIndexPath:indexPath];
     };
     collectionView.dataSource = self.diffableDataSource;
   } else {
+    [collectionView registerClass:[GridCell class]
+        forCellWithReuseIdentifier:kCellIdentifier];
+    [collectionView registerClass:[SuggestedActionsGridCell class]
+        forCellWithReuseIdentifier:kSuggestedActionsCellIdentifier];
+    [collectionView registerClass:[GridHeader class]
+        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+               withReuseIdentifier:kGridHeaderIdentifier];
+    [collectionView registerClass:[InactiveTabsButtonHeader class]
+        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+               withReuseIdentifier:kInactiveTabsButtonHeaderIdentifier];
+    [collectionView registerClass:[InactiveTabsPreambleHeader class]
+        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+               withReuseIdentifier:kInactiveTabsPreambleHeaderIdentifier];
     collectionView.dataSource = self;
   }
   collectionView.delegate = self;
@@ -628,7 +643,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   return base::checked_cast<NSInteger>(self.items.count);
 }
 
-#pragma mark - UICollectionView Data Source Providers
+#pragma mark - UICollectionView Diffable Data Source Helpers
 
 - (void)reloadCollectionViewData {
   NSDiffableDataSourceSnapshot* snapshot =
@@ -644,9 +659,12 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
 }
 
+// TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
+// the diffable data source refactor is validated by testers.
 - (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
           viewForSupplementaryElementOfKind:(NSString*)kind
                                 atIndexPath:(NSIndexPath*)indexPath {
+  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
   switch (_mode) {
     case TabGridModeNormal: {
       // The Regular Tabs grid has a button to inform about the hidden inactive
@@ -704,6 +722,92 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
+// Creates the cell and supplementary view registrations and assigns them to the
+// appropriate properties.
+- (void)createRegistrations {
+  __weak __typeof(self) weakSelf = self;
+
+  // Register GridCell.
+  auto configureGridCell =
+      ^(GridCell* cell, NSIndexPath* indexPath, TabSwitcherItem* item) {
+        [weakSelf configureCell:cell withItem:item atIndex:indexPath.item];
+      };
+  self.gridCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:[GridCell class]
+           configurationHandler:configureGridCell];
+
+  // Register SuggestedActionsGridCell.
+  auto configureSuggestedActionsCell =
+      ^(SuggestedActionsGridCell* suggestedActionsCell, NSIndexPath* indexPath,
+        id item) {
+        CHECK(weakSelf.suggestedActionsViewController);
+        suggestedActionsCell.suggestedActionsView =
+            weakSelf.suggestedActionsViewController.view;
+      };
+  self.suggestedActionsCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:[SuggestedActionsGridCell class]
+           configurationHandler:configureSuggestedActionsCell];
+
+  // Register GridHeader.
+  auto configureGridHeader =
+      ^(GridHeader* gridHeader, NSString* elementKind, NSIndexPath* indexPath) {
+        NSString* sectionIdentifier = [weakSelf.diffableDataSource
+            sectionIdentifierForIndex:indexPath.section];
+        [weakSelf configureGridHeader:gridHeader
+                 forSectionIdentifier:sectionIdentifier];
+      };
+  self.gridHeaderRegistration = [UICollectionViewSupplementaryRegistration
+      registrationWithSupplementaryClass:[GridHeader class]
+                             elementKind:UICollectionElementKindSectionHeader
+                    configurationHandler:configureGridHeader];
+
+  // Register InactiveTabsButtonHeader.
+  auto configureInactiveTabsButtonHeader =
+      ^(InactiveTabsButtonHeader* header, NSString* elementKind,
+        NSIndexPath* indexPath) {
+        [weakSelf configureInactiveTabsButtonHeader:header];
+      };
+  self.inactiveTabsButtonHeaderRegistration =
+      [UICollectionViewSupplementaryRegistration
+          registrationWithSupplementaryClass:[InactiveTabsButtonHeader class]
+                                 elementKind:
+                                     UICollectionElementKindSectionHeader
+                        configurationHandler:configureInactiveTabsButtonHeader];
+
+  // Register InactiveTabsPreambleHeader.
+  auto configureInactiveTabsPreambleHeader =
+      ^(InactiveTabsPreambleHeader* header, NSString* elementKind,
+        NSIndexPath* indexPath) {
+        [weakSelf configureInactiveTabsPreambleHeader:header];
+      };
+  self.inactiveTabsPreambleHeaderRegistration =
+      [UICollectionViewSupplementaryRegistration
+          registrationWithSupplementaryClass:[InactiveTabsPreambleHeader class]
+                                 elementKind:
+                                     UICollectionElementKindSectionHeader
+                        configurationHandler:
+                            configureInactiveTabsPreambleHeader];
+}
+
+// Configures the grid header for the given section.
+- (void)configureGridHeader:(GridHeader*)gridHeader
+       forSectionIdentifier:(NSString*)sectionIdentifier {
+  CHECK(base::FeatureList::IsEnabled(kTabGridRefactoring));
+  if ([sectionIdentifier isEqualToString:kOpenTabsSectionIdentifier]) {
+    gridHeader.title = l10n_util::GetNSString(
+        IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE);
+    NSString* resultsCount = [@(self.items.count) stringValue];
+    gridHeader.value =
+        l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
+                                base::SysNSStringToUTF16(resultsCount));
+  } else if ([sectionIdentifier
+                 isEqualToString:kSuggestedActionsSectionIdentifier]) {
+    gridHeader.title =
+        l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS);
+  }
+}
+
+// Configures the Inactive Tabs Button header according to the current state.
 - (void)configureInactiveTabsButtonHeader:(InactiveTabsButtonHeader*)header {
   header.parent = self;
   __weak __typeof(self) weakSelf = self;
@@ -716,6 +820,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
+// Configures the Inactive Tabs Preamble header according to the current state.
 - (void)configureInactiveTabsPreambleHeader:
     (InactiveTabsPreambleHeader*)header {
   __weak __typeof(self) weakSelf = self;
@@ -725,8 +830,67 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   header.daysThreshold = self.inactiveTabsDaysThreshold;
 }
 
+// Returns a configured header for the given index path.
+- (UICollectionReusableView*)headerForSectionAtIndexPath:
+    (NSIndexPath*)indexPath {
+  UICollectionViewSupplementaryRegistration* registration;
+  switch (_mode) {
+    case TabGridModeNormal:
+      // The Regular Tabs grid has a button to inform about the hidden inactive
+      // tabs.
+      CHECK(IsInactiveTabsAvailable());
+      if (self.inactiveTabsCount == 0 &&
+          !self.inactiveTabsHeaderHideAnimationInProgress) {
+        base::debug::DumpWithoutCrashing();
+      }
+      registration = self.inactiveTabsButtonHeaderRegistration;
+      break;
+    case TabGridModeSelection:
+      NOTREACHED();
+      break;
+    case TabGridModeSearch:
+      registration = self.gridHeaderRegistration;
+      break;
+    case TabGridModeInactive:
+      // The Inactive Tabs grid has a header to inform about the feature and a
+      // link to its settings.
+      CHECK(IsInactiveTabsEnabled());
+      registration = self.inactiveTabsPreambleHeaderRegistration;
+      break;
+  }
+  return [self.collectionView
+      dequeueConfiguredReusableSupplementaryViewWithRegistration:registration
+                                                    forIndexPath:indexPath];
+}
+
+// Returns a configured cell for the given index path and item identifier.
+- (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
+                                 itemIdentifier:(NSString*)itemIdentifier {
+  CHECK(base::FeatureList::IsEnabled(kTabGridRefactoring));
+
+  // Handle the SuggestedActionsGridCell.
+  if ([itemIdentifier isEqualToString:kSuggestedActionsCellIdentifier]) {
+    return [self.collectionView
+        dequeueConfiguredReusableCellWithRegistration:
+            self.suggestedActionsCellRegistration
+                                         forIndexPath:indexPath
+                                                 item:itemIdentifier];
+  }
+
+  // Handle GridCell-s.
+  TabSwitcherItem* item = self.items[indexPath.item];
+  return [self.collectionView
+      dequeueConfiguredReusableCellWithRegistration:self.gridCellRegistration
+                                       forIndexPath:indexPath
+                                               item:item];
+}
+
+// TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
+// the diffable data source refactor is validated by testers.
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
+  CHECK(!base::FeatureList::IsEnabled(kTabGridRefactoring));
+
   NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
   UICollectionViewCell* cell;
 
