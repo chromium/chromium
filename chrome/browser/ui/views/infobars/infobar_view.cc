@@ -40,6 +40,7 @@
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -118,6 +119,10 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         gfx::Insets::TLBR(close_button_spacing.top(), 0,
                           close_button_spacing.bottom(), 0));
     close_button_ = AddChildView(std::move(close_button));
+
+    if (features::IsChromeRefresh2023()) {
+      InstallCircleHighlightPathGenerator(close_button_);
+    }
   }
 }
 
