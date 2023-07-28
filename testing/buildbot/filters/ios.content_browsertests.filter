@@ -214,6 +214,13 @@
 # TODO(crbug.com/1467854): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
+# TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
+# test server, which is not supported on iOS.
+-BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromHTMLFile
+-BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromJavaScriptFile
+-BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
+-BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilityAriaTime/blink
