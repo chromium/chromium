@@ -97,9 +97,6 @@ bool TraceReportDatabase::OpenDatabaseForTesting() {
   return EnsureTableCreated();
 }
 
-// TODO (aattar): Add database clean up solution and/or quota. Currently there's
-// no solution for cleaning up the database and/or how many trace reports it
-// can hold at once. Therefore, this method needs to be used carefully.
 bool TraceReportDatabase::AddTrace(NewReport new_report) {
   if (!database_.is_open()) {
     return false;
@@ -222,6 +219,24 @@ bool TraceReportDatabase::DeleteAllTraces() {
   CHECK(delete_all_traces.is_valid());
 
   return delete_all_traces.Run();
+}
+
+bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
+                                                  const base::Time end) {
+  if (!database_.is_open()) {
+    return false;
+  }
+
+  sql::Statement delete_traces_in_range(database_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM local_traces WHERE creation_time BETWEEN ? AND ?"));
+
+  delete_traces_in_range.BindTime(0, start);
+  delete_traces_in_range.BindTime(1, end);
+
+  CHECK(delete_traces_in_range.is_valid());
+
+  return delete_traces_in_range.Run();
 }
 
 bool TraceReportDatabase::EnsureTableCreated() {
