@@ -394,20 +394,20 @@ AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
   return CSSAnimationData::InitialName();
 }
 
-CSSTransitionData::CSSTransitionAnimationType CSSToStyleMap::MapAnimationMode(
+CSSTransitionData::TransitionBehavior CSSToStyleMap::MapAnimationBehavior(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* ident_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (ident_value->GetValueID()) {
       case CSSValueID::kNormal:
-        return CSSTransitionData::CSSTransitionAnimationType::kNormal;
-      case CSSValueID::kDiscrete:
-        return CSSTransitionData::CSSTransitionAnimationType::kDiscrete;
+        return CSSTransitionData::TransitionBehavior::kNormal;
+      case CSSValueID::kAllowDiscrete:
+        return CSSTransitionData::TransitionBehavior::kAllowDiscrete;
       default:
         break;
     }
   }
-  return CSSTransitionData::InitialMode();
+  return CSSTransitionData::InitialBehavior();
 }
 
 StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,

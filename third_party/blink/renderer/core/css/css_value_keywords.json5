@@ -1688,7 +1688,7 @@
     "root",
     "nearest",
 
-    // transition-animation-type
-    "discrete",
+    // transition-behavior
+    "allow-discrete",
   ],
 }

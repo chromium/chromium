@@ -109,7 +109,7 @@ class CORE_EXPORT InterpolationType {
                      const NonInterpolableValue*,
                      InterpolationEnvironment&) const = 0;
 
-  // If this returns true, then transition-animation-type:discrete must be set
+  // If this returns true, then transition-behavior:allow-discrete must be set
   // in order to use this InterpolationType. Discrete properties generally don't
   // have an InterpolationType set because there is nothing to interpolate, but
   // some of them do in order to flip at the beginning or end of the animation

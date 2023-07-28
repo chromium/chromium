@@ -1251,10 +1251,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kToggleGroup:
     case CSSPropertyID::kToggleRoot:
     case CSSPropertyID::kToggleTrigger:
+    case CSSPropertyID::kTransitionBehavior:
     case CSSPropertyID::kTransitionDelay:
     case CSSPropertyID::kTransitionDuration:
     case CSSPropertyID::kTransitionProperty:
-    case CSSPropertyID::kTransitionAnimationType:
     case CSSPropertyID::kTransitionTimingFunction:
     case CSSPropertyID::kUnicodeBidi:
     case CSSPropertyID::kWebkitWritingMode:

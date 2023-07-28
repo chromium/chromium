@@ -233,10 +233,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ResolvedTransform(const LayoutObject*, const ComputedStyle&);
   static CSSValue* CreateTransitionPropertyValue(
       const CSSTransitionData::TransitionProperty&);
-  static CSSValue* CreateTransitionAnimationTypeValue(
-      const CSSTransitionData::CSSTransitionAnimationType&);
+  static CSSValue* CreateTransitionBehaviorValue(
+      const CSSTransitionData::TransitionBehavior&);
   static CSSValue* ValueForTransitionProperty(const CSSTransitionData*);
-  static CSSValue* ValueForTransitionAnimationType(const CSSTransitionData*);
+  static CSSValue* ValueForTransitionBehavior(const CSSTransitionData*);
   static CSSValue* ValueForContentData(const ComputedStyle&,
                                        bool allow_visited_style);
 

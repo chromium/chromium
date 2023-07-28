@@ -2314,14 +2314,14 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     }
   }
 
-  auto mode = CSSTimingData::GetRepeated(state.transition_data->ModeList(),
+  auto mode = CSSTimingData::GetRepeated(state.transition_data->BehaviorList(),
                                          transition_index);
 
   // If no smooth interpolation exists between the old and new values and
-  // transition-animation-type didn't indicate that we should do a discrete
+  // transition-behavior didn't indicate that we should do a discrete
   // transition, then don't start a transition.
   if (discrete_interpolation &&
-      mode != CSSTransitionData::CSSTransitionAnimationType::kDiscrete) {
+      mode != CSSTransitionData::TransitionBehavior::kAllowDiscrete) {
     return;
   }
 
@@ -3105,7 +3105,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kToggleRoot:
     case CSSPropertyID::kToggleTrigger:
     case CSSPropertyID::kTransition:
-    case CSSPropertyID::kTransitionAnimationType:
+    case CSSPropertyID::kTransitionBehavior:
     case CSSPropertyID::kTransitionDelay:
     case CSSPropertyID::kTransitionDuration:
     case CSSPropertyID::kTransitionProperty:

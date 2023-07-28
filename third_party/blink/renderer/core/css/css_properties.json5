@@ -992,13 +992,13 @@
       is_animation_property: true,
     },
     {
-      name: "transition-animation-type",
+      name: "transition-behavior",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       typedom_types: ["Keyword"],
       separator: ",",
       style_builder_template: "transition",
       style_builder_template_args: {
-        attribute: "Mode",
+        attribute: "Behavior",
       },
       valid_for_marker: true,
       is_animation_property: true,
@@ -7398,7 +7398,7 @@
       longhands: [
         "transition-property", "transition-duration",
         "transition-timing-function", "transition-delay",
-        "transition-animation-type",
+        "transition-behavior",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },

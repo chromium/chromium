@@ -370,7 +370,7 @@ touch-action: auto
 transform: none
 transform-origin: 50% 50%
 transform-style: flat
-transition-animation-type: normal
+transition-behavior: normal
 transition-delay: 0s
 transition-duration: 0s
 transition-property: all

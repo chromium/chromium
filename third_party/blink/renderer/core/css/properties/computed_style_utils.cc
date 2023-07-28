@@ -2979,13 +2979,13 @@ CSSValue* ComputedStyleUtils::CreateTransitionPropertyValue(
           .GetPropertyNameAtomicString());
 }
 
-CSSValue* ComputedStyleUtils::CreateTransitionAnimationTypeValue(
-    const CSSTransitionData::CSSTransitionAnimationType& type) {
+CSSValue* ComputedStyleUtils::CreateTransitionBehaviorValue(
+    const CSSTransitionData::TransitionBehavior& type) {
   switch (type) {
-    case CSSTransitionData::CSSTransitionAnimationType::kNormal:
+    case CSSTransitionData::TransitionBehavior::kNormal:
       return CSSIdentifierValue::Create(CSSValueID::kNormal);
-    case CSSTransitionData::CSSTransitionAnimationType::kDiscrete:
-      return CSSIdentifierValue::Create(CSSValueID::kDiscrete);
+    case CSSTransitionData::TransitionBehavior::kAllowDiscrete:
+      return CSSIdentifierValue::Create(CSSValueID::kAllowDiscrete);
   }
   NOTREACHED() << " Unrecognized type: " << static_cast<unsigned>(type);
   return nullptr;
@@ -3005,12 +3005,12 @@ CSSValue* ComputedStyleUtils::ValueForTransitionProperty(
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForTransitionAnimationType(
+CSSValue* ComputedStyleUtils::ValueForTransitionBehavior(
     const CSSTransitionData* transition_data) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   if (transition_data) {
-    for (const auto& mode : transition_data->ModeList()) {
-      list->Append(*CreateTransitionAnimationTypeValue(mode));
+    for (const auto& mode : transition_data->BehaviorList()) {
+      list->Append(*CreateTransitionBehaviorValue(mode));
     }
   } else {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kNormal));

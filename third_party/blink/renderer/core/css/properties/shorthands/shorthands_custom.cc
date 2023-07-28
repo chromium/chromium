@@ -3442,9 +3442,8 @@ CSSValue* ConsumeTransitionValue(CSSPropertyID property,
       return css_parsing_utils::ConsumeTransitionProperty(range, context);
     case CSSPropertyID::kTransitionTimingFunction:
       return css_parsing_utils::ConsumeAnimationTimingFunction(range, context);
-    case CSSPropertyID::kTransitionAnimationType:
-      if (css_parsing_utils::IsValidTransitionAnimationType(
-              range.Peek().Id())) {
+    case CSSPropertyID::kTransitionBehavior:
+      if (css_parsing_utils::IsValidTransitionBehavior(range.Peek().Id())) {
         return CSSIdentifierValue::Create(
             range.ConsumeIncludingWhitespace().Id());
       }
@@ -3515,10 +3514,10 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
                                      i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
           CSSTimingData::GetRepeated(transition_data->DelayStartList(), i)));
-      if (CSSTimingData::GetRepeated(transition_data->ModeList(), i) !=
-          CSSTransitionData::InitialMode()) {
-        list->Append(*ComputedStyleUtils::CreateTransitionAnimationTypeValue(
-            transition_data->ModeList()[i]));
+      if (CSSTimingData::GetRepeated(transition_data->BehaviorList(), i) !=
+          CSSTransitionData::InitialBehavior()) {
+        list->Append(*ComputedStyleUtils::CreateTransitionBehaviorValue(
+            transition_data->BehaviorList()[i]));
       }
       transitions_list->Append(*list);
     }

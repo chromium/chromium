@@ -38,8 +38,7 @@ const StylePropertyShorthand& transitionShorthandForParsing() {
       std::size(kTransitionProperties));
 
   static const CSSProperty* kTransitionPropertiesWithAnimationType[] = {
-      &GetCSSPropertyTransitionAnimationType(),
-      &GetCSSPropertyTransitionDuration(),
+      &GetCSSPropertyTransitionBehavior(), &GetCSSPropertyTransitionDuration(),
       &GetCSSPropertyTransitionTimingFunction(),
       &GetCSSPropertyTransitionDelay(), &GetCSSPropertyTransitionProperty()};
   static StylePropertyShorthand transition_longhands_with_animation_type(

@@ -7122,23 +7122,23 @@ bool IsValidPropertyList(const CSSValueList& value_list) {
   return true;
 }
 
-bool IsValidTransitionAnimationType(const CSSValueID& value) {
+bool IsValidTransitionBehavior(const CSSValueID& value) {
   switch (value) {
     case CSSValueID::kNormal:
-    case CSSValueID::kDiscrete:
+    case CSSValueID::kAllowDiscrete:
       return true;
     default:
       return false;
   }
 }
 
-bool IsValidTransitionAnimationTypeList(const CSSValueList& value_list) {
+bool IsValidTransitionBehaviorList(const CSSValueList& value_list) {
   for (auto& value : value_list) {
     auto* ident_value = DynamicTo<CSSIdentifierValue>(value.Get());
     if (!ident_value) {
       return false;
     }
-    if (!IsValidTransitionAnimationType(ident_value->GetValueID())) {
+    if (!IsValidTransitionBehavior(ident_value->GetValueID())) {
       return false;
     }
   }

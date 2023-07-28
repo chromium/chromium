@@ -468,7 +468,7 @@ transformBox
 transformOrigin
 transformStyle
 transition
-transitionAnimationType
+transitionBehavior
 transitionDelay
 transitionDuration
 transitionProperty

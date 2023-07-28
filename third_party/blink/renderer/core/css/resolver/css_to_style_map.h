@@ -80,7 +80,7 @@ class CSSToStyleMap {
   static double MapAnimationIterationCount(StyleResolverState&,
                                            const CSSValue&);
   static AtomicString MapAnimationName(StyleResolverState&, const CSSValue&);
-  static CSSTransitionData::CSSTransitionAnimationType MapAnimationMode(
+  static CSSTransitionData::TransitionBehavior MapAnimationBehavior(
       StyleResolverState&,
       const CSSValue&);
   static StyleTimeline MapAnimationTimeline(StyleResolverState&,
