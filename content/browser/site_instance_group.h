@@ -71,7 +71,7 @@ class CONTENT_EXPORT SiteInstanceGroup
     : public base::RefCounted<SiteInstanceGroup>,
       public RenderProcessHostObserver {
  public:
-  class CONTENT_EXPORT Observer {
+  class CONTENT_EXPORT Observer : public base::CheckedObserver {
    public:
     // Called when this SiteInstanceGroup transitions to having no active
     // frames, as measured by active_frame_count().
@@ -204,7 +204,7 @@ class CONTENT_EXPORT SiteInstanceGroup
   // prevent UaF.
   base::flat_set<raw_ptr<SiteInstanceImpl>> site_instances_;
 
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
   bool is_notifying_observers_ = false;
 
   base::WeakPtrFactory<SiteInstanceGroup> weak_ptr_factory_{this};
