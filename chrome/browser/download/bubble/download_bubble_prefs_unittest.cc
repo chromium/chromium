@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/common/pref_names.h"
@@ -25,9 +26,19 @@
 
 namespace {
 
-constexpr char kDownloadConnectorEnabledPref[] = R"([
+constexpr char kDownloadConnectorEnabledNonBlockingPref[] = R"([
   {
     "service_provider": "google",
+    "enable": [
+      {"url_list": ["*"], "tags": ["malware"]}
+    ]
+  }
+])";
+
+constexpr char kDownloadConnectorEnabledBlockingPref[] = R"([
+  {
+    "service_provider": "google",
+    "block_until_verdict":1,
     "enable": [
       {"url_list": ["*"], "tags": ["malware"]}
     ]
@@ -49,6 +60,12 @@ class DownloadBubblePrefsTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidToken("fake-token"));
+    profile_->GetPrefs()->SetInteger(
+        ConnectorScopePref(
+            enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED),
+        policy::POLICY_SCOPE_MACHINE);
   }
 
  protected:
@@ -98,13 +115,18 @@ TEST_F(DownloadBubblePrefsTest, DownloadBubbleEnabledManaged) {
   ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/false);
 }
 
-TEST_F(DownloadBubblePrefsTest, IsDownloadConnectorEnabled) {
-  EXPECT_FALSE(IsDownloadConnectorEnabled(profile_));
+TEST_F(DownloadBubblePrefsTest, DoesDownloadConnectorBlock) {
+  EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
   profile_->GetPrefs()->Set(
       enterprise_connectors::ConnectorPref(
           enterprise_connectors::FILE_DOWNLOADED),
-      *base::JSONReader::Read(kDownloadConnectorEnabledPref));
-  EXPECT_TRUE(IsDownloadConnectorEnabled(profile_));
+      *base::JSONReader::Read(kDownloadConnectorEnabledNonBlockingPref));
+  EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
+  profile_->GetPrefs()->Set(
+      enterprise_connectors::ConnectorPref(
+          enterprise_connectors::FILE_DOWNLOADED),
+      *base::JSONReader::Read(kDownloadConnectorEnabledBlockingPref));
+  EXPECT_TRUE(DoesDownloadConnectorBlock(profile_, GURL()));
 }
 
 TEST_F(DownloadBubblePrefsTest, V2FeatureFlagEnabled) {

@@ -1351,7 +1351,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING))
                 .AddSubpageSecondaryIconAndText(
                     vector_icons::kDocumentScannerIcon,
-                    download::IsDownloadConnectorEnabled(profile())
+                    download::DoesDownloadConnectorBlock(profile(), GetURL())
                         ? l10n_util::GetStringUTF16(
                               IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_ENTERPRISE_SECONDARY)
                         : l10n_util::GetStringUTF16(
@@ -1365,7 +1365,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                         IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_DISCARD),
                     DownloadCommands::Command::DISCARD);
         ui_info.subpage_buttons[0].is_prominent = false;
-        if (!download::IsDownloadConnectorEnabled(profile())) {
+        if (!download::DoesDownloadConnectorBlock(profile(), GetURL())) {
           ui_info.AddSecondarySubpageButton(
               l10n_util::GetStringUTF16(
                   IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_CANCEL),
@@ -1376,7 +1376,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
         ui_info = DownloadUIModel::BubbleUIInfo()
                       .AddProgressBar()
                       .SetProgressBarLooping();
-        if (!download::IsDownloadConnectorEnabled(profile())) {
+        if (!download::DoesDownloadConnectorBlock(profile(), GetURL())) {
           ui_info.AddPrimaryButton(
               DownloadCommands::Command::BYPASS_DEEP_SCANNING);
         }
@@ -1724,7 +1724,8 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
 #else
       // Either "Checking with your organization's security policies..." or
       // "Scanning..."
-      return download::IsDownloadConnectorEnabled(model_->profile())
+      return download::DoesDownloadConnectorBlock(
+                 model_->profile(), model_->GetDownloadItem()->GetURL())
                  ? l10n_util::GetStringUTF16(
                        IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING_ENTERPRISE)
                  : l10n_util::GetStringUTF16(

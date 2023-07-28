@@ -18,7 +18,9 @@ bool IsDownloadBubbleV2Enabled(Profile* profile);
 // Called when deciding whether to show or hide the bubble.
 bool ShouldShowDownloadBubble(Profile* profile);
 
-bool IsDownloadConnectorEnabled(Profile* profile);
+// The enterprise download connectors can be enabled in blocking or nonblocking
+// mode. This returns false if the connector is disabled.
+bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url);
 
 // Whether to suppress the download bubble IPH. This will be true for users
 // who have interacted with the download bubble prior to the IPH being added.
