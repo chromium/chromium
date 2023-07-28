@@ -12,6 +12,7 @@
 #include "chrome/browser/companion/core/mock_signin_delegate.h"
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
+#include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -37,21 +38,16 @@ class CompanionUrlBuilderTest : public testing::Test {
   ~CompanionUrlBuilderTest() override = default;
 
   void SetUp() override {
-    scoped_list_.InitAndEnableFeatureWithParameters(
-        features::internal::kSidePanelCompanion, GetFeatureParams());
+    scoped_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                               /** disabled_features= */ {});
 
     pref_service_.registry()->RegisterBooleanPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         false);
 
-// Need to BUILDFLAG these lines because
-// kSidePanelCompanionEntryPinnedToToolbar
-// does not exist on Android and will break try-bots
-#if (!BUILDFLAG(IS_ANDROID))
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSidePanelCompanionEntryPinnedToToolbar,
         EntryPointDefaultPinned());
-#endif
 
     PromoHandler::RegisterProfilePrefs(pref_service_.registry());
 
@@ -65,8 +61,10 @@ class CompanionUrlBuilderTest : public testing::Test {
                                                          &signin_delegate_);
   }
 
-  virtual base::FieldTrialParams GetFeatureParams() {
-    return {{"open-links-in-current-tab", "false"}};
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {base::test::FeatureRefAndParams(
+        features::internal::kSidePanelCompanion,
+        {{"open-links-in-current-tab", "false"}})};
   }
 
   virtual bool EntryPointDefaultPinned() { return true; }
@@ -221,6 +219,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_TRUE(proto.is_signed_in());
   EXPECT_TRUE(proto.is_entrypoint_pinned_by_default());
   EXPECT_TRUE(proto.links_open_in_new_tab());
+  EXPECT_FALSE(proto.is_vqs_enabled_on_chrome());
 
   // Verify promo state.
   EXPECT_TRUE(proto.has_promo_state());
@@ -281,8 +280,10 @@ TEST_F(CompanionUrlBuilderTest, WithoutTextQuery) {
 
 class CompanionUrlBuilderCurrentTabTest : public CompanionUrlBuilderTest {
  public:
-  base::FieldTrialParams GetFeatureParams() override {
-    return {{"open-links-in-current-tab", "true"}};
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {base::test::FeatureRefAndParams(
+        features::internal::kSidePanelCompanion,
+        {{"open-links-in-current-tab", "true"}})};
   }
 };
 
@@ -313,6 +314,28 @@ TEST_F(CompanionUrlBuilderDefaultUnpinnedTest, DefaultUnpinned) {
       DeserializeCompanionRequest(encoded_proto);
 
   EXPECT_FALSE(proto.is_entrypoint_pinned_by_default());
+}
+
+class CompanionUrlBuilderVqsEnabledTest : public CompanionUrlBuilderTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {base::test::FeatureRefAndParams(
+                features::internal::kSidePanelCompanion, {}),
+            base::test::FeatureRefAndParams(
+                visual_search::features::kVisualSearchSuggestions, {})};
+  }
+};
+
+TEST_F(CompanionUrlBuilderVqsEnabledTest, VqsEnabled) {
+  GURL page_url(kValidUrl);
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(encoded_proto);
+
+  EXPECT_TRUE(proto.is_vqs_enabled_on_chrome());
 }
 
 }  // namespace companion

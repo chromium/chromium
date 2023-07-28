@@ -15,6 +15,12 @@
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
+// Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
+// does not exist on Android and will break try-bots
+#if (!BUILDFLAG(IS_ANDROID))
+#include "chrome/browser/companion/visual_search/features.h"
+#endif
+
 namespace companion {
 namespace {
 
@@ -123,7 +129,7 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
       !companion::ShouldOpenLinksInCurrentTab());
 
 // Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
-// does not exist on Android and will break try-bots
+// and kVisualSearchSuggestions do not exist on Android and will break try-bots
 #if (!BUILDFLAG(IS_ANDROID))
   bool is_entry_point_default_pinned =
       pref_service_ &&
@@ -131,6 +137,8 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
           ->GetDefaultPrefValue(prefs::kSidePanelCompanionEntryPinnedToToolbar)
           ->GetBool();
   url_params.set_is_entrypoint_pinned_by_default(is_entry_point_default_pinned);
+  url_params.set_is_vqs_enabled_on_chrome(base::FeatureList::IsEnabled(
+      visual_search::features::kVisualSearchSuggestions));
 #endif
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
