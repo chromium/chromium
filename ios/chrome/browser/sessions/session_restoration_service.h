@@ -14,13 +14,10 @@
 // is enabled.
 //
 // TODO(crbug.com/1383087): Update this comment once launched.
-class SessionRestorationService final : public KeyedService {
+class SessionRestorationService : public KeyedService {
  public:
   SessionRestorationService();
-  ~SessionRestorationService() final;
-
-  // KeyedService implementation.
-  void Shutdown() final;
+  ~SessionRestorationService() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_SERVICE_H_

@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/sessions/session_restoration_service.h"
+#include "ios/chrome/browser/sessions/session_restoration_service_impl.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
@@ -33,7 +33,7 @@ SessionRestorationServiceFactory::~SessionRestorationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SessionRestorationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<SessionRestorationService>();
+  return std::make_unique<SessionRestorationServiceImpl>();
 }
 
 web::BrowserState* SessionRestorationServiceFactory::GetBrowserStateToUse(

@@ -144,13 +144,23 @@ source_set("session_saving") {
 
 source_set("session_restoration_service") {
   sources = [
+    "session_restoration_service.cc",
     "session_restoration_service.h",
-    "session_restoration_service.mm",
   ]
   deps = [
+    "//base",
     "//components/keyed_service/core",
     "//ios/web/common:features",
   ]
+}
+
+source_set("session_restoration_service_impl") {
+  visibility = [ ":session_restoration_service_factory" ]
+  sources = [
+    "session_restoration_service_impl.h",
+    "session_restoration_service_impl.mm",
+  ]
+  deps = [ ":session_restoration_service" ]
 }
 
 source_set("session_restoration_service_factory") {
@@ -159,7 +169,7 @@ source_set("session_restoration_service_factory") {
     "session_restoration_service_factory.h",
   ]
   deps = [
-    ":session_restoration_service",
+    ":session_restoration_service_impl",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
   ]
