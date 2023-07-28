@@ -22,7 +22,6 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/history_clusters/core/features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/search/ntp_features.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -36,6 +35,7 @@
 #include "media/base/media_switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -176,7 +176,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(features::kChromeWhatsNewUI);
     enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
-    enabled_features.push_back(ntp_features::kCustomizeChromeSidePanel);
+    enabled_features.push_back(features::kCustomizeChromeSidePanel);
     enabled_features.push_back(features::kReadAnything);
     enabled_features.push_back(user_notes::kUserNotes);
 

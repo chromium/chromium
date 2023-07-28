@@ -9,18 +9,18 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 
 class CustomizeChromeSidePanelControllerTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {ntp_features::kCustomizeChromeSidePanel}, {});
+    scoped_feature_list_.InitWithFeatures({features::kCustomizeChromeSidePanel},
+                                          {});
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   }

@@ -52,7 +52,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/search/ntp_features.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -638,7 +637,7 @@ void ThemeService::ClearThemeData(bool clear_ntp_background) {
 
   SwapThemeSupplier(nullptr);
   ClearThemePrefs();
-  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel) &&
+  if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel) &&
       clear_ntp_background) {
     NtpCustomBackgroundService::ResetProfilePrefs(profile_);
   }
@@ -880,7 +879,7 @@ void ThemeService::ClearThemePrefs() {
 void ThemeService::SetThemePrefsForExtension(
     const extensions::Extension* extension) {
   ClearThemePrefs();
-  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+  if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel)) {
     NtpCustomBackgroundService::ResetProfilePrefs(profile_);
   }
 

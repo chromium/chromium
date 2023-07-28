@@ -455,6 +455,10 @@ bool IsLacrosColorManagementEnabled() {
   return base::FeatureList::IsEnabled(kLacrosColorManagement);
 }
 
+BASE_FEATURE(kCustomizeChromeSidePanel,
+             "CustomizeChromeSidePanel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kChromeRefresh2023,
              "ChromeRefresh2023",
              base::FEATURE_DISABLED_BY_DEFAULT);

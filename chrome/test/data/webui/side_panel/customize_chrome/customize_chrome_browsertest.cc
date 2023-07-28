@@ -5,8 +5,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 
 class SidePanelCustomizeChromeTest : public WebUIMochaBrowserTest {
  protected:
@@ -16,7 +16,7 @@ class SidePanelCustomizeChromeTest : public WebUIMochaBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      ntp_features::kCustomizeChromeSidePanel};
+      features::kCustomizeChromeSidePanel};
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ButtonLabel) {

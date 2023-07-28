@@ -36,7 +36,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/search/ntp_features.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/test_utils.h"
@@ -586,8 +585,7 @@ TEST_F(ThemeServiceTest, UseDefaultTheme_DisableExtensionTest) {
 TEST_F(ThemeServiceTest, UseDefaultTheme_DisableNtpThemeTest) {
   // Turn on Customize Chrome Side Panel.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ntp_features::kCustomizeChromeSidePanel);
+  scoped_feature_list.InitAndEnableFeature(features::kCustomizeChromeSidePanel);
 
   base::Value::Dict test_background_info;
   test_background_info.Set("test_data", "foo");

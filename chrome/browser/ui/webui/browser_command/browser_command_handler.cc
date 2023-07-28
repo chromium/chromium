@@ -27,11 +27,11 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/search/ntp_features.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 
@@ -233,7 +233,7 @@ void BrowserCommandHandler::OpenPasswordManager() {
 }
 
 bool BrowserCommandHandler::BrowserSupportsCustomizeChromeSidePanel() {
-  return base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel);
+  return base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel);
 }
 
 bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {
