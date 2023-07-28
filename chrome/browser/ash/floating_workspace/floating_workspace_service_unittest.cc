@@ -20,8 +20,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
@@ -35,7 +34,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash::floating_workspace {
@@ -45,8 +43,6 @@ namespace {
 constexpr char kLocalSessionName[] = "local_session";
 constexpr char kRemoteSessionOneName[] = "remote_session_1";
 constexpr char kRemoteSession2Name[] = "remote_session_2";
-constexpr char kDevicePath[] = "test_device_path";
-constexpr char kDeviceName[] = "test_device_name";
 const base::Time most_recent_time = base::Time::FromDoubleT(15);
 const base::Time more_recent_time = base::Time::FromDoubleT(10);
 const base::Time least_recent_time = base::Time::FromDoubleT(5);
@@ -287,13 +283,13 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
   void AddTestNetworkDevice() {
-    helper_.AddDevice(kDevicePath, shill::kTypeWifi, kDeviceName);
-    if (!NetworkHandler::IsInitialized()) {
-      NetworkHandler::Initialize();
-    }
+    network_handler_test_helper_->AddDefaultProfiles();
   }
 
-  void CleanUpTestNetworkDevices() { helper_.ClearDevices(); }
+  void CleanUpTestNetworkDevices() {
+    network_handler_test_helper_->ClearDevices();
+    network_handler_test_helper_->ClearServices();
+  }
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -308,6 +304,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
             /*skip_engine_connection=*/true);
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_.get());
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     AddTestNetworkDevice();
   }
 
@@ -318,8 +315,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   std::unique_ptr<desks_storage::FakeDeskSyncService> fake_desk_sync_service_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  ash::NetworkStateTestHelper helper_{
-      /*use_default_devices_and_services=*/false};
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
@@ -745,9 +741,6 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
           .Get() +
       base::Seconds(1));
 
-  // mock_sync_service->SetDownloadStatus(
-  //     syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
-  // test_floating_workspace_service_v2.OnStateChanged(mock_sync_service.get());
   EXPECT_FALSE(test_floating_workspace_service_v2
                    .GetRestoredFloatingWorkspaceTemplate());
   histogram_tester.ExpectTotalCount(
@@ -1119,6 +1112,78 @@ TEST_F(FloatingWorkspaceServiceTest, PerformGarbageCollectionOnStaleEntries) {
 
   EXPECT_EQ(
       1ul, fake_desk_sync_service()->GetDeskModel()->GetAllEntryUuids().size());
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       FloatingWorkspaceTemplateHasProgressStatus) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
+       features::kDeskTemplateSync},
+      {});
+  std::unique_ptr<MockSyncService> mock_sync_service =
+      std::make_unique<MockSyncService>();
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), mock_sync_service.get(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+
+  task_environment().FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(HasNotificationFor(kNotificationForProgressStatus));
+
+  // Wait for download to complete and check that the progress bar is gone.
+  mock_sync_service->SetDownloadStatus(
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_floating_workspace_service_v2.OnStateChanged(mock_sync_service.get());
+  EXPECT_FALSE(HasNotificationFor(kNotificationForProgressStatus));
+
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       FloatingWorkspaceTemplateProgressStatusGoneAfterTimeOut) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
+       features::kDeskTemplateSync},
+      {});
+  std::unique_ptr<MockSyncService> mock_sync_service =
+      std::make_unique<MockSyncService>();
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), mock_sync_service.get(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+  task_environment().FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(HasNotificationFor(kNotificationForProgressStatus));
+  // Wait for timeout and check that the progress bar is gone.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
+          .Get() +
+      base::Seconds(1));
+  EXPECT_FALSE(HasNotificationFor(kNotificationForProgressStatus));
+  EXPECT_TRUE(HasNotificationFor(kNotificationForSyncErrorOrTimeOut));
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       FloatingWorkspaceTemplateProgressStatusGoneAfterSyncError) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
+       features::kDeskTemplateSync},
+      {});
+  std::unique_ptr<MockSyncService> mock_sync_service =
+      std::make_unique<MockSyncService>();
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), mock_sync_service.get(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+  task_environment().FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(HasNotificationFor(kNotificationForProgressStatus));
+  // Send sync error to service.
+  mock_sync_service->SetDownloadStatus(
+      syncer::SyncService::ModelTypeDownloadStatus::kError);
+  test_floating_workspace_service_v2.OnStateChanged(mock_sync_service.get());
+  EXPECT_FALSE(HasNotificationFor(kNotificationForProgressStatus));
+  EXPECT_TRUE(HasNotificationFor(kNotificationForSyncErrorOrTimeOut));
   scoped_feature_list().Reset();
 }
 

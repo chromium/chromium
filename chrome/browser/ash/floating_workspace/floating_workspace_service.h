@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_SERVICE_H_
 
 #include <memory>
+#include <string>
 #include "ash/public/cpp/desk_template.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -37,6 +38,7 @@ namespace ash {
 extern const char kNotificationForNoNetworkConnection[];
 extern const char kNotificationForSyncErrorOrTimeOut[];
 extern const char kNotificationForRestoreAfterError[];
+extern const char kNotificationForProgressStatus[];
 
 // The restore from error notification button index.
 enum class RestoreFromErrorNotificationButtonIndex {
@@ -50,6 +52,7 @@ enum class FloatingWorkspaceServiceNotificationType {
   kNoNetworkConnection,
   kSyncErrorOrTimeOut,
   kRestoreAfterError,
+  kProgressStatus,
 };
 
 // A keyed service to support floating workspace. Note that a periodical
@@ -121,6 +124,13 @@ class FloatingWorkspaceService : public KeyedService,
   // Start and Stop capturing and uploading the active desks.
   void StartCaptureAndUploadActiveDesk();
   void StopCaptureAndUploadActiveDesk();
+
+  // Start and stop the progress bar notification.
+  void MaybeStartProgressBarNotification();
+  void StopProgressBarNotification();
+
+  // Handles the updating of progress bar notification.
+  void HandleProgressBarStatus();
 
   // Get latest Floating Workspace Template from DeskSyncBridge.
   const DeskTemplate* GetLatestFloatingWorkspaceTemplate();
@@ -212,6 +222,10 @@ class FloatingWorkspaceService : public KeyedService,
   // Timer used to wait for internet connection after service initialization.
   base::OneShotTimer connection_timer_;
 
+  // Timer used to periodically update the progress status bar based on time
+  // from the 2 seconds after login to 15 seconds max wait time.
+  base::RepeatingTimer progress_timer_;
+
   // Convenience pointer to desks_storage::DeskSyncService. Guaranteed to be not
   // null for the duration of `this`.
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
@@ -223,6 +237,7 @@ class FloatingWorkspaceService : public KeyedService,
   absl::optional<base::Uuid> floating_workspace_uuid_;
 
   std::unique_ptr<message_center::Notification> notification_;
+  std::string progress_notification_id_;
 
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};
