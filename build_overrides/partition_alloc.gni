@@ -81,4 +81,5 @@ enable_backup_ref_ptr_support_default = _is_brp_supported
 put_ref_count_in_previous_slot_default = true
 enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default =
-    enable_backup_ref_ptr_support_default && is_linux && is_debug
+    enable_backup_ref_ptr_support_default && is_linux && !is_official_build &&
+    (is_debug || dcheck_always_on)
