@@ -1656,14 +1656,6 @@ void InjectNTP(Browser* browser) {
     data.currentPageIsIncognito = YES;
   } else {
     data.currentPageIsIncognito = NO;
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browserState);
-    std::string username =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .email;
-    if (!username.empty()) {
-      data.currentPageSyncedUserName = base::SysUTF8ToNSString(username);
-    }
   }
 
   data.productSpecificData = specificProductData;

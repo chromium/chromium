@@ -29,10 +29,6 @@
 // user generated report.
 @property(nonatomic, strong) UIImage* currentPageScreenshot;
 
-// Stores the user name of the account being synchronized. Returns nil
-// if sync is not enabled or the current active tab is in Incognito mode.
-@property(nonatomic, strong) NSString* currentPageSyncedUserName;
-
 // Stores additional product specific data to be attached to the user
 // generated report.
 @property(nonatomic, strong)
