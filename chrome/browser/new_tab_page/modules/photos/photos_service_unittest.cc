@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
+#include "base/barrier_closure.h"
 #include "base/hash/hash.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -308,12 +309,7 @@ TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
 
 TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
   auto quit_closure = task_environment_.QuitClosure();
-  int num_responses = 0;
-  auto finished_response = [&]() {
-    if (++num_responses >= 4) {
-      quit_closure.Run();
-    }
-  };
+  auto barrier_closure = base::BarrierClosure(4, quit_closure);
 
   std::vector<photos::mojom::MemoryPtr> response1;
   std::vector<photos::mojom::MemoryPtr> response2;
@@ -329,28 +325,28 @@ TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response1 = std::move(memories);
-            finished_response();
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response2 = std::move(memories);
-            finished_response();
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response3 = std::move(memories);
-            finished_response();
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response4 = std::move(memories);
-            finished_response();
+            barrier_closure.Run();
           }));
   service_->GetMemories(callback1.Get());
   service_->GetMemories(callback2.Get());

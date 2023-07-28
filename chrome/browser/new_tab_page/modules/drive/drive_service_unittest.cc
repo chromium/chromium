@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/modules/drive/drive_service.h"
+#include "base/barrier_closure.h"
 #include "base/hash/hash.h"
 #include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -161,12 +162,7 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
 
 TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   auto quit_closure = task_environment_.QuitClosure();
-  int num_responses = 0;
-  auto finished_response = [&]() {
-    if (++num_responses >= 4) {
-      quit_closure.Run();
-    }
-  };
+  auto barrier_closure = base::BarrierClosure(4, quit_closure);
 
   std::vector<drive::mojom::FilePtr> response1;
   std::vector<drive::mojom::FilePtr> response2;
@@ -182,28 +178,28 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
       .WillOnce(
           testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
             response1 = std::move(documents);
-            finished_response();
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
             response2 = std::move(documents);
-            finished_response();
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
             response3 = std::move(documents);
-            finished_response();
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
             response4 = std::move(documents);
-            finished_response();
+            barrier_closure.Run();
           }));
   service_->GetDriveFiles(callback1.Get());
   service_->GetDriveFiles(callback2.Get());

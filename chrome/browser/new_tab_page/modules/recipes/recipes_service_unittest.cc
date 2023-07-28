@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -180,12 +181,7 @@ TEST_F(RecipesServiceTest, GoodRecipeResponse) {
 // Verifies service can handle multiple in flight requests.
 TEST_F(RecipesServiceTest, MultiRequest) {
   auto quit_closure = task_environment_.QuitClosure();
-  int num_responses = 0;
-  auto finished_response = [&]() {
-    if (++num_responses >= 2) {
-      quit_closure.Run();
-    }
-  };
+  auto barrier_closure = base::BarrierClosure(2, quit_closure);
 
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
@@ -224,7 +220,7 @@ TEST_F(RecipesServiceTest, MultiRequest) {
       .Times(1)
       .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result1 = std::move(arg);
-        finished_response();
+        barrier_closure.Run();
       }));
   service_->GetPrimaryTask(callback1.Get());
 
@@ -234,7 +230,7 @@ TEST_F(RecipesServiceTest, MultiRequest) {
       .Times(1)
       .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result2 = std::move(arg);
-        finished_response();
+        barrier_closure.Run();
       }));
   service_->GetPrimaryTask(callback2.Get());
 
