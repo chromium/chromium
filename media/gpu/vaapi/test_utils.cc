@@ -163,9 +163,10 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       const gfx::BufferFormat& format) {
-    LocalGpuMemoryBufferManager gpu_memory_buffer_manager;
+    std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager =
+        std::make_unique<LocalGpuMemoryBufferManager>();
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-        gpu_memory_buffer_manager.ImportDmaBuf(handle, size, format);
+        gpu_memory_buffer_manager->ImportDmaBuf(handle, size, format);
 
     if (!gpu_memory_buffer->Map()) {
       LOG(ERROR) << "Failed to map GPU memory buffer!";
@@ -173,12 +174,14 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
     }
 
     return std::make_unique<GpuMemoryBufferMapping>(
-        std::move(gpu_memory_buffer));
+        std::move(gpu_memory_buffer_manager), std::move(gpu_memory_buffer));
   }
 
   GpuMemoryBufferMapping(
+      std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer)
-      : gpu_memory_buffer_(std::move(gpu_memory_buffer)) {}
+      : gpu_memory_buffer_manager_(std::move(gpu_memory_buffer_manager)),
+        gpu_memory_buffer_(std::move(gpu_memory_buffer)) {}
 
   ~GpuMemoryBufferMapping() override { gpu_memory_buffer_->Unmap(); }
 
@@ -193,6 +196,12 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
   gfx::Size GetSize() const override { return gpu_memory_buffer_->GetSize(); }
 
  private:
+  // It's very important these two objects are initialized in this order,
+  // because C++ guarantees they will be destroyed in the reverse order.
+  // Unfortunately, the destructor for GpuMemoryBuffer calls the GBM device that
+  // gets destroyed by the LocalGpuMemoryBufferManager destructor, so there is
+  // an order we need to do this in to prevent a segfault.
+  const std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   const std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
 };
 
