@@ -84476,23 +84476,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="ONBOARDING"/>
 </enum>
 
-<enum name="PictureBufferMechanism">
-  <int value="0" label="COPY_TO_RGB">
-    Copy to either a BGRA8 or FP16 texture using the video processor.
-  </int>
-  <int value="1" label="COPY_TO_NV12">
-    Copy to another NV12 texture that can be used in ANGLE.
-  </int>
-  <int value="2" label="DELAYED_COPY_TO_NV12 (Deprecated)">
-    Bind the resulting GLImage to the NV12 texture. If the texture's used in a
-    an overlay than use it directly, otherwise copy it to another NV12 texture
-    when necessary. This enum is deprecated. See crbug.com/1401462.
-  </int>
-  <int value="3" label="BIND">
-    Bind the NV12 decoder texture directly to the texture used in ANGLE.
-  </int>
-</enum>
-
 <enum name="PietErrorCode">
   <summary>
     Piet Error Code as defined in
