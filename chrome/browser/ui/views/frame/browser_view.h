@@ -124,6 +124,18 @@ class BrowserView : public BrowserWindow,
                     public webapps::AppBannerManager::Observer {
  public:
   METADATA_HEADER(BrowserView);
+
+  // Enumerates where the devtools are docked relative to the browser's main
+  // web contents.
+  enum class DevToolsDockedPlacement {
+    kLeft,
+    kRight,
+    kBottom,
+    // Devtools are not docked.
+    kNone,
+    kUnknown
+  };
+
   explicit BrowserView(std::unique_ptr<Browser> browser);
   BrowserView(const BrowserView&) = delete;
   BrowserView& operator=(const BrowserView&) = delete;
@@ -253,7 +265,11 @@ class BrowserView : public BrowserWindow,
   }
 
   // Accessor for the contents WebView.
-  ContentsWebView* contents_web_view() { return contents_web_view_; }
+  ContentsWebView* contents_web_view() const { return contents_web_view_; }
+
+  DevToolsDockedPlacement devtools_docked_placement() const {
+    return current_devtools_docked_placement_;
+  }
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -1245,6 +1261,9 @@ class BrowserView : public BrowserWindow,
       window_management_subscription_id_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
+
+  DevToolsDockedPlacement current_devtools_docked_placement_ =
+      DevToolsDockedPlacement::kNone;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };

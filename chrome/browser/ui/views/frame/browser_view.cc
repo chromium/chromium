@@ -11,6 +11,8 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -23,6 +25,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -242,7 +245,10 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -414,6 +420,35 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
       return true;
   }
   return false;
+}
+
+// Return the DevTools docked placement. It infers the docked placement from
+// the bounds of contents_webview relative to the local bounds of the container
+// that holds both contents_webview and devtools_webview.
+BrowserView::DevToolsDockedPlacement GetDevToolsDockedPlacement(
+    const gfx::Rect& contents_webview_bounds,
+    const gfx::Rect& local_webview_container_bounds) {
+  // If contents_webview has the same bounds as webview_container, it either
+  // means that devtools are not open or devtools are open in a separate
+  // window (not docked).
+  if (contents_webview_bounds == local_webview_container_bounds) {
+    return BrowserView::DevToolsDockedPlacement::kNone;
+  }
+
+  if (contents_webview_bounds.x() > 0 && contents_webview_bounds.y() == 0 &&
+      contents_webview_bounds.x() + contents_webview_bounds.width() ==
+          local_webview_container_bounds.width()) {
+    return BrowserView::DevToolsDockedPlacement::kLeft;
+  } else if (contents_webview_bounds.origin().IsOrigin() &&
+             contents_webview_bounds.height() ==
+                 local_webview_container_bounds.height()) {
+    return BrowserView::DevToolsDockedPlacement::kRight;
+  } else if (contents_webview_bounds.width() ==
+             local_webview_container_bounds.width()) {
+    return BrowserView::DevToolsDockedPlacement::kBottom;
+  }
+
+  return BrowserView::DevToolsDockedPlacement::kUnknown;
 }
 
 // Overlay view that owns TopContainerView in some cases (such as during
@@ -4345,6 +4380,18 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
     bool devtools_is_on_top = devtools_index > contents_index;
     if (strategy.hide_inspected_contents() != devtools_is_on_top)
       contents_container_->ReorderChildView(contents_web_view_, devtools_index);
+  }
+
+  DevToolsDockedPlacement new_placement = GetDevToolsDockedPlacement(
+      contents_web_view_->bounds(), contents_container_->GetLocalBounds());
+
+  // When browser window is resizing, the contents_container and web_contents
+  // bounds can be out of sync, resulting in a state, where it is impossible to
+  // infer docked placment based on contents webview bounds. In this case, use
+  // the last known docked placement, since resizing a window does not change
+  // the devtools dock placment.
+  if (new_placement != DevToolsDockedPlacement::kUnknown) {
+    current_devtools_docked_placement_ = new_placement;
   }
 }
 
