@@ -34,6 +34,7 @@ source_set("reauthentication_ui") {
   ]
 
   deps = [
+    ":reauthentication_constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common/ui/reauthentication",
@@ -41,4 +42,12 @@ source_set("reauthentication_ui") {
   ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("reauthentication_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "reauthentication_constants.h",
+    "reauthentication_constants.mm",
+  ]
 }

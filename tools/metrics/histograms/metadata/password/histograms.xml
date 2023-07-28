@@ -1773,6 +1773,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.iOS.PasswordManagerVisit" enum="Boolean"
+    expires_after="2023-12-21">
+  <owner>eic@google.com</owner>
+  <owner>tmartino@chromium.com</owner>
+  <summary>
+    This metric counts how many times the Password Manager Main Page is visited
+    on iOS. Recorded when the user opens the Password Manager Main Page after
+    successful Local Authentication (if authentication is required). Only the
+    true bucket is logged.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.iOS.ReauthenticationUI.Event"
+    enum="ReauthenticationEvent" expires_after="2024-07-21">
+  <owner>eic@google.com</owner>
+  <owner>tmartino@chromium.com</owner>
+  <summary>
+    Tracks the results and attempts of reauthentication when trying to open the
+    Password Manager on iOS.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.IsPasswordProtected2" enum="Boolean"
     expires_after="2024-03-01">
   <owner>skrakowi@chromium.org</owner>

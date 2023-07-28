@@ -32,7 +32,9 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -362,6 +364,45 @@ void OpenSetPasscodeHelpArticle() {
                                    learnHow)] performAction:grey_tap()];
 }
 
+// Verifies reauthentication UI histogram was recorded.
+void CheckReauthenticationUIEventMetric(ReauthenticationEvent event) {
+  NSString* histogram = base::SysUTF8ToNSString(
+      password_manager::kReauthenticationUIEventHistogram);
+
+  NSError* error = [MetricsAppInterface expectCount:1
+                                          forBucket:static_cast<int>(event)
+                                       forHistogram:histogram];
+
+  GREYAssertNil(error,
+                @"Failed to record reauthentication ui event histogram.");
+}
+
+// Verifies the total count of reauthentication UI histogram recorded.
+void CheckReauthenticationUIEventMetricTotalCount(int count) {
+  NSString* histogram = base::SysUTF8ToNSString(
+      password_manager::kReauthenticationUIEventHistogram);
+
+  NSError* error = [MetricsAppInterface expectTotalCount:count
+                                            forHistogram:histogram];
+  GREYAssertNil(error,
+                @"Unexpected reauthentication ui event histogram count.");
+}
+
+// Verifies the total count of password manager visit histogram recorded.
+void CheckPasswordManagerVisitMetricCount(int count) {
+  NSString* histogram = @"PasswordManager.iOS.PasswordManagerVisit";
+
+  // Check password manager visit metric.
+  NSError* error = [MetricsAppInterface expectTotalCount:count
+                                            forHistogram:histogram];
+  GREYAssertNil(error, @"Unexpected Password Manager Vistit histogram count");
+
+  error = [MetricsAppInterface expectCount:count
+                                 forBucket:YES
+                              forHistogram:histogram];
+  GREYAssertNil(error, @"Unexpected Password Manager Vistit histogram count");
+}
+
 }  // namespace
 
 // Various tests for the main Password Manager UI.
@@ -509,6 +550,12 @@ void OpenSetPasscodeHelpArticle() {
       [self isRunningTest:@selector
             (testOpenPasswordManagerWithWithoutPasscodeSet)]) {
     config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordAuthOnEntry);
+  }
+
+  if ([self isRunningTest:@selector
+            (testPasswordManagerVisitMetricWithoutAuthRequired)]) {
+    config.features_disabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntry);
   }
 
@@ -3208,6 +3255,14 @@ void OpenSetPasscodeHelpArticle() {
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+
+  // Check password manager visit metric.
+  CheckPasswordManagerVisitMetricCount(1);
+
+  // Check Reauthentication UI metrics.
+  CheckReauthenticationUIEventMetricTotalCount(2);
+  CheckReauthenticationUIEventMetric(ReauthenticationEvent::kAttempt);
+  CheckReauthenticationUIEventMetric(ReauthenticationEvent::kSuccess);
 }
 
 // Checks opening the password manager with a failed reauthentication does not
@@ -3230,6 +3285,14 @@ void OpenSetPasscodeHelpArticle() {
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check password manager visit metric.
+  CheckPasswordManagerVisitMetricCount(0);
+
+  // Check Reauthentication UI metrics.
+  CheckReauthenticationUIEventMetricTotalCount(2);
+  CheckReauthenticationUIEventMetric(ReauthenticationEvent::kAttempt);
+  CheckReauthenticationUIEventMetric(ReauthenticationEvent::kFailure);
 }
 
 // Checks opening the password manager with no passcode does not show passwords
@@ -3249,6 +3312,24 @@ void OpenSetPasscodeHelpArticle() {
   // Check for the NTP after Password Manager is gone.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check Reauthentication UI metrics.
+  CheckReauthenticationUIEventMetricTotalCount(2);
+  CheckReauthenticationUIEventMetric(ReauthenticationEvent::kAttempt);
+  CheckReauthenticationUIEventMetric(ReauthenticationEvent::kMissingPasscode);
+
+  // Check password manager visit metric.
+  CheckPasswordManagerVisitMetricCount(0);
+}
+
+// Tests that password manager visit histogram is recorded after opening
+// password manager without authentication required.
+- (void)testPasswordManagerVisitMetricWithoutAuthRequired {
+  OpenPasswordManager();
+
+  CheckPasswordManagerVisitMetricCount(1);
+
+  CheckReauthenticationUIEventMetricTotalCount(0);
 }
 
 @end

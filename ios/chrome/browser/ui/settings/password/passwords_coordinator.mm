@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -163,6 +164,11 @@ using password_manager::WarningType;
   [_reauthCoordinator start];
 }
 
+// Records password manager visit metric.
+- (void)recordPasswordManagerVisit {
+  UMA_HISTOGRAM_BOOLEAN("PasswordManager.iOS.PasswordManagerVisit", true);
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -203,6 +209,8 @@ using password_manager::WarningType;
 
   if (startBlockedForReauth) {
     [self blockForReauth];
+  } else {
+    [self recordPasswordManagerVisit];
   }
 
   // When kIOSPasswordCheckup is enabled, start a password check.
@@ -471,6 +479,8 @@ using password_manager::WarningType;
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
   DCHECK_EQ(_reauthCoordinator, coordinator);
+
+  [self recordPasswordManagerVisit];
 
   [_reauthCoordinator stop];
   _reauthCoordinator.delegate = nil;
