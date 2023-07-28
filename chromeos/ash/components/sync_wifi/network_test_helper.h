@@ -17,9 +17,9 @@
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
 
 namespace user_manager {
-class ScopedUserManager;
 class User;
 }  // namespace user_manager
 

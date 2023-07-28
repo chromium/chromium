@@ -169,9 +169,7 @@ class BrowserManagerTest : public testing::Test {
     auto* testing_profile = testing_profile_manager_->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
 
-    fake_user_manager_ = new ash::FakeChromeUserManager;
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     auto fake_cros_component_manager =
         base::MakeRefCounted<FakeCrOSComponentManager>();
@@ -211,9 +209,8 @@ class BrowserManagerTest : public testing::Test {
     shelf_controller_.reset();
     version_service_delegate_ = nullptr;
     browser_loader_ = nullptr;
-    fake_user_manager_ = nullptr;
     fake_browser_manager_.reset();
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
     testing_profile_manager_.reset();
 
     // Need to reverse the state back to non set.
@@ -274,9 +271,8 @@ class BrowserManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   raw_ptr<MockBrowserLoader, ExperimentalAsh> browser_loader_ = nullptr;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;

@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
+#include "components/user_manager/scoped_user_manager.h"
 
 namespace arc {
 namespace mojom {
@@ -30,7 +31,6 @@ class FakeChromeUserManager;
 }
 
 namespace user_manager {
-class ScopedUserManager;
 class User;
 }
 

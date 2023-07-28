@@ -19,7 +19,9 @@ class PrefService;
 
 namespace user_manager {
 
-class ScopedUserManager;
+namespace internal {
+class ScopedUserManagerImpl;
+}  // namespace internal
 
 // A list pref of the the regular users known on this device, arranged in LRU
 // order, stored in local state.
@@ -501,7 +503,7 @@ class USER_MANAGER_EXPORT UserManager {
   static UserManager* instance;
 
  private:
-  friend class ScopedUserManager;
+  friend class internal::ScopedUserManagerImpl;
 
   // Same as Get() but doesn't won't crash is current instance is NULL.
   static UserManager* GetForTesting();

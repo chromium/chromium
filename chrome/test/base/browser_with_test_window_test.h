@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/user_manager/scoped_user_manager.h"
 #else
 #include "ui/views/test/scoped_views_test_helper.h"
 #endif
@@ -55,10 +56,6 @@ class NavigationController;
 namespace crosapi {
 class CrosapiManager;
 }
-
-namespace user_manager {
-class ScopedUserManager;
-}  // namespace user_manager
 #endif
 
 class TestingProfileManager;

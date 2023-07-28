@@ -14,6 +14,10 @@
 #include "extensions/browser/extension_system.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/user_manager/scoped_user_manager.h"
+#endif
+
 class Profile;
 
 namespace base {
@@ -24,12 +28,6 @@ class FilePath;
 namespace content {
 class BrowserContext;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace user_manager {
-class ScopedUserManager;
-}  // namespace user_manager
-#endif
 
 namespace value_store {
 class TestingValueStore;
