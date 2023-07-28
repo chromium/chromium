@@ -21,7 +21,7 @@ namespace base {
 // destroyed. However, unlike a `T*` or `T&`, a logic bug will manifest as a
 // benign crash instead of as a Use-after-Free.
 //
-// SafeRef pointers can not be null (as expressed by the "Ref" suffix instead of
+// SafeRef pointers cannot be null (as expressed by the "Ref" suffix instead of
 // "Ptr"). A SafeRef can be wrapped in an absl::optional if it should not always
 // point to something valid. (A SafePtr sibling type can be introduced if this
 // is problematic, or if consuming moves are needed!)
@@ -35,7 +35,7 @@ namespace base {
 // pointee invalid when the base::WeakPtrFactory is invalidated, in the same way
 // as base::WeakPtr does, including after a call to InvalidateWeakPtrs().
 //
-// SafeRefTraits are only meant to mark SafeRef that were found to be dangling,
+// SafeRefTraits are only meant to mark SafeRefs that were found to be dangling,
 // thus one should not use this flag to disable dangling pointer detection on
 // SafeRef. This parameter is set to SafeRefTraits::kEmpty by default.
 //
