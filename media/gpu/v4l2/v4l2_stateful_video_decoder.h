@@ -16,6 +16,7 @@
 #include "media/gpu/media_gpu_export.h"
 
 namespace base {
+class Location;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -108,6 +109,15 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // Tries to "enqueue" all available |CAPTURE_queue_| buffers in the driver's
   // CAPTURE queue (V4L2Queues don't do that by default upon allocation).
   void TryAndEnqueueCAPTUREQueueBuffers();
+
+  // Dequeues all the available |OUTPUT_queue_| buffers. This will effectively
+  // make those available for sending further encoded chunks to the driver.
+  // Returns false if any ioctl fails, true otherwise.
+  bool DrainOUTPUTQueue();
+
+  // Prints a VLOG with the state of |OUTPUT_queue| and |CAPTURE_queue_| for
+  // debugging, preceded with |from_here|s function name.
+  void PrintOutQueueStatesForVLOG(const base::Location& from_here);
 
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   // This |wake_event_| is used to interrupt a blocking poll() call, such as the

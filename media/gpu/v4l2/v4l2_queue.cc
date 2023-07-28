@@ -1464,14 +1464,27 @@ absl::optional<struct v4l2_format> V4L2Queue::SetModifierFormat(
 
 bool V4L2Queue::SendStopCommand() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return SendCommand(V4L2_DEC_CMD_STOP);
+}
+
+bool V4L2Queue::SendStartCommand() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return SendCommand(V4L2_DEC_CMD_START);
+}
+
+bool V4L2Queue::SendCommand(__u32 command) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(mcasas): Restrict this to V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, after
   // deprecating V4L2StatefulVideoDecoderBackend.
 
   struct v4l2_decoder_cmd cmd;
   memset(&cmd, 0, sizeof(cmd));  // Must use memset() due to unions.
-  cmd.cmd = V4L2_DEC_CMD_STOP;
+  cmd.cmd = command;
   const bool success = ioctl_cb_.Run(VIDIOC_DECODER_CMD, &cmd) == kIoctlOk;
-  PLOG_IF(ERROR, !success) << "Failed to issue V4L2_DEC_CMD_STOP command";
+  PLOG_IF(ERROR, !success) << "Failed to issue command " << command
+                           << " (V4L2_DEC_CMD_START: " << V4L2_DEC_CMD_START
+                           << ", V4L2_DEC_CMD_STOP: " << V4L2_DEC_CMD_STOP
+                           << ")";
   return success;
 }
 

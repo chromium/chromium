@@ -534,8 +534,9 @@ class MEDIA_GPU_EXPORT V4L2Queue
       uint64_t modifier,
       const gfx::Size& size);
 
-  // Sends a V4L2_DEC_CMD_STOP to this queue.
+  // Sends a V4L2_DEC_CMD_STOP/V4L2_DEC_CMD_START to this queue.
   [[nodiscard]] bool SendStopCommand();
+  [[nodiscard]] bool SendStartCommand();
 
  private:
   ~V4L2Queue();
@@ -543,6 +544,9 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // Called when clients request a buffer to be queued.
   [[nodiscard]] bool QueueBuffer(struct v4l2_buffer* v4l2_buffer,
                                  scoped_refptr<VideoFrame> video_frame);
+
+  // Sends a V4L2_DEC_CMD_* to this queue.
+  [[nodiscard]] bool SendCommand(__u32 command);
 
   const enum v4l2_buf_type type_;
   enum v4l2_memory memory_ = V4L2_MEMORY_MMAP;

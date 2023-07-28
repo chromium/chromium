@@ -470,6 +470,36 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
   EXPECT_TRUE(tvp->WaitForFrameProcessors());
 }
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+// Flush the decoder somewhere mid-stream, then continue as normal. This is a
+// contrived use case to exercise important V4L2 stateful areas.
+TEST_F(VideoDecoderTest, FlushMidStream) {
+  if (!base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+    GTEST_SKIP();
+  }
+
+  auto tvp = CreateDecoderListener(g_env->Video());
+
+  tvp->Play();
+  const size_t flush_location_in_frames =
+      std::min(static_cast<size_t>(10), g_env->Video()->NumFrames() / 2);
+  EXPECT_TRUE(tvp->WaitForFrameDecoded(flush_location_in_frames));
+  tvp->Flush();
+  EXPECT_TRUE(tvp->WaitForFlushDone());
+  // GetFrameDecodedCount() is likely larger than |flush_location_in_frames|
+  // because there are likely submitted encoded chunks ready to be decoded at
+  // the time of Flush().
+  EXPECT_GE(tvp->GetFrameDecodedCount(), flush_location_in_frames);
+  tvp->Play();
+  EXPECT_TRUE(tvp->WaitForFlushDone());
+
+  // Total flush count must be two: once mid-stream and once at the end.
+  EXPECT_EQ(tvp->GetFlushDoneCount(), 2u);
+  EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(tvp->WaitForFrameProcessors());
+}
+#endif
+
 // Flush the decoder immediately after initialization.
 TEST_F(VideoDecoderTest, FlushAfterInitialize) {
   auto tvp = CreateDecoderListener(g_env->Video());

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/bind_post_task.h"
@@ -294,20 +295,12 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  // Ideally we should be able to get some resources back that were queued in
-  // during a previous Decode().
-  while (OUTPUT_queue_->QueuedBuffersCount()) {
-    const auto result = OUTPUT_queue_->DequeueBuffer();
-    if (!result.first || !result.second) {
-      break;
-    }
+  // Ideally we should be able to get some resources back (dequeued) that were
+  // queued in during a previous Decode().
+  if (!DrainOUTPUTQueue()) {
+    LOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
   }
-
-  DVLOGF(4) << "|OUTPUT_queue_| " << OUTPUT_queue_->QueuedBuffersCount() << "/"
-            << OUTPUT_queue_->AllocatedBuffersCount() << ", |CAPTURE_queue_| "
-            << (CAPTURE_queue_ ? CAPTURE_queue_->QueuedBuffersCount() : 0)
-            << "/"
-            << (CAPTURE_queue_ ? CAPTURE_queue_->AllocatedBuffersCount() : 0);
+  PrintOutQueueStatesForVLOG(FROM_HERE);
 
   absl::optional<V4L2WritableBufferRef> v4l2_buffer =
       OUTPUT_queue_->GetFreeBuffer();
@@ -682,47 +675,65 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
   for (std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer();
        success && dequeued_buffer;
        std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer()) {
+    PrintOutQueueStatesForVLOG(FROM_HERE);
     // A buffer marked "last" indicates the end of a flush. Note that, according
     // to spec, this buffer may or may not have zero |bytesused|.
     // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#drain
     if (dequeued_buffer->IsLast()) {
       VLOGF(3) << "Buffer marked LAST in |CAPTURE_queue_|";
+
+      // Make sure the |OUTPUT_queue_| is really empty before restarting.
+      if (!DrainOUTPUTQueue()) {
+        LOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
+      }
+
+      // According to the spec, decoding can be restarted either sending a
+      // "V4L2_DEC_CMD_START - the decoder will not be reset and will resume
+      //  operation normally, with all the state from before the drain," or
+      // sending a VIDIOC_STREAMOFF - VIDIOC_STREAMON to either queue. Since we
+      // want to keep the state (e.g. resolution, |client_| buffers), we try
+      // the first option.
+      if (!CAPTURE_queue_->SendStartCommand()) {
+        VLOGF(3) << "Failed to resume decoding after flush";
+        // TODO(mcasas): Handle this error.
+      }
       if (flush_cb_) {
         std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
       }
-      return;
-    }
-
-    VLOGF(3) << "There's at least one |CAPTURE_queue_| buffer ready.";
-    scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
-    CHECK(video_frame);
-    video_frame->set_timestamp(
-        TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
-
-    //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to return
-    //  |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled". For a
-    //  V4L2_MEMORY_DMABUF |CAPTURE_queue_|, we don't do that because the
-    //  VideoFrames are pooled in |client_|s; TryAndEnqueueCAPTUREQueueBuffers()
-    //  will find them there.
-    if (queue_type == V4L2_MEMORY_MMAP) {
-      // TODO(mcasas): Consider carrying this gfx::Rect in the |video_frame|.
-      absl::optional<gfx::Rect> visible_rect = CAPTURE_queue_->GetVisibleRect();
-      CHECK(visible_rect.has_value());
-
-      auto wrapped_frame = VideoFrame::WrapVideoFrame(
-          video_frame, video_frame->format(), *visible_rect,
-          /*natural_size=*/visible_rect->size());
-
-      // Make sure |dequeued_buffer| stays alive and its reference released as
-      // |wrapped_frame| is destroyed, allowing -maybe- for it to get back to
-      // |CAPTURE_queue_|s free buffers.
-      wrapped_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
-          base::BindOnce([](scoped_refptr<V4L2ReadableBuffer> buffer) {},
-                         std::move(dequeued_buffer))));
-      CHECK(wrapped_frame);
-      output_cb_.Run(std::move(wrapped_frame));
     } else {
-      output_cb_.Run(std::move(video_frame));
+      scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
+      CHECK(video_frame);
+      video_frame->set_timestamp(
+          TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
+      VLOGF(4) << video_frame->AsHumanReadableString();
+
+      //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to
+      //  return |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled".
+      //  For a V4L2_MEMORY_DMABUF |CAPTURE_queue_|, we don't do that because
+      //  the VideoFrames are pooled in |client_|s;
+      //  TryAndEnqueueCAPTUREQueueBuffers() will find them there.
+      if (queue_type == V4L2_MEMORY_MMAP) {
+        // TODO(mcasas): Consider carrying this gfx::Rect in the |video_frame|.
+        absl::optional<gfx::Rect> visible_rect =
+            CAPTURE_queue_->GetVisibleRect();
+        CHECK(visible_rect.has_value());
+
+        auto wrapped_frame = VideoFrame::WrapVideoFrame(
+            video_frame, video_frame->format(), *visible_rect,
+            /*natural_size=*/visible_rect->size());
+
+        // Make sure |dequeued_buffer| stays alive and its reference released as
+        // |wrapped_frame| is destroyed, allowing -maybe- for it to get back to
+        // |CAPTURE_queue_|s free buffers.
+        wrapped_frame->AddDestructionObserver(
+            base::BindPostTaskToCurrentDefault(
+                base::BindOnce([](scoped_refptr<V4L2ReadableBuffer> buffer) {},
+                               std::move(dequeued_buffer))));
+        CHECK(wrapped_frame);
+        output_cb_.Run(std::move(wrapped_frame));
+      } else {
+        output_cb_.Run(std::move(video_frame));
+      }
     }
   }
   LOG_IF(ERROR, !success) << "Failed dequeueing from |CAPTURE_queue_|";
@@ -768,6 +779,30 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
       }
     }
   }
+}
+
+bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(OUTPUT_queue_) << "|OUTPUT_queue_| must be created at this point";
+
+  bool success;
+  scoped_refptr<V4L2ReadableBuffer> dequeued_buffer;
+  for (std::tie(success, dequeued_buffer) = OUTPUT_queue_->DequeueBuffer();
+       success && dequeued_buffer;
+       std::tie(success, dequeued_buffer) = OUTPUT_queue_->DequeueBuffer()) {
+    PrintOutQueueStatesForVLOG(FROM_HERE);
+  }
+  return success;
+}
+
+void V4L2StatefulVideoDecoder::PrintOutQueueStatesForVLOG(
+    const base::Location& from_here) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(4) << from_here.function_name() << " |OUTPUT_queue_| "
+          << OUTPUT_queue_->QueuedBuffersCount() << "/"
+          << OUTPUT_queue_->AllocatedBuffersCount() << ", |CAPTURE_queue_| "
+          << (CAPTURE_queue_ ? CAPTURE_queue_->QueuedBuffersCount() : 0) << "/"
+          << (CAPTURE_queue_ ? CAPTURE_queue_->AllocatedBuffersCount() : 0);
 }
 
 }  // namespace media

@@ -547,16 +547,11 @@ bool V4L2StatefulVideoDecoderBackend::CompleteFlush() {
 
   // If CAPTURE queue is streaming, send the START command to the V4L2 device
   // to signal that we are resuming decoding with the same state.
-  if (output_queue_->IsStreaming()) {
-    struct v4l2_decoder_cmd cmd;
-    memset(&cmd, 0, sizeof(cmd));
-    cmd.cmd = V4L2_DEC_CMD_START;
-    if (device_->Ioctl(VIDIOC_DECODER_CMD, &cmd) != 0) {
-      LOG(ERROR) << "Failed to issue START command";
-      std::move(flush_cb_).Run(DecoderStatus::Codes::kFailed);
-      client_->OnBackendError();
-      return false;
-    }
+  if (output_queue_->IsStreaming() && !output_queue_->SendStartCommand()) {
+    LOG(ERROR) << "Failed to issue START command";
+    std::move(flush_cb_).Run(DecoderStatus::Codes::kFailed);
+    client_->OnBackendError();
+    return false;
   }
 
   client_->CompleteFlush();
