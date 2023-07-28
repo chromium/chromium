@@ -740,7 +740,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     kRemoveValidationMessageObjectFromValidationMessageObject = 22,
     kRoleChangeFromAriaHasPopup = 23,
     kRoleChangeFromRoleOrType = 24,
-    kRoleMaybeChanged = 25,
+    kRoleMaybeChangedFromEventListener = 25,
     kRoleMaybeChangedFromHref = 26,
     kSectionOrRegionRoleMaybeChangedFromLabel = 27,
     kSectionOrRegionRoleMaybeChangedFromTitle = 28,

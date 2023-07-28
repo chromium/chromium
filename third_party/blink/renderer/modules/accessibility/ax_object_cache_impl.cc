@@ -3192,9 +3192,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kRoleChangeFromRoleOrType:
       HandleRoleChangeWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kRoleMaybeChanged:
-      HandleRoleMaybeChangedWithCleanLayout(node);
-      break;
+    case TreeUpdateReason::kRoleMaybeChangedFromEventListener:
     case TreeUpdateReason::kRoleMaybeChangedFromHref:
       HandleRoleMaybeChangedWithCleanLayout(node);
       break;
@@ -3883,7 +3881,8 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
       // The role of an element depends on whether it has an event listener, so
       // check if the role changed, and if so re-create the object.
       if (obj->RoleValue() != obj->DetermineAccessibilityRole()) {
-        DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChanged, &node);
+        DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChangedFromEventListener,
+                        &node);
       }
     }
   }
