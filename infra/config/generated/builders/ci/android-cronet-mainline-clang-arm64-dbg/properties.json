@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-cronet-arm64-rel",
+              "builder": "android-cronet-mainline-clang-arm64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -21,7 +21,7 @@
                   "cronet_builder",
                   "mb"
                 ],
-                "build_config": "Release",
+                "build_config": "Debug",
                 "config": "android",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -39,15 +39,21 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-cronet-arm64-rel",
+          "builder": "android-cronet-mainline-clang-arm64-dbg",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-cronet-mainline-clang-arm64-dbg",
+          "group": "tryserver.chromium.android"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 150,
+    "instance": "rbe-chromium-trusted",
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -58,6 +64,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.android",
-  "recipe": "chromium_trybot"
+  "builder_group": "chromium.android",
+  "recipe": "chromium"
 }

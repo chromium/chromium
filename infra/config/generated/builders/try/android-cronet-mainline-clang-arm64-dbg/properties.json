@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-cronet-arm64-rel",
+              "builder": "android-cronet-mainline-clang-arm64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -21,7 +21,7 @@
                   "cronet_builder",
                   "mb"
                 ],
-                "build_config": "Release",
+                "build_config": "Debug",
                 "config": "android",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -39,7 +39,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-cronet-arm64-rel",
+          "builder": "android-cronet-mainline-clang-arm64-dbg",
           "project": "chromium"
         }
       ]
