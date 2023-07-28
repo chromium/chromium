@@ -821,8 +821,8 @@
     // device-level accounts.
     const AuthenticationOperation operation =
         base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? AuthenticationOperation::SigninOnly
-            : AuthenticationOperation::SigninAndSync;
+            ? AuthenticationOperation::kSigninOnly
+            : AuthenticationOperation::kSigninAndSync;
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
         initWithOperation:operation
               accessPoint:signin_metrics::AccessPoint::
@@ -982,7 +982,7 @@
     id<ApplicationCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:AuthenticationOperation::SigninOnly
+        initWithOperation:AuthenticationOperation::kSigninOnly
               accessPoint:access_point];
     signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     [handler showSignin:command baseViewController:self.NTPViewController];
@@ -1028,8 +1028,8 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   AuthenticationOperation operation =
       base::FeatureList::IsEnabled(feed::kFeedBottomSyncStringRemoval)
-          ? AuthenticationOperation::SigninOnly
-          : AuthenticationOperation::SigninAndSync;
+          ? AuthenticationOperation::kSigninOnly
+          : AuthenticationOperation::kSigninAndSync;
   ShowSigninCommand* command =
       [[ShowSigninCommand alloc] initWithOperation:operation
                                        accessPoint:access_point];

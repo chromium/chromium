@@ -649,7 +649,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self preventUserInteraction];
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::AddAccount
+      initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO

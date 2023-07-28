@@ -1701,7 +1701,7 @@ void InjectNTP(Browser* browser) {
   Browser* mainBrowser = self.mainInterface.browser;
 
   switch (command.operation) {
-    case AuthenticationOperation::PrimaryAccountReauth:
+    case AuthenticationOperation::kPrimaryAccountReauth:
       self.signinCoordinator = [SigninCoordinator
           primaryAccountReauthCoordinatorWithBaseViewController:
               baseViewController
@@ -1711,7 +1711,7 @@ void InjectNTP(Browser* browser) {
                                                     promoAction:
                                                         command.promoAction];
       break;
-    case AuthenticationOperation::SigninAndSyncReauth:
+    case AuthenticationOperation::kSigninAndSyncReauth:
       self.signinCoordinator = [SigninCoordinator
           signinAndSyncReauthCoordinatorWithBaseViewController:
               baseViewController
@@ -1721,7 +1721,7 @@ void InjectNTP(Browser* browser) {
                                                    promoAction:
                                                        command.promoAction];
       break;
-    case AuthenticationOperation::SigninAndSync:
+    case AuthenticationOperation::kSigninAndSync:
       self.signinCoordinator = [SigninCoordinator
           userSigninCoordinatorWithBaseViewController:baseViewController
                                               browser:mainBrowser
@@ -1729,7 +1729,7 @@ void InjectNTP(Browser* browser) {
                                           accessPoint:command.accessPoint
                                           promoAction:command.promoAction];
       break;
-    case AuthenticationOperation::SigninOnly:
+    case AuthenticationOperation::kSigninOnly:
       self.signinCoordinator = [SigninCoordinator
           consistencyPromoSigninCoordinatorWithBaseViewController:
               baseViewController
@@ -1737,18 +1737,18 @@ void InjectNTP(Browser* browser) {
                                                       accessPoint:
                                                           command.accessPoint];
       break;
-    case AuthenticationOperation::AddAccount:
+    case AuthenticationOperation::kAddAccount:
       self.signinCoordinator = [SigninCoordinator
           addAccountCoordinatorWithBaseViewController:baseViewController
                                               browser:mainBrowser
                                           accessPoint:command.accessPoint];
       break;
-    case AuthenticationOperation::ForcedSigninAndSync:
+    case AuthenticationOperation::kForcedSigninAndSync:
       self.signinCoordinator = [SigninCoordinator
           forcedSigninCoordinatorWithBaseViewController:baseViewController
                                                 browser:mainBrowser];
       break;
-    case AuthenticationOperation::SigninAndSyncWithTwoScreens:
+    case AuthenticationOperation::kSigninAndSyncWithTwoScreens:
       self.signinCoordinator = [SigninCoordinator
           twoScreensSigninCoordinatorWithBaseViewController:baseViewController
                                                     browser:mainBrowser
@@ -1756,7 +1756,7 @@ void InjectNTP(Browser* browser) {
                                                 promoAction:command
                                                                 .promoAction];
       break;
-    case AuthenticationOperation::InstantSignin:
+    case AuthenticationOperation::kInstantSignin:
       self.signinCoordinator = [SigninCoordinator
           instantSigninCoordinatorWithBaseViewController:baseViewController
                                                  browser:mainBrowser

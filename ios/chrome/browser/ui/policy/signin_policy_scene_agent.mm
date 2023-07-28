@@ -239,7 +239,7 @@
 // Shows the forced sign-in prompt using the application command.
 - (void)showForcedSigninPrompt {
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::ForcedSigninAndSync
+      initWithOperation:AuthenticationOperation::kForcedSigninAndSync
                identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN
             promoAction:signin_metrics::PromoAction::

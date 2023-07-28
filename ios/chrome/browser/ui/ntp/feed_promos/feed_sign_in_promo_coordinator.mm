@@ -114,7 +114,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::SigninAndSync
+      initWithOperation:AuthenticationOperation::kSigninAndSync
             accessPoint:access_point];
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   [handler showSignin:command baseViewController:self.baseViewController];

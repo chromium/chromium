@@ -1041,17 +1041,17 @@ const char* AlreadySeenSigninViewPreferenceKey(
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::InstantSignin
+                         operation:AuthenticationOperation::kInstantSignin
                        promoAction:promoAction];
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::SigninAndSync
+                         operation:AuthenticationOperation::kSigninAndSync
                        promoAction:promoAction];
       return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::SigninOnly
+                         operation:AuthenticationOperation::kSigninOnly
                        promoAction:promoAction];
       return;
   }
@@ -1068,19 +1068,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
       [self showSigninWithIdentity:self.identity
-                         operation:AuthenticationOperation::InstantSignin
+                         operation:AuthenticationOperation::kInstantSignin
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:self.identity
-                         operation:AuthenticationOperation::SigninAndSync
+                         operation:AuthenticationOperation::kSigninAndSync
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::SigninOnly
+                         operation:AuthenticationOperation::kSigninOnly
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
@@ -1100,19 +1100,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::InstantSignin
+                         operation:AuthenticationOperation::kInstantSignin
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NOT_DEFAULT];
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::SigninAndSync
+                         operation:AuthenticationOperation::kSigninAndSync
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NOT_DEFAULT];
       return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::SigninOnly
+                         operation:AuthenticationOperation::kSigninOnly
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NOT_DEFAULT];
       return;

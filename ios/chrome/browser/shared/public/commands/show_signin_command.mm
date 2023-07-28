@@ -27,8 +27,8 @@
   if ((self = [super init])) {
     // Only `SigninAndSync` and `InstantSignin` can be opened with an identity
     // selected.
-    DCHECK(operation == AuthenticationOperation::SigninAndSync ||
-           operation == AuthenticationOperation::InstantSignin || !identity);
+    DCHECK(operation == AuthenticationOperation::kSigninAndSync ||
+           operation == AuthenticationOperation::kInstantSignin || !identity);
     _operation = operation;
     _identity = identity;
     _accessPoint = accessPoint;

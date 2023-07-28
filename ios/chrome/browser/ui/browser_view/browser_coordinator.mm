@@ -2433,7 +2433,7 @@ enum class ToolbarKind {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
               showSignin:[[ShowSigninCommand alloc]
                              initWithOperation:AuthenticationOperation::
-                                                   PrimaryAccountReauth
+                                                   kPrimaryAccountReauth
                                    accessPoint:signin_metrics::AccessPoint::
                                                    ACCESS_POINT_REAUTH_INFO_BAR]
       baseViewController:self.viewController];
