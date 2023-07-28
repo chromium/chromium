@@ -414,9 +414,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateFont(fontName: string) {
+    const validatedFontName = this.validatedFontNameFromName_(fontName);
     this.updateStyles({
-      '--font-family': this.validatedFontNameFromName_(fontName),
+      '--font-family': validatedFontName,
     });
+
+    // Also update the font on the toolbar itself with the validated font name.
+    // TODO(crbug.com/1465029): Ensure the toolbar font is persisted to prefs.
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const toolbar = shadowRoot.getElementById('toolbar');
+    if (toolbar) {
+      toolbar.style.fontFamily = validatedFontName;
+    }
   }
 
   // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
