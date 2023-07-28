@@ -106,7 +106,7 @@ class Space : public ErrorBehaviourProvider {
   std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
     return {{l10n_util::GetStringUTF16(IDS_LEARN_MORE),
              GURL("https://support.google.com/"
-                  "chromebook?p=Steam_kDlcNeedSpaceError")}};
+                  "chromebook?p=Steam_DlcNeedSpaceError")}};
   }
 };
 
