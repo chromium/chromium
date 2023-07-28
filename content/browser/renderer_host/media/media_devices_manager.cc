@@ -512,7 +512,7 @@ void MediaDevicesManager::SetSubscriptionLastSeenDeviceIdSalt(
     return;
   SubscriptionRequest& request = it->second;
 
-  request.last_seen_device_id_salt_ = salt_and_origin.device_id_salt;
+  request.last_seen_device_id_salt_ = salt_and_origin.device_id_salt();
 }
 
 void MediaDevicesManager::UnsubscribeDeviceChangeNotifications(
@@ -1210,14 +1210,14 @@ void MediaDevicesManager::OnSaltAndOriginForSubscription(
   // list has changed, or the device_id_salt has changed.
   bool salt_reset =
       request.last_seen_device_id_salt_ &&
-      salt_and_origin.device_id_salt != request.last_seen_device_id_salt_;
+      salt_and_origin.device_id_salt() != request.last_seen_device_id_salt_;
 
   if (devices_changed || salt_reset) {
     MediaDevicesManager::CheckPermissionForDeviceChange(
         subscription_id, render_process_id, render_frame_id, type, device_infos,
         salt_and_origin);
   }
-  request.last_seen_device_id_salt_ = salt_and_origin.device_id_salt;
+  request.last_seen_device_id_salt_ = salt_and_origin.device_id_salt();
 }
 
 void MediaDevicesManager::CheckPermissionForDeviceChange(

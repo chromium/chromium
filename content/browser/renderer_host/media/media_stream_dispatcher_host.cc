@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "build/build_config.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -369,7 +370,7 @@ void MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(
       !CheckRequestAllScreensAllowed(render_process_id, render_frame_id)) {
     std::move(result_callback)
         .Run({.request_allowed = false,
-              .salt_and_origin = MediaDeviceSaltAndOrigin()});
+              .salt_and_origin = MediaDeviceSaltAndOrigin::Empty()});
     return;
   }
 
@@ -493,9 +494,9 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
 
   MediaDeviceSaltAndOrigin salt_and_origin =
       std::move(ui_check_result.salt_and_origin);
-  ui_check_result = {};
+  ui_check_result = {.salt_and_origin = MediaDeviceSaltAndOrigin::Empty()};
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
-                                           salt_and_origin.origin)) {
+                                           salt_and_origin.origin())) {
     std::move(callback).Run(
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
         /*label=*/std::string(),
@@ -513,8 +514,8 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
       base::FeatureList::IsEnabled(features::kUserMediaCaptureOnFocus) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForMediaStream) &&
-      !salt_and_origin.is_background;
-  if (needs_focus && !salt_and_origin.has_focus) {
+      !salt_and_origin.is_background();
+  if (needs_focus && !salt_and_origin.has_focus()) {
     pending_requests_.push_back(std::make_unique<PendingAccessRequest>(
         page_request_id, controls, user_gesture,
         std::move(audio_stream_selection_info_ptr), std::move(callback),
@@ -592,7 +593,7 @@ void MediaStreamDispatcherHost::DoOpenDevice(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
-                                           salt_and_origin.origin)) {
+                                           salt_and_origin.origin())) {
     std::move(callback).Run(false /* success */, std::string(),
                             blink::MediaStreamDevice());
     return;
@@ -749,7 +750,7 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
-                                           salt_and_origin.origin)) {
+                                           salt_and_origin.origin())) {
     std::move(callback).Run(
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
         nullptr);

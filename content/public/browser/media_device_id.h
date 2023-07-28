@@ -14,9 +14,8 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/resource_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
 
 namespace content {

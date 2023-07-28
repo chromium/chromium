@@ -14,38 +14,69 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
-
-using blink::mojom::MediaDeviceType;
 
 namespace content {
 
 using DeviceIdCallback = base::OnceCallback<void(const std::string&)>;
 // Returns the ID of the user-default device ID via `callback`.
 // If no such device ID can be found, `callback` receives an empty string.
-CONTENT_EXPORT void GetDefaultMediaDeviceID(MediaDeviceType device_type,
-                                            int render_process_id,
-                                            int render_frame_id,
-                                            DeviceIdCallback callback);
+CONTENT_EXPORT void GetDefaultMediaDeviceID(
+    blink::mojom::MediaDeviceType device_type,
+    int render_process_id,
+    int render_frame_id,
+    DeviceIdCallback callback);
 
-struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
-  MediaDeviceSaltAndOrigin();
-  MediaDeviceSaltAndOrigin(std::string device_id_salt,
-                           std::string group_id_salt,
-                           url::Origin origin,
-                           bool has_focus,
-                           bool is_background);
+class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
+ public:
+  MediaDeviceSaltAndOrigin(
+      std::string device_id_salt,
+      url::Origin origin,
+      std::string group_id_salt = std::string(),
+      bool has_focus = false,
+      bool is_background = false,
+      absl::optional<ukm::SourceId> ukm_source_id = absl::nullopt);
+
   MediaDeviceSaltAndOrigin(const MediaDeviceSaltAndOrigin& other);
+  MediaDeviceSaltAndOrigin& operator=(const MediaDeviceSaltAndOrigin& other);
+
+  MediaDeviceSaltAndOrigin(MediaDeviceSaltAndOrigin&& other);
+  MediaDeviceSaltAndOrigin& operator=(MediaDeviceSaltAndOrigin&& other);
+
   ~MediaDeviceSaltAndOrigin();
 
-  std::string device_id_salt;
-  std::string group_id_salt;
+  static MediaDeviceSaltAndOrigin Empty();
+
+  const std::string& device_id_salt() const { return device_id_salt_; }
+  const std::string& group_id_salt() const { return group_id_salt_; }
+  const url::Origin& origin() const { return origin_; }
+  const absl::optional<ukm::SourceId>& ukm_source_id() const {
+    return ukm_source_id_;
+  }
+  bool has_focus() const { return has_focus_; }
+  bool is_background() const { return is_background_; }
+
+  void set_device_id_salt(std::string salt) {
+    device_id_salt_ = std::move(salt);
+  }
+  void set_group_id_salt(std::string salt) { group_id_salt_ = std::move(salt); }
+  void set_ukm_source_id(absl::optional<ukm::SourceId> ukm_source_id) {
+    ukm_source_id_ = std::move(ukm_source_id);
+  }
+  void set_origin(url::Origin origin) { origin_ = std::move(origin); }
+  void set_has_focus(bool has_focus) { has_focus_ = has_focus; }
+  void set_is_background(bool is_background) { is_background_ = is_background; }
+
+ private:
+  std::string device_id_salt_;
+  std::string group_id_salt_;
   // Last committed origin of the frame making a media device request.
-  url::Origin origin;
+  url::Origin origin_;
   // ukm::SourceId of the main frame making the media device request.
-  absl::optional<ukm::SourceId> ukm_source_id;
-  bool has_focus;
-  bool is_background;
+  absl::optional<ukm::SourceId> ukm_source_id_;
+  bool has_focus_;
+  bool is_background_;
 };
 
 // Returns the current media device ID salt and security origin for the given
@@ -112,8 +143,47 @@ CONTENT_EXPORT void GetRawDeviceIdFromHMAC(
     GlobalRenderFrameHostId render_frame_host_id,
     const std::string& hmac_device_id,
     blink::mojom::MediaDeviceType media_device_type,
-    base::OnceCallback<void(const absl::optional<std::string>&)>
-        raw_device_id_callback);
+    OptionalDeviceIdCallback raw_device_id_callback);
+
+// Generates an HMAC device ID for `raw_device_id` using the given
+// `salt_and_origin`. If `use_group_salt` is true,
+// `salt_and_origin.group_id_salt()` will be used as salt. Otherwise,
+// `salt_and_origin.device_id_salt()` is used as salt.
+CONTENT_EXPORT std::string GetHMACForRawMediaDeviceID(
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
+    const std::string& raw_device_id,
+    bool use_group_salt = false);
+
+// Checks if `hmac_device_id` is an HMAC of |raw_device_id| for the given
+// `salt_and_origin`.
+CONTENT_EXPORT bool DoesRawMediaDeviceIDMatchHMAC(
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
+    const std::string& hmac_device_id,
+    const std::string& raw_unique_id);
+
+// Returns the raw device ID for `hmac_device_id` for the given
+// `salt_and_origin`. `stream_type` must be
+// blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE or
+// blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE. The result will
+// be returned via `callback` on the given `task_runner`.
+// Must be called on the IO thread.
+CONTENT_EXPORT void GetRawDeviceIDForMediaStreamHMAC(
+    blink::mojom::MediaStreamType stream_type,
+    MediaDeviceSaltAndOrigin salt_and_origin,
+    std::string hmac_device_id,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    OptionalDeviceIdCallback callback);
+
+// Returns the raw device ID of type `device_type` for `hmac_device_id` for the
+// given `salt_and_origin`. The result will be returned via `callback` on the
+// given `task_runner`.
+// Must be called on the IO thread.
+CONTENT_EXPORT void GetRawDeviceIDForMediaDeviceHMAC(
+    blink::mojom::MediaDeviceType device_type,
+    MediaDeviceSaltAndOrigin salt_and_origin,
+    std::string hmac_device_id,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    OptionalDeviceIdCallback callback);
 
 }  // namespace content
 

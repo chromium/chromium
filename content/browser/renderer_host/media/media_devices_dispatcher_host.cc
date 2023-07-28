@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/media_device_id.h"
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
@@ -57,11 +56,9 @@ ToVectorAudioInputDeviceCapabilitiesPtr(
     blink::mojom::AudioInputDeviceCapabilitiesPtr capabilities_ptr =
         blink::mojom::AudioInputDeviceCapabilities::New();
     capabilities_ptr->device_id =
-        GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
-                                salt_and_origin.origin, capabilities.device_id);
-    capabilities_ptr->group_id =
-        GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
-                                salt_and_origin.origin, capabilities.group_id);
+        GetHMACForRawMediaDeviceID(salt_and_origin, capabilities.device_id);
+    capabilities_ptr->group_id = GetHMACForRawMediaDeviceID(
+        salt_and_origin, capabilities.group_id, /*use_group_salt=*/true);
     capabilities_ptr->parameters = capabilities.parameters;
     result.push_back(std::move(capabilities_ptr));
   }
@@ -390,11 +387,9 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
   for (const auto& device_info :
        enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
     std::string hmac_device_id =
-        GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
-                                salt_and_origin.origin, device_info.device_id);
-    std::string hmac_group_id =
-        GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
-                                salt_and_origin.origin, device_info.group_id);
+        GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id);
+    std::string hmac_group_id = GetHMACForRawMediaDeviceID(
+        salt_and_origin, device_info.group_id, /*use_group_salt=*/true);
     blink::mojom::VideoInputDeviceCapabilitiesPtr capabilities =
         blink::mojom::VideoInputDeviceCapabilities::New();
     capabilities->device_id = std::move(hmac_device_id);
@@ -428,10 +423,9 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
       "MDDH::GetVideoInputDeviceFormats({hashed_device_id=%s}, "
       "{try_in_use_first=%s})",
       hashed_device_id.c_str(), try_in_use_first ? "true" : "false"));
-  MediaStreamManager::GetRawDeviceIDForMediaStreamHMAC(
-      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      salt_and_origin.device_id_salt, salt_and_origin.origin, hashed_device_id,
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  GetRawDeviceIDForMediaStreamHMAC(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
+      hashed_device_id, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId,
           weak_factory_.GetWeakPtr(), hashed_device_id, try_in_use_first,

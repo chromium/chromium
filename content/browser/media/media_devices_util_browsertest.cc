@@ -69,7 +69,7 @@ void VerifyHMACDeviceID(MediaDeviceType device_type,
 
 }  // namespace
 
-class MediaDevicesUtilTest : public ContentBrowserTest {
+class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -131,7 +131,9 @@ class MediaDevicesUtilTest : public ContentBrowserTest {
   MediaDeviceEnumeration device_enumeration_;
 };
 
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest, TranslateDeviceIdAndBack) {
+// This test provides coverage for the utilities in
+// content/public/media_device_id.h
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslateDeviceIdAndBack) {
   const std::string salt = CreateRandomMediaDeviceIDSalt();
   EXPECT_FALSE(salt.empty());
   for (int i = 0; i < static_cast<int>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
@@ -154,61 +156,27 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest, TranslateDeviceIdAndBack) {
         continue;
       }
       base::test::TestFuture<const absl::optional<std::string>&> future;
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&GetMediaDeviceIDForHMAC, *stream_type, salt, origin_,
-                         hmac_device_id,
-                         base::SequencedTaskRunner::GetCurrentDefault(),
-                         future.GetCallback()));
+      GetMediaDeviceIDForHMAC(*stream_type, salt, origin_, hmac_device_id,
+                              base::SequencedTaskRunner::GetCurrentDefault(),
+                              future.GetCallback());
       absl::optional<std::string> raw_device_id = future.Get();
       EXPECT_THAT(raw_device_id, Optional(device_info.device_id));
     }
   }
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest, GetMediaDeviceSaltAndOrigin) {
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
+                       GetMediaDeviceSaltAndOrigin) {
   MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
-  EXPECT_FALSE(salt_and_origin.device_id_salt.empty());
-  EXPECT_FALSE(salt_and_origin.group_id_salt.empty());
-  EXPECT_NE(salt_and_origin.device_id_salt, salt_and_origin.group_id_salt);
+  EXPECT_FALSE(salt_and_origin.device_id_salt().empty());
+  EXPECT_FALSE(salt_and_origin.group_id_salt().empty());
+  EXPECT_NE(salt_and_origin.device_id_salt(), salt_and_origin.group_id_salt());
   EXPECT_EQ(
-      salt_and_origin.origin,
+      salt_and_origin.origin(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
-                       TranslateMediaDeviceInfoWithPermission) {
-  MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
-  ASSERT_FALSE(device_enumeration_.empty());
-  ASSERT_FALSE(device_enumeration_[0].empty());
-  blink::WebMediaDeviceInfo original_info = device_enumeration_[0][0];
-  blink::WebMediaDeviceInfo translated_info = TranslateMediaDeviceInfo(
-      /*has_permission=*/true, salt_and_origin, original_info);
-  EXPECT_EQ(
-      translated_info.device_id,
-      GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
-                              salt_and_origin.origin, original_info.device_id));
-  EXPECT_EQ(translated_info.label, original_info.label);
-  EXPECT_EQ(
-      translated_info.group_id,
-      GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
-                              salt_and_origin.origin, original_info.group_id));
-}
-
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
-                       TranslateMediaDeviceInfoWithoutPermission) {
-  MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
-  ASSERT_FALSE(device_enumeration_.empty());
-  ASSERT_FALSE(device_enumeration_[0].empty());
-  blink::WebMediaDeviceInfo original_info = device_enumeration_[0][0];
-  blink::WebMediaDeviceInfo translated_info = TranslateMediaDeviceInfo(
-      /*has_permission=*/false, salt_and_origin, original_info);
-  EXPECT_EQ(translated_info.device_id.empty(), ShouldHideDeviceIDs());
-  EXPECT_TRUE(translated_info.label.empty());
-  EXPECT_EQ(translated_info.group_id.empty(), ShouldHideDeviceIDs());
-}
-
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
                        TranslateMediaDeviceInfoArrayWithPermission) {
   MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
   for (const auto& device_infos : device_enumeration_) {
@@ -218,19 +186,18 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
     EXPECT_EQ(web_media_device_infos.size(), device_infos.size());
     for (size_t j = 0; j < device_infos.size(); ++j) {
       EXPECT_EQ(web_media_device_infos[j].device_id,
-                GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
-                                        salt_and_origin.origin,
-                                        device_infos[j].device_id));
+                GetHMACForRawMediaDeviceID(salt_and_origin,
+                                           device_infos[j].device_id));
       EXPECT_EQ(web_media_device_infos[j].label, device_infos[j].label);
-      EXPECT_EQ(web_media_device_infos[j].group_id,
-                GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
-                                        salt_and_origin.origin,
-                                        device_infos[j].group_id));
+      EXPECT_EQ(
+          web_media_device_infos[j].group_id,
+          GetHMACForRawMediaDeviceID(salt_and_origin, device_infos[j].group_id,
+                                     /*use_group_salt=*/true));
     }
   }
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
                        TranslateMediaDeviceInfoArrayWithoutPermission) {
   MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
   for (const auto& device_infos : device_enumeration_) {
@@ -247,19 +214,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
-                       TranslateEmptyMediaDeviceInfoArray) {
-  MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
-  blink::WebMediaDeviceInfoArray web_media_device_infos =
-      TranslateMediaDeviceInfoArray(/*has_permission=*/false, salt_and_origin,
-                                    {});
-  EXPECT_TRUE(web_media_device_infos.empty());
-  web_media_device_infos = TranslateMediaDeviceInfoArray(
-      /*has_permission=*/true, salt_and_origin, {});
-  EXPECT_TRUE(web_media_device_infos.empty());
-}
-
-IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest, TranslationWithoutSalt) {
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslationWithoutSalt) {
   for (int i = 0; i < static_cast<int>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
        ++i) {
     SCOPED_TRACE(base::StringPrintf("device_type %d", i));
@@ -278,6 +233,61 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest, TranslationWithoutSalt) {
       EXPECT_THAT(raw_device_id, Optional(device_info.device_id));
     }
   }
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
+                       GetRawMediaDeviceIDForHMAC) {
+  const MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
+  const std::string existing_raw_device_id =
+      device_enumeration_[0][0].device_id;
+  const std::string existing_hmac_device_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, existing_raw_device_id);
+
+  base::test::TestFuture<const absl::optional<std::string>&> future;
+  GetIOThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&GetRawDeviceIDForMediaStreamHMAC,
+                                MediaStreamType::DEVICE_AUDIO_CAPTURE,
+                                salt_and_origin, existing_hmac_device_id,
+                                base::SequencedTaskRunner::GetCurrentDefault(),
+                                future.GetCallback()));
+  absl::optional<std::string> raw_device_id = future.Get();
+  ASSERT_TRUE(raw_device_id.has_value());
+  EXPECT_EQ(*raw_device_id, existing_raw_device_id);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
+  const MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
+  const std::string existing_raw_device_id =
+      device_enumeration_[static_cast<size_t>(
+          MediaDeviceType::MEDIA_AUDIO_OUTPUT)][0]
+          .device_id;
+  const std::string existing_hmac_device_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, existing_raw_device_id);
+
+  base::test::TestFuture<const absl::optional<std::string>&> future;
+  GetIOThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
+                                MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+                                salt_and_origin, existing_hmac_device_id,
+                                base::SequencedTaskRunner::GetCurrentDefault(),
+                                future.GetCallback()));
+  absl::optional<std::string> raw_device_id = future.Get();
+  ASSERT_TRUE(raw_device_id.has_value());
+  EXPECT_EQ(*raw_device_id, existing_raw_device_id);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
+                       GetRawDeviceIDForNonexistingHMAC) {
+  base::test::TestFuture<const absl::optional<std::string>&> future;
+  GetIOThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
+                     MediaDeviceType::MEDIA_AUDIO_OUTPUT, GetSaltAndOrigin(),
+                     "nonexisting_hmac_device_id",
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     future.GetCallback()));
+  absl::optional<std::string> raw_device_id = future.Get();
+  EXPECT_FALSE(raw_device_id.has_value());
 }
 
 }  // namespace content

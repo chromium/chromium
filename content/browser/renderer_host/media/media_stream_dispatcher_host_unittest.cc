@@ -28,6 +28,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
@@ -310,7 +311,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
  public:
   MediaStreamDispatcherHostTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
-        origin_(url::Origin::Create(GURL("https://test.com"))) {
+        salt_and_origin_(CreateRandomMediaDeviceIDSalt(),
+                         url::Origin::Create(GURL("https://test.com"))) {
     scoped_feature_list_
         .InitFromCommandLine(/*enable_features=*/
                              "UserMediaCaptureOnFocus,GetAllScreensMedia",
@@ -330,8 +332,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     // Create our own MediaStreamManager.
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
         audio_system_.get(), std::move(mock_video_capture_provider));
-    focus_ = true;
-    background_ = false;
+    salt_and_origin_.set_has_focus(true);
+    salt_and_origin_.set_is_background(false);
     host_ = std::make_unique<MockMediaStreamDispatcherHost>(
         kProcessId, kRenderId, media_stream_manager_.get());
     host_->set_get_salt_and_origin_cb_for_testing(
@@ -395,9 +397,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
   void GetSaltAndOrigin(GlobalRenderFrameHostId /*render_frame_host_id*/,
                         MediaDeviceSaltAndOriginCallback callback) {
-    std::move(callback).Run(
-        MediaDeviceSaltAndOrigin(media_device_id_salt_, "fake_group_id_salt",
-                                 origin_, focus_, background_));
+    std::move(callback).Run(salt_and_origin_);
   }
 
   MOCK_METHOD2(MockOnBadMessage, void(int, bad_message::BadMessageReason));
@@ -436,10 +436,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
          host_->stream_devices_set_->stream_devices) {
       EXPECT_FALSE(DoesContainRawIds(stream_devices->audio_device));
       EXPECT_FALSE(DoesContainRawIds(stream_devices->video_device));
-      EXPECT_TRUE(
-          DoesEveryDeviceMapToRawId(stream_devices->audio_device, origin_));
-      EXPECT_TRUE(
-          DoesEveryDeviceMapToRawId(stream_devices->video_device, origin_));
+      EXPECT_TRUE(DoesEveryDeviceMapToRawId(stream_devices->audio_device));
+      EXPECT_TRUE(DoesEveryDeviceMapToRawId(stream_devices->video_device));
     }
   }
 
@@ -463,8 +461,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
                         run_loop.QuitClosure());
     run_loop.Run();
     EXPECT_FALSE(DoesContainRawIds(video_device(/*stream_index=*/0u).value()));
-    EXPECT_TRUE(DoesEveryDeviceMapToRawId(
-        video_device(/*stream_index=*/0u).value(), origin_));
+    EXPECT_TRUE(
+        DoesEveryDeviceMapToRawId(video_device(/*stream_index=*/0u).value()));
   }
 
   void OpenVideoDeviceAndWaitForFailure(int page_request_id,
@@ -476,8 +474,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
                         run_loop.QuitClosure());
     run_loop.Run();
     EXPECT_FALSE(DoesContainRawIds(video_device(/*stream_index=*/0u).value()));
-    EXPECT_FALSE(DoesEveryDeviceMapToRawId(
-        video_device(/*stream_index=*/0u).value(), origin_));
+    EXPECT_FALSE(
+        DoesEveryDeviceMapToRawId(video_device(/*stream_index=*/0u).value()));
   }
 
   bool DoesContainRawIds(
@@ -503,8 +501,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   }
 
   bool DoesEveryDeviceMapToRawId(
-      const absl::optional<blink::MediaStreamDevice>& optional_device,
-      const url::Origin& origin) {
+      const absl::optional<blink::MediaStreamDevice>& optional_device) {
     if (!optional_device.has_value()) {
       return true;
     }
@@ -517,15 +514,15 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     media::AudioDeviceDescriptions::const_iterator audio_it =
         audio_device_descriptions_.begin();
     for (; audio_it != audio_device_descriptions_.end(); ++audio_it) {
-      if (DoesMediaDeviceIDMatchHMAC(media_device_id_salt_, origin, device.id,
-                                     audio_it->unique_id)) {
+      if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin_, device.id,
+                                        audio_it->unique_id)) {
         EXPECT_FALSE(found_match) << "Multiple matches found.";
         found_match = true;
       }
     }
     for (const std::string& device_id : stub_video_device_ids_) {
-      if (DoesMediaDeviceIDMatchHMAC(media_device_id_salt_, origin, device.id,
-                                     device_id)) {
+      if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin_, device.id,
+                                        device_id)) {
         EXPECT_FALSE(found_match) << "Multiple matches found.";
         found_match = true;
       }
@@ -565,7 +562,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   }
 
   void ResetMediaDeviceIDSalt() {
-    media_device_id_salt_ = CreateRandomMediaDeviceIDSalt();
+    salt_and_origin_.set_device_id_salt(CreateRandomMediaDeviceIDSalt());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -574,12 +571,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<media::AudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-  std::string media_device_id_salt_;
+  MediaDeviceSaltAndOrigin salt_and_origin_;
   media::AudioDeviceDescriptions audio_device_descriptions_;
   std::vector<std::string> stub_video_device_ids_;
-  url::Origin origin_;
-  bool focus_;
-  bool background_;
   raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_;
 };
 
@@ -697,8 +691,8 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioAndVideo) {
 TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithDepthVideo) {
   // We specify to generate both audio and video stream.
   blink::StreamControls controls(true, true);
-  std::string source_id = GetHMACForMediaDeviceID(media_device_id_salt_,
-                                                  origin_, kDepthVideoDeviceId);
+  std::string source_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin_, kDepthVideoDeviceId);
   // |source_id| corresponds to the depth device. As we can generate only one
   // video stream using GenerateStreamAndWaitForResult, we use
   // controls.video.source_id to specify that the stream is depth video.
@@ -837,7 +831,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsDifferentRenderId) {
 TEST_F(MediaStreamDispatcherHostTest, WebContentsNotFocused) {
   blink::StreamControls controls(true, false);
 
-  focus_ = false;
+  salt_and_origin_.set_has_focus(false);
   host_->set_get_salt_and_origin_cb_for_testing(
       base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
                           base::Unretained(this)));
@@ -857,8 +851,8 @@ TEST_F(MediaStreamDispatcherHostTest, WebContentsNotFocusedInBackgroundPage) {
 
   SetupFakeUI(true);
 
-  focus_ = false;
-  background_ = true;
+  salt_and_origin_.set_has_focus(false);
+  salt_and_origin_.set_is_background(true);
   host_->set_get_salt_and_origin_cb_for_testing(
       base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
                           base::Unretained(this)));
@@ -893,7 +887,7 @@ TEST_F(MediaStreamDispatcherHostTest, WebContentsFocused) {
 
   SetupFakeUI(true);
 
-  focus_ = false;
+  salt_and_origin_.set_has_focus(false);
   host_->set_get_salt_and_origin_cb_for_testing(
       base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
                           base::Unretained(this)));
@@ -919,7 +913,7 @@ TEST_F(MediaStreamDispatcherHostTest, WebContentsFocused) {
                           kPageRequestId, SameTypesAs(std::ref(expectation))))
       .Times(1);
 
-  focus_ = true;
+  salt_and_origin_.set_has_focus(true);
   host_->set_get_salt_and_origin_cb_for_testing(
       base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
                           base::Unretained(this)));
@@ -975,8 +969,8 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithSourceId) {
   media::AudioDeviceDescriptions::const_iterator audio_it =
       audio_device_descriptions_.begin();
   for (; audio_it != audio_device_descriptions_.end(); ++audio_it) {
-    std::string source_id = GetHMACForMediaDeviceID(
-        media_device_id_salt_, origin_, audio_it->unique_id);
+    std::string source_id =
+        GetHMACForRawMediaDeviceID(salt_and_origin_, audio_it->unique_id);
     ASSERT_FALSE(source_id.empty());
     blink::StreamControls controls(true, true);
     controls.audio.device_id = source_id;
@@ -988,7 +982,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithSourceId) {
 
   for (const std::string& device_id : stub_video_device_ids_) {
     std::string source_id =
-        GetHMACForMediaDeviceID(media_device_id_salt_, origin_, device_id);
+        GetHMACForRawMediaDeviceID(salt_and_origin_, device_id);
     ASSERT_FALSE(source_id.empty());
     blink::StreamControls controls(true, true);
     controls.video.device_id = source_id;
