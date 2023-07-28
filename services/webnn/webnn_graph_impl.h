@@ -21,6 +21,10 @@ class WebNNGraphImpl : public mojom::WebNNGraph {
   static bool ValidateAndBuildGraph(
       mojom::WebNNContext::CreateGraphCallback callback,
       const mojom::GraphInfoPtr& graph_info);
+
+  // The actual platform graph creation and building will be bypassed if it is
+  // set true.
+  static void SetValidationOnlyForTesting(bool is_validation_only_for_testing);
 };
 
 }  // namespace webnn

@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_service.mojom.h"
+#include "services/webnn/webnn_graph_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn {
@@ -66,6 +67,11 @@ class WebNNContextImplTest : public testing::Test {
   WebNNContextImplTest(const WebNNContextImplTest&) = delete;
   WebNNContextImplTest& operator=(const WebNNContextImplTest&) = delete;
 
+  void SetUp() override { WebNNGraphImpl::SetValidationOnlyForTesting(true); }
+  void TearDown() override {
+    WebNNGraphImpl::SetValidationOnlyForTesting(false);
+  }
+
  protected:
   WebNNContextImplTest() = default;
   ~WebNNContextImplTest() override = default;
@@ -112,7 +118,7 @@ TEST_F(WebNNContextImplTest, CreateWebNNGraphTest) {
       BuildSimpleGraph(),
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<mojom::WebNNGraph> remote) {
-            EXPECT_TRUE(remote.is_valid());
+            EXPECT_FALSE(remote.is_valid());
             is_callback_called = true;
             run_loop_create_graph.Quit();
           }));

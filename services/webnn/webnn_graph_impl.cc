@@ -11,10 +11,14 @@
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-
+#if BUILDFLAG(IS_WIN)
+#include "services/webnn/dml/graph_impl.h"
+#endif
 namespace webnn {
 
 namespace {
+
+bool g_is_validation_only_for_testing = false;
 
 // Maps the id to its `mojo::Operand`.
 using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
@@ -412,6 +416,12 @@ WebNNGraphImpl::WebNNGraphImpl() = default;
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 
 // static
+void WebNNGraphImpl::SetValidationOnlyForTesting(
+    bool is_validation_only_for_testing) {
+  g_is_validation_only_for_testing = is_validation_only_for_testing;
+}
+
+// static
 bool WebNNGraphImpl::ValidateAndBuildGraph(
     mojom::WebNNContext::CreateGraphCallback callback,
     const mojom::GraphInfoPtr& graph_info) {
@@ -419,16 +429,18 @@ bool WebNNGraphImpl::ValidateAndBuildGraph(
     return false;
   }
 
-  // The remote sent to the renderer.
-  mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
-  // The receiver bound to WebNNGraphImpl.
-  mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
-      std::make_unique<WebNNGraphImpl>(),
-      blink_remote.InitWithNewPipeAndPassReceiver());
-  // TODO(crbug.com/1273291): Build graph with OS machine learning APIs.
-  // webnn_graph_impl->BuildGraph(std::move(callback), std::move(blink_remote));
-  std::move(callback).Run(std::move(blink_remote));
+  if (g_is_validation_only_for_testing) {
+    std::move(callback).Run(mojo::NullRemote());
+    return true;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  dml::GraphImpl::CreateAndBuild(graph_info, std::move(callback));
   return true;
+#else
+  std::move(callback).Run(mojo::NullRemote());
+  return true;
+#endif
 }
 
 }  // namespace webnn
