@@ -210,6 +210,7 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
     console_view_entry = [
