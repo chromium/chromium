@@ -224,14 +224,54 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     const absl::optional<gfx::Rect>& clip_rect_in_root) {
   bool needs_commit = false;
 
+  // Helper function to set |field| to |parameter| and return whether it
+  // changed.
+  auto SetField = [&needs_commit](auto& field, auto& parameter) -> bool {
+    const bool changed = field != parameter;
+    if (changed) {
+      field = std::move(parameter);
+
+      // We assume that any change to the input of |Update| will result in some
+      // visual property change that requires a commit. If this is not true, an
+      // input is not needed.
+      needs_commit = true;
+    }
+    return changed;
+  };
+
+  // Fields on |VisualSubtree| should map 1:1 with parameters to |Update| (with
+  // the exception of the DComp device pointer, DComp visuals, and Z-order). To
+  // avoid issues with incremental computation, set fields to input parameters
+  // here with the helper function and read the member fields below only if
+  // guarded by the corresponding |*_changed| variable.
+  const bool dcomp_visual_content_changed =
+      SetField(dcomp_visual_content_, dcomp_visual_content);
+  const bool dcomp_surface_serial_changed =
+      SetField(dcomp_surface_serial_, dcomp_surface_serial);
+  const bool image_size_changed = SetField(image_size_, image_size);
+  const bool content_tint_color_changed =
+      SetField(content_tint_color_, content_tint_color);
+  const bool content_rect_changed = SetField(content_rect_, content_rect);
+  const bool quad_rect_changed = SetField(quad_rect_, quad_rect);
+  const bool nearest_neighbor_filter_changed =
+      SetField(nearest_neighbor_filter_, nearest_neighbor_filter);
+  const bool quad_to_root_transform_changed =
+      SetField(quad_to_root_transform_, quad_to_root_transform);
+  const bool rounded_corner_bounds_changed =
+      SetField(rounded_corner_bounds_, rounded_corner_bounds);
+  const bool opacity_changed = SetField(opacity_, opacity);
+  const bool clip_rect_in_root_changed =
+      SetField(clip_rect_in_root_, clip_rect_in_root);
+
   // Methods that update the visual tree can only fail with OOM. We'll assert
   // success in this function to aid in debugging.
   HRESULT hr = S_OK;
 
+  // All the visual are created together on the first |Update|.
   if (!clip_visual_) {
     needs_commit = true;
 
-    // All the visual are created together on the first |Update|.
+    CHECK(!rounded_corners_visual_);
     CHECK(!transform_visual_);
     CHECK(!content_visual_);
 
@@ -258,15 +298,12 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     CHECK_EQ(hr, S_OK);
   }
 
-  if (clip_rect_ != clip_rect_in_root) {
-    clip_rect_ = clip_rect_in_root;
-    needs_commit = true;
-
-    if (clip_rect_.has_value()) {
+  if (clip_rect_in_root_changed) {
+    if (clip_rect_in_root_.has_value()) {
       // DirectComposition clips happen in the pre-transform visual space, while
       // cc/ clips happen post-transform. So the clip needs to go on a separate
       // parent visual that's untransformed.
-      gfx::Rect clip_rect = clip_rect_.value();
+      const gfx::Rect& clip_rect = clip_rect_in_root_.value();
       hr = clip_visual_->SetClip(D2D1::RectF(
           clip_rect.x(), clip_rect.y(), clip_rect.right(), clip_rect.bottom()));
       CHECK_EQ(hr, S_OK);
@@ -276,10 +313,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     }
   }
 
-  if (opacity_ != opacity) {
-    opacity_ = opacity;
-    needs_commit = true;
-
+  if (opacity_changed) {
     // |IDCompositionVisual3| should be available since Windows 8.1, but we
     // noticed crashes due to unconditionally casting to the interface on very
     // early versions of Windows 10. Here, we only attempt the cast when the
@@ -308,10 +342,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     }
   }
 
-  if (rounded_corner_bounds_ != rounded_corner_bounds) {
-    rounded_corner_bounds_ = rounded_corner_bounds;
-    needs_commit = true;
-
+  if (rounded_corner_bounds_changed) {
     if (!rounded_corner_bounds_.IsEmpty()) {
       Microsoft::WRL::ComPtr<IDCompositionRectangleClip> clip;
       hr = dcomp_device->CreateRectangleClip(&clip);
@@ -372,25 +403,20 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     }
   }
 
-  if (transform_ != quad_to_root_transform) {
-    transform_ = quad_to_root_transform;
-    needs_commit = true;
-
-    DCHECK(transform_.IsFlat());
+  if (quad_to_root_transform_changed) {
+    DCHECK(quad_to_root_transform_.IsFlat());
     D2D_MATRIX_3X2_F matrix =
         // D2D_MATRIX_3x2_F is row-major.
-        D2D1::Matrix3x2F(transform_.rc(0, 0), transform_.rc(1, 0),  //
-                         transform_.rc(0, 1), transform_.rc(1, 1),  //
-                         transform_.rc(0, 3), transform_.rc(1, 3));
+        D2D1::Matrix3x2F(
+            quad_to_root_transform_.rc(0, 0), quad_to_root_transform_.rc(1, 0),
+            quad_to_root_transform_.rc(0, 1), quad_to_root_transform_.rc(1, 1),
+            quad_to_root_transform_.rc(0, 3), quad_to_root_transform_.rc(1, 3));
     hr = Microsoft::WRL::ComPtr<IDCompositionVisual>(transform_visual_)
              ->SetTransform(matrix);
     CHECK_EQ(hr, S_OK);
   }
 
-  if (nearest_neighbor_filter_ != nearest_neighbor_filter) {
-    nearest_neighbor_filter_ = nearest_neighbor_filter;
-    needs_commit = true;
-
+  if (nearest_neighbor_filter_changed) {
     hr = transform_visual_->SetBitmapInterpolationMode(
         nearest_neighbor_filter_
             ? DCOMPOSITION_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR
@@ -398,13 +424,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     CHECK_EQ(hr, S_OK);
   }
 
-  if (image_size_ != image_size || content_rect_ != content_rect ||
-      quad_rect_ != quad_rect) {
-    image_size_ = image_size;
-    content_rect_ = content_rect;
-    quad_rect_ = quad_rect;
-    needs_commit = true;
-
+  if (image_size_changed || content_rect_changed || quad_rect_changed) {
     if (content_rect_.Contains(gfx::Rect(image_size_))) {
       // No need to set clip to content if the whole image is inside the content
       // rect region.
@@ -450,10 +470,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     CHECK_EQ(hr, S_OK);
   }
 
-  if (content_tint_color_ != content_tint_color) {
-    content_tint_color_ = content_tint_color;
-    needs_commit = true;
-
+  if (content_tint_color_changed) {
     SkColor4f color = content_tint_color_.value_or(SkColors::kWhite);
 
     if (color == SkColors::kWhite) {
@@ -478,40 +495,27 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     }
   }
 
-  if (dcomp_visual_content_ != dcomp_visual_content) {
-    dcomp_visual_content_ = std::move(dcomp_visual_content);
-    needs_commit = true;
-
+  if (dcomp_visual_content_changed) {
     hr = content_visual_->SetContent(dcomp_visual_content_.Get());
     CHECK_EQ(hr, S_OK);
   }
 
-  if (dcomp_surface_serial_ != dcomp_surface_serial) {
-    dcomp_surface_serial_ = dcomp_surface_serial;
-    needs_commit = true;
-
+  if (dcomp_surface_serial_changed) {
     // The DComp surface has been drawn to and needs a commit to show its
     // update. No visual changes are needed in this case.
   }
 
-  // Properties that derive from multiple other properties can only change if
-  // something else in the subtree has changed, so we can guard recalculating
-  // these behind |needs_commit|.
-  if (needs_commit) {
+  if (quad_to_root_transform_changed || quad_rect_changed) {
     const float kNeedsSoftBorderTolerance = 0.001;
     const bool content_soft_borders =
-        !transform_.Preserves2dAxisAlignment() ||
+        !quad_to_root_transform_.Preserves2dAxisAlignment() ||
         !gfx::IsNearestRectWithinDistance(
-            transform_.MapRect(gfx::RectF(quad_rect_)),
+            quad_to_root_transform_.MapRect(gfx::RectF(quad_rect_)),
             kNeedsSoftBorderTolerance);
-    if (content_soft_borders_ != content_soft_borders) {
-      content_soft_borders_ = content_soft_borders;
-
-      hr = content_visual_->SetBorderMode(content_soft_borders_
-                                              ? DCOMPOSITION_BORDER_MODE_SOFT
-                                              : DCOMPOSITION_BORDER_MODE_HARD);
-      CHECK_EQ(hr, S_OK);
-    }
+    hr = content_visual_->SetBorderMode(content_soft_borders
+                                            ? DCOMPOSITION_BORDER_MODE_SOFT
+                                            : DCOMPOSITION_BORDER_MODE_HARD);
+    CHECK_EQ(hr, S_OK);
   }
 
   return needs_commit;
@@ -521,9 +525,9 @@ void DCLayerTree::VisualTree::VisualSubtree::GetSwapChainVisualInfoForTesting(
     gfx::Transform* transform,
     gfx::Point* offset,
     gfx::Rect* clip_rect) const {
-  *transform = transform_;
+  *transform = quad_to_root_transform_;
   *offset = quad_rect_.origin();
-  *clip_rect = clip_rect_.value_or(gfx::Rect());
+  *clip_rect = clip_rect_in_root_.value_or(gfx::Rect());
 }
 
 DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)

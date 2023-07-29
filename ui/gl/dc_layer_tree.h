@@ -265,11 +265,6 @@ class DCLayerTree {
       // is updated.
       uint64_t dcomp_surface_serial_ = 0;
 
-      // True if |content_visual_| has soft borders. This is required for
-      // anti-aliasing when |transform_| makes |quad_rect_| not have
-      // axis-aligned integer bounds in root space.
-      bool content_soft_borders_ = false;
-
       // The portion of |dcomp_visual_content_| to display. This area will be
       // mapped to |quad_rect_|'s bounds.
       gfx::Rect content_rect_;
@@ -284,10 +279,10 @@ class DCLayerTree {
       bool nearest_neighbor_filter_ = false;
 
       // Transform from quad space to root space.
-      gfx::Transform transform_;
+      gfx::Transform quad_to_root_transform_;
 
       // Clip rect in root space.
-      absl::optional<gfx::Rect> clip_rect_;
+      absl::optional<gfx::Rect> clip_rect_in_root_;
 
       // Rounded corner clip in root space
       gfx::RRectF rounded_corner_bounds_;
