@@ -947,6 +947,11 @@ const char kHatsPrivacyHubBaselineCycleEndTs[] =
     "hats_privacy_hub_baseline_end_timestamp";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -2012,6 +2017,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   registry->RegisterBooleanPref(prefs::kAccessibilityPdfOcrAlwaysActive, false);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kClearUserDataDir1Pref, false);
+#endif
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -2536,6 +2545,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kHatsPrivacyHubBaselineIsSelected);
   profile_prefs->ClearPref(kHatsPrivacyHubBaselineCycleEndTs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kClearUserDataDir1Pref);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -423,7 +423,6 @@ const char kLacrosAvailabilityPolicyLacrosPrimary[] = "lacros_primary";
 const char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
-const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 // Marks the Chrome version at which profile migration was completed.
 const char kDataVerPref[] = "lacros.data_version";
 const char kProfileDataBackwardMigrationCompletedForUserPref[] =
@@ -436,8 +435,6 @@ const char kProfileMigrationCompletionTimeForUserPref[] =
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
-  registry->RegisterBooleanPref(kClearUserDataDir1Pref,
-                                /*default_value=*/false);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -1059,9 +1056,6 @@ base::StringPiece GetLacrosSelectionPolicyName(LacrosSelectionPolicy value) {
 bool IsAshBrowserSyncEnabled() {
   // Turn off sync from Ash if Lacros is enabled and Ash web browser is
   // disabled.
-  // TODO(crbug.com/1293250): We must check whether profile migration is
-  // completed or not here. Currently that is checked inside `IsLacrosEnabled()`
-  // but it is planned to be decoupled with the function in the future.
   if (IsLacrosEnabled() && !IsAshWebBrowserEnabled())
     return false;
 

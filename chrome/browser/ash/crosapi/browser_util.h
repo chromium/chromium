@@ -193,14 +193,8 @@ inline constexpr const char kLacrosDataBackwardMigrationModePolicyKeepAll[] =
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];
 
-// A boolean preference that records whether the user data dir has been cleared.
-// We intentionally number this as we anticipate we might need to clear the user
-// data dir multiple times. This preference tracks the breaking change
-// introduced by account_manager in M91/M92 timeframe.
-extern const char kClearUserDataDir1Pref[];
-
-// A dictionary local state pref that records the last data version of
-// lacros-chrome.
+// A dictionary local state pref that records the version at which profile
+// migration was marked as completed.
 extern const char kDataVerPref[];
 
 // Registers user profile preferences related to the lacros-chrome binary.
@@ -230,8 +224,6 @@ enum class PolicyInitState {
 // been completed. This is to be used inside `BrowserDataMigrator`. Unlike
 // `IsLacrosEnabled()` it can be called before the primary user profile is
 // created.
-// TODO(crbug.com/1265800): Refactor `IsLacrosEnabled()` and
-// `IsLacrosEnabledForMigration()` to reduce duplicated code.
 bool IsLacrosEnabledForMigration(const user_manager::User* user,
                                  PolicyInitState policy_init_state);
 
@@ -241,8 +233,6 @@ bool IsAshWebBrowserEnabled();
 
 // Similar to `IsAshWebBrowserEnabled()` but it is calleable even before primary
 // profile and policy are initialized.
-// TODO(crbug.com/1265800): Refactor to reduce code duplication with
-// `IsAshWebBrowserEnabled()`.
 bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
                                         PolicyInitState policy_init_state);
 
@@ -251,8 +241,6 @@ bool IsLacrosPrimaryBrowser();
 
 // Similar to `IsLacrosPrimaryBrowser()` but is calleable even before primary
 // profile and policy are initialized.
-// TODO(crbug.com/1265800): Refactor to reduce code duplication with
-// `IsLacrosPrimaryBrowser()`.
 bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
                                         PolicyInitState policy_init_state);
 
@@ -268,8 +256,6 @@ bool IsLacrosPrimaryBrowserAllowed();
 
 // Similar to `IsLacrosPrimaryBrowserAllowed()` but is calleable even before
 // primary profile and policy are initialized.
-// TODO(crbug.com/1265800): Refactor to reduce code duplication with
-// `IsLacrosPrimaryBrowserAllowed()`.
 bool IsLacrosPrimaryBrowserAllowedForMigration(
     const user_manager::User* user,
     ash::standalone_browser::LacrosAvailability lacros_availability);
