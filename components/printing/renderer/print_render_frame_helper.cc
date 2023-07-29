@@ -1375,6 +1375,8 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
     print_preview_context_.InitWithFrame(web_frame);
     RequestPrintPreview(PrintPreviewRequestType::kScripted,
                         /*already_notified_frame=*/false);
+#else
+    NOTREACHED_NORETURN();
 #endif
   } else {
     RecordBeforeAfterPrintEventForDebugging(__LINE__);
@@ -2172,6 +2174,8 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
     print_preview_context_.InitWithNode(node);
     RequestPrintPreview(PrintPreviewRequestType::kUserInitiatedContextNode,
                         /*already_notified_frame=*/false);
+#else
+    NOTREACHED_NORETURN();
 #endif
   } else {
     // Make a copy of the node, in case RenderView::OnContextMenuClosed() resets
