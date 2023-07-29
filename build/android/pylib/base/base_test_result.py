@@ -69,7 +69,7 @@ class BaseTestResult:
     return self.GetName() == other.GetName()
 
   def __lt__(self, other):
-    return self.GetName() == other.GetName()
+    return self.GetName() < other.GetName()
 
   def __hash__(self):
     return hash(self._name)
