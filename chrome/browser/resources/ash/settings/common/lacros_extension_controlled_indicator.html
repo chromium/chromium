@@ -1,0 +1,38 @@
+<style include="cros-color-overrides">
+  :host {
+    align-items: center;
+    display: flex;
+    margin-inline-start: 36px;
+    min-height: var(--cr-section-min-height);
+  }
+
+  img {
+    /* Margin between the extension icon image and the label text next to it. */
+    margin-inline-end: 16px;
+  }
+
+  iron-icon[icon='cr:open-in-new'] {
+    fill: var(--text-color);
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  #disable {
+    margin-inline-start: 8px;
+  }
+
+  /* Using ">" operator to ensure that this CSS rule will not accidentally
+   * be applied to a search highlight span (which is inserted dynamically if
+   * when search "hit" occurs within this element. */
+  :host > span {
+    flex: 1;
+    margin-inline-end: 8px;
+  }
+</style>
+<img role="presentation" src="chrome://resources/images/extension.svg"
+    width="20" height="20">
+<span>[[getLabel_(extensionName)]]</span>
+<cr-button id="manage" on-click="onManageClick_">
+  $i18n{manage}
+  <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
+</cr-button>

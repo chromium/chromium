@@ -62,6 +62,7 @@ build_webui("build") {
   ]
 
   web_component_files = [
+    "common/lacros_extension_controlled_indicator.ts",
     "crostini_page/bruschetta_subpage.ts",
     "crostini_page/crostini_arc_adb.ts",
     "crostini_page/crostini_arc_adb_confirmation_dialog.ts",
@@ -311,6 +312,7 @@ build_webui("build") {
   non_web_component_files = [
     "assert_extras.ts",
     "common/global_scroll_target_mixin.ts",
+    "common/lacros_extension_control_browser_proxy.ts",
     "common/load_time_booleans.ts",
     "common/setting_id_param_util.ts",
     "common/types.ts",

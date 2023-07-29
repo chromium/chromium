@@ -19,6 +19,7 @@ import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../settings_vars.css.js';
 import './internet_shared.css.js';
 import '/shared/settings/controls/settings_toggle_button.js';
+import '../common/lacros_extension_controlled_indicator.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
