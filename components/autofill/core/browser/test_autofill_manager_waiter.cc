@@ -117,6 +117,34 @@ void TestAutofillManagerWaiter::OnAfterTextFieldDidChange(
   Decrement(Event::kTextFieldDidChange);
 }
 
+void TestAutofillManagerWaiter::OnBeforeTextFieldDidScroll(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Increment(Event::kTextFieldDidScroll);
+}
+
+void TestAutofillManagerWaiter::OnAfterTextFieldDidScroll(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Decrement(Event::kTextFieldDidScroll);
+}
+
+void TestAutofillManagerWaiter::OnBeforeSelectControlDidChange(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Increment(Event::kSelectControlDidChange);
+}
+
+void TestAutofillManagerWaiter::OnAfterSelectControlDidChange(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Decrement(Event::kSelectControlDidChange);
+}
+
 void TestAutofillManagerWaiter::OnBeforeAskForValuesToFill(
     AutofillManager& manager,
     FormGlobalId form,
@@ -157,13 +185,9 @@ void TestAutofillManagerWaiter::OnAfterJavaScriptChangedAutofilledValue(
   Decrement(Event::kJavaScriptChangedAutofilledValue);
 }
 
-void TestAutofillManagerWaiter::OnBeforeFormSubmitted(AutofillManager& manager,
-                                                      FormGlobalId form) {
+void TestAutofillManagerWaiter::OnFormSubmitted(AutofillManager& manager,
+                                                FormGlobalId form) {
   Increment(Event::kFormSubmitted);
-}
-
-void TestAutofillManagerWaiter::OnAfterFormSubmitted(AutofillManager& manager,
-                                                     FormGlobalId form) {
   Decrement(Event::kFormSubmitted);
 }
 

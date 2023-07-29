@@ -91,10 +91,19 @@ class AutofillManager
                                            FormGlobalId form,
                                            FieldGlobalId field) {}
 
-    virtual void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
-                                                 FormGlobalId form) {}
-    virtual void OnAfterDidFillAutofillFormData(AutofillManager& manager,
-                                                FormGlobalId form) {}
+    virtual void OnBeforeTextFieldDidScroll(AutofillManager& manager,
+                                            FormGlobalId form,
+                                            FieldGlobalId field) {}
+    virtual void OnAfterTextFieldDidScroll(AutofillManager& manager,
+                                           FormGlobalId form,
+                                           FieldGlobalId field) {}
+
+    virtual void OnBeforeSelectControlDidChange(AutofillManager& manager,
+                                                FormGlobalId form,
+                                                FieldGlobalId field) {}
+    virtual void OnAfterSelectControlDidChange(AutofillManager& manager,
+                                               FormGlobalId form,
+                                               FieldGlobalId field) {}
 
     virtual void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                             FormGlobalId form,
@@ -102,6 +111,11 @@ class AutofillManager
     virtual void OnAfterAskForValuesToFill(AutofillManager& manager,
                                            FormGlobalId form,
                                            FieldGlobalId field) {}
+
+    virtual void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
+                                                 FormGlobalId form) {}
+    virtual void OnAfterDidFillAutofillFormData(AutofillManager& manager,
+                                                FormGlobalId form) {}
 
     virtual void OnBeforeJavaScriptChangedAutofilledValue(
         AutofillManager& manager,
@@ -111,11 +125,6 @@ class AutofillManager
         AutofillManager& manager,
         FormGlobalId form,
         FieldGlobalId field) {}
-
-    virtual void OnBeforeFormSubmitted(AutofillManager& manager,
-                                       FormGlobalId form) {}
-    virtual void OnAfterFormSubmitted(AutofillManager& manager,
-                                      FormGlobalId form) {}
 
     virtual void OnBeforeLoadedServerPredictions(AutofillManager& manager) {}
     virtual void OnAfterLoadedServerPredictions(AutofillManager& manager) {}
@@ -128,13 +137,7 @@ class AutofillManager
                                         FormGlobalId form,
                                         FieldTypeSource source) {}
 
-    // TODO(crbug.com/1330105): Clean up API: delete the events that don't
-    // follow the OnBeforeFoo() / OnAfterFoo() pattern.
-    virtual void OnFormParsed(AutofillManager& manager) {}
-    virtual void OnTextFieldDidChange(AutofillManager& manager) {}
-    virtual void OnTextFieldDidScroll(AutofillManager& manager) {}
-    virtual void OnSelectControlDidChange(AutofillManager& manager) {}
-    virtual void OnFormSubmitted(AutofillManager& manager) {}
+    virtual void OnFormSubmitted(AutofillManager& manager, FormGlobalId) {}
   };
 
   // TODO(crbug.com/1151542): Move to anonymous namespace once

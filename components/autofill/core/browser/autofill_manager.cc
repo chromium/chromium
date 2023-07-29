@@ -317,10 +317,8 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
     return;
   }
 
-  NotifyObservers(&Observer::OnBeforeFormSubmitted, form.global_id());
-  NotifyObservers(&Observer::OnFormSubmitted);
+  NotifyObservers(&Observer::OnFormSubmitted, form.global_id());
   OnFormSubmittedImpl(form, known_success, source);
-  NotifyObservers(&Observer::OnAfterFormSubmitted, form.global_id());
 }
 
 void AutofillManager::OnFormsSeen(
@@ -454,7 +452,6 @@ void AutofillManager::OnTextFieldDidChange(const FormData& form,
 
   NotifyObservers(&Observer::OnBeforeTextFieldDidChange, form.global_id(),
                   field.global_id());
-  NotifyObservers(&Observer::OnTextFieldDidChange);
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnTextFieldDidChangeImpl(form, field, bounding_box, timestamp);
     NotifyObservers(&Observer::OnAfterTextFieldDidChange, form.global_id(),
@@ -475,15 +472,20 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  NotifyObservers(&Observer::OnTextFieldDidScroll);
+  NotifyObservers(&Observer::OnBeforeTextFieldDidScroll, form.global_id(),
+                  field.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnTextFieldDidScrollImpl(form, field, bounding_box);
+    NotifyObservers(&Observer::OnAfterTextFieldDidScroll, form.global_id(),
+                    field.global_id());
     return;
   }
   ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::OnTextFieldDidScrollImpl, field,
-                            bounding_box)
-                .Then(NotifyNoObserversCallback()));
+      form,
+      ParsingCallback(&AutofillManager::OnTextFieldDidScrollImpl, field,
+                      bounding_box)
+          .Then(NotifyObserversCallback(&Observer::OnAfterTextFieldDidScroll,
+                                        form.global_id(), field.global_id())));
 }
 
 void AutofillManager::OnSelectControlDidChange(const FormData& form,
@@ -492,15 +494,20 @@ void AutofillManager::OnSelectControlDidChange(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  NotifyObservers(&Observer::OnSelectControlDidChange);
+  NotifyObservers(&Observer::OnBeforeSelectControlDidChange, form.global_id(),
+                  field.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnSelectControlDidChangeImpl(form, field, bounding_box);
+    NotifyObservers(&Observer::OnAfterSelectControlDidChange, form.global_id(),
+                    field.global_id());
     return;
   }
-  ParseFormAsync(form,
-                 ParsingCallback(&AutofillManager::OnSelectControlDidChangeImpl,
-                                 field, bounding_box)
-                     .Then(NotifyNoObserversCallback()));
+  ParseFormAsync(
+      form, ParsingCallback(&AutofillManager::OnSelectControlDidChangeImpl,
+                            field, bounding_box)
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterSelectControlDidChange, form.global_id(),
+                    field.global_id())));
 }
 
 void AutofillManager::OnAskForValuesToFill(
@@ -783,7 +790,6 @@ void AutofillManager::ParseFormsAsync(
               &Observer::OnFieldTypesDetermined, id,
               Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         }
-        self->NotifyObservers(&Observer::OnFormParsed);
         std::move(callback).Run(*self, parsed_forms);
       };
 
@@ -880,7 +886,6 @@ void AutofillManager::ParseFormAsync(
         self->NotifyObservers(
             &Observer::OnFieldTypesDetermined, id,
             Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
-        self->NotifyObservers(&Observer::OnFormParsed);
         std::move(callback).Run(*self, form_data);
       };
 
@@ -912,7 +917,6 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
     form_structure->RetrieveFromCache(
         *cached_form, FormStructure::RetrieveFromCacheReason::kFormParsing);
 
-    NotifyObservers(&Observer::OnFormParsed);
     if (form_structure.get()->value_from_dynamic_change_form())
       value_from_dynamic_change_form_ = true;
   }

@@ -29,6 +29,8 @@ enum class AutofillManagerEvent {
   kLanguageDetermined,
   kFormsSeen,
   kTextFieldDidChange,
+  kTextFieldDidScroll,
+  kSelectControlDidChange,
   kAskForValuesToFill,
   kDidFillAutofillFormData,
   kJavaScriptChangedAutofilledValue,
@@ -165,6 +167,20 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                  FormGlobalId form,
                                  FieldGlobalId field) override;
 
+  void OnBeforeTextFieldDidScroll(AutofillManager& manager,
+                                  FormGlobalId form,
+                                  FieldGlobalId field) override;
+  void OnAfterTextFieldDidScroll(AutofillManager& manager,
+                                 FormGlobalId form,
+                                 FieldGlobalId field) override;
+
+  void OnBeforeSelectControlDidChange(AutofillManager& manager,
+                                      FormGlobalId form,
+                                      FieldGlobalId field) override;
+  void OnAfterSelectControlDidChange(AutofillManager& manager,
+                                     FormGlobalId form,
+                                     FieldGlobalId field) override;
+
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form,
                                   FieldGlobalId field) override;
@@ -184,10 +200,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                                FormGlobalId form,
                                                FieldGlobalId field) override;
 
-  void OnBeforeFormSubmitted(AutofillManager& manager,
-                             FormGlobalId form) override;
-  void OnAfterFormSubmitted(AutofillManager& manager,
-                            FormGlobalId form) override;
+  void OnFormSubmitted(AutofillManager& manager, FormGlobalId form) override;
 
   DenseSet<Event> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
