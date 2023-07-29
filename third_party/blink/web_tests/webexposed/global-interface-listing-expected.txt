@@ -2751,6 +2751,14 @@ interface FileReader : EventTarget
     setter onloadend
     setter onloadstart
     setter onprogress
+interface FileSystemChangeRecord
+    attribute @@toStringTag
+    getter changedHandle
+    getter relativePathComponents
+    getter relativePathMovedFrom
+    getter root
+    getter type
+    method constructor
 interface FileSystemDirectoryHandle : FileSystemHandle
     attribute @@toStringTag
     method @@asyncIterator
@@ -2779,6 +2787,12 @@ interface FileSystemHandle
     method queryPermission
     method remove
     method requestPermission
+interface FileSystemObserver
+    attribute @@toStringTag
+    method constructor
+    method disconnect
+    method observe
+    method unobserve
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
     method constructor

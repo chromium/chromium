@@ -35,12 +35,11 @@ interface FileSystemAccessDirectoryEntriesListener {
 // This interface represents a handle to a directory in the File System Access
 // API.
 //
-// TODO(mek): Using something similar to (but probably not the same as)
-// mojo_base.mojom.Basename (https://crbug.com/779196) to represent names of
-// children could help us defend against directory traversal bugs at the IPC
-// layer (not the same type though because of https://crbug.com/956231 and the
-// fact that our paths really aren't base::FilePath, but instead are virtual
-// paths).
+// TODO(https://crbug.com/1248065): Using something similar to (but probably not
+// the same as) mojo_base.mojom.SafeBasename to represent names of children
+// could help us defend against directory traversal bugs at the IPC layer (not
+// the same type though because of https://crbug.com/956231 and the fact that
+// our paths really aren't base::FilePath, but instead are virtual paths).
 interface FileSystemAccessDirectoryHandle {
   // Queries the current permission status for this handle.
   GetPermissionStatus(bool writable) => (PermissionStatus status);

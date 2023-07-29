@@ -1699,6 +1699,13 @@
       base_feature: "none",
     },
     {
+      // The FileSystemObserver interface for the File System Access API.
+      // See https://crbug.com/1019297.
+      name: "FileSystemObserver",
+      depends_on: ["FileSystemAccess"],
+      status: "experimental",
+    },
+    {
       name: "FirstRectForRangeVertical",
       status: "stable",
     },

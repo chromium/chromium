@@ -23,6 +23,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
+#include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace blink {
@@ -140,6 +142,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
           token,
       GetEntryFromDataTransferTokenCallback token_resolved_callback) override;
+  void BindObserverHost(
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessObserverHost>
+          host_receiver) override;
 
   // storage::mojom::FileSystemAccessContext:
   void SerializeHandle(
@@ -286,6 +291,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   FileSystemAccessPermissionContext* permission_context() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return permission_context_;
+  }
+
+  FileSystemAccessWatcherManager& watcher_manager() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return watcher_manager_;
   }
 
   bool is_off_the_record() const { return off_the_record_; }
@@ -575,6 +585,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // access handles dereference the lock manager on destruction, so it should
   // outlive them.
   std::unique_ptr<FileSystemAccessLockManager> lock_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  FileSystemAccessWatcherManager watcher_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // All the receivers for file and directory handles that have references to

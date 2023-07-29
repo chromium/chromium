@@ -81,6 +81,8 @@ mojom("mojom_platform") {
     "file_system_access/file_system_access_file_handle.mojom",
     "file_system_access/file_system_access_file_writer.mojom",
     "file_system_access/file_system_access_manager.mojom",
+    "file_system_access/file_system_access_observer.mojom",
+    "file_system_access/file_system_access_observer_host.mojom",
     "file_system_access/file_system_access_transfer_token.mojom",
     "filesystem/file_system.mojom",
     "font_access/font_access.mojom",

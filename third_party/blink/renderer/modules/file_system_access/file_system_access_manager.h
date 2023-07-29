@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_H_
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

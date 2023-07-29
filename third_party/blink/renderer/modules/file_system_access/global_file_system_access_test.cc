@@ -91,6 +91,10 @@ class MockFileSystemAccessManager
           blink::mojom::blink::FileSystemAccessDataTransferToken> token,
       GetEntryFromDataTransferTokenCallback callback) override {}
 
+  void BindObserverHost(
+      mojo::PendingReceiver<blink::mojom::blink::FileSystemAccessObserverHost>
+          observer_host) override {}
+
  private:
   void BindFileSystemAccessManager(mojo::ScopedMessagePipeHandle handle) {
     receivers_.Add(this,

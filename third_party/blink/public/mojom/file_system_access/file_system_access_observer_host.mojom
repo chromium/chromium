@@ -1,0 +1,35 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
+
+// Represents the FileSystemObserver object in the browser process.
+// File system changes which occur during the lifetime of this interface will be
+// relayed to the `FileSystemAccessObserver` returned from the respective
+// `Observe()` call. All file system watches configured by an instance of this
+// interface will be discontinued when the instance is disconnected.
+interface FileSystemAccessObserverHost {
+  // Starts observing the file or directory specified by `token`.
+  // Returns whether setting up a watch of the file or directory succeeded
+  // and a receiver which notifies of changes to the given file path.
+  // If the file or directory overlaps with an existing watch on this host,
+  // an error is returned.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
+  Observe(pending_remote<FileSystemAccessTransferToken> token,
+          bool is_recursive) =>
+    (FileSystemAccessError result,
+     pending_receiver<FileSystemAccessObserver>? observer_receiver);
+
+  // Stops watching the file or directory specified by `token`.
+  // If the file path is being watched, this disconnects the
+  // `FileSystemAccessObserver` that was created by the prior corresponding
+  // `Observe()` call. This method is idempotent; it is not an error to call
+  // this method if the given file path is not already being watched.
+  Unobserve(pending_remote<FileSystemAccessTransferToken> token);
+};

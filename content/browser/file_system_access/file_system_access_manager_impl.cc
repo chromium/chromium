@@ -35,6 +35,7 @@
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -311,6 +312,7 @@ FileSystemAccessManagerImpl::FileSystemAccessManagerImpl(
       blob_context_(std::move(blob_context)),
       permission_context_(permission_context),
       lock_manager_(std::make_unique<FileSystemAccessLockManager>(PassKey())),
+      watcher_manager_(this, PassKey()),
       off_the_record_(off_the_record) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);
@@ -772,6 +774,15 @@ void FileSystemAccessManagerImpl::GetDirectoryHandleFromToken(
                          DidResolveTransferTokenForDirectoryHandle,
                      weak_factory_.GetWeakPtr(), receivers_.current_context(),
                      std::move(directory_handle_receiver)));
+}
+
+void FileSystemAccessManagerImpl::BindObserverHost(
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessObserverHost>
+        host_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const BindingContext& context = receivers_.current_context();
+  watcher_manager().BindObserverHost(context, std::move(host_receiver));
 }
 
 void FileSystemAccessManagerImpl::SerializeHandle(
