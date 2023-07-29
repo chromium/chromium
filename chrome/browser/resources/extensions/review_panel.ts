@@ -13,6 +13,7 @@ import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_bu
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ItemDelegate} from './item.js';
 import {getTemplate} from './review_panel.html.js';
 
 export interface ReviewItemDelegate {
@@ -111,7 +112,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
     return ['onExtensionsChanged_(extensions.*)'];
   }
 
-  delegate: ReviewItemDelegate;
+  delegate: ItemDelegate&ReviewItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
   private hasChangeBeenMade_: boolean;
   private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[];
@@ -207,11 +208,19 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
     }
   }
 
-  private onRemoveAllExtensions_(): void {
+  private async onRemoveAllClick_(): Promise<void> {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelRemoveAllClicked');
-    // TODO(crbug.com/1432194): Call the private API to remove all extensions.
-    this.hasChangeBeenMade_ = true;
+    try {
+      await this.delegate.deleteItems(
+          this.unsafeExtensions_.map(extension => extension.id));
+      // If the Remove button was clicked and no errors were thrown, change
+      // the flag.
+      this.hasChangeBeenMade_ = true;
+    } catch (_) {
+      // The error was almost certainly the user canceling the dialog.
+      // Do nothing.
+    }
   }
 }
 

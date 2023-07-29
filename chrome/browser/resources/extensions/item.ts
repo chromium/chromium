@@ -34,6 +34,7 @@ import {navigation, Page} from './navigation_helper.js';
 
 export interface ItemDelegate {
   deleteItem(id: string): void;
+  deleteItems(ids: string[]): Promise<void>;
   uninstallItem(id: string): Promise<void>;
   setItemEnabled(id: string, isEnabled: boolean): void;
   setItemAllowedIncognito(id: string, isAllowedIncognito: boolean): void;

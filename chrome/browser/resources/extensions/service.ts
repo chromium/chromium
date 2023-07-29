@@ -179,6 +179,13 @@ export class Service implements ServiceInterface {
     return chrome.management.uninstall(id, {showConfirmDialog: true});
   }
 
+  deleteItems(ids: string[]): Promise<void> {
+    this.isDeleting_ = true;
+    return chrome.developerPrivate.removeMultipleExtensions(ids).finally(() => {
+      this.isDeleting_ = false;
+    });
+  }
+
   setItemSafetyCheckWarningAcknowledged(id: string): Promise<void> {
     return chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,

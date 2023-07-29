@@ -126,6 +126,47 @@ suite('ExtensionsReviewPanel', function() {
     assertTrue(isVisible(completionTextContainer));
   });
 
+  test(
+      'CompletionStateShouldBeShownAfterDeletingMultipleExtensions',
+      async function() {
+        const completionTextContainer =
+            element.shadowRoot!.querySelector('.completion-container');
+        assertFalse(isVisible(completionTextContainer));
+        class MockDeleteItemDelegate extends MockItemDelegate {
+          override deleteItems(ids: string[]) {
+            element.extensions = element.extensions.filter(
+                extension => !ids.includes(extension.id));
+            return Promise.resolve();
+          }
+          override setItemSafetyCheckWarningAcknowledged(): void {}
+        }
+        const extensionItems = [
+          createExtensionInfo({
+            name: 'Alpha',
+            id: 'a'.repeat(32),
+            safetyCheckText: {panelString: 'This extension contains malware.'},
+          }),
+          createExtensionInfo({
+            name: 'Bravo',
+            id: 'b'.repeat(32),
+            safetyCheckText: {panelString: 'This extension contains malware.'},
+          }),
+          createExtensionInfo({
+            name: 'Charlie',
+            id: 'c'.repeat(29),
+            safetyCheckText: {panelString: 'This extension contains malware.'},
+          }),
+        ];
+        element.extensions = extensionItems;
+        element.delegate = new MockDeleteItemDelegate();
+        // Wait until the async response comes back.
+        element.shadowRoot!.querySelector<HTMLElement>(
+                               '#removeAllButton')!.click();
+        await flushTasks();
+        assertTrue(!!completionTextContainer);
+        assertTrue(isVisible(completionTextContainer));
+      });
+
   test('CompletionStateShouldBeShownAfterKeepingItems', async function() {
     const completionTextContainer =
         element.shadowRoot!.querySelector('.completion-container');

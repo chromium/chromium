@@ -85,6 +85,9 @@ export class ListenerMock {
 export class MockItemDelegate extends ClickMock implements ItemDelegate {
   itemStateChangedTarget: FakeChromeEvent = new FakeChromeEvent();
   deleteItem(_id: string) {}
+  deleteItems(_ids: string[]) {
+    return Promise.resolve();
+  }
   uninstallItem(_id: string) {
     return Promise.resolve();
   }
