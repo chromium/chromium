@@ -169,6 +169,7 @@ source_set("app_list") {
     "//ash/assistant/util",
     "//ash/keyboard/ui",
     "//ash/public/cpp/app_list/vector_icons",
+    "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/resources/vector_icons",
     "//ash/search_box",
     "//ash/strings",

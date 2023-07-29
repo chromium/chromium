@@ -13,7 +13,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
@@ -91,10 +90,9 @@ std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
   if (view_delegate_)
     toast->SetViewDelegate(view_delegate_);
 
-  if (dark_icon_ && light_icon_)
-    toast->SetThemingIcons(dark_icon_, light_icon_);
-  else if (icon_)
-    toast->SetIcon(icon_);
+  if (icon_) {
+    toast->SetIcon(*icon_);
+  }
 
   if (icon_size_)
     toast->SetIconSize(*icon_size_);
@@ -115,21 +113,8 @@ std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
 }
 
 AppListToastView::Builder& AppListToastView::Builder::SetIcon(
-    const gfx::VectorIcon* icon) {
-  DCHECK(!dark_icon_);
-  DCHECK(!light_icon_);
-
+    const ui::ImageModel& icon) {
   icon_ = icon;
-  return *this;
-}
-
-AppListToastView::Builder& AppListToastView::Builder::SetThemingIcons(
-    const gfx::VectorIcon* dark_icon,
-    const gfx::VectorIcon* light_icon) {
-  DCHECK(!icon_);
-
-  dark_icon_ = dark_icon;
-  light_icon_ = light_icon;
   return *this;
 }
 
@@ -250,11 +235,6 @@ AppListToastView::AppListToastView(const std::u16string title,
 
 AppListToastView::~AppListToastView() = default;
 
-void AppListToastView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateIconImage();
-}
-
 void AppListToastView::SetButton(
     std::u16string button_text,
     views::Button::PressedCallback button_callback) {
@@ -300,24 +280,10 @@ void AppListToastView::SetSubtitle(const std::u16string subtitle) {
   subtitle_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 }
 
-void AppListToastView::SetIcon(const gfx::VectorIcon* icon) {
-  DCHECK(!dark_icon_);
-  DCHECK(!light_icon_);
-
+void AppListToastView::SetIcon(const ui::ImageModel& icon) {
   CreateIconView();
 
   default_icon_ = icon;
-  UpdateIconImage();
-}
-
-void AppListToastView::SetThemingIcons(const gfx::VectorIcon* dark_icon,
-                                       const gfx::VectorIcon* light_icon) {
-  DCHECK(!default_icon_);
-
-  CreateIconView();
-
-  dark_icon_ = dark_icon;
-  light_icon_ = light_icon;
   UpdateIconImage();
 }
 
@@ -394,22 +360,11 @@ void AppListToastView::UpdateIconImage() {
   if (!icon_)
     return;
 
-  if (default_icon_) {
-    icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        *default_icon_,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary),
-        icon_size_.value_or(gfx::GetDefaultSizeOfVectorIcon(*default_icon_))));
+  if (!default_icon_) {
     return;
   }
 
-  const gfx::VectorIcon* themed_icon =
-      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-          ? dark_icon_.get()
-          : light_icon_.get();
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      *themed_icon, ui::kColorAshSystemUIMenuIcon,
-      icon_size_.value_or(gfx::GetDefaultSizeOfVectorIcon(*themed_icon))));
+  icon_->SetImage(*default_icon_);
 }
 
 void AppListToastView::CreateIconView() {
