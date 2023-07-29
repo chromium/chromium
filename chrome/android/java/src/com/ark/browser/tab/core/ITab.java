@@ -41,6 +41,8 @@ public interface ITab {
         return getTabInfo().getParentId();
     }
 
+    ITabGroup getParentTab();
+
     TabInfo getTabInfo();
 
     PageInfo getCurrentPageInfo();

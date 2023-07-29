@@ -39,4 +39,7 @@
     <item name="compositor_background_tab_outline_alpha" format="float" type="dimen">0.2</item>
     <item name="compositor_background_tab_overlay_alpha" format="float" type="dimen">0</item>
 
+    <id name="key_tab_id"/>
+    <id name="key_tab_position"/>
+
 </resources>

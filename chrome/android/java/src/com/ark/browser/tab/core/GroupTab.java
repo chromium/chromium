@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class GroupTab implements ITabGroup {
@@ -33,6 +32,7 @@ public class GroupTab implements ITabGroup {
 
     private static final String TAG = "TabGroupImpl";
 
+    private final ITabGroup mParentTab;
     protected final TabInfo mTabInfo;
     private final List<ITab> mTabList;
 
@@ -42,20 +42,19 @@ public class GroupTab implements ITabGroup {
 
     private AsyncTask<DataInputStream> mPrefetchTabGroupTask;
 
-    public GroupTab(String name, TabInfo tabInfo) {
+    public GroupTab(ITabGroup parent, TabInfo tabInfo) {
+        mParentTab = parent;
         this.mObservers = new ObserverList<>();
         mTabInfo = tabInfo;
         mTabList = new ArrayList<>();
-        File groupFile = ArkTabDao.getGroupFile(tabInfo.getId());
-        if (!groupFile.exists()) {
-            groupFile = ArkTabDao.getGroupFile(name);
-        }
+        File groupFile = ArkTabDao.getTabFile(tabInfo.getId());
         if (groupFile.exists()) {
-            mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
+            mPrefetchTabGroupTask = ArkTabDao.fetchFile(groupFile);
         }
     }
 
-    public GroupTab(TabInfo tabInfo, List<ITab> tabs) {
+    public GroupTab(ITabGroup parent, TabInfo tabInfo, List<ITab> tabs) {
+        mParentTab = parent;
         this.mObservers = new ObserverList<>();
         mTabInfo = tabInfo;
         mTabList = tabs;
@@ -77,6 +76,11 @@ public class GroupTab implements ITabGroup {
 
 
     @Override
+    public ITabGroup getParentTab() {
+        return mParentTab;
+    }
+
+    @Override
     public TabInfo getTabInfo() {
         return mTabInfo;
     }
@@ -87,42 +91,10 @@ public class GroupTab implements ITabGroup {
         return null;
     }
 
-    public void readGroupFile(DataInputStream stream) {
+    public void readGroupFile(DataInputStream is) {
         try {
-            mTabInfo.setIndex(stream.readInt());
-            mTabInfo.setIncognito(stream.readBoolean());
-            mTabInfo.setParentId(-100);
-            mTabInfo.setIsGroup(true);
-            mTabInfo.setLocked(true);
-            mTabInfo.setCreateTime(System.currentTimeMillis());
-
-            mTabInfo.setCurrentPageId(-1);
-            mTabInfo.setPosition(0);
-            mTabInfo.setAccessTime(System.currentTimeMillis());
-
-            final int count = stream.readInt();
-
-            int[] tabIds = new int[count];
-            for (int i = 0; i < count; i++) {
-                int tabId = stream.readInt();
-                tabIds[i] = tabId;
-            }
-            ArkLogger.e(TAG, "readGroupFile count=" + count + " tabIds=" + Arrays.toString(tabIds));
-
-            ArkLogger.e(TAG, "from tabInfo tabIds=" + Arrays.toString(tabIds));
-            for (int id : tabIds) {
-                ITab newTab = ChildTab.from(id);
-                ArkLogger.e(TAG, "from tabInfo=" + newTab.getTabInfo());
-                mTabList.add(newTab);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void readGroupFile5(DataInputStream is, int version) {
-        try {
+            int version = is.readInt();
+            ArkLogger.e(this, "readGroupFile5 version=" + version);
             mTabInfo.setId(is.readInt());
             mTabInfo.setParentId(is.readInt());
             mTabInfo.setIsGroup(is.readBoolean());
@@ -139,7 +111,8 @@ public class GroupTab implements ITabGroup {
             ArkLogger.e(TabInfo.class, "readGroupFile5 id="
                     + mTabInfo.getId() + " count=" + count);
             for (int i = 0; i < count; i++) {
-                ITab newTab = ChildTab.from(is.readInt());
+                int childId = is.readInt();
+                ITab newTab = ChildTab.from(this, childId);
                 ArkLogger.e(TAG, "readGroupFile5 tabInfo=" + newTab.getTabInfo());
                 mTabList.add(newTab);
             }
@@ -157,13 +130,7 @@ public class GroupTab implements ITabGroup {
 
         if (mPrefetchTabGroupTask != null) {
             try (DataInputStream stream = mPrefetchTabGroupTask.get()) {
-                int version = stream.readInt();
-                ArkLogger.e(this, "init version=" + version);
-                if (version < 5) {
-                    readGroupFile(stream);
-                } else {
-                    readGroupFile5(stream, version);
-                }
+                readGroupFile(stream);
             } catch (Exception e) {
                 ArkLogger.e(this, "init failed!", e);
                 e.printStackTrace();
@@ -224,7 +191,7 @@ public class GroupTab implements ITabGroup {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl() + " type=" + type);
 
 
-        ChildTab newTab = new ChildTab(getId());
+        ChildTab newTab = new ChildTab(this);
 
         if (currentTab != null) {
             int index = indexOf(currentTab);
@@ -315,7 +282,7 @@ public class GroupTab implements ITabGroup {
             List<IPage> pages = new ArrayList<>();
             page.getPageInfo().setTabId(newTabInfo.getId());
             pages.add(page);
-            ITab newTab = new ChildTab(newTabInfo, pages);
+            ITab newTab = new ChildTab(this, newTabInfo, pages);
 
             int index = indexOf(tab) + 1;
             int position = tab.getTabInfo().getPosition() + 1;
@@ -356,6 +323,7 @@ public class GroupTab implements ITabGroup {
             }
             mPrefetchTabGroupTask = null;
         }
+        ThreadPool.removeCallbacks(mSaveRunnable);
         this.mObservers.clear();
         if (!this.mTabList.isEmpty()) {
             for (ITab info : mTabList) {
@@ -383,6 +351,7 @@ public class GroupTab implements ITabGroup {
             return;
         }
         mTabInfo.setIndex(index);
+        mTabInfo.setCurrentPageId(getTabAt(index).getId());
         saveTabInfo();
     }
 
@@ -513,8 +482,8 @@ public class GroupTab implements ITabGroup {
             os.writeInt(getCount());
 
             ArkLogger.e(this, "saveGroupFile info=" + tabInfo
-                    + " getTabList=" + getTabList());
-            for (ITab tab : getTabList()) {
+                    + " getTabList=" + mTabList);
+            for (ITab tab : mTabList) {
                 os.writeInt(tab.getId());
             }
             os.close();
@@ -525,7 +494,8 @@ public class GroupTab implements ITabGroup {
             ThreadPool.executeIO(() -> {
                 long time1 = System.currentTimeMillis();
                 byte[] bytes = stream.toByteArray();
-                File tabFile = ArkTabDao.getGroupFile(getId());
+                File tabFile = ArkTabDao.getTabFile(getId());
+                ArkLogger.e(GroupTab.this, "saveGroupFile file=" + tabFile);
                 android.util.AtomicFile file = new android.util.AtomicFile(tabFile);
                 FileOutputStream fos = null;
                 try {

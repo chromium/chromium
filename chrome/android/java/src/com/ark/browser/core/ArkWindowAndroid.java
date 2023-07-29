@@ -30,8 +30,6 @@ public abstract class ArkWindowAndroid extends ActivityWindowAndroid {
 
     public abstract ArkCompositorViewHolder getCompositorViewHolder();
 
-    public abstract ArkNavigationHandler getNavigationHandler();
-
     public TabContentManager getTabContentManager() {
         return getCompositorViewHolder().getTabContentManager();
     }

@@ -92,31 +92,6 @@ public class SmartSearchPanel extends FrameLayout {
             }
 
             @Override
-            public ArkNavigationHandler getNavigationHandler() {
-                return new ArkNavigationHandler() {
-                    @Override
-                    public boolean canGoForward() {
-                        return mFloatTabGroup.canGoForward();
-                    }
-
-                    @Override
-                    public boolean goForward() {
-                        return mFloatTabGroup.goForward();
-                    }
-
-                    @Override
-                    public boolean canGoBack() {
-                        return mFloatTabGroup.canGoBack();
-                    }
-
-                    @Override
-                    public boolean goBack() {
-                        return mFloatTabGroup.goBack();
-                    }
-                };
-            }
-
-            @Override
             protected Window getWindow() {
                 if (mWindow == null) {
                     return super.getWindow();
@@ -542,18 +517,6 @@ public class SmartSearchPanel extends FrameLayout {
         if (mViewHolder.getWindowAndroid() == null) {
             mViewHolder.setFocusable(false);
             mViewHolder.initCompositor(mNativeWindow, new ArkCompositorViewHolder.Callback() {
-//                @Override
-//                public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
-//                    if (mFloatTabList == null) {
-//                        return false;
-//                    }
-//                    return mFloatTabList.openNewPage(current, type, url);
-//                }
-
-                @Override
-                public ITabGroup getTabList(@NonNull Tab current) {
-                    return getFloatTabList();
-                }
 
                 @Override
                 public void didThemeColorChanged(int color) {
@@ -645,7 +608,7 @@ public class SmartSearchPanel extends FrameLayout {
             TabInfo info = TabInfo.create(-103, -1, true);
             info.setLocked(true);
             info.setIncognito(false);
-            mFloatTabGroup = new GroupTab("group_smart_search", info) {
+            mFloatTabGroup = new GroupTab(null, info) {
 
                 @Override
                 public void onIndexChanged(int index) {
@@ -697,7 +660,7 @@ public class SmartSearchPanel extends FrameLayout {
     private int openNewTab(LoadUrlParams loadUrlParams) {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl());
         TabInfo newTabInfo = TabInfo.create(mFloatTabGroup.getId());
-        ChildTab newTab = new ChildTab(newTabInfo) {
+        ChildTab newTab = new ChildTab(mFloatTabGroup, newTabInfo) {
 
             @Override
             public void saveTabInfo() {

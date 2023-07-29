@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import androidx.annotation.NonNull;
+
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.LauncherLayout;
@@ -18,6 +20,7 @@ import com.android.launcher3.TabItemInfo;
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageInfo;
@@ -32,6 +35,7 @@ import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
+import com.ark.browser.utils.ArkLogger;
 import com.zpj.utils.ContextUtils;
 import com.zpj.utils.StatusBarUtils;
 
@@ -65,6 +69,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
         mSwitcher.setAdapter(new ArkTabAdapter(mViewHolder.getTabContentManager()));
+//        mSwitcher.setTabGroup(TabGroupManager.global().getCurrentTabGroup());
 
         BottomControlBar bottomControlBar = view.findViewById(R.id.bottom_control_bar);
         bottomControlBar.setSwitcherManager(this);
@@ -95,7 +100,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
                     }
                 } else {
                     LoadUrlParams params = new LoadUrlParams(itemInfo.url);
-                    TabGroupManager.global().getCurrentTabGroup().openNewTab(params, TabLaunchType.FROM_LAUNCHER_SHORTCUT);
+                    getCurrentTabGroup().openNewTab(params, TabLaunchType.FROM_LAUNCHER_SHORTCUT);
                     if (v instanceof BubbleTextView) {
                         Rect rect = new Rect();
                         ((BubbleTextView) v).getIconBounds(rect);
@@ -166,6 +171,44 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     }
 
+    public void initCompositor(ArkWindowAndroid window) {
+        TabGroupManager.global().addObserver(() -> {
+            Tab tab = TabGroupManager.global().getCurrentNativeTab();
+            ArkLogger.d(this, "TabManagerObserver onChange tab=" + tab);
+            if (tab != null) {
+                mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
+            }
+            mViewHolder.setTab(tab);
+        });
+
+        mViewHolder.setFocusable(false);
+        mViewHolder.initCompositor(window, new ArkCompositorViewHolder.Callback() {
+
+            @Override
+            public void didThemeColorChanged(int color) {
+                setThemeColor(color);
+            }
+
+            @Override
+            public void onPageAttached(@NonNull Tab page) {
+                ArkLogger.e(TabSwitcherManager.this, "onPageAttached");
+                mBottomController.onPageAttached(page);
+                setThemeColor(page.getThemeColor());
+            }
+
+            @Override
+            public void onPageDetached(@NonNull Tab page) {
+                mBottomController.onPageDetached(page);
+            }
+
+            @Override
+            public void onShutDown() {
+                TabGroupManager.global().destroy();
+            }
+        });
+        mViewHolder.onStart();
+    }
+
     public BottomController getBottomController() {
         return mBottomController;
     }
@@ -231,6 +274,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     public void onRestore() {
         mTabSwitcherLayout.onRestore();
+        mSwitcher.setTabGroup(TabGroupManager.global().getCurrentTabGroup());
     }
 
     @Override
@@ -240,8 +284,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     @Override
     public void onBeforeExpand(int position) {
-        ITabGroup tabGroup = TabGroupManager.global().getCurrentTabGroup();
-        tabGroup.selectTabAt(position);
+
     }
 
     @Override
@@ -429,7 +472,8 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public void cacheCurrentPage() {
-        PageInfo pageInfo = TabGroupManager.global().getCurrentPageInfo();
+        PageInfo pageInfo = getCurrentTabGroup().getCurrentPageInfo();
+        ArkLogger.e(this, "cacheCurrentPage pageInfo=" + pageInfo);
         PageSnapshotManager.getInstance().cachePage(pageInfo);
         if (pageInfo != null) {
             ArkWebContents arkWeb = ArkWebManager.get(pageInfo.getId());
@@ -451,7 +495,16 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         } else {
             tabGroup.openNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
         }
+        mSwitcher.setTabGroup(tabGroup);
         goToBrowser();
+    }
+
+    private ITabGroup getCurrentTabGroup() {
+        ITabGroup tabGroup = mSwitcher.getTabGroup();
+        if (tabGroup == null) {
+            return TabGroupManager.global().getCurrentTabGroup();
+        }
+        return tabGroup;
     }
 
 

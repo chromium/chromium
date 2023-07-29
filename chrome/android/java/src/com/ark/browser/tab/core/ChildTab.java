@@ -2,6 +2,8 @@ package com.ark.browser.tab.core;
 
 import android.util.AtomicFile;
 
+import androidx.annotation.NonNull;
+
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.ArkTabImpl;
@@ -28,28 +30,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * TODO rename to ChildTabImpl
- */
 public class ChildTab implements ITab, IPageGroup {
 
     private static final String TAG = "TabImpl";
 
+    private final ITabGroup mParentTab;
     private final TabInfo mTabInfo;
 
     private transient ChildTab mFloatingTab;
 
     protected transient final List<IPage> mPages;
 
-    public ChildTab(int parentId) {
-        this(TabInfo.create(parentId));
+    public ChildTab(ITabGroup parent) {
+        this(parent, TabInfo.create(parent.getId()));
     }
 
-    public ChildTab(TabInfo tabInfo) {
-        this(tabInfo, new ArrayList<>(0));
+    public ChildTab(ITabGroup parent, TabInfo tabInfo) {
+        this(parent, tabInfo, new ArrayList<>(0));
     }
 
-    public ChildTab(TabInfo tabInfo, List<IPage> pages) {
+    public ChildTab(ITabGroup parent, TabInfo tabInfo, List<IPage> pages) {
+        mParentTab = parent;
         mTabInfo = tabInfo;
         mPages = pages;
     }
@@ -84,6 +85,11 @@ public class ChildTab implements ITab, IPageGroup {
             }
         }
         return INVALID_TAB_INDEX;
+    }
+
+    @Override
+    public ITabGroup getParentTab() {
+        return mParentTab;
     }
 
     @Override
@@ -163,7 +169,7 @@ public class ChildTab implements ITab, IPageGroup {
         if (mFloatingTab != null) {
             return mFloatingTab.cloneTab();
         }
-        ChildTab newTab = new ChildTab(getTabInfo().cloneTabInfo());
+        ChildTab newTab = new ChildTab(mParentTab, getTabInfo().cloneTabInfo());
 
         boolean encrypted = newTab.getTabInfo().isIncognito();
         for (int i = 0; i < mPages.size(); i++) {
@@ -351,27 +357,27 @@ public class ChildTab implements ITab, IPageGroup {
     }
 
 
-    public static ChildTab from(int tabId) {
+    public static ChildTab from(ITabGroup parent, int tabId) {
         File tabFile = ArkTabDao.getTabFile(tabId);
         ArkLogger.e(ChildTab.class, "from id=" + tabId + " tabFile=" + tabFile);
         try {
-            return from(tabFile);
+            return from(parent, tabFile);
         } catch (IOException e) {
             e.printStackTrace();
-            return new ChildTab(TabInfo.create(tabId, -1));
+            return new ChildTab(parent, TabInfo.create(tabId, -1));
         }
     }
 
-    private static ChildTab from(File tabFile) throws IOException {
+    private static ChildTab from(ITabGroup parent, File tabFile) throws IOException {
         try (DataInputStream stream = ArkTabDao.readFile(tabFile)) {
             if (stream == null) {
                 throw new IOException("tab file stream is null!");
             }
-            return from(stream);
+            return from(parent, stream);
         }
     }
 
-    private static ChildTab from(DataInputStream is) throws IOException {
+    private static ChildTab from(ITabGroup parent, DataInputStream is) throws IOException {
         List<IPage> pages = new ArrayList<>();
         int version = is.readInt();
         int tabId = is.readInt();
@@ -419,6 +425,71 @@ public class ChildTab implements ITab, IPageGroup {
             ArkLogger.e(TabInfo.class, "TabInfo.from pageId=" + pageId + " pageInfo=" + pageInfo);
             pages.add(new PageImpl(pageInfo));
         }
-        return new ChildTab(newTabInfo, pages);
+        return new ChildTab(parent, newTabInfo, pages);
+    }
+
+    private static ITab restoreTab(@NonNull ITabGroup parent, DataInputStream is) throws IOException {
+        int version = is.readInt();
+        int tabId = is.readInt();
+        int parentId;
+        if (version >= 3) {
+            if (version >= 5) {
+                parentId = is.readInt();
+            } else {
+                String name = is.readUTF();
+                if ("group_incognito".equals(name)) {
+                    parentId = -101;
+                } else {
+                    parentId = -100;
+                }
+            }
+        } else {
+            parentId = -100;
+        }
+        TabInfo newTabInfo = TabInfo.create(tabId, parentId, false);
+        ArkLogger.e(ChildTab.class, "restoreTab version=" + version + " parentId=" + newTabInfo.getParentId());
+        if (version >= 4) {
+            newTabInfo.setIsGroup(is.readBoolean());
+        } else {
+            newTabInfo.setIsGroup(false);
+        }
+        if (version >= 2) {
+            newTabInfo.setLaunchType(is.readInt());
+        }
+        newTabInfo.setCreateTime(is.readLong());
+        newTabInfo.setIncognito(is.readBoolean());
+        newTabInfo.setLocked(is.readBoolean());
+
+        newTabInfo.setChildIndex(is.readInt());
+        newTabInfo.setCurrentPageId(is.readInt());
+        newTabInfo.setPosition(is.readInt());
+        newTabInfo.setAccessTime(is.readLong());
+
+        int count = is.readInt();
+        ArkLogger.e(TabInfo.class, "restoreTab id=" + newTabInfo.getId() + " count=" + count);
+
+        boolean isGroup = newTabInfo.isGroup();
+
+        if (isGroup) {
+            List<ITab> tabs = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                int childId = is.readInt();
+                ITab newTab = ChildTab.from(parent, childId);
+                ArkLogger.e(TAG, "restoreTab tabInfo=" + newTab.getTabInfo());
+                tabs.add(newTab);
+            }
+            return new GroupTab(parent, newTabInfo, tabs);
+        } else {
+            File pagesDir = ArkTabDao.getPagesDir(newTabInfo.getId());
+            List<IPage> pages = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                int pageId = is.readInt();
+                File file = new File(pagesDir, String.valueOf(pageId));
+                PageInfo pageInfo = PageInfo.from(file);
+                ArkLogger.e(TabInfo.class, "restoreTab pageId=" + pageId + " pageInfo=" + pageInfo);
+                pages.add(new PageImpl(pageInfo));
+            }
+            return new ChildTab(parent, newTabInfo, pages);
+        }
     }
 }

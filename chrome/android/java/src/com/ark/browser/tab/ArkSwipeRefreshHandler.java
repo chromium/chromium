@@ -150,9 +150,9 @@ public class ArkSwipeRefreshHandler implements OverscrollRefreshHandler {
             boolean handle;
 
             if (navigateForward) {
-                handle = mTab.canGoForward2();
+                handle = mTab.canGoForward();
             } else {
-                handle = mTab.canGoBack2();
+                handle = mTab.canGoBack();
             }
             if (handle) {
                 mNavigateForward = navigateForward;
@@ -190,9 +190,9 @@ public class ArkSwipeRefreshHandler implements OverscrollRefreshHandler {
             mSwipeRefreshLayout.release(allowRefresh);
             if (mSwipeRefreshLayout.canBackOrForward()) {
                 if (mNavigateForward) {
-                    mTab.goForward2();
+                    mTab.goForward();
                 } else {
-                    mTab.goBack2();
+                    mTab.goBack();
                 }
             }
         }

@@ -107,31 +107,6 @@ public class ArkMainFragment extends BaseFragment implements
                 super.destroy();
             }
 
-            @Override
-            public ArkNavigationHandler getNavigationHandler() {
-                return new ArkNavigationHandler() {
-                    @Override
-                    public boolean canGoForward() {
-                        return TabGroupManager.global().canGoForward();
-                    }
-
-                    @Override
-                    public boolean goForward() {
-                        return TabGroupManager.global().goForward();
-                    }
-
-                    @Override
-                    public boolean canGoBack() {
-                        return TabGroupManager.global().canGoBack();
-                    }
-
-                    @Override
-                    public boolean goBack() {
-                        return TabGroupManager.global().goBack();
-                    }
-                };
-            }
-
         };
     }
 
@@ -352,10 +327,17 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onResumeWithNative() {
-        ArkWebContents web = TabGroupManager.global().getCurrentWeb();
-        if (web != null) {
-            // For picture-in-picture mode / auto-darken web contents.
-            web.notifyRendererPreferenceUpdate();
+//        ArkWebContents web = TabGroupManager.global().getCurrentWeb();
+//        if (web != null) {
+//            // For picture-in-picture mode / auto-darken web contents.
+//            web.notifyRendererPreferenceUpdate();
+//        }
+
+        if (mViewHolder != null) {
+            Tab tab = mViewHolder.getTab();
+            if (tab != null && tab.getWebContents() != null) {
+                tab.getWebContents().notifyRendererPreferenceUpdate();
+            }
         }
     }
 
@@ -367,62 +349,9 @@ public class ArkMainFragment extends BaseFragment implements
     public void initializeCompositor() {
         postOnLazyInit(() -> {
             initMessageDispatcher();
-            initCompositor();
+            ArkLogger.e(TAG, "initCompositor");
+            mSwitcherManager.initCompositor(getWindowAndroid());
         });
-    }
-
-    private void initCompositor() {
-        ArkLogger.e(TAG, "initCompositor");
-        TabGroupManager.global().addObserver(() -> {
-            Tab tab = TabGroupManager.global().getCurrentNativeTab();
-            ArkLogger.d(TAG, "TabManagerObserver onChange tab=" + tab);
-            if (tab != null) {
-                mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
-            }
-            mViewHolder.setTab(tab);
-        });
-
-        mViewHolder.setFocusable(false);
-        mViewHolder.initCompositor(getWindowAndroid(), new ArkCompositorViewHolder.Callback() {
-
-            @Override
-            public ITabGroup getTabList(Tab current) {
-                if (current == null) {
-                    return TabGroupManager.global().getCurrentTabGroup();
-                }
-                return TabGroupManager.global().getTabGroup(current.isIncognito());
-            }
-
-            @Override
-            public void didThemeColorChanged(int color) {
-                mSwitcherManager.setThemeColor(color);
-            }
-
-            @Override
-            public void onPageAttached(@NonNull Tab page) {
-                ArkLogger.e(TAG, "onPageAttached");
-//                page.addObserver(observer);
-//                if (!page.isLoading()) {
-//                    mProgressBar.setVisibility(View.GONE);
-//                }
-//                mUrlBar.setText(page.getUrl().getSpec());
-                mSwitcherManager.getBottomController().onPageAttached(page);
-                mSwitcherManager.setThemeColor(page.getThemeColor());
-            }
-
-            @Override
-            public void onPageDetached(@NonNull Tab page) {
-//                page.removeObserver(observer);
-//                mProgressBar.setVisibility(View.GONE);
-                mSwitcherManager.getBottomController().onPageDetached(page);
-            }
-
-            @Override
-            public void onShutDown() {
-                TabGroupManager.global().destroy();
-            }
-        });
-        mViewHolder.onStart();
     }
 
     private void initMessageDispatcher() {

@@ -75,7 +75,7 @@ public class TabSwitcherLayout extends FrameLayout {
 
             @Override
             public boolean onSwipe(int position) {
-                if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
+                if (mSwitcher.getCount() == 0) {
                     mEmptyLayout.setAlpha(0f);
                     mEmptyLayout.setVisibility(VISIBLE);
                     mEmptyLayout.animate()
@@ -125,7 +125,7 @@ public class TabSwitcherLayout extends FrameLayout {
             @Override
             public void onOpen(float percent) {
                 setBarAlpha(percent);
-                if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
+                if (mSwitcher.getCount() == 0) {
                     mEmptyLayout.setAlpha(percent);
                     mEmptyLayout.setVisibility(VISIBLE);
                 } else {
@@ -143,7 +143,7 @@ public class TabSwitcherLayout extends FrameLayout {
             @Override
             public void onAnimIdle(float percent) {
                 setBarAlpha(percent);
-                if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
+                if (mSwitcher.getCount() == 0) {
                     mEmptyLayout.setAlpha(percent);
                     mEmptyLayout.setVisibility(VISIBLE);
                 } else {
@@ -157,7 +157,7 @@ public class TabSwitcherLayout extends FrameLayout {
                 if (mAlpha > 0) {
                     setBarAlpha(1f - percent);
 
-                    if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
+                    if (mSwitcher.getCount() == 0) {
                         mEmptyLayout.setAlpha(1 - percent);
                         mEmptyLayout.setVisibility(VISIBLE);
                     } else {

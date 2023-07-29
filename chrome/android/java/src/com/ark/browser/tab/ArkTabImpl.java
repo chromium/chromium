@@ -760,32 +760,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
-    public boolean canGoBack2() {
-        if (mArkWeb != null && mArkWeb.canGoBack()) {
-            return true;
-        }
-        return mWindowAndroid != null && mWindowAndroid.getNavigationHandler().canGoBack();
-    }
-
-    public boolean canGoForward2() {
-        if (mArkWeb != null && mArkWeb.canGoForward()) {
-            return true;
-        }
-        return mWindowAndroid != null && mWindowAndroid.getNavigationHandler().canGoForward();
-    }
-
-    public void goBack2() {
-        if (mWindowAndroid != null) {
-            mWindowAndroid.getNavigationHandler().goBack();
-        }
-    }
-
-    public void goForward2() {
-        if (mWindowAndroid != null) {
-            mWindowAndroid.getNavigationHandler().goForward();
-        }
-    }
-
     // TabLifecycle implementation.
 
     @Override

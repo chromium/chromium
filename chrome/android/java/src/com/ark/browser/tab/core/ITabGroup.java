@@ -138,10 +138,11 @@ public interface ITabGroup extends ITab {
 
     default void selectTabAt(int position) {
         ITab tab = getTabAt(position);
-        if (tab == null) {
-            return;
+        if (tab instanceof ChildTab) {
+            selectTab(tab, tab.getCurrentPage());
+        } else {
+            onIndexChanged(position);
         }
-        selectTab(tab, tab.getCurrentPage());
     }
 
     default void selectTab(ITab tab) {
@@ -248,50 +249,6 @@ public interface ITabGroup extends ITab {
 
         return true;
     }
-
-
-    default boolean canGoBack() {
-        final TabInfo tabInfo = getCurrentTabInfo();
-        if (tabInfo != null) {
-            Tab currentTab = TabCacheManager.getInstance().findTab(tabInfo.getId());
-            return currentTab != null && currentTab.canGoBack();
-        }
-        return false;
-    }
-
-    default boolean goBack() {
-        ITab tab = getCurrentTab();
-        if (tab != null) {
-            Tab currentTab = TabCacheManager.getInstance().findTab(tab.getId());
-            if (currentTab.canGoBack()) {
-                currentTab.goBack();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    default boolean canGoForward() {
-        final TabInfo tabInfo = getCurrentTabInfo();
-        if (tabInfo != null) {
-            Tab currentTab = TabCacheManager.getInstance().findTab(tabInfo.getId());
-            return currentTab != null && currentTab.canGoForward();
-        }
-        return false;
-    }
-
-    default boolean goForward() {
-        ITab tabInfo = getCurrentTab();
-        if (tabInfo != null) {
-            Tab currentTab = TabCacheManager.getInstance().findTab(tabInfo.getId());
-            if (currentTab.canGoForward()) {
-                currentTab.goForward();
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     ITab cloneTab(ITab tabInfo);
 

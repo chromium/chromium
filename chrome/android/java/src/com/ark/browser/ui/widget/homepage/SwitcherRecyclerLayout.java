@@ -20,17 +20,21 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.OverScroller;
+import android.widget.Toast;
 
 import androidx.core.view.ViewCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.ark.browser.tab.EmptyTabInfoObserver;
-import com.ark.browser.tab.TabGroupManager;
+import com.ark.browser.tab.TabInfoObserver;
+import com.ark.browser.tab.core.ChildTab;
+import com.ark.browser.tab.core.GroupTab;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.dialog.TabActionDialog;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.utils.ColorUtils;
-import com.zpj.utils.PrefsHelper;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -136,20 +140,44 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             viewList.clear();
             notifyDataSetChanged();
         }
-        TabGroupManager.global().getCurrentTabGroup().addObserver(new EmptyTabInfoObserver() {
+    }
 
-            @Override
-            public void didAddTab(ITab tab, @TabSelectionType int type) {
-                Log.d(TAG, "didAddTab state=" + mState);
-                setPosition(TabGroupManager.global().getCurrentTabGroup().getIndex());
-                mCurrentTouchView = null;
-                initChildren();
+    private ITabGroup mTabGroup;
+
+    private final TabInfoObserver tabInfoObserver = new EmptyTabInfoObserver() {
+        @Override
+        public void didAddTab(ITab tab, @TabSelectionType int type) {
+            if (mTabGroup == null) {
+                return;
             }
+            Log.d(TAG, "didAddTab state=" + mState);
+            setPosition(mTabGroup.getIndex());
+            mCurrentTouchView = null;
+            initChildren();
+        }
+    };
 
-        });
+    public void setTabGroup(ITabGroup tabGroup) {
+        if (mTabGroup == tabGroup) {
+            return;
+        }
+        if (mTabGroup != null) {
+            mTabGroup.removeObserver(tabInfoObserver);
+        }
+        mTabGroup = tabGroup;
+        mTabGroup.addObserver(tabInfoObserver);
+
+        notifyDataSetChanged();
+    }
+
+    public ITabGroup getTabGroup() {
+        return mTabGroup;
     }
 
     public void notifyDataSetChanged() {
+        if (mTabGroup == null) {
+            return;
+        }
         mPosition = getPosition();
         needLayout = true;
         requestLayout();
@@ -192,23 +220,25 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
 
                 int end;
-                if (mPosition < 0) {
-                    mPosition = 0;
-                } else if (mPosition > getCount() - 1) {
-                    mPosition = getCount() - 1;
+                int pos = getPosition();
+                if (pos < 0) {
+                    pos = 0;
+                } else if (pos > getCount() - 1) {
+                    pos = getCount() - 1;
                 }
-                if (mPosition == getCount() - 1) {
-                    if (mPosition == 0) {
+                setPosition(pos);
+                if (pos == getCount() - 1) {
+                    if (pos == 0) {
                         mFirstPosition = 0;
                     } else {
-                        mFirstPosition = mPosition - Math.min(2, getCount() - 1);
-                        left -= (mPosition - mFirstPosition) * (mChildWidth + mGapSize);
+                        mFirstPosition = pos - Math.min(2, getCount() - 1);
+                        left -= (pos - mFirstPosition) * (mChildWidth + mGapSize);
                     }
-                    end = mPosition;
-                } else if (mPosition > 0) {
+                    end = pos;
+                } else if (pos > 0) {
                     left -= (mChildWidth + mGapSize);
-                    mFirstPosition = mPosition - 1;
-                    end = mPosition + 1;
+                    mFirstPosition = pos - 1;
+                    end = pos + 1;
                 } else {
                     mFirstPosition = 0;
 //                    end = 2;
@@ -229,6 +259,9 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         Log.d(TAG, "onInterceptTouchEvent event=" + MotionEvent.actionToString(ev.getAction()));
+        if (mTabGroup == null) {
+            return false;
+        }
         boolean intercept = false;
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -267,7 +300,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                 }
                 boolean isSwipeable = true;
                 if (mCurrentTouchView != null && adapter != null) {
-                    isSwipeable = !adapter.isLocked(mFirstPosition + indexOfChild(mCurrentTouchView));
+                    isSwipeable = !isLocked(mFirstPosition + indexOfChild(mCurrentTouchView));
                 }
                 if (isSwipeable && mCurrentTouchView != null && ev.getRawY() < mDownY
                         && Math.abs(ev.getRawY() - mDownY) > Math.abs(ev.getRawX() - mDownX)) {
@@ -294,7 +327,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.d(TAG, "onTouch onTouchEvent event=" + MotionEvent.actionToString(event.getAction()));
-        if (mState != STATE_IDLE) {
+        if (mTabGroup == null || mState != STATE_IDLE) {
             return false;
         }
         if (mVelocityTracker == null) {
@@ -336,7 +369,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
                 boolean isSwipeable = true;
                 if (mCurrentTouchView != null && adapter != null) {
-                    isSwipeable = !adapter.isLocked(mFirstPosition + indexOfChild(mCurrentTouchView));
+                    isSwipeable = !isLocked(mFirstPosition + indexOfChild(mCurrentTouchView));
                 }
                 if (isSwipeable && !isSwipeMode && mCurrentTouchView != null && event.getRawY() < mDownY
                         && Math.abs(event.getRawY() - mDownY) > Math.abs(event.getRawX() - mDownX)) {
@@ -428,9 +461,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                                 if (pos == getCount() - 1) {
                                     setPosition(Math.max(pos - 1, 0));
                                 }
-                                if (adapter != null) {
-                                    adapter.onSwipe(pos);
-                                }
+                                mTabGroup.closeTab(mTabGroup.getTabAt(pos));
                                 removeView(mCurrentTouchView);
                                 viewList.remove(mCurrentTouchView);
                                 mCurrentTouchView.setAlpha(1f);
@@ -588,7 +619,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         int index;
         if (mCurrentTouchView != null) {
             index = indexOfChild(mCurrentTouchView);
-            mPosition = mFirstPosition + index;
+            setPosition(mFirstPosition + index);
         } else {
             index = mPosition - mFirstPosition;
         }
@@ -660,14 +691,15 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     @Override
                     public void onTransitionEnd() {
                         int index = indexOfChild(mCurrentTouchView);
-                        mPosition = mFirstPosition + index;
-                        if (index == 0 && mPosition > 0) {
-                            View child = obtainView(mPosition - 1, 0);
+                        int pos = mFirstPosition + index;
+                        setPosition(pos);
+                        if (index == 0 && pos > 0) {
+                            View child = obtainView(pos - 1, 0);
                             viewList.add(0, child);
                             mFirstPosition--;
-                        } else if (index == getChildCount() - 1 && mPosition < getCount() - 1) {
+                        } else if (index == getChildCount() - 1 && pos < getCount() - 1) {
                             int size = viewList.size();
-                            View child = obtainView(mPosition + 1, size);
+                            View child = obtainView(pos + 1, size);
                             viewList.add(size, child);
                         }
                     }
@@ -692,7 +724,8 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     .start();
             return;
         }
-        selectCenterChildView();
+        selectCenterPosition();
+        initChildViews();
         int index = indexOfChild(mCurrentTouchView);
         Log.d(TAG, "open index=" + index + " count=" + getChildCount());
         Rect startRect = new Rect();
@@ -752,9 +785,8 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     public void goToIdle() {
-        mPosition = adapter.getPosition();
-        selectChildView();
-//        selectCenterChildView();
+        mPosition = getPosition();
+        initChildViews();
         Log.d(TAG, "goToIdle index=" + indexOfChild(mCurrentTouchView) + " count=" + getChildCount());
         goToIdle(true, new Rect(0, -mTitleHeight, mWidth, mHeight));
     }
@@ -784,10 +816,9 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     public void dragToSwitchTab(float dx, float dy) {
 
-        Log.e(TAG, "dragToSwitchTab index=" + adapter.getPosition() + " pos=" + getPosition());
+        Log.e(TAG, "dragToSwitchTab index=" + getPosition() + " pos=" + getPosition());
 
-        mPosition = adapter.getPosition();
-        selectChildView();
+        initCurrentChildViews();
 
         int height = mHeight + mTitleHeight - (int) Math.abs(dy) * 3 / 2;
         height = Math.max((int) (mHeight * 0.42), height);
@@ -837,10 +868,9 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     public void endDragToSwitchTab(float velocityX) {
         if (mCurrentTouchView == null) {
-            selectChildView(mPosition);
+            initCurrentChildViews();
         }
 
-//        int position = TabGroupManager.global().getCurrentTabList().getIndex();
         mState = STATE_ANIMATION;
 
         int delta = mCurrentTouchView.getRight() + mCurrentTouchView.getLeft() - mWidth;
@@ -914,14 +944,15 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     @Override
                     public void onTransitionEnd() {
                         int index = indexOfChild(mCurrentTouchView);
-                        mPosition = mFirstPosition + index;
-                        if (index == 0 && mPosition > 0) {
-                            View child = obtainView(mPosition - 1, 0);
+                        int pos = mFirstPosition + index;
+                        setPosition(pos);
+                        if (index == 0 && pos > 0) {
+                            View child = obtainView(pos - 1, 0);
                             viewList.add(0, child);
                             mFirstPosition--;
-                        } else if (index == getChildCount() - 1 && mPosition < getCount() - 1) {
+                        } else if (index == getChildCount() - 1 && pos < getCount() - 1) {
                             int size = viewList.size();
-                            View child = obtainView(mPosition + 1, size);
+                            View child = obtainView(pos + 1, size);
                             viewList.add(size, child);
                         }
                     }
@@ -1003,9 +1034,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     public void moveDrag(float dx, float dy) {
-        mPosition = adapter.getPosition();
-
-        selectChildView();
+        initCurrentChildViews();
 
         int height = mHeight + mTitleHeight - (int) Math.abs(dy) * 3 / 2;
         height = Math.max((int) (mHeight * 0.42), height);
@@ -1204,15 +1233,16 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     private View obtainView(int position, int index) {
         Log.d(TAG, "obtainView position=" + position + " index=" + index);
+        ITab iTab = mTabGroup.getTabAt(position);
         View view = mViewQueue.poll();
         if (view == null) {
-            view = adapter.onCreateViewHolder(this, position);
+            view = adapter.onCreateViewHolder(this, iTab, position);
             if (view == null) {
                 throw new RuntimeException("onCreateViewHolder  必须填充布局");
             }
         }
 //        view.setTag(R.id.tag_switcher_tab_position, position);
-        adapter.onBindViewHolder(view, position);
+        adapter.onBindViewHolder(view, iTab, position);
         view.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -1225,19 +1255,30 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                 return false;
             }
         });
-        view.setOnClickListener(view1 -> {
+        view.setOnClickListener(v -> {
             if (mState == STATE_IDLE) {
-                mState = STATE_ANIMATION;
-                mPosition = mFirstPosition + indexOfChild(view1);
-                mCurrentTouchView = view1;
-                goToSelect(view1, mPosition);
+                int pos = mFirstPosition + indexOfChild(v);
+                ITab tab = mTabGroup.getTabAt(pos);
+                setPosition(pos);
+                if (tab instanceof ChildTab) {
+                    mState = STATE_ANIMATION;
+                    mCurrentTouchView = v;
+                    goToSelect(v, pos);
+                } else if (tab instanceof GroupTab) {
+                    setTabGroup((ITabGroup) tab);
+                }
             }
         });
         view.setOnLongClickListener(v -> {
             int pos = mFirstPosition + indexOfChild(v);
             mCurrentTouchView = v;
-            ITab tabInfo = TabGroupManager.global().getCurrentTabGroup().getTabAt(pos);
-            TabActionDialog.newInstance(tabInfo, mDownX, mDownY).show(getContext());
+            ITab tab = mTabGroup.getTabAt(pos);
+            // TODO GroupTab or ChildTab
+            if (tab instanceof ChildTab) {
+                TabActionDialog.newInstance(tab, mDownX, mDownY).show(getContext());
+            } else {
+                Toast.makeText(getContext(), "TODO GroupTab Long Click", Toast.LENGTH_SHORT).show();
+            }
             return true;
         });
         view.measure(MeasureSpec.makeMeasureSpec(mChildWidth, MeasureSpec.EXACTLY),
@@ -1248,30 +1289,40 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     private boolean flag;
 
-    private void selectChildView() {
-        if (mPosition < 0) {
-            mPosition = getPosition();
+    private void selectCenterPosition() {
+        int pos = getPosition();
+        int maxPos = mFirstPosition + getChildCount() - 1;
+        if (pos < mFirstPosition || pos > maxPos) {
+            pos = (maxPos + mFirstPosition) / 2;
         }
-        selectChildView(mPosition);
+        setPosition(pos);
     }
 
-    private void selectCenterPosition() {
-        if (mPosition < 0) {
-            mPosition = getPosition();
+    private void selectCenterChildView() {
+        int width = getMeasuredWidth();
+        int delta = width;
+        int index = 0;
+        int centerPosition = mPosition;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            int temp = Math.abs(child.getLeft() + child.getRight() - width);
+            if (temp < delta) {
+                delta = temp;
+                centerPosition = (int) child.getTag(R.id.key_tab_position);
+                index = i;
+                mCurrentTouchView = child;
+                ArkLogger.e(this, "selectCenterPosition mPos=" + mPosition + " index=" + i + " center=" + centerPosition);
+            }
         }
-        int maxPos = mFirstPosition + getChildCount() - 1;
-        if (mPosition < mFirstPosition || mPosition > maxPos) {
-            mPosition = (maxPos + mFirstPosition) / 2;
-        }
-        savePosition();
+        mFirstPosition = centerPosition - index;
+        setPosition(centerPosition);
     }
 
     private int getPosition() {
-        return Math.max(0, PrefsHelper.with().getInt("tab_index", 0));
-    }
-
-    private void savePosition() {
-        PrefsHelper.with().applyInt("tab_index", mPosition);
+        if (mTabGroup == null) {
+            return 0;
+        }
+        return mTabGroup.getIndex();
     }
 
     private void setPosition(int pos) {
@@ -1279,15 +1330,50 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             return;
         }
         mPosition = pos;
-        savePosition();
+        if (mTabGroup != null) {
+            mTabGroup.onIndexChanged(pos);
+        }
     }
 
-    private void selectCenterChildView() {
-        selectCenterPosition();
-        selectChildView(mPosition);
+    private void initCurrentChildViews() {
+        mPosition = getPosition();
+        View targetChild = null;
+        if (mPosition >= mFirstPosition) {
+            View child = getChildAt(mPosition - mFirstPosition);
+            if (child != null) {
+                if (mPosition == (int) child.getTag(R.id.key_tab_position)) {
+                    targetChild = child;
+                }
+            }
+        }
+        if (targetChild == null) {
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                int pos = (int) child.getTag(R.id.key_tab_position);
+                if (mPosition == pos) {
+                    targetChild = child;
+                    break;
+                }
+            }
+        }
+
+        if (targetChild == null) {
+            initChildViews();
+        } else {
+            mCurrentTouchView = targetChild;
+            mFirstPosition = mPosition - indexOfChild(targetChild);
+
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                Log.e(TAG, "selectChildView mFirstPosition=" + mFirstPosition + " i=" + i + " count=" + getCount());
+                int pos = mFirstPosition + i;
+                adapter.onBindViewHolder(child, mTabGroup.getTabAt(pos), pos);
+            }
+        }
     }
 
-    private void selectChildView(int position) {
+    private void initChildViews() {
+        int position = mPosition;
         int childCount = getChildCount();
         Log.d(TAG, "selectChildView position=" + position + " mFirstPosition=" + mFirstPosition + " childCount=" + childCount);
         if (position == 0) {
@@ -1314,7 +1400,8 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             Log.e(TAG, "selectChildView mFirstPosition=" + mFirstPosition + " i=" + i + " count=" + getCount());
-            adapter.onBindViewHolder(child, mFirstPosition + i);
+            int pos = mFirstPosition + i;
+            adapter.onBindViewHolder(child, mTabGroup.getTabAt(pos), pos);
         }
     }
 
@@ -1543,8 +1630,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     }
                     break;
                 case STATE_EXPAND:
-//                    mPosition = position;
-//                    savePosition();
+                    mTabGroup.selectTabAt(position);
                     for (Callback callback : mCallbackList) {
                         callback.onBeforeExpand(position);
                     }
@@ -1823,8 +1909,9 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                 scrollBy(dx, 0);
 
                 postOnAnimation();
+            } else {
+                selectCenterPosition();
             }
-            selectCenterPosition();
         }
 
         private void startSpringAnimation(int dx) {
@@ -1871,8 +1958,11 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     }
 
-    private int getCount() {
-        return adapter.getCount();
+    public int getCount() {
+        if (mTabGroup == null) {
+            return 0;
+        }
+        return mTabGroup.getCount();
     }
 
 
@@ -1880,6 +1970,13 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     public void addCallback(Callback mCallback) {
         this.mCallbackList.add(mCallback);
+    }
+
+    private boolean isLocked(int position) {
+        if (mTabGroup == null || position < 0 || position > getCount() - 1) {
+            return false;
+        }
+        return mTabGroup.getTabInfoAt(position).isLocked();
     }
 
     private static class BezierEvaluator implements TypeEvaluator<Point> {

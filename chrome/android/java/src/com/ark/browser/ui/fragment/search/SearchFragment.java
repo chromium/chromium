@@ -798,22 +798,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
 
     private void searchTabInfo() {
         ThreadPool.execute(() -> {
-            List<ITab> all = TabGroupManager.global().getCurrentTabGroup().getTabList();
-            List<ITab> tabList = new ArrayList<>();
-            if (TextUtils.isEmpty(keyword)) {
-                tabList.addAll(all);
-            } else {
-                for (ITab tab : all) {
-                    PageInfo info = tab.getCurrentPageInfo();
-                    if (info != null) {
-                        String key = keyword.toLowerCase();
-                        if (info.getTitle().toLowerCase().contains(key)
-                                || info.getUrl().toLowerCase().contains(key)) {
-                            tabList.add(tab);
-                        }
-                    }
-                }
-            }
+            List<ITab> tabList = TabGroupManager.searchTabs(keyword);
             Collections.sort(tabList, new Comparator<ITab>() {
                 @Override
                 public int compare(ITab o1, ITab o2) {

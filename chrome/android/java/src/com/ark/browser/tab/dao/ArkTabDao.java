@@ -53,11 +53,6 @@ public class ArkTabDao {
         return groupsDir;
     }
 
-    // TODO
-    public static File getGroupFile(String name) {
-        return new File(getGroupsDir(), name);
-    }
-
     public static File getGroupFile(int id) {
         return new File(getGroupsDir(), "tab" + id);
     }
@@ -104,17 +99,17 @@ public class ArkTabDao {
         return new DataInputStream(new ByteArrayInputStream(data));
     }
 
-    public static AsyncTask<DataInputStream> fetchGroupFile(final File groupFile) {
+    public static AsyncTask<DataInputStream> fetchFile(final File file) {
         return new BackgroundOnlyAsyncTask<DataInputStream>() {
             @Override
             protected DataInputStream doInBackground() {
-                return readFile(groupFile);
+                return readFile(file);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static DataInputStream fetchGroupFileSync(final File groupFile) {
-        return readFile(groupFile);
+    public static DataInputStream fetchFileSync(final File file) {
+        return readFile(file);
     }
 
     public static int readSavedStateFile(DataInputStream stream, @Nullable SparseBooleanArray tabIds)

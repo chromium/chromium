@@ -1,6 +1,8 @@
 package com.ark.browser.tab;
 
+import android.text.TextUtils;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -14,6 +16,7 @@ import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -93,24 +96,50 @@ public class TabGroupManager {
 //    }
 
     public static ITab cloneTab(ITab tab) {
-        return getTabGroupById(tab.getParentId()).cloneTab(tab);
+        return tab.getParentTab().cloneTab(tab);
     }
 
     public static boolean moveToNewTab(PageInfo page) {
         ITab tab = findTabById(page.getTabId());
         if (tab != null) {
-            ITabGroup group = getTabGroupById(tab.getParentId());
+            ITabGroup group = tab.getParentTab();
             return group.moveToNewTab(group.findPageById(page.getId()));
         }
         return false;
     }
 
     public static boolean selectTab(ITab iTab, IPage page) {
-        ITabGroup tabGroup = getTabGroupById(iTab.getParentId());
+        ITabGroup tabGroup = iTab.getParentTab();
         if (tabGroup == null) {
             return false;
         }
         return tabGroup.selectTab(iTab, page);
+    }
+
+    public static List<ITab> searchTabs(String keyword) {
+        List<ITab> tabList = new ArrayList<>();
+        if (TextUtils.isEmpty(keyword)) {
+            tabList.addAll(GlobalSelector.getInstance().getTabGroup(false).getTabList());
+            return tabList;
+        }
+        searchTabs(tabList, GlobalSelector.getInstance().getTabGroup(false), keyword.toLowerCase());
+        return tabList;
+    }
+
+    private static void searchTabs(List<ITab> results, ITab tab, String keyword) {
+        if (tab instanceof ITabGroup) {
+            for (ITab child : ((ITabGroup) tab).getTabList()) {
+                searchTabs(results, child, keyword);
+            }
+        } else {
+            PageInfo info = tab.getCurrentPageInfo();
+            if (info != null) {
+                if (info.getTitle().toLowerCase().contains(keyword)
+                        || info.getUrl().toLowerCase().contains(keyword)) {
+                    results.add(tab);
+                }
+            }
+        }
     }
 
 
@@ -145,22 +174,6 @@ public class TabGroupManager {
                 return null;
             }
             return ArkWebManager.get(pageInfo.getId());
-        }
-
-        default boolean canGoForward() {
-            return getCurrentTabGroup().canGoForward();
-        }
-
-        default boolean goForward() {
-            return getCurrentTabGroup().goForward();
-        }
-
-        default boolean canGoBack() {
-            return getCurrentTabGroup().canGoBack();
-        }
-
-        default boolean goBack() {
-            return getCurrentTabGroup().goBack();
         }
 
         void notifyChanged();
@@ -264,9 +277,6 @@ public class TabGroupManager {
 
         private static volatile GlobalSelector sInstance;
 
-        public static final String GROUP_DEFAULT = "group_default";
-        public static final String GROUP_INCOGNITO = "group_incognito";
-
         public static final int ID_DEFAULT = -100;
         public static final int ID_INCOGNITO = -101;
 
@@ -276,12 +286,12 @@ public class TabGroupManager {
             TabInfo info = TabInfo.create(ID_DEFAULT, -1, true);
             info.setLocked(true);
             info.setIncognito(false);
-            tabGroups.add(new GroupTab(GROUP_DEFAULT, info));
+            tabGroups.add(new GroupTab(null, info));
 
             info = TabInfo.create(ID_INCOGNITO, -1, true);
             info.setLocked(true);
             info.setIncognito(true);
-            tabGroups.add(new GroupTab(GROUP_INCOGNITO, info));
+            tabGroups.add(new GroupTab(null, info));
         }
 
         public static GlobalSelector getInstance() {
@@ -305,6 +315,10 @@ public class TabGroupManager {
 
         public void selectTabGroup(boolean incognito) {
             mCurrentIndex = incognito ? 1 : 0;
+        }
+
+        public void closeAllTabs() {
+            Toast.makeText(ContextUtils.getApplicationContext(), "TODO 关闭所有窗口", Toast.LENGTH_SHORT).show();
         }
 
         @NonNull

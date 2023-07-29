@@ -83,7 +83,7 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
 
     @Override
     protected void initLayoutParams(ViewGroup view) {
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)view.getLayoutParams();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
         params.height = FrameLayout.LayoutParams.WRAP_CONTENT;
         params.width = mMinWidth;
         view.setFocusableInTouchMode(true);
@@ -119,11 +119,11 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
         if (this.touchPoint == null) {
             int[] locations = new int[2];
             this.attachView.getLocationOnScreen(locations);
-            touchRect.set((float)locations[0], (float)locations[1], (float)(locations[0] + this.attachView.getMeasuredWidth()), (float)(locations[1] + this.attachView.getMeasuredHeight()));
+            touchRect.set((float) locations[0], (float) locations[1], (float) (locations[0] + this.attachView.getMeasuredWidth()), (float) (locations[1] + this.attachView.getMeasuredHeight()));
             this.touchPoint = new PointF(touchRect.centerX(), touchRect.centerY());
         }
         touchRect.set(this.touchPoint.x, this.touchPoint.y, this.touchPoint.x, this.touchPoint.y);
-        boolean isFromBottom = this.touchPoint.y * 2 > ScreenUtils.getScreenHeight();
+        boolean isFromBottom = this.touchPoint.y * 2 > ScreenUtils.getScreenHeight() + ScreenUtils.getStatusBarHeight();
 
         mRecycler = new EasyRecycler<>(recyclerView, items);
         mRecycler.setLayoutManager(new LinearLayoutManager(context))
@@ -385,13 +385,13 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
             holder.setOnClickListener(R.id.menu_row_share_icon, model.get(BUTTON_CLICK_LISTENER));
 
 
-
         }
     }
 
     /**
      * This adds a checkerboard style background to the image.
      * It is useful for the transparent PNGs.
+     *
      * @return The given image with the checkerboard pattern in the background.
      */
     private static Bitmap getImageWithCheckerBackground(Resources res, Bitmap image) {

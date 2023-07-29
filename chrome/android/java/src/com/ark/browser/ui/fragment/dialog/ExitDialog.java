@@ -85,7 +85,7 @@ public class ExitDialog extends OverDragBottomDialogFragment<ExitDialog> impleme
             PrefsHelper.with().applyBoolean("clear_history_when_exit", clearHistory);
             PrefsHelper.with().applyBoolean("send_background_when_exit", sendToBackground);
             if (closeTabs && !sendToBackground) {
-                TabGroupManager.global().getCurrentTabGroup().closeAllTabs();
+                TabGroupManager.global().closeAllTabs();
             }
             if (clearHistory) {
                 //todo something

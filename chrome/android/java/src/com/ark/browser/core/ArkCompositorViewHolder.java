@@ -45,7 +45,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.ark.browser.tab.ArkSwipeRefreshHandler;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.ArkTabWebContentsObserver;
-import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.dao.ArkTabStore;
 import com.ark.browser.ui.dialog.SmartSearchPopupWindow;
 import com.ark.browser.ui.widget.SmartSearchPanel;
@@ -149,12 +148,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
         @Override
         public void onUrlUpdated(Tab tab) {
-            if (mCallback != null) {
-                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
-                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
-            } else {
-                setEnabled(false);
-            }
+            onBackPressedCallback.setEnabled(mTabVisible != null && mTabVisible.canGoBack());
         }
 
         @Override
@@ -339,16 +333,9 @@ public class ArkCompositorViewHolder extends FrameLayout
         @Override
         public void handleOnBackPressed() {
             ArkLogger.e(TAG, "handleOnBackPressed");
-            if (mCallback != null) {
-                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
-                if (tabGroup.canGoBack()) {
-                    tabGroup.goBack();
-                    setEnabled(tabGroup.canGoBack());
-                    return;
-                }
+            if (!onBackPressed()) {
+                org.chromium.utils.ContextUtils.activityFromContext(getContext()).onBackPressed();
             }
-            setEnabled(false);
-            org.chromium.utils.ContextUtils.activityFromContext(getContext()).onBackPressed();
         }
     };
 
@@ -1390,13 +1377,10 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     public boolean onBackPressed() {
-        if (mCallback != null) {
-            ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
-            if (tabGroup.canGoBack()) {
-                tabGroup.goBack();
-                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
-                return true;
-            }
+        if (mTabVisible != null && mTabVisible.canGoBack()) {
+            mTabVisible.goBack();
+            onBackPressedCallback.setEnabled(mTabVisible.canGoBack());
+            return true;
         }
         onBackPressedCallback.setEnabled(false);
         return false;
@@ -1479,20 +1463,20 @@ public class ArkCompositorViewHolder extends FrameLayout
         SelectionPopupController controller =
                 SelectionPopupController.fromWebContents(webContents);
         controller.setActionModeCallback(new ChromeActionModeHandler.ActionModeCallback(
-                        tab, webContents,
-                        new Consumer<Boolean>() {
-                            @Override
-                            public void accept(Boolean aBoolean) {
-                                Toast.makeText(ContextUtils.getApplicationContext(), "mActionBarObserver show：" + aBoolean, Toast.LENGTH_SHORT).show();
-                            }
-                        },
-                        new org.chromium.base.Callback<String>() {
-                            @Override
-                            public void onResult(String result) {
-                                Toast.makeText(ContextUtils.getApplicationContext(), "搜索：" + result, Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                );
+                tab, webContents,
+                new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) {
+                        Toast.makeText(ContextUtils.getApplicationContext(), "mActionBarObserver show：" + aBoolean, Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new org.chromium.base.Callback<String>() {
+                    @Override
+                    public void onResult(String result) {
+                        Toast.makeText(ContextUtils.getApplicationContext(), "搜索：" + result, Toast.LENGTH_SHORT).show();
+                    }
+                })
+        );
 
 //        final SmartSearchPanel smartSearchDialog = tab.getWindowAndroid().getActivity().get()
 //                .findViewById(R.id.layout_smart_search);
@@ -1535,7 +1519,8 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
 
             @Override
-            public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {}
+            public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {
+            }
 
             @Override
             public boolean requestSelectionPopupUpdates(boolean shouldSuggest) {
@@ -1543,7 +1528,8 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
 
             @Override
-            public void cancelAllRequests() {}
+            public void cancelAllRequests() {
+            }
 
             @SuppressLint("ClickableViewAccessibility")
             private void show() {
@@ -1697,12 +1683,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
 //        mLayoutManager.showLayout(LayoutType.BROWSING, false);
 
-        if (mCallback != null) {
-            ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
-            onBackPressedCallback.setEnabled(tabGroup.canGoBack());
-        } else {
-            setEnabled(false);
-        }
+        onBackPressedCallback.setEnabled(mTabVisible != null && mTabVisible.canGoBack());
 
     }
 
@@ -1804,18 +1785,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         return mTabContentManager;
     }
 
-//    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
-//        ArkLogger.d(TAG, "openNewPage params=" + params);
-//        if (mCallback == null) {
-//            return false;
-//        }
-//        ITabGroup tabList = mCallback.getTabList(parent);
-//        return tabList.openNewPage(parent, params);
-//    }
-
     public interface Callback {
-
-        ITabGroup getTabList(Tab current);
 
         void didThemeColorChanged(int color);
 
