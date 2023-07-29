@@ -92,6 +92,15 @@ class ASH_EXPORT DeskButton : public views::Button,
   const std::u16string& GetTextForTest() const;
 
  private:
+  enum class SwitchButtonUpdateSource {
+    // Used to update switch button before switching to the previous desk.
+    kPreviousButtonPressed = -1,
+    // Used to update switch button when there is no switch.
+    kDeskButtonUpdate = 0,
+    // Used to update switch button before switching to the next desk.
+    kNextButtonPressed = 1,
+  };
+
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -127,8 +136,9 @@ class ASH_EXPORT DeskButton : public views::Button,
   // `desk_name_` and `abbreviated_desk_name_` accordingly.
   void CalculateDisplayNames(const Desk* desk);
 
-  // Determines whether the desk switch buttons can be shown.
-  void MaybeUpdateDeskSwitchButtonVisibility();
+  // Determines whether the desk switch buttons can be shown. `source` is used
+  // to calculate target active desk index before desk switch.
+  void MaybeUpdateDeskSwitchButtonVisibility(SwitchButtonUpdateSource source);
 
   // Updates the shelf auto-hide disabler given `should_enable_shelf_auto_hide`.
   void UpdateShelfAutoHideDisabler(

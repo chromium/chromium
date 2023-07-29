@@ -19,6 +19,7 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desk_textfield.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -292,7 +293,8 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   if (!desk_->is_desk_being_removed() &&
       owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
     const int desk_index = controller->GetDeskIndex(desk_);
-    desk_shortcut_view_->SetVisible(visible && desk_index <= 7);
+    desk_shortcut_view_->SetVisible(visible &&
+                                    desk_index < kDeskBarMaxDeskShortcut);
     desk_shortcut_label_->SetText(u"+ " +
                                   base::NumberToString16(desk_index + 1));
   }

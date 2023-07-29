@@ -64,6 +64,10 @@ constexpr int kDeskBarDeskIconButtonAndLabelSpacing = 8;
 // For desk button desk bar, the spacing between shelf and desk bar.
 constexpr int kDeskBarShelfAndBarSpacing = 8;
 
+// For desk button desk bar, number of desk activation shortcuts
+// supported.
+constexpr int kDeskBarMaxDeskShortcut = 8;
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_CONSTANTS_H_

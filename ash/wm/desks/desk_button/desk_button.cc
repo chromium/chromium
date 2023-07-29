@@ -17,6 +17,7 @@
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_bar_controller.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
@@ -44,7 +45,6 @@ constexpr int kDeskSwitchButtonWidth = 20;
 constexpr int kDeskSwitchButtonHeight = 36;
 constexpr int kButtonCornerRadius = 12;
 constexpr int kFocusRingHaloInset = -3;
-constexpr int kMaxDeskShortcut = 8;
 
 }  // namespace
 
@@ -207,7 +207,8 @@ void DeskButton::OnExpandedStateUpdate(bool expanded) {
   // layout.
   prev_desk_button_->SetVisible(expanded);
   next_desk_button_->SetVisible(expanded);
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 
   // Re-layout the button to reflect desk switch button visibility changes.
   Layout();
@@ -239,7 +240,8 @@ void DeskButton::SetActivation(bool is_activated) {
       is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                     : cros_tokens::kCrosSysOnSurface);
 
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 void DeskButton::SetFocused(bool is_focused) {
@@ -248,7 +250,8 @@ void DeskButton::SetFocused(bool is_focused) {
   }
 
   is_focused_ = is_focused;
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 void DeskButton::MaybeContract() {
@@ -309,7 +312,8 @@ void DeskButton::OnMouseEntered(const ui::MouseEvent& event) {
     desk_button_widget_->SetExpanded(true);
   }
 
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 void DeskButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -331,7 +335,8 @@ void DeskButton::OnMouseExited(const ui::MouseEvent& event) {
     desk_button_widget_->SetExpanded(false);
   }
 
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -342,22 +347,26 @@ views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
 }
 
 void DeskButton::OnDeskAdded(const Desk* desk) {
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 void DeskButton::OnDeskRemoved(const Desk* desk) {
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 void DeskButton::OnDeskReordered(int old_index, int new_index) {
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 void DeskButton::OnDeskActivationChanged(const Desk* activated,
                                          const Desk* deactivated) {
   CalculateDisplayNames(activated);
   desk_name_label_->SetText(is_expanded_ ? desk_name_ : abbreviated_desk_name_);
-  MaybeUpdateDeskSwitchButtonVisibility();
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 void DeskButton::OnDeskNameChanged(const Desk* desk,
@@ -401,15 +410,17 @@ void DeskButton::OnButtonPressed() {
 }
 
 void DeskButton::OnPreviousPressed() {
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kPreviousButtonPressed);
   DesksController::Get()->ActivateAdjacentDesk(
       /*going_left=*/true, DesksSwitchSource::kDeskButtonSwitchButton);
-  prev_desk_button_->set_hovered(false);
 }
 
 void DeskButton::OnNextPressed() {
+  MaybeUpdateDeskSwitchButtonVisibility(
+      SwitchButtonUpdateSource::kNextButtonPressed);
   DesksController::Get()->ActivateAdjacentDesk(
       /*going_left=*/false, DesksSwitchSource::kDeskButtonSwitchButton);
-  next_desk_button_->set_hovered(false);
 }
 
 void DeskButton::CalculateDisplayNames(const Desk* desk) {
@@ -442,45 +453,54 @@ void DeskButton::CalculateDisplayNames(const Desk* desk) {
       l10n_util::GetStringFUTF16(IDS_SHELF_DESK_BUTTON_TITLE, desk_name_));
 }
 
-void DeskButton::MaybeUpdateDeskSwitchButtonVisibility() {
-  DesksController* desks_controller = DesksController::Get();
-  const size_t active_desk_index = desks_controller->GetActiveDeskIndex();
-  const bool can_show_prev_desk_button = !(active_desk_index == 0);
-  const bool can_show_next_desk_button =
-      !(active_desk_index == desks_controller->desks().size() - 1);
-
-  // There are certain conditions that indicate that we cannot show either of
-  // the buttons.
-  const bool can_show_desk_switch_buttons =
+void DeskButton::MaybeUpdateDeskSwitchButtonVisibility(
+    SwitchButtonUpdateSource source) {
+  // It has to meet all the following conditions for the switch button to show:
+  //   1) desk button is currently hovered or focused;
+  //   2) desk button is not activated;
+  //   3) desk button is expanded;
+  //   4) there is a desk available for the previous/next switch button;
+  DesksController* desk_controller = DesksController::Get();
+  const int target_desk_index =
+      desk_controller->GetActiveDeskIndex() + static_cast<int>(source);
+  const int prev_desk_index = target_desk_index - 1;
+  const int next_desk_index = target_desk_index + 1;
+  const bool show_desk_switch_buttons =
       (is_hovered_ || is_focused_) && !is_activated_ && is_expanded_;
-  prev_desk_button_->SetShown(can_show_desk_switch_buttons &&
-                              can_show_prev_desk_button);
-  next_desk_button_->SetShown(can_show_desk_switch_buttons &&
-                              can_show_next_desk_button);
+  auto is_valid_desk_index = [desk_controller](int index) {
+    return 0 <= index && index < desk_controller->GetNumberOfDesks();
+  };
+  const bool show_prev_desk_button =
+      show_desk_switch_buttons && is_valid_desk_index(prev_desk_index);
+  const bool show_next_desk_button =
+      show_desk_switch_buttons && is_valid_desk_index(next_desk_index);
 
-  if (prev_desk_button_->GetEnabled()) {
-    if ((active_desk_index - 1) <= kMaxDeskShortcut - 1) {
+  prev_desk_button_->SetShown(show_prev_desk_button);
+  next_desk_button_->SetShown(show_next_desk_button);
+
+  if (show_prev_desk_button) {
+    if (prev_desk_index < kDeskBarMaxDeskShortcut) {
       prev_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE,
-          desks_controller->GetDeskName(active_desk_index - 1),
-          base::NumberToString16(active_desk_index)));
+          desk_controller->GetDeskName(prev_desk_index),
+          base::NumberToString16(prev_desk_index + 1)));
     } else {
       prev_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE_16_DESKS,
-          desks_controller->GetDeskName(active_desk_index - 1)));
+          desk_controller->GetDeskName(prev_desk_index)));
     }
   }
 
-  if (next_desk_button_->GetEnabled()) {
-    if ((active_desk_index + 1) <= kMaxDeskShortcut - 1) {
+  if (show_next_desk_button) {
+    if (next_desk_index < kDeskBarMaxDeskShortcut) {
       next_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_SHELF_NEXT_DESK_BUTTON_TITLE,
-          desks_controller->GetDeskName(active_desk_index + 1),
-          base::NumberToString16(active_desk_index + 2)));
+          desk_controller->GetDeskName(next_desk_index),
+          base::NumberToString16(next_desk_index + 1)));
     } else {
       next_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_SHELF_NEXT_DESK_BUTTON_TITLE_16_DESKS,
-          desks_controller->GetDeskName(active_desk_index + 1)));
+          desk_controller->GetDeskName(next_desk_index)));
     }
   }
 }
