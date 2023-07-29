@@ -16,6 +16,14 @@
 #include "base/win/scoped_handle.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gl/buildflags.h"
+
+// Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
+// ui/gl/buildflags.h
+#if BUILDFLAG(USE_DAWN)
+#include <dawn/native/D3DBackend.h>
+using dawn::native::d3d::ExternalImageDXGI;
+#endif  // BUILDFLAG(USE_DAWN)
 
 namespace gpu {
 
@@ -73,12 +81,20 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
   // Releases keyed mutex if all pending access for given device are ended.
   void EndAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
+#if BUILDFLAG(USE_DAWN)
+  // Returns the Dawn ExternalImageDXGI associated with given device. It's the
+  // caller's responsibility to initialize the external image if needed.
+  std::unique_ptr<ExternalImageDXGI>& GetDawnExternalImage(WGPUDevice device);
+
   // Returns true if there's no concurrent keyed mutex access on another device
   // allowing Dawn to acquire the keyed mutex if needed.
-  bool BeginAccessDawn();
+  bool BeginAccessDawn(WGPUDevice device);
 
-  // Updates keyed mutex acquired state after Dawn has released it.
-  void EndAccessDawn();
+  // Updates keyed mutex acquired state after Dawn has released it. Erases the
+  // Dawn state entry from the map if the external image is already destroyed
+  // after all pending Dawn access is done.
+  void EndAccessDawn(WGPUDevice device);
+#endif  // BUILDFLAG(USE_DAWN)
 
  private:
   struct D3D11TextureState {
@@ -102,6 +118,28 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
   using D3D11TextureStateMap =
       base::flat_map<Microsoft::WRL::ComPtr<ID3D11Device>, D3D11TextureState>;
   D3D11TextureStateMap d3d11_texture_state_map_;
+
+#if BUILDFLAG(USE_DAWN)
+  // When Dawn uses keyed mutex for synchronization with the D3D11 backend, we
+  // want a single instance of ExternalImageDXGI (per device) for each unique
+  // texture even if we have multiple duplicated handles (and shared images)
+  // pointing to the texture. Caching the ExternalImageDXGI here enables this.
+  // Note that it's ok to use raw WGPUDevice pointers here since the external
+  // image acts like a weak pointer to the device, and we can detect if the
+  // entry is valid by checking ExternalImageDXGI::IsValid().
+  struct DawnExternalImageState {
+    DawnExternalImageState();
+    ~DawnExternalImageState();
+    DawnExternalImageState(DawnExternalImageState&&);
+    DawnExternalImageState& operator=(DawnExternalImageState&&);
+
+    std::unique_ptr<ExternalImageDXGI> external_image;
+    int access_count = 0;
+  };
+  using DawnExternalImageCache =
+      base::flat_map<WGPUDevice, DawnExternalImageState>;
+  DawnExternalImageCache dawn_external_image_cache_;
+#endif  // BUILDFLAG(USE_DAWN)
 
   // True if the texture has an underlying keyed mutex.
   bool has_keyed_mutex_ = false;

@@ -25,16 +25,6 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/scoped_egl_image.h"
 
-// Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
-// ui/gl/buildflags.h
-#if BUILDFLAG(USE_DAWN)
-#include <dawn/native/D3DBackend.h>
-using dawn::native::d3d::ExternalImageDescriptorDXGISharedHandle;
-using dawn::native::d3d::ExternalImageDXGI;
-using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
-using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
-#endif  // BUILDFLAG(USE_DAWN)
-
 namespace gfx {
 class Size;
 class ColorSpace;
@@ -114,6 +104,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
 #if BUILDFLAG(USE_DAWN)
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
+                                wgpu::BackendType backend_type,
                                 wgpu::TextureUsage usage);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
 #endif
@@ -203,25 +194,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
       VideoDecodeDevice device) override;
 
  private:
-#if BUILDFLAG(USE_DAWN)
-  struct DawnExternalImageState {
-    DawnExternalImageState();
-    DawnExternalImageState(DawnExternalImageState&&);
-    DawnExternalImageState& operator=(DawnExternalImageState&&);
-    ~DawnExternalImageState();
-
-    // If an external image exists, it means Dawn produced the D3D12 side of the
-    // D3D11 texture created by ID3D12Device::OpenSharedHandle().
-    std::unique_ptr<ExternalImageDXGI> external_image;
-
-    // Signaled fence imported from Dawn at EndAccess. This can be reused if
-    // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.
-    scoped_refptr<D3DSharedFence> signaled_fence;
-  };
-
-  base::flat_map<WGPUDevice, DawnExternalImageState> dawn_external_image_cache_;
-#endif  // BUILDFLAG(USE_DAWN)
-
   D3DImageBacking(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -252,8 +224,26 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
   // Common state tracking for both D3D11 and Dawn access.
   bool ValidateBeginAccess(bool write_access) const;
-
+  void BeginAccessCommon(bool write_access);
   void EndAccessCommon(scoped_refptr<D3DSharedFence> fence);
+
+  // Get a list of fences to wait on in BeginAccessD3D11/Dawn. If the waiting
+  // device is backed by D3D11 (ANGLE or Dawn), |wait_d3d11_device| can be
+  // specified to skip over fences for the same device since the wait will be a
+  // no-op. Similarly, |wait_dawn_device| can be provided to skip over waits on
+  // fences previously signaled on the same Dawn device which are cached in
+  // |dawn_signaled_fence_map_|.
+  std::vector<scoped_refptr<D3DSharedFence>> GetPendingWaitFences(
+      const Microsoft::WRL::ComPtr<ID3D11Device>& wait_d3d11_device,
+      const wgpu::Device& wait_dawn_device,
+      bool write_access);
+
+#if BUILDFLAG(USE_DAWN)
+  // Uses either DXGISharedHandleState or internal |dawn_external_image_|
+  // depending on whether the texture has a shared handle or not.
+  std::unique_ptr<ExternalImageDXGI>& GetDawnExternalImage(
+      const wgpu::Device& device);
+#endif  // BUILDFLAG(USE_DAWN)
 
   // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
@@ -310,10 +300,24 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // and/or write.
   scoped_refptr<D3DSharedFence> write_fence_;
 
-  // Fence used for signaling on this backing's |d3d11_device_|. Lazily created
-  // and signaled on first Dawn access, and used on any subsequent D3D11 access.
-  // TODO(sunnyps): Support multiple D3D11 devices.
-  scoped_refptr<D3DSharedFence> d3d11_device_fence_;
+  // Fences used for signaling after D3D11 access. Lazily created as needed.
+  // TODO(sunnyps): This doesn't need to be per D3DImageBacking. Find a better
+  // place for this so that they can be shared by all backings.
+  base::flat_map<Microsoft::WRL::ComPtr<ID3D11Device>,
+                 scoped_refptr<D3DSharedFence>>
+      d3d11_signaled_fence_map_;
+
+#if BUILDFLAG(USE_DAWN)
+  // If an external image exists, it means Dawn produced the D3D12 side of the
+  // D3D11 texture created by ID3D12Device::OpenSharedHandle(). Only used if
+  // the backing doesn't have a shared handle e.g. for mappable D3D11 textures.
+  std::unique_ptr<ExternalImageDXGI> dawn_external_image_;
+
+  // Signaled fence imported from Dawn at EndAccess. This can be reused if
+  // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.
+  base::flat_map<WGPUDevice, scoped_refptr<D3DSharedFence>>
+      dawn_signaled_fence_map_;
+#endif  // BUILDFLAG(USE_DAWN)
 };
 
 }  // namespace gpu
