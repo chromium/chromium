@@ -2202,14 +2202,29 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
   // style" menus, some positioning calculations are different. Testing for that
   // condition separately will allow those subtle positioning differences to be
   // taken into account within CalculateBubbleMenuBounds() and elsewhere.
-  gfx::Rect bounds =
+  bool calculate_as_bubble_menu =
       MenuItemView::IsBubble(state_.anchor) ||
-              (!IsCombobox() && menu_config.use_bubble_border &&
-               menu_config.CornerRadiusForMenu(this))
+      (!IsCombobox() && menu_config.use_bubble_border &&
+       menu_config.CornerRadiusForMenu(this));
+  gfx::Rect bounds =
+      calculate_as_bubble_menu
           ? CalculateBubbleMenuBounds(item, preferred_open_direction,
                                       &resulting_direction, &anchor)
           : CalculateMenuBounds(item, preferred_open_direction,
                                 &resulting_direction, &anchor);
+
+  // TODO(crbug.com/1467321): Investigate why menu bounds can be zero. Remove
+  // the log when the crash is fixed.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  CHECK(!bounds.size().IsEmpty())
+      << "Menu size must NOT be empty but it is " << bounds.ToString()
+      << " calculated as "
+      << (calculate_as_bubble_menu ? "bubble menu" : "menu")
+      << ". The item count is "
+      << static_cast<int>(item->GetSubmenu()->GetMenuItems().size())
+      << ". See crbug.com/1467321.";
+#endif
+
   SetChildMenuOpenDirectionAtDepth(menu_depth, resulting_direction);
   bool do_capture = (!did_capture_ && !for_drop_ && !IsEditableCombobox());
   showing_submenu_ = true;
