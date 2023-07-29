@@ -63047,6 +63047,7 @@ from previous Chrome versions.
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
   <int value="-450917820" label="EnableCbdSignOut:enabled"/>
+  <int value="-450578554" label="WGIGamepadTriggerRumble:enabled"/>
   <int value="-450100254" label="OverviewButton:enabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
   <int value="-449229817" label="ArcExternalStorageAccess:enabled"/>
@@ -65027,6 +65028,7 @@ from previous Chrome versions.
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
   <int value="566031886" label="DIPS:disabled"/>
   <int value="567368307" label="enable-experimental-canvas-features"/>
+  <int value="570445904" label="WGIGamepadTriggerRumble:disabled"/>
   <int value="570469494" label="LoginDetection:disabled"/>
   <int value="570882482" label="CrOSDspBasedAecAllowed:enabled"/>
   <int value="571349694" label="AllowAllSitesToInitiateMirroring:enabled"/>

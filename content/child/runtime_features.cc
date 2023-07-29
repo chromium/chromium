@@ -394,8 +394,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(blink::features::kDesktopPWAsTabStripCustomizations)},
     {"WebSerialBluetooth",
      raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
-    {"WGIGamepadTriggerRumble",
-     raw_ref(features::kEnableWindowsGamingInputDataFetcher)},
     {"MediaStreamTrackTransfer", raw_ref(features::kMediaStreamTrackTransfer)},
     {"PrivateNetworkAccessPermissionPrompt",
      raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt)} };
