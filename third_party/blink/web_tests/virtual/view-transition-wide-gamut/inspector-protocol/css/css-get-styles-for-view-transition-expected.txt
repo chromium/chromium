@@ -333,6 +333,10 @@ The test verifies functionality of querying style information for view-transitio
                                         name : mix-blend-mode
                                         value : normal
                                     }
+                                    [5] : {
+                                        name : text-orientation
+                                        value : mixed
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -554,6 +558,10 @@ The test verifies functionality of querying style information for view-transitio
                                     [4] : {
                                         name : mix-blend-mode
                                         value : normal
+                                    }
+                                    [5] : {
+                                        name : text-orientation
+                                        value : mixed
                                     }
                                 ]
                                 shorthandEntries : [
@@ -2224,6 +2232,10 @@ Dumping styles for : ::view-transition-group with id root{
                                 name : mix-blend-mode
                                 value : normal
                             }
+                            [5] : {
+                                name : text-orientation
+                                value : mixed
+                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -3254,6 +3266,10 @@ Dumping styles for : ::view-transition-group with id shared{
                             [4] : {
                                 name : mix-blend-mode
                                 value : normal
+                            }
+                            [5] : {
+                                name : text-orientation
+                                value : mixed
                             }
                         ]
                         shorthandEntries : [

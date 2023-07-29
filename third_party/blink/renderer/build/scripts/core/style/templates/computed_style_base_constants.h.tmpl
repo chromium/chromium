@@ -21,6 +21,9 @@ enum class {{enum.type_name}} : {{"unsigned" if enum.set_type or enum.values|len
   {% endif %}
   {{value}}{{flag}},
   {% endfor %}
+  {% if not enum.set_type %}
+  kMaxEnumValue = {{enum.values|last}},
+  {% endif %}
 };
 
 {% if enum.set_type %}

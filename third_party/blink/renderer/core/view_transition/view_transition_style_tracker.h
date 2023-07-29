@@ -265,6 +265,9 @@ class ViewTransitionStyleTracker
 
     // The mix blend mode to use for the container.
     BlendMode mix_blend_mode = BlendMode::kNormal;
+
+    // Text orientation to use for the container.
+    ETextOrientation text_orientation = ETextOrientation::kMixed;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the
@@ -307,6 +310,7 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       WritingMode&,
       BlendMode&,
+      ETextOrientation&,
       absl::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
   Member<Document> document_;

@@ -15,6 +15,7 @@ div {
   contain: paint;
   view-transition-name: target;
   mix-blend-mode: multiply;
+  text-orientation: upright;
 }
 ::view-transition-image-pair(target) {
   position: fixed;
@@ -31,6 +32,7 @@ promise_test(() => {
       assert_equals(getComputedStyle(document.documentElement, ":view-transition").position, "fixed", ":view-transition");
       assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").position, "absolute", "container(target)");
       assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").mixBlendMode, "multiply", "container(target)");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").textOrientation, "upright", "container(target)");
       assert_equals(getComputedStyle(document.documentElement, ":view-transition-image-pair(target)").position, "absolute", "wrapper(target)");
 
       assert_equals(getComputedStyle(document.documentElement, ":view-transition-old(target)").position, "absolute", "outgoing(target)");
@@ -44,6 +46,7 @@ promise_test(() => {
         assert_equals(getComputedStyle(document.documentElement, ":view-transition").position, "fixed", "raf :view-transition");
         assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").position, "absolute", "raf container(target)");
         assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").mixBlendMode, "multiply", "raf container(target)");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").textOrientation, "upright", "raf container(target)");
         assert_equals(getComputedStyle(document.documentElement, ":view-transition-image-pair(target)").position, "fixed", "raf wrapper(target)");
 
         assert_equals(getComputedStyle(document.documentElement, ":view-transition-old(target)").position, "absolute", "raf outgoing(target)");
@@ -81,6 +84,7 @@ promise_test(() => {
     assert_equals(getComputedStyle(document.documentElement, ":view-transition").position, "fixed");
     assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").position, "absolute");
     assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").mixBlendMode, "multiply");
+    assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(target)").textOrientation, "upright");
     assert_equals(getComputedStyle(document.documentElement, ":view-transition-image-pair(target)").position, "fixed");
 
     assert_equals(getComputedStyle(document.documentElement, ":view-transition-old(target)").position, "absolute");

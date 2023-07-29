@@ -31,7 +31,8 @@ class ViewTransitionStyleBuilder {
   void AddContainerStyles(const String& tag,
                           const ContainerProperties& properties,
                           WritingMode writing_mode,
-                          BlendMode blend_mode);
+                          BlendMode blend_mode,
+                          ETextOrientation text_orientation);
 
   String Build();
 

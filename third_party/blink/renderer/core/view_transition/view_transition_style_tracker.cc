@@ -371,14 +371,22 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
         transition_state_element.captured_rect_in_layout_space;
 
     CHECK_LE(transition_state_element.container_writing_mode,
-             static_cast<uint8_t>(WritingMode::kMaxWritingMode));
+             static_cast<std::underlying_type_t<WritingMode>>(
+                 WritingMode::kMaxWritingMode));
     element_data->container_writing_mode = static_cast<WritingMode>(
         transition_state_element.container_writing_mode);
 
     CHECK_LE(transition_state_element.mix_blend_mode,
-             static_cast<uint8_t>(BlendMode::kMaxBlendMode));
+             static_cast<std::underlying_type_t<BlendMode>>(
+                 BlendMode::kMaxBlendMode));
     element_data->mix_blend_mode =
         static_cast<BlendMode>(transition_state_element.mix_blend_mode);
+
+    CHECK_LE(transition_state_element.text_orientation,
+             static_cast<std::underlying_type_t<ETextOrientation>>(
+                 ETextOrientation::kMaxEnumValue));
+    element_data->text_orientation = static_cast<ETextOrientation>(
+        transition_state_element.text_orientation);
 
     element_data->CacheGeometryState();
 
@@ -986,6 +994,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     PhysicalRect visual_overflow_rect_in_layout_space;
     WritingMode writing_mode;
     BlendMode blend_mode;
+    ETextOrientation text_orientation;
     absl::optional<gfx::RectF> captured_rect_in_layout_space;
 
     if (element_data->target_element->IsDocumentElement()) {
@@ -997,11 +1006,12 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       visual_overflow_rect_in_layout_space.size = layout_view_size;
       writing_mode = layout_object->StyleRef().GetWritingMode();
       blend_mode = layout_object->StyleRef().GetBlendMode();
+      text_orientation = layout_object->StyleRef().GetTextOrientation();
     } else {
       ComputeLiveElementGeometry(
           max_capture_size, *layout_object, container_properties,
           visual_overflow_rect_in_layout_space, writing_mode, blend_mode,
-          captured_rect_in_layout_space);
+          text_orientation, captured_rect_in_layout_space);
     }
 
     if (!element_data->container_properties.empty() &&
@@ -1010,6 +1020,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
             element_data->visual_overflow_rect_in_layout_space &&
         writing_mode == element_data->container_writing_mode &&
         blend_mode == element_data->mix_blend_mode &&
+        text_orientation == element_data->text_orientation &&
         captured_rect_in_layout_space ==
             element_data->captured_rect_in_layout_space) {
       continue;
@@ -1032,6 +1043,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
         visual_overflow_rect_in_layout_space;
     element_data->container_writing_mode = writing_mode;
     element_data->mix_blend_mode = blend_mode;
+    element_data->text_orientation = text_orientation;
     element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
 
     PseudoId live_content_element = HasLiveNewContent()
@@ -1079,6 +1091,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     PhysicalRect& visual_overflow_rect_in_layout_space,
     WritingMode& writing_mode,
     BlendMode& blend_mode,
+    ETextOrientation& text_orientation,
     absl::optional<gfx::RectF>& captured_rect_in_layout_space) const {
   DCHECK(!layout_object.IsLayoutView());
 
@@ -1159,6 +1172,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
 
   writing_mode = layout_object.StyleRef().GetWritingMode();
   blend_mode = layout_object.StyleRef().GetBlendMode();
+  text_orientation = layout_object.StyleRef().GetTextOrientation();
 
   container_properties = ContainerProperties(border_box_size_in_css_space,
                                              snapshot_matrix_in_css_space);
@@ -1465,8 +1479,12 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     element.captured_rect_in_layout_space =
         element_data->captured_rect_in_layout_space;
     element.container_writing_mode =
-        static_cast<uint8_t>(element_data->container_writing_mode);
-    element.mix_blend_mode = static_cast<uint8_t>(element_data->mix_blend_mode);
+        static_cast<decltype(element.container_writing_mode)>(
+            element_data->container_writing_mode);
+    element.mix_blend_mode = static_cast<decltype(element.mix_blend_mode)>(
+        element_data->mix_blend_mode);
+    element.text_orientation = static_cast<decltype(element.text_orientation)>(
+        element_data->text_orientation);
   }
 
   // TODO(khushalsagar): Need to send offsets to retain positioning of
@@ -1559,7 +1577,8 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
     // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
     builder.AddContainerStyles(
         view_transition_name, element_data->container_properties.back(),
-        element_data->container_writing_mode, element_data->mix_blend_mode);
+        element_data->container_writing_mode, element_data->mix_blend_mode,
+        element_data->text_orientation);
 
     // This sets up the styles to animate the pseudo-elements as described in
     // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.

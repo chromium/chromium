@@ -59,6 +59,10 @@ struct BLINK_COMMON_EXPORT
     return r.mix_blend_mode;
   }
 
+  static uint8_t text_orientation(const blink::ViewTransitionElement& r) {
+    return r.text_orientation;
+  }
+
   static bool Read(blink::mojom::ViewTransitionElementDataView r,
                    blink::ViewTransitionElement* out);
 };

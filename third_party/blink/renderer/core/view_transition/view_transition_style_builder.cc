@@ -20,6 +20,19 @@ const char* kNewImageTagName = "html::view-transition-new";
 const char* kOldImageTagName = "html::view-transition-old";
 const char* kKeyframeNamePrefix = "-ua-view-transition-group-anim-";
 
+const char* TextOrientationToString(ETextOrientation text_orientation) {
+  switch (text_orientation) {
+    case ETextOrientation::kMixed:
+      return "mixed";
+    case ETextOrientation::kSideways:
+      return "sideways";
+    case ETextOrientation::kUpright:
+      return "upright";
+  }
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
 void ViewTransitionStyleBuilder::AddUAStyle(const String& style) {
@@ -121,7 +134,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
     const ContainerProperties& properties,
     WritingMode writing_mode,
-    BlendMode blend_mode) {
+    BlendMode blend_mode,
+    ETextOrientation text_orientation) {
   std::ostringstream writing_mode_stream;
   writing_mode_stream << writing_mode;
 
@@ -133,6 +147,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
         transform: %s;
         writing-mode: %s;
         mix-blend-mode: %s;
+        text-orientation: %s;
       )CSS",
       properties.border_box_size_in_css_space.width.ToFloat(),
       properties.border_box_size_in_css_space.height.ToFloat(),
@@ -142,7 +157,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
           .Utf8()
           .c_str(),
       writing_mode_stream.str().c_str(),
-      BlendModeToString(blend_mode).Utf8().c_str());
+      BlendModeToString(blend_mode).Utf8().c_str(),
+      TextOrientationToString(text_orientation));
 
   AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
 }
