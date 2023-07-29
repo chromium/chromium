@@ -41,6 +41,9 @@ constexpr char kOneLensAmbientVisualSearchWebFullscreen[] = "avsf";
 constexpr char kChromeSearchCompanion[] = "csc";
 constexpr char kViewportWidthQueryParameter[] = "vpw";
 constexpr char kViewportHeightQueryParameter[] = "vph";
+// Query parameter for source (aka Access Point).
+constexpr char kSourceQueryParameter[] = "source";
+constexpr char kSourceQueryParameterValue[] = "chrome.gsc";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],
@@ -98,6 +101,8 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
     case lens::CHROME_SEARCH_COMPANION:
       query_parameters.insert(
           {kRenderingEnvironmentQueryParameter, kChromeSearchCompanion});
+      query_parameters.insert(
+          {kSourceQueryParameter, kSourceQueryParameterValue});
       break;
     default:
       // Empty strings are ignored when query parameters are built.
