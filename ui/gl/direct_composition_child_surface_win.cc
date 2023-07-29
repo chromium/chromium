@@ -20,7 +20,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/egl_util.h"
-#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_features.h"
@@ -55,8 +54,10 @@ bool IsVerifyDrawOffsetEnabled() {
 
 DirectCompositionChildSurfaceWin::DirectCompositionChildSurfaceWin(
     GLDisplayEGL* display,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     bool use_angle_texture_offset)
     : GLSurfaceEGL(display),
+      d3d11_device_(std::move(d3d11_device)),
       use_angle_texture_offset_(use_angle_texture_offset) {}
 
 DirectCompositionChildSurfaceWin::~DirectCompositionChildSurfaceWin() {
@@ -64,7 +65,6 @@ DirectCompositionChildSurfaceWin::~DirectCompositionChildSurfaceWin() {
 }
 
 bool DirectCompositionChildSurfaceWin::Initialize(GLSurfaceFormat format) {
-  d3d11_device_ = QueryD3D11DeviceObjectFromANGLE();
   dcomp_device_ = GetDirectCompositionDevice();
   if (!dcomp_device_)
     return false;

@@ -65,11 +65,13 @@ DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
 
 DCLayerTree::~DCLayerTree() = default;
 
-bool DCLayerTree::Initialize(HWND window) {
+bool DCLayerTree::Initialize(
+    HWND window,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   window_ = window;
   DCHECK(window_);
 
-  d3d11_device_ = QueryD3D11DeviceObjectFromANGLE();
+  d3d11_device_ = std::move(d3d11_device);
   DCHECK(d3d11_device_);
 
   dcomp_device_ = GetDirectCompositionDevice();

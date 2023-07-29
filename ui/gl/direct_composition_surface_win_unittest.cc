@@ -317,7 +317,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
     return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(50, 50);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -400,7 +400,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
     return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(64, 64);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -472,7 +472,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
     return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(80, 80);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -532,7 +532,7 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
     return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(1280, 720);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -623,7 +623,7 @@ class DirectCompositionPixelTest : public DirectCompositionSurfaceTest {
     glClear(GL_COLOR_BUFFER_BIT);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
+        GetDirectCompositionD3D11Device();
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
         CreateNV12Texture(d3d11_device, texture_size);
@@ -694,7 +694,7 @@ class DirectCompositionVideoPixelTest : public DirectCompositionPixelTest {
     EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
+        GetDirectCompositionD3D11Device();
 
     gfx::Size texture_size(50, 50);
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -770,7 +770,7 @@ TEST_F(DirectCompositionPixelTest, SoftwareVideoSwapchain) {
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size y_size(50, 50);
   size_t stride = y_size.width();
@@ -850,7 +850,7 @@ TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(50, 50);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -1008,7 +1008,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(50, 50);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -1131,7 +1131,7 @@ TEST_F(DirectCompositionPixelTest, SwapChainImage) {
     return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
   ASSERT_TRUE(d3d11_device);
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
   d3d11_device.As(&dxgi_device);
@@ -1425,7 +1425,7 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
   constexpr gfx::Size texture_size(50, 50);
   if (for_video) {
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
+        GetDirectCompositionD3D11Device();
     ASSERT_TRUE(d3d11_device);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -1483,7 +1483,7 @@ TEST_F(DirectCompositionSurfaceTest, VisualsReused) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(50, 50);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =

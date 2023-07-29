@@ -18,8 +18,10 @@ namespace gl {
 
 class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
  public:
-  DirectCompositionChildSurfaceWin(GLDisplayEGL* display,
-                                   bool use_angle_texture_offset);
+  DirectCompositionChildSurfaceWin(
+      GLDisplayEGL* display,
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+      bool use_angle_texture_offset);
 
   DirectCompositionChildSurfaceWin(const DirectCompositionChildSurfaceWin&) =
       delete;

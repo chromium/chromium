@@ -82,7 +82,8 @@ class DCLayerTree {
   ~DCLayerTree();
 
   // Returns true on success.
-  bool Initialize(HWND window);
+  bool Initialize(HWND window,
+                  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
   // Present pending overlay layers, and perform a direct composition commit if
   // necessary.  Returns true if presentation and commit succeeded.

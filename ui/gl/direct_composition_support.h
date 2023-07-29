@@ -21,13 +21,26 @@ namespace gl {
 
 class GLDisplayEGL;
 
-GL_EXPORT void InitializeDirectComposition(GLDisplayEGL* display);
+// Initialize direct composition with the given d3d11 device.
+GL_EXPORT void InitializeDirectComposition(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+
+// Initialize direct composition with the given ANGLE egl display. It calls
+// InitializeDirectComposition() with ANGLE's d3d11 device internally.
+GL_EXPORT void InitializeDirectCompositionANGLE(GLDisplayEGL* display);
+
 GL_EXPORT void ShutdownDirectComposition();
 
 // Retrieves the global direct composition device. InitializeDirectComposition
 // must be called on GPU process startup before the device is retrieved, and
 // ShutdownDirectComposition must be called at process shutdown.
 GL_EXPORT IDCompositionDevice3* GetDirectCompositionDevice();
+
+// Retrieves the global d3d11 device used by direct composition.
+// InitializeDirectComposition must be called on GPU process startup before the
+// device is retrieved, and ShutdownDirectComposition must be called at process
+// shutdown.
+GL_EXPORT ID3D11Device* GetDirectCompositionD3D11Device();
 
 // Returns true if direct composition is supported.  We prefer to use direct
 // composition even without hardware overlays, because it allows us to bypass

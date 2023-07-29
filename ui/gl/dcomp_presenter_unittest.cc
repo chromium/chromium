@@ -128,7 +128,7 @@ void ClearRect(IDCompositionSurface* surface,
                const gfx::Rect& update_rect,
                SkColor4f update_color) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> immediate_context;
   d3d11_device->GetImmediateContext(&immediate_context);
 
@@ -273,7 +273,7 @@ class DCompPresenterTest : public testing::Test {
 // Ensure that the overlay image isn't presented again unless it changes.
 TEST_F(DCompPresenterTest, NoPresentTwice) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(50, 50);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -353,7 +353,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
 // is support - swapchain should be set to the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(64, 64);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -420,7 +420,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
 // is not support - swapchain should be the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(80, 80);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -476,7 +476,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
 // Test protected video flags
 TEST_F(DCompPresenterTest, ProtectedVideos) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(1280, 720);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -578,7 +578,7 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
+        GetDirectCompositionD3D11Device();
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
         CreateNV12Texture(d3d11_device, texture_size);
@@ -740,7 +740,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
+        GetDirectCompositionD3D11Device();
 
     gfx::Size texture_size(50, 50);
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -811,7 +811,7 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size y_size(50, 50);
   size_t stride = y_size.width();
@@ -878,7 +878,7 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(50, 50);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -1025,7 +1025,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
 
   gfx::Size texture_size(50, 50);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
@@ -1143,7 +1143,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
   }
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
   ASSERT_TRUE(d3d11_device);
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
   d3d11_device.As(&dxgi_device);
@@ -2030,7 +2030,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   constexpr gfx::Size texture_size(50, 50);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+      GetDirectCompositionD3D11Device();
   ASSERT_TRUE(d3d11_device);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
