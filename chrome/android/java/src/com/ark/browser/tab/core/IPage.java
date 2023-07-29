@@ -24,6 +24,7 @@ public interface IPage {
 
     int getId();
 
+    @NonNull
     PageInfo getPageInfo();
 
     default IPage clone(int newTabId) {
@@ -58,7 +59,6 @@ public interface IPage {
     }
 
     default void savePageInfo() {
-
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
@@ -100,30 +100,6 @@ public interface IPage {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-//        ThreadPool.executeIO(() -> {
-//            PageInfo pageInfo = getPageInfo();
-//            File pagesDir = ArkTabDao.getPagesDir(pageInfo.tabInfoId);
-//            File file = new File(pagesDir, String.valueOf(pageInfo.pageId));
-//            try (DataOutputStream os = new DataOutputStream(
-//                    new BufferedOutputStream(new FileOutputStream(file)))) {
-//                int version = 1;
-//                os.writeInt(version);
-//                os.writeInt(pageInfo.pageId);
-//                os.writeInt(pageInfo.tabInfoId);
-//                os.writeBoolean(pageInfo.isIncognito);
-//                os.writeBoolean(pageInfo.fromMerge);
-//                os.writeInt(pageInfo.getThemeColor());
-//                os.writeInt(pageInfo.originalIndex);
-//                os.writeUTF(pageInfo.getUrl());
-//                os.writeUTF(pageInfo.getTitle());
-//                os.flush();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
     }
 
 }

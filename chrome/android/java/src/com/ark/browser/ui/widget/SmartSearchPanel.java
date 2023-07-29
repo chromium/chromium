@@ -25,10 +25,10 @@ import com.ark.browser.tab.EmptyTabInfoObserver;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
+import com.ark.browser.tab.core.ChildTab;
+import com.ark.browser.tab.core.GroupTab;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.tab.core.TabGroupImpl;
-import com.ark.browser.tab.core.TabImpl;
 import com.ark.browser.utils.ArkLogger;
 import com.google.android.material.tabs.TabLayout;
 
@@ -645,7 +645,7 @@ public class SmartSearchPanel extends FrameLayout {
             TabInfo info = TabInfo.create(-103, -1, true);
             info.setLocked(true);
             info.setIncognito(false);
-            mFloatTabGroup = new TabGroupImpl("group_smart_search", info) {
+            mFloatTabGroup = new GroupTab("group_smart_search", info) {
 
                 @Override
                 public void onIndexChanged(int index) {
@@ -697,7 +697,7 @@ public class SmartSearchPanel extends FrameLayout {
     private int openNewTab(LoadUrlParams loadUrlParams) {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl());
         TabInfo newTabInfo = TabInfo.create(mFloatTabGroup.getId());
-        ITab newTab = new TabImpl(newTabInfo) {
+        ChildTab newTab = new ChildTab(newTabInfo) {
 
             @Override
             public void saveTabInfo() {

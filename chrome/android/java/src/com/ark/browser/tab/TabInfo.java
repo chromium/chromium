@@ -38,6 +38,10 @@ public class TabInfo {
 
     protected String title;
 
+    private TabInfo() {
+
+    }
+
     public int getId() {
         return tabId;
     }
@@ -58,11 +62,11 @@ public class TabInfo {
         this.createTime = createTime;
     }
 
-    public int getPageIndex() {
+    public int getChildIndex() {
         return childIndex;
     }
 
-    public void setPageIndex(int pageIndex) {
+    public void setChildIndex(int pageIndex) {
         this.childIndex = pageIndex;
     }
 
@@ -178,19 +182,6 @@ public class TabInfo {
         return create(parentId, false, createTime);
     }
 
-//    public static TabInfo create(String parentId, long createTime) {
-//        return create(parentId, false, createTime);
-//    }
-
-//    public static TabInfo create(String groupId, boolean isGroup, long createTime) {
-//        TabInfo manager = new TabInfo();
-//        manager.createTime = createTime;
-//        manager.tabId = ArkIdManager.generateTabId();
-//        manager.mParentId = groupId;
-//        manager.mIsGroup = isGroup;
-//        return manager;
-//    }
-
     public static TabInfo create(int parentId, boolean isGroup, long createTime) {
         TabInfo manager = new TabInfo();
         manager.createTime = createTime;
@@ -211,7 +202,7 @@ public class TabInfo {
                 ", isLocked=" + isLocked +
                 ", incognito=" + incognito +
                 ", accessTime=" + accessTime +
-                ", parentId=" + fromId +
+                ", parentId=" + mParentId +
                 ", mLaunchType=" + mLaunchType +
                 '}';
     }

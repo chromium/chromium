@@ -21,6 +21,7 @@ import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.IPageGroup;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment;
 import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
@@ -111,14 +112,14 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
         } else {
             id = savedInstanceState.getInt(KEY_ID);
         }
-        mTab = TabGroupManager.getTabById(id);
-        if (mTab == null) {
-            popThis();
-        } else {
+        mTab = TabGroupManager.findTabById(id);
+        if (mTab instanceof IPageGroup) {
             list.clear();
-            list.addAll(mTab.getPages());
+            list.addAll(((IPageGroup) mTab).getPages());
             Collections.reverse(list);
             mSelectPosition = list.size() - mTab.getTabInfo().getIndex() - 1;
+        } else {
+            popThis();
         }
     }
 
@@ -221,7 +222,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
 
                     PageActionDialog popup = PageActionDialog.newInstance(pageInfo.getId());
                     popup.setOnSelectListener((fragment, position1, text) -> {
-                        switch(position1){
+                        switch (position1) {
                             case 0:
                                 LoadUrlEvent.post(pageInfo, true, false);
                                 break;
@@ -315,7 +316,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
 
             @Override
             public void onAnimationStart(Animator animation) {
-                mTab.selectPage(list.get(mSelectPosition));
+                TabGroupManager.selectTab(mTab, list.get(mSelectPosition));
             }
 
             @Override

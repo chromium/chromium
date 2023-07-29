@@ -1,16 +1,13 @@
 package com.ark.browser.tab.core;
 
+import android.graphics.Color;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.core.util.AtomicFile;
 
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
-import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
@@ -22,18 +19,26 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadUrlParams;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
-public interface ITabGroup {
+public interface ITabGroup extends ITab {
 
     void init();
 
-    int getId();
+//    @Override
+//    default String getTitle() {
+//        PageInfo pageInfo = getCurrentPageInfo();
+//        if (pageInfo == null) {
+//            return "";
+//        }
+//        return pageInfo.getTitle();
+//    }
+
+    @Override
+    default int getThemeColor() {
+        // TODO white or black
+        return Color.WHITE;
+    }
 
     boolean isIncognito();
 
@@ -47,20 +52,11 @@ public interface ITabGroup {
 
     ObserverList<TabInfoObserver> getObservers();
 
-    default int indexOf(Tab page) {
-        for (int i = 0; i < getCount(); i++) {
-            ITab tab = getTabAt(i);
-            if (tab.hasPage(page)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     default int indexOf(ITab targetTab) {
+        int id = targetTab.getId();
         for (int i = 0; i < getCount(); i++) {
             ITab tab = getTabAt(i);
-            if (tab.getId() == targetTab.getId()) {
+            if (tab.getId() == id) {
                 return i;
             }
         }
@@ -85,21 +81,11 @@ public interface ITabGroup {
         return tab.getTabInfo();
     }
 
-    default PageInfo getPageInfoById(int pageId) {
+    @Override
+    default IPage findPageById(int pageId) {
         for (int i = 0; i < getCount(); i++) {
             ITab tab = getTabAt(i);
-            PageInfo pageInfo = tab.getPageInfoById(pageId);
-            if (pageInfo != null) {
-                return pageInfo;
-            }
-        }
-        return null;
-    }
-
-    default IPage getPageById(int pageId) {
-        for (int i = 0; i < getCount(); i++) {
-            ITab tab = getTabAt(i);
-            IPage page = tab.getPageById(pageId);
+            IPage page = tab.findPageById(pageId);
             if (page != null) {
                 return page;
             }
@@ -107,7 +93,7 @@ public interface ITabGroup {
         return null;
     }
 
-    default ITab getTabById(int tabId) {
+    default ITab findTabById(int tabId) {
         ITab tabInfo = getCurrentTab();
         if (tabInfo != null && tabId == tabInfo.getId()) {
             return tabInfo;
@@ -121,22 +107,7 @@ public interface ITabGroup {
         return null;
     }
 
-//    default int getTabIndexById(int pageId) {
-//        IPage page = getCurrentPage();
-//        if (page != null && page.getId() == pageId) {
-//            return getIndex();
-//        }
-//
-//        for (int i = 0; i < getCount(); i++) {
-//            ITab tab = getTabAt(i);
-//            if (tab.hasPage(pageId)) {
-//                return i;
-//            }
-//        }
-//
-//        return ITab.INVALID_TAB_INDEX;
-//    }
-
+    @Override
     default IPage getCurrentPage() {
         ITab tab = getCurrentTab();
         ArkLogger.d(getClass().getSimpleName(), "getCurrentPage tab=" + tab);
@@ -147,6 +118,7 @@ public interface ITabGroup {
         return tab.getCurrentPage();
     }
 
+    @Override
     default PageInfo getCurrentPageInfo() {
         ITab tab = getCurrentTab();
         if (tab == null) {
@@ -164,21 +136,12 @@ public interface ITabGroup {
     }
 
 
-
     default void selectTabAt(int position) {
         ITab tab = getTabAt(position);
         if (tab == null) {
             return;
         }
         selectTab(tab, tab.getCurrentPage());
-    }
-
-    default boolean selectPrePage(ITab tab) {
-        return selectTab(tab, tab.getPreviousPage());
-    }
-
-    default boolean selectNextPage(ITab tab) {
-        return selectTab(tab, tab.getNextPage());
     }
 
     default void selectTab(ITab tab) {
@@ -194,7 +157,7 @@ public interface ITabGroup {
 
         ITab currentTab = getCurrentTab();
         if (currentTab != null) {
-            lastId = currentTab.getCurrentPageId();
+            lastId = currentTab.getTabInfo().getCurrentPageId();
             ArkLogger.e(this, "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
             if (lastId != page.getId()) {
                 Tab lastTab = TabCacheManager.getInstance().findTab(lastId);
@@ -218,7 +181,8 @@ public interface ITabGroup {
         ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(iTab.getId());
 
         if (tab == null) {
-            tab = ArkTabImpl.create(iTab, null);
+            // TODO not cast to TabImpl
+            tab = ArkTabImpl.create((ChildTab) iTab, null);
         }
 
         iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
@@ -236,8 +200,6 @@ public interface ITabGroup {
             ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastId);
         }
-
-
 
 
 //        int finalLastId = lastId;
@@ -288,7 +250,6 @@ public interface ITabGroup {
     }
 
 
-
     default boolean canGoBack() {
         final TabInfo tabInfo = getCurrentTabInfo();
         if (tabInfo != null) {
@@ -332,14 +293,12 @@ public interface ITabGroup {
     }
 
 
-
-
     ITab cloneTab(ITab tabInfo);
 
     void openNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
     default void openNewTab(PageInfo pageInfo, LoadUrlParams loadUrlParams, @TabLaunchType int type) {
-        ITab currentTab = pageInfo == null ? null : getTabById(pageInfo.getTabId());
+        ITab currentTab = pageInfo == null ? null : findTabById(pageInfo.getTabId());
         openNewTab(currentTab, loadUrlParams, type);
     }
 
@@ -348,55 +307,6 @@ public interface ITabGroup {
     }
 
     boolean moveToNewTab(IPage page);
-
-    default boolean removeTab(Tab tab) {
-        ArkLogger.d(getClass().getSimpleName(), "closeTab tab=" + tab);
-        if (tab == null) {
-            return false;
-        }
-        ITab iTab = getTabById(tab.getId());
-        if (iTab == null) {
-            return false;
-        }
-
-        IPage nextPage;
-        nextPage = iTab.getPreviousPage();
-        if (nextPage == null) {
-            nextPage = iTab.getNextPage();
-        }
-
-        boolean result;
-
-        ArkLogger.d(getClass().getSimpleName(), "closeTab manager.getPageSize()=" + iTab.getPageSize());
-        if (nextPage == null) {
-            result = getTabList().remove(iTab);
-            int index = getIndex();
-            if (getTabList().isEmpty()) {
-                index = ITab.INVALID_TAB_INDEX;
-            } else if (index > getTabList().size() - 1) {
-                index = getTabList().size() - 1;
-            }
-            onIndexChanged(index);
-            if (result) {
-                removeTab(iTab);
-            }
-        } else {
-            selectTab(iTab, nextPage);
-
-            int i = iTab.indexOfPage(tab.getId());
-
-            ArkLogger.d(getClass().getSimpleName(), "closeTabInStack i=" + i);
-            if (i >= 0) {
-                IPage page = iTab.getPages().remove(i);
-                page.remove();
-                result = true;
-            } else {
-                result = false;
-            }
-
-        }
-        return result;
-    }
 
     default boolean closeTab(ITab tab) {
         if (tab == null) {
@@ -465,53 +375,5 @@ public interface ITabGroup {
     void destroy();
 
     void onIndexChanged(int index);
-
-    void saveGroupFile();
-
-//    default void saveGroupFile() {
-//        ArkLogger.e(this, "saveGroupFile");
-//        try {
-//            if (getTabList().isEmpty()) {
-//                return;
-//            }
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            DataOutputStream os = new DataOutputStream(stream);
-//            int version = 1;
-//            os.writeInt(version);
-//            os.writeInt(getIndex());
-//            os.writeBoolean(isIncognito());
-//            os.writeInt(getCount());
-//            for (ITab tab : getTabList()) {
-//                os.writeInt(tab.getId());
-//            }
-//            os.close();
-//
-//            ArkLogger.e(this, "saveGroupFile index=" + getIndex()
-//                    + " count=" + getCount() + " tabList=" + getTabList());
-//
-//            byte[] bytes = stream.toByteArray();
-//
-//            ThreadPool.executeIO(new Runnable() {
-//                @Override
-//                public void run() {
-//                    File groupFile = ArkTabDao.getGroupFile(getId());
-//                    AtomicFile file = new AtomicFile(groupFile);
-//                    FileOutputStream fos = null;
-//                    try {
-//                        fos = file.startWrite();
-//                        fos.write(bytes, 0, bytes.length);
-//                        file.finishWrite(fos);
-//                        ArkLogger.e(this, "saveGroupFile success!");
-//                    } catch (IOException e) {
-//                        if (fos != null) file.failWrite(fos);
-//                        ArkLogger.e(this, "saveGroupFile Failed to write file: " + file.getBaseFile().getAbsolutePath());
-//                    }
-//                }
-//            });
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 }

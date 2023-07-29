@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabGroupManager;
+import com.ark.browser.tab.core.IPage;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.toast.ZToast;
 
@@ -44,7 +45,10 @@ public class PageActionDialog extends AttachListDialogFragment<String>
         } else {
             pageId = savedInstanceState.getInt(KEY_ID, Tab.INVALID_PAGE_ID);
         }
-        mPageInfo = TabGroupManager.findPageInfoById(pageId);
+        IPage page = TabGroupManager.findPageById(pageId);
+        if (page != null) {
+            mPageInfo = page.getPageInfo();
+        }
         if (mPageInfo == null) {
             popThis();
         }
@@ -72,7 +76,7 @@ public class PageActionDialog extends AttachListDialogFragment<String>
 
     @Override
     public void onSelect(AttachListDialogFragment<String> fragment, int position, String text) {
-        switch(position){
+        switch (position) {
             case 0:
                 LoadUrlEvent.post(mPageInfo, true, false);
                 break;

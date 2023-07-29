@@ -28,6 +28,7 @@ import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.core.ChildTab;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -175,12 +176,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     private final TabWebContentsDelegateAndroidImpl mWebContentsDelegate = new TabWebContentsDelegateAndroidImpl(this, null);
 
-    private final ITab mTab;
+    private final ChildTab mTab;
     private final TabInfo mTabInfo;
 
     @UiThread
     @NonNull
-    public static ArkTabImpl create(@NonNull ITab iTab, ITab parentTab) {
+    public static ArkTabImpl create(@NonNull ChildTab iTab, ITab parentTab) {
         long start = System.currentTimeMillis();
         ArkLogger.e(TAG, "createLivePage tabInfo=" + iTab.getTabInfo());
         ArkTabImpl tab = new ArkTabImpl(iTab);
@@ -203,7 +204,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         updateInteractableState();
     }
 
-    private ArkTabImpl(ITab tab) {
+    private ArkTabImpl(ChildTab tab) {
 
         mTab = tab;
         mTabInfo = tab.getTabInfo();
@@ -230,8 +231,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Initializes {@link Tab} with {@code webContents}.  If {@code webContents} is {@code null}
      * a new {@link WebContents} will be created for this {@link Tab}.
      *
-     * @param parent          The tab that caused this tab to be opened.
-     * @param creationState   State in which the tab is created.
+     * @param parent        The tab that caused this tab to be opened.
+     * @param creationState State in which the tab is created.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void initialize(ITab parent) {
@@ -334,10 +335,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private void updateSelectPage(IPage page) {
-        if (mTab.getCurrentPageId() == page.getId()) {
+        if (mTabInfo.getCurrentPageId() == page.getId()) {
             return;
         }
-        getTabInfo().setPageIndex(mTab.indexOfPage(page.getId()));
+        getTabInfo().setChildIndex(mTab.indexOfPage(page.getId()));
         getTabInfo().setCurrentPageId(page.getId());
         mTab.saveTabInfo();
     }
@@ -720,7 +721,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         if (mArkWeb != null && mArkWeb.canGoBack()) {
             return true;
         }
-        return mTabInfo.getPageIndex() > 0;
+        return mTabInfo.getChildIndex() > 0;
     }
 
     @Override
@@ -728,7 +729,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         if (mArkWeb != null && mArkWeb.canGoForward()) {
             return true;
         }
-        return mTabInfo.getPageIndex() < mTab.getPageSize() - 1;
+        if (mTab != null) {
+            return mTabInfo.getChildIndex() < mTab.getPageSize() - 1;
+        }
+        return false;
     }
 
     @Override
@@ -737,9 +741,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             mArkWeb.goBack();
             return;
         }
-        IPage page = mTab.getPreviousPage();
+        IPage page = mTab.getPageAt(mTabInfo.getChildIndex() - 1);
+        ;
         if (page != null) {
-            ThreadPool.postOnUIThread(() -> mTab.selectPage(page));
+            ThreadPool.postOnUIThread(() -> TabGroupManager.selectTab(mTab, page));
         }
     }
 
@@ -749,9 +754,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             mArkWeb.goForward();
             return;
         }
-        IPage page = mTab.getNextPage();
+        IPage page = mTab.getPageAt(mTabInfo.getChildIndex() + 1);
         if (page != null) {
-            ThreadPool.postOnUIThread(() -> mTab.selectPage(page));
+            ThreadPool.postOnUIThread(() -> TabGroupManager.selectTab(mTab, page));
         }
     }
 

@@ -20,6 +20,8 @@ import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.TabGroupManager;
+import com.ark.browser.tab.core.IPageGroup;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.toast.ZToast;
 
@@ -359,7 +361,11 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public boolean canMoveTab() {
-        return mTab.getTab().getPages().size() > 1;
+        ITab iTab = mTab.getTab();
+        if (iTab instanceof IPageGroup) {
+            return ((IPageGroup) iTab).getPages().size() > 1;
+        }
+        return false;
     }
 
     @Override

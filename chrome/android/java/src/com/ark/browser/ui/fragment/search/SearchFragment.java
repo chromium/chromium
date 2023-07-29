@@ -306,7 +306,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
                 ivThumbnail.setImageBitmap(null);
             }
             holder.setOnItemClickListener(v -> {
-                tab.selectTab();
+                TabGroupManager.selectTab(tab, tab.getCurrentPage());
                 dismiss();
                 BundleEvent.with(BundleEvent.ACTION_GO_TO_BROWSER).post();
             });

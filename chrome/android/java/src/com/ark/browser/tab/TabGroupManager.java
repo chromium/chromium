@@ -6,10 +6,10 @@ import androidx.annotation.NonNull;
 
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.tab.core.GroupTab;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.tab.core.TabGroupImpl;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class TabGroupManager {
@@ -55,33 +53,19 @@ public class TabGroupManager {
     public static ITabGroup getTabGroup(int tabId) {
         // TODO getTabGroups()
         for (ITabGroup group : getTabGroups()) {
-            if (group.getTabById(tabId) != null) {
+            if (group.findTabById(tabId) != null) {
                 return group;
             }
         }
         return null;
     }
 
-    public static ITab getTabById(int tabId) {
+    public static ITab findTabById(int tabId) {
         // TODO getTabGroups()
         for (ITabGroup group : getTabGroups()) {
-            ITab tab = group.getTabById(tabId);
+            ITab tab = group.findTabById(tabId);
             if (tab != null) {
                 return tab;
-            }
-        }
-        return null;
-    }
-
-
-    public static PageInfo findPageInfoById(int id) {
-        if (id != Tab.INVALID_PAGE_ID) {
-            // TODO getTabGroups()
-            for (ITabGroup group : getTabGroups()) {
-                PageInfo pageInfo = group.getPageInfoById(id);
-                if (pageInfo != null) {
-                    return pageInfo;
-                }
             }
         }
         return null;
@@ -91,7 +75,7 @@ public class TabGroupManager {
         if (pageId != Tab.INVALID_PAGE_ID) {
             // TODO getTabGroups()
             for (ITabGroup group : getTabGroups()) {
-                IPage page = group.getPageById(pageId);
+                IPage page = group.findPageById(pageId);
                 if (page != null) {
                     return page;
                 }
@@ -113,12 +97,20 @@ public class TabGroupManager {
     }
 
     public static boolean moveToNewTab(PageInfo page) {
-        ITab tab = getTabById(page.getTabId());
+        ITab tab = findTabById(page.getTabId());
         if (tab != null) {
             ITabGroup group = getTabGroupById(tab.getParentId());
-            return group.moveToNewTab(group.getPageById(page.getId()));
+            return group.moveToNewTab(group.findPageById(page.getId()));
         }
         return false;
+    }
+
+    public static boolean selectTab(ITab iTab, IPage page) {
+        ITabGroup tabGroup = getTabGroupById(iTab.getParentId());
+        if (tabGroup == null) {
+            return false;
+        }
+        return tabGroup.selectTab(iTab, page);
     }
 
 
@@ -284,12 +276,12 @@ public class TabGroupManager {
             TabInfo info = TabInfo.create(ID_DEFAULT, -1, true);
             info.setLocked(true);
             info.setIncognito(false);
-            tabGroups.add(new TabGroupImpl(GROUP_DEFAULT, info));
+            tabGroups.add(new GroupTab(GROUP_DEFAULT, info));
 
             info = TabInfo.create(ID_INCOGNITO, -1, true);
             info.setLocked(true);
             info.setIncognito(true);
-            tabGroups.add(new TabGroupImpl(GROUP_INCOGNITO, info));
+            tabGroups.add(new GroupTab(GROUP_INCOGNITO, info));
         }
 
         public static GlobalSelector getInstance() {

@@ -50,7 +50,7 @@ public class TabActionDialog extends AttachListDialogFragment<String>
         } else {
             id = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
         }
-        mTab = TabGroupManager.getTabById(id);
+        mTab = TabGroupManager.findTabById(id);
         if (mTab == null) {
             popThis();
         }
