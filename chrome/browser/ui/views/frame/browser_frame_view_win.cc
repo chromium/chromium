@@ -33,7 +33,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win.h"
@@ -71,8 +70,6 @@ base::win::ScopedHICON CreateHICONFromSkBitmapSizedTo(
 constexpr int kMaximizedLeftMargin = 2;
 
 constexpr int kIconTitleSpacing = 5;
-
-constexpr int kCR23TopAreaHeight = 6;
 
 }  // namespace
 
@@ -409,7 +406,7 @@ void BrowserFrameViewWin::ResetWindowControls() {
 void BrowserFrameViewWin::OnThemeChanged() {
   BrowserNonClientFrameView::OnThemeChanged();
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
-    SetSystemMicaTitlebarAttributes();
+    SetSystemTitlebarAttributes();
   }
 }
 
@@ -520,7 +517,7 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
 
 int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
   if (frame()->IsFullscreen() && !restored) {
-    return features::IsChromeRefresh2023() ? kCR23TopAreaHeight : 0;
+    return 0;
   }
 
   const bool maximized = IsMaximized() && !restored;
@@ -532,10 +529,6 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
     top += maximized ? TitlebarMaximizedVisualHeight()
                      : caption_button_container_->GetPreferredSize().height();
     return top;
-  }
-
-  if (features::IsChromeRefresh2023()) {
-    return top + kCR23TopAreaHeight;
   }
 
   // In maximized mode, we do not add any additional thickness to the grab
@@ -639,24 +632,26 @@ bool BrowserFrameViewWin::ShouldShowWindowTitle(TitlebarType type) const {
 
 void BrowserFrameViewWin::TabletModeChanged() {
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
-    SetSystemMicaTitlebarAttributes();
+    SetSystemTitlebarAttributes();
   }
 }
 
-void BrowserFrameViewWin::SetSystemMicaTitlebarAttributes() {
-  CHECK(SystemTitlebarCanUseMicaMaterial());
+void BrowserFrameViewWin::SetSystemTitlebarAttributes() {
+  if (SystemTitlebarSupportsDarkMode()) {
+    const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
+    DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+                          DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
+                          sizeof(dark_titlebar_enabled));
+  }
 
-  const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
-  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
-                        DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
-                        sizeof(dark_titlebar_enabled));
-
-  const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
-      browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
-                                           : DWMSBT_MAINWINDOW;
-  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
-                        DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
-                        sizeof(dwm_backdrop_type));
+  if (ShouldBrowserUseMicaTitlebar(browser_view())) {
+    const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
+        browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
+                                             : DWMSBT_MAINWINDOW;
+    DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+                          DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
+                          sizeof(dwm_backdrop_type));
+  }
 }
 
 SkColor BrowserFrameViewWin::GetTitlebarColor() const {
