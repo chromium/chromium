@@ -69,11 +69,6 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   bool IsMaximized() const;
   bool IsWebUITabStrip() const;
 
-  // Returns the y coordinate for the top of the frame, which in maximized mode
-  // is the top of the screen and in restored mode is 1 pixel below the top of
-  // the window to leave room for the visual border that Windows draws.
-  int WindowTopY() const;
-
   // Visual height of the titlebar when the window is maximized (i.e. excluding
   // the area above the top of the screen).
   int TitlebarMaximizedVisualHeight() const;
@@ -130,6 +125,11 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // don't have tabs.
   int TitlebarHeight(bool restored) const;
 
+  // Returns the y coordinate for the top of the frame, which in maximized mode
+  // is the top of the screen and in restored mode is 1 pixel below the top of
+  // the window to leave room for the visual border that Windows draws.
+  int WindowTopY() const;
+
   // Returns the width of the caption buttons region, including visible
   // system-drawn and custom-drawn caption buttons.
   int CaptionButtonsRegionWidth() const;
@@ -145,8 +145,8 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // Called when the device enters or exits tablet mode.
   void TabletModeChanged();
 
-  // Sets DWM attributes for rendering the system-drawn Mica titlebar.
-  void SetSystemMicaTitlebarAttributes();
+  // Sets DWM attributes for rendering the system-drawn titlebar.
+  void SetSystemTitlebarAttributes();
 
   // Paint various sub-components of this view.
   void PaintTitlebar(gfx::Canvas* canvas) const;
