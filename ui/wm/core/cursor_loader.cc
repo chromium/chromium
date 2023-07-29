@@ -124,7 +124,7 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
   // into account the different ways of creating an invisible cursor.
   scoped_refptr<ui::PlatformCursor> cursor;
   if (use_platform_cursors_ || type == CursorType::kNone) {
-    cursor = factory_->GetDefaultCursor(type);
+    cursor = factory_->GetDefaultCursor(type, scale_);
     if (cursor)
       return cursor;
     // The cursor may fail to load if the cursor theme has just been reset.

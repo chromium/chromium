@@ -40,10 +40,28 @@ WaylandCursorFactory::ThemeData::ThemeData() = default;
 
 WaylandCursorFactory::ThemeData::~ThemeData() = default;
 
+void WaylandCursorFactory::ThemeData::AddThemeLoadedCallback(
+    Callback callback) {
+  if (loaded_) {
+    std::move(callback).Run(theme_.get());
+  } else {
+    callbacks_.push_back(std::move(callback));
+  }
+}
+
+void WaylandCursorFactory::ThemeData::SetLoadedTheme(wl_cursor_theme* theme) {
+  DCHECK(!loaded_);
+  theme_.reset(theme);
+  loaded_ = true;
+  for (auto& callback : callbacks_) {
+    std::move(callback).Run(theme);
+  }
+  callbacks_.clear();
+}
+
 WaylandCursorFactory::WaylandCursorFactory(WaylandConnection* connection)
-    : connection_(connection) {
+    : connection_(connection), theme_cache_(std::make_unique<ThemeCache>()) {
   connection_->SetCursorBufferListener(this);
-  ReloadThemeCursors();
 }
 
 WaylandCursorFactory::~WaylandCursorFactory() {
@@ -61,7 +79,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateImageCursor(
     const SkBitmap& bitmap,
     const gfx::Point& hotspot,
     float scale) {
-  SetDeviceScaleFactor(scale);
+  scoped_refptr<BitmapCursor> bitmap_cursor;
 
   // Wayland only supports cursor images with an integer scale, so we
   // must upscale cursor images with non-integer scales to integer scaled
@@ -75,11 +93,13 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateImageCursor(
         std::round(bitmap.height() * (rounded_scale / scale)));
     const gfx::Point scaled_hotspot =
         gfx::ScaleToRoundedPoint(hotspot, rounded_scale / scale);
-    return base::MakeRefCounted<BitmapCursor>(type, scaled_bitmap,
-                                              scaled_hotspot, rounded_scale);
+    bitmap_cursor = base::MakeRefCounted<BitmapCursor>(
+        type, scaled_bitmap, scaled_hotspot, rounded_scale);
   } else {
-    return BitmapCursorFactory::CreateImageCursor(type, bitmap, hotspot, scale);
+    bitmap_cursor =
+        base::MakeRefCounted<BitmapCursor>(type, bitmap, hotspot, scale);
   }
+  return base::MakeRefCounted<WaylandAsyncCursor>(bitmap_cursor);
 }
 
 scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateAnimatedCursor(
@@ -88,7 +108,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateAnimatedCursor(
     const gfx::Point& hotspot,
     float scale,
     base::TimeDelta frame_delay) {
-  SetDeviceScaleFactor(scale);
+  scoped_refptr<BitmapCursor> bitmap_cursor;
 
   float rounded_scale = GetRoundedScale(scale);
   if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon() &&
@@ -102,60 +122,66 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateAnimatedCursor(
     }
     const gfx::Point scaled_hotspot =
         gfx::ScaleToRoundedPoint(hotspot, rounded_scale / scale);
-    return base::MakeRefCounted<BitmapCursor>(
+    bitmap_cursor = base::MakeRefCounted<BitmapCursor>(
         type, scaled_bitmaps, scaled_hotspot, frame_delay, rounded_scale);
   } else {
-    return BitmapCursorFactory::CreateAnimatedCursor(type, bitmaps, hotspot,
-                                                     scale, frame_delay);
+    bitmap_cursor = base::MakeRefCounted<BitmapCursor>(type, bitmaps, hotspot,
+                                                       frame_delay, scale);
   }
+  return base::MakeRefCounted<WaylandAsyncCursor>(bitmap_cursor);
+}
+
+void WaylandCursorFactory::FinishCursorLoad(
+    scoped_refptr<WaylandAsyncCursor> cursor,
+    mojom::CursorType type,
+    float scale,
+    wl_cursor_theme* loaded_theme) {
+  for (const auto& name : CursorNamesFromType(type)) {
+    wl_cursor* theme_cursor = GetCursorFromTheme(loaded_theme, name);
+    if (theme_cursor) {
+      cursor->SetBitmapCursor(base::MakeRefCounted<BitmapCursor>(
+          type, theme_cursor,
+          connection_->surface_submission_in_pixel_coordinates()
+              ? scale
+              : GetRoundedScale(scale)));
+      return;
+    }
+  }
+  // Fall back to the BitmapCursorFactory implementation if the theme has't
+  // provided a shape for the requested type.
+  cursor->SetBitmapCursor(BitmapCursor::FromPlatformCursor(
+      BitmapCursorFactory::GetDefaultCursor(type)));
 }
 
 scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
     mojom::CursorType type) {
-  auto* const current_theme = GetCurrentTheme();
+  // Fall back to 1x for scale if not provided.
+  return GetDefaultCursor(type, 1.0);
+}
+
+scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
+    mojom::CursorType type,
+    float scale) {
+  auto* const current_theme = GetThemeForScale(scale);
   DCHECK(current_theme);
   if (current_theme->cache.count(type) == 0) {
-    for (const std::string& name : CursorNamesFromType(type)) {
-      wl_cursor* cursor = GetCursorFromTheme(name);
-      if (!cursor)
-        continue;
-
-      current_theme->cache[type] = base::MakeRefCounted<BitmapCursor>(
-          type, cursor,
-          connection_->surface_submission_in_pixel_coordinates()
-              ? scale_
-              : GetRoundedScale(scale_));
-      break;
-    }
+    auto async_cursor = base::MakeRefCounted<WaylandAsyncCursor>();
+    current_theme->cache[type] = async_cursor;
+    current_theme->AddThemeLoadedCallback(
+        base::BindOnce(&WaylandCursorFactory::FinishCursorLoad,
+                       weak_factory_.GetWeakPtr(), async_cursor, type, scale));
   }
-  if (current_theme->cache.count(type) == 0)
-    current_theme->cache[type] = nullptr;
-
-  // Fall back to the base class implementation if the theme has't provided
-  // a shape for the requested type.
-  if (current_theme->cache[type].get() == nullptr)
-    return BitmapCursorFactory::GetDefaultCursor(type);
-
   return current_theme->cache[type];
 }
 
-void WaylandCursorFactory::SetDeviceScaleFactor(float scale) {
-  if (scale_ == scale)
-    return;
-
-  scale_ = scale;
-  MaybeLoadThemeCursors();
-}
-
-wl_cursor* WaylandCursorFactory::GetCursorFromTheme(const std::string& name) {
-  auto* const current_theme = GetCurrentTheme();
-  DCHECK(current_theme);
-
+wl_cursor* WaylandCursorFactory::GetCursorFromTheme(wl_cursor_theme* theme,
+                                                    const std::string& name) {
   // Possible if the theme could not be loaded.
-  if (!current_theme->theme)
+  if (!theme) {
     return nullptr;
+  }
 
-  return wl_cursor_theme_get_cursor(current_theme->theme.get(), name.c_str());
+  return wl_cursor_theme_get_cursor(theme, name.c_str());
 }
 
 void WaylandCursorFactory::OnCursorThemeNameChanged(
@@ -166,15 +192,11 @@ void WaylandCursorFactory::OnCursorThemeNameChanged(
     return;
 
   name_ = cursor_theme_name;
-  ReloadThemeCursors();
+  FlushThemeCache(false);
 }
 
 void WaylandCursorFactory::OnCursorThemeSizeChanged(int cursor_theme_size) {
-  if (size_ == cursor_theme_size)
-    return;
-
   size_ = cursor_theme_size;
-  MaybeLoadThemeCursors();
 }
 
 void WaylandCursorFactory::OnCursorBufferAttached(wl_cursor* cursor_data) {
@@ -184,85 +206,87 @@ void WaylandCursorFactory::OnCursorBufferAttached(wl_cursor* cursor_data) {
     unloaded_theme_.reset();
     return;
   }
-  auto* const current_theme = GetCurrentTheme();
-  DCHECK(current_theme);
-  for (auto& item : current_theme->cache) {
-    if (item.second->platform_data() == cursor_data) {
-      // The cursor that has been just attached is from the current theme.  That
-      // means that the theme that has been unloaded earlier can now be deleted.
-      unloaded_theme_.reset();
-      return;
+  for (auto& item : *theme_cache_) {
+    for (auto& subitem : item.second->cache) {
+      auto bitmap_cursor = subitem.second->bitmap_cursor();
+      if (bitmap_cursor && bitmap_cursor->platform_data() == cursor_data) {
+        // The cursor that has been just attached is from the current theme.
+        // That means that the theme that has been unloaded earlier can now be
+        // deleted.
+        unloaded_theme_.reset();
+        return;
+      }
     }
   }
 }
 
-WaylandCursorFactory::ThemeData* WaylandCursorFactory::GetCurrentTheme() {
-  auto theme_it = theme_cache_.find(GetCacheKey());
-  if (theme_it == theme_cache_.end())
-    return nullptr;
-  return theme_it->second.get();
-}
+WaylandCursorFactory::ThemeData* WaylandCursorFactory::GetThemeForScale(
+    float scale) {
+  auto item = theme_cache_->find(GetScaledSize(scale));
+  if (item != theme_cache_->end()) {
+    return item->second.get();
+  }
 
-void WaylandCursorFactory::ReloadThemeCursors() {
-  auto* const current_theme = GetCurrentTheme();
-  // If we use any cursor when the theme is reloaded, the one can be only from
-  // the theme that is currently used.  As soon as we take the next cursor from
-  // the next theme, we will destroy it (see OnCursorBufferAttached() above).
-  // If more than one theme has been changed but we didn't take any cursors from
-  // them (which is possible if the user played with settings but didn't switch
-  // into Chromium), we don't need to track them all.
-  if (!unloaded_theme_ && current_theme && current_theme->cache.size() > 0)
-    unloaded_theme_ = std::move(theme_cache_[GetCacheKey()]);
-
-  theme_cache_.clear();
-
-  MaybeLoadThemeCursors();
-}
-
-void WaylandCursorFactory::MaybeLoadThemeCursors() {
-  if (GetCurrentTheme())
-    return;
-
-  theme_cache_[GetCacheKey()] = std::make_unique<ThemeData>();
+  theme_cache_->insert_or_assign(GetScaledSize(scale),
+                                 std::make_unique<ThemeData>());
+  auto* cache_entry = theme_cache_->at(GetScaledSize(scale)).get();
 
   // The task environment is normally not created in tests.  As this factory is
   // part of the platform that is created always and early, posting a task to
   // the pool would fail in many many tests.
   if (!base::ThreadPoolInstance::Get())
-    return;
+    return cache_entry;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(wl_cursor_theme_load,
-                     name_.empty() ? nullptr : name_.c_str(), GetCacheKey(),
-                     connection_->buffer_factory()->shm()),
-      base::BindOnce(&WaylandCursorFactory::OnThemeLoaded,
-                     weak_factory_.GetWeakPtr(), name_, size_));
+      base::BindOnce(
+          wl_cursor_theme_load, name_.empty() ? nullptr : name_.c_str(),
+          GetScaledSize(scale), connection_->buffer_factory()->shm()),
+      base::BindOnce(&WaylandCursorFactory::FinishThemeLoad,
+                     weak_factory_.GetWeakPtr(), cache_entry->GetWeakPtr()));
+
+  return cache_entry;
 }
 
-int WaylandCursorFactory::GetCacheKey() const {
+void WaylandCursorFactory::FlushThemeCache(bool force) {
+  size_t num_cursor_objects = 0;
+  for (auto& entry : *theme_cache_) {
+    num_cursor_objects += entry.second->cache.size();
+  }
+  if (force) {
+    unloaded_theme_.reset();
+  } else {
+    // If we use any cursor when the theme is reloaded, the one can be only from
+    // the theme that is currently used.  As soon as we take the next cursor
+    // from the next theme, we will destroy it (see OnCursorBufferAttached()
+    // above). If more than one theme has been changed but we didn't take any
+    // cursors from them (which is possible if the user played with settings but
+    // didn't switch into Chromium), we don't need to track them all.
+    if (!unloaded_theme_ && num_cursor_objects != 0) {
+      unloaded_theme_ = std::move(theme_cache_);
+    }
+  }
+  theme_cache_ = std::make_unique<ThemeCache>();
+}
+
+int WaylandCursorFactory::GetScaledSize(float scale) const {
   if (connection_->surface_submission_in_pixel_coordinates()) {
     // When surface submission in pixel coordinates is enabled, true
     // fractional scaled cursors can be represented without scaling, so
     // load the cursor with its proper size.
-    return base::checked_cast<int>(size_ * scale_);
+    return base::checked_cast<int>(size_ * scale);
   } else {
-    return base::checked_cast<int>(size_ * GetRoundedScale(scale_));
+    return base::checked_cast<int>(size_ * GetRoundedScale(scale));
   }
 }
 
-void WaylandCursorFactory::OnThemeLoaded(const std::string& loaded_theme_name,
-                                         int loaded_theme_size,
-                                         wl_cursor_theme* loaded_theme) {
-  if (loaded_theme_name == name_) {
-    // wl_cursor_theme_load() can return nullptr.  We don't check that here but
-    // have to be cautious when we actually load the shape.
-    auto* const current_theme = GetCurrentTheme();
-    DCHECK(current_theme);
-    current_theme->theme.reset(loaded_theme);
-    current_theme->cache.clear();
-    NotifyObserversOnThemeLoaded();
+void WaylandCursorFactory::FinishThemeLoad(base::WeakPtr<ThemeData> cache_entry,
+                                           wl_cursor_theme* loaded_theme) {
+  // wl_cursor_theme_load() can return nullptr.  We don't check that here but
+  // have to be cautious when we actually load the shape.
+  if (cache_entry) {
+    cache_entry->SetLoadedTheme(loaded_theme);
   }
 }
 

@@ -233,9 +233,17 @@ void WaylandWindow::OnPointerFocusChanged(bool focused) {
   // Whenever the window gets the pointer focus back, the cursor shape must be
   // updated. Otherwise, it is invalidated upon wl_pointer::leave and is not
   // restored by the Wayland compositor.
+#if BUILDFLAG(IS_LINUX)
+  if (focused && async_cursor_) {
+    async_cursor_->AddCursorLoadedCallback(
+        base::BindOnce(&WaylandWindow::OnCursorLoaded,
+                       weak_ptr_factory_.GetWeakPtr(), async_cursor_));
+  }
+#else
   if (focused && cursor_) {
     UpdateCursorShape(cursor_);
   }
+#endif
 }
 
 bool WaylandWindow::HasPointerFocus() const {
@@ -482,11 +490,24 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
 void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   DCHECK(platform_cursor);
 
+#if BUILDFLAG(IS_LINUX)
+  auto async_cursor = WaylandAsyncCursor::FromPlatformCursor(platform_cursor);
+
+  if (async_cursor_ == async_cursor) {
+    return;
+  }
+
+  async_cursor_ = async_cursor;
+  async_cursor->AddCursorLoadedCallback(
+      base::BindOnce(&WaylandWindow::OnCursorLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), async_cursor));
+#else
   if (cursor_ == platform_cursor) {
     return;
   }
 
   UpdateCursorShape(BitmapCursor::FromPlatformCursor(platform_cursor));
+#endif
 }
 
 void WaylandWindow::MoveCursorTo(const gfx::Point& location) {
@@ -1049,10 +1070,19 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
         cursor->bitmaps(), hotspot_in_dips,
         std::ceil(cursor->cursor_image_scale_factor()));
   }
-  // The new cursor needs to be stored last to avoid deleting the old cursor
-  // while it's still in use.
+#if !BUILDFLAG(IS_LINUX)
   cursor_ = cursor;
+#endif
 }
+
+#if BUILDFLAG(IS_LINUX)
+void WaylandWindow::OnCursorLoaded(scoped_refptr<WaylandAsyncCursor> cursor,
+                                   scoped_refptr<BitmapCursor> bitmap_cursor) {
+  if (HasPointerFocus() && async_cursor_ == cursor && bitmap_cursor) {
+    UpdateCursorShape(bitmap_cursor);
+  }
+}
+#endif
 
 void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   // For values not specified in pending_configure_state_, use the latest

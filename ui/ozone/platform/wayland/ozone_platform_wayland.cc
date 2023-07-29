@@ -66,10 +66,10 @@
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/ozone/common/bitmap_cursor_factory.h"
-#else
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
+#else
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -246,10 +246,10 @@ class OzonePlatformWayland : public OzonePlatform,
 
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
         connection_->buffer_manager_host());
-#if BUILDFLAG(IS_CHROMEOS)
-    cursor_factory_ = std::make_unique<BitmapCursorFactory>();
-#else
+#if BUILDFLAG(IS_LINUX)
     cursor_factory_ = std::make_unique<WaylandCursorFactory>(connection_.get());
+#else
+    cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 #endif
     input_controller_ = CreateWaylandInputController(connection_.get());
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());

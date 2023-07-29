@@ -56,6 +56,13 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorFactory {
   virtual scoped_refptr<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type);
 
+  // Return the default cursor of the specified type. When a default cursor is
+  // not available, nullptr is returned. This is implemented by backends that
+  // manages its own cursor images and therefore needs to know the appropriate
+  // scale to load them at.
+  virtual scoped_refptr<PlatformCursor> GetDefaultCursor(mojom::CursorType type,
+                                                         float scale);
+
   // Return the {bitmaps, hotspot} for the default cursor of the specified
   // `type`. If that cursor is not available or the extraction of the data
   // fails, return `absl::nullopt`.

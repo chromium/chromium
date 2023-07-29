@@ -61,6 +61,15 @@ scoped_refptr<PlatformCursor> CursorFactory::GetDefaultCursor(
   return nullptr;
 }
 
+scoped_refptr<PlatformCursor> CursorFactory::GetDefaultCursor(
+    mojom::CursorType type,
+    float scale) {
+  // If the backend doesn't provide its own implementation of
+  // GetDefaultCursor(type, scale) it is assumed that the cursor objects
+  // returned by GetDefaultCursor(type) are independent of display scale values.
+  return GetDefaultCursor(type);
+}
+
 scoped_refptr<PlatformCursor> CursorFactory::CreateImageCursor(
     mojom::CursorType type,
     const SkBitmap& bitmap,

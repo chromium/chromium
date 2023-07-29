@@ -344,8 +344,10 @@ source_set("wayland") {
     ]
   }
 
-  if (!is_chromeos) {
+  if (is_linux) {
     sources += [
+      "host/wayland_async_cursor.cc",
+      "host/wayland_async_cursor.h",
       "host/wayland_cursor_factory.cc",
       "host/wayland_cursor_factory.h",
     ]
@@ -637,7 +639,7 @@ source_set("wayland_unittests") {
     "//ui/platform_window/wm",
   ]
 
-  if (!is_chromeos) {
+  if (is_linux) {
     sources += [ "host/wayland_cursor_factory_unittest.cc" ]
   }
 
