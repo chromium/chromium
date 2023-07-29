@@ -329,7 +329,10 @@ class TestImporter(object):
                 'upload', '-f', '--send-mail', '--enable-auto-submit',
                 '--reviewers', RUBBER_STAMPER_BOT
             ])
-            timeout = 1800
+            # Some internal builders (e.g., `win-branded-compile-rel`) only run
+            # on CQ+2 without reusing a CQ+1 build. Use a 1h timeout as well to
+            # accommodate them.
+            timeout = 3600
 
         if self.git_cl.wait_for_closed_status(timeout_seconds=timeout):
             _log.info('Update completed.')
