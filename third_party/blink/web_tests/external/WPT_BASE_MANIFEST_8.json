@@ -276074,11 +276074,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "3257f34596ac75bef401d11c14a62c11f2bda513",
+     "466869ec597521fcc8ea5bc33ccae30a9cb5430f",
      []
     ],
     "mtime.json": [
-     "9cb8597f3a895d38ab8d28fd7aa9eb5c049bf443",
+     "8331faddafba3aec37f3234bc74eb6aa8e14410a",
      []
     ]
    },
@@ -318165,7 +318165,7 @@
       []
      ],
      "parsing-expected.txt": [
-      "d661380249807ff570578c1d9254f1a55551e95c",
+      "30fbe1b9ae7e30a7ab95806374ac49a66b9a8056",
       []
      ],
      "parsing.html.ini": [
@@ -353311,7 +353311,7 @@
       []
      ],
      "fenced-frame-no-preflight-required.tentative.https.window-expected.txt": [
-      "b7540e37b1cf04e8ab9a98b5500a2ea4d2754314",
+      "16f49124ccb5b2b5797510bcd3eda428f0223570",
       []
      ],
      "fenced-frame-no-preflight-required.tentative.https.window.js.ini": [
@@ -353323,23 +353323,23 @@
       []
      ],
      "fenced-frame-subresource-fetch.tentative.https.window_include=baseline-expected.txt": [
-      "e1f3eb6392b64d8dbd5062205623fe192a50fc86",
+      "11fbae2530f919822290f9a457ece1f4401ed433",
       []
      ],
      "fenced-frame-subresource-fetch.tentative.https.window_include=from-local-expected.txt": [
-      "18bb619fa288d1cce5eacbd93f2f1cd85fb13b10",
+      "27021f2d3e61bdc098f13a35344e6c9bf4beaa0b",
       []
      ],
      "fenced-frame-subresource-fetch.tentative.https.window_include=from-private-expected.txt": [
-      "7ab69d7ea481d2c9804fd92e9a4d982e26a7408b",
+      "38179e7ffa5fe68fd3e00ec6ae0e692d750156f8",
       []
      ],
      "fenced-frame-subresource-fetch.tentative.https.window_include=from-public-expected.txt": [
-      "a256c961774e104bada3b3a2fde4cb50c12a967d",
+      "5b785123b1cf22d5178cd0e17ca458e58232be9d",
       []
      ],
      "fenced-frame.tentative.https.window-expected.txt": [
-      "d38e4b1dcd54150e4a7a2601c9687b97efe978f0",
+      "a9ba41e185ba47c22d16dd2e6c68ac0180134c56",
       []
      ],
      "fenced-frame.tentative.https.window.js.ini": [
@@ -353440,7 +353440,7 @@
        []
       ],
       "fenced-frame-local-network-access.https.html": [
-       "860371f22396477f1af1a8d89aecf04893977222",
+       "98f118432e0ee13b8b089977bd3c640343005497",
        []
       ],
       "fenced-frame-local-network-access.https.html.headers": [
@@ -353492,7 +353492,7 @@
        []
       ],
       "support.sub.js": [
-       "f72a57a2c35d2555fb5452c9cbb0bcb777251765",
+       "27d733d8b7f4c09df054982a42779520fbbd0d7d",
        []
       ],
       "worker-blob-fetcher.html": [
@@ -360926,6 +360926,14 @@
         "fb3b5b830d345d2aa858e41673e08f99977baf08",
         []
        ],
+       "2d.text.drawing.style.letterSpacing.measure.html.ini": [
+        "1652d8b6f1917209fd3f52580c2bcc9e20b8d243",
+        []
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.html.ini": [
+        "fd07f5deb5c60686cc22c737d0f40f5c6eee4979",
+        []
+       ],
        "2d.text.measure.baselines-expected.txt": [
         "fb1758f8793dc1b179dae4ff48a5be96710410c5",
         []
@@ -361382,24 +361390,24 @@
         "fb3b5b830d345d2aa858e41673e08f99977baf08",
         []
        ],
-       "2d.text.drawing.style.letterSpacing.measure.relative.html.ini": [
-        "9cb3a0a857bf2f20ad742761b47a914b5006355e",
+       "2d.text.drawing.style.letterSpacing.measure.html.ini": [
+        "1652d8b6f1917209fd3f52580c2bcc9e20b8d243",
         []
        ],
-       "2d.text.drawing.style.letterSpacing.measure.relative.worker.js.ini": [
-        "eca264d68019cdeb1da890cd55637c1db6629d3c",
+       "2d.text.drawing.style.letterSpacing.measure.worker.js.ini": [
+        "52a9e8789992074cee536a7deba5f8706c562ae6",
         []
        ],
-       "2d.text.drawing.style.wordSpacing.measure.relative.html.ini": [
-        "7a3721c0c12f0a8a3f7857688c1403b5068eb458",
+       "2d.text.drawing.style.wordSpacing.measure.html.ini": [
+        "fd07f5deb5c60686cc22c737d0f40f5c6eee4979",
         []
        ],
-       "2d.text.drawing.style.wordSpacing.measure.relative.worker.js.ini": [
-        "2142c1260983365f0a7bf1f3370b8164e24be26d",
+       "2d.text.drawing.style.wordSpacing.measure.worker.js.ini": [
+        "123196748618fcc9b75e4e80d2c269f76dfcb0c3",
         []
        ],
        "2d.text.measure.baselines-expected.txt": [
-        "abf66d88fd20ef2fe5c43d5b9c8859069a27a87e",
+        "fb1758f8793dc1b179dae4ff48a5be96710410c5",
         []
        ],
        "2d.text.measure.baselines.html.ini": [
@@ -361407,7 +361415,7 @@
         []
        ],
        "2d.text.measure.baselines.worker-expected.txt": [
-        "abf66d88fd20ef2fe5c43d5b9c8859069a27a87e",
+        "fb1758f8793dc1b179dae4ff48a5be96710410c5",
         []
        ],
        "2d.text.measure.baselines.worker.js.ini": [
@@ -361530,7 +361538,7 @@
        []
       ],
       "name2dir.yaml": [
-       "d6871f285298ee7051634a3404ce3bb67c8546a2",
+       "a56fc2ff488e80b78c2c40649869e08bf384fd68",
        []
       ],
       "templates": {
@@ -361551,7 +361559,7 @@
         []
        ],
        "testharness_element.html": [
-        "b6bda2835e271e7cfa12bfc688e851caa9028644",
+        "56cde7936a944771ab5026de71191b45f529d559",
         []
        ],
        "testharness_offscreen.html": [
@@ -361573,10 +361581,6 @@
          "7b6f28f1713f19c601be350e7ffa12a76f08a42e",
          []
         ],
-        "text.yaml": [
-         "bdca739bd5bc8c4ab4b99754388cfed968c332ac",
-         []
-        ],
         "the-canvas-element.yaml": [
          "d6d8cd801b410909fdee32b7e0c9f903fda469de",
          []
@@ -361585,10 +361589,6 @@
        "offscreen": {
         "meta.yaml": [
          "bd761937f40e8796f6192e09741c1c2bccf3df2d",
-         []
-        ],
-        "text.yaml": [
-         "b66ae4f82068061bb3b635b2d387219f245708c5",
          []
         ],
         "the-offscreen-canvas.yaml": [
@@ -361652,6 +361652,10 @@
        ],
        "shadows.yaml": [
         "366ac0b6072dfaa9de58abbda84525d9fe1806d1",
+        []
+       ],
+       "text.yaml": [
+        "88a9a281c404434892c68ae1dbfdbc801bc552a4",
         []
        ],
        "the-canvas-state.yaml": [
@@ -412549,13 +412553,6 @@
       {}
      ]
     ],
-    "idbdatabase_deleteObjectStore2.htm": [
-     "91f118ef62a3bd009dc2e9961f0dc87f554ccafc",
-     [
-      null,
-      {}
-     ]
-    ],
     "idbdatabase_deleteObjectStore3.htm": [
      "3ddbe8ec62b42f24f54445ae3b3cec25793ee3a4",
      [
@@ -460657,7 +460654,7 @@
       ]
      ],
      "parsing.html": [
-      "2b0fd5cde9d3ca65d8d95b982a3087003d5175d1",
+      "ee9f35484469cb310fc3428bf0b99d60de92eceb",
       [
        null,
        {}
@@ -535790,91 +535787,91 @@
         ]
        ],
        "2d.text.draw.align.center.html": [
-        "6f54844b29ab66b0548d187c97a14e68e0096364",
+        "723ebe876455240c734515a06a7071d28c7fa72c",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.end.ltr.html": [
-        "39751e139ca33b48dae855932d0ec9048906fb81",
+        "d29da833cc5e1fbe6b1375ab11f16a06e20990c2",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.end.rtl.html": [
-        "86645a91742340a443e512a2c5b57f5a67d6c5ea",
+        "09a9658ac0939b65be536783aef7580fb1489f3d",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.left.html": [
-        "cd01f2588af9fd4537cba3656910e06e92538f13",
+        "dda5318fbfe071c03e4fda81de08ac458ea9785a",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.right.html": [
-        "64207b06e6e90744680fc219f32ea79f23d2cfa4",
+        "2b3217278ac9492f20289d331c7a5f563029a516",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.start.ltr.html": [
-        "abf8086e8c1b32185d7df65884dcf30a6cc338e1",
+        "8e14642fc29e8033b0915dacee76497dd157ff33",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.start.rtl.html": [
-        "8c5b819854c535f8f5c78dcbebe25b5ec72e33b1",
+        "fe1ccd113764c332e4e1c51bf4decff2b6362672",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.alphabetic.html": [
-        "0f70a475c81d22b9f622b7d6b103a14a3eed4205",
+        "a45db596d02ef8c5fc4751d836a7e62076ad6d7d",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.bottom.html": [
-        "706d7743af70db6bf4d84523df32a8c244aa021e",
+        "ed1bf002a10f8f1731261e46dcd85a38b3f6d33c",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.hanging.html": [
-        "7b3a0a9373bc87de31ce263c5bd6d2fc482ef43b",
+        "2f274b419930aed64a4cfca35d5fc15d857d1488",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.ideographic.html": [
-        "8da9aabb942a17ad8cd63534539be447f9f4d09e",
+        "8d6a12e2623df7ff55e1ec66b8498820b149ad94",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.middle.html": [
-        "ebc821c2bbd65f15f73bb043b508808761f2fbe7",
+        "5b021a5877d6dab669c242bb56399f8c9a0cc7a2",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.top.html": [
-        "21e505ec7952d2917f73e814f44d05e6929a7b3e",
+        "2011514d33b1ca473c9b990872cf7b574b92d507",
         [
          null,
          {}
@@ -535888,14 +535885,14 @@
         ]
        ],
        "2d.text.draw.fill.maxWidth.bound.html": [
-        "88dc1099238741923c335a6b39c1e3821a4ff7ce",
+        "c5f7dcf1194a835a6a0542370043adbc85f1f828",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fill.maxWidth.fontface.html": [
-        "ed241deeb222de3109b7ad53dbfed9a1e27f661c",
+        "7df555381512a65ee924cab16f569f82871f2d0e",
         [
          null,
          {}
@@ -535930,63 +535927,63 @@
         ]
        ],
        "2d.text.draw.fontface.html": [
-        "cb7d6984d1f9e4380506136661cec3ba7ec09426",
+        "c46ac2084e23af9938ee4d0b77641d4060f7cc22",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fontface.notinpage.html": [
-        "6c347399b2a53a00943ee6a74c0b83b343d44865",
+        "92891fb04fd4e6122889c7bc98d3f78c34b16ef7",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fontface.repeat.html": [
-        "d6d33a07681b4ab20ccff156c2918b2cc336aeee",
+        "d597540b97f13a27944d71022d13dad24b2ffc0c",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.basic.html": [
-        "2c5d4710134417be51c00ba1f8eb18957449407a",
+        "d4447402aa0b4541eba7ad6c7966d211069d7f3c",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.end.html": [
-        "aebdd0e87e5de65b7d7e8f28b19c6f623218aee3",
+        "5a14dbd5146a7c0862a4e529ac184ac0a0d85c22",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.nonspace.html": [
-        "00877c6a0b78b38caba641498a9c53727b2f0cc7",
+        "1fc4203b90a711c73434397635af605fc75e1cd1",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.other.html": [
-        "1400d7c5d83fb16b902a3dadc5539f72850885cf",
+        "ffc82929b530f82ebb57df89308cebce289d6203",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.space.html": [
-        "271c9bacaddb028db307f3326296c54e5fcf9935",
+        "64c14d1a545df8b77317f6c4449bcff0d6790ba3",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.start.html": [
-        "6f1b81e533eb42fd950c8fc4251a0af40c7d1971",
+        "272432c3be73a409ed2903c65ed10dfca4e4bd68",
         [
          null,
          {}
@@ -536049,14 +536046,35 @@
         ]
        ],
        "2d.text.drawing.style.letterSpacing.change.font.html": [
-        "d7543e5d9a829c6c91e987f5e38872d1d04300a5",
+        "74774b5cce5eb6e34708af22d96ec592fa640e0a",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.letterSpacing.measure.html": [
-        "9b0ce16eafde2685eb145d326fc3531a354434ce",
+        "611ea0b2f0af6618786b6d78191d5d0a359fef6a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.measure.direction.html": [
+        "abe696b196cd2323be7e44d24d5d3b3b86117cce",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.measure.rtl.text.html": [
+        "e521b092363d332a38051e493c7ca24e5355a1e4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.measure.textAlign.html": [
+        "2d5a4718c5b1d06308113e4ce64913dbeefdab7b",
         [
          null,
          {}
@@ -536084,7 +536102,7 @@
         ]
        ],
        "2d.text.drawing.style.wordSpacing.measure.html": [
-        "d4f10032eb5b33d51d97f13383eaea174455e585",
+        "802646d03017cb718800b929bd0bdd8da73b2c9b",
         [
          null,
          {}
@@ -536140,7 +536158,7 @@
         ]
        ],
        "2d.text.font.parse.size.percentage.html": [
-        "519a1eb0b4a357c8b1e04bc642c00da25ec5f6b6",
+        "520231a804c368c095e8afd700853d30c922178d",
         [
          null,
          {}
@@ -536168,84 +536186,63 @@
         ]
        ],
        "2d.text.measure.actualBoundingBox.html": [
-        "2317493032182fd8e58a71eff64e796e7a05dfbb",
+        "d0672b23dcd3f4902f1ca6375a3be62560f96902",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.advances.html": [
-        "84d0af46b84052e3244404636d399bed5e07e369",
+        "84f04dd677f836bc1b747497071248ac811c1005",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.baselines.html": [
-        "f5d149239611a932da0785cabf6e18db653d1305",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.boundingBox.direction.html": [
-        "a00eb7eb9c056c9a994ce6ffaa73cee46eef6cc4",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.boundingBox.textAlign.html": [
-        "88f594c7c8f5a6518cf710f1d31a14fc130ba062",
+        "9d947eb361879bdc55306d2b9313fcf221769016",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.emHeights.html": [
-        "d1085abd6e7c16a2c9873ee866b7b86ce7c0f530",
+        "e39fc06c411b7ffb8cbca2bde5a89c990fa6494d",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.fontBoundingBox.ahem.html": [
-        "80cbabac8f23cb8a0c432c4c04a77ec9287cd67f",
+        "0044f4d1e7c76887df7b35d8c85cbfa8a8c5b50c",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.fontBoundingBox.html": [
-        "03f2dfc04203845edf0ca2fa451817da4ab09f2f",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.rtl.text.html": [
-        "a92d5cbd0be86825797744c734bec255c7c98e51",
+        "375910593aac5edf56af87be3609e39407650dc1",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.width.basic.html": [
-        "1d5502d8f0ee5d8d8d33a083e677e31a5d9bbfe3",
+        "36dc468b4e90585b616e684d3a3667c24ab94752",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.width.empty.html": [
-        "ce9e80b3381e8f5cc3b3d2e88473aeea62f6b05d",
+        "39ddad9789e8ad4c3fca8337cfcb33847171083d",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.width.space.html": [
-        "1cf93c032d43b8e6c9bafd46c231dc494e408b95",
+        "7fd8095e28257fa53657cd72a7367ffcf613a100",
         [
          null,
          {}
@@ -547449,182 +547446,182 @@
         ]
        ],
        "2d.text.draw.align.center.html": [
-        "f855930f302eea94a15ebf42938ff3a8827aa84f",
+        "0f7a2f4a0278b2b9b4de0e44646f0758244d2c1d",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.center.worker.js": [
-        "a24b839d2f894ed36ae14fe3d7f35c3541bd152e",
+        "44f093cdac24cc03a0ae89ceaa9fc6c4eb4e8c03",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.center.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.end.ltr.html": [
-        "ae69277be74fa630e7848637a7c13af388252a30",
+        "a9e6dfe9010091bbda4e29f2aa886c9c25dd9017",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.end.ltr.worker.js": [
-        "64dc013b444968039b7d64d957df09d0f9e5ea7a",
+        "4bd0f5a31476cf8f916bf1f149a924d42a88600a",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.end.ltr.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.end.rtl.html": [
-        "cabc85e55943f8db87978def88018130daf274fb",
+        "b0d0b66a9cadb9ab9a2cfc5c4046a8219757b3d1",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.end.rtl.worker.js": [
-        "b177d0e9617061cb685304e0543ab34cdc097069",
+        "b3e62d85380676013421fe5224ca8bb6c37148a8",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.end.rtl.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.left.html": [
-        "0166b9b309db445e62a5c2ca2f0899ba964af59e",
+        "563596d7571390dbd60e7a3b5c77758ff0f114c0",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.left.worker.js": [
-        "be8a4e188e255308dc073b00e172862e7b0d37cb",
+        "c7dc0bed42bd2568281eaae882fca5ee59318217",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.left.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.right.html": [
-        "011f6dccd9cbbbb12f3c58fbc063d09cd3e35b2e",
+        "227a8f981f94bfee62f74e25ed9bdecc86a7fc0a",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.right.worker.js": [
-        "43f00dcb95c6fe314ad74efe58257c3629becc58",
+        "58fe85e0b76bf04f81bf423558f646d7235aa293",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.right.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.start.ltr.html": [
-        "b15fb4c0481828c22c62f2ede4bc02832865d6af",
+        "bd7e69451d56cdb9c74952848cf8bfd1bf8e8bee",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.start.ltr.worker.js": [
-        "a3204938c0ab73278866ceec1eb74c196b01a94c",
+        "c0793d9af6fcbf30d4ee14fc794a89027300f248",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.start.ltr.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.start.rtl.html": [
-        "c8a0de20b67700721d720705051989ebe10bd519",
+        "cadc8a46449c3505316c246e504fd2fd2b86bc0a",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.start.rtl.worker.js": [
-        "ad03dd5c46928a7f613ce638e876446220e5d354",
+        "ed706c287a17fe90d1175c52d89e184adf13f9b3",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.start.rtl.worker.html",
          {}
         ]
        ],
        "2d.text.draw.baseline.alphabetic.html": [
-        "6cb550fde7a91b36f37c80774ac9c1d255c29ece",
+        "ff72b3219df446268d69eec81cae1f64636f604a",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.alphabetic.worker.js": [
-        "ed2c3f88b024e674a843416bfa33562fd42ee8ea",
+        "a98a5863d92ed6ebf634e78c424749b3a2aba0a1",
         [
          "html/canvas/offscreen/text/2d.text.draw.baseline.alphabetic.worker.html",
          {}
         ]
        ],
        "2d.text.draw.baseline.bottom.html": [
-        "398b4a9b0a569f3dad9c0dd4fb0d6b95483e6d41",
+        "f75a94243d6e6ef2b6a88fba31c0f1cbda7ddc66",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.bottom.worker.js": [
-        "727376391f7a5facf97a6d4939033934384e076e",
+        "30f60c574b92218df3cf89e5c030ed918ca2ae7c",
         [
          "html/canvas/offscreen/text/2d.text.draw.baseline.bottom.worker.html",
          {}
         ]
        ],
        "2d.text.draw.baseline.hanging.html": [
-        "0b8228343289fe59d269b4ccf63dc48b6008edda",
+        "a29db78385928aba00daa76a7892683de65fb589",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.hanging.worker.js": [
-        "fca74d6938184d68f11790b86fbdb0240cd11d8e",
+        "638506a2792c345b67fe378b072b5df2dc2985d4",
         [
          "html/canvas/offscreen/text/2d.text.draw.baseline.hanging.worker.html",
          {}
         ]
        ],
        "2d.text.draw.baseline.ideographic.html": [
-        "c996444b860a079402dbeb20344578c94877e58d",
+        "6bda1b4f307ad66f407882bfb53d5a8193bf4f00",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.ideographic.worker.js": [
-        "0ffa6fe299a0cb9a03778f0f32a57141074d0b7c",
+        "7c682fb5f145180d44aa995204495c750d68d359",
         [
          "html/canvas/offscreen/text/2d.text.draw.baseline.ideographic.worker.html",
          {}
         ]
        ],
        "2d.text.draw.baseline.middle.html": [
-        "911da8bef2c20759daa2361a5ac3b18f14c88632",
+        "b0186e6549ae2f0f9eb347e270a075f0e0c079bb",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.middle.worker.js": [
-        "eeb32eafc111ed289a6ddeccd58cde22ac7cc7f6",
+        "c373ab6c7293c6a38ddacf3f91fd3c314f9a2658",
         [
          "html/canvas/offscreen/text/2d.text.draw.baseline.middle.worker.html",
          {}
         ]
        ],
        "2d.text.draw.baseline.top.html": [
-        "56b5bb7d83cfecaab4385f2c9e1926d678c4e06b",
+        "163d27dec766f0371742b2a8797b96850098336d",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.baseline.top.worker.js": [
-        "d4341c6900abfb9c0578898cc1895dc0a7f0cd20",
+        "effc4418c34df245474b2b38b4ee68881af9412e",
         [
          "html/canvas/offscreen/text/2d.text.draw.baseline.top.worker.html",
          {}
@@ -547645,28 +547642,28 @@
         ]
        ],
        "2d.text.draw.fill.maxWidth.bound.html": [
-        "ae21607af95b8e5b3b2f253a8470188c371069d3",
+        "2dca5a75efac971873c46ffe709978435c24d2ed",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fill.maxWidth.bound.worker.js": [
-        "240bffeed41832c7fa626f97ff6abcb844a35dc6",
+        "adcb45faaae178c52897a5e2261082a4135987f2",
         [
          "html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.bound.worker.html",
          {}
         ]
        ],
        "2d.text.draw.fill.maxWidth.fontface.html": [
-        "259fdc738ac6918604f93fcc9f8b90a7baa0aa43",
+        "fa7277ed7ab7b92d72441d324a337a3a54abf22c",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fill.maxWidth.fontface.worker.js": [
-        "7aa3f470f5fa865b2b5b311143c757899a73eb41",
+        "8df519b7d1c473cadeb3577a1cf03c5971721f6a",
         [
          "html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.fontface.worker.html",
          {}
@@ -547701,27 +547698,17 @@
         ]
        ],
        "2d.text.draw.fill.maxWidth.zero.html": [
-        "0056d75126ce19e62c0eaa6d31a33f295835dab7",
+        "a789a84dbe793facb830cc55f374277cbd5cb6ca",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "2d.text.draw.fill.maxWidth.zero.worker.js": [
-        "65e67cce2c76dc4ec96a0d02441757b576192714",
+        "7dea281f98ae3ce6828abc01496ad575c2b2cdec",
         [
          "html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.worker.html",
-         {
-          "script_metadata": [
-           [
-            "timeout",
-            "long"
-           ]
-          ],
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "2d.text.draw.fill.unaffected.html": [
@@ -547739,126 +547726,126 @@
         ]
        ],
        "2d.text.draw.fontface.html": [
-        "f8d9085f55b0ca752f3901892a599f6aba3ece32",
+        "5d4f93b4f3511c9e8dc8c6d0fa5623d964365ebd",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fontface.notinpage.html": [
-        "da552d11cc9ee28f9e74fbd69375caf206b7b428",
+        "82c9b31e662032048565794a1a34941996264584",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fontface.notinpage.worker.js": [
-        "3bfb0be818826c1f1e515d33ac6f6f1e9181bd16",
+        "628cb395069c5ca0080c1f44c4e7d24dea13b144",
         [
          "html/canvas/offscreen/text/2d.text.draw.fontface.notinpage.worker.html",
          {}
         ]
        ],
        "2d.text.draw.fontface.repeat.html": [
-        "3a14462bcd6733037cff24752a65e0cd045fa536",
+        "1a6ba78fb9f16262ad9f4fff7b748746b2a8a7b0",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.fontface.repeat.worker.js": [
-        "f2210a3239e4d3b15c5da6105de48ff9649415f3",
+        "7567c095580e17e9607583563f54d02e7ca19bea",
         [
          "html/canvas/offscreen/text/2d.text.draw.fontface.repeat.worker.html",
          {}
         ]
        ],
        "2d.text.draw.fontface.worker.js": [
-        "1c7e727c5eac308d521cfc41d946df95b9c418d1",
+        "02257f0a06e48bddc0233f122a6a58c199205e39",
         [
          "html/canvas/offscreen/text/2d.text.draw.fontface.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.basic.html": [
-        "fa2fa86c36eb678b9b44d43e2fd84c7a1010a93f",
+        "55828fc72c76201c36141cce503e1d30eca11116",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.basic.worker.js": [
-        "75cacf9ca28e6250136a372b749cb23f11ec7caf",
+        "ef09925c551d62f5e1ff56c17ecad06b45aba06d",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.basic.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.collapse.end.html": [
-        "060f41bb976358c6f3fd7e21b9308af77216bc8d",
+        "f00a187e23e79c73b5ab0d6f6c15c87f6f9fb2c4",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.end.worker.js": [
-        "4c436006e3b13e773a39adcfdc9a954ed640839c",
+        "9a9afa1e74516b10aeca97392ea26d03fcd6175d",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.end.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.collapse.nonspace.html": [
-        "18289e51edf729da0d88e90e99443e9c2c9cf815",
+        "792abe4deb68e9e692dd56a03eaa381104bc807f",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.nonspace.worker.js": [
-        "2aa7f67a57583a50d72edc1d2e875e9f5b9a2e04",
+        "a12c2f9a48447991395f142cf94b1c1b04ffe0a0",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.nonspace.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.collapse.other.html": [
-        "41bca9bce6a017d2a434755b5a2e0f4adffb7592",
+        "83e89270f983e2dbddca259549e6c723d161de6e",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.other.worker.js": [
-        "a662955bec09d3eb5501b532c9dd60774d7b2e0e",
+        "bbf9e684be7dd11ab8f1781b54423352aa2fe5a5",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.other.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.collapse.space.html": [
-        "6a2b305b7474c2f5bf6f5d93080466d4c45d572b",
+        "5fc96ffd7d6685f18bf7c81b8988bdbd5b0798c8",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.space.worker.js": [
-        "b1e8d8e872d4f068c9542c237c10755724eee3b0",
+        "e5ab7b67f4a4e878b1110f3860299f1068859b55",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.space.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.collapse.start.html": [
-        "cadb1c3b60a1879094484de320924d7b819a1665",
+        "c07994360d630026f9dd0d45b25b138c4440790a",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.start.worker.js": [
-        "d7ae819eea3de72f3d29ce240e8f29985d5d3d58",
+        "20fec7801f821bcce9dbf9640ed7a2b6e836b7cf",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.start.worker.html",
          {}
@@ -547963,14 +547950,14 @@
         ]
        ],
        "2d.text.drawing.style.invalid.spacing.html": [
-        "3a99352295c720bbd7f13bcd8ed999c99bc8c1e9",
+        "d16b175ad6716e97cfc52225aaebfd226293dc37",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.invalid.spacing.worker.js": [
-        "271858500e96537b156c09e2cc6205f29c8cc156",
+        "06207b2c6c688d1dfd38dd245cccd502d3221318",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.invalid.spacing.worker.html",
          {}
@@ -547990,31 +547977,17 @@
          {}
         ]
        ],
-       "2d.text.drawing.style.letterSpacing.measure.absolute.html": [
-        "46cd55a5cafd9246b15d14b9080e6973af4304b7",
+       "2d.text.drawing.style.letterSpacing.measure.html": [
+        "63169486badaa1bb44253141073fabf5343c52d7",
         [
          null,
          {}
         ]
        ],
-       "2d.text.drawing.style.letterSpacing.measure.absolute.worker.js": [
-        "8c82aebb3c076a0e9f76097857017f8080427229",
+       "2d.text.drawing.style.letterSpacing.measure.worker.js": [
+        "585166fca01f0b9398d000499bcbcd1d6d7a35d8",
         [
-         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.absolute.worker.html",
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.letterSpacing.measure.relative.html": [
-        "296c929dc31a4bc3df86f6c9c52f62544e5701b5",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.letterSpacing.measure.relative.worker.js": [
-        "d6afa71abaf6a731037c6cbab1b2aa102a6fa033",
-        [
-         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.relative.worker.html",
+         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.worker.html",
          {}
         ]
        ],
@@ -548061,28 +548034,28 @@
         ]
        ],
        "2d.text.drawing.style.nonfinite.spacing.html": [
-        "ca50f13a69bf40f7a6a9115f799a39758e58cb38",
+        "48a592b839a73647af11e3ca830b8851ca436172",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.nonfinite.spacing.worker.js": [
-        "801b8b5c73bb20c631766efb535ae3651ba296d6",
+        "4cf20b28c078d83864c40b0c23bc90120ee713d9",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.nonfinite.spacing.worker.html",
          {}
         ]
        ],
        "2d.text.drawing.style.textRendering.settings.html": [
-        "3fc07d547886caac218c9cac27d9a2c835d466ea",
+        "52b34deaab91bc90888dd6e36cb7cc09f305bbcb",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.textRendering.settings.worker.js": [
-        "c37f2e342f20d68898a656b97e96891b52aaa0b9",
+        "a4381963f7b14d40140160b5c9676d84f6c68a7a",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.textRendering.settings.worker.html",
          {}
@@ -548102,31 +548075,17 @@
          {}
         ]
        ],
-       "2d.text.drawing.style.wordSpacing.measure.absolute.html": [
-        "458f12b008fb8a3350a09dbbf5d33c67627470ae",
+       "2d.text.drawing.style.wordSpacing.measure.html": [
+        "69bf6e979c60473f05aa9697016748b80c453f8c",
         [
          null,
          {}
         ]
        ],
-       "2d.text.drawing.style.wordSpacing.measure.absolute.worker.js": [
-        "36d1fefc23d2a2ea16444032eecb48c55c7f4ade",
+       "2d.text.drawing.style.wordSpacing.measure.worker.js": [
+        "d899b8c32824718aae9010c458cd8c03d72a6a9a",
         [
-         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.measure.absolute.worker.html",
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.wordSpacing.measure.relative.html": [
-        "11988ae157ddfe78da2e5458f09516210f2ef93c",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.wordSpacing.measure.relative.worker.js": [
-        "f5295e915e819824bd494f5a6268c0b7f6829165",
-        [
-         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.measure.relative.worker.html",
+         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.measure.worker.html",
          {}
         ]
        ],
@@ -548257,112 +548216,126 @@
         ]
        ],
        "2d.text.measure.actualBoundingBox.html": [
-        "96b37702c48a68cd4bd552492b253189579d281c",
+        "105efc07948a4de537689bb8bbc7ee1548f187bf",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.actualBoundingBox.worker.js": [
-        "b16ed415ca82cca9c9eec989b99b253c11a38bf2",
+        "c3d18ff8786d188fc95ad80d46acbda264d35eb4",
         [
          "html/canvas/offscreen/text/2d.text.measure.actualBoundingBox.worker.html",
          {}
         ]
        ],
        "2d.text.measure.advances.html": [
-        "f3bedd41ef53b060ca6655a7a0214aacc5208c3f",
+        "2eec005cb84c42e2d9ccc7ada883a3aba0afb8f3",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.advances.worker.js": [
-        "55c744aaeb1bfeaee929e5ca98dd159818de7483",
+        "4b02f06f2dd5c9335848af2ea1a7cb004e786088",
         [
          "html/canvas/offscreen/text/2d.text.measure.advances.worker.html",
          {}
         ]
        ],
        "2d.text.measure.baselines.html": [
-        "09fd0f408223fae715cfea3cdb00000e76f9fcb2",
+        "9d0cc1268d5314a7a4e06de3c60421ea7ea1795c",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.baselines.worker.js": [
-        "c6288a569da0172d7c5f43bdb6c08d3a0e5b2256",
+        "ddb48f4fe02ee5de8c13fb65452b540f1287657f",
         [
          "html/canvas/offscreen/text/2d.text.measure.baselines.worker.html",
          {}
         ]
        ],
        "2d.text.measure.emHeights.html": [
-        "6a93bac04aa51f26c589c5d176862989a24fe2ae",
+        "a92ce58a00e7a1f0f928137fd9e218ad82f9f4f3",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.emHeights.worker.js": [
-        "1dd5f7ce48c08cca97743d9eb7ce2626e8100f9a",
+        "68db6de88d0f0d354bb9e63c3728daa8c15bab74",
         [
          "html/canvas/offscreen/text/2d.text.measure.emHeights.worker.html",
          {}
         ]
        ],
+       "2d.text.measure.fontBoundingBox.ahem.html": [
+        "cb8b0c558dbbcde67b7e96a9f1e11f6bad44014a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.fontBoundingBox.ahem.worker.js": [
+        "255bcd108aac7f3590ae641604741324bbf7a080",
+        [
+         "html/canvas/offscreen/text/2d.text.measure.fontBoundingBox.ahem.worker.html",
+         {}
+        ]
+       ],
        "2d.text.measure.fontBoundingBox.html": [
-        "f36bfd6f9d2bab3ef050af1e32d0acc0adf70ed8",
+        "e32780334262f971a5431ac97d3a1d27a016f4d4",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.fontBoundingBox.worker.js": [
-        "cfbfe77e6bdadf5fbf21ece0ea90eb0fc90fecdd",
+        "ca272760fd410f4397df1697181c0b24e2c98220",
         [
          "html/canvas/offscreen/text/2d.text.measure.fontBoundingBox.worker.html",
          {}
         ]
        ],
        "2d.text.measure.width.basic.html": [
-        "fa47879836be978c7b6a526325fc7e25de95cf85",
+        "fea19040833cbf381d5c3cbf77f8fea791603bed",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.width.basic.worker.js": [
-        "265843ae66e8c5c4575cdb4a9bbf9952561213fd",
+        "866ad8b3c5c096d1226c8d443c1b29b270d30a85",
         [
          "html/canvas/offscreen/text/2d.text.measure.width.basic.worker.html",
          {}
         ]
        ],
        "2d.text.measure.width.empty.html": [
-        "7d412008b04e2a430bc04d8c78dec113493c0901",
+        "11bd029433078ef1c328938c4667ae0802c2d68b",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.width.empty.worker.js": [
-        "68bba39e9d2762473b7a02907ccbfe3cb5cef04c",
+        "6fb89c5ba73aa957ef429452969cad8fb67f2b91",
         [
          "html/canvas/offscreen/text/2d.text.measure.width.empty.worker.html",
          {}
         ]
        ],
        "2d.text.measure.width.space.html": [
-        "6ef4255b834ec995cc2d4cfb8455912ce6014719",
+        "38d5084298a9041e08f428fb48d07a32af23a502",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.width.space.worker.js": [
-        "5ee4ee3ff74a000465a1d2fc4cc2f7bd8d931dec",
+        "d832feec5fc0fa9621a35d2d33a0bc864edc7ed0",
         [
          "html/canvas/offscreen/text/2d.text.measure.width.space.worker.html",
          {}

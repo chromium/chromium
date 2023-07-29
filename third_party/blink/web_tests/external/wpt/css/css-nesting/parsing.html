@@ -49,7 +49,7 @@
   testNestedSelector("> .bar", {expected:"& > .bar"});
   testNestedSelector("> & .bar", {expected: "& > & .bar"});
   testNestedSelector("+ .bar &", {expected:"& + .bar &"});
-  testNestedSelector("+ .bar, .foo, > .baz", {expected:"& + .bar, & .foo, & > .baz"});
+  testNestedSelector("+ .bar, .foo, > .baz", {expected:"& + .bar, .foo, & > .baz"});
 
   // implicit relative (and not)
   testNestedSelector(".foo");
