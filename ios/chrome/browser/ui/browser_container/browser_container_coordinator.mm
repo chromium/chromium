@@ -151,6 +151,7 @@
 - (void)stop {
   if (!self.started)
     return;
+  [self dismissAlertCoordinator];
   self.started = NO;
   [self.webContentAreaOverlayContainerCoordinator stop];
   [self.screenTimeCoordinator stop];
@@ -174,9 +175,13 @@
                                                    browser:self.browser
                                                      title:title
                                                    message:message];
+  __weak BrowserContainerCoordinator* weakSelf = self;
   for (EditMenuAlertDelegateAction* action in actions) {
     [self.alertCoordinator addItemWithTitle:action.title
-                                     action:action.action
+                                     action:^{
+                                       action.action();
+                                       [weakSelf dismissAlertCoordinator];
+                                     }
                                       style:action.style
                                   preferred:action.preferred
                                     enabled:YES];
@@ -202,6 +207,11 @@
   self.screenTimeCoordinator = screenTimeCoordinator;
 
 #endif
+}
+
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end
