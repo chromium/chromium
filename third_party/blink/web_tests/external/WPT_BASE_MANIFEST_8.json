@@ -276072,16 +276072,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "466869ec597521fcc8ea5bc33ccae30a9cb5430f",
-     []
-    ],
-    "mtime.json": [
-     "8331faddafba3aec37f3234bc74eb6aa8e14410a",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -283230,7 +283220,7 @@
      []
     ],
     "META.yml": [
-     "46da8a9fb654cc685e1ba928d2b7adef9c20d4c8",
+     "68c30024552f526e2d34f42eb22416ac3b585114",
      []
     ],
     "OWNERS": [
@@ -442887,7 +442877,7 @@
      ]
     ],
     "cookieStore_set_arguments.https.any.js": [
-     "aab964d014eca3b341c1e772c677d2af71d8756e",
+     "8ff66bf7772f22076360fda0b735a7894ed6ad8d",
      [
       "cookie-store/cookieStore_set_arguments.https.any.html",
       {
@@ -475702,7 +475692,7 @@
       ]
      ],
      "pseudo-get-computed-style.html": [
-      "20cb0c36165ef71adf8a966ca0f348f611a31147",
+      "268df4718e6dadcb53cc00bd5a53e826d87ca4b7",
       [
        null,
        {}
