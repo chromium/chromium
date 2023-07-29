@@ -12696,8 +12696,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithRelay",
+                    "params": {
+                        "SafeBrowsingHashRealTimeOverOhttpRelayUrl": "https://test.ohttp.endpoint.com/"
+                    },
                     "enable_features": [
+                        "SafeBrowsingHashRealTimeOverOhttp",
                         "SafeBrowsingLookupMechanismExperiment"
                     ]
                 }
