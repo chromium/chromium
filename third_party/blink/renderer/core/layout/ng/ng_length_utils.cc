@@ -199,22 +199,6 @@ LayoutUnit ResolveBlockLengthInternal(
   }
 }
 
-// logical_aspect_ratio is inline_size / block_size.
-LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
-                                     double logical_aspect_ratio,
-                                     EBoxSizing box_sizing,
-                                     LayoutUnit block_size) {
-  if (box_sizing == EBoxSizing::kBorderBox) {
-    return std::max(
-        border_padding.InlineSum(),
-        LayoutUnit::FromDoubleRound(block_size * logical_aspect_ratio));
-  }
-
-  return LayoutUnit::FromDoubleRound((block_size - border_padding.BlockSum()) *
-                                     logical_aspect_ratio) +
-         border_padding.InlineSum();
-}
-
 LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                      const LogicalSize& aspect_ratio,
                                      EBoxSizing box_sizing,
@@ -227,23 +211,6 @@ LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
   block_size -= border_padding.BlockSum();
   return block_size.MulDiv(aspect_ratio.inline_size, aspect_ratio.block_size) +
          border_padding.InlineSum();
-}
-
-// logical_aspect_ratio is block_size / inline_size.
-LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
-                                    double logical_aspect_ratio,
-                                    EBoxSizing box_sizing,
-                                    LayoutUnit inline_size) {
-  if (box_sizing == EBoxSizing::kBorderBox) {
-    return std::max(
-        border_padding.BlockSum(),
-        LayoutUnit::FromDoubleRound(inline_size * logical_aspect_ratio));
-  }
-
-  return LayoutUnit::FromDoubleRound(
-             (inline_size - border_padding.InlineSum()) *
-             logical_aspect_ratio) +
-         border_padding.BlockSum();
 }
 
 LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
