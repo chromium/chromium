@@ -3069,6 +3069,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-network-service-sandbox",
+    "owners": [ "mpdenton", "chrome-platform-security@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-neural-palm-adaptive-hold",
     "owners": [ "robsc", "napper", "alanlxl" ],
     "expiry_milestone": 130

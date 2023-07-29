@@ -66352,6 +66352,7 @@ from previous Chrome versions.
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
   <int value="1249861983" label="WebViewUseMetricsUploadService:disabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
+  <int value="1250398558" label="NetworkServiceSandbox:enabled"/>
   <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
   <int value="1251097300"
       label="CCTResizableSideSheetDiscoverFeedSettings:enabled"/>
@@ -66412,6 +66413,7 @@ from previous Chrome versions.
   <int value="1280208275" label="QueryTilesOnStart:disabled"/>
   <int value="1280614081" label="show-overdraw-feedback"/>
   <int value="1281379527" label="AmbientSubpageUIChange:enabled"/>
+  <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
   <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>

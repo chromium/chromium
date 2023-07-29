@@ -589,6 +589,7 @@ specific_include_rules = {
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
     "+pdf/pdf_features.h",
+    "+sandbox/policy/features.h",
   ],
   "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",

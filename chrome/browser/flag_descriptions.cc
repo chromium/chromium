@@ -7190,6 +7190,12 @@ const char kEnableProtoApiForClassifyUrlDescription[] =
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+const char kEnableNetworkServiceSandboxName[] =
+    "Enable the network service sandbox.";
+const char kEnableNetworkServiceSandboxDescription[] =
+    "Enables a sandbox around the network service to help mitigate exploits in "
+    "its process. This may cause crashes if Kerberos is used.";
+
 const char kUseOutOfProcessVideoDecodingName[] =
     "Use out-of-process video decoding (OOP-VD)";
 const char kUseOutOfProcessVideoDecodingDescription[] =

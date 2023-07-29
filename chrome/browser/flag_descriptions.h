@@ -4182,6 +4182,9 @@ extern const char kEnableProtoApiForClassifyUrlDescription[];
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+extern const char kEnableNetworkServiceSandboxName[];
+extern const char kEnableNetworkServiceSandboxDescription[];
+
 extern const char kUseOutOfProcessVideoDecodingName[];
 extern const char kUseOutOfProcessVideoDecodingDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
