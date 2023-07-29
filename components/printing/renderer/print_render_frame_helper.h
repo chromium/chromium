@@ -168,49 +168,49 @@ class PrintRenderFrameHelper
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
-  // CREATE_IN_PROGRESS signifies that the preview document is being rendered
+  // `kInProgress` signifies that the preview document is being rendered
   // asynchronously by a PrintRenderer.
-  enum CreatePreviewDocumentResult {
-    CREATE_SUCCESS = 0,
+  enum class CreatePreviewDocumentResult {
+    kSuccess = 0,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    CREATE_IN_PROGRESS = 1,
+    kInProgress = 1,
 #endif
-    CREATE_FAIL = 2,
+    kFail = 2,
   };
 
-  enum PrintingResult {
-    OK,
-    FAIL_PRINT_INIT,
-    FAIL_PRINT,
-    INVALID_PAGE_RANGE,
+  enum class PrintingResult {
+    kOk,
+    kFailPrintInit,
+    kFailPrint,
+    kInvalidPageRange,
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-    FAIL_PREVIEW,
-    INVALID_SETTINGS,
+    kFailPreview,
+    kInvalidSettings,
 #endif
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.  Updates need to be reflected in
   // enum PrintPreviewFailureType in tools/metrics/histograms/enums.xml.
-  enum PrintPreviewErrorBuckets {
-    PREVIEW_ERROR_NONE = 0,  // Always first.
-    // PREVIEW_ERROR_BAD_SETTING_DEPRECATED = 1,
-    PREVIEW_ERROR_METAFILE_COPY_FAILED = 2,
-    // PREVIEW_ERROR_METAFILE_INIT_FAILED_DEPRECATED = 3,
-    PREVIEW_ERROR_ZERO_PAGES = 4,
-    // PREVIEW_ERROR_MAC_DRAFT_METAFILE_INIT_FAILED_DEPRECATED = 5,
-    // PREVIEW_ERROR_PAGE_RENDERED_WITHOUT_METAFILE_DEPRECATED = 6,
-    // PREVIEW_ERROR_INVALID_PRINTER_SETTINGS_DEPRECATED = 7,
-    // PREVIEW_ERROR_METAFILE_CAPTURE_FAILED_DEPRECATED = 8,
-    PREVIEW_ERROR_EMPTY_PRINTER_SETTINGS = 9,
-    PREVIEW_ERROR_LAST_ENUM  // Always last.
+  enum class PrintPreviewErrorBuckets {
+    kNone = 0,  // Always first.
+    // kBadSettingDeprecated = 1,
+    kMetafileCopyFailed = 2,
+    // kMetafileInitFailedDeprecated = 3,
+    kZeroPages = 4,
+    // kMacDraftMetafileInitFailedDeprecated = 5,
+    // kPageRenderedWithoutMetafileDeprecated = 6,
+    // kInvalidPrinterSettingsDeprecated = 7,
+    // kMetafileCaptureFailedDeprecated = 8,
+    kEmptyPrinterSettings = 9,
+    kLastEnum  // Always last.
   };
 
-  enum PrintPreviewRequestType {
-    PRINT_PREVIEW_USER_INITIATED_ENTIRE_FRAME,
-    PRINT_PREVIEW_USER_INITIATED_SELECTION,
-    PRINT_PREVIEW_USER_INITIATED_CONTEXT_NODE,
-    PRINT_PREVIEW_SCRIPTED  // triggered by window.print().
+  enum class PrintPreviewRequestType {
+    kUserInitiatedEntireFrame,
+    kUserInitiatedSelection,
+    kUserInitiatedContextNode,
+    kScripted  // triggered by window.print().
   };
 
   enum class PrintRequestType {
@@ -529,7 +529,7 @@ class PrintRenderFrameHelper
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     void SetIsForArc(bool is_for_arc);
 #endif
-    void set_error(enum PrintPreviewErrorBuckets error);
+    void set_error(PrintPreviewErrorBuckets error);
 
     // Getters
     // Original frame for which preview was requested.
@@ -549,14 +549,13 @@ class PrintRenderFrameHelper
     size_t pages_rendered_count() const;
     MetafileSkia* metafile();
     ContentProxySet* typeface_content_info();
-    int last_error() const;
 
    private:
-    enum State {
-      UNINITIALIZED,  // Not ready to render.
-      INITIALIZED,    // Ready to render.
-      RENDERING,      // Rendering.
-      DONE            // Finished rendering.
+    enum class State {
+      kUninitialized,  // Not ready to render.
+      kInitialized,    // Ready to render.
+      kRendering,      // Rendering.
+      kDone            // Finished rendering.
     };
 
     // Reset some of the internal rendering context.
@@ -602,9 +601,9 @@ class PrintRenderFrameHelper
     base::TimeDelta document_render_time_;
     base::TimeTicks begin_time_;
 
-    enum PrintPreviewErrorBuckets error_ = PREVIEW_ERROR_NONE;
+    PrintPreviewErrorBuckets error_ = PrintPreviewErrorBuckets::kNone;
 
-    State state_ = UNINITIALIZED;
+    State state_ = State::kUninitialized;
   };
 
   class ScriptingThrottler {

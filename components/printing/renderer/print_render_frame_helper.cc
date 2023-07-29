@@ -1373,7 +1373,7 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     print_preview_context_.InitWithFrame(web_frame);
-    RequestPrintPreview(PRINT_PREVIEW_SCRIPTED,
+    RequestPrintPreview(PrintPreviewRequestType::kScripted,
                         /*already_notified_frame=*/false);
 #endif
   } else {
@@ -1557,8 +1557,9 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
     return;
   }
   print_preview_context_.InitWithFrame(frame);
-  RequestPrintPreview(has_selection ? PRINT_PREVIEW_USER_INITIATED_SELECTION
-                                    : PRINT_PREVIEW_USER_INITIATED_ENTIRE_FRAME,
+  RequestPrintPreview(has_selection
+                          ? PrintPreviewRequestType::kUserInitiatedSelection
+                          : PrintPreviewRequestType::kUserInitiatedEntireFrame,
                       /*already_notified_frame=*/false);
 }
 
@@ -1577,14 +1578,14 @@ void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
 #endif
 
   if (!print_preview_context_.source_frame()) {
-    DidFinishPrinting(FAIL_PREVIEW);
+    DidFinishPrinting(PrintingResult::kFailPreview);
     return;
   }
 
   if (!UpdatePrintSettings(print_preview_context_.source_frame(),
                            print_preview_context_.source_node(),
                            settings.Clone())) {
-    DidFinishPrinting(INVALID_SETTINGS);
+    DidFinishPrinting(PrintingResult::kInvalidSettings);
     return;
   }
 
@@ -1706,7 +1707,7 @@ void PrintRenderFrameHelper::PrintingDone(bool success) {
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
   notify_browser_of_print_failure_ = false;
-  DidFinishPrinting(success ? OK : FAIL_PRINT);
+  DidFinishPrinting(success ? PrintingResult::kOk : PrintingResult::kFailPrint);
 }
 
 void PrintRenderFrameHelper::ConnectToPdfRenderer() {
@@ -1795,15 +1796,15 @@ void PrintRenderFrameHelper::PrepareFrameForPreviewDocument() {
   reset_prep_frame_view_ = false;
 
   if (!print_pages_params_) {
-    print_preview_context_.set_error(PREVIEW_ERROR_ZERO_PAGES);
-    DidFinishPrinting(FAIL_PREVIEW);
+    print_preview_context_.set_error(PrintPreviewErrorBuckets::kZeroPages);
+    DidFinishPrinting(PrintingResult::kFailPreview);
     return;
   }
 
   if (CheckForCancel()) {
     // No need to set an error, since |notify_browser_of_print_failure_| is
     // false.
-    DidFinishPrinting(FAIL_PREVIEW);
+    DidFinishPrinting(PrintingResult::kFailPreview);
     return;
   }
 
@@ -1833,17 +1834,20 @@ void PrintRenderFrameHelper::OnFramePreparedForPreviewDocument() {
 
   CreatePreviewDocumentResult result = CreatePreviewDocument();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (result == CREATE_IN_PROGRESS)
+  if (result == CreatePreviewDocumentResult::kInProgress) {
     return;
+  }
 #endif
 
-  DidFinishPrinting(result == CREATE_SUCCESS ? OK : FAIL_PREVIEW);
+  DidFinishPrinting(result == CreatePreviewDocumentResult::kSuccess
+                        ? PrintingResult::kOk
+                        : PrintingResult::kFailPreview);
 }
 
 PrintRenderFrameHelper::CreatePreviewDocumentResult
 PrintRenderFrameHelper::CreatePreviewDocument() {
   if (!print_pages_params_ || CheckForCancel() || !preview_ui_)
-    return CREATE_FAIL;
+    return CreatePreviewDocumentResult::kFail;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (print_preview_context_.IsForArc()) {
@@ -1865,7 +1869,7 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
           std::move(prep_frame_view_), print_pages_params_->pages,
           print_params.printed_doc_type, print_params.document_cookie,
           require_document_metafile)) {
-    return CREATE_FAIL;
+    return CreatePreviewDocumentResult::kFail;
   }
 
   // If tagged PDF exporting is enabled, we also need to capture an
@@ -1916,7 +1920,7 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
           GetFitToPageScaleFactor(printable_area_in_points)),
       print_params.preview_request_id);
   if (CheckForCancel())
-    return CREATE_FAIL;
+    return CreatePreviewDocumentResult::kFail;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If a PrintRenderer has been provided, use it to create the preview
@@ -1928,7 +1932,7 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
         base::BindOnce(&PrintRenderFrameHelper::OnPreviewDocumentCreated,
                        weak_ptr_factory_.GetWeakPtr(),
                        print_params.document_cookie, begin_time));
-    return CREATE_IN_PROGRESS;
+    return CreatePreviewDocumentResult::kInProgress;
   }
 #endif
 
@@ -1955,10 +1959,10 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
     }
 
     if (!RenderPreviewPage(page_number))
-      return CREATE_FAIL;
+      return CreatePreviewDocumentResult::kFail;
 
     if (CheckForCancel())
-      return CREATE_FAIL;
+      return CreatePreviewDocumentResult::kFail;
 
     // We must call PrepareFrameAndViewForPrint::FinishPrinting() (by way of
     // print_preview_context_.AllPagesRendered()) before calling
@@ -1974,11 +1978,11 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
       DCHECK(print_preview_context_.IsModifiable() ||
              print_preview_context_.IsFinalPageRendered());
       if (!FinalizePrintReadyDocument())
-        return CREATE_FAIL;
+        return CreatePreviewDocumentResult::kFail;
     }
   }
   print_preview_context_.Finished();
-  return CREATE_SUCCESS;
+  return CreatePreviewDocumentResult::kSuccess;
 }
 
 bool PrintRenderFrameHelper::RenderPreviewPage(uint32_t page_number) {
@@ -2041,7 +2045,8 @@ bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
     if (!CopyMetafileDataToDidPrintContentParams(
             *metafile, preview_params->content.get())) {
       LOG(ERROR) << "CopyMetafileDataToDidPrintContentParams failed";
-      print_preview_context_.set_error(PREVIEW_ERROR_METAFILE_COPY_FAILED);
+      print_preview_context_.set_error(
+          PrintPreviewErrorBuckets::kMetafileCopyFailed);
       return false;
     }
   }
@@ -2076,7 +2081,8 @@ void PrintRenderFrameHelper::OnPreviewDocumentCreated(
 
   bool success =
       ProcessPreviewDocument(begin_time, std::move(preview_document_region));
-  DidFinishPrinting(success ? OK : FAIL_PREVIEW);
+  DidFinishPrinting(success ? PrintingResult::kOk
+                            : PrintingResult::kFailPreview);
 }
 #endif
 
@@ -2164,7 +2170,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     print_preview_context_.InitWithNode(node);
-    RequestPrintPreview(PRINT_PREVIEW_USER_INITIATED_CONTEXT_NODE,
+    RequestPrintPreview(PrintPreviewRequestType::kUserInitiatedContextNode,
                         /*already_notified_frame=*/false);
 #endif
   } else {
@@ -2208,13 +2214,13 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
 
   uint32_t expected_page_count = 0;
   if (!CalculateNumberOfPages(frame, node, &expected_page_count)) {
-    DidFinishPrinting(FAIL_PRINT_INIT);
+    DidFinishPrinting(PrintingResult::kFailPrintInit);
     return;  // Failed to init print page settings.
   }
 
   // Some full screen plugins can say they don't want to print.
   if (!expected_page_count || expected_page_count > kMaxPageCount) {
-    DidFinishPrinting(FAIL_PRINT);
+    DidFinishPrinting(PrintingResult::kFailPrint);
     return;
   }
 
@@ -2237,7 +2243,7 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
     if (!print_settings) {
       if (print_manager_host_) {
         // Release resources and fail silently if the user cancels.
-        DidFinishPrinting(OK);
+        DidFinishPrinting(PrintingResult::kOk);
       }
       return;
     }
@@ -2252,7 +2258,7 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
   // Render Pages for printing.
   if (!RenderPagesForPrint(frame_ref.GetFrame(), node)) {
     LOG(ERROR) << "RenderPagesForPrint failed";
-    DidFinishPrinting(FAIL_PRINT);
+    DidFinishPrinting(PrintingResult::kFailPrint);
   }
   scripting_throttler_.Reset();
 }
@@ -2261,10 +2267,10 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
   // Code in PrintPagesNative() handles the success case firing the callback,
   // so if we get here with the pending callback it must be the failure case.
   if (print_with_params_callback_) {
-    DCHECK_NE(result, OK);
+    DCHECK_NE(result, PrintingResult::kOk);
     std::move(print_with_params_callback_)
         .Run(mojom::PrintWithParamsResult::NewFailureReason(
-            result == INVALID_PAGE_RANGE
+            result == PrintingResult::kInvalidPageRange
                 ? mojom::PrintFailureReason::kInvalidPageRange
                 : mojom::PrintFailureReason::kGeneralFailure));
     Reset();
@@ -2279,25 +2285,25 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
                        : -1;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   switch (result) {
-    case OK:
+    case PrintingResult::kOk:
       break;
 
-    case FAIL_PRINT_INIT:
+    case PrintingResult::kFailPrintInit:
       DCHECK(!notify_browser_of_print_failure_);
       break;
 
-    case INVALID_PAGE_RANGE:
-    case FAIL_PRINT:
+    case PrintingResult::kInvalidPageRange:
+    case PrintingResult::kFailPrint:
       if (notify_browser_of_print_failure_ && print_pages_params_) {
         GetPrintManagerHost()->PrintingFailed(
-            cookie, result == INVALID_PAGE_RANGE
+            cookie, result == PrintingResult::kInvalidPageRange
                         ? mojom::PrintFailureReason::kInvalidPageRange
                         : mojom::PrintFailureReason::kGeneralFailure);
       }
       break;
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-    case FAIL_PREVIEW:
+    case PrintingResult::kFailPreview:
       if (!is_print_ready_metafile_sent_) {
         if (notify_browser_of_print_failure_) {
           LOG(ERROR) << "CreatePreviewDocument failed";
@@ -2310,7 +2316,7 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
       }
       print_preview_context_.Failed(notify_browser_of_print_failure_);
       break;
-    case INVALID_SETTINGS:
+    case PrintingResult::kInvalidSettings:
       if (preview_ui_)
         preview_ui_->PrinterSettingsInvalid(cookie, request_id);
       print_preview_context_.Failed(false);
@@ -2347,7 +2353,7 @@ void PrintRenderFrameHelper::PrintPages() {
   if (!page_count || page_count > kMaxPageCount) {
     LOG(ERROR) << "Can't print 0 pages and the page count couldn't be greater "
                   "than kMaxPageCount.";
-    return DidFinishPrinting(FAIL_PRINT);
+    return DidFinishPrinting(PrintingResult::kFailPrint);
   }
 
   // TODO(vitalybuka): should be page_count or valid pages from params.pages.
@@ -2360,11 +2366,11 @@ void PrintRenderFrameHelper::PrintPages() {
   std::vector<uint32_t> pages_to_print =
       PageNumber::GetPages(print_pages_params_->pages, page_count);
   if (pages_to_print.empty())
-    return DidFinishPrinting(INVALID_PAGE_RANGE);
+    return DidFinishPrinting(PrintingResult::kInvalidPageRange);
   if (!PrintPagesNative(prep_frame_view_->frame(), page_count,
                         pages_to_print)) {
     LOG(ERROR) << "Printing failed.";
-    return DidFinishPrinting(FAIL_PRINT);
+    return DidFinishPrinting(PrintingResult::kFailPrint);
   }
 }
 
@@ -2550,7 +2556,8 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   mojom::PrintPagesParamsPtr settings;
   GetPrintManagerHost()->UpdatePrintSettings(job_settings->Clone(), &settings);
   if (!settings) {
-    print_preview_context_.set_error(PREVIEW_ERROR_EMPTY_PRINTER_SETTINGS);
+    print_preview_context_.set_error(
+        PrintPreviewErrorBuckets::kEmptyPrinterSettings);
     return false;
   }
 
@@ -2749,7 +2756,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
   params->is_modifiable = is_modifiable;
   params->has_selection = has_selection;
   switch (type) {
-    case PRINT_PREVIEW_SCRIPTED: {
+    case PrintPreviewRequestType::kScripted: {
       // Shows scripted print preview in two stages.
       // 1. SetupScriptedPrintPreview() blocks this call and JS by running a
       //    nested run loop.
@@ -2793,7 +2800,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       }
       return;
     }
-    case PRINT_PREVIEW_USER_INITIATED_ENTIRE_FRAME: {
+    case PrintPreviewRequestType::kUserInitiatedEntireFrame: {
       // See comment under PRINT_PREVIEW_SCRIPTED.
       if (is_loading_) {
         WaitForLoad(type);
@@ -2802,13 +2809,13 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
 
       break;
     }
-    case PRINT_PREVIEW_USER_INITIATED_SELECTION: {
+    case PrintPreviewRequestType::kUserInitiatedSelection: {
       DCHECK(has_selection);
       DCHECK(!print_preview_context_.IsPlugin());
       params->selection_only = has_selection;
       break;
     }
-    case PRINT_PREVIEW_USER_INITIATED_CONTEXT_NODE: {
+    case PrintPreviewRequestType::kUserInitiatedContextNode: {
       // See comment under PRINT_PREVIEW_SCRIPTED.
       if (is_loading_) {
         WaitForLoad(type);
@@ -2817,10 +2824,6 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
 
       params->webnode_only = true;
       break;
-    }
-    default: {
-      NOTREACHED();
-      return;
     }
   }
 
@@ -2883,7 +2886,8 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   if (!CopyMetafileDataToDidPrintContentParams(
           *metafile, preview_page_params->content.get())) {
     LOG(ERROR) << "CopyMetafileDataToDidPrintContentParams failed";
-    print_preview_context_.set_error(PREVIEW_ERROR_METAFILE_COPY_FAILED);
+    print_preview_context_.set_error(
+        PrintPreviewErrorBuckets::kMetafileCopyFailed);
     return false;
   }
 
@@ -2912,7 +2916,7 @@ void PrintRenderFrameHelper::PrintPreviewContext::InitWithFrame(
     blink::WebLocalFrame* web_frame) {
   DCHECK(web_frame);
   DCHECK(!IsRendering());
-  state_ = INITIALIZED;
+  state_ = State::kInitialized;
   source_frame_.Reset(web_frame);
   source_node_.Reset();
   CalculatePluginAttributes();
@@ -2923,7 +2927,7 @@ void PrintRenderFrameHelper::PrintPreviewContext::InitWithNode(
   DCHECK(!web_node.IsNull());
   DCHECK(web_node.GetDocument().GetFrame());
   DCHECK(!IsRendering());
-  state_ = INITIALIZED;
+  state_ = State::kInitialized;
   source_frame_.Reset(web_node.GetDocument().GetFrame());
   source_node_ = web_node;
   CalculatePluginAttributes();
@@ -2940,7 +2944,7 @@ void PrintRenderFrameHelper::PrintPreviewContext::DispatchAfterPrintEvent() {
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::OnPrintPreview() {
-  DCHECK_EQ(INITIALIZED, state_);
+  DCHECK_EQ(State::kInitialized, state_);
   ClearContext();
 }
 
@@ -2950,8 +2954,8 @@ bool PrintRenderFrameHelper::PrintPreviewContext::CreatePreviewDocument(
     mojom::SkiaDocumentType doc_type,
     int document_cookie,
     bool require_document_metafile) {
-  DCHECK_EQ(INITIALIZED, state_);
-  state_ = RENDERING;
+  DCHECK_EQ(State::kInitialized, state_);
+  state_ = State::kRendering;
 
   // Need to make sure old object gets destroyed first.
   prep_frame_view_ = std::move(prepared_frame);
@@ -2961,7 +2965,7 @@ bool PrintRenderFrameHelper::PrintPreviewContext::CreatePreviewDocument(
   if (total_page_count_ == 0 || total_page_count_ > kMaxPageCount) {
     LOG(ERROR) << "CreatePreviewDocument got 0 page count or it's greater than "
                   "kMaxPageCount.";
-    set_error(PREVIEW_ERROR_ZERO_PAGES);
+    set_error(PrintPreviewErrorBuckets::kZeroPages);
     return false;
   }
 
@@ -2989,19 +2993,19 @@ bool PrintRenderFrameHelper::PrintPreviewContext::CreatePreviewDocument(
 
 void PrintRenderFrameHelper::PrintPreviewContext::RenderedPreviewPage(
     const base::TimeDelta& page_time) {
-  DCHECK_EQ(RENDERING, state_);
+  DCHECK_EQ(State::kRendering, state_);
   document_render_time_ += page_time;
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::RenderedPreviewDocument(
     const base::TimeDelta document_time) {
-  DCHECK_EQ(RENDERING, state_);
+  DCHECK_EQ(State::kRendering, state_);
   document_render_time_ += document_time;
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::AllPagesRendered() {
-  DCHECK_EQ(RENDERING, state_);
-  state_ = DONE;
+  DCHECK_EQ(State::kRendering, state_);
+  state_ = State::kDone;
   prep_frame_view_->FinishPrinting();
 }
 
@@ -3031,51 +3035,52 @@ void PrintRenderFrameHelper::PrintPreviewContext::FinalizePrintReadyDocument() {
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::Finished() {
-  DCHECK_EQ(DONE, state_);
-  state_ = INITIALIZED;
+  DCHECK_EQ(State::kDone, state_);
+  state_ = State::kInitialized;
   ClearContext();
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::Failed(bool report_error) {
-  DCHECK(state_ != UNINITIALIZED);
-  state_ = INITIALIZED;
+  DCHECK(state_ != State::kUninitialized);
+  state_ = State::kInitialized;
   if (report_error) {
-    DCHECK_NE(PREVIEW_ERROR_NONE, error_);
+    DCHECK_NE(PrintPreviewErrorBuckets::kNone, error_);
     const char* name = "PrintPreview.RendererError";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (is_for_arc_)
       name = "Arc.PrintPreview.RendererError";
 #endif
-    base::UmaHistogramEnumeration(name, error_, PREVIEW_ERROR_LAST_ENUM);
+    base::UmaHistogramEnumeration(name, error_,
+                                  PrintPreviewErrorBuckets::kLastEnum);
   }
   ClearContext();
 }
 
 uint32_t PrintRenderFrameHelper::PrintPreviewContext::GetNextPageNumber() {
-  DCHECK_EQ(RENDERING, state_);
+  DCHECK_EQ(State::kRendering, state_);
   if (IsFinalPageRendered())
     return kInvalidPageIndex;
   return pages_to_render_[current_page_index_++];
 }
 
 bool PrintRenderFrameHelper::PrintPreviewContext::IsRendering() const {
-  return state_ == RENDERING || state_ == DONE;
+  return state_ == State::kRendering || state_ == State::kDone;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrintRenderFrameHelper::PrintPreviewContext::IsForArc() const {
-  DCHECK_NE(state_, UNINITIALIZED);
+  DCHECK_NE(state_, State::kUninitialized);
   return is_for_arc_;
 }
 #endif
 
 bool PrintRenderFrameHelper::PrintPreviewContext::IsPlugin() const {
-  DCHECK(state_ != UNINITIALIZED);
+  DCHECK(state_ != State::kUninitialized);
   return is_plugin_;
 }
 
 bool PrintRenderFrameHelper::PrintPreviewContext::IsModifiable() const {
-  DCHECK(state_ != UNINITIALIZED);
+  DCHECK(state_ != State::kUninitialized);
   return is_modifiable_;
 }
 
@@ -3107,42 +3112,42 @@ void PrintRenderFrameHelper::PrintPreviewContext::set_error(
 
 blink::WebLocalFrame*
 PrintRenderFrameHelper::PrintPreviewContext::source_frame() {
-  DCHECK(state_ != UNINITIALIZED);
+  DCHECK(state_ != State::kUninitialized);
   return source_frame_.GetFrame();
 }
 
 const blink::WebNode& PrintRenderFrameHelper::PrintPreviewContext::source_node()
     const {
-  DCHECK(state_ != UNINITIALIZED);
+  DCHECK(state_ != State::kUninitialized);
   return source_node_;
 }
 
 blink::WebLocalFrame*
 PrintRenderFrameHelper::PrintPreviewContext::prepared_frame() {
-  DCHECK(state_ != UNINITIALIZED);
+  DCHECK(state_ != State::kUninitialized);
   return prep_frame_view_->frame();
 }
 
 const blink::WebNode&
 PrintRenderFrameHelper::PrintPreviewContext::prepared_node() const {
-  DCHECK(state_ != UNINITIALIZED);
+  DCHECK(state_ != State::kUninitialized);
   return prep_frame_view_->node();
 }
 
 uint32_t PrintRenderFrameHelper::PrintPreviewContext::total_page_count() const {
-  DCHECK(state_ != UNINITIALIZED);
+  DCHECK(state_ != State::kUninitialized);
   return total_page_count_;
 }
 
 const std::vector<uint32_t>&
 PrintRenderFrameHelper::PrintPreviewContext::pages_to_render() const {
-  DCHECK_EQ(RENDERING, state_);
+  DCHECK_EQ(State::kRendering, state_);
   return pages_to_render_;
 }
 
 size_t PrintRenderFrameHelper::PrintPreviewContext::pages_rendered_count()
     const {
-  DCHECK_EQ(DONE, state_);
+  DCHECK_EQ(State::kDone, state_);
   return pages_to_render_.size();
 }
 
@@ -3157,16 +3162,12 @@ PrintRenderFrameHelper::PrintPreviewContext::typeface_content_info() {
   return &typeface_content_info_;
 }
 
-int PrintRenderFrameHelper::PrintPreviewContext::last_error() const {
-  return error_;
-}
-
 void PrintRenderFrameHelper::PrintPreviewContext::ClearContext() {
   prep_frame_view_.reset();
   metafile_.reset();
   typeface_content_info_.clear();
   pages_to_render_.clear();
-  error_ = PREVIEW_ERROR_NONE;
+  error_ = PrintPreviewErrorBuckets::kNone;
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::CalculatePluginAttributes() {
