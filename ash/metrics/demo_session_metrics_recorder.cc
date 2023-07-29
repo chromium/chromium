@@ -305,11 +305,12 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    if (scoped_observation_.IsObservingSource(window))
-      scoped_observation_.Reset();
+    DCHECK(scoped_observation_.IsObservingSource(window));
+    scoped_observation_.Reset();
   }
 
   void ObserveWindow(aura::Window* window) {
+    scoped_observation_.Reset();
     scoped_observation_.Observe(window);
   }
 
