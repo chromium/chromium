@@ -1812,6 +1812,7 @@
 <translation id="8921624153894383499">Google Assistant सेवा इस भाषा में उपलब्ध नहीं है.</translation>
 <translation id="8924458948354692166">विंडो का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
 <translation id="8926951137623668982">शेल्फ़ को हमेशा के लिए छिपाकर रखा गया है</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="8936501819958976551">बंद की गई</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8940956008527784070">बैटरी कम (<ph name="PERCENTAGE" />%)</translation>

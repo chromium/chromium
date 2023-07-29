@@ -231,6 +231,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1432187715652018471">La pàgina vol instal·lar un gestor de serveis</translation>
 <translation id="1432581352905426595">Gestiona els motors de cerca</translation>
+<translation id="1433225466058025572">Prova de tornar a moure els fitxers</translation>
 <translation id="1435940442311036198">Utilitza una clau d'accés en un altre dispositiu</translation>
 <translation id="1436185428532214179">Pot demanar permís per editar fitxers i carpetes del dispositiu</translation>
 <translation id="1442386063175183758">Plegat amb finestra a la dreta</translation>
@@ -683,6 +684,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2396249848217231973">&amp;Desfés la supressió</translation>
 <translation id="2397836504670957718">Portàtils</translation>
 <translation id="2400600116338235695">Pot demanar permís per connectar-se a ports en sèrie</translation>
+<translation id="2404884497378469141">Prova de tornar a copiar els fitxers</translation>
 <translation id="2413155254802890957">Anteriors</translation>
 <translation id="2413528052993050574">El servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè és possible que el seu certificat de seguretat s'hagi revocat. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2414886740292270097">Fosc</translation>
@@ -839,6 +841,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2759825833388495838">emplenar la teva contrasenya a <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Còmics</translation>
 <translation id="2765217105034171413">Petita</translation>
+<translation id="2770159525358613612">Prova de tornar a penjar els fitxers</translation>
 <translation id="277133753123645258">Mètode d'enviament</translation>
 <translation id="277499241957683684">Falta el registre del dispositiu</translation>
 <translation id="2775884851269838147">Primera pàgina d'impressió</translation>
@@ -1229,6 +1232,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3632892046558972264">S'ha posat en pausa la compartició de pantalla</translation>
 <translation id="3634530185120165534">Safata 5</translation>
 <translation id="3634567936866541746">Acabes d'introduir la contrasenya en un lloc web enganyós. Per protegir els teus comptes, Chrome et recomana que comprovis les contrasenyes desades.</translation>
+<translation id="3642196846309122856">Prova de tornar a baixar els fitxers</translation>
 <translation id="3642638418806704195">Aplicació:</translation>
 <translation id="3646643500201740985">Mesurar el rendiment d'un anunci</translation>
 <translation id="3647286794400715637">Cada entrada de la cadena d'URL ha de contenir 1 o 2 URL.</translation>
@@ -1352,6 +1356,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3890664840433101773">Afegeix un correu electrònic</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">La targeta ha caducat</translation>
+<translation id="390391808978419508">S'ha esgotat el temps d'espera per a l'obertura</translation>
 <translation id="3905894480064208252">{0,plural, =1{S'ha bloquejat el fitxer perquè no es pugui transferir}other{S'han bloquejat <ph name="FILE_COUNT" /> fitxers perquè no es puguin transferir}}</translation>
 <translation id="3906095212874392000">Final del text convertit</translation>
 <translation id="3906954721959377182">Tauleta</translation>
@@ -1364,6 +1369,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="393316646445601645">Internet i telecomunicacions</translation>
 <translation id="3939773374150895049">Vols utilitzar WebAuthn en lloc del CVC?</translation>
 <translation id="3941630233824954464">Activa la reautenticació obligatòria</translation>
+<translation id="3942048175062210325">Prova de tornar a obrir els fitxers</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3946209740501886391">Pregunta sempre en aquest lloc</translation>
 <translation id="3947595700203588284">Pot demanar permís per connectar-se a dispositius MIDI</translation>
@@ -1445,6 +1451,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4117700440116928470">L'àmbit de la política no s'admet.</translation>
 <translation id="4121428309786185360">Caduca el</translation>
 <translation id="4123572138124678573">Encunyació triple a la part inferior</translation>
+<translation id="412601465078863288">S'ha esgotat el temps d'espera per a la pujada</translation>
 <translation id="4127317221386336246">Accessoris de moda</translation>
 <translation id="4127575959421463246">Cerques les marques de Chrome OS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 element més}other{# elements més}}</translation>
@@ -1661,6 +1668,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4540780316273593836">S'ha produït un error</translation>
 <translation id="4541810033354695636">realitat augmentada</translation>
 <translation id="4542971377163063093">Safata 6</translation>
+<translation id="4546730006268514143">S'ha esgotat el temps d'espera per a la transferència</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estàs utilitzant el bloqueig de pantalla per emplenar contrasenyes</translation>
 <translation id="4558551763791394412">Desactiva les extensions</translation>
@@ -2094,6 +2102,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5470230812924696184">Enginyeria civil</translation>
 <translation id="5470861586879999274">&amp;Refés la modificació</translation>
 <translation id="5471337644440862957">Comèdies</translation>
+<translation id="547963486735802022">Provar de tornar a transferir els fitxers</translation>
 <translation id="5481076368049295676">Aquest contingut pot provar d'instal·lar programari maliciós al teu dispositiu per suprimir-ne informació o robar-te'n. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">Afegeix una adreça vàlida</translation>
 <translation id="5483838506518938965">Ja esteu a punt</translation>
@@ -2783,6 +2792,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6961733224437895943">Assegurances de la llar</translation>
 <translation id="6961844873822989059">Pot demanar permís per utilitzar els tipus de lletra instal·lats al dispositiu</translation>
 <translation id="6961980518585973432">Aniversaris</translation>
+<translation id="6962858948849099922">S'ha esgotat el temps d'espera per al moviment</translation>
 <translation id="6963520811470373926">S'està substituint</translation>
 <translation id="6963574715554809750">Comerç al detall</translation>
 <translation id="6963693576491380224">Feines del sector públic i governamental</translation>
@@ -2860,6 +2870,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7111507312244504964">Inspeccions i peritatges de propietats</translation>
 <translation id="7112327784801341716">No es mostren les teves dades actuals? Contacta amb el teu banc per actualitzar-les.</translation>
 <translation id="7118618213916969306">Cerca l'URL (<ph name="SHORT_URL" />) del porta-retalls</translation>
+<translation id="7119371694555167493">S'ha esgotat el temps d'espera per a la còpia</translation>
 <translation id="7119414471315195487">Tanca altres pestanyes o programes</translation>
 <translation id="7124354851782353862">Introdueix el CVC</translation>
 <translation id="7129355289156517987">Quan tanques totes les pestanyes d'incògnit a Chromium, la teva activitat en aquelles pestanyes s'esborra del dispositiu:
@@ -3112,6 +3123,7 @@ Detalls addicionals:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Menys de: <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> no pot gestionar la sol·licitud en aquest moment.</translation>
+<translation id="7599089013883397081">S'ha esgotat el temps d'espera per a la baixada</translation>
 <translation id="7600965453749440009">No tradueixis mai de: <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Normalment et connectes a aquest lloc web de manera segura, però aquesta vegada Chrome no ha pogut utilitzar una connexió segura. És possible que un atacant estigui provant d'espiar o de modificar la connexió a la xarxa. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">El valor es troba fora de l'interval <ph name="VALUE" /> .</translation>

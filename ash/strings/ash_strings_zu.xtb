@@ -1811,6 +1811,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8921624153894383499">Umsizi we-Google akakhulumi lolu limi.</translation>
 <translation id="8924458948354692166">Cindezela u-enter ukuze uthathe isithombe-skrini sewindi</translation>
 <translation id="8926951137623668982">Ishelufu lihlala lifihliwe</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{Ifayela eli-1}one{Amafayela angu-#}other{Amafayela angu-#}}</translation>
 <translation id="8936501819958976551">kwenziwe kwangasebenzi</translation>
 <translation id="8938800817013097409">Idivayisi ye-USB-C (imbobo engakwesokudla ngemuva)</translation>
 <translation id="8940956008527784070">Ibhethri liphansi (<ph name="PERCENTAGE" />%)</translation>

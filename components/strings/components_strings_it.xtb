@@ -231,6 +231,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1432187715652018471">La pagina vuole installare un gestore di servizi.</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
+<translation id="1433225466058025572">Prova a spostare di nuovo i file</translation>
 <translation id="1435940442311036198">Usa una passkey su un altro dispositivo</translation>
 <translation id="1436185428532214179">Può chiedere di modificare file o cartelle sul dispositivo</translation>
 <translation id="1442386063175183758">Piegatura a finestra a destra</translation>
@@ -683,6 +684,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2396249848217231973">&amp;Annulla eliminazione</translation>
 <translation id="2397836504670957718">Laptop e notebook</translation>
 <translation id="2400600116338235695">Può chiedere di connettersi alle porte seriali</translation>
+<translation id="2404884497378469141">Prova a copiare di nuovo i file</translation>
 <translation id="2413155254802890957">Precedenti</translation>
 <translation id="2413528052993050574">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere revocato. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="2414886740292270097">Scuro</translation>
@@ -839,6 +841,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2759825833388495838">inserire la tua password su <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Fumetti</translation>
 <translation id="2765217105034171413">Piccola</translation>
+<translation id="2770159525358613612">Prova a caricare di nuovo i file</translation>
 <translation id="277133753123645258">Metodo di spedizione</translation>
 <translation id="277499241957683684">Record del dispositivo mancante</translation>
 <translation id="2775884851269838147">Prima pagina di stampa</translation>
@@ -1226,6 +1229,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3632892046558972264">Condivisione schermo in pausa</translation>
 <translation id="3634530185120165534">Vassoio 5</translation>
 <translation id="3634567936866541746">Hai appena inserito la tua password su un sito ingannevole. Per proteggere i tuoi account, Chrome ti consiglia di controllare le password salvate.</translation>
+<translation id="3642196846309122856">Riprova a scaricare i file</translation>
 <translation id="3642638418806704195">Applicazione:</translation>
 <translation id="3646643500201740985">Misurazione del rendimento di un annuncio</translation>
 <translation id="3647286794400715637">Ogni voce della stringa dell'URL deve contenere da 1 a 2 URL.</translation>
@@ -1349,6 +1353,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3890664840433101773">Aggiungi email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carta è scaduta</translation>
+<translation id="390391808978419508">Timeout dell'apertura</translation>
 <translation id="3905894480064208252">{0,plural, =1{Trasferimento del file bloccato}other{Trasferimento di <ph name="FILE_COUNT" /> file bloccato}}</translation>
 <translation id="3906095212874392000">Fine del testo convertito</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1361,6 +1366,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="393316646445601645">Internet e telecomunicazioni</translation>
 <translation id="3939773374150895049">Usare WebAuthn anziché CVC?</translation>
 <translation id="3941630233824954464">Abilita riautenticazione obbligatoria</translation>
+<translation id="3942048175062210325">Prova a riaprire i file</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3946209740501886391">Chiedi sempre su questo sito</translation>
 <translation id="3947595700203588284">Può chiedere di connettersi ai dispositivi MIDI</translation>
@@ -1442,6 +1448,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4117700440116928470">L'ambito della norma non è supportato.</translation>
 <translation id="4121428309786185360">Scade in data</translation>
 <translation id="4123572138124678573">Tripla perforatura in basso</translation>
+<translation id="412601465078863288">Timeout del caricamento</translation>
 <translation id="4127317221386336246">Accessori di abbigliamento</translation>
 <translation id="4127575959421463246">Stai cercando i flag di ChromeOS? Visita la pagina</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
@@ -1658,6 +1665,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4540780316273593836">Si è verificato un problema</translation>
 <translation id="4541810033354695636">realtà aumentata</translation>
 <translation id="4542971377163063093">Vassoio 6</translation>
+<translation id="4546730006268514143">Timeout del trasferimento</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Stai usando il blocco schermo per inserire le password</translation>
 <translation id="4558551763791394412">Prova a disattivare le estensioni.</translation>
@@ -2091,6 +2099,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5470230812924696184">Ingegneria civile</translation>
 <translation id="5470861586879999274">&amp;Ripeti modifica</translation>
 <translation id="5471337644440862957">Film commedie</translation>
+<translation id="547963486735802022">Prova a trasferire nuovamente i file</translation>
 <translation id="5481076368049295676">Questi contenuti potrebbero cercare di installare sul tuo dispositivo software pericoloso che si impossessa delle tue informazioni o le elimina. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Aggiungi un indirizzo valido</translation>
 <translation id="5483838506518938965">Ecco fatto</translation>
@@ -2779,6 +2788,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6961733224437895943">Assicurazione sulla casa</translation>
 <translation id="6961844873822989059">Può chiedere di utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="6961980518585973432">Anniversari</translation>
+<translation id="6962858948849099922">Timeout scaduto</translation>
 <translation id="6963520811470373926">In sostituzione</translation>
 <translation id="6963574715554809750">Commercio al dettaglio</translation>
 <translation id="6963693576491380224">Offerte di lavoro nella pubblica amministrazione e nel settore pubblico</translation>
@@ -2856,6 +2866,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7111507312244504964">Valutazioni e perizie immobiliari</translation>
 <translation id="7112327784801341716">I dati non sono aggiornati? Contatta la banca per aggiornarli.</translation>
 <translation id="7118618213916969306">Cerca URL dagli appunti, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Timeout della copia</translation>
 <translation id="7119414471315195487">Chiudi altri programmi o schede</translation>
 <translation id="7124354851782353862">Inserisci il CVC</translation>
 <translation id="7129355289156517987">Quando chiudi tutte le schede di navigazione in incognito di Chromium, la tua attività nelle schede viene cancellata da questo dispositivo:
@@ -3108,6 +3119,7 @@ Ulteriori dettagli:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Meno di <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> al momento non è in grado di gestire la richiesta.</translation>
+<translation id="7599089013883397081">Timeout del download</translation>
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">In genere ti connetti a questo sito in modo sicuro, ma questa volta Chrome non è riuscito a utilizzare una connessione protetta. Un utente malintenzionato potrebbe tentare di intercettare o modificare la connessione di rete. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Il valore non è compreso nell'intervallo (<ph name="VALUE" />).</translation>

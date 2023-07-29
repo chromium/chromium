@@ -95,6 +95,9 @@ ni APIs de extensiones. Si inhabilitas la política o no la estableces, se permi
 
 Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />
 esto no impide que se tomen capturas de pantalla con aplicaciones del sistema operativo o de terceros.</translation>
+<translation id="1065175969514496951">Si estableces la política, se permitirá el acceso a las URLs de la lista durante la autenticación (p. ej., en la pantalla de acceso y de bloqueo), como excepciones a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces la política <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> como <ph name="WILDCARD_VALUE" />, se bloquearán todas las solicitudes. Además, con esta política puedes permitir el acceso a una lista limitada de URLs. Úsala para abrir excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas de acceso específicas, con el formato que se indica en (https://support.google.com/chrome/a?p=url_blocklist_filter_format). El filtro más específico determina si una URL está bloqueada o habilitada. La política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre la política <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Esta política se limitará a 1,000 entradas.
+
+Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1069489575852947981">Si habilitas la política o no la estableces, se definirá una cuenta local del dispositivo para el acceso automático sin tiempos de espera. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl+Alt+S para omitir el acceso automático y mostrar la pantalla de acceso.
 
       Si inhabilitas la política, los usuarios no podrán omitir el acceso automático sin tiempos de espera (si se configuró).</translation>
@@ -1160,6 +1163,13 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si se establece la política como falsa o no se establece, no se enviará la información.
       Si se establece como verdadera, se informará la zona horaria configurada del dispositivo.</translation>
 <translation id="1990784382342293892">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />".</translation>
+<translation id="1995744620192427843">Si estableces la política, no se podrán cargar las páginas web con URLs prohibidas durante la autenticación del usuario (p. ej., en la pantalla de acceso y de bloqueo). Proporciona una lista de patrones de URL donde se especifican las URLs prohibidas. Si no estableces la política, no se prohibirá ninguna URL durante la autenticación. Los patrones de las URLs deben presentar un formato conforme a lo especificado en (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Las excepciones a estos patrones se pueden definir en la política relacionada <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />.
+
+Ciertas URLs son necesarias para que la autenticación se realice correctamente, incluida accounts.google.com, por lo que no se deben bloquear si se requiere el acceso en línea.
+
+Nota: Esta política no se aplica a las URLs de JavaScript en la página con datos cargados de forma dinámica. Si bloqueaste example.com/abc, example.com aún podría cargarla con XMLHTTPRequest.</translation>
 <translation id="199764499252435679">Habilitar las actualizaciones de componentes en <ph name="PRODUCT_NAME" /></translation>
 <translation id="1997943707974344423">Permitir Smart Lock</translation>
 <translation id="1998504583649140526">Configuración de solicitudes de red privada</translation>
@@ -4870,6 +4880,7 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si la habilitas, el estado de la actividad del dispositivo se informa al servidor, lo que le permite detectar si el dispositivo está sin conexión, siempre que el usuario esté afiliado.</translation>
 <translation id="5238275681097851753">Permitir el bloqueo de cierto contenido de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Habilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
+<translation id="5239277956452384929">Permitir el acceso a una lista de las URLs durante la autenticación</translation>
 <translation id="5245647012663146075">No permitir que se habilite Phone Hub</translation>
 <translation id="5245671702326993331">Permite las notificaciones nativas</translation>
 <translation id="524637053580639111">A partir de M82, esta política no está disponible. En su lugar, utiliza DeviceMinimumVersion.
@@ -8330,6 +8341,7 @@ Esta política se aplica al modo Incógnito. Esto significa que debes habilitar 
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>
 <translation id="8245574649143980200">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).</translation>
+<translation id="8247143534027746614">Bloquear el acceso a una lista de patrones de URL durante la autenticación</translation>
 <translation id="824818544897669723">Inhabilitar la eliminación del historial de descargas y del navegador</translation>
 <translation id="8250048892729838843">Esta política dejó de estar disponible. Si habilitas la política o no la estableces, los dispositivos tendrán controles de informes detallados.
       Si inhabilitas la política, los dispositivos inscritos no tendrán controles de informes detallados.</translation>

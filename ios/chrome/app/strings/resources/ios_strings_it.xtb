@@ -47,6 +47,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="122699739164161391">Chiudi tutte le schede</translation>
 <translation id="1229222343402087523">Cerca ${searchPhrase} in Chrome</translation>
 <translation id="1242044645101871359">Accedi di nuovo</translation>
+<translation id="1248276223555153952">Gestisci gli account su questo dispositivo</translation>
 <translation id="1254117744268754948">Scegli cartella</translation>
 <translation id="1254424942107648268">Trova precedente</translation>
 <translation id="1258491128795710625">Novità</translation>
@@ -109,6 +110,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1580783302095112590">Messaggio inviato.</translation>
 <translation id="1582732959743469162">Verrà interrotto l'avanzamento del tuo download attuale.</translation>
 <translation id="1594034544529347967">Inizio</translation>
+<translation id="160275202205869636">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="1605405588277479165">Off - Sconsigliata</translation>
 <translation id="1605658421715042784">Copia immagine</translation>
 <translation id="1608337082864370066">Cerca l'immagine copiata</translation>
@@ -290,6 +292,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2773292004659987824">Ricerca in incognito</translation>
 <translation id="277771892408211951">Seleziona lingua</translation>
 <translation id="2780046210906776326">Nessun account email</translation>
+<translation id="2780326741858434269">Account su questo dispositivo</translation>
 <translation id="2781325423985810933">ANNULLA</translation>
 <translation id="2781331604911854368">Attiva</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3575234738189584619">Cerca con Lens</translation>
 <translation id="3577555362230509265">Utilizza Chrome in altre app.</translation>
 <translation id="3581564640715911333">Proponi di tradurre le pagine in altre lingue</translation>
+<translation id="3587885837929752825">La tua organizzazione limita ciò che puoi salvare nel tuo Account Google.</translation>
 <translation id="3588820906588687999">Apri immagine in un'altra scheda</translation>
 <translation id="3595252146048399851">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="3603009562372709545">Copia URL link</translation>
@@ -693,6 +697,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5271265092610673171">{count,plural, =1{C'è un campo obbligatorio vuoto. Compilalo prima di salvare.}other{Ci sono alcuni campi obbligatori vuoti. Compilali prima di salvare.}}</translation>
 <translation id="5271549068863921519">Salva password</translation>
 <translation id="5283494734135414249">Tocca la scorciatoia visualizzata sotto la barra degli indirizzi.</translation>
+<translation id="5292723732574094123">Account disconnesso. Accedi di nuovo per vedere i preferiti, le password e altri dati nel tuo account.</translation>
 <translation id="5295239312320826323">Vuoi rimuovere l'account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5317780077021120954">Salva</translation>
@@ -736,6 +741,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="5631164295104953411">Aggiungi il metodo di pagamento</translation>
+<translation id="5649795523408334796">Rileva indirizzi</translation>
 <translation id="5652623411397330904">I prodotti monitorati verranno visualizzati qui.</translation>
 <translation id="5657859710142657190">Vai alla griglia delle schede</translation>
 <translation id="5659593005791499971">Email</translation>
@@ -1297,6 +1303,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8843129975935593190">La tua organizzazione limita ciò che puoi sincronizzare.</translation>
 <translation id="8849001918648564819">Nascosto</translation>
 <translation id="8855242995793521265">Non rallenta in modo significativo il browser o il dispositivo.</translation>
+<translation id="8863431381414769983">Ricevi indicazioni stradali e informazioni locali da Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} scheda}other{{count} schede}}</translation>
 <translation id="8870413625673593573">Chiusi di recente</translation>
 <translation id="8876882697946675716">Mantieni sincronizzati i tuoi dispositivi</translation>

@@ -231,6 +231,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1432187715652018471">siden vil installere en tjenestebehandler</translation>
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
+<translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
 <translation id="1435940442311036198">Bruk en tilgangsnøkkel på en annen enhet</translation>
 <translation id="1436185428532214179">Kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="1442386063175183758">Høyre vindusfals</translation>
@@ -683,6 +684,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2396249848217231973">&amp;Angre slettingen</translation>
 <translation id="2397836504670957718">Bærbare datamaskiner</translation>
 <translation id="2400600116338235695">Kan be om å få koble til serielle porter</translation>
+<translation id="2404884497378469141">Prøv å kopiere filene på nytt</translation>
 <translation id="2413155254802890957">Gamle</translation>
 <translation id="2413528052993050574">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat kan være trukket tilbake. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="2414886740292270097">Mørk</translation>
@@ -839,6 +841,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2759825833388495838">fylle ut passordet ditt på <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Tegneserier</translation>
 <translation id="2765217105034171413">Liten</translation>
+<translation id="2770159525358613612">Prøv å laste opp filene på nytt</translation>
 <translation id="277133753123645258">Leveringsmetode</translation>
 <translation id="277499241957683684">Manglende enhetsoppføring</translation>
 <translation id="2775884851269838147">Første utskriftsside</translation>
@@ -1229,6 +1232,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3632892046558972264">Skjermdelingen er satt på pause</translation>
 <translation id="3634530185120165534">Skuff 5</translation>
 <translation id="3634567936866541746">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sikrer kontoene dine ved å sjekke de lagrede passordene dine.</translation>
+<translation id="3642196846309122856">Prøv å laste ned filene på nytt</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3646643500201740985">Måling av annonseresultater</translation>
 <translation id="3647286794400715637">Hver nettadresse-strengoppføring må inneholde 1–2 nettadresser.</translation>
@@ -1352,6 +1356,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3890664840433101773">Legg til e-post</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3901925938762663762">Kortet er utløpt</translation>
+<translation id="390391808978419508">Åpningen ble tidsavbrutt</translation>
 <translation id="3905894480064208252">{0,plural, =1{Filen er blokkert for overføring}other{<ph name="FILE_COUNT" /> filer er blokkert for overføring}}</translation>
 <translation id="3906095212874392000">Slutten på den konverterte teksten</translation>
 <translation id="3906954721959377182">Nettbrett</translation>
@@ -1364,6 +1369,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="393316646445601645">Internett og telekommunikasjon</translation>
 <translation id="3939773374150895049">Vil du bruke WebAuthn i stedet for CVC?</translation>
 <translation id="3941630233824954464">Slå på obligatorisk gjenautentisering</translation>
+<translation id="3942048175062210325">Prøv å åpne filene på nytt</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3946209740501886391">Spør alltid på dette nettstedet</translation>
 <translation id="3947595700203588284">Kan be om å få koble til MIDI-enheter</translation>
@@ -1445,6 +1451,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4117700440116928470">Omfanget for innstillingen støttes ikke.</translation>
 <translation id="4121428309786185360">Utløper </translation>
 <translation id="4123572138124678573">Tre hull bunn</translation>
+<translation id="412601465078863288">Opplastingen ble tidsavbrutt</translation>
 <translation id="4127317221386336246">Tilbehør til klær</translation>
 <translation id="4127575959421463246">Ser du etter ChromeOS-flaggene? Besøk</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 til}other{# til}}</translation>
@@ -1661,6 +1668,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4540780316273593836">Noe gikk galt</translation>
 <translation id="4541810033354695636">utvidet virkelighet</translation>
 <translation id="4542971377163063093">Skuff 6</translation>
+<translation id="4546730006268514143">Overføringen ble tidsavbrutt</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du bruker skjermlåsen til å fylle ut passord</translation>
 <translation id="4558551763791394412">Prøv å slå av utvidelsene dine.</translation>
@@ -2094,6 +2102,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5470230812924696184">Byggeteknikk</translation>
 <translation id="5470861586879999274">&amp;Endre likevel</translation>
 <translation id="5471337644440862957">Komedier</translation>
+<translation id="547963486735802022">Prøv å overføre filene på nytt</translation>
 <translation id="5481076368049295676">Dette innholdet kan prøve å installere farlig programvare som stjeler eller sletter informasjon, på enheten din. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Du må angi en gyldig adresse</translation>
 <translation id="5483838506518938965">Du er klar</translation>
@@ -2783,6 +2792,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6961733224437895943">Boligforsikring</translation>
 <translation id="6961844873822989059">Kan be om å få bruke skrifttyper som er installert på enheten</translation>
 <translation id="6961980518585973432">Jubileer</translation>
+<translation id="6962858948849099922">Flyttingen ble tidsavbrutt</translation>
 <translation id="6963520811470373926">Overstyrende</translation>
 <translation id="6963574715554809750">Detaljhandel</translation>
 <translation id="6963693576491380224">Jobber i statlig og offentlig sektor</translation>
@@ -2860,6 +2870,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7111507312244504964">Verdivurdering og -taksering</translation>
 <translation id="7112327784801341716">Er ikke informasjonen riktig? Kontakt banken for å oppdatere den.</translation>
 <translation id="7118618213916969306">Søk etter nettadressen <ph name="SHORT_URL" /> på utklippstavlen</translation>
+<translation id="7119371694555167493">Kopieringen ble tidsavbrutt</translation>
 <translation id="7119414471315195487">Lukk andre faner eller programmer</translation>
 <translation id="7124354851782353862">Skriv inn verifiseringskoden</translation>
 <translation id="7129355289156517987">Når du lukker alle inkognitofaner i Chromium, blir aktiviteten din på de aktuelle fanene fjernet fra enheten:
@@ -3111,6 +3122,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Under <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan for øyeblikket ikke behandle denne forespørselen.</translation>
+<translation id="7599089013883397081">Nedlastingen ble tidsavbrutt</translation>
 <translation id="7600965453749440009">Oversett aldri <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Du pleier å ha en sikker tilkobling til dette nettstedet, men Chrome kunne ikke bruke en sikker tilkobling denne gangen. Det kan hende at angripere prøver å tyvlytte på eller modifisere nettverkstilkoblingen din. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Verdien er utenfor rekkevidden <ph name="VALUE" />.</translation>
@@ -3433,6 +3445,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="827820107214076967">Last inn logger på nytt</translation>
 <translation id="8279611986089885641">Chrome-varsler må være på. Du kan slå dem på i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Skuff 11</translation>
+<translation id="8281730697546299650">Andre funksjoner for annonsepersonvern er nå tilgjengelige</translation>
 <translation id="8281886186245836920">Hopp over</translation>
 <translation id="8282409409360764263">Hagevedlikehold</translation>
 <translation id="8282947398454257691">få kjennskap til den unike enhetsidentifikatoren</translation>

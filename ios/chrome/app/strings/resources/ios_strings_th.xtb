@@ -47,6 +47,7 @@
 <translation id="122699739164161391">ปิดแท็บทั้งหมด</translation>
 <translation id="1229222343402087523">ค้นหา ${searchPhrase} ใน Chrome</translation>
 <translation id="1242044645101871359">ลงชื่อเข้าใช้อีกครั้ง</translation>
+<translation id="1248276223555153952">จัดการบัญชีในอุปกรณ์นี้...</translation>
 <translation id="1254117744268754948">เลือกโฟลเดอร์</translation>
 <translation id="1254424942107648268">ค้นหาก่อนหน้า</translation>
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
 <translation id="1582732959743469162">การดำเนินการนี้จะหยุดการดาวน์โหลดที่ดำเนินอยู่ทั้งหมด</translation>
 <translation id="1594034544529347967">เริ่ม</translation>
+<translation id="160275202205869636">เมื่อเปิดไว้ ระบบจะใช้และบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
 <translation id="1605405588277479165">ปิด - ไม่แนะนำ</translation>
 <translation id="1605658421715042784">คัดลอกรูปภาพ</translation>
 <translation id="1608337082864370066">ค้นหารูปภาพที่คัดลอก</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">ค้นหาในโหมดไม่ระบุตัวตน</translation>
 <translation id="277771892408211951">เลือกภาษา</translation>
 <translation id="2780046210906776326">ไม่มีบัญชีอีเมล</translation>
+<translation id="2780326741858434269">บัญชีในอุปกรณ์นี้</translation>
 <translation id="2781325423985810933">เลิกทำ</translation>
 <translation id="2781331604911854368">เปิด</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
 <translation id="3577555362230509265">ใช้ Chrome ในแอปอื่นๆ</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
+<translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
 <translation id="3595252146048399851">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /> Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="3603009562372709545">คัดลอก URL ของลิงก์</translation>
@@ -693,6 +697,7 @@
 <translation id="5271265092610673171">{count,plural, =1{ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก}other{ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก}}</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>
 <translation id="5283494734135414249">แตะทางลัดที่ปรากฏใต้แถบที่อยู่</translation>
+<translation id="5292723732574094123">ออกจากระบบแล้ว ลงชื่อเข้าใช้อีกครั้งเพื่อดูบุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ในบัญชีของคุณ</translation>
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
@@ -736,6 +741,7 @@
 <translation id="5614553682702429503">บันทึกรหัสผ่านไหม</translation>
 <translation id="5626245204502895507">ไม่สามารถดาวน์โหลดไฟล์ได้ในขณะนี้</translation>
 <translation id="5631164295104953411">เพิ่มวิธีการชำระเงิน</translation>
+<translation id="5649795523408334796">ตรวจหาที่อยู่</translation>
 <translation id="5652623411397330904">ผลิตภัณฑ์ที่คุณติดตามจะแสดงที่นี่</translation>
 <translation id="5657859710142657190">ไปที่ตารางกริดของแท็บ</translation>
 <translation id="5659593005791499971">อีเมล</translation>
@@ -1297,6 +1303,7 @@
 <translation id="8843129975935593190">องค์กรของคุณจำกัดสิ่งที่คุณสามารถซิงค์</translation>
 <translation id="8849001918648564819">ซ่อน</translation>
 <translation id="8855242995793521265">ไม่ทำให้เบราว์เซอร์หรืออุปกรณ์ของคุณทำงานช้าลงอย่างเห็นได้ชัด</translation>
+<translation id="8863431381414769983">ขอเส้นทางและข้อมูลในพื้นที่จาก Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} แท็บ}other{{count} แท็บ}}</translation>
 <translation id="8870413625673593573">เพิ่งปิด</translation>
 <translation id="8876882697946675716">ซิงค์อุปกรณ์อยู่เสมอ</translation>

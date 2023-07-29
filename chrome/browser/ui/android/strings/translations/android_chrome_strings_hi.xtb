@@ -358,6 +358,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
 <translation id="2961210776189273067">टाइटल</translation>
 <translation id="296370266220139811">टाइप करने का समय बचाएं</translation>
+<translation id="297771753501244313">पिछली बार खोलने की तारीख से क्रम में लगाएं</translation>
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
 <translation id="2979639724566107830">नई विंडो में खोलें</translation>
 <translation id="2981364137500752533">आप ज़्यादा से ज़्यादा पांच विंडो खोल सकते हैं.</translation>

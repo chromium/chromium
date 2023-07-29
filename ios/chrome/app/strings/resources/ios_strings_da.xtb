@@ -47,6 +47,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="122699739164161391">Luk alle faner</translation>
 <translation id="1229222343402087523">Søg efter ${searchPhrase} i Chrome</translation>
 <translation id="1242044645101871359">Log ind igen</translation>
+<translation id="1248276223555153952">Administrer konti på denne enhed...</translation>
 <translation id="1254117744268754948">Vælg mappe</translation>
 <translation id="1254424942107648268">Find forrige</translation>
 <translation id="1258491128795710625">Nyheder</translation>
@@ -109,6 +110,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1580783302095112590">Email sendt.</translation>
 <translation id="1582732959743469162">Denne handling stopper den aktuelle download.</translation>
 <translation id="1594034544529347967">Starter</translation>
+<translation id="160275202205869636">Når denne indstilling er aktiveret, kan du bruge og gemme data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
 <translation id="1605405588277479165">Fra (anbefales ikke)</translation>
 <translation id="1605658421715042784">Kopiér billede</translation>
 <translation id="1608337082864370066">Søg efter kopieret billede</translation>
@@ -290,6 +292,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2773292004659987824">Søgning i inkognitotilstand</translation>
 <translation id="277771892408211951">Vælg sprog</translation>
 <translation id="2780046210906776326">Ingen mailkonti</translation>
+<translation id="2780326741858434269">Konti på denne enhed</translation>
 <translation id="2781325423985810933">FORTRYD</translation>
 <translation id="2781331604911854368">Til</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3575234738189584619">Søg med Lens</translation>
 <translation id="3577555362230509265">Brug Chrome i andre apps.</translation>
 <translation id="3581564640715911333">Tilbyd at oversætte sider på andre sprog</translation>
+<translation id="3587885837929752825">Din organisation begrænser, hvad du kan gemme på din Google-konto.</translation>
 <translation id="3588820906588687999">Åbn billede på ny fane</translation>
 <translation id="3595252146048399851">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />. Google kan personligt tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="3603009562372709545">Kopiér linkets webadresse</translation>
@@ -693,6 +697,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}one{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}other{Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.}}</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
 <translation id="5283494734135414249">Tryk på den genvej, der vises under adresselinjen.</translation>
+<translation id="5292723732574094123">Logget ud. Log ind igen for at se bogmærker, adgangskoder og meget mere på din konto.</translation>
 <translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5317780077021120954">Gem</translation>
@@ -736,6 +741,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
 <translation id="5626245204502895507">Filen kunne ikke downloades på nuværende tidspunkt.</translation>
 <translation id="5631164295104953411">Tilføj betalingsmetode</translation>
+<translation id="5649795523408334796">Registrer adresser</translation>
 <translation id="5652623411397330904">De produkter, hvis pris du holder øje med, vises her.</translation>
 <translation id="5657859710142657190">Gå til fanegitter</translation>
 <translation id="5659593005791499971">Mail</translation>
@@ -1297,6 +1303,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="8843129975935593190">Din organisation begrænser, hvad du kan synkronisere.</translation>
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8855242995793521265">Gør ikke din browser eller enhed mærkbart langsommere.</translation>
+<translation id="8863431381414769983">Få rutevejledning og lokale oplysninger fra Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} fane}one{{count} fane}other{{count} faner}}</translation>
 <translation id="8870413625673593573">Senest lukkede</translation>
 <translation id="8876882697946675716">Bevar synkroniseringen af dine enheder</translation>

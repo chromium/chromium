@@ -1807,6 +1807,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8921624153894383499">L'Assistente Google non parla questa lingua.</translation>
 <translation id="8924458948354692166">Premi invio per acquisire lo screenshot della finestra</translation>
 <translation id="8926951137623668982">Barra delle app sempre nascosta</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">disattivato</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="8940956008527784070">Batteria in esaurimento (<ph name="PERCENTAGE" />%)</translation>

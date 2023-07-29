@@ -47,6 +47,7 @@
 <translation id="122699739164161391">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="1229222343402087523">Chrome मा ${searchPhrase} खोज्नुहोस्</translation>
 <translation id="1242044645101871359">फेरि साइन इन गर्नुहोस्</translation>
+<translation id="1248276223555153952">यो डिभाइसमा लिंक गरिएका खाताहरूको व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="1254117744268754948">फोल्डर रोज्नुहोस्</translation>
 <translation id="1254424942107648268">अघिल्लो भेट्टाउनुहोस्</translation>
 <translation id="1258491128795710625">नयाँ के छ</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">पत्र पठाइयो।</translation>
 <translation id="1582732959743469162">यस कार्यले तपाईंको जारी डाउनलोडको सम्पूर्ण प्रगति रोक्ने छ।</translation>
 <translation id="1594034544529347967">सुरु हुने मिति</translation>
+<translation id="160275202205869636">यो सुविधा अन हुँदा आफ्नो Google खातामा डेटा प्रयोग र सेभ गर्नुहोस्। यो सुविधा अफ हुँदा उक्त डेटा यो डिभाइसमा मात्र सेभ गरिन्छ।</translation>
 <translation id="1605405588277479165">अफ छ - सिफारिस गरिँदैन</translation>
 <translation id="1605658421715042784">तस्बिर प्रतिलिपि गर्नुहोस्</translation>
 <translation id="1608337082864370066">प्रतिलिपि गरिएको छविको खोजी गर्नुहोस्</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">इन्कोग्निटो खोज</translation>
 <translation id="277771892408211951">भाषा चयन गर्नुहोस्</translation>
 <translation id="2780046210906776326">इमेल खाताहरू छैन</translation>
+<translation id="2780326741858434269">यो डिभाइसमा लिंक गरिएका खाताहरू</translation>
 <translation id="2781325423985810933">अन्डू गर्नुहोस्</translation>
 <translation id="2781331604911854368">सक्रिय छ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="3577555362230509265">अन्य एपहरूमा Chrome प्रयोग गर्नुहोस्।</translation>
 <translation id="3581564640715911333">पृष्ठहरू अन्य भाषामा अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
+<translation id="3587885837929752825">तपाईंको सङ्गठनले तपाईंले आफ्नो Google खातामा सेभ गर्न पाउने कुराहरूका सम्बन्धमा सीमा तोकेको छ।</translation>
 <translation id="3588820906588687999">छविलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="3595252146048399851">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई आफूले सिंक गर्न चाहेका कुराहरू छनौट गर्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="3603009562372709545">लिंक URL प्रतिलिपि गर्नुहोस्</translation>
@@ -693,6 +697,7 @@
 <translation id="5271265092610673171">{count,plural, =1{भर्नु पर्ने एउटा फिल्ड खाली छाडिएको छ। सो फिल्डमा भरेपछि मात्र सेभ गर्नुहोस्।}other{भर्नु पर्ने केही फिल्डहरू खाली छाडिएका छन्। ती फिल्डहरूमा भरेपछि मात्र सेभ गर्नुहोस्।}}</translation>
 <translation id="5271549068863921519">पासवर्ड बचत गर्नुहोस्</translation>
 <translation id="5283494734135414249">एड्रेस बारको तलपट्टि देखिने सर्टकटमा ट्याप गर्नुहोस्।</translation>
+<translation id="5292723732574094123">साइन आउट गरिएको छ। आफ्नो खातामा बुकमार्क र पासवर्डलगायतका कुराहरू हेर्न फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="5295239312320826323">खाता <ph name="USER_EMAIL" /> हटाउने हो?</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
@@ -736,6 +741,7 @@
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="5626245204502895507">यस समयमा फाइल डाउनलोड गर्न सकिदैन।</translation>
 <translation id="5631164295104953411">भुक्तानी विधि थप्नुहोस्‌</translation>
+<translation id="5649795523408334796">ठेगानाहरू पत्ता लगाउने सुविधासम्बन्धी सेटिङ</translation>
 <translation id="5652623411397330904">तपाईंले ट्र्याक गर्ने उत्पादनहरू यहाँ देखाइने छन्।</translation>
 <translation id="5657859710142657190">ट्याब ग्रिडमा जानुहोस्</translation>
 <translation id="5659593005791499971">इमेल</translation>
@@ -1297,6 +1303,7 @@
 <translation id="8843129975935593190">तपाईंको सङ्गठनले तपाईंले सिंक गर्न पाउने कुराहरूका सम्बन्धमा सीमा तोकेको छ।</translation>
 <translation id="8849001918648564819">लुकाइएको</translation>
 <translation id="8855242995793521265">तपाईंको ब्राउजर वा डिभाइसलाई महसुस हुने गरी सुस्त बनाउँदैन।</translation>
+<translation id="8863431381414769983">Google नक्साबाट जाने बाटो र स्थानीय जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ट्याब}other{{count} वटा ट्याब}}</translation>
 <translation id="8870413625673593573">हालै बन्द गरिएको</translation>
 <translation id="8876882697946675716">आफ्ना डिभाइसहरू सिंक गरिराख्नुहोस्</translation>

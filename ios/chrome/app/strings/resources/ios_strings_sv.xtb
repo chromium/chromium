@@ -47,6 +47,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="122699739164161391">Stäng alla flikar</translation>
 <translation id="1229222343402087523">Sök efter ${searchPhrase} i Chrome</translation>
 <translation id="1242044645101871359">Logga in igen</translation>
+<translation id="1248276223555153952">Hantera konton på den här enheten …</translation>
 <translation id="1254117744268754948">Välj mapp</translation>
 <translation id="1254424942107648268">Hitta föregående</translation>
 <translation id="1258491128795710625">Nyheter</translation>
@@ -109,6 +110,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1580783302095112590">E-post skickades.</translation>
 <translation id="1582732959743469162">Den pågående nedladdningen avbryts.</translation>
 <translation id="1594034544529347967">Börjar</translation>
+<translation id="160275202205869636">Använd och spara data i Google-kontot när inställningen är aktiverad. När inställningen är inaktiverad sparas data endast på den här enheten.</translation>
 <translation id="1605405588277479165">Av – rekommenderas inte</translation>
 <translation id="1605658421715042784">Kopiera bild</translation>
 <translation id="1608337082864370066">Sök efter kopierad bild</translation>
@@ -290,6 +292,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2773292004659987824">Inkognitosökning</translation>
 <translation id="277771892408211951">Välj språk</translation>
 <translation id="2780046210906776326">Inga e-postkonton</translation>
+<translation id="2780326741858434269">Konton på den här enheten</translation>
 <translation id="2781325423985810933">ÅNGRA</translation>
 <translation id="2781331604911854368">På</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3575234738189584619">Sök med Lens</translation>
 <translation id="3577555362230509265">Använd Chrome i andra appar.</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
+<translation id="3587885837929752825">Din organisation begränsar vad du kan spara på Google-kontot.</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
 <translation id="3595252146048399851">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="3603009562372709545">Kopiera länkens webbadress</translation>
@@ -693,6 +697,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5271265092610673171">{count,plural, =1{Ett obligatoriskt fält är tomt. Fyll i det innan du sparar.}other{Vissa obligatoriska fält är tomma. Fyll i dem innan du sparar.}}</translation>
 <translation id="5271549068863921519">Spara lösenord</translation>
 <translation id="5283494734135414249">Tryck på genvägen som visas under adressfältet.</translation>
+<translation id="5292723732574094123">Utloggad. Logga in igen om du vill visa bokmärken, lösenord med mera i kontot.</translation>
 <translation id="5295239312320826323">Vill du ta bort kontot <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5317780077021120954">Spara</translation>
@@ -736,6 +741,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5626245204502895507">Det gick inte att ladda ned filen just nu.</translation>
 <translation id="5631164295104953411">Lägg till betalningsmetod</translation>
+<translation id="5649795523408334796">Identifiera adresser</translation>
 <translation id="5652623411397330904">Produkterna du bevakar visas här.</translation>
 <translation id="5657859710142657190">Öppna rutnätet med flikar</translation>
 <translation id="5659593005791499971">E-post</translation>
@@ -1297,6 +1303,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="8843129975935593190">Organisationen begränsar vad du kan synkronisera.</translation>
 <translation id="8849001918648564819">Dold</translation>
 <translation id="8855242995793521265">Gör inte webbläsaren eller enheten märkbart långsammare.</translation>
+<translation id="8863431381414769983">Få vägbeskrivningar och lokal information från Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} flik}other{{count} flikar}}</translation>
 <translation id="8870413625673593573">Nyligen stängda</translation>
 <translation id="8876882697946675716">Håll dina enheter synkroniserade</translation>

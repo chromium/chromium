@@ -358,6 +358,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagina da leggere}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagine da leggere}}</translation>
 <translation id="2961210776189273067">Titolo</translation>
 <translation id="296370266220139811">Risparmia tempo e digita meno</translation>
+<translation id="297771753501244313">Ordina per ultimo aperto</translation>
 <translation id="2979025552038692506">Scheda in incognito selezionata</translation>
 <translation id="2979639724566107830">Apri in un'altra finestra</translation>
 <translation id="2981364137500752533">Puoi avere fino a 5 finestre.</translation>

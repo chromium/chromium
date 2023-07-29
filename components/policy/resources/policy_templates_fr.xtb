@@ -93,6 +93,9 @@ Si elle est désactivée, la fonctionnalité de correction automatique est désa
 <translation id="1063860513136880926">Si cette règle est activée, les utilisateurs ne peuvent pas faire de captures d'écran avec des raccourcis clavier ni avec des API d'extension. Si elle est désactivée ou qu'elle n'est pas configurée, les captures d'écran sont autorisées.
 
 Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />, cela n'empêche pas d'effectuer des captures d'écran avec des applis tierces ou du système d'exploitation.</translation>
+<translation id="1065175969514496951">Cette règle permet d'autoriser l'accès aux URL listées lors de l'authentification (par exemple, sur les écrans de connexion et de verrouillage) comme exceptions à <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Lisez sa description pour connaître le format des entrées listées. Par exemple, définir <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> sur <ph name="WILDCARD_VALUE" /> bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
+
+Si cette règle n'est pas configurée, aucune exception à <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> n'est autorisée.</translation>
 <translation id="1069489575852947981">Si cette règle est activée ou qu'elle n'est pas configurée, la connexion sans délai au compte local de l'appareil concerné s'effectue automatiquement. <ph name="PRODUCT_OS_NAME" /> permet d'utiliser le raccourci clavier Ctrl+Alt+S pour contourner la connexion automatique et afficher l'écran de connexion.
 
       Si cette règle est désactivée, les utilisateurs ne peuvent pas contourner la connexion automatique sans délai (si celle-ci est configurée).</translation>
@@ -1149,6 +1152,13 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
       Si la règle est définie sur "False" ou n'est pas définie, cette information n'est pas transmise.
       Si elle est définie sur "True", le fuseau horaire actuel de l'appareil est transmis.</translation>
 <translation id="1990784382342293892">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
+<translation id="1995744620192427843">Cette règle permet d'empêcher les pages Web ayant des URL interdites de se charger lors de l'authentification de l'utilisateur (par exemple, sur les écrans de connexion et de verrouillage). Elle fournit une liste de formats d'URL précisant les URL interdites. Si cette règle n'est pas configurée, aucune URL n'est interdite lors de l'authentification. Les formats d'URL doivent respecter les conditions énoncées à la page https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Les exceptions à ces formats peuvent être définies dans la règle associée <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />.
+
+Certaines URL, comme accounts.google.com, sont nécessaires à l'authentification. Elles ne doivent donc pas être bloquées si une connexion en ligne est requise.
+
+Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Si vous bloquez example.com/abc, example.com pourra toujours la charger à l'aide de XMLHTTPRequest.</translation>
 <translation id="199764499252435679">Activer la mise à jour des composants de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1997943707974344423">Autoriser Smart Lock</translation>
 <translation id="1998504583649140526">Paramètres des requêtes à un réseau privé</translation>
@@ -4752,6 +4762,7 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si la règle est activée, l'état est transmis au serveur, ce qui lui permet de détecter si l'appareil est hors connexion, tant que l'utilisateur est affilié.</translation>
 <translation id="5238275681097851753">Autoriser le blocage de certains contenus <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forcer l'activation de l'Association express (association Bluetooth rapide).</translation>
+<translation id="5239277956452384929">Autoriser l'accès à une liste d'URL lors de l'authentification</translation>
 <translation id="5245647012663146075">Ne pas autoriser l'activation de Phone Hub</translation>
 <translation id="5245671702326993331">Autorise les notifications natives</translation>
 <translation id="524637053580639111">Cette règle étant supprimée dans la version M82, veuillez utiliser la règle DeviceMinimumVersion à la place.
@@ -8111,6 +8122,7 @@ Cette règle s'applique au mode navigation privée. Cela signifie que la navigat
 <translation id="8244171102276095471">Activer des suites de chiffrement RC4 dans TLS</translation>
 <translation id="8244525275280476362">Délai maximal de récupération après le rejet d'une règle</translation>
 <translation id="8245574649143980200">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent voir et utiliser la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> via le menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le menu contextuel lorsque la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> est disponible.</translation>
+<translation id="8247143534027746614">Bloquer l'accès à une liste de formats d'URL lors de l'authentification</translation>
 <translation id="824818544897669723">Désactiver la suppression des historiques du navigateur et des téléchargements</translation>
 <translation id="8250048892729838843">Cette règle est obsolète. Si cette règle est activée ou qu'elle n'est pas configurée, l'appareil peut recevoir des contrôles de rapports précis.
       Si cette règle est désactivée, les appareils enregistrés ne reçoivent pas de contrôles de rapports précis.</translation>

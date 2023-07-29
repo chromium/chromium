@@ -47,6 +47,7 @@
 <translation id="122699739164161391">ሁሉንም ትሮች ዝጋ</translation>
 <translation id="1229222343402087523">${searchPhrase}ን በChrome ውስጥ ይፈልጉ</translation>
 <translation id="1242044645101871359">እንደገና ይግቡ</translation>
+<translation id="1248276223555153952">በዚህ መሣሪያ ላይ ያሉ መለያዎችን ያስተዳድሩ...</translation>
 <translation id="1254117744268754948">አቃፊ ይምረጡ</translation>
 <translation id="1254424942107648268">ቀዳሚውን አግኝ</translation>
 <translation id="1258491128795710625">ምን አዲስ ነገር አለ</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">መልዕክት ተልኳል።</translation>
 <translation id="1582732959743469162">ይህ መተግበሪያ ለአሁኑ ውርድዎ ሁሉንም ሂደት ያቆማል።</translation>
 <translation id="1594034544529347967">ይጀምራል</translation>
+<translation id="160275202205869636">ሲበራ፣ በGoogle መለያዎ ውስጥ ውሂብ ይጠቀማል እና ያስቀምጣል። ሲጠፋ፣ ውሂብ ወደዚህ መሣሪያ ብቻ ይቀመጣል።</translation>
 <translation id="1605405588277479165">አጥፋ - አይመከርም</translation>
 <translation id="1605658421715042784">ምስሉን ገልብጥ</translation>
 <translation id="1608337082864370066">የቀዱትን ምስል ይፈልጉ</translation>
@@ -279,6 +281,7 @@
 <translation id="2702801445560668637">የንባብ ዝርዝር</translation>
 <translation id="2704491540504985681">የወረዱ</translation>
 <translation id="2704606927547763573">ተቀድቷል</translation>
+<translation id="2708051474374549906">ወደ Google በሚላከው የእርስዎ የአሰሳ ውሂብ ላይ ተመስርቶ አደገኛ ከሆኑ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች የሚደረግ የእውነተኛ ጊዜ ንቁ ጥበቃ</translation>
 <translation id="2709516037105925701">ራስ-ሙላ</translation>
 <translation id="271033894570825754">አዲስ</translation>
 <translation id="2712127207578915686">ፋይሉን መክፈት አልተቻለም</translation>
@@ -289,6 +292,7 @@
 <translation id="2773292004659987824">ማንነት የማያሳውቅ ፍለጋ</translation>
 <translation id="277771892408211951">ቋንቋ ይምረጡ</translation>
 <translation id="2780046210906776326">ምንም የኢሜይል መለያዎች የሉም</translation>
+<translation id="2780326741858434269">በዚህ መሣሪያ ላይ ያሉ መለያዎች</translation>
 <translation id="2781325423985810933">ቀልብስ</translation>
 <translation id="2781331604911854368">አብራ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -341,6 +345,7 @@
 <translation id="3020183492814296499">አቋራጮች</translation>
 <translation id="3037605927509011580">ውይ፣ ተሰናከለ!</translation>
 <translation id="3039722182465315531">በመለያ አይግቡ</translation>
+<translation id="3053332585453689122">ጎጂ መሆናቸውን ለመፈተሽ የሚጎበኟቸው ዩአርሎችን እና የገፅ ይዘት ትንሽ ናሙናን፣ ውርዶችን፣ የቅጥያ እንቅስቃሴን እና የሥርዓት መረጃን ወደ የGoogle ጥንቃቄ አሰሳ ይልካል።</translation>
 <translation id="3074499504015191586">ሙሉ ገጹን ተርጉም</translation>
 <translation id="3076846064362030967">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። በመለያ ሲገቡ <ph name="BEGIN_LINK" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።
 
@@ -430,6 +435,7 @@
 <translation id="3575234738189584619">በሌንስ ፈልግ</translation>
 <translation id="3577555362230509265">Chromeን በሌሎች መተግበሪያዎች ውስጥ ይጠቀሙ።</translation>
 <translation id="3581564640715911333">በሌሎች ቋንቋዎች ለመተርጎም ሐሳብ አቅርብ</translation>
+<translation id="3587885837929752825">ድርጅትዎ በGoogle መለያዎ ውስጥ ማስቀመጥ የሚችሉትን ነገር ይገድባል።</translation>
 <translation id="3588820906588687999">ምስሉን በአዲስ ትር ውስጥ ክፈት</translation>
 <translation id="3595252146048399851"><ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ በማንኛውም ጊዜ ምን እንደሚያሰምሩ መምረጥ ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመስረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="3603009562372709545">የአገናኝ ዩአርኤል ገልብጥ</translation>
@@ -572,6 +578,7 @@
 <translation id="4587589328781138893">ጣቢያዎች</translation>
 <translation id="4588014171431912783">የእርስዎ የማስመር ቅንብሮች በእርስዎ የመጨረሻ ምትኬ ላይ በመመስረት ወደነበሩበት ይመለሳሉ። <ph name="BEGIN_LINK" />ምን ማስመር እንደሚችሉ ይመልከቱ<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">የቁልፍ ሰሌዳ</translation>
+<translation id="4601095002996233687">ለሚያጠራጥሩ ውርዶች በጥልቀት የሚደረጉ ቅኝቶች።</translation>
 <translation id="4606247758155004938">የእርስዎ አሳሽ በእርስዎ ድርጅት የሚተዳደር ነው።</translation>
 <translation id="461440297010471931">በGoogle መፈለግ</translation>
 <translation id="4616391354457235490">ቀልብስ</translation>
@@ -690,6 +697,7 @@
 <translation id="5271265092610673171">{count,plural, =1{አስፈላጊ መስክ ባዶ ነው። ከማስቀመጥ በፊት ይሙሉት።}one{አንዳንድ አስፈላጊ መስክ ባዶ ነው። ከማስቀመጥ በፊት ይሙሉት።}other{አንዳንድ አስፈላጊ መስኮች ባዶ ናቸው። ከማስቀመጥ በፊት ይሙሏቸው።}}</translation>
 <translation id="5271549068863921519">የይለፍ ቃሉን አስቀምጥ</translation>
 <translation id="5283494734135414249">ከአድራሻ አሞሌው ስር የሚታየው አቋራጭ ላይ መታ ያድርጉ።</translation>
+<translation id="5292723732574094123">ዘግተው ወጥተዋል። ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎችንም በመለያዎ ውስጥ ለማየት በመለያ መልሰው ይግቡ።</translation>
 <translation id="5295239312320826323">የ<ph name="USER_EMAIL" /> መለያ ይወገድ?</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
@@ -733,6 +741,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5614553682702429503">የይለፍ ቃል ይቀመጥ?</translation>
 <translation id="5626245204502895507">ፋይሉ በዚህ ጊዜ ሊወርድ አልቻለም።</translation>
 <translation id="5631164295104953411">የመክፈያ ዘዴ ያክሉ</translation>
+<translation id="5649795523408334796">አድራሻዎችን ይወቁ</translation>
 <translation id="5652623411397330904">እርስዎ የሚከታተሏቸው ምርቶች እዚህ ላይ ይታያሉ።</translation>
 <translation id="5657859710142657190">ወደ ትር ፍርግርግ ሂድ</translation>
 <translation id="5659593005791499971">ኢሜይል</translation>
@@ -927,6 +936,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">አንድ ጣቢያ ይጎብኙ እና በChrome ምናሌ ውስጥ ተከተል የሚለውን ጠቅ ያድርጉ</translation>
 <translation id="6550675742724504774">አማራጮች</translation>
+<translation id="6550891580932862748">ለእርስዎ አደገኛ ከሆኑ የድር ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ አያደርግልዎትም። በሌሎች Google ምርቶች ውስጥ ያሉ የእርስዎ አስተማማኝ የአሳሽ ቅንብሮች ተጽዕኖ አያድርባቸውም።</translation>
 <translation id="6561262006871132942">አጉላ</translation>
 <translation id="6579867704846662339">ከሌሎች መተግበሪያዎች ላይ መጪ ዩአርኤሎችን በማንነት የማያሳውቅ ውስጥ ለመክፈት መምረጥ ይችላሉ።</translation>
 <translation id="6583087784430677195">ለማጥፋት <ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" />ን ይክፈቱ እና ወደ የይለፍ ቃላትም በራስ-ሙላ ይሂዱ።</translation>
@@ -1149,6 +1159,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 ጣቢያዎች እርስዎ በተለያዩ ጣቢያዎች ላይ ያሉዎት የአሰሳ እንቅስቃሴን ለመመልከት፣ ለምሳሌ ማስታወቂያዎችን ግላዊነት ለማላበስ፣ ኩኪዎችን መጠቀም ይችላሉ።</translation>
 <translation id="7971521879845308059">ብቅ-ባዮችን አግድ</translation>
 <translation id="7975036700432177008">ይሞክሩ</translation>
+<translation id="7977451675950311423">በውሂብ ጥሰት ውስጥ የተጠለፈ የይለፍ ቃል ከተጠቀሙ ያስጠነቅቅዎታል።</translation>
 <translation id="7978018860671536736">3. የይለፍ ቃላትን በራስ-ሙላን መታ ያድርጉ</translation>
 <translation id="7982789257301363584">አውታረ መረብ</translation>
 <translation id="7987685713885608670">ለታከለው ደህንነት በመሣሪያዎ ላይ ያሉ የይለፍ ቃላትን ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት ያመስጥሩ።</translation>
@@ -1292,6 +1303,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8843129975935593190">የእርስዎ ድርጅት እርስዎ ምን ማስመር እንደሚችሉ ይገድባል።</translation>
 <translation id="8849001918648564819">ተደብቋል</translation>
 <translation id="8855242995793521265">በሚታወቅ መልኩ የእርስዎን አሳሸ ወይም መሣሪያ ቀስ አይደርግም።</translation>
+<translation id="8863431381414769983">ከGoogle ካርታዎች አቅጣጫዎችን እና አካባቢያዊ መረጃ ያግኙ</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ትር}one{{count} ትሮች}other{{count} ትሮች}}</translation>
 <translation id="8870413625673593573">በቅርብ ጊዜ የተዘጉ</translation>
 <translation id="8876882697946675716">መሳሪያዎችዎን በስምረት ላይ ያቆዩዋቸው</translation>

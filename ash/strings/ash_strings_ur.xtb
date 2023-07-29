@@ -1810,6 +1810,7 @@
 <translation id="8921624153894383499">‏Google اسسٹنٹ یہ زبان نہیں بولتا ہے۔</translation>
 <translation id="8924458948354692166">ونڈو کا اسکرین شاٹ لینے کے لیے اینٹر دبائیں</translation>
 <translation id="8926951137623668982">شیلف ہمیشہ پوشیدہ</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 فائل}other{# فائلز}}</translation>
 <translation id="8936501819958976551">غیر فعال</translation>
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>
 <translation id="8940956008527784070">‏بیٹری کم ہے (‎<ph name="PERCENTAGE" />%‎)</translation>

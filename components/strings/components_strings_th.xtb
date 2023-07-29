@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1432187715652018471">หน้าเว็บต้องการติดตั้งเครื่องจัดการบริการ</translation>
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
+<translation id="1433225466058025572">ลองย้ายไฟล์อีกครั้ง</translation>
 <translation id="1435940442311036198">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
 <translation id="1436185428532214179">สามารถขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
 <translation id="1442386063175183758">พับทบด้านขวา</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;เลิกทำการนำออก</translation>
 <translation id="2397836504670957718">แล็ปท็อปและโน้ตบุ๊ก</translation>
 <translation id="2400600116338235695">สามารถขอเชื่อมต่อกับพอร์ตอนุกรมได้</translation>
+<translation id="2404884497378469141">ลองคัดลอกไฟล์อีกครั้ง</translation>
 <translation id="2413155254802890957">เก่า</translation>
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2414886740292270097">มืด</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">กรอกรหัสผ่านใน "<ph name="APP_NAME" />"</translation>
 <translation id="2764001903315068341">การ์ตูน</translation>
 <translation id="2765217105034171413">ขนาดเล็ก</translation>
+<translation id="2770159525358613612">ลองอัปโหลดไฟล์อีกครั้ง</translation>
 <translation id="277133753123645258">วิธีการจัดส่งสินค้า</translation>
 <translation id="277499241957683684">ไม่มีอุปกรณ์บันทึก</translation>
 <translation id="2775884851269838147">หน้าที่พิมพ์หน้าแรก</translation>
@@ -1228,6 +1231,7 @@
 <translation id="3632892046558972264">หยุดการแชร์หน้าจอชั่วคราว</translation>
 <translation id="3634530185120165534">ถาด 5</translation>
 <translation id="3634567936866541746">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
+<translation id="3642196846309122856">ลองดาวน์โหลดไฟล์อีกครั้ง</translation>
 <translation id="3642638418806704195">แอปพลิเคชัน:</translation>
 <translation id="3646643500201740985">การวัดประสิทธิภาพของโฆษณา</translation>
 <translation id="3647286794400715637">แต่ละรายการในสตริง URL ต้องมี URL 1-2 รายการ</translation>
@@ -1351,6 +1355,7 @@
 <translation id="3890664840433101773">เพิ่มอีเมล</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3901925938762663762">บัตรหมดอายุ</translation>
+<translation id="390391808978419508">การเปิดหมดเวลาแล้ว</translation>
 <translation id="3905894480064208252">{0,plural, =1{ไฟล์ถูกบล็อกไม่ให้มีการโอน}other{ไฟล์ <ph name="FILE_COUNT" /> รายการถูกบล็อกไม่ให้มีการโอน}}</translation>
 <translation id="3906095212874392000">สิ้นสุดข้อความที่แปลง</translation>
 <translation id="3906954721959377182">แท็บเล็ต</translation>
@@ -1363,6 +1368,7 @@
 <translation id="393316646445601645">อินเทอร์เน็ตและโทรคมนาคม</translation>
 <translation id="3939773374150895049">ใช้ WebAuthn แทน CVC ไหม</translation>
 <translation id="3941630233824954464">เปิดใช้การตรวจสอบสิทธิ์อีกครั้งซึ่งจำเป็นต้องดำเนินการ</translation>
+<translation id="3942048175062210325">ลองเปิดไฟล์อีกครั้ง</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3946209740501886391">ถามทุกครั้งบนเว็บไซต์นี้</translation>
 <translation id="3947595700203588284">สามารถขอเชื่อมต่อกับอุปกรณ์ MIDI ได้</translation>
@@ -1444,6 +1450,7 @@
 <translation id="4117700440116928470">ขอบข่ายนโยบายไม่ได้รับการสนับสนุน</translation>
 <translation id="4121428309786185360">หมดอายุเมื่อวันที่</translation>
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
+<translation id="412601465078863288">การอัปโหลดหมดเวลาแล้ว</translation>
 <translation id="4127317221386336246">เครื่องประดับเสื้อผ้า</translation>
 <translation id="4127575959421463246">กำลังมองหาการติดธงของ ChromeOS ใช่ไหม ไปที่</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{อีก 1 รายการ}other{อีก # รายการ}}</translation>
@@ -1660,6 +1667,7 @@
 <translation id="4540780316273593836">เกิดข้อผิดพลาด</translation>
 <translation id="4541810033354695636">Augmented Reality</translation>
 <translation id="4542971377163063093">ถาด 6</translation>
+<translation id="4546730006268514143">การโอนหมดเวลาแล้ว</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">คุณกําลังใช้การล็อกหน้าจอเพื่อป้อนรหัสผ่าน</translation>
 <translation id="4558551763791394412">ลองปิดใช้ส่วนขยาย</translation>
@@ -2093,6 +2101,7 @@
 <translation id="5470230812924696184">การให้คำปรึกษาด้านวิศวกรรมโยธา</translation>
 <translation id="5470861586879999274">&amp;ทำซ้ำการแก้ไข</translation>
 <translation id="5471337644440862957">ภาพยนตร์ตลก</translation>
+<translation id="547963486735802022">ลองโอนไฟล์อีกครั้ง</translation>
 <translation id="5481076368049295676">เนื้อหานี้อาจพยายามติดตั้งซอฟต์แวร์อันตรายที่จะขโมยหรือลบข้อมูลในอุปกรณ์ของคุณ <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="5483838506518938965">คุณพร้อมแล้ว</translation>
@@ -2782,6 +2791,7 @@
 <translation id="6961733224437895943">ประกันภัยบ้าน</translation>
 <translation id="6961844873822989059">สามารถขอใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์ได้</translation>
 <translation id="6961980518585973432">วันครบรอบ</translation>
+<translation id="6962858948849099922">การย้ายหมดเวลาแล้ว</translation>
 <translation id="6963520811470373926">กำลังแทนที่</translation>
 <translation id="6963574715554809750">การขายปลีก</translation>
 <translation id="6963693576491380224">งานในภาครัฐและงานรับราชการ</translation>
@@ -2859,6 +2869,7 @@
 <translation id="7111507312244504964">การประเมินมูลค่าและการตรวจสอบอสังหาริมทรัพย์</translation>
 <translation id="7112327784801341716">หากไม่เห็นข้อมูลปัจจุบัน โปรดติดต่อธนาคารให้อัปเดต</translation>
 <translation id="7118618213916969306">ค้นหา URL ในคลิปบอร์ด <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">การคัดลอกหมดเวลาแล้ว</translation>
 <translation id="7119414471315195487">ปิดแท็บหรือโปรแกรมอื่นๆ</translation>
 <translation id="7124354851782353862">ป้อน CVC ของคุณ</translation>
 <translation id="7129355289156517987">เมื่อคุณปิดแท็บที่ไม่ระบุตัวตนใน Chromium ทั้งหมด ระบบจะล้างกิจกรรมในแท็บเหล่านั้นจากอุปกรณ์เครื่องนี้
@@ -3111,6 +3122,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">ไม่ถึง <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ไม่สามารถดำเนินการกับคำขอนี้ในขณะนี้</translation>
+<translation id="7599089013883397081">การดาวน์โหลดหมดเวลาแล้ว</translation>
 <translation id="7600965453749440009">ไม่ต้องแปลภาษา<ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์นี้อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">ค่าอยู่นอกช่วง <ph name="VALUE" /></translation>
