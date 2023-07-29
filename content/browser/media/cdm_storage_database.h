@@ -5,8 +5,13 @@
 #ifndef CONTENT_BROWSER_MEDIA_CDM_STORAGE_DATABASE_H_
 #define CONTENT_BROWSER_MEDIA_CDM_STORAGE_DATABASE_H_
 
+#include <stdint.h>
+#include <string>
+#include <vector>
+
 #include "base/sequence_checker.h"
 #include "content/browser/media/cdm_storage_host.h"
+#include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,15 +22,12 @@ namespace content {
 // Helper class which encapsulates all database logic for storing cdm data.
 //
 // This class must be constructed and used on a sequence which allows blocking.
-class CdmStorageDatabase {
+class CONTENT_EXPORT CdmStorageDatabase {
  public:
   // The database will be in-memory if `path` is empty.
   explicit CdmStorageDatabase(const base::FilePath& path);
 
-  CdmStorageHost::CdmStorageHostOpenError EnsureOpen(
-      const blink::StorageKey& storage_key,
-      const media::CdmType& cdm_type,
-      const std::string& file_name);
+  CdmStorageHost::CdmStorageHostOpenError EnsureOpenForTesting();
 
   absl::optional<std::vector<uint8_t>> ReadFile(
       const blink::StorageKey& storage_key,

@@ -3072,6 +3072,7 @@ test("content_unittests") {
 
   if (enable_library_cdms) {
     sources += [
+      "../browser/media/cdm_storage_database_unittest.cc",
       "../browser/media/key_system_support_impl_unittest.cc",
       "../browser/media/media_license_manager_unittest.cc",
       "../browser/media/media_license_storage_host_unittest.cc",

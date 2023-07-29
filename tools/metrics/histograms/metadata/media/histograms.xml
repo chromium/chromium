@@ -2233,6 +2233,16 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent to load a library CDM.</summary>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError"
+    enum="SqliteLoggedResultCode" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    SQLite specific errors reported while opening and using the Cdm Storage
+    Database. Recorded on any error from a database operation.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
     expires_after="2024-01-15">
   <owner>jkardatzke@chromium.org</owner>
