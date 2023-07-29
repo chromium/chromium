@@ -5,11 +5,11 @@
 #include "chrome/browser/lacros/views_text_services_context_menu_lacros.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/lacros/clipboard_history_lacros.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -115,7 +115,7 @@ bool ViewsTextServicesContextMenuLacros::IsCommandIdEnabled(
     // history command id if there are clipboard history item descriptors.
     return IsClipboardHistoryLacrosServiceAvailable() &&
            (chromeos::features::IsClipboardHistoryRefreshEnabled()
-                ? !ClipboardHistoryLacros::Get()->cached_descriptors().empty()
+                ? !chromeos::clipboard_history::QueryItemDescriptors().empty()
                 : !IsClipboardHistoryEmpty());
   }
 

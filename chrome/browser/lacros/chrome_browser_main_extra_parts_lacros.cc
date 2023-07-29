@@ -68,6 +68,24 @@
 
 namespace {
 
+// Creates a `crosapi::ClipboardHistoryLacros` instance. This function should
+// only be called if the clipboard history refresh is enabled.
+std::unique_ptr<crosapi::ClipboardHistoryLacros>
+CreateClipboardHistoryLacros() {
+  CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
+
+  if (chromeos::LacrosService* const service = chromeos::LacrosService::Get();
+      service->IsAvailable<crosapi::mojom::ClipboardHistory>() &&
+      service->GetInterfaceVersion<crosapi::mojom::ClipboardHistory>() >=
+          int{crosapi::mojom::ClipboardHistory::MethodMinVersions::
+                  kRegisterClientMinVersion}) {
+    return std::make_unique<crosapi::ClipboardHistoryLacros>(
+        service->GetRemote<crosapi::mojom::ClipboardHistory>().get());
+  }
+
+  return nullptr;
+}
+
 extensions::mojom::FeatureSessionType GetExtSessionType() {
   using extensions::mojom::FeatureSessionType;
 
@@ -138,8 +156,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   web_page_info_provider_ =
       std::make_unique<crosapi::WebPageInfoProviderLacros>();
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    clipboard_history_lacros_ =
-        std::make_unique<crosapi::ClipboardHistoryLacros>();
+    clipboard_history_lacros_ = CreateClipboardHistoryLacros();
   }
 
   memory_pressure::MultiSourceMemoryPressureMonitor* monitor =
@@ -285,8 +302,16 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
         base::BindRepeating([]() {
-          return crosapi::ClipboardHistoryLacros::Get()->cached_descriptors();
+          if (const crosapi::ClipboardHistoryLacros* const
+                  clipboard_history_lacros =
+                      crosapi::ClipboardHistoryLacros::Get()) {
+            return clipboard_history_lacros->cached_descriptors();
+          }
+
+          return chromeos::clipboard_history::QueryItemDescriptorsImpl::
+              ResultType();
         }));
+
     chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
         base::BindRepeating(
             [](const base::UnguessableToken& id, int event_flags,

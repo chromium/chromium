@@ -5,15 +5,15 @@
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
 
 #include <utility>
+#include <vector>
 
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"
-#include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -22,6 +22,7 @@ namespace crosapi {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Mock;
 
 // Matchers --------------------------------------------------------------------
 
@@ -67,36 +68,29 @@ class MockClipboardHistoryAsh : public mojom::ClipboardHistory {
 
 }  // namespace
 
-class ClipboardHistoryClientLacrosBrowserTest : public InProcessBrowserTest {
+class ClipboardHistoryLacrosTest : public testing::Test {
  public:
   // testing::Test:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-
+  void SetUp() override {
     // Enable the clipboard history refresh feature.
     crosapi::mojom::BrowserInitParamsPtr params_ptr =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
+        crosapi::mojom::BrowserInitParams::New();
     params_ptr->enable_clipboard_history_refresh = true;
-    params_ptr->interface_versions
-        .value()[crosapi::mojom::ClipboardHistory::Uuid_] = 2;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params_ptr));
-
-    // Inject the mock clipboard history interface.
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        mock_clipboard_history_ash_.receiver_.BindNewPipeAndPassRemote());
   }
 
   MockClipboardHistoryAsh mock_clipboard_history_ash_;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryClientLacrosBrowserTest, Basics) {
+TEST_F(ClipboardHistoryLacrosTest, Basics) {
   // Verifies that `ClipboardHistoryLacros` calls the clipboard history
   // interface to register itself as a client.
   EXPECT_CALL(mock_clipboard_history_ash_, RegisterClient).Times(1);
-  ClipboardHistoryLacros client;
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::ClipboardHistory>()
-      .FlushForTesting();
+  ClipboardHistoryLacros client(&mock_clipboard_history_ash_);
+  Mock::VerifyAndClearExpectations(&mock_clipboard_history_ash_);
 
   std::vector<crosapi::mojom::ClipboardHistoryItemDescriptorPtr>
       descriptor_ptrs_from_ash;

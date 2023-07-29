@@ -19,7 +19,7 @@ namespace crosapi {
 // only if the clipboard history refresh feature is enabled.
 class ClipboardHistoryLacros : public mojom::ClipboardHistoryClient {
  public:
-  ClipboardHistoryLacros();
+  explicit ClipboardHistoryLacros(mojom::ClipboardHistory* remote);
   ClipboardHistoryLacros(const ClipboardHistoryLacros&) = delete;
   ClipboardHistoryLacros& operator=(const ClipboardHistoryLacros&) = delete;
   ~ClipboardHistoryLacros() override;
