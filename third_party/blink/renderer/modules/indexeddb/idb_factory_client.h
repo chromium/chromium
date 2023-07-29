@@ -31,7 +31,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

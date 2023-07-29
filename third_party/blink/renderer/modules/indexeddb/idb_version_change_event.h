@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VERSION_CHANGE_EVENT_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_version_change_event_init.h"

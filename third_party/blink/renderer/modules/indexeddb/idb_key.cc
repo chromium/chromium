@@ -28,8 +28,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-
 namespace blink {
 
 namespace {

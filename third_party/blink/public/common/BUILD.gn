@@ -182,7 +182,6 @@ source_set("headers") {
     "indexeddb/indexeddb_key_path.h",
     "indexeddb/indexeddb_key_range.h",
     "indexeddb/indexeddb_metadata.h",
-    "indexeddb/web_idb_types.h",
     "input/pointer_id.h",
     "input/synthetic_web_input_event_builders.h",
     "input/web_coalesced_input_event.h",
