@@ -1656,12 +1656,11 @@ std::wstring ComputeUserChoiceHash(const std::wstring& extension,
       base::span<uint8_t>(reinterpret_cast<uint8_t*>(input), sizeof(input))));
 }
 
-bool IsUserChoiceHashValid(
-    const base::win::ExportDerivedRegKey& user_choice_reg_key,
-    const std::wstring& extension,
-    const std::wstring& sid,
-    const std::wstring& prog_id,
-    const std::wstring& salt) {
+bool IsUserChoiceHashValid(const base::win::RegKey& user_choice_reg_key,
+                           const std::wstring& extension,
+                           const std::wstring& sid,
+                           const std::wstring& prog_id,
+                           const std::wstring& salt) {
   // Manually validate the hash instead of using
   // IApplicationAssociationRegistration because
   // IApplicationAssociationRegistration may trigger a UI notification and reset
@@ -1685,7 +1684,7 @@ bool IsUserChoiceHashValid(
   return current_hash == expected_hash;
 }
 
-bool WriteUserChoiceValues(base::win::ExportDerivedRegKey& user_choice_reg_key,
+bool WriteUserChoiceValues(base::win::RegKey& user_choice_reg_key,
                            const std::wstring& extension,
                            const std::wstring& sid,
                            const std::wstring& prog_id,
@@ -2299,7 +2298,7 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
     return false;
   }
 
-  base::win::ExportDerivedRegKey url_associations_key(
+  base::win::RegKey url_associations_key(
       HKEY_CURRENT_USER,
       L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations",
       KEY_READ | KEY_WRITE);
@@ -2308,9 +2307,8 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
         base::StrCat({kBrowserProtocolAssociations[i], L"\\UserChoice"}));
     // Deleting the key works around the deny set value ACL on UserChoice.
     url_associations_key.DeleteKey(subkey_path.c_str());
-    base::win::ExportDerivedRegKey key(url_associations_key.Handle(),
-                                       subkey_path.c_str(),
-                                       KEY_READ | KEY_WRITE);
+    base::win::RegKey key(url_associations_key.Handle(), subkey_path.c_str(),
+                          KEY_READ | KEY_WRITE);
     if (!WriteUserChoiceValues(key, kBrowserProtocolAssociations[i], sid,
                                prog_id, shell_salt)) {
       ReportDirectSettingResult(DirectSettingAttemptResult::kFailedRegistrySet);
@@ -2318,7 +2316,7 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
     }
   }
 
-  base::win::ExportDerivedRegKey file_extensions_key(
+  base::win::RegKey file_extensions_key(
       HKEY_CURRENT_USER,
       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts",
       KEY_READ | KEY_WRITE);
@@ -2327,9 +2325,8 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
         base::StrCat({kDefaultFileAssociations[i], L"\\UserChoice"}));
     // Deleting the key works around the deny set value ACL on UserChoice.
     file_extensions_key.DeleteKey(subkey_path.c_str());
-    base::win::ExportDerivedRegKey key(file_extensions_key.Handle(),
-                                       subkey_path.c_str(),
-                                       KEY_READ | KEY_WRITE);
+    base::win::RegKey key(file_extensions_key.Handle(), subkey_path.c_str(),
+                          KEY_READ | KEY_WRITE);
     if (!WriteUserChoiceValues(key, kDefaultFileAssociations[i], sid, prog_id,
                                shell_salt)) {
       ReportDirectSettingResult(DirectSettingAttemptResult::kFailedRegistrySet);

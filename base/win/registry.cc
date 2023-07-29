@@ -14,16 +14,12 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
-#include "base/native_library.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/win/object_watcher.h"
-#include "base/win/pe_image.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
 
@@ -50,326 +46,8 @@ constexpr DWORD kInvalidIterValue = static_cast<DWORD>(-1);
 
 }  // namespace
 
-namespace internal {
-
-// A forwarder to the normal delayloaded Windows Registry API.
-class Standard {
- public:
-  static inline LSTATUS CreateKey(HKEY hKey,
-                                  LPCWSTR lpSubKey,
-                                  DWORD Reserved,
-                                  LPWSTR lpClass,
-                                  DWORD dwOptions,
-                                  REGSAM samDesired,
-                                  CONST LPSECURITY_ATTRIBUTES
-                                      lpSecurityAttributes,
-                                  PHKEY phkResult,
-                                  LPDWORD lpdwDisposition) {
-    return ::RegCreateKeyExW(hKey, lpSubKey, Reserved, lpClass, dwOptions,
-                             samDesired, lpSecurityAttributes, phkResult,
-                             lpdwDisposition);
-  }
-
-  static inline LSTATUS OpenKey(HKEY hKey,
-                                LPCWSTR lpSubKey,
-                                DWORD ulOptions,
-                                REGSAM samDesired,
-                                PHKEY phkResult) {
-    return ::RegOpenKeyExW(hKey, lpSubKey, ulOptions, samDesired, phkResult);
-  }
-
-  static inline LSTATUS DeleteKey(HKEY hKey,
-                                  LPCWSTR lpSubKey,
-                                  REGSAM samDesired,
-                                  DWORD Reserved) {
-    return ::RegDeleteKeyExW(hKey, lpSubKey, samDesired, Reserved);
-  }
-
-  static inline LSTATUS QueryInfoKey(HKEY hKey,
-                                     LPWSTR lpClass,
-                                     LPDWORD lpcchClass,
-                                     LPDWORD lpReserved,
-                                     LPDWORD lpcSubKeys,
-                                     LPDWORD lpcbMaxSubKeyLen,
-                                     LPDWORD lpcbMaxClassLen,
-                                     LPDWORD lpcValues,
-                                     LPDWORD lpcbMaxValueNameLen,
-                                     LPDWORD lpcbMaxValueLen,
-                                     LPDWORD lpcbSecurityDescriptor,
-                                     PFILETIME lpftLastWriteTime) {
-    return ::RegQueryInfoKeyW(hKey, lpClass, lpcchClass, lpReserved, lpcSubKeys,
-                              lpcbMaxSubKeyLen, lpcbMaxClassLen, lpcValues,
-                              lpcbMaxValueNameLen, lpcbMaxValueLen,
-                              lpcbSecurityDescriptor, lpftLastWriteTime);
-  }
-
-  static inline LSTATUS EnumKey(HKEY hKey,
-                                DWORD dwIndex,
-                                LPWSTR lpName,
-                                LPDWORD lpcchName,
-                                LPDWORD lpReserved,
-                                LPWSTR lpClass,
-                                LPDWORD lpcchClass,
-                                PFILETIME lpftLastWriteTime) {
-    return ::RegEnumKeyExW(hKey, dwIndex, lpName, lpcchName, lpReserved,
-                           lpClass, lpcchClass, lpftLastWriteTime);
-  }
-
-  static inline LSTATUS CloseKey(HKEY hKey) { return ::RegCloseKey(hKey); }
-
-  static inline LSTATUS QueryValue(HKEY hKey,
-                                   LPCWSTR lpValueName,
-                                   LPDWORD lpReserved,
-                                   LPDWORD lpType,
-                                   LPBYTE lpData,
-                                   LPDWORD lpcbData) {
-    return ::RegQueryValueExW(hKey, lpValueName, lpReserved, lpType, lpData,
-                              lpcbData);
-  }
-
-  static inline LSTATUS SetValue(HKEY hKey,
-                                 LPCWSTR lpValueName,
-                                 DWORD Reserved,
-                                 DWORD dwType,
-                                 CONST BYTE* lpData,
-                                 DWORD cbData) {
-    return ::RegSetValueExW(hKey, lpValueName, Reserved, dwType, lpData,
-                            cbData);
-  }
-
-  static inline LSTATUS DeleteValue(HKEY hKey, LPCWSTR lpValueName) {
-    return ::RegDeleteValueW(hKey, lpValueName);
-  }
-
-  static inline LSTATUS EnumValue(HKEY hKey,
-                                  DWORD dwIndex,
-                                  LPWSTR lpValueName,
-                                  LPDWORD lpcchValueName,
-                                  LPDWORD lpReserved,
-                                  LPDWORD lpType,
-                                  LPBYTE lpData,
-                                  LPDWORD lpcbData) {
-    return ::RegEnumValueW(hKey, dwIndex, lpValueName, lpcchValueName,
-                           lpReserved, lpType, lpData, lpcbData);
-  }
-};
-
-// An implementation derived from the export table of advapi32.
-class ExportDerived {
- public:
-  static LSTATUS CreateKey(HKEY hKey,
-                           LPCWSTR lpSubKey,
-                           DWORD Reserved,
-                           LPWSTR lpClass,
-                           DWORD dwOptions,
-                           REGSAM samDesired,
-                           CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-                           PHKEY phkResult,
-                           LPDWORD lpdwDisposition) {
-    if (!ResolveRegistryFunctions() || !reg_create_key_ex_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_create_key_ex_(hKey, lpSubKey, Reserved, lpClass, dwOptions,
-                              samDesired, lpSecurityAttributes, phkResult,
-                              lpdwDisposition);
-  }
-
-  static LSTATUS OpenKey(HKEY hKey,
-                         LPCWSTR lpSubKey,
-                         DWORD ulOptions,
-                         REGSAM samDesired,
-                         PHKEY phkResult) {
-    if (!ResolveRegistryFunctions() || !reg_open_key_ex_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_open_key_ex_(hKey, lpSubKey, ulOptions, samDesired, phkResult);
-  }
-
-  static LSTATUS DeleteKey(HKEY hKey,
-                           LPCWSTR lpSubKey,
-                           REGSAM samDesired,
-                           DWORD Reserved) {
-    if (!ResolveRegistryFunctions() || !reg_delete_key_ex_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_delete_key_ex_(hKey, lpSubKey, samDesired, Reserved);
-  }
-
-  static LSTATUS QueryInfoKey(HKEY hKey,
-                              LPWSTR lpClass,
-                              LPDWORD lpcchClass,
-                              LPDWORD lpReserved,
-                              LPDWORD lpcSubKeys,
-                              LPDWORD lpcbMaxSubKeyLen,
-                              LPDWORD lpcbMaxClassLen,
-                              LPDWORD lpcValues,
-                              LPDWORD lpcbMaxValueNameLen,
-                              LPDWORD lpcbMaxValueLen,
-                              LPDWORD lpcbSecurityDescriptor,
-                              PFILETIME lpftLastWriteTime) {
-    if (!ResolveRegistryFunctions() || !reg_query_info_key_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_query_info_key_(hKey, lpClass, lpcchClass, lpReserved,
-                               lpcSubKeys, lpcbMaxSubKeyLen, lpcbMaxClassLen,
-                               lpcValues, lpcbMaxValueNameLen, lpcbMaxValueLen,
-                               lpcbSecurityDescriptor, lpftLastWriteTime);
-  }
-
-  static LSTATUS EnumKey(HKEY hKey,
-                         DWORD dwIndex,
-                         LPWSTR lpName,
-                         LPDWORD lpcchName,
-                         LPDWORD lpReserved,
-                         LPWSTR lpClass,
-                         LPDWORD lpcchClass,
-                         PFILETIME lpftLastWriteTime) {
-    if (!ResolveRegistryFunctions() || !reg_enum_key_ex_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_enum_key_ex_(hKey, dwIndex, lpName, lpcchName, lpReserved,
-                            lpClass, lpcchClass, lpftLastWriteTime);
-  }
-
-  static LSTATUS CloseKey(HKEY hKey) {
-    if (!ResolveRegistryFunctions() || !reg_close_key_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_close_key_(hKey);
-  }
-
-  static LSTATUS QueryValue(HKEY hKey,
-                            LPCWSTR lpValueName,
-                            LPDWORD lpReserved,
-                            LPDWORD lpType,
-                            LPBYTE lpData,
-                            LPDWORD lpcbData) {
-    if (!ResolveRegistryFunctions() || !reg_query_value_ex_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_query_value_ex_(hKey, lpValueName, lpReserved, lpType, lpData,
-                               lpcbData);
-  }
-
-  static LSTATUS SetValue(HKEY hKey,
-                          LPCWSTR lpValueName,
-                          DWORD Reserved,
-                          DWORD dwType,
-                          CONST BYTE* lpData,
-                          DWORD cbData) {
-    if (!ResolveRegistryFunctions() || !reg_set_value_ex_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_set_value_ex_(hKey, lpValueName, Reserved, dwType, lpData,
-                             cbData);
-  }
-
-  static LSTATUS DeleteValue(HKEY hKey, LPCWSTR lpValueName) {
-    if (!ResolveRegistryFunctions() || !reg_delete_value_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-    return reg_delete_value_(hKey, lpValueName);
-  }
-  static LSTATUS EnumValue(HKEY hKey,
-                           DWORD dwIndex,
-                           LPWSTR lpValueName,
-                           LPDWORD lpcchValueName,
-                           LPDWORD lpReserved,
-                           LPDWORD lpType,
-                           LPBYTE lpData,
-                           LPDWORD lpcbData) {
-    if (!ResolveRegistryFunctions() || !reg_enum_value_) {
-      return ERROR_ERRORS_ENCOUNTERED;
-    }
-
-    return reg_enum_value_(hKey, dwIndex, lpValueName, lpcchValueName,
-                           lpReserved, lpType, lpData, lpcbData);
-  }
-
- private:
-  static bool ProcessOneExport(const base::win::PEImage& image,
-                               DWORD ordinal,
-                               DWORD hint,
-                               LPCSTR name,
-                               PVOID function_addr,
-                               LPCSTR forward,
-                               PVOID cookie) {
-    if (!name || !function_addr) {
-      return true;
-    }
-
-    static const auto kMap =
-        base::MakeFixedFlatMapSorted<base::StringPiece, void**>({
-            {"RegCloseKey", reinterpret_cast<void**>(&reg_close_key_)},
-            {"RegCreateKeyExW", reinterpret_cast<void**>(&reg_create_key_ex_)},
-            {"RegDeleteKeyExW", reinterpret_cast<void**>(&reg_delete_key_ex_)},
-            {"RegDeleteValueW", reinterpret_cast<void**>(&reg_delete_value_)},
-            {"RegEnumKeyExW", reinterpret_cast<void**>(&reg_enum_key_ex_)},
-            {"RegEnumValueW", reinterpret_cast<void**>(&reg_enum_value_)},
-            {"RegOpenKeyExW", reinterpret_cast<void**>(&reg_open_key_ex_)},
-            {"RegQueryInfoKeyW",
-             reinterpret_cast<void**>(&reg_query_info_key_)},
-            {"RegQueryValueExW",
-             reinterpret_cast<void**>(&reg_query_value_ex_)},
-            {"RegSetValueExW", reinterpret_cast<void**>(&reg_set_value_ex_)},
-        });
-
-    auto* entry = kMap.find(name);
-    if (entry == kMap.end()) {
-      return true;
-    }
-
-    static size_t num_init_functions = 0;
-    if (!std::exchange(*(entry->second), function_addr)) {
-      ++num_init_functions;
-    }
-
-    bool& fully_resolved = *static_cast<bool*>(cookie);
-    fully_resolved = num_init_functions == kMap.size();
-    return !fully_resolved;
-  }
-
-  static bool ResolveRegistryFunctions() {
-    static bool initialized = []() {
-      base::NativeLibraryLoadError error;
-      HMODULE advapi32 = base::PinSystemLibrary(L"advapi32.dll", &error);
-      if (!advapi32 || error.code) {
-        return false;
-      }
-      bool fully_resolved = false;
-      base::win::PEImage(advapi32).EnumExports(&ProcessOneExport,
-                                               &fully_resolved);
-      return fully_resolved;
-    }();
-    return initialized;
-  }
-
-  static decltype(::RegCreateKeyExW)* reg_create_key_ex_;
-  static decltype(::RegOpenKeyExW)* reg_open_key_ex_;
-  static decltype(::RegDeleteKeyExW)* reg_delete_key_ex_;
-  static decltype(::RegQueryInfoKeyW)* reg_query_info_key_;
-  static decltype(::RegEnumKeyExW)* reg_enum_key_ex_;
-  static decltype(::RegCloseKey)* reg_close_key_;
-  static decltype(::RegQueryValueExW)* reg_query_value_ex_;
-  static decltype(::RegSetValueExW)* reg_set_value_ex_;
-  static decltype(::RegDeleteValueW)* reg_delete_value_;
-  static decltype(::RegEnumValueW)* reg_enum_value_;
-};
-
-decltype(::RegCreateKeyEx)* ExportDerived::reg_create_key_ex_ = nullptr;
-decltype(::RegOpenKeyExW)* ExportDerived::reg_open_key_ex_ = nullptr;
-decltype(::RegDeleteKeyExW)* ExportDerived::reg_delete_key_ex_ = nullptr;
-decltype(::RegQueryInfoKeyW)* ExportDerived::reg_query_info_key_ = nullptr;
-decltype(::RegEnumKeyExW)* ExportDerived::reg_enum_key_ex_ = nullptr;
-decltype(::RegCloseKey)* ExportDerived::reg_close_key_ = nullptr;
-decltype(::RegQueryValueEx)* ExportDerived::reg_query_value_ex_ = nullptr;
-decltype(::RegSetValueExW)* ExportDerived::reg_set_value_ex_ = nullptr;
-decltype(::RegDeleteValueW)* ExportDerived::reg_delete_value_ = nullptr;
-decltype(::RegEnumValueW)* ExportDerived::reg_enum_value_ = nullptr;
-
 // Watches for modifications to a key.
-template <typename Reg>
-class GenericRegKey<Reg>::Watcher : public ObjectWatcher::Delegate {
+class RegKey::Watcher : public ObjectWatcher::Delegate {
  public:
   Watcher() = default;
 
@@ -393,9 +71,7 @@ class GenericRegKey<Reg>::Watcher : public ObjectWatcher::Delegate {
   ChangeCallback callback_;
 };
 
-template <typename Reg>
-bool GenericRegKey<Reg>::Watcher::StartWatching(HKEY key,
-                                                ChangeCallback callback) {
+bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
   DCHECK(key);
   DCHECK(callback_.is_null());
 
@@ -423,19 +99,13 @@ bool GenericRegKey<Reg>::Watcher::StartWatching(HKEY key,
   return object_watcher_.StartWatchingOnce(watch_event_.get(), this);
 }
 
-// GenericRegKey<Reg>
-// ----------------------------------------------------------------------
+// RegKey ----------------------------------------------------------------------
 
-template <typename Reg>
-GenericRegKey<Reg>::GenericRegKey() = default;
+RegKey::RegKey() = default;
 
-template <typename Reg>
-GenericRegKey<Reg>::GenericRegKey(HKEY key) : key_(key) {}
+RegKey::RegKey(HKEY key) : key_(key) {}
 
-template <typename Reg>
-GenericRegKey<Reg>::GenericRegKey(HKEY rootkey,
-                                  const wchar_t* subkey,
-                                  REGSAM access) {
+RegKey::RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access) {
   if (rootkey) {
     if (access & (KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_CREATE_LINK)) {
       (void)Create(rootkey, subkey, access);
@@ -448,8 +118,7 @@ GenericRegKey<Reg>::GenericRegKey(HKEY rootkey,
   }
 }
 
-template <typename Reg>
-GenericRegKey<Reg>::GenericRegKey(GenericRegKey<Reg>&& other) noexcept
+RegKey::RegKey(RegKey&& other) noexcept
     : key_(other.key_),
       wow64access_(other.wow64access_),
       key_watcher_(std::move(other.key_watcher_)) {
@@ -457,8 +126,7 @@ GenericRegKey<Reg>::GenericRegKey(GenericRegKey<Reg>&& other) noexcept
   other.wow64access_ = 0;
 }
 
-template <typename Reg>
-GenericRegKey<Reg>& GenericRegKey<Reg>::operator=(GenericRegKey<Reg>&& other) {
+RegKey& RegKey::operator=(RegKey&& other) {
   Close();
   std::swap(key_, other.key_);
   std::swap(wow64access_, other.wow64access_);
@@ -466,28 +134,23 @@ GenericRegKey<Reg>& GenericRegKey<Reg>::operator=(GenericRegKey<Reg>&& other) {
   return *this;
 }
 
-template <typename Reg>
-GenericRegKey<Reg>::~GenericRegKey() {
+RegKey::~RegKey() {
   Close();
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::Create(HKEY rootkey,
-                                const wchar_t* subkey,
-                                REGSAM access) {
+LONG RegKey::Create(HKEY rootkey, const wchar_t* subkey, REGSAM access) {
   DWORD disposition_value;
   return CreateWithDisposition(rootkey, subkey, &disposition_value, access);
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::CreateWithDisposition(HKEY rootkey,
-                                               const wchar_t* subkey,
-                                               DWORD* disposition,
-                                               REGSAM access) {
+LONG RegKey::CreateWithDisposition(HKEY rootkey,
+                                   const wchar_t* subkey,
+                                   DWORD* disposition,
+                                   REGSAM access) {
   DCHECK(rootkey && subkey && access && disposition);
   HKEY subhkey = nullptr;
   LONG result =
-      Reg::CreateKey(rootkey, subkey, 0, nullptr, REG_OPTION_NON_VOLATILE,
+      RegCreateKeyEx(rootkey, subkey, 0, nullptr, REG_OPTION_NON_VOLATILE,
                      access, nullptr, &subhkey, disposition);
   if (result == ERROR_SUCCESS) {
     Close();
@@ -498,8 +161,7 @@ LONG GenericRegKey<Reg>::CreateWithDisposition(HKEY rootkey,
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::CreateKey(const wchar_t* name, REGSAM access) {
+LONG RegKey::CreateKey(const wchar_t* name, REGSAM access) {
   DCHECK(name && access);
 
   if (!Valid()) {
@@ -518,7 +180,7 @@ LONG GenericRegKey<Reg>::CreateKey(const wchar_t* name, REGSAM access) {
     return ERROR_INVALID_PARAMETER;
   }
   HKEY subkey = nullptr;
-  LONG result = Reg::CreateKey(key_, name, 0, nullptr, REG_OPTION_NON_VOLATILE,
+  LONG result = RegCreateKeyEx(key_, name, 0, nullptr, REG_OPTION_NON_VOLATILE,
                                access, nullptr, &subkey, nullptr);
   if (result == ERROR_SUCCESS) {
     Close();
@@ -529,14 +191,11 @@ LONG GenericRegKey<Reg>::CreateKey(const wchar_t* name, REGSAM access) {
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::Open(HKEY rootkey,
-                              const wchar_t* subkey,
-                              REGSAM access) {
+LONG RegKey::Open(HKEY rootkey, const wchar_t* subkey, REGSAM access) {
   DCHECK(rootkey && subkey && access);
   HKEY subhkey = nullptr;
 
-  LONG result = Reg::OpenKey(rootkey, subkey, 0, access, &subhkey);
+  LONG result = RegOpenKeyEx(rootkey, subkey, 0, access, &subhkey);
   if (result == ERROR_SUCCESS) {
     Close();
     key_ = subhkey;
@@ -546,9 +205,7 @@ LONG GenericRegKey<Reg>::Open(HKEY rootkey,
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::OpenKey(const wchar_t* relative_key_name,
-                                 REGSAM access) {
+LONG RegKey::OpenKey(const wchar_t* relative_key_name, REGSAM access) {
   DCHECK(relative_key_name && access);
 
   if (!Valid()) {
@@ -567,7 +224,7 @@ LONG GenericRegKey<Reg>::OpenKey(const wchar_t* relative_key_name,
     return ERROR_INVALID_PARAMETER;
   }
   HKEY subkey = nullptr;
-  LONG result = Reg::OpenKey(key_, relative_key_name, 0, access, &subkey);
+  LONG result = RegOpenKeyEx(key_, relative_key_name, 0, access, &subkey);
 
   // We have to close the current opened key before replacing it with the new
   // one.
@@ -579,62 +236,54 @@ LONG GenericRegKey<Reg>::OpenKey(const wchar_t* relative_key_name,
   return result;
 }
 
-template <typename Reg>
-void GenericRegKey<Reg>::Close() {
+void RegKey::Close() {
   if (key_) {
-    Reg::CloseKey(key_);
+    ::RegCloseKey(key_);
     key_ = nullptr;
     wow64access_ = 0;
   }
 }
 
-// TODO(wfh): Remove this and other unsafe methods. See
-// http://crbug.com/375400
-template <typename Reg>
-void GenericRegKey<Reg>::Set(HKEY key) {
+// TODO(wfh): Remove this and other unsafe methods. See http://crbug.com/375400
+void RegKey::Set(HKEY key) {
   if (key_ != key) {
     Close();
     key_ = key;
   }
 }
 
-template <typename Reg>
-HKEY GenericRegKey<Reg>::Take() {
+HKEY RegKey::Take() {
   DCHECK_EQ(wow64access_, 0u);
   HKEY key = key_;
   key_ = nullptr;
   return key;
 }
 
-template <typename Reg>
-bool GenericRegKey<Reg>::HasValue(const wchar_t* name) const {
-  return Reg::QueryValue(key_, name, nullptr, nullptr, nullptr, nullptr) ==
+bool RegKey::HasValue(const wchar_t* name) const {
+  return RegQueryValueEx(key_, name, nullptr, nullptr, nullptr, nullptr) ==
          ERROR_SUCCESS;
 }
 
-template <typename Reg>
-DWORD GenericRegKey<Reg>::GetValueCount() const {
+DWORD RegKey::GetValueCount() const {
   DWORD count = 0;
   LONG result =
-      Reg::QueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr, nullptr,
-                        nullptr, &count, nullptr, nullptr, nullptr, nullptr);
+      RegQueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr, nullptr,
+                      nullptr, &count, nullptr, nullptr, nullptr, nullptr);
   return (result == ERROR_SUCCESS) ? count : 0;
 }
 
-template <typename Reg>
-FILETIME GenericRegKey<Reg>::GetLastWriteTime() const {
+FILETIME RegKey::GetLastWriteTime() const {
   FILETIME last_write_time;
-  LONG result = Reg::QueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr,
-                                  nullptr, nullptr, nullptr, nullptr, nullptr,
-                                  nullptr, &last_write_time);
+  LONG result = RegQueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr,
+                                nullptr, nullptr, nullptr, nullptr, nullptr,
+                                nullptr, &last_write_time);
   return (result == ERROR_SUCCESS) ? last_write_time : FILETIME{};
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::GetValueNameAt(DWORD index, std::wstring* name) const {
+LONG RegKey::GetValueNameAt(DWORD index, std::wstring* name) const {
   wchar_t buf[256];
   DWORD bufsize = std::size(buf);
-  LONG r = Reg::EnumValue(key_, index, buf, &bufsize, nullptr, nullptr, nullptr,
+  LONG r = ::RegEnumValue(key_, index, buf, &bufsize, nullptr, nullptr, nullptr,
                           nullptr);
   if (r == ERROR_SUCCESS) {
     name->assign(buf, bufsize);
@@ -643,8 +292,7 @@ LONG GenericRegKey<Reg>::GetValueNameAt(DWORD index, std::wstring* name) const {
   return r;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::DeleteKey(const wchar_t* name) {
+LONG RegKey::DeleteKey(const wchar_t* name) {
   DCHECK(name);
 
   // Verify the key exists before attempting delete to replicate previous
@@ -652,23 +300,22 @@ LONG GenericRegKey<Reg>::DeleteKey(const wchar_t* name) {
   // `RegOpenKeyEx()` will return an error if `key_` is invalid.
   HKEY subkey = nullptr;
   LONG result =
-      Reg::OpenKey(key_, name, 0, READ_CONTROL | wow64access_, &subkey);
+      RegOpenKeyEx(key_, name, 0, READ_CONTROL | wow64access_, &subkey);
   if (result != ERROR_SUCCESS) {
     return result;
   }
-  Reg::CloseKey(subkey);
+  RegCloseKey(subkey);
 
   return RegDelRecurse(key_, name, wow64access_);
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::DeleteEmptyKey(const wchar_t* name) {
+LONG RegKey::DeleteEmptyKey(const wchar_t* name) {
   DCHECK(name);
 
   // `RegOpenKeyEx()` will return an error if `key_` is invalid.
   HKEY target_key = nullptr;
   LONG result =
-      Reg::OpenKey(key_, name, 0, KEY_READ | wow64access_, &target_key);
+      RegOpenKeyEx(key_, name, 0, KEY_READ | wow64access_, &target_key);
 
   if (result != ERROR_SUCCESS) {
     return result;
@@ -676,10 +323,10 @@ LONG GenericRegKey<Reg>::DeleteEmptyKey(const wchar_t* name) {
 
   DWORD count = 0;
   result =
-      Reg::QueryInfoKey(target_key, nullptr, nullptr, nullptr, nullptr, nullptr,
-                        nullptr, &count, nullptr, nullptr, nullptr, nullptr);
+      RegQueryInfoKey(target_key, nullptr, nullptr, nullptr, nullptr, nullptr,
+                      nullptr, &count, nullptr, nullptr, nullptr, nullptr);
 
-  Reg::CloseKey(target_key);
+  RegCloseKey(target_key);
 
   if (result != ERROR_SUCCESS) {
     return result;
@@ -692,16 +339,13 @@ LONG GenericRegKey<Reg>::DeleteEmptyKey(const wchar_t* name) {
   return ERROR_DIR_NOT_EMPTY;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::DeleteValue(const wchar_t* value_name) {
+LONG RegKey::DeleteValue(const wchar_t* value_name) {
   // `RegDeleteValue()` will return an error if `key_` is invalid.
-  LONG result = Reg::DeleteValue(key_, value_name);
+  LONG result = RegDeleteValue(key_, value_name);
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::ReadValueDW(const wchar_t* name,
-                                     DWORD* out_value) const {
+LONG RegKey::ReadValueDW(const wchar_t* name, DWORD* out_value) const {
   DCHECK(out_value);
   DWORD type = REG_DWORD;
   DWORD size = sizeof(DWORD);
@@ -718,9 +362,7 @@ LONG GenericRegKey<Reg>::ReadValueDW(const wchar_t* name,
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::ReadInt64(const wchar_t* name,
-                                   int64_t* out_value) const {
+LONG RegKey::ReadInt64(const wchar_t* name, int64_t* out_value) const {
   DCHECK(out_value);
   DWORD type = REG_QWORD;
   int64_t local_value = 0;
@@ -738,9 +380,7 @@ LONG GenericRegKey<Reg>::ReadInt64(const wchar_t* name,
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::ReadValue(const wchar_t* name,
-                                   std::wstring* out_value) const {
+LONG RegKey::ReadValue(const wchar_t* name, std::wstring* out_value) const {
   DCHECK(out_value);
   const size_t kMaxStringLength = 1024;  // This is after expansion.
   // Use the one of the other forms of ReadValue if 1024 is too small for you.
@@ -770,19 +410,17 @@ LONG GenericRegKey<Reg>::ReadValue(const wchar_t* name,
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::ReadValue(const wchar_t* name,
-                                   void* data,
-                                   DWORD* dsize,
-                                   DWORD* dtype) const {
-  LONG result = Reg::QueryValue(key_, name, nullptr, dtype,
+LONG RegKey::ReadValue(const wchar_t* name,
+                       void* data,
+                       DWORD* dsize,
+                       DWORD* dtype) const {
+  LONG result = RegQueryValueEx(key_, name, nullptr, dtype,
                                 reinterpret_cast<LPBYTE>(data), dsize);
   return result;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::ReadValues(const wchar_t* name,
-                                    std::vector<std::wstring>* values) {
+LONG RegKey::ReadValues(const wchar_t* name,
+                        std::vector<std::wstring>* values) {
   values->clear();
 
   DWORD type = REG_MULTI_SZ;
@@ -803,8 +441,8 @@ LONG GenericRegKey<Reg>::ReadValues(const wchar_t* name,
   }
 
   // Parse the double-null-terminated list of strings.
-  // Note: This code is paranoid to not read outside of |buf|, in the case
-  // where it may not be properly terminated.
+  // Note: This code is paranoid to not read outside of |buf|, in the case where
+  // it may not be properly terminated.
   auto entry = buffer.cbegin();
   auto buffer_end = buffer.cend();
   while (entry < buffer_end && *entry != '\0') {
@@ -815,15 +453,12 @@ LONG GenericRegKey<Reg>::ReadValues(const wchar_t* name,
   return 0;
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::WriteValue(const wchar_t* name, DWORD in_value) {
+LONG RegKey::WriteValue(const wchar_t* name, DWORD in_value) {
   return WriteValue(name, &in_value, static_cast<DWORD>(sizeof(in_value)),
                     REG_DWORD);
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::WriteValue(const wchar_t* name,
-                                    const wchar_t* in_value) {
+LONG RegKey::WriteValue(const wchar_t* name, const wchar_t* in_value) {
   return WriteValue(
       name, in_value,
       static_cast<DWORD>(sizeof(*in_value) *
@@ -831,21 +466,19 @@ LONG GenericRegKey<Reg>::WriteValue(const wchar_t* name,
       REG_SZ);
 }
 
-template <typename Reg>
-LONG GenericRegKey<Reg>::WriteValue(const wchar_t* name,
-                                    const void* data,
-                                    DWORD dsize,
-                                    DWORD dtype) {
+LONG RegKey::WriteValue(const wchar_t* name,
+                        const void* data,
+                        DWORD dsize,
+                        DWORD dtype) {
   DCHECK(data || !dsize);
 
   LONG result =
-      Reg::SetValue(key_, name, 0, dtype,
+      RegSetValueEx(key_, name, 0, dtype,
                     reinterpret_cast<LPBYTE>(const_cast<void*>(data)), dsize);
   return result;
 }
 
-template <typename Reg>
-bool GenericRegKey<Reg>::StartWatching(ChangeCallback callback) {
+bool RegKey::StartWatching(ChangeCallback callback) {
   if (!key_watcher_) {
     key_watcher_ = std::make_unique<Watcher>();
   }
@@ -858,18 +491,15 @@ bool GenericRegKey<Reg>::StartWatching(ChangeCallback callback) {
 }
 
 // static
-template <typename Reg>
-LONG GenericRegKey<Reg>::RegDelRecurse(HKEY root_key,
-                                       const wchar_t* name,
-                                       REGSAM access) {
+LONG RegKey::RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access) {
   // First, see if the key can be deleted without having to recurse.
-  LONG result = Reg::DeleteKey(root_key, name, access, 0);
+  LONG result = RegDeleteKeyEx(root_key, name, access, 0);
   if (result == ERROR_SUCCESS) {
     return result;
   }
 
   HKEY target_key = nullptr;
-  result = Reg::OpenKey(root_key, name, 0, KEY_ENUMERATE_SUB_KEYS | access,
+  result = RegOpenKeyEx(root_key, name, 0, KEY_ENUMERATE_SUB_KEYS | access,
                         &target_key);
 
   if (result == ERROR_FILE_NOT_FOUND) {
@@ -893,7 +523,7 @@ LONG GenericRegKey<Reg>::RegDelRecurse(HKEY root_key,
   while (result == ERROR_SUCCESS) {
     DWORD key_size = kMaxKeyNameLength;
     result =
-        Reg::EnumKey(target_key, 0, WriteInto(&key_name, kMaxKeyNameLength),
+        RegEnumKeyEx(target_key, 0, WriteInto(&key_name, kMaxKeyNameLength),
                      &key_size, nullptr, nullptr, nullptr, nullptr);
 
     if (result != ERROR_SUCCESS) {
@@ -909,53 +539,13 @@ LONG GenericRegKey<Reg>::RegDelRecurse(HKEY root_key,
     }
   }
 
-  Reg::CloseKey(target_key);
+  RegCloseKey(target_key);
 
   // Try again to delete the key.
-  result = Reg::DeleteKey(root_key, name, access, 0);
+  result = RegDeleteKeyEx(root_key, name, access, 0);
 
   return result;
 }
-
-// Instantiate the only two allowed versions of GenericRegKey for use by the
-// public base::win::RegKey and base::win::ExportDerivedRegKey.
-template class GenericRegKey<internal::Standard>;
-template class GenericRegKey<internal::ExportDerived>;
-
-}  // namespace internal
-
-RegKey::RegKey() : GenericRegKey<internal::Standard>() {}
-RegKey::RegKey(HKEY key) : GenericRegKey<internal::Standard>(key) {}
-RegKey::RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access)
-    : GenericRegKey<internal::Standard>(rootkey, subkey, access) {}
-
-RegKey::RegKey(RegKey&& other) noexcept
-    : GenericRegKey<internal::Standard>(std::move(other)) {}
-RegKey& RegKey::operator=(RegKey&& other) {
-  GenericRegKey<internal::Standard>::operator=(std::move(other));
-  return *this;
-}
-
-RegKey::~RegKey() = default;
-
-ExportDerivedRegKey::ExportDerivedRegKey()
-    : GenericRegKey<internal::ExportDerived>() {}
-ExportDerivedRegKey::ExportDerivedRegKey(HKEY key)
-    : GenericRegKey<internal::ExportDerived>(key) {}
-ExportDerivedRegKey::ExportDerivedRegKey(HKEY rootkey,
-                                         const wchar_t* subkey,
-                                         REGSAM access)
-    : GenericRegKey<internal::ExportDerived>(rootkey, subkey, access) {}
-
-ExportDerivedRegKey::ExportDerivedRegKey(ExportDerivedRegKey&& other) noexcept
-    : GenericRegKey<internal::ExportDerived>(std::move(other)) {}
-ExportDerivedRegKey& ExportDerivedRegKey::operator=(
-    ExportDerivedRegKey&& other) {
-  GenericRegKey<internal::ExportDerived>::operator=(std::move(other));
-  return *this;
-}
-
-ExportDerivedRegKey::~ExportDerivedRegKey() = default;
 
 // RegistryValueIterator ------------------------------------------------------
 
