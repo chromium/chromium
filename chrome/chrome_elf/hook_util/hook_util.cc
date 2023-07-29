@@ -4,12 +4,10 @@
 
 #include "hook_util.h"
 
+#include <assert.h>
 #include <versionhelpers.h>  // windows.h must be before
 
 #include "base/win/pe_image.h"
-#include "chrome/chrome_elf/nt_registry/nt_registry.h"  // utils
-#include "sandbox/win/src/interception_internal.h"
-#include "sandbox/win/src/internal_types.h"
 
 namespace {
 

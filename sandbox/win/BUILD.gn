@@ -172,13 +172,13 @@ static_library("sandbox") {
 
   public_deps = [
     ":common",
-    ":service_resolver",
     "//base",
     "//sandbox:common",
   ]
 
   deps = [
     ":maybe_set_appcontainer_acls",
+    ":service_resolver",
     "//base:base_static",
   ]
 
@@ -323,6 +323,7 @@ test("sbox_unittests") {
 
   deps = [
     ":sandbox",
+    ":service_resolver",
     ":test_support",
     "//base/test:test_support",
     "//testing/gtest",

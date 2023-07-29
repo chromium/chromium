@@ -1,6 +1,7 @@
 include_rules = [
-  # Nothing from base.
+  # Nothing from base except compiler_specific.h
   "-base",
+  "+base/compiler_specific.h",
   # Nothing from chrome except install_static and local includes.
   "-chrome",
   "+chrome/install_static",
