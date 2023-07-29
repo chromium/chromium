@@ -24,6 +24,7 @@ import org.chromium.components.variations.StudyOuterClass.Study;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment.FeatureAssociation;
 import org.chromium.components.variations.VariationsSeedOuterClass.VariationsSeed;
+import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -83,7 +84,7 @@ public class VariationsTest {
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
     // TODO(crbug.com/1098037): Reference this via a Java VariationsSwitches class.
-    @CommandLineFlags.Add("disable-field-trial-config")
+    @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testFeatureEnabled() throws Exception {
         try {
             FeatureAssociation features =
@@ -109,7 +110,7 @@ public class VariationsTest {
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
     // TODO(crbug.com/1098037): Reference this via a Java VariationsSwitches class.
-    @CommandLineFlags.Add("disable-field-trial-config")
+    @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testSeedFreshnessHistogramWritten() throws Exception {
         String seedFreshnessHistogramName = "Variations.SeedFreshness";
         try {

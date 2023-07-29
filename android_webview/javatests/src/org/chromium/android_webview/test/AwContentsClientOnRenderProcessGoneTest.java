@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -173,8 +174,8 @@ public class AwContentsClientOnRenderProcessGoneTest {
     // https://go/force-field-trials-docs for the syntax of these flags.
     @CommandLineFlags.Add({
             "enable-features=RenderDocument<RenderDocument",
-            "force-fieldtrials=RenderDocument/Group1",
-            "force-fieldtrial-params=RenderDocument.Group1:level/crashed-frame",
+            BaseSwitches.FORCE_FIELD_TRIALS + "=RenderDocument/Group1",
+            BaseSwitches.FORCE_FIELD_TRIAL_PARAMS + "=RenderDocument.Group1:level/crashed-frame",
     })
     public void
     testNavigationAfterCrashAndJavaScript() throws Throwable {

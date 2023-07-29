@@ -287,6 +287,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//components/policy/android:policy_java",
     "//components/policy/android:policy_java_test_support",
     "//components/safe_browsing/android:safe_browsing_java",
+    "//components/variations:variations_java",
     "//components/variations/android:variations_java",
     "//components/variations/proto:proto_java",
     "//components/version_info/android:version_constants_java",
