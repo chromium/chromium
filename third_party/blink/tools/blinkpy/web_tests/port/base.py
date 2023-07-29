@@ -270,6 +270,7 @@ class Port(object):
         self.server_process_constructor = server_process.ServerProcess  # This can be overridden for testing.
         self._http_lock = None  # FIXME: Why does this live on the port object?
         self._dump_reader = None
+        self._skip_base_tests = set()
 
         # Configuration and target are always set by PortFactory so this is only
         # relevant in cases where a Port is created without it (testing mostly).
@@ -1528,11 +1529,18 @@ class Port(object):
         if self.lookup_virtual_test_base(test):
             return False
 
-        for suite in self.virtual_test_suites():
-            for entry in suite.skip_base_tests:
-                if self.normalize_test_name(test).startswith(
-                        self.normalize_test_name(entry)):
-                    return True
+        # Ensure that this was called at least once, to process all suites
+        # information
+        vts = self.virtual_test_suites()
+        if test in self._skip_base_tests:
+            return True
+        # We also need to check if a parent folder of a test is in the list
+        # Can't use "Starts with" as we need the exact entry for an efficient
+        # search of the set
+        test_folders = test.split('/')
+        for i in range(len(test_folders)):
+            if '/'.join(test_folders[:i]) + '/' in self._skip_base_tests:
+                return True
         return False
 
     def name(self):
@@ -2356,6 +2364,8 @@ class Port(object):
                         '{} contains entries with the same prefix: {!r}. Please combine them'
                         .format(path_to_virtual_test_suites, json_config))
                 virtual_test_suites.append(vts)
+                for entry in vts.skip_base_tests:
+                    self._skip_base_tests.add(self.normalize_test_name(entry))
         except ValueError as error:
             raise ValueError('{} is not a valid JSON file: {}'.format(
                 path_to_virtual_test_suites, error))
@@ -2747,7 +2757,6 @@ class VirtualTestSuite(object):
         elif skip_base_tests is None:
             skip_base_tests = []
         assert isinstance(skip_base_tests, list)
-
         self.full_prefix = 'virtual/' + prefix + '/'
         self.platforms = [x.lower() for x in platforms]
         self.bases = bases
