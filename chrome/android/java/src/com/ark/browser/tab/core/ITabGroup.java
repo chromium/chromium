@@ -3,6 +3,7 @@ package com.ark.browser.tab.core;
 import android.graphics.Color;
 import android.widget.Toast;
 
+import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabCacheManager;
@@ -25,19 +26,15 @@ public interface ITabGroup extends ITab {
 
     void init();
 
-//    @Override
-//    default String getTitle() {
-//        PageInfo pageInfo = getCurrentPageInfo();
-//        if (pageInfo == null) {
-//            return "";
-//        }
-//        return pageInfo.getTitle();
-//    }
+    @Override
+    default String getTitle() {
+        return getCount() + "个标签页";
+    }
 
     @Override
     default int getThemeColor() {
         // TODO white or black
-        return Color.WHITE;
+        return AppConfig.isNightMode() ? Color.BLACK : Color.WHITE;
     }
 
     boolean isIncognito();
@@ -94,14 +91,19 @@ public interface ITabGroup extends ITab {
     }
 
     default ITab findTabById(int tabId) {
-        ITab tabInfo = getCurrentTab();
-        if (tabInfo != null && tabId == tabInfo.getId()) {
-            return tabInfo;
+        ITab currentTab = getCurrentTab();
+        if (currentTab != null && tabId == currentTab.getId()) {
+            return currentTab;
         }
         for (int i = 0; i < getCount(); i++) {
             ITab tab = getTabAt(i);
             if (tabId == tab.getId()) {
                 return tab;
+            } else if (tab instanceof ITabGroup) {
+                tab = ((ITabGroup) tab).findTabById(tabId);
+                if (tab != null) {
+                    return tab;
+                }
             }
         }
         return null;
@@ -191,77 +193,28 @@ public interface ITabGroup extends ITab {
 
         onIndexChanged(indexOf(iTab));
         tab.selectPage(page);
-//        if (state == null) {
-//            tab.selectPage(page);
-//        } else {
-//            iTab.selectPage(page);
-//        }
 
-        for (TabInfoObserver obs : getObservers()) {
+        for (TabInfoObserver obs : getRootGroupTab().getObservers()) {
             ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastId);
         }
-
-
-//        int finalLastId = lastId;
-//        ThreadPool.executeIO(() -> {
-//
-//
-//            TabState state = ArkTabDao.restorePageState(page.getId());
-//
-//            ArkLogger.e(ITabGroup.this, "selectTabInfo state=" + state);
-//
-//            TabState finalState = state;
-//            ThreadPool.runOnUIThread(() -> {
-//                long start = System.currentTimeMillis();
-//
-//
-//                ArkTabImpl tab = (ArkTabImpl) PageCacheManager.getInstance().findTab(iTab.getId());
-//
-//                if (tab == null) {
-//                    if (finalState == null) {
-//                        tab = (ArkTabImpl) PageCacheManager.getInstance().createLivePage(iTab, page);
-//                    } else {
-//                        tab = (ArkTabImpl) PageCacheManager.getInstance().createFrozenPageFromState(
-//                                iTab, finalState);
-//                    }
-//                } else {
-//                    finalState = null;
-//                }
-////                innerTab.setImportance(ChildProcessImportance.IMPORTANT);
-////                innerTab.show(TabSelectionType.FROM_USER);
-//
-//                onIndexChanged(indexOf(iTab));
-//                iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
-//                iTab.selectPage(page);
-//
-//                tab.selectPage(page);
-//
-//
-//                for (TabInfoObserver obs : getObservers()) {
-//                    ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
-//                    obs.didSelectTab(iTab, TabSelectionType.FROM_USER, finalLastId);
-//                }
-//                ArkLogger.e(ITabGroup.this, "selectTabInfo end create tab deltaTime=" + (System.currentTimeMillis() - start));
-//            });
-//        });
-
-
         return true;
     }
 
     ITab cloneTab(ITab tabInfo);
 
-    void openNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
+    void openInNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
-    default void openNewTab(PageInfo pageInfo, LoadUrlParams loadUrlParams, @TabLaunchType int type) {
+    default void openInNewTab(PageInfo pageInfo, LoadUrlParams loadUrlParams, @TabLaunchType int type) {
         ITab currentTab = pageInfo == null ? null : findTabById(pageInfo.getTabId());
-        openNewTab(currentTab, loadUrlParams, type);
+        openInNewTab(currentTab, loadUrlParams, type);
     }
 
-    default void openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
-        openNewTab(getCurrentTab(), loadUrlParams, type);
+    default void openInNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
+        openInNewTab(getCurrentTab(), loadUrlParams, type);
     }
+
+    void openInNewGroup(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
     boolean moveToNewTab(IPage page);
 
@@ -270,14 +223,15 @@ public interface ITabGroup extends ITab {
             return false;
         }
         boolean result = getTabList().remove(tab);
-        int index = getIndex();
-        if (getTabList().isEmpty()) {
-            index = ITab.INVALID_TAB_INDEX;
-        } else if (getIndex() > getTabList().size() - 1) {
-            index = getTabList().size() - 1;
-        }
-        onIndexChanged(index);
         if (result) {
+            int index = getIndex();
+            if (getTabList().isEmpty()) {
+                index = ITab.INVALID_TAB_INDEX;
+            } else if (getIndex() > getTabList().size() - 1) {
+                index = getTabList().size() - 1;
+            }
+            onIndexChanged(index);
+            saveTabInfo();
             removeTab(tab);
         }
         return result;
@@ -291,7 +245,7 @@ public interface ITabGroup extends ITab {
         int id = tab.getId();
         ThreadPool.postOnUIThread(() -> {
             tab.remove();
-            for (TabInfoObserver obs : getObservers()) {
+            for (TabInfoObserver obs : getRootGroupTab().getObservers()) {
                 obs.didCloseTab(id, isIncognito());
             }
         });

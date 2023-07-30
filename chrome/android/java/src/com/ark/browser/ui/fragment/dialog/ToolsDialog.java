@@ -286,7 +286,7 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.tv_website_settings) {
             start(SingleWebsiteFragment.newInstance(mArkWeb.getPageInfo()));
         } else if (id == R.id.tv_history_stack) {
-            HistoryStackDialogFragment.newInstance(mArkWeb.getPageInfo()).show(context);
+            HistoryStackDialogFragment.newInstance(mArkWeb.getPageInfo().getTabId()).show(context);
         } else if (id == R.id.tv_fullscreen) {
             boolean tag = !fullscreenMode;
             AppConfig.toggleFullscreenMode();

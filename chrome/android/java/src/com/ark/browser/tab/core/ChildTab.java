@@ -56,6 +56,18 @@ public class ChildTab implements ITab, IPageGroup {
     }
 
     @Override
+    public String getTitle() {
+        PageInfo pageInfo = getCurrentPageInfo();
+        if (pageInfo == null) {
+            pageInfo = getPageInfoAt(0);
+            if (pageInfo == null) {
+                return "Blank";
+            }
+        }
+        return pageInfo.getTitle();
+    }
+
+    @Override
     public List<IPage> getPages() {
         return mPages;
     }
@@ -240,6 +252,7 @@ public class ChildTab implements ITab, IPageGroup {
             PageSnapshotManager.getInstance().removeSnapshot(page.getPageInfo().getId());
             page.deletePageInfo();
         }
+        ArkTabDao.deletePagesDir(getId());
         destroy();
     }
 
@@ -319,8 +332,7 @@ public class ChildTab implements ITab, IPageGroup {
      * TODO TabRestore
      */
     public void deleteTabInfo() {
-        File tabFile = ArkTabDao.getTabFile(getId());
-        tabFile.delete();
+        ArkTabDao.deleteTabFile(getId());
     }
 
     public boolean removePage(IPage page) {
@@ -356,140 +368,4 @@ public class ChildTab implements ITab, IPageGroup {
         return page.getPageInfo();
     }
 
-
-    public static ChildTab from(ITabGroup parent, int tabId) {
-        File tabFile = ArkTabDao.getTabFile(tabId);
-        ArkLogger.e(ChildTab.class, "from id=" + tabId + " tabFile=" + tabFile);
-        try {
-            return from(parent, tabFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ChildTab(parent, TabInfo.create(tabId, -1));
-        }
-    }
-
-    private static ChildTab from(ITabGroup parent, File tabFile) throws IOException {
-        try (DataInputStream stream = ArkTabDao.readFile(tabFile)) {
-            if (stream == null) {
-                throw new IOException("tab file stream is null!");
-            }
-            return from(parent, stream);
-        }
-    }
-
-    private static ChildTab from(ITabGroup parent, DataInputStream is) throws IOException {
-        List<IPage> pages = new ArrayList<>();
-        int version = is.readInt();
-        int tabId = is.readInt();
-        int parentId;
-        if (version >= 3) {
-            if (version >= 5) {
-                parentId = is.readInt();
-            } else {
-                String name = is.readUTF();
-                if ("group_incognito".equals(name)) {
-                    parentId = -101;
-                } else {
-                    parentId = -100;
-                }
-            }
-        } else {
-            parentId = -100;
-        }
-        TabInfo newTabInfo = TabInfo.create(tabId, parentId, false);
-        ArkLogger.e(ChildTab.class, "from version=" + version + " parentId=" + newTabInfo.getParentId());
-        if (version >= 4) {
-            newTabInfo.setIsGroup(is.readBoolean());
-        } else {
-            newTabInfo.setIsGroup(false);
-        }
-        if (version >= 2) {
-            newTabInfo.setLaunchType(is.readInt());
-        }
-        newTabInfo.setCreateTime(is.readLong());
-        newTabInfo.setIncognito(is.readBoolean());
-        newTabInfo.setLocked(is.readBoolean());
-
-        newTabInfo.setChildIndex(is.readInt());
-        newTabInfo.setCurrentPageId(is.readInt());
-        newTabInfo.setPosition(is.readInt());
-        newTabInfo.setAccessTime(is.readLong());
-
-        int count = is.readInt();
-        ArkLogger.e(TabInfo.class, "TabInfo.from id=" + newTabInfo.getId() + " count=" + count);
-        File pagesDir = ArkTabDao.getPagesDir(newTabInfo.getId());
-        for (int i = 0; i < count; i++) {
-            int pageId = is.readInt();
-            File file = new File(pagesDir, String.valueOf(pageId));
-            PageInfo pageInfo = PageInfo.from(file);
-            ArkLogger.e(TabInfo.class, "TabInfo.from pageId=" + pageId + " pageInfo=" + pageInfo);
-            pages.add(new PageImpl(pageInfo));
-        }
-        return new ChildTab(parent, newTabInfo, pages);
-    }
-
-    private static ITab restoreTab(@NonNull ITabGroup parent, DataInputStream is) throws IOException {
-        int version = is.readInt();
-        int tabId = is.readInt();
-        int parentId;
-        if (version >= 3) {
-            if (version >= 5) {
-                parentId = is.readInt();
-            } else {
-                String name = is.readUTF();
-                if ("group_incognito".equals(name)) {
-                    parentId = -101;
-                } else {
-                    parentId = -100;
-                }
-            }
-        } else {
-            parentId = -100;
-        }
-        TabInfo newTabInfo = TabInfo.create(tabId, parentId, false);
-        ArkLogger.e(ChildTab.class, "restoreTab version=" + version + " parentId=" + newTabInfo.getParentId());
-        if (version >= 4) {
-            newTabInfo.setIsGroup(is.readBoolean());
-        } else {
-            newTabInfo.setIsGroup(false);
-        }
-        if (version >= 2) {
-            newTabInfo.setLaunchType(is.readInt());
-        }
-        newTabInfo.setCreateTime(is.readLong());
-        newTabInfo.setIncognito(is.readBoolean());
-        newTabInfo.setLocked(is.readBoolean());
-
-        newTabInfo.setChildIndex(is.readInt());
-        newTabInfo.setCurrentPageId(is.readInt());
-        newTabInfo.setPosition(is.readInt());
-        newTabInfo.setAccessTime(is.readLong());
-
-        int count = is.readInt();
-        ArkLogger.e(TabInfo.class, "restoreTab id=" + newTabInfo.getId() + " count=" + count);
-
-        boolean isGroup = newTabInfo.isGroup();
-
-        if (isGroup) {
-            List<ITab> tabs = new ArrayList<>();
-            for (int i = 0; i < count; i++) {
-                int childId = is.readInt();
-                ITab newTab = ChildTab.from(parent, childId);
-                ArkLogger.e(TAG, "restoreTab tabInfo=" + newTab.getTabInfo());
-                tabs.add(newTab);
-            }
-            return new GroupTab(parent, newTabInfo, tabs);
-        } else {
-            File pagesDir = ArkTabDao.getPagesDir(newTabInfo.getId());
-            List<IPage> pages = new ArrayList<>();
-            for (int i = 0; i < count; i++) {
-                int pageId = is.readInt();
-                File file = new File(pagesDir, String.valueOf(pageId));
-                PageInfo pageInfo = PageInfo.from(file);
-                ArkLogger.e(TabInfo.class, "restoreTab pageId=" + pageId + " pageInfo=" + pageInfo);
-                pages.add(new PageImpl(pageInfo));
-            }
-            return new ChildTab(parent, newTabInfo, pages);
-        }
-    }
 }

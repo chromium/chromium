@@ -145,15 +145,17 @@
             >
 
             <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/btn_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="28dp"
                 android:paddingVertical="8dp"
                 android:gravity="center"
-                android:text="全部关闭"
+                android:text="返回上级"
                 android:textColor="@color/white"
                 android:background="?android:attr/selectableItemBackground"
-                android:drawableTop="@drawable/ic_delete"
+                android:drawableTop="@drawable/ic_arrow_back_white_24dp"
+                android:drawablePadding="4dp"
                 app:drawable_tint_color="@color/white"
                 android:textSize="12sp"
                 />
@@ -179,6 +181,7 @@
                 android:text="最近关闭"
                 android:textColor="@color/white"
                 android:drawableTop="@drawable/ic_recently_closed"
+                android:drawablePadding="4dp"
                 app:drawable_tint_color="@color/white"
                 android:background="?android:attr/selectableItemBackground"
                 android:textSize="12sp"
@@ -241,5 +244,20 @@
             />
 
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btn_close_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:gravity="center"
+        android:background="@drawable/bg_search_switcher"
+        android:src="@drawable/ic_delete"
+        android:tint="@color/white"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

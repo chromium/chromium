@@ -3,16 +3,20 @@ package com.ark.browser.tab;
 import androidx.annotation.Keep;
 
 import com.ark.browser.core.utils.ArkIdManager;
+import com.ark.browser.tab.core.ChildTab;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+
+import java.io.DataInputStream;
+import java.io.IOException;
 
 @Keep
 public class TabInfo {
 
     private int tabId;
 
-    // TODO
     private int mParentId;
 
     private long createTime;
@@ -36,6 +40,7 @@ public class TabInfo {
 
     protected boolean mIsGroup;
 
+    // TODO
     protected String title;
 
     private TabInfo() {
@@ -185,10 +190,50 @@ public class TabInfo {
     public static TabInfo create(int parentId, boolean isGroup, long createTime) {
         TabInfo manager = new TabInfo();
         manager.createTime = createTime;
+        manager.accessTime = createTime;
         manager.tabId = ArkIdManager.generateTabId();
         manager.mParentId = parentId;
         manager.mIsGroup = isGroup;
         return manager;
+    }
+
+    public static TabInfo create(DataInputStream is) throws IOException {
+        int version = is.readInt();
+        int tabId = is.readInt();
+        int parentId;
+        if (version >= 3) {
+            if (version >= 5) {
+                parentId = is.readInt();
+            } else {
+                String name = is.readUTF();
+                if ("group_incognito".equals(name)) {
+                    parentId = -101;
+                } else {
+                    parentId = -100;
+                }
+            }
+        } else {
+            parentId = -100;
+        }
+        TabInfo newTabInfo = TabInfo.create(tabId, parentId, false);
+        ArkLogger.e(ChildTab.class, "from version=" + version + " parentId=" + newTabInfo.getParentId());
+        if (version >= 4) {
+            newTabInfo.setIsGroup(is.readBoolean());
+        } else {
+            newTabInfo.setIsGroup(false);
+        }
+        if (version >= 2) {
+            newTabInfo.setLaunchType(is.readInt());
+        }
+        newTabInfo.setCreateTime(is.readLong());
+        newTabInfo.setIncognito(is.readBoolean());
+        newTabInfo.setLocked(is.readBoolean());
+
+        newTabInfo.setChildIndex(is.readInt());
+        newTabInfo.setCurrentPageId(is.readInt());
+        newTabInfo.setPosition(is.readInt());
+        newTabInfo.setAccessTime(is.readLong());
+        return newTabInfo;
     }
 
     @Override

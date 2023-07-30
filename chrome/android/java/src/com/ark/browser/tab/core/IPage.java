@@ -49,9 +49,7 @@ public interface IPage {
 //    }
 
     default void deletePageInfo() {
-        File pagesDir = ArkTabDao.getPagesDir(getPageInfo().getTabId());
-        File file = new File(pagesDir, String.valueOf(getId()));
-        file.delete();
+        ArkTabDao.deletePageFile(getPageInfo().getTabId(), getId());
     }
 
     default void loadUrl(LoadUrlParams params) {

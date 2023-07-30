@@ -420,4 +420,87 @@
     <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_card_art_width">32dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_card_art_height">20dp</dimen>
+
+
+
+
+    <dimen name="tab_grid_favicon_size">18dp</dimen>
+    <dimen name="tab_list_selected_inset">7dp</dimen>
+    <dimen name="tab_list_selected_inset_low_end">6dp</dimen>
+    <dimen name="tab_list_selected_margin">7dp</dimen>
+    <dimen name="tab_list_card_radius">8dp</dimen>
+    <dimen name="tab_grid_price_card_radius">4dp</dimen>
+    <dimen name="tab_list_mini_card_radius">12dp</dimen>
+    <dimen name="tab_list_mini_card_frame_size">1dp</dimen>
+    <dimen name="tab_grid_bottom_padding">16dp</dimen>
+    <dimen name="tab_grid_close_button_size">18dp</dimen>
+    <dimen name="tab_grid_dialog_side_margin">16dp</dimen>
+    <dimen name="tab_grid_dialog_top_margin">85dp</dimen>
+    <dimen name="tab_grid_iph_item_description_margin">16dp</dimen>
+    <dimen name="tab_grid_iph_dialog_height">400dp</dimen>
+    <dimen name="tab_grid_iph_dialog_top_margin">24dp</dimen>
+    <dimen name="tab_grid_iph_dialog_text_top_margin_landscape">8dp</dimen>
+    <dimen name="tab_grid_iph_dialog_text_top_margin_portrait">16dp</dimen>
+    <dimen name="tab_grid_iph_dialog_text_side_margin">32dp</dimen>
+    <dimen name="tab_grid_large_message_side_padding_landscape">114dp</dimen>
+    <dimen name="tab_grid_merge_threshold">45dp</dimen>
+    <dimen name="tab_grid_thumbnail_card_default_size">152dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_frame_corner_radius">7dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_frame_size">32dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_padding_from_frame">4dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_background_radius">4dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_background_down_shift">1dp</dimen>
+    <dimen name="tab_group_toolbar_height">56dp</dimen>
+    <dimen name="tab_group_toolbar_topic_margin">8dp</dimen>
+    <dimen name="tab_strip_fading_edge_width">8dp</dimen>
+    <dimen name="tab_strip_button_width">48dp</dimen>
+    <dimen name="tab_strip_favicon_inset">3dp</dimen>
+    <dimen name="tab_strip_favicon_size">14dp</dimen>
+    <dimen name="swipe_to_dismiss_threshold">144dp</dimen>
+    <dimen name="selection_tab_grid_toggle_button_inset">14dp</dimen>
+    <dimen name="selection_tab_list_toggle_button_lateral_inset">18dp</dimen>
+    <dimen name="selection_tab_list_toggle_button_vertical_inset">22dp</dimen>
+    <dimen name="tab_carousel_card_width">168dp</dimen>
+    <dimen name="tasks_view_items_vertical_spacing">8dp</dimen>
+    <dimen name="tab_thumbnail_placeholder_vertical_offset">2dp</dimen>
+
+    <!-- Dimens for incognito reauth promo message icon -->
+    <dimen name="incognito_reauth_promo_message_icon_width">52dp</dimen>
+    <dimen name="incognito_reauth_promo_message_icon_height">52dp</dimen>
+
+    <!-- Dimens for theme refactor 2021 -->
+    <dimen name="tab_grid_card_bg_radius">16dp</dimen>
+    <dimen name="tab_grid_card_favicon_padding">11dp</dimen>
+    <dimen name="tab_grid_card_header_height">40dp</dimen>
+    <dimen name="tab_grid_card_margin">8dp</dimen>
+    <dimen name="tab_grid_card_between_card_padding">4dp</dimen>
+    <dimen name="tab_grid_card_title_fading_length">20dp</dimen>
+    <dimen name="tab_grid_card_title_end_margin">44dp</dimen>
+    <dimen name="tab_grid_card_thumbnail_corner_radius_top">4dp</dimen>
+    <dimen name="tab_grid_card_thumbnail_corner_radius_bottom">12dp</dimen>
+    <dimen name="tab_grid_card_thumbnail_margin">16dp</dimen>
+    <dimen name="tab_list_card_action_button_size">48dp</dimen>
+    <dimen name="tab_list_card_action_button_margin">4dp</dimen>
+
+    <dimen name="tab_grid_dialog_bg_radius">24dp</dimen>
+    <dimen name="tab_grid_dialog_app_bar_padding">8dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="tab_bg_elevation">@dimen/default_elevation_4</dimen>
+
+    <integer name="tab_thumbnail_placeholder_color_alpha">255</integer>
+    <integer name="tab_thumbnail_placeholder_selected_color_alpha">38</integer>
+    <integer name="tab_grid_hovered_card_background_color_alpha">128</integer>
+    <integer name="tab_grid_hovered_card_background_selected_color_alpha">26</integer>
+
+    <!-- Dimens for tasks view layout -->
+    <dimen name="search_box_start_padding">16dp</dimen>
+    <dimen name="search_box_end_padding">10dp</dimen>
+    <dimen name="tasks_surface_location_bar_url_button_size"> 20dp</dimen>
+    <dimen name="tasks_surface_location_bar_url_button_start_margin"> 16dp</dimen>
+
+    <!-- Dimens for TabSelectionEditor -->
+    <dimen name="tab_selection_editor_action_view_padding">14dp</dimen>
+    <dimen name="tab_selection_editor_longpress_entry_threshold">20dp</dimen>
+    <dimen name="tab_selection_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
 </resources>

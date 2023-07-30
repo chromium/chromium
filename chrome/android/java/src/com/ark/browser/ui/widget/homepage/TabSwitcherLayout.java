@@ -8,23 +8,16 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 
-import com.ark.browser.tab.PageInfo;
-import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.tab.TabGroupManager;
-import com.ark.browser.tab.core.ITab;
-import com.ark.browser.ui.fragment.dialog.TabActionDialog;
+import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.search.SearchFragment;
-import com.ark.browser.ui.widget.FitWidthImageView;
+import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.ui.widget.indicator.SwitcherIndicatorView;
-import com.ark.browser.utils.FaviconUtil;
+import com.zpj.toast.ZToast;
 import com.zpj.utils.ScreenUtils;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
@@ -49,6 +42,8 @@ public class TabSwitcherLayout extends FrameLayout {
     private final View mSwitcherBottomBar;
     private final View mEmptyLayout;
     private final View mLoadingLayout;
+    private final ImageButton mBtnCloseAll;
+    private final DrawableTintTextView mBtnBack;
 
     private final MagicIndicator mIndicator;
 
@@ -74,6 +69,11 @@ public class TabSwitcherLayout extends FrameLayout {
             private float mAlpha;
 
             @Override
+            public void onTabGroupChanged(ITabGroup tabGroup) {
+                updateBackButtonState();
+            }
+
+            @Override
             public boolean onSwipe(int position) {
                 if (mSwitcher.getCount() == 0) {
                     mEmptyLayout.setAlpha(0f);
@@ -84,26 +84,6 @@ public class TabSwitcherLayout extends FrameLayout {
                             .start();
                 }
                 return false;
-            }
-
-            @Override
-            public void onBeforeExpand(int position) {
-
-            }
-
-            @Override
-            public void onExpand(int position) {
-
-            }
-
-            @Override
-            public void onBeforeIdle(int position) {
-
-            }
-
-            @Override
-            public void onIdle(int position) {
-
             }
 
             @Override
@@ -185,6 +165,31 @@ public class TabSwitcherLayout extends FrameLayout {
         mSwitcherBottomBar.setAlpha(0f);
         mIndicator = findViewById(R.id.magic_indicator);
 
+        mBtnBack = findViewById(R.id.btn_back);
+        mBtnBack.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ITabGroup tabGroup = mSwitcher.getTabGroup();
+                if (tabGroup == null) {
+                    return;
+                }
+                if (tabGroup.getParentTab() != null) {
+                    mSwitcher.setTabGroup(tabGroup.getParentTab());
+                }
+
+                updateBackButtonState();
+            }
+        });
+
+        mBtnCloseAll = findViewById(R.id.btn_close_all);
+        mBtnCloseAll.setAlpha(0f);
+        mBtnCloseAll.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ZToast.warning("TODO closeAll");
+            }
+        });
+
         findViewById(R.id.btn_search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,6 +242,21 @@ public class TabSwitcherLayout extends FrameLayout {
         mSwitcher.notifyDataSetChanged();
     }
 
+    private void updateBackButtonState() {
+        ITabGroup tabGroup = mSwitcher.getTabGroup();
+        if (tabGroup == null) {
+            mBtnBack.setEnabled(false);
+        } else {
+            mBtnBack.setEnabled(tabGroup.getParentTab() != null);
+        }
+
+        if (mBtnBack.isEnabled()) {
+            mBtnBack.setTint(Color.WHITE);
+        } else {
+            mBtnBack.setTint(Color.GRAY);
+        }
+    }
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
@@ -261,6 +281,9 @@ public class TabSwitcherLayout extends FrameLayout {
         mSwitcherTopBar.setScaleX(percent);
         mSwitcherTopBar.setScaleY(percent);
         mSwitcherTopBar.setTranslationY(-mSwitcherTopBar.getMeasuredHeight() * (1f - percent));
+
+        mBtnCloseAll.setAlpha(percent);
+        mBtnCloseAll.setTranslationY(-mBtnCloseAll.getMeasuredHeight() * (1f - percent));
     }
 
     public void addCallback(SwitcherRecyclerLayout.Callback callback) {
@@ -279,8 +302,12 @@ public class TabSwitcherLayout extends FrameLayout {
         mSwitcherBottomBar.setAlpha(0f);
         mSwitcherTopBar.setVisibility(VISIBLE);
         mSwitcherTopBar.setAlpha(0f);
+        mBtnCloseAll.setVisibility(VISIBLE);
+        mBtnCloseAll.setAlpha(0f);
         mEmptyLayout.setVisibility(VISIBLE);
         mEmptyLayout.setAlpha(0f);
+
+        updateBackButtonState();
     }
 
     public void showBrowser() {
@@ -291,6 +318,8 @@ public class TabSwitcherLayout extends FrameLayout {
         mSwitcherBottomBar.setAlpha(0f);
         mSwitcherTopBar.setVisibility(INVISIBLE);
         mSwitcherTopBar.setAlpha(0f);
+        mBtnCloseAll.setVisibility(INVISIBLE);
+        mBtnCloseAll.setAlpha(0f);
         mEmptyLayout.setVisibility(GONE);
         mEmptyLayout.setAlpha(0f);
     }

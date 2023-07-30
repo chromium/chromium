@@ -13,18 +13,12 @@ public interface ITab {
         return getTabInfo().getId();
     }
 
-    default String getTitle() {
-        PageInfo pageInfo = getCurrentPageInfo();
-        if (pageInfo == null) {
-            return "";
-        }
-        return pageInfo.getTitle();
-    }
+    String getTitle();
 
     default int getThemeColor() {
         PageInfo pageInfo = getCurrentPageInfo();
         if (pageInfo == null) {
-            return Color.WHITE;
+            return getTabInfo().isIncognito() ? Color.BLACK : Color.WHITE;
         }
         return pageInfo.getThemeColor();
     }
@@ -42,6 +36,28 @@ public interface ITab {
     }
 
     ITabGroup getParentTab();
+
+    /**
+     * TODO modify to CompositorViewHolder
+     * @return
+     */
+    default ITabGroup getRootGroupTab() {
+
+        ITabGroup tabGroup = getParentTab();
+
+        while (tabGroup != null) {
+            ITabGroup parent = tabGroup.getParentTab();
+            if (parent == null) {
+                return tabGroup;
+            } else {
+                tabGroup = parent;
+            }
+        }
+        if (this instanceof ITabGroup) {
+            return (ITabGroup) this;
+        }
+        throw new RuntimeException("root TabGroup is null!");
+    }
 
     TabInfo getTabInfo();
 

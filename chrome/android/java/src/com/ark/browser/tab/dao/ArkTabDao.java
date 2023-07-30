@@ -9,6 +9,7 @@ import androidx.core.util.AtomicFile;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
+import com.zpj.utils.FileUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
@@ -27,6 +28,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * TODO modify to interface
+ */
 public class ArkTabDao {
 
     private static final String TAG = "ArkTabDao";
@@ -65,6 +69,12 @@ public class ArkTabDao {
         return new File(tabsDir, "tab" + id);
     }
 
+    public static void deleteTabFile(int id) {
+        File tabFile = getTabFile(id);
+        AtomicFile atomicFile = new AtomicFile(tabFile);
+        atomicFile.delete();
+    }
+
     public static File getPagesDir(int tabId) {
         File tabsDir = new File(StateDirHolder.sDirectory, DIR_PAGES);
         File dir = new File(tabsDir, String.valueOf(tabId));
@@ -74,9 +84,39 @@ public class ArkTabDao {
         return dir;
     }
 
+    public static void deletePageFile(int tabId, int pageId) {
+        File pagesDir = getPagesDir(tabId);
+        File file = new File(pagesDir, String.valueOf(pageId));
+        AtomicFile atomicFile = new AtomicFile(file);
+        atomicFile.delete();
+    }
+
+    public static void deletePagesDir(int tabId) {
+        FileUtils.deleteFileByDirectory(getPagesDir(tabId));
+    }
+
 //    public static File getPageFile(int int pageId) {
 //
 //    }
+
+
+
+    public static DataInputStream readFileAtomic(File file) {
+        ArkLogger.i(TAG, "readFile2 file: " + file);
+        if (!file.exists()) {
+            ArkLogger.i(TAG, "readFile2 file not exists!");
+            return null;
+        }
+
+        AtomicFile atomicFile = new AtomicFile(file);
+        try {
+            return new DataInputStream(new ByteArrayInputStream(atomicFile.readFully()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            ArkLogger.e(TAG, "readFile2 file read failed!", e);
+            return null;
+        }
+    }
 
     public static DataInputStream readFile(File file) {
         ArkLogger.i(TAG, "Starting to fetch tab list for " + file);
@@ -99,17 +139,17 @@ public class ArkTabDao {
         return new DataInputStream(new ByteArrayInputStream(data));
     }
 
-    public static AsyncTask<DataInputStream> fetchFile(final File file) {
+    public static AsyncTask<DataInputStream> readFileAsync(final File file) {
         return new BackgroundOnlyAsyncTask<DataInputStream>() {
             @Override
             protected DataInputStream doInBackground() {
-                return readFile(file);
+                return readFileAtomic(file);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static DataInputStream fetchFileSync(final File file) {
-        return readFile(file);
+    public static DataInputStream readFileSync(final File file) {
+        return readFileAtomic(file);
     }
 
     public static int readSavedStateFile(DataInputStream stream, @Nullable SparseBooleanArray tabIds)

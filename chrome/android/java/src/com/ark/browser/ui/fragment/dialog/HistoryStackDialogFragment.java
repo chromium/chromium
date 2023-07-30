@@ -64,10 +64,6 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
 
     private ITab mTab;
 
-    public static HistoryStackDialogFragment newInstance(PageInfo pageInfo) {
-        return newInstance(pageInfo.getTabId());
-    }
-
     public static HistoryStackDialogFragment newInstance(int tabId) {
         Bundle args = new Bundle();
         args.putInt(KEY_ID, tabId);

@@ -68,8 +68,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mTabSwitcherLayout = view.findViewById(R.id.tab_switcher_layout);
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
-        mSwitcher.setAdapter(new ArkTabAdapter(mViewHolder.getTabContentManager()));
-//        mSwitcher.setTabGroup(TabGroupManager.global().getCurrentTabGroup());
+        mSwitcher.setAdapter(new ArkTabAdapter(mContext, mViewHolder.getTabContentManager()));
 
         BottomControlBar bottomControlBar = view.findViewById(R.id.bottom_control_bar);
         bottomControlBar.setSwitcherManager(this);
@@ -100,7 +99,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
                     }
                 } else {
                     LoadUrlParams params = new LoadUrlParams(itemInfo.url);
-                    getCurrentTabGroup().openNewTab(params, TabLaunchType.FROM_LAUNCHER_SHORTCUT);
+                    getCurrentTabGroup().openInNewTab(params, TabLaunchType.FROM_LAUNCHER_SHORTCUT);
                     if (v instanceof BubbleTextView) {
                         Rect rect = new Rect();
                         ((BubbleTextView) v).getIconBounds(rect);
@@ -253,6 +252,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     public void hideBrowser() {
         mBrowserLayout.setVisibility(View.INVISIBLE);
         StatusBarUtils.setLightMode(ContextUtils.getActivity(mBrowserLayout.getContext()));
+        mViewHolder.setTab(null);
     }
 
     public void setThemeColor(int color) {
@@ -278,16 +278,6 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     @Override
-    public boolean onSwipe(int position) {
-        return true;
-    }
-
-    @Override
-    public void onBeforeExpand(int position) {
-
-    }
-
-    @Override
     public void onExpand(int position) {
         goToBrowser(false);
     }
@@ -299,16 +289,6 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     @Override
-    public void onIdle(int position) {
-
-    }
-
-    @Override
-    public void onBeforeHide(int position) {
-
-    }
-
-    @Override
     public void onHide(int position) {
         goToLauncher();
     }
@@ -317,16 +297,6 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     public void onOpen(float percent) {
         mLauncherLayout.setVisibility(View.VISIBLE);
         mLauncherLayout.setAlpha(1 - percent);
-    }
-
-    @Override
-    public void onAnimExpand(float percent) {
-
-    }
-
-    @Override
-    public void onAnimIdle(float percent) {
-
     }
 
     @Override
@@ -365,6 +335,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         cacheCurrentPage();
         mTabSwitcherLayout.showSwitcher();
         mTabSwitcherLayout.open();
+        hideBrowser();
     }
 
     public void goToLauncher(boolean animated) {
@@ -484,16 +455,20 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public void openUrl(LoadUrlEvent event) {
-        ITabGroup tabGroup = TabGroupManager.global().getTabGroup(event.isIncognito());
+//        ITabGroup tabGroup = TabGroupManager.global().getCurrentTabGroup(event.isIncognito());
+        ITabGroup tabGroup = getCurrentTabGroup();
+        if (tabGroup.isIncognito() != event.isIncognito()) {
+            tabGroup = TabGroupManager.global().getCurrentTabGroup(event.isIncognito());
+        }
         LoadUrlParams loadUrlParams = event.getLoadUrlParams();
         if (event.isNewTab() || tabGroup.getCurrentTab() == null) {
             loadUrlParams.setTransitionType(PageTransition.GENERATED);
-            tabGroup.openNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+            tabGroup.openInNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
         } else if (isInBrowser() && tabGroup.getCurrentTab() != null) {
             // TODO new tab or new page?
-            tabGroup.openNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+            tabGroup.openInNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
         } else {
-            tabGroup.openNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+            tabGroup.openInNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
         }
         mSwitcher.setTabGroup(tabGroup);
         goToBrowser();

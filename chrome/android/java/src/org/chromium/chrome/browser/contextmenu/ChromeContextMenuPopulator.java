@@ -318,6 +318,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                 if (mMode == ContextMenuMode.NORMAL) {
                     linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                    linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
                     if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }
@@ -392,11 +393,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 //                imageGroup.add(createListItem(
 //                        Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
 //            }
-            imageGroup.add(createListItem(Item.COPY_IMAGE));
             if (isSrcDownloadableScheme) {
                 imageGroup.add(createListItem(Item.SAVE_IMAGE));
                 hasSaveImage = true;
             }
+
+            imageGroup.add(createListItem(Item.COPY_IMAGE));
 
             if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
                 imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));

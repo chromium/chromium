@@ -168,6 +168,15 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         mTabGroup.addObserver(tabInfoObserver);
 
         notifyDataSetChanged();
+
+        ThreadPool.postOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                for (Callback callback : mCallbackList) {
+                    callback.onTabGroupChanged(mTabGroup);
+                }
+            }
+        });
     }
 
     public ITabGroup getTabGroup() {
@@ -179,6 +188,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             return;
         }
         mPosition = getPosition();
+        mFirstPosition = mPosition;
         needLayout = true;
         requestLayout();
     }
@@ -1998,27 +2008,53 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     public interface Callback {
 
-        boolean onSwipe(int position);
+        default void onTabGroupChanged(ITabGroup tabGroup) {
 
-        void onBeforeExpand(int position);
+        }
 
-        void onExpand(int position);
+        default boolean onSwipe(int position) {
+            return true;
+        }
 
-        void onBeforeIdle(int position);
+        default void onBeforeExpand(int position) {
 
-        void onIdle(int position);
+        }
 
-        void onBeforeHide(int position);
+        default void onExpand(int position) {
 
-        void onHide(int position);
+        }
 
-        void onOpen(float percent);
+        default void onBeforeIdle(int position) {
 
-        void onAnimExpand(float percent);
+        }
 
-        void onAnimIdle(float percent);
+        default void onIdle(int position) {
 
-        void onClose(float percent);
+        }
+
+        default void onBeforeHide(int position) {
+
+        }
+
+        default void onHide(int position) {
+
+        }
+
+        default void onOpen(float percent) {
+
+        }
+
+        default void onAnimExpand(float percent) {
+
+        }
+
+        default void onAnimIdle(float percent) {
+
+        }
+
+        default void onClose(float percent) {
+
+        }
 
     }
 

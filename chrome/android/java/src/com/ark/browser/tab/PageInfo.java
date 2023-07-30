@@ -73,7 +73,7 @@ public class PageInfo {
 
 
     public static PageInfo from(File pageFile) throws IOException {
-        try (DataInputStream stream = ArkTabDao.readFile(pageFile)) {
+        try (DataInputStream stream = ArkTabDao.readFileAtomic(pageFile)) {
             if (stream == null) {
                 throw new IOException("page file stream is null!");
             }

@@ -87,14 +87,6 @@ public class TabGroupManager {
         return null;
     }
 
-//    public static int getTotalTabCount() {
-//        int count = 0;
-//        for (ITabGroup tabList : getTabGroups()) {
-//            count += tabList.getCount();
-//        }
-//        return count;
-//    }
-
     public static ITab cloneTab(ITab tab) {
         return tab.getParentTab().cloneTab(tab);
     }
@@ -324,7 +316,19 @@ public class TabGroupManager {
         @NonNull
         @Override
         public ITabGroup getCurrentTabGroup() {
-            return getTabGroup(isIncognitoSelected());
+            return getCurrentTabGroup(isIncognitoSelected());
+        }
+
+        public ITabGroup getCurrentTabGroup(boolean incognito) {
+            ITabGroup tabGroup = getTabGroup(incognito);
+            return getTabGroup(tabGroup);
+        }
+
+        private ITabGroup getTabGroup(ITabGroup tabGroup) {
+            if (tabGroup.getCurrentTab() instanceof ITabGroup) {
+                return getTabGroup((ITabGroup) tabGroup.getCurrentTab());
+            }
+            return tabGroup;
         }
 
         @Override

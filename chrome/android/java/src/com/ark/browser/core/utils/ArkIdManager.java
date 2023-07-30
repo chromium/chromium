@@ -42,6 +42,34 @@ public class ArkIdManager {
         private static final ArkIdManager PAGE_ID_MANAGER = new ArkIdManager("page_id_manager");
     }
 
+    private static class GroupHolder {
+        private static final IdGenerator GROUP_ID_MANAGER = new IdGenerator("group_id_manager");
+
+        public static class IdGenerator {
+
+            private final AtomicInteger mIdCounter = new AtomicInteger();
+
+            private final PrefsHelper mPreferences;
+
+
+            private IdGenerator(String prefsName) {
+                mPreferences = PrefsHelper.with(prefsName);
+                mIdCounter.set(mPreferences.getInt("next_id", Tab.INVALID_TAB_ID));
+            }
+
+
+            private int generateId() {
+                int id = mIdCounter.decrementAndGet();
+                if (id == -100 || id == -101) {
+                    return generateId();
+                }
+                mPreferences.applyInt("next_id", id);
+                return id;
+            }
+
+        }
+    }
+
 
     public static int generateTabId(int id) {
         return Holder.TAB_ID_MANAGER.generateId(id);
@@ -49,6 +77,11 @@ public class ArkIdManager {
 
     public static int generateTabId() {
         return generateTabId(Tab.INVALID_TAB_ID);
+    }
+
+    // TODO
+    public static int generateGroupId() {
+        return GroupHolder.GROUP_ID_MANAGER.generateId();
     }
 
     public static int generatePageId(int id) {

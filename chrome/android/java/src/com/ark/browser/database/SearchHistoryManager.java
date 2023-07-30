@@ -28,7 +28,7 @@ public class SearchHistoryManager {
         private static final LinkedList<String> SEARCH_HISTORY_LIST = new LinkedList<>();
 
         static {
-            try (DataInputStream is = ArkTabDao.readFile(
+            try (DataInputStream is = ArkTabDao.readFileAtomic(
                     new File(ContextUtils.getApplicationContext().getFilesDir(), NAME))) {
                 if (is != null) {
                     int version = is.readInt();

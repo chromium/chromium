@@ -211,7 +211,11 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Toast.makeText(ContextUtils.getApplicationContext(), "onOpenInNewTabInGroup", Toast.LENGTH_SHORT).show();
         LoadUrlParams params = new LoadUrlParams(url);
         params.setReferrer(referrer);
-        LoadUrlEvent.post(mTab.getPageInfo(), params, true, mTab.isIncognito());
+        ITab tab = mTab.getTab();
+        if (tab == null) {
+            return;
+        }
+        tab.getParentTab().openInNewGroup(tab, params, TabLaunchType.FROM_CHROME_UI);
     }
 
     @Override

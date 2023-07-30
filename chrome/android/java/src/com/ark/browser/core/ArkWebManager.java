@@ -2,7 +2,7 @@ package com.ark.browser.core;
 
 import android.util.SparseArray;
 
-import com.ark.browser.tab.PageInfo;
+import org.chromium.content_public.browser.WebContents;
 
 public class ArkWebManager {
 
@@ -33,6 +33,14 @@ public class ArkWebManager {
 
     public static ArkWebContents get(int id) {
         return PAGE_CACHE.get(id, null);
+    }
+
+    public static WebContents getWebContents(int id) {
+        ArkWebContents web = get(id);
+        if (web == null) {
+            return null;
+        }
+        return web.getWebContents();
     }
 
     public static void put(int id, ArkWebContents arkWeb) {
