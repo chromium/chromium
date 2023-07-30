@@ -4541,7 +4541,7 @@
             ]
         }
     ],
-    "DelayFirstWorkerWake": [
+    "DelayMemoryInterventions": [
         {
             "platforms": [
                 "android",
@@ -4557,6 +4557,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
                         "DelayFirstWorkerWake"
                     ]
                 }
