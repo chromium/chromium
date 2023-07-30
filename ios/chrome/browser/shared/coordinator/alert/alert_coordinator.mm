@@ -67,9 +67,7 @@
                    style:(UIAlertActionStyle)style
                preferred:(BOOL)preferred
                  enabled:(BOOL)enabled {
-  if (self.visible) {
-    return;
-  }
+  CHECK(!self.visible);
 
   if (style == UIAlertActionStyleCancel) {
     CHECK(!self.cancelButtonAdded);
