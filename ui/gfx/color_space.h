@@ -150,7 +150,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
     INVALID,
     // Limited Rec. 709 color range with RGB values ranging from 16 to 235.
     LIMITED,
-    // Full RGB color range with RGB valees from 0 to 255.
+    // Full RGB color range with RGB values from 0 to 255.
     FULL,
     // Range is defined by TransferID/MatrixID.
     DERIVED,

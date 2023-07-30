@@ -246,7 +246,7 @@ enum class RangeID : int8_t {
   INVALID = 0,
   // Limited Rec. 709 color range with RGB values ranging from 16 to 235.
   LIMITED = 1,
-  // Full RGB color range with RGB valees from 0 to 255.
+  // Full RGB color range with RGB values from 0 to 255.
   FULL = 2,
   // Range is defined by TransferID/MatrixID.
   DERIVED = 3,
