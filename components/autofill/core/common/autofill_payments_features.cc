@@ -23,6 +23,11 @@ namespace autofill::features {
 
 // Features
 
+// When enabled, Android N+ devices will be supported for FIDO authentication.
+BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
+             "AutofillEnableAndroidNKeyForFidoAuthentication",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card art images (instead of network icons) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,

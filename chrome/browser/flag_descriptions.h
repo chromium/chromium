@@ -240,6 +240,9 @@ extern const char kEnableAutoDisableAccessibilityDescription[];
 extern const char kEnableAutoDisableAccessibilityV2Name[];
 extern const char kEnableAutoDisableAccessibilityV2Description[];
 
+extern const char kAutofillEnableAndroidNKeyForFidoAuthenticationName[];
+extern const char kAutofillEnableAndroidNKeyForFidoAuthenticationDescription[];
+
 extern const char kAutofillEnableCvcStorageAndFillingName[];
 extern const char kAutofillEnableCvcStorageAndFillingDescription[];
 
