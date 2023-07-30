@@ -47,6 +47,7 @@
 <translation id="122699739164161391">সকলো টেব বন্ধ কৰক</translation>
 <translation id="1229222343402087523">Chromeত ${searchPhrase}ৰ সন্ধান কৰক</translation>
 <translation id="1242044645101871359">আকৌ ছাইন ইন কৰক</translation>
+<translation id="1248276223555153952">এই ডিভাইচটোত একাউণ্টসমূহ পৰিচালনা কৰক...</translation>
 <translation id="1254117744268754948">ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="1254424942107648268">পূৰ্বৱৰ্তী ষ্ট্ৰিং বিচাৰক</translation>
 <translation id="1258491128795710625">নতুন কি আছে</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">মেইল পঠিওৱা হ'ল।</translation>
 <translation id="1582732959743469162">এই কার্যয়ে আপোনাৰ বর্তমানৰ ডাউনল’ডৰ সকলো প্ৰগতি বন্ধ কৰিব।</translation>
 <translation id="1594034544529347967">আৰম্ভণিৰ সময়</translation>
+<translation id="160275202205869636">অন কৰা থাকিলে, আপোনাৰ Google একাউণ্টত ডেটা ব্যৱহাৰ আৰু ছেভ কৰক। অফ থাকিলে, ডেটা কেৱল এই ডিভাইচটোত ছেভ কৰা হয়।</translation>
 <translation id="1605405588277479165">অফ আছে - চুপাৰিছ কৰা নহয়</translation>
 <translation id="1605658421715042784">চিত্ৰ প্ৰতিলিপি কৰক</translation>
 <translation id="1608337082864370066">প্ৰতিলিপি কৰা প্ৰতিচ্ছবিৰ সন্ধান কৰক</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">ইনক’গনিট’ ম’ডত সন্ধান কৰক</translation>
 <translation id="277771892408211951">ভাষা বাছনি কৰক</translation>
 <translation id="2780046210906776326">কোনো ইমেইল একাউণ্ট নাই</translation>
+<translation id="2780326741858434269">এই ডিভাইচটোত থকা একাউণ্ট</translation>
 <translation id="2781325423985810933">আনডু কৰক</translation>
 <translation id="2781331604911854368">অন আছে</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">Lensৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="3577555362230509265">অন্য এপ্‌সমূহত Chrome ব্যৱহাৰ কৰক।</translation>
 <translation id="3581564640715911333">অন্য ভাষাত পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
+<translation id="3587885837929752825">আপুনি নিজৰ Google একাউণ্টত কি ছেভ কৰিব পাৰে, সেয়া আপোনাৰ প্ৰতিষ্ঠানে সীমিত কৰে।</translation>
 <translation id="3588820906588687999">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="3595252146048399851">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="3603009562372709545">লিংক URL প্ৰতিলিপি কৰক</translation>
@@ -693,6 +697,7 @@
 <translation id="5271265092610673171">{count,plural, =1{এটা আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে এইটো পূৰ কৰক।}one{কিছুমান আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে সেইবোৰ পূৰ কৰক।}other{কিছুমান আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে সেইবোৰ পূৰ কৰক।}}</translation>
 <translation id="5271549068863921519">পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="5283494734135414249">ঠিকনা বাৰৰ তলত ওলোৱা শ্বৰ্টকাটটোত টিপক।</translation>
+<translation id="5292723732574094123">ছাইন আউট কৰা আছে। আপোনাৰ একাউণ্টত বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক চাবলৈ পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> একাউণ্টটো আঁতৰাবনে?</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
@@ -736,6 +741,7 @@
 <translation id="5614553682702429503">পাছৱৰ্ড ছেভ কৰিবনে?</translation>
 <translation id="5626245204502895507">এই মুহূৰ্তত ফাইলটো ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="5631164295104953411">পৰিশোধৰ পদ্ধতি যোগ কৰক</translation>
+<translation id="5649795523408334796">ঠিকনা চিনাক্ত কৰক</translation>
 <translation id="5652623411397330904">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহ ইয়াত দেখা যাব।</translation>
 <translation id="5657859710142657190">টেব গ্ৰিডলৈ যাওক</translation>
 <translation id="5659593005791499971">ইমেইল</translation>
@@ -1297,6 +1303,7 @@
 <translation id="8843129975935593190">আপুনি কি ছিংক কৰিব পাৰে, সেয়া আপোনাৰ প্ৰতিষ্ঠানে সীমিত কৰিছে।</translation>
 <translation id="8849001918648564819">লুকুওৱা হৈছে</translation>
 <translation id="8855242995793521265">আপোনাৰ ব্ৰাউজাৰ অথবা ডিভাইচটো লক্ষণীয়ভাৱে লেহেমীয়া নকৰে।</translation>
+<translation id="8863431381414769983">Google Mapsৰ পৰা দিক্-নিৰ্দেশনা আৰু স্থানীয় তথ্য পাওক</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} টা টেব}one{{count} টা টেব}other{{count} টা টেব}}</translation>
 <translation id="8870413625673593573">শেহতীয়াকৈ বন্ধ কৰা</translation>
 <translation id="8876882697946675716">আপোনাৰ ডিভাইচসমূহ ছিংক কৰি ৰাখক</translation>

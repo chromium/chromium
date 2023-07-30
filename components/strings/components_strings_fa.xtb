@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1432187715652018471">این صفحه می‌خواهد کنترل‌کننده سرویس نصب کند.</translation>
 <translation id="1432581352905426595">مدیریت موتورهای جستجو</translation>
+<translation id="1433225466058025572">فایل‌ها را دوباره جابه‌جا کنید</translation>
 <translation id="1435940442311036198">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="1436185428532214179">می‌تواند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهد</translation>
 <translation id="1442386063175183758">سمت راست تاخوردگی دروازه‌ای</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;واگرد حذف</translation>
 <translation id="2397836504670957718">رایانه کیفی و نوت‌بوک</translation>
 <translation id="2400600116338235695">می‌تواند برای اتصال به درگاه‌های سریال درخواست دهد</translation>
+<translation id="2404884497378469141">فایل‌ها را دوباره کپی کنید</translation>
 <translation id="2413155254802890957">قدیمی</translation>
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="2414886740292270097">تاریک</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">گذرواژه‌تان را در <ph name="APP_NAME" /> وارد کنید</translation>
 <translation id="2764001903315068341">داستان مصور</translation>
 <translation id="2765217105034171413">کوچک</translation>
+<translation id="2770159525358613612">فایل‌ها را دوباره بارگذاری کنید</translation>
 <translation id="277133753123645258">روش ارسال</translation>
 <translation id="277499241957683684">ثبت دستگاه موجود نیست</translation>
 <translation id="2775884851269838147">صفحه چاپ اول</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">هم‌رسانی صفحه‌نمایش موقتاً متوقف شد</translation>
 <translation id="3634530185120165534">سینی ۵</translation>
 <translation id="3634567936866541746">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. برای ایمن کردن حسابتان، Chrome توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
+<translation id="3642196846309122856">فایل‌ها را دوباره بارگیری کنید</translation>
 <translation id="3642638418806704195">برنامه:</translation>
 <translation id="3646643500201740985">سنجش میزان موفقیت آگهی</translation>
 <translation id="3647286794400715637">هر ورودی رشته نشانی وب باید بین ۱ تا ۲ نشانی وب داشته باشد.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">افزودن ایمیل</translation>
 <translation id="3897092660631435901">منو</translation>
 <translation id="3901925938762663762">کارت منقضی شده است</translation>
+<translation id="390391808978419508">مهلت زمانی کپی کردن تمام شد</translation>
 <translation id="3905894480064208252">{0,plural, =1{انتقال فایل مسدود شده است}one{انتقال <ph name="FILE_COUNT" /> فایل مسدود شده است}other{انتقال <ph name="FILE_COUNT" /> فایل مسدود شده است}}</translation>
 <translation id="3906095212874392000">انتهای نوشتار تبدیل‌شده</translation>
 <translation id="3906954721959377182">رایانه لوحی</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">اینترنت و مخابرات</translation>
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
 <translation id="3941630233824954464">فعال‌سازی اصالت‌سنجی مجدد اجباری</translation>
+<translation id="3942048175062210325">فایل‌ها را دوباره باز کنید</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3946209740501886391">در این سایت، همیشه سؤال شود</translation>
 <translation id="3947595700203588284">‏می‌تواند برای اتصال به دستگاه‌های MIDI درخواست دهد</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">محدوده خط‌مشی پشتیبانی نمی‌شود.</translation>
 <translation id="4121428309786185360">تاریخ انقضا</translation>
 <translation id="4123572138124678573">سه سوراخ در پایین</translation>
+<translation id="412601465078863288">مهلت زمانی بارگذاری تمام شد</translation>
 <translation id="4127317221386336246">لوازم جانبی لباس</translation>
 <translation id="4127575959421463246">‏به‌دنبال پرچم‌های ChromeOS هستید؟ بازدید</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{۱ مورد دیگر}one{# مورد دیگر}other{# مورد دیگر}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">مشکلی رخ داد</translation>
 <translation id="4541810033354695636">واقعیت افزوده</translation>
 <translation id="4542971377163063093">سینی ۶</translation>
+<translation id="4546730006268514143">مهلت زمانی انتقال تمام شد</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">از قفل صفحه برای تکمیل گذرواژه‌ها استفاده می‌کنید</translation>
 <translation id="4558551763791394412">افزونه‌ها را غیرفعال کنید.</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">مهندسی عمران</translation>
 <translation id="5470861586879999274">&amp;انجام مجدد ویرایش</translation>
 <translation id="5471337644440862957">فیلم کمدی</translation>
+<translation id="547963486735802022">فایل‌ها را دوباره منتقل کنید</translation>
 <translation id="5481076368049295676">شاید این محتوا تلاش کند نرم‌افزار خطرناکی در دستگاهتان نصب کند که اطلاعاتتان را به سرقت برد یا حذف کند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">نشانی معتبری اضافه کنید</translation>
 <translation id="5483838506518938965">شما آماده‌اید!</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6961733224437895943">بیمه مسکن</translation>
 <translation id="6961844873822989059">می‌تواند برای استفاده از قلم‌های نصب‌شده در دستگاه درخواست دهد</translation>
 <translation id="6961980518585973432">سالگرد</translation>
+<translation id="6962858948849099922">مهلت زمانی جابه‌جایی تمام شد</translation>
 <translation id="6963520811470373926">درحال جایگزین شدن</translation>
 <translation id="6963574715554809750">تجارت خرده‌فروشی</translation>
 <translation id="6963693576491380224">مشاغل دولتی و بخش عمومی</translation>
@@ -2860,6 +2870,7 @@
 <translation id="7111507312244504964">بازرسی و ارزیابی املاک</translation>
 <translation id="7112327784801341716">اطلاعات کنونی‌تان را نمی‌بینید؟ برای به‌روزرسانی آن، با بانکتان تماس بگیرید.</translation>
 <translation id="7118618213916969306">جستجوی نشانی وب بریده‌دان، <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">مهلت زمانی کپی کردن تمام شد</translation>
 <translation id="7119414471315195487">برگه‌ها یا برنامه‌های دیگر را ببندید</translation>
 <translation id="7124354851782353862">‏کد تأیید کارت (CVC) را وارد کنید</translation>
 <translation id="7129355289156517987">‏وقتی همه برگه‌های ناشناس Chromium را ببندید، فعالیتتان در این برگه‌ها از دستگاهتان پاک می‌شود:
@@ -3112,6 +3123,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">کمتر از <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> درحال حاضر نمی‌تواند این درخواست را انجام دهد.</translation>
+<translation id="7599089013883397081">مهلت زمانی بارگیری تمام شد</translation>
 <translation id="7600965453749440009">هرگز <ph name="LANGUAGE" /> ترجمه نشود</translation>
 <translation id="7601297359530599375">‏معمولاً ازطریق اتصال ایمن به این سایت متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">مقدار خارج از محدوده <ph name="VALUE" /> است.</translation>

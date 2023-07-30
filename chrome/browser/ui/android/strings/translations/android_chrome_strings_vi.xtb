@@ -358,6 +358,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> trang chưa đọc}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> trang chưa đọc}}</translation>
 <translation id="2961210776189273067">Danh xưng</translation>
 <translation id="296370266220139811">Tiết kiệm thời gian, công sức nhập</translation>
+<translation id="297771753501244313">Xếp theo lần mở gần nhất</translation>
 <translation id="2979025552038692506">Thẻ ẩn danh được chọn</translation>
 <translation id="2979639724566107830">Mở trong cửa sổ mới</translation>
 <translation id="2981364137500752533">Bạn có thể mở tối đa 5 cửa sổ.</translation>

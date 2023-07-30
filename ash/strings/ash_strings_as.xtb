@@ -1811,6 +1811,7 @@
 <translation id="8921624153894383499">Google Assistantএ এই ভাষাটো ব্যৱহাৰ নকৰে।</translation>
 <translation id="8924458948354692166">ৱিণ্ড’ৰ স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="8926951137623668982">শ্বেল্ফ সদায় লুকাই থাকে</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{১ টা ফাইল}one{# টা ফাইল}other{# টা ফাইল}}</translation>
 <translation id="8936501819958976551">অক্ষম কৰা হৈছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইচ (পিছফালৰ সোঁফালৰ প’র্ট)</translation>
 <translation id="8940956008527784070">বেটাৰীৰ চাৰ্জ কম আছে (<ph name="PERCENTAGE" />%)</translation>

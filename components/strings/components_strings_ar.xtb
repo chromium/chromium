@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1432187715652018471">تريد هذه الصفحة تثبيت معالج الخدمة.</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
+<translation id="1433225466058025572">حاوِل نقل ملفاتك مرة أخرى.</translation>
 <translation id="1435940442311036198">استخدام مفتاح مرور على جهاز آخر</translation>
 <translation id="1436185428532214179">السماح للموقع الإلكتروني بطلب تعديل الملفات والمجلدات على جهازك</translation>
 <translation id="1442386063175183758">الطي على شكل بوابة يمينًا</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">تراجع عن الحذ&amp;ف</translation>
 <translation id="2397836504670957718">أجهزة كمبيوتر محمولة ودفترية</translation>
 <translation id="2400600116338235695">السماح للموقع الإلكتروني بطلب الاتصال بمنافذ تسلسلية</translation>
+<translation id="2404884497378469141">حاوِل نسخ ملفاتك مرة أخرى.</translation>
 <translation id="2413155254802890957">قديم</translation>
 <translation id="2413528052993050574">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان ربما تم إلغاء صلاحيتها. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2414886740292270097">داكن</translation>
@@ -840,6 +842,7 @@
 <translation id="2759825833388495838">إدخال كلمة مرورك في "<ph name="APP_NAME" />".</translation>
 <translation id="2764001903315068341">كتب مصوّرة</translation>
 <translation id="2765217105034171413">صغير</translation>
+<translation id="2770159525358613612">حاوِل تحميل ملفاتك مرة أخرى.</translation>
 <translation id="277133753123645258">طريقة الشحن</translation>
 <translation id="277499241957683684">سجِلّ الجهاز مفقود</translation>
 <translation id="2775884851269838147">طباعة الصفحة الأولى</translation>
@@ -1230,6 +1233,7 @@
 <translation id="3632892046558972264">تم إيقاف ميزة "مشاركة الشاشة" مؤقتًا</translation>
 <translation id="3634530185120165534">الدُرج 5</translation>
 <translation id="3634567936866541746">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. لحماية حساباتك، يقترح متصفِّح Chrome التحقّق من كلمات المرور المحفوظة.</translation>
+<translation id="3642196846309122856">حاوِل تنزيل ملفاتك مرة أخرى.</translation>
 <translation id="3642638418806704195">التطبيق:</translation>
 <translation id="3646643500201740985">قياس مستوى أداء إعلان</translation>
 <translation id="3647286794400715637">‏يجب أن يحتوي كل إدخال في سلسلة عناوين URL على عنوان URL واحد (كحد أدني) أو اثنين (كحد أقصى).</translation>
@@ -1354,6 +1358,7 @@
 <translation id="3890664840433101773">إضافة بريد إلكتروني</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3901925938762663762">انتهت صلاحية البطاقة</translation>
+<translation id="390391808978419508">انتهت مهلة الفتح</translation>
 <translation id="3905894480064208252">{0,plural, =1{تم حظر نقل الملف}zero{تم حظر نقل <ph name="FILE_COUNT" /> ملف}two{تم حظر نقل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر نقل <ph name="FILE_COUNT" /> ملفات}many{تم حظر نقل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر نقل <ph name="FILE_COUNT" /> ملف}}</translation>
 <translation id="3906095212874392000">نهاية النص المحوَّل</translation>
 <translation id="3906954721959377182">جهاز لوحي</translation>
@@ -1366,6 +1371,7 @@
 <translation id="393316646445601645">إنترنت واتصالات</translation>
 <translation id="3939773374150895049">‏هل تريد استخدم WebAuthn بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
 <translation id="3941630233824954464">تفعيل ميزة إعادة المصادقة الإلزامية</translation>
+<translation id="3942048175062210325">حاوِل فتح الملفات مرة أخرى.</translation>
 <translation id="3943857333388298514">لصق</translation>
 <translation id="3946209740501886391">السؤال دائمًا على الموقع الإلكتروني هذا</translation>
 <translation id="3947595700203588284">‏السماح للموقع الإلكتروني بطلب الاتصال بأجهزة MIDI</translation>
@@ -1447,6 +1453,7 @@
 <translation id="4117700440116928470">نطاق السياسة غير متوافق.</translation>
 <translation id="4121428309786185360">تاريخ انتهاء الصلاحية</translation>
 <translation id="4123572138124678573">عمل ثلاثة ثقوب بالأسفل</translation>
+<translation id="412601465078863288">انتهت مهلة التحميل</translation>
 <translation id="4127317221386336246">إكسسوارات ملابس</translation>
 <translation id="4127575959421463246">‏التعرّف على الميزات التجريبية لنظام التشغيل Chrome الانتقال</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{عنصر واحد آخر}zero{# عنصر آخر}two{عنصران آخران (#)}few{# عناصر أخرى}many{# عنصرًا آخر}other{# عنصر آخر}}</translation>
@@ -1665,6 +1672,7 @@
 <translation id="4540780316273593836">حدث خطأٌ</translation>
 <translation id="4541810033354695636">الواقع المعزّز</translation>
 <translation id="4542971377163063093">الدُرج 6</translation>
+<translation id="4546730006268514143">انتهت مهلة النقل</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">أنت تستخدم حاليًا ميزة "قفل الشاشة" لملء كلمات المرور</translation>
 <translation id="4558551763791394412">جرّب إيقاف الإضافات.</translation>
@@ -2098,6 +2106,7 @@
 <translation id="5470230812924696184">هندسة مدنية</translation>
 <translation id="5470861586879999274">إعادة الت&amp;حرير</translation>
 <translation id="5471337644440862957">أفلام كوميدية</translation>
+<translation id="547963486735802022">حاوِل نقل ملفاتك مرة أخرى.</translation>
 <translation id="5481076368049295676">قد يحاول هذا المحتوى تثبيت برامج خطيرة على جهازك تسرق معلوماتك أو تحذفها. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">إضافة عنوان صالح</translation>
 <translation id="5483838506518938965">اكتملت المهمة</translation>
@@ -2787,6 +2796,7 @@
 <translation id="6961733224437895943">التأمين على المنازل</translation>
 <translation id="6961844873822989059">السماح للموقع الإلكتروني بطلب استخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="6961980518585973432">ذكريات سنوية</translation>
+<translation id="6962858948849099922">انتهت مهلة النقل</translation>
 <translation id="6963520811470373926">يتم استبدال القيمة الأخرى</translation>
 <translation id="6963574715554809750">تجارة البيع بالتجزئة</translation>
 <translation id="6963693576491380224">وظائف في الحكومة والقطاع العام</translation>
@@ -2864,6 +2874,7 @@
 <translation id="7111507312244504964">معاينات عقارات وتقييماتها</translation>
 <translation id="7112327784801341716">إذا لم تظهر معلوماتك الحديثة، يُرجى التواصل مع المصرف الذي تتعامل معه لتعديلها.</translation>
 <translation id="7118618213916969306">‏البحث عن عنوان URL للحافظة، <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">انتهت مهلة النَسخ</translation>
 <translation id="7119414471315195487">إغلاق علامات التبويب أو البرامج الأخرى</translation>
 <translation id="7124354851782353862">‏أدخِل رمز التحقق من البطاقة (CVC)</translation>
 <translation id="7129355289156517987">‏عند إغلاق كل علامات التبويب في وضع التصفّح المتخفي في متصفّح Chromium، يتم محو نشاطك في علامات التبويب تلك من هذا الجهاز:
@@ -3116,6 +3127,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">أقل من <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">يتعذر على <ph name="HOST_NAME" /> معالجة هذا الطلب حاليًا.</translation>
+<translation id="7599089013883397081">انتهت مهلة التنزيل</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">‏يمكنك عادةً الاتصال بهذا الموقع الإلكتروني بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي. قد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">القيمة خارج النطاق <ph name="VALUE" />.</translation>

@@ -1809,6 +1809,7 @@
 <translation id="8921624153894383499">‏«دستیار Google» به این زبان صحبت نمی‌کند.</translation>
 <translation id="8924458948354692166">برای ضبط نماگرفت از پنجره، کلید «ورود» را فشار دهید</translation>
 <translation id="8926951137623668982">قفسه همیشه پنهان می‌شود</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="8936501819958976551">غیرفعال</translation>
 <translation id="8938800817013097409">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="8940956008527784070">باتری ضعیف است (<ph name="PERCENTAGE" />٪)</translation>

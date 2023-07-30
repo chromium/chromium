@@ -47,6 +47,7 @@
 <translation id="122699739164161391">إغلاق جميع علامات التبويب</translation>
 <translation id="1229222343402087523">‏البحث عن ${searchPhrase} في متصفِّح Chrome</translation>
 <translation id="1242044645101871359">تسجيل الدخول مرة أخرى</translation>
+<translation id="1248276223555153952">إدارة الحسابات على هذا الجهاز…</translation>
 <translation id="1254117744268754948">اختيار مجلد</translation>
 <translation id="1254424942107648268">العثور على النتيجة السابقة</translation>
 <translation id="1258491128795710625">الميزات الجديدة</translation>
@@ -111,6 +112,7 @@
 <translation id="1580783302095112590">تم إرسال البريد.</translation>
 <translation id="1582732959743469162">سيؤدي ذلك إلى إيقاف تقدّم جميع عمليات التنزيل الحالية.</translation>
 <translation id="1594034544529347967">البدء</translation>
+<translation id="160275202205869636">‏عند تفعيل هذا الإعداد، يمكنك استخدام البيانات وحفظها في حسابك على Google. أمّا في حال إيقاف هذا الإعداد، فسيتم حفظ البيانات على هذا الجهاز فقط.</translation>
 <translation id="1605405588277479165">غير مفعّل - (غير مستحسَن)</translation>
 <translation id="1605658421715042784">نسخ الصورة</translation>
 <translation id="1608337082864370066">البحث عن الصورة التي نسختها</translation>
@@ -292,6 +294,7 @@
 <translation id="2773292004659987824">البحث في وضع التصفُّح المتخفي</translation>
 <translation id="277771892408211951">اختيار لغة</translation>
 <translation id="2780046210906776326">لا تتوفر حسابات بريد إلكتروني</translation>
+<translation id="2780326741858434269">الحسابات على هذا الجهاز</translation>
 <translation id="2781325423985810933">تراجع</translation>
 <translation id="2781331604911854368">مفعّل</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -434,6 +437,7 @@
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="3577555362230509265">‏استخدام Chrome في تطبيقات أخرى</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
+<translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
 <translation id="3595252146048399851">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="3603009562372709545">‏نسخ عنوان URL للرابط</translation>
@@ -695,6 +699,7 @@
 <translation id="5271265092610673171">{count,plural, =1{هناك حقل مطلوب فارغ. يُرجى ملء هذا الحقل قبل الحفظ.}zero{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}two{هناك حقلان مطلوبان فارغان. يُرجى ملء هذين الحقلين قبل الحفظ.}few{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}many{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}other{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}}</translation>
 <translation id="5271549068863921519">حفظ كلمة المرور</translation>
 <translation id="5283494734135414249">انقر على الاختصار الذي يظهر أسفل شريط العناوين.</translation>
+<translation id="5292723732574094123">تم تسجيل الخروج. سجِّل الدخول مرة أخرى للاطّلاع على الإشارات المرجعية وكلمات المرور وغيرها في حسابك.</translation>
 <translation id="5295239312320826323">هل تريد إزالة الحساب <ph name="USER_EMAIL" />؟</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5317780077021120954">حفظ</translation>
@@ -738,6 +743,7 @@
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
 <translation id="5626245204502895507">تعذر تنزيل الملف في الوقت الحالي.</translation>
 <translation id="5631164295104953411">إضافة طريقة الدفع</translation>
+<translation id="5649795523408334796">رصد العناوين</translation>
 <translation id="5652623411397330904">ستظهر هنا المنتجات التي يتم تتبُّع أسعارها.</translation>
 <translation id="5657859710142657190">الانتقال إلى شبكة علامات التبويب</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
@@ -805,7 +811,7 @@
 <translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="5965679971710331625">تم تسجيل الدخول</translation>
 <translation id="5971872012779224351">{count,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {count} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({count}).}few{تم حذف {count} إشارات مرجعية.}many{تم حذف {count} إشارة مرجعية.}other{تم حذف {count} إشارة مرجعية.}}</translation>
-<translation id="5979837087407522202">بحث عن كلمات المرور</translation>
+<translation id="5979837087407522202">البحث عن كلمات المرور</translation>
 <translation id="5981230843984570095">إغلاق جميع علامات التبويب غير النشطة</translation>
 <translation id="5982717868370722439">يمكنك إضافة البيانات الحالية إلى <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">تم الانتقال إليها مؤخرًا</translation>
@@ -1299,6 +1305,7 @@
 <translation id="8843129975935593190">تفرض مؤسستك قيودًا على أنواع البيانات التي يمكنك مزامنتها.</translation>
 <translation id="8849001918648564819">مخفي</translation>
 <translation id="8855242995793521265">لا يؤدي إلى إبطاء المتصفِّح أو الجهاز بشكل ملحوظ.</translation>
+<translation id="8863431381414769983">‏الحصول على الاتجاهات والمعلومات المحلية من "خرائط Google"</translation>
 <translation id="8868471676553493380">{count,plural, =1{علامة تبويب واحدة ({count})}zero{{count} علامة تبويب}two{علامتا تبويب ({count})}few{{count} علامات تبويب}many{{count} علامة تبويب}other{{count} علامة تبويب}}</translation>
 <translation id="8870413625673593573">العناصر المغلقة مؤخرًا</translation>
 <translation id="8876882697946675716">مواصلة مزامنة الأجهزة</translation>

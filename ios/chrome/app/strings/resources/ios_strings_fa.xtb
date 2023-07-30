@@ -47,6 +47,7 @@
 <translation id="122699739164161391">بستن همه برگه‌ها</translation>
 <translation id="1229222343402087523">‏جستجوی ${searchPhrase} در Chrome</translation>
 <translation id="1242044645101871359">دوباره به سیستم وارد شوید</translation>
+<translation id="1248276223555153952">مدیریت حساب‌ها در این دستگاه…</translation>
 <translation id="1254117744268754948">انتخاب پوشه</translation>
 <translation id="1254424942107648268">یافتن قبلی</translation>
 <translation id="1258491128795710625">ویژگی‌های جدید</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">نامه ارسال شد.</translation>
 <translation id="1582732959743469162">با این کار کل پیشرفت بارگیری کنونی‌تان متوقف خواهد شد.</translation>
 <translation id="1594034544529347967">تاریخ شروع</translation>
+<translation id="160275202205869636">‏وقتی روشن باشد، از داده‌های «حساب Google» شما استفاده می‌شود و داده‌ها در آن ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
 <translation id="1605405588277479165">خاموش - توصیه نمی‌شود</translation>
 <translation id="1605658421715042784">کپی تصویر</translation>
 <translation id="1608337082864370066">جستجوی تصویر کپی‌شده</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">جستجوی ناشناس</translation>
 <translation id="277771892408211951">انتخاب زبان</translation>
 <translation id="2780046210906776326">حساب ایمیلی وجود ندارد</translation>
+<translation id="2780326741858434269">حساب‌های موجود در این دستگاه</translation>
 <translation id="2781325423985810933">واگرد</translation>
 <translation id="2781331604911854368">روشن</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">جستجو با «لنز»</translation>
 <translation id="3577555362230509265">‏از Chrome در دیگر برنامه‌ها استفاده کنید.</translation>
 <translation id="3581564640715911333">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
+<translation id="3587885837929752825">‏سازمان شما آنچه را می‌توانید در «حساب Google» خود ذخیره کنید محدود می‌کند.</translation>
 <translation id="3588820906588687999">باز کردن تصویر در برگه جدید</translation>
 <translation id="3595252146048399851">‏همواره می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید چه مواردی همگام‌سازی شود. Google ممکن است براساس سابقه‌تان «جستجو» و سرویس‌های دیگر را شخصی کند.</translation>
 <translation id="3603009562372709545">‏کپی URL پیوند</translation>
@@ -693,6 +697,7 @@
 <translation id="5271265092610673171">{count,plural, =1{یکی‌از فیلدهای الزامی خالی است. آن را قبل‌از ذخیره کردن پر کنید.}one{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}other{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}}</translation>
 <translation id="5271549068863921519">ذخیره گذرواژه</translation>
 <translation id="5283494734135414249">روی میان‌بری که زیر نوار نشانی ظاهر می‌شود ضربه بزنید.</translation>
+<translation id="5292723732574094123">از سیستم خارج شده‌اید. دوباره به سیستم وارد شوید تا نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در حسابتان ببینید.</translation>
 <translation id="5295239312320826323">حساب <ph name="USER_EMAIL" /> برداشته شود؟</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5317780077021120954">ذخیره</translation>
@@ -736,6 +741,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
 <translation id="5626245204502895507">فایل در حال حاضر قابل بارگیری نیست.</translation>
 <translation id="5631164295104953411">افزودن روش پرداخت</translation>
+<translation id="5649795523408334796">شناسایی نشانی</translation>
 <translation id="5652623411397330904">محصولاتی که پیگیری می‌کنید اینجا نمایش داده می‌شوند.</translation>
 <translation id="5657859710142657190">رفتن به شبکه برگه</translation>
 <translation id="5659593005791499971">ایمیل</translation>
@@ -1297,6 +1303,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8843129975935593190">سازمان شما آنچه را می‌توانید همگام‌سازی کنید محدود می‌کند.</translation>
 <translation id="8849001918648564819">پنهان</translation>
 <translation id="8855242995793521265">باعث نمی‌شود سرعت مرورگر یا دستگاه شما به‌طور قابل‌توجهی کاهش یابد.</translation>
+<translation id="8863431381414769983">‏دریافت مسیر و اطلاعات محلی از Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} برگه}one{{count} برگه}other{{count} برگه}}</translation>
 <translation id="8870413625673593573">اخیراً بسته‌شده</translation>
 <translation id="8876882697946675716">دستگاه‌هایتان را همگام نگه دارید</translation>
