@@ -371,8 +371,14 @@ bool EditContext::SetComposition(
       return false;
     has_composition_ = true;
   }
-  if (text.IsEmpty() && !has_composition_)
+  if (text.IsEmpty()) {
+    if (has_composition_) {
+      // Receiving an empty text string is a signal to delete any text in the
+      // composition range and terminate the composition
+      CancelComposition();
+    }
     return true;
+  }
 
   WebRange actual_replacement_range = replacement_range;
   if (actual_replacement_range.IsEmpty()) {
@@ -410,6 +416,12 @@ bool EditContext::SetComposition(
   DispatchCharacterBoundsUpdateEvent(composition_range_start_,
                                      composition_range_end_);
   return true;
+}
+
+void EditContext::ClearCompositionState() {
+  has_composition_ = false;
+  composition_range_start_ = 0;
+  composition_range_end_ = 0;
 }
 
 bool EditContext::SetCompositionFromExistingText(
@@ -452,6 +464,24 @@ bool EditContext::SetCompositionFromExistingText(
   selection_start_ = composition_start;
   selection_end_ = composition_start;
   return true;
+}
+
+void EditContext::CancelComposition() {
+  DCHECK(has_composition_);
+
+  // Delete the text in the composition range
+  text_ = text_.Substring(0, composition_range_start_) +
+          text_.Substring(composition_range_end_);
+
+  // Place the selection where the deleted composition had been
+  selection_start_ = composition_range_start_;
+  selection_end_ = composition_range_start_;
+  DispatchTextUpdateEvent(g_empty_string, composition_range_start_,
+                          composition_range_end_, selection_start_,
+                          selection_end_);
+
+  DispatchCompositionEndEvent(g_empty_string);
+  ClearCompositionState();
 }
 
 bool EditContext::InsertText(const WebString& text) {
@@ -576,9 +606,7 @@ bool EditContext::CommitText(const WebString& text,
   if (!text.IsEmpty() && has_composition_)
     DispatchCompositionEndEvent(text);
 
-  composition_range_start_ = 0;
-  composition_range_end_ = 0;
-  has_composition_ = false;
+  ClearCompositionState();
   return true;
 }
 
@@ -599,9 +627,7 @@ bool EditContext::FinishComposingText(
   // the previous compositions?
   selection_start_ = selection_start_ + text.length();
   selection_end_ = selection_end_ + text.length();
-  composition_range_start_ = 0;
-  composition_range_end_ = 0;
-  has_composition_ = false;
+  ClearCompositionState();
   return true;
 }
 

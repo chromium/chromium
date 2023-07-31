@@ -60,7 +60,8 @@ test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
-  test.innerHTML = "";
+  test.innerHTML = "ABCD";
+  editContext.text = "abcd";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
@@ -68,13 +69,36 @@ test(function() {
     test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
 
+  let compositionStartCount = 0;
+  let compositionEndCount = 0;
+  editContext.addEventListener("compositionstart", e => {
+    compositionStartCount++;
+  });
+  editContext.addEventListener("compositionend", e => {
+    compositionEndCount++;
+  });
+
   test.editContext = editContext;
   test.focus();
+  editContext.updateSelection(2, 2);
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "FOO");
+  assert_equals(editContext.text, "abfoocd");
+  assert_equals(test.innerHTML, "ABFOOCD");
+  assert_equals(compositionStartCount, 1, "Should get compositionstart after setting non-empty composition");
+  assert_equals(compositionEndCount, 0, "Should not get compositionend until terminating composition");
+
   textInputController.setComposition("");
-  assert_equals(test.innerHTML, "");
-}, 'Testing EditContext TextUpdate with empty strings');
+  assert_equals(editContext.text, "abcd");
+  assert_equals(test.innerHTML, "ABCD");
+  assert_equals(compositionStartCount, 1, "Shouldn't get another compositionstart when setting empty composition");
+  assert_equals(compositionEndCount, 1, "Should get compositionend when setting empty composition");
+
+  textInputController.setComposition("bar");
+  assert_equals(editContext.text, "abbarcd");
+  assert_equals(test.innerHTML, "ABBARCD");
+  assert_equals(compositionStartCount, 2, "Should get another compositionstart after setting non-empty composition");
+  assert_equals(compositionEndCount, 1, "Should not get another compositionend until terminating composition");
+}, 'Testing EditContext TextUpdate with empty string');
 
 test(function() {
   const editContext = new EditContext();

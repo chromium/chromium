@@ -261,6 +261,12 @@ class CORE_EXPORT EditContext final : public EventTarget,
 
   bool HasValidCompositionBounds() const;
 
+  // Delete the characters in the existing composition range and end the
+  // composition.
+  void CancelComposition();
+
+  void ClearCompositionState();
+
   // EditContext member variables.
   String text_;
   uint32_t selection_start_ = 0;
