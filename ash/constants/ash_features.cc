@@ -2431,12 +2431,12 @@ BASE_FEATURE(kTerminalDev, "TerminalDev", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables time of day screen saver.
 BASE_FEATURE(kTimeOfDayScreenSaver,
              "TimeOfDayScreenSaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables time of day wallpaper.
 BASE_FEATURE(kTimeOfDayWallpaper,
              "TimeOfDayWallpaper",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the TrafficCountersHandler class to auto-reset traffic counters
 // and shows Data Usage in the Celluar Settings UI.
