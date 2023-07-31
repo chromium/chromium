@@ -2951,7 +2951,7 @@ if (is_apple) {
 
     # Do not compile with ARC because this target has tests for code that does
     # not compile with ARC.
-    configs -= [ "//build/config/compiler:enable_arc2" ]
+    configs -= [ "//build/config/compiler:enable_arc" ]
     deps = [
       ":base",
       "//base/test:test_support",

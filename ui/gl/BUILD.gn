@@ -351,7 +351,7 @@ component("gl") {
     # be compiled with ARC due to Dawn, and if this code were to be compiled
     # with ARC, it would not link with that code due to mismatches of
     # autoreleasing out parameters.
-    configs -= [ "//build/config/compiler:enable_arc2" ]
+    configs -= [ "//build/config/compiler:enable_arc" ]
 
     frameworks = [
       "CoreFoundation.framework",

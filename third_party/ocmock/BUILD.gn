@@ -107,5 +107,5 @@ source_set("ocmock") {
 
   # Do not compile with ARC because OCMock code is not compatible with being
   # compiled with ARC.
-  configs -= [ "//build/config/compiler:enable_arc2" ]
+  configs -= [ "//build/config/compiler:enable_arc" ]
 }

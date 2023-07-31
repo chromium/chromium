@@ -403,7 +403,7 @@ if (is_mac) {
 
       # Do not compile with ARC because Breakpad code is not compatible with
       # being compiled with ARC.
-      configs -= [ "//build/config/compiler:enable_arc2" ]
+      configs -= [ "//build/config/compiler:enable_arc" ]
 
       deps = [ ":common" ]
     }
@@ -1068,7 +1068,7 @@ if (is_ios) {
 
     # Do not compile with ARC because Breakpad code is not compatible with being
     # compiled with ARC.
-    configs -= [ "//build/config/compiler:enable_arc2" ]
+    configs -= [ "//build/config/compiler:enable_arc" ]
 
     if (is_clang) {
       # See https://crbug.com/google-breakpad/675.

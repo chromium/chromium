@@ -141,7 +141,7 @@ if (is_apple) {
 
     # Do not compile with ARC because ARC would prevent intercepting and
     # interfering with low-level object destruction.
-    configs -= [ "//build/config/compiler:enable_arc2" ]
+    configs -= [ "//build/config/compiler:enable_arc" ]
 
     deps = [
       ":crash_key",
@@ -184,7 +184,7 @@ source_set("unit_tests") {
 
     # Do not compile with ARC because ARC would prevent intercepting and
     # interfering with low-level object destruction.
-    configs -= [ "//build/config/compiler:enable_arc2" ]
+    configs -= [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_castos || is_chromeos) {

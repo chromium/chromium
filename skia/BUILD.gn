@@ -708,7 +708,7 @@ template("skia_source_set") {
     if (is_apple) {
       # Do not compile with ARC because Skia code is not compatible with being
       # compiled with ARC.
-      configs -= [ "//build/config/compiler:enable_arc2" ]
+      configs -= [ "//build/config/compiler:enable_arc" ]
     }
 
     # Android, the only user of mismatched sample files (for now), gets a small

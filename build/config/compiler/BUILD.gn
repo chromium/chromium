@@ -2828,22 +2828,6 @@ if (is_apple) {
     cflags_objc = common_flags
     cflags_objcc = common_flags
   }
-
-  # The `enable_arc` config, above, is used in about 1000 targets. It needs to
-  # be enabled globally, but the same config can't be added twice to a target.
-  # Therefore, to turn ARC on everywhere, this duplicate "enable_arc2" config
-  # will be enabled at the top-level and turned off at leaf targets, then the
-  # original `enable_arc` will be removed, and then this `enable_arc2` config
-  # will be renamed to `enable_arc`. TODO(https://crbug.com/733237): Complete
-  # this.
-  config("enable_arc2") {
-    common_flags = [
-      "-fobjc-arc",
-      "-fno-objc-arc-exceptions",
-    ]
-    cflags_objc = common_flags
-    cflags_objcc = common_flags
-  }
 }
 
 if (is_android) {

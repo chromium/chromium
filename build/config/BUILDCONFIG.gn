@@ -366,7 +366,7 @@ if (is_win) {
 }
 
 if (is_apple) {
-  default_compiler_configs += [ "//build/config/compiler:enable_arc2" ]
+  default_compiler_configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 if (is_posix) {

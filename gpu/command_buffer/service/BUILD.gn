@@ -495,7 +495,7 @@ target(link_target_type, "gles2_sources") {
 
     # Do not compile with ARC because Dawn is not (yet) compatible with being
     # called from code compiled with ARC.
-    configs -= [ "//build/config/compiler:enable_arc2" ]
+    configs -= [ "//build/config/compiler:enable_arc" ]
 
     if (skia_use_metal) {
       deps += [ "//components/viz/common:metal_context_provider" ]

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("mini_map_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "mini_map_api.h" ]
   deps = [ "//base" ]
 }

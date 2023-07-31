@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("mini_map") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "mini_map_action_handler.h",
     "mini_map_coordinator.h",
@@ -35,7 +34,6 @@ source_set("mini_map") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "mini_map_mediator_unittest.mm" ]
   deps = [

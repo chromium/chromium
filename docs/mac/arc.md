@@ -189,7 +189,7 @@ ARC, ARC can be disabled as follows:
 ```gn
   # Do not compile with ARC because AncientDeps code is not compatible with
   # being compiled with ARC.
-  configs -= [ "//build/config/compiler:enable_arc2" ]
+  configs -= [ "//build/config/compiler:enable_arc" ]
 ```
 
 Again, ARC must be used for all new code unless there is a good technical reason

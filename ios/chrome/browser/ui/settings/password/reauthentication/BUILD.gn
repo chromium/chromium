@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 source_set("reauthentication") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "reauthentication_coordinator.h",
     "reauthentication_coordinator.mm",
@@ -27,7 +25,6 @@ source_set("reauthentication") {
 }
 
 source_set("reauthentication_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "reauthentication_view_controller.h",
     "reauthentication_view_controller.mm",
@@ -45,7 +42,6 @@ source_set("reauthentication_ui") {
 }
 
 source_set("reauthentication_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "reauthentication_constants.h",
     "reauthentication_constants.mm",
