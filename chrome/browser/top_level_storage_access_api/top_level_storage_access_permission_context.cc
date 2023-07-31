@@ -28,6 +28,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace {
 
@@ -68,7 +69,8 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!user_gesture ||
-      !base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
+      !base::FeatureList::IsEnabled(
+          blink::features::kStorageAccessAPIForOriginExtension) ||
       !requesting_origin.is_valid() || !embedding_origin.is_valid()) {
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
@@ -136,7 +138,8 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kStorageAccessAPIForOriginExtension)) {
     return CONTENT_SETTING_BLOCK;
   }
 
@@ -195,7 +198,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
     TopLevelStorageAccessRequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kStorageAccessAPIForOriginExtension)) {
     return;
   }
 

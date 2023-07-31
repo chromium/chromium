@@ -53,9 +53,9 @@ class TopLevelStorageAccessPermissionContextTest
     std::vector<base::test::FeatureRef> enabled;
     std::vector<base::test::FeatureRef> disabled;
     if (saa_enabled) {
-      enabled.push_back(blink::features::kStorageAccessAPI);
+      enabled.push_back(blink::features::kStorageAccessAPIForOriginExtension);
     } else {
-      disabled.push_back(blink::features::kStorageAccessAPI);
+      disabled.push_back(blink::features::kStorageAccessAPIForOriginExtension);
     }
     features_.InitWithFeatures(enabled, disabled);
   }
@@ -182,7 +182,10 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
   TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kFirstPartySets, blink::features::kStorageAccessAPI},
+        {
+            features::kFirstPartySets,
+            blink::features::kStorageAccessAPIForOriginExtension,
+        },
         /*disabled_features=*/{});
   }
   void SetUp() override {
@@ -368,7 +371,7 @@ class TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest
   TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kStorageAccessAPI},
+        {blink::features::kStorageAccessAPIForOriginExtension},
         /*disabled_features=*/{features::kFirstPartySets});
   }
 
