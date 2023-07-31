@@ -1220,10 +1220,6 @@
       depends_on: ["CSSTextWrap"],
     },
     {
-      name: "CSSZoom",
-      status: "stable",
-    },
-    {
       // https://html.spec.whatwg.org/#dom-customelementregistry-getname
       name: "CustomElementsGetName",
       status: "stable",
