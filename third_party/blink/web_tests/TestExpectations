@@ -6136,9 +6136,9 @@ crbug.com/1394927 virtual/pending-beacon/external/wpt/pending-beacon/pending_bea
 crbug.com/1325514 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Failure Pass ]
 
 # Sheriff 2022-12-5
-crbug.com/1395549 [ Fuchsia ] webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pass ]
-crbug.com/1395551 [ Fuchsia ] webaudio/codec-tests/vorbis/vbr-70kbps-44khz.html [ Failure Pass ]
-crbug.com/1395552 [ Fuchsia ] webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure Pass ]
+crbug.com/1395549 webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pass ]
+crbug.com/1395551 webaudio/codec-tests/vorbis/vbr-70kbps-44khz.html [ Failure Pass ]
+crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure Pass ]
 
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
