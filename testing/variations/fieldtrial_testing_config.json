@@ -8277,21 +8277,21 @@
             ]
         }
     ],
-    "JourneysNonSupportedLocales": [
+    "JourneysIncludeSyncedVisits": [
         {
             "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221206",
-                    "params": {
-                        "JourneysLocaleOrLanguageAllowlist": "*"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "Journeys"
+                        "JourneysIncludeSyncedVisits"
                     ]
                 }
             ]
