@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -121,6 +122,17 @@ const char kAutofillPaymentMethodsMandatoryReauthPromoShownCounter[] =
     "autofill.payment_methods_mandatory_reauth_promo_counter";
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+// Boolean that is true iff Chrome only provdides a virtual view structure that
+// Android Autofill providers can use for filling. This pref is profile bound
+// since each profile may have a preference for filling. It is not syncable as
+// the setup on each device requires steps outside the browser. Enabling this
+// pref on a device without a proper provider may yield a surprising absence of
+// filling.
+const char kAutofillUsingVirtualViewStructure[] =
+    "autofill.using_virtual_view_structure";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Synced prefs. Used for cross-device choices, e.g., credit card Autofill.
   registry->RegisterBooleanPref(
@@ -173,6 +185,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kAutofillEnabledDeprecated, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kAutofillOrphanRowsRemoved, false);
+
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kAutofillUsingVirtualViewStructure,
+                                false);
+#endif
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
@@ -354,6 +371,19 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
 
 void ClearSyncTransportOptIns(PrefService* prefs) {
   prefs->SetDict(prefs::kAutofillSyncTransportOptIn, base::Value::Dict());
+}
+
+bool UsesVirtualViewStructureForAutofill(const PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid)) {
+    return false;
+  }
+
+  return prefs->GetBoolean(kAutofillUsingVirtualViewStructure);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace prefs

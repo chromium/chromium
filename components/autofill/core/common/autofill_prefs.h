@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_
 
-#include <string>
-
 #include "build/build_config.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -26,7 +24,7 @@ extern const char kAutofillCreditCardEnabled[];
 extern const char kAutofillCreditCardFidoAuthEnabled[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 // Please use kAutofillCreditCardEnabled, kAutofillIBANEnabled and
 // kAutofillProfileEnabled instead.
 extern const char kAutofillEnabledDeprecated[];
@@ -49,6 +47,9 @@ extern const char kAutocompleteLastVersionRetentionPolicy[];
 extern const char kAutofillPaymentMethodsMandatoryReauth[];
 extern const char kAutofillPaymentMethodsMandatoryReauthPromoShownCounter[];
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillUsingVirtualViewStructure[];
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // The maximum value for the
 // `kAutofillPaymentMethodsMandatoryReauthPromoShownCounter` pref. If this
@@ -116,6 +117,8 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
                                       const CoreAccountId& account_id);
 
 void ClearSyncTransportOptIns(PrefService* prefs);
+
+bool UsesVirtualViewStructureForAutofill(const PrefService* prefs);
 
 }  // namespace prefs
 }  // namespace autofill
