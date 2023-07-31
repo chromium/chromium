@@ -2358,7 +2358,7 @@
       },
     },
   },
-  'context_lost_passthrough_tests': {
+  'context_lost_metal_passthrough_tests': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
@@ -2541,6 +2541,28 @@
       },
     },
   },
+  'expected_color_pixel_gl_passthrough_test': {
+    'replacements': {
+      'Mac V8 FYI Release (Intel)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+    },
+  },
+  'expected_color_pixel_metal_passthrough_test': {
+    'remove_from': [
+      # crbug.com/1458020 for Mac Retina ASAN removal
+      'Mac FYI Retina ASAN (AMD)',
+    ],
+    'replacements': {
+      'Mac V8 FYI Release (Intel)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+    },
+  },
   'expected_color_pixel_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
@@ -2560,10 +2582,6 @@
         ],
       },
     },
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -2573,11 +2591,6 @@
         },
       },
       'Linux V8 FYI Release - pointer compression (NVIDIA)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Mac V8 FYI Release (Intel)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
@@ -3781,6 +3794,28 @@
       'win-rel-cft',
     ],
   },
+  'pixel_skia_gold_gl_passthrough_test': {
+    'replacements': {
+      'Mac V8 FYI Release (Intel)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+    },
+  },
+  'pixel_skia_gold_metal_passthrough_test': {
+    'remove_from': [
+      # crbug.com/1458020 for Mac Retina ASAN removal
+      'Mac FYI Retina ASAN (AMD)',
+    ],
+    'replacements': {
+      'Mac V8 FYI Release (Intel)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+    },
+  },
   'pixel_skia_gold_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
@@ -3800,10 +3835,6 @@
         ],
       },
     },
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -3813,11 +3844,6 @@
         },
       },
       'Linux V8 FYI Release - pointer compression (NVIDIA)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Mac V8 FYI Release (Intel)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
@@ -3921,6 +3947,12 @@
       },
     },
   },
+  'screenshot_sync_metal_passthrough_tests': {
+    'remove_from': [
+      # crbug.com/1458020 for Mac Retina ASAN removal
+      'Mac FYI Retina ASAN (AMD)',
+    ],
+  },
   'screenshot_sync_passthrough_tests': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
@@ -3940,10 +3972,6 @@
         ],
       },
     },
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
   },
   'screenshot_sync_validating_tests': {
     'modifications': {

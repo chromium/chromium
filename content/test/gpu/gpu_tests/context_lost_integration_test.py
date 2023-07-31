@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 import time
-from typing import Any, List, Tuple
+from typing import Any, List, Set, Tuple
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -122,6 +122,17 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def _SuiteSupportsParallelTests(cls) -> bool:
     return True
+
+  def _GetSerialTests(self) -> Set[str]:
+    serial_tests = {
+        # High/low power tests don't work properly with multiple browsers
+        # active.
+        'ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext',
+        'ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash',
+        'ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash',
+        'ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
+    }
+    return serial_tests
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:

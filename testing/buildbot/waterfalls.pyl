@@ -4239,7 +4239,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
         },
       },
       'Linux Release (NVIDIA)': {
@@ -4250,7 +4250,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
         },
       },
       'Mac Debug (Intel)': {
@@ -4261,7 +4261,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_telemetry_tests',
         },
       },
       'Mac Release (Intel)': {
@@ -4272,7 +4272,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_telemetry_tests',
         },
       },
       'Mac Retina Debug (AMD)': {
@@ -4283,7 +4283,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_telemetry_tests',
         },
       },
       'Mac Retina Release (AMD)': {
@@ -4294,7 +4294,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_telemetry_tests',
         },
       },
       'Win10 x64 Debug (NVIDIA)': {
@@ -4618,7 +4618,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Debug (Intel)': {
@@ -4629,7 +4629,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_telemetry_tests',
         },
       },
       'Mac FYI Experimental Release (Apple M1)': {
@@ -4654,10 +4654,11 @@
         ],
         # When the experimental OS version is identical to the stable version,
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
-        # should have the same test_suites as 'Mac FYI Release (Intel)'.
+        # should have the combination of test_suites of 'Mac FYI Release (Intel)'
+        # and 'Mac Release (Intel)'.
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Experimental Retina Release (AMD)': {
@@ -4669,10 +4670,11 @@
         ],
         # When the experimental OS version is identical to the stable version,
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
-        # should have the same test_suites as 'Mac FYI Retina Release (AMD)'.
+        # should have the combination of test_suites as 'Mac FYI Retina Release (AMD)'
+        # and 'Mac Retina Release (AMD)'.
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Experimental Retina Release (NVIDIA)': {
@@ -4687,7 +4689,7 @@
         # should have the same test_suites as 'Mac FYI Retina Release (NVIDIA)'.
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_nvidia_release_telemetry_tests',
         },
       },
       'Mac FYI Release (Apple M1)': {
@@ -4698,7 +4700,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Release (Intel)': {
@@ -4720,7 +4722,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Retina Debug (AMD)': {
@@ -4731,7 +4733,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_debug_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_telemetry_tests',
         },
       },
       'Mac FYI Retina Release (AMD)': {
@@ -4753,7 +4755,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Retina Release (NVIDIA)': {
@@ -4764,7 +4766,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_nvidia_release_telemetry_tests',
         },
       },
       'Mac Pro FYI Release (AMD)': {
@@ -6515,7 +6517,7 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'V8 Android GN (dbg)': {
