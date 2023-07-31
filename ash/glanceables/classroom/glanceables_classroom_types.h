@@ -38,23 +38,26 @@ struct ASH_EXPORT GlanceablesClassroomCourse {
 // Student submissions state aggregated from a list of student submissions,
 // usually associated with a course work item.
 struct ASH_EXPORT GlanceablesClassroomAggregatedSubmissionsState {
+  GlanceablesClassroomAggregatedSubmissionsState() = default;
   GlanceablesClassroomAggregatedSubmissionsState(int total_count,
                                                  int number_turned_in,
                                                  int number_graded);
   GlanceablesClassroomAggregatedSubmissionsState(
       const GlanceablesClassroomAggregatedSubmissionsState&) = default;
   GlanceablesClassroomAggregatedSubmissionsState& operator=(
-      const GlanceablesClassroomAggregatedSubmissionsState&) = delete;
+      const GlanceablesClassroomAggregatedSubmissionsState&) = default;
   ~GlanceablesClassroomAggregatedSubmissionsState() = default;
 
+  void Reset();
+
   // The total number of students that have this assigned to them.
-  const int total_count;
+  int total_count = 0;
 
   // The number of this assignment that has been turned in students.
-  const int number_turned_in;
+  int number_turned_in = 0;
 
   // The number of this assignment that has already been graded.
-  const int number_graded;
+  int number_graded = 0;
 };
 
 // Represents a single classroom assignment.  This data is aggregated from all

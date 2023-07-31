@@ -36,6 +36,12 @@ GlanceablesClassroomAggregatedSubmissionsState::
       number_turned_in(number_turned_in),
       number_graded(number_graded) {}
 
+void GlanceablesClassroomAggregatedSubmissionsState::Reset() {
+  total_count = 0;
+  number_turned_in = 0;
+  number_graded = 0;
+}
+
 // ----------------------------------------------------------------------------
 // GlanceablesClassroomAssignment
 

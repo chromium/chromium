@@ -220,14 +220,14 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+        [&](std::unique_ptr<GlanceablesClassroomClientImpl::CourseList>
                 courses) {
           run_loop.Quit();
 
-          ASSERT_EQ(courses.size(), 1u);
+          ASSERT_EQ(courses->size(), 1u);
 
-          EXPECT_EQ(courses.at(0)->id, "course-id-1");
-          EXPECT_EQ(courses.at(0)->name, "Active Course 1");
+          EXPECT_EQ(courses->at(0)->id, "course-id-1");
+          EXPECT_EQ(courses->at(0)->name, "Active Course 1");
 
           histogram_tester.ExpectTotalCount(
               "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
@@ -261,11 +261,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesOnHttpError) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     fetch_method.Run(base::BindLambdaForTesting(
-        [&](const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+        [&](std::unique_ptr<GlanceablesClassroomClientImpl::CourseList>
                 courses) {
           run_loop.Quit();
 
-          ASSERT_TRUE(courses.empty());
+          EXPECT_FALSE(courses);
 
           histogram_tester.ExpectTotalCount(
               "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
@@ -337,15 +337,15 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+        [&](std::unique_ptr<GlanceablesClassroomClientImpl::CourseList>
                 courses) {
           run_loop.Quit();
 
-          ASSERT_EQ(courses.size(), 3u);
+          ASSERT_EQ(courses->size(), 3u);
 
-          EXPECT_EQ(courses.at(0)->id, "course-id-from-page-1");
-          EXPECT_EQ(courses.at(1)->id, "course-id-from-page-2");
-          EXPECT_EQ(courses.at(2)->id, "course-id-from-page-3");
+          EXPECT_EQ(courses->at(0)->id, "course-id-from-page-1");
+          EXPECT_EQ(courses->at(1)->id, "course-id-from-page-2");
+          EXPECT_EQ(courses->at(2)->id, "course-id-from-page-3");
 
           histogram_tester.ExpectUniqueSample(
               test_case.expected_courses_count_histogram_name,
@@ -5054,6 +5054,1065 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 1);
   EXPECT_EQ(assignments.at(1)->course_work_title, "Course Work 2");
   EXPECT_EQ(assignments.at(1)->submissions_state->number_turned_in, 0);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReusePreviousStudentDataOnCourseFetchError) {
+  EXPECT_CALL(request_handler(), HandleRequest(Field(&HttpRequest::relative_url,
+                                                     HasSubstr("/courses?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-1",
+                  "name": "Active Course 1",
+                  "courseState": "ACTIVE"
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Math assignment - approaching due date",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                }
+              ]
+            })"))));
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+    EXPECT_EQ(assignments.at(0)->course_work_title,
+              "Math assignment - approaching due date");
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+    EXPECT_EQ(assignments.at(0)->course_work_title,
+              "Math assignment - approaching due date");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReusePreviousStudentDataOnCourseSecondPageFetchError) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(
+                  &HttpRequest::relative_url,
+                  AllOf(HasSubstr("/courses?"), Not(HasSubstr("pageToken="))))))
+
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-1",
+                  "name": "Active Course 1",
+                  "courseState": "ACTIVE"
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-2",
+                  "name": "Active Course 2",
+                  "courseState": "ACTIVE"
+                }
+              ],
+              "nextPageToken": "page-2-token"
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/courses?"),
+                                        HasSubstr("pageToken=page-2-token")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Math assignment - approaching due date",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                }
+              ]
+            })"))));
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+    EXPECT_EQ(assignments.at(0)->course_work_title,
+              "Math assignment - approaching due date");
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+    EXPECT_EQ(assignments.at(0)->course_work_title,
+              "Math assignment - approaching due date");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnCachedDataIfCourseWorkFetchFailsForStudents) {
+  ExpectActiveCourse(/*call_count=*/2);
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Assignment 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 16,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "TURNED_IN"
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "NEW"
+                }
+              ]
+            })"))));
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnCachedDataIfCourseWorkSecondPageFetchFailsForStudents) {
+  ExpectActiveCourse(/*call_count=*/2);
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/courseWork?"),
+                                        Not(HasSubstr("pageToken="))))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Assignment 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 16,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-3",
+                  "title": "Assignment 3",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 17,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ],
+              "nextPageToken": "page-2-token"
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/courseWork?"),
+                                        HasSubstr("pageToken=page-2-token")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "NEW"
+                }
+              ]
+            })"))));
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 2");
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 3");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnCachedDataIfSubmissionsFetchFailsForStudents) {
+  ExpectActiveCourse(/*call_count=*/2);
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Assignment 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 16,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-3",
+                  "title": "Assignment 3",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-3",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 17,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnCachedDataIfSubmissionsSecondPageFetchFailsForStudents) {
+  ExpectActiveCourse(/*call_count=*/2);
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Assignment 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 16,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-3",
+                  "title": "Assignment 3",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-3",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 17,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/studentSubmissions?"),
+                                        Not(HasSubstr("pageToken="))))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "NEW"
+                }
+              ],
+              "nextPageToken": "page-2-token"
+            })"))));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/studentSubmissions?"),
+                                        HasSubstr("pageToken=page-2-token")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 3");
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnCachedTeacherAssignmentsOnCoursesFetchFailure) {
+  EXPECT_CALL(request_handler(), HandleRequest(Field(&HttpRequest::relative_url,
+                                                     HasSubstr("/courses?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courses": [
+                {
+                  "id": "course-id-1",
+                  "name": "Active Course 1",
+                  "courseState": "ACTIVE"
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 3, "day": 5},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-1/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-1", 1, 0, 0)))));
+  client()->set_number_of_assignments_prioritized_for_display_for_testing(0u);
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 1u);
+
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnCachedTeacherAssignmentsOnCourseWorkFetchFailure) {
+  OverrideTime("10 Apr 2023 09:05 GMT");
+
+  ExpectActiveCourse(/*call_count=*/2);
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/courseWork?"),
+                                        Not(HasSubstr("pageToken="))))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Assignment 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-2",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 14,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ],
+              "nextPageToken": "page-2-token"
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/courseWork?"),
+                                        HasSubstr("pageToken=page-2-token")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          AllOf(HasSubstr("courseWork/course-work-item-1/studentSubmissions?"),
+                Not(HasSubstr("pageToken="))))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-1", 1, 0, 0)))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          R"({
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                }
+              ],
+              "nextPageToken": "page-2-token"
+            })"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          AllOf(HasSubstr("courseWork/course-work-item-1/studentSubmissions?"),
+                HasSubstr("pageToken=page-2-token")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-1", 1, 0, 0)))));
+
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-2/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-2", 1, 0, 0)))));
+
+  client()->set_number_of_assignments_prioritized_for_display_for_testing(0u);
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+    ASSERT_TRUE(assignments.at(1)->submissions_state);
+    EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 1);
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  OverrideTime("10 Apr 2023 09:05 GMT");
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 2);
+
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+    ASSERT_TRUE(assignments.at(1)->submissions_state);
+    EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 1);
+  }
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnCachedTeacherAssignmentsOnSubmissionsFetchFailure) {
+  OverrideTime("10 Apr 2023 09:05 GMT");
+
+  ExpectActiveCourse(/*call_count=*/2);
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/courseWork?"),
+                                        Not(HasSubstr("pageToken="))))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Assignment 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-2",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 14,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Assignment 1",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ],
+              "nextPageToken": "page-2-token"
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/courseWork?"),
+                                        HasSubstr("pageToken=page-2-token")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-2",
+                  "title": "Assignment 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 9},
+                  "dueTime": {
+                    "hours": 14,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          AllOf(HasSubstr("courseWork/course-work-item-1/studentSubmissions?"),
+                Not(HasSubstr("pageToken="))))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-1", 1, 0, 0)))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          R"({
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                }
+              ],
+              "nextPageToken": "page-2-token"
+            })"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          AllOf(HasSubstr("courseWork/course-work-item-1/studentSubmissions?"),
+                HasSubstr("pageToken=page-2-token")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-2/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-2", 1, 0, 0)))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          CreateSubmissionsListResponse("course-work-item-2", 2, 0, 0)))));
+
+  client()->set_number_of_assignments_prioritized_for_display_for_testing(0u);
+
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+    ASSERT_TRUE(assignments.at(1)->submissions_state);
+    EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 1);
+  }
+
+  client()->OnGlanceablesBubbleClosed();
+
+  OverrideTime("10 Apr 2023 09:05 GMT");
+  {
+    TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
+        future;
+    client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+    const auto assignments = future.Take();
+    ASSERT_EQ(assignments.size(), 2u);
+
+    EXPECT_EQ(assignments.at(0)->course_work_title, "Assignment 1");
+    ASSERT_TRUE(assignments.at(0)->submissions_state);
+    EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
+
+    EXPECT_EQ(assignments.at(1)->course_work_title, "Assignment 2");
+    ASSERT_TRUE(assignments.at(1)->submissions_state);
+    EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 2);
+  }
 }
 
 }  // namespace ash
