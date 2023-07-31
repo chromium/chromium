@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
@@ -53,6 +54,7 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Block until handler is ready.
   void WaitForHandler();
+  void WaitInternal(base::RepeatingClosure* closure);
 
   // Tells whether the WebUI handler is loaded and ready to receive calls.
   bool IsHandlerReady();
@@ -68,6 +70,10 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Flags whether this waited for the handler and recorded associated metrics.
   bool waited_for_handler_;
+
+  // Needed in case the browser shuts down and destructs the presenter while
+  // waiting for handler. It's an edge case, but theoretically possible.
+  base::WeakPtrFactory<OmniboxPopupPresenter> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

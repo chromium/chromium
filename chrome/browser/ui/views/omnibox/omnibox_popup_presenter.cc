@@ -135,20 +135,18 @@ void OmniboxPopupPresenter::WaitForHandler() {
     auto quit = loop.QuitClosure();
     auto runner = base::ThreadPool::CreateTaskRunner(base::TaskTraits());
     runner->PostTask(FROM_HERE,
-                     base::BindOnce(
-                         [](OmniboxPopupPresenter* presenter,
-                            base::RepeatingClosure* closure) {
-                           while (!presenter->IsHandlerReady()) {
-                             base::PlatformThread::Sleep(base::Milliseconds(1));
-                           }
-                           closure->Run();
-                         },
-                         base::Unretained(this), &quit));
-    // base::Unretained is safe here because this is not currently destructing
-    // and we are blocking until quit closure is run.
+                     base::BindOnce(&OmniboxPopupPresenter::WaitInternal,
+                                    weak_ptr_factory_.GetWeakPtr(), &quit));
     loop.Run();
     CHECK(IsHandlerReady());
   }
+}
+
+void OmniboxPopupPresenter::WaitInternal(base::RepeatingClosure* closure) {
+  while (!IsHandlerReady()) {
+    base::PlatformThread::Sleep(base::Milliseconds(1));
+  }
+  closure->Run();
 }
 
 bool OmniboxPopupPresenter::IsHandlerReady() {
