@@ -832,7 +832,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
 <translation id="6210079381482819663">Las pestañas que no se usen durante <ph name="THRESHOLD" /> días o más se moverán aquí. Puedes cambiar esta opción en cualquier momento desde la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />.</translation>
-<translation id="6213567400989743524">Advertencias cerradas</translation>
+<translation id="6213567400989743524">Advertencias ignoradas</translation>
 <translation id="6219550825416862075">Hola de nuevo</translation>
 <translation id="6219688215832490856">No traducir nunca</translation>
 <translation id="6223816392543092032">Accede a tus marcadores, a tu historial, a tus contraseñas y a otros ajustes desde todos tus dispositivos.</translation>
