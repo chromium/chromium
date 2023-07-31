@@ -96,8 +96,7 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
       // For overlays we are going to display this frame immediately, so commit
       // it.
       surface->CommitFramesRecursively(
-          base::BindRepeating([](const viz::SurfaceId&,
-                                 const viz::BeginFrameId&) { return true; }));
+          [](const viz::SurfaceId&, const viz::BeginFrameId&) { return true; });
     }
 
     // TODO(vasilyt): We don't need full aggregation here as we don't need

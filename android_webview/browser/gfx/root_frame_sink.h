@@ -136,7 +136,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   bool needs_draw_ = false;
   raw_ptr<RootFrameSinkClient> client_;
   base::flat_set<viz::SurfaceId> contained_surfaces_;
-  std::map<viz::SurfaceId, viz::BeginFrameId> last_invalidated_frame_id_;
+  std::map<viz::SurfaceId, uint64_t> last_invalidated_frame_index_;
 
   const bool use_new_invalidate_heuristic_;
 

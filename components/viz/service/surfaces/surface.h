@@ -121,7 +121,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   enum QueueFrameResult { REJECTED, ACCEPTED_ACTIVE, ACCEPTED_PENDING };
 
   using CommitPredicate =
-      base::RepeatingCallback<bool(const SurfaceId&, const BeginFrameId&)>;
+      base::FunctionRef<bool(const SurfaceId&, const BeginFrameId&)>;
 
   Surface(const SurfaceInfo& surface_info,
           SurfaceManager* surface_manager,
@@ -311,12 +311,12 @@ class VIZ_SERVICE_EXPORT Surface final {
       CompositorRenderPassId render_pass_id);
 
   // Returns frame id of the oldest uncommitted frame if any,
-  absl::optional<BeginFrameId> GetFirstUncommitedFrameId();
+  absl::optional<uint64_t> GetFirstUncommitedFrameIndex();
 
-  // Returns frame id of the oldest uncommitted frame that is newer than
-  // provided `frame_id`.
-  absl::optional<BeginFrameId> GetUncommitedFrameIdNewerThan(
-      const BeginFrameId& frame_id);
+  // Returns frame index of the oldest uncommitted frame that is newer than
+  // provided `frame_index`.
+  absl::optional<uint64_t> GetUncommitedFrameIndexNewerThan(
+      uint64_t frame_index);
 
  private:
   struct FrameData {

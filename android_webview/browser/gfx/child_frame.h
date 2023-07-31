@@ -76,6 +76,9 @@ class ChildFrame {
   // (e.g webview is offscreen) this will be updated to more recent draws.
   // See: `HardwareRenderer::WaitAndPruneFrameQueue()` for details.
   viz::BeginFrameArgs begin_frame_args;
+
+  // Indicates if this ChildFrame was rendered at least once.
+  bool rendered = false;
 };
 
 using ChildFrameQueue = base::circular_deque<std::unique_ptr<ChildFrame>>;

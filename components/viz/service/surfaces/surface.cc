@@ -427,8 +427,9 @@ void Surface::CommitFramesRecursively(const CommitPredicate& predicate) {
     const auto& ack =
         uncommitted_frames_.front().frame.metadata.begin_frame_ack;
 
-    if (!predicate.Run(surface_id(), ack.frame_id))
+    if (!predicate(surface_id(), ack.frame_id)) {
       break;
+    }
 
     CommitFrame(std::move(uncommitted_frames_.front()));
     uncommitted_frames_.pop_front();
@@ -461,18 +462,18 @@ void Surface::CommitFramesRecursively(const CommitPredicate& predicate) {
   }
 }
 
-absl::optional<BeginFrameId> Surface::GetFirstUncommitedFrameId() {
+absl::optional<uint64_t> Surface::GetFirstUncommitedFrameIndex() {
   if (uncommitted_frames_.empty())
     return absl::nullopt;
-  return uncommitted_frames_.front().frame.metadata.begin_frame_ack.frame_id;
+  return uncommitted_frames_.front().frame_index;
 }
 
-absl::optional<BeginFrameId> Surface::GetUncommitedFrameIdNewerThan(
-    const BeginFrameId& frame_id) {
+absl::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
+    uint64_t frame_index) {
   for (auto& frame : uncommitted_frames_) {
-    if (frame.frame.metadata.begin_frame_ack.frame_id.IsNextInSequenceTo(
-            frame_id))
-      return frame.frame.metadata.begin_frame_ack.frame_id;
+    if (frame.frame_index > frame_index) {
+      return frame.frame_index;
+    }
   }
   return absl::nullopt;
 }

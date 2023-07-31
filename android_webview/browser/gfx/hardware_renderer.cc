@@ -280,6 +280,7 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
 
   if (child_frame->frame) {
     DCHECK(!viz_frame_submission_);
+    DCHECK(!child_frame->rendered);
     without_gpu_->SubmitChildCompositorFrame(child_frame);
   }
 
@@ -364,42 +365,64 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
     auto root_surface_id =
         viz::SurfaceId(without_gpu_->root_frame_sink_id(), local_surface_id);
 
-    auto commit_predicate = base::BindRepeating(
-        [](const viz::BeginFrameId& current_frame_id,
-           const viz::FrameSinkId& root_frame_sink_id,
-           const viz::FrameSinkId& child_frame_sink_id,
-           const viz::SurfaceId& surface_id,
-           const viz::BeginFrameId& frame_id) {
-          // Always commit frame from different begin frame sources, because we
-          // can't order with them.
-          if (frame_id.source_id != current_frame_id.source_id) {
-            // We always should have single source_id except for the manual
-            // acks.
-            DCHECK_EQ(frame_id.source_id, viz::BeginFrameArgs::kManualSourceId);
-            return true;
-          }
+    const auto& current_frame_id = child_frame->begin_frame_args.frame_id;
+    const auto& root_frame_sink_id = root_surface_id.frame_sink_id();
+    const auto& child_frame_sink_id = child_surface_id_.frame_sink_id();
 
-          // Commit all frames that are older than current one.
-          if (frame_id.sequence_number < current_frame_id.sequence_number) {
-            return true;
-          }
+    // Each OnDraw on UI we get new ChildFrame. Without OnDraw we can't modify
+    // contents of the webview or it will break HWUI damage tracking, so only
+    // commit if the frame is new.
+    const bool commit_child_frames = !child_frame->rendered;
 
-          // All clients except root renderer and root surface are frame behind.
-          const bool is_frame_behind =
-              surface_id.frame_sink_id() != root_frame_sink_id &&
-              surface_id.frame_sink_id() != child_frame_sink_id;
+    base::flat_set<viz::SurfaceId> manual_surfaces;
+    auto commit_predicate = [&](const viz::SurfaceId& surface_id,
+                                const viz::BeginFrameId& frame_id) {
+      const bool is_root_surface =
+          surface_id.frame_sink_id() == root_frame_sink_id;
+      const bool is_main_renderer_surface =
+          surface_id.frame_sink_id() == child_frame_sink_id;
 
-          // If this surface is not frame behind, commit it for current frame
-          // too.
-          if (!is_frame_behind &&
-              frame_id.sequence_number == current_frame_id.sequence_number) {
-            return true;
-          }
+      // If we have uncommitted main renderer frame, `commit_child_frames`
+      // must be true.
+      CHECK(!is_main_renderer_surface || commit_child_frames);
 
-          return false;
-        },
-        child_frame->begin_frame_args.frame_id, root_surface_id.frame_sink_id(),
-        child_surface_id_.frame_sink_id());
+      if (!commit_child_frames) {
+        // Commit only root frame, all child surfaces can be committed only
+        // if we did have Draw on UI thread.
+        return is_root_surface;
+      }
+
+      // Always commit frame from different begin frame sources, because we
+      // can't order with them.
+      if (frame_id.source_id != current_frame_id.source_id) {
+        // We always should have single source_id except for the manual
+        // acks.
+        DCHECK_EQ(frame_id.source_id, viz::BeginFrameArgs::kManualSourceId);
+
+        // For manual acks commit only one frame at time to avoid excessive
+        // frame drops.
+        auto [_, inserted] = manual_surfaces.insert(surface_id);
+        return inserted;
+      }
+
+      // Commit all frames that are older than current one.
+      if (frame_id.sequence_number < current_frame_id.sequence_number) {
+        return true;
+      }
+
+      // All clients except main renderer and root surface are frame behind.
+      const bool is_frame_behind =
+          !is_main_renderer_surface && !is_root_surface;
+
+      // If this surface is not frame behind, commit it for current frame
+      // too.
+      if (!is_frame_behind &&
+          frame_id.sequence_number == current_frame_id.sequence_number) {
+        return true;
+      }
+
+      return false;
+    };
 
     GetFrameSinkManager()->surface_manager()->CommitFramesInRangeRecursively(
         viz::SurfaceRange(root_surface_id), commit_predicate);
@@ -419,6 +442,7 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
   auto now = base::TimeTicks::Now();
   display_->DrawAndSwap({now, now});
 
+  child_frame->rendered = true;
   without_gpu_->SetContainedSurfaces(display_->GetContainedSurfaceIds());
 }
 
@@ -501,7 +525,9 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
     child_frames[remaining_frame_index]->begin_frame_args = NewerBeginFrameArgs(
         child_frames[remaining_frame_index]->begin_frame_args,
         frame->begin_frame_args);
+    // We shouldn't get rendered frames here.
     DCHECK(!frame->frame);
+    DCHECK(!frame->rendered);
   }
   DCHECK_EQ(static_cast<size_t>(remaining_frame_index),
             child_frames.size() - 1);
@@ -515,6 +541,8 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
     // We shouldn't drop newer frames.
     DCHECK(!frame->begin_frame_args.frame_id.IsNextInSequenceTo(
         child_frames.back()->begin_frame_args.frame_id));
+    // We shouldn't get rendered frames here.
+    DCHECK(!frame->rendered);
     if (frame->frame) {
       pruned_frames.emplace_back(std::move(frame));
     }
