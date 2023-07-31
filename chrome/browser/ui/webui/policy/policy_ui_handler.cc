@@ -35,6 +35,7 @@
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
@@ -66,6 +67,7 @@
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_loader_local_test.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_scheduler.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
@@ -216,6 +218,11 @@ void PolicyUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getPolicyLogs",
       base::BindRepeating(&PolicyUIHandler::HandleGetPolicyLogs,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "restartBrowser",
+      base::BindRepeating(&PolicyUIHandler::HandleRestartBrowser,
                           base::Unretained(this)));
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -484,6 +491,19 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
   if (local_test_infobar_added_) {
     DismissInfobarsForActiveLocalTestPoliciesAllTabs();
   }
+}
+
+void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
+  CHECK(args.size() == 2);
+  std::string policies = args[1].GetString();
+
+  // Set policies to preference
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup,
+                   policies);
+
+  // Restart browser
+  chrome::AttemptRestart();
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {

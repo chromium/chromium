@@ -744,6 +744,9 @@ Additional details:
   <message name="IDS_POLICY_TEST_TITLE" desc="Title for the page.">
     Policy Tests
   </message>
+  <message name="IDS_POLICY_TEST_RESTART_AND_APPLY" desc="Label for the restart-browser button">
+    Restart and apply policies
+  </message>
   <message name="IDS_POLICY_TEST_APPLY" desc="Label for the apply-policies button.">
     Apply policies
   </message>

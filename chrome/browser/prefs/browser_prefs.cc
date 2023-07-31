@@ -1412,6 +1412,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   optimization_guide::prefs::RegisterLocalStatePrefs(registry);
   password_manager::PasswordManager::RegisterLocalPrefs(registry);
   policy::BrowserPolicyConnector::RegisterPrefs(registry);
+  policy::LocalTestPolicyProvider::RegisterLocalStatePrefs(registry);
   policy::ManagementService::RegisterLocalStatePrefs(registry);
   policy::PolicyStatisticsCollector::RegisterPrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterPrefs(registry);
@@ -1675,7 +1676,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   permissions::RegisterProfilePrefs(registry);
   PermissionBubbleMediaAccessHandler::RegisterProfilePrefs(registry);
   PlatformNotificationServiceImpl::RegisterProfilePrefs(registry);
-  policy::LocalTestPolicyProvider::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PolicyUI::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);

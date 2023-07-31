@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -26,8 +28,10 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -41,6 +45,10 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #endif
 
 using testing::_;
@@ -177,6 +185,21 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
   PolicyTestHandlerTest() {
     scoped_feature_list_.InitWithFeatureState(
         policy::features::kEnablePolicyTestPage, true);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    base::StringPiece test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    if (base::StartsWith(test_name, "PRE_")) {
+      // Expect a browser relaunch late in browser shutdown.
+      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
+          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
+      EXPECT_CALL(*mock_relaunch_callback_, Run);
+      relaunch_chrome_override_ =
+          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
+              mock_relaunch_callback_->Get());
+    }
+#endif
   }
   PolicyTestHandlerTest(const PolicyTestHandlerTest&) = delete;
   PolicyTestHandlerTest& operator=(const PolicyTestHandlerTest&) = delete;
@@ -201,6 +224,14 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::TestWebUI web_ui_;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<
+      base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>
+      mock_relaunch_callback_;
+  std::unique_ptr<upgrade_util::ScopedRelaunchChromeBrowserOverride>
+      relaunch_chrome_override_;
+#endif
 };
 }  // namespace
 
@@ -325,3 +356,40 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
 
   handler.reset();
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+// TODO(b:293632195) Implement test on android and chromeos
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, PRE_RestartBrowser) {
+  std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
+
+  // Trigger handler
+  const std::string jsonString =
+      R"([
+      {"level": 0,"scope": 0,"source": 0,
+      "name": "DefaultSearchProviderEnabled","value": false}
+      ])";
+
+  base::Value::List list_args;
+
+  list_args.Append("restartBrowser");
+  list_args.Append(jsonString);
+
+  web_ui()->HandleReceivedMessage("restartBrowser", list_args);
+
+  handler.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, RestartBrowser) {
+  const std::string jsonString =
+      R"([
+      {"level": 0,"scope": 0,"source": 0,
+      "name": "DefaultSearchProviderEnabled","value": false}
+      ])";
+
+  // Check preference has correct value set
+  PrefService* pref = g_browser_process->local_state();
+  EXPECT_EQ(
+      jsonString,
+      pref->GetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup));
+}
+#endif

@@ -65,11 +65,10 @@ bool LocalTestPolicyProvider::IsFirstPolicyLoadComplete(
 }
 
 // static
-void LocalTestPolicyProvider::RegisterProfilePrefs(
+void LocalTestPolicyProvider::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterListPref(
-      policy::policy_prefs::kLocalTestPoliciesForNextStartup,
-      base::Value::List());
+  registry->RegisterStringPref(
+      policy::policy_prefs::kLocalTestPoliciesForNextStartup, std::string());
 }
 
 LocalTestPolicyProvider::LocalTestPolicyProvider() {

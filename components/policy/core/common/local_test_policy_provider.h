@@ -38,7 +38,7 @@ class POLICY_EXPORT LocalTestPolicyProvider
   void RefreshPolicies() override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:
   explicit LocalTestPolicyProvider();

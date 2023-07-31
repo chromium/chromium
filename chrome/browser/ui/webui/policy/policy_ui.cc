@@ -179,7 +179,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     // Localized strings for chrome://policy/test.
     static constexpr webui::LocalizedString kPolicyTestStrings[] = {
         {"testTitle", IDS_POLICY_TEST_TITLE},
-        {"testRestart", IDS_POLICY_REBOOT_BUTTON},
+        {"testRestart", IDS_POLICY_TEST_RESTART_AND_APPLY},
         {"testApply", IDS_POLICY_TEST_APPLY},
         {"testImport", IDS_POLICY_TEST_IMPORT},
         {"testDesc", IDS_POLICY_TEST_DESC},

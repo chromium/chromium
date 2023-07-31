@@ -72,6 +72,8 @@ function initialize() {
   getRequiredElement('clear-policies').addEventListener('click', clearPolicies);
   getRequiredElement('export-policies-json')
       .addEventListener('click', exportAndDownloadPolicies);
+  getRequiredElement('restart-browser')
+      .addEventListener('click', restartBrowser);
 }
 
 function uploadPoliciesFile() {
@@ -200,6 +202,13 @@ function exportAndDownloadPolicies() {
     link.dispatchEvent(new MouseEvent(
         'click', {bubbles: true, cancelable: true, view: window}));
   }
+}
+
+function restartBrowser() {
+  const jsonString =
+      getRequiredElement<PolicyTestTableElement>('policy-test-table')
+          .getTestPoliciesJsonString();
+  sendWithPromise('restartBrowser', jsonString);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

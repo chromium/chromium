@@ -149,6 +149,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   metrics::RegisterDemographicsLocalStatePrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   policy::BrowserPolicyConnector::RegisterPrefs(registry);
+  policy::LocalTestPolicyProvider::RegisterLocalStatePrefs(registry);
   policy::PolicyStatisticsCollector::RegisterPrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterPrefs(registry);
   sessions::SessionIdGenerator::RegisterPrefs(registry);
@@ -285,7 +286,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   HostContentSettingsMap::RegisterProfilePrefs(registry);
   invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
   invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
-  policy::LocalTestPolicyProvider::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
