@@ -695,6 +695,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="History.Clusters.Backend.ClusterSimilarityHeuristicsProcessor.ClusterSearchTermOverridden"
+    enum="Boolean" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs whether the canonical search term for the cluster was overridden when
+    one was already generated for it. Logged for all but the first search visit
+    in each cluster processed that has multiple search visits when the Journeys
+    UI is shown.
+
+    A cluster can have multiple search visits and we expect that search visits
+    in the same cluster all have the same search term (or no search term at
+    all). However, this does not seem to be true as we have seen crashes in the
+    wild that make this assumption. This metric tracks how often a search visit
+    had non-empty search terms that differed from the search terms of the
+    previous search visit with non-empty search terms in the same cluster.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.Backend.ClusterSize.{ClusterStatistic}"
     units="number visits" expires_after="2022-12-01">
   <obsolete>

@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/cluster_similarity_heuristics_processor.h"
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
@@ -67,6 +68,8 @@ TEST_F(ClusterSimilarityHeuristicsProcessorTest, Merged) {
 }
 
 TEST_F(ClusterSimilarityHeuristicsProcessorTest, MergedSameSearchTerms) {
+  base::HistogramTester histogram_tester;
+
   std::vector<history::Cluster> clusters;
 
   history::AnnotatedVisit visit =
@@ -98,9 +101,17 @@ TEST_F(ClusterSimilarityHeuristicsProcessorTest, MergedSameSearchTerms) {
                   testing::VisitResult(3, 1.0, {}, u"search term"),
                   testing::VisitResult(5, 1.0, {}, u"search term"))));
   ASSERT_EQ(clusters.size(), 1u);
+
+  // Each processed cluster only had at most one search visit.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.ClusterSimilarityHeuristicsProcessor."
+      "ClusterSearchTermOverriden",
+      0);
 }
 
 TEST_F(ClusterSimilarityHeuristicsProcessorTest, NotMerged) {
+  base::HistogramTester histogram_tester;
+
   std::vector<history::Cluster> clusters;
 
   history::AnnotatedVisit visit7 =
@@ -183,6 +194,13 @@ TEST_F(ClusterSimilarityHeuristicsProcessorTest, NotMerged) {
           ElementsAre(testing::VisitResult(18, 1.0, {}, u"search term 2"),
                       testing::VisitResult(19, 1.0, {}, u"search term 2")),
           ElementsAre(testing::VisitResult(11, 1.0))));
+
+  // Both processed clusters had 2 search visits that matched the originally
+  // determined search term.
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ClusterSimilarityHeuristicsProcessor."
+      "ClusterSearchTermOverriden",
+      false, 2);
 }
 
 }  // namespace
