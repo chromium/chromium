@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
@@ -410,8 +411,14 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
       .pic_order_cnt_val = pic->pic_order_cnt_val_,
       .short_term_ref_pic_set_size = static_cast<__u16>(slice_hdr->st_rps_bits),
       .long_term_ref_pic_set_size = static_cast<__u16>(slice_hdr->lt_rps_bits),
+#if BUILDFLAG(IS_CHROMEOS)
+      // .num_delta_pocs_of_ref_rps_idx is upstream but not yet pulled
+      // into linux build sysroot.
+      // TODO(wenst): Remove once linux-libc-dev package is updated to
+      // at least v6.5 in the sysroots.
       .num_delta_pocs_of_ref_rps_idx =
           static_cast<__u8>(slice_hdr->st_ref_pic_set.rps_idx_num_delta_pocs),
+#endif
       .flags = static_cast<__u64>(
           (pic->irap_pic_ ? V4L2_HEVC_DECODE_PARAM_FLAG_IRAP_PIC : 0) |
           ((pic->nal_unit_type_ >= H265NALU::IDR_W_RADL &&
