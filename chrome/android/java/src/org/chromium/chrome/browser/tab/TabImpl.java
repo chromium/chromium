@@ -594,8 +594,12 @@ public class TabImpl implements Tab {
             return true;
         }
 
-        switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
-        restoreIfNeeded();
+        // If desktop mode window setting is enabled, move switchUserAgentIfNeeded() from
+        // loadIfNeeded() to restoreIfNeeded(); to avoid reload without explicit user intent.
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+            switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
+        }
+        restoreIfNeeded(caller);
         return true;
     }
 
@@ -1535,7 +1539,7 @@ public class TabImpl implements Tab {
      * the load codepath is the same (run in loadIfNecessary()) and the same caching policies of
      * history load are used.
      */
-    private final void restoreIfNeeded() {
+    private final void restoreIfNeeded(@LoadIfNeededCaller int caller) {
         // Attempts to display the Paint Preview representation of this Tab. Please note that this
         // is behind an experimental flag (crbug.com/1008520).
         if (isFrozen()) StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
@@ -1555,7 +1559,16 @@ public class TabImpl implements Tab {
                 return;
             }
 
-            if (mWebContents != null) mWebContents.getNavigationController().loadIfNecessary();
+            if (mWebContents != null) {
+                // If desktop mode window setting is enabled, move switchUserAgentIfNeeded() from
+                // loadIfNeeded() to restoreIfNeeded(); to avoid reload without explicit user
+                // intent.
+                if (ContentFeatureMap.isEnabled(
+                            ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+                    switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
+                }
+                mWebContents.getNavigationController().loadIfNecessary();
+            }
             mIsBeingRestored = true;
             for (TabObserver observer : mObservers) observer.onRestoreStarted(this);
         } finally {
