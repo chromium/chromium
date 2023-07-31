@@ -41,6 +41,7 @@ from pylib.local.device import local_device_test_run
 from pylib.output import remote_output_manager
 from pylib.symbols import stack_symbolizer
 from pylib.utils import chrome_proxy_utils
+from pylib.utils import code_coverage_utils
 from pylib.utils import gold_utils
 from pylib.utils import instrumentation_tracing
 from pylib.utils import shared_preference_utils
@@ -86,6 +87,9 @@ MAX_BATCH_TEST_TIMEOUT = 30 * 60
 
 LOGCAT_FILTERS = ['*:e', 'chromium:v', 'cr_*:v', 'DEBUG:I',
                   'StrictMode:D', '%s:I' % _TAG]
+
+EXTRA_CLANG_COVERAGE_DEVICE_FILE = (
+    'org.chromium.base.test.BaseJUnit4ClassRunner.ClangCoverageDeviceFile')
 
 EXTRA_SCREENSHOT_FILE = (
     'org.chromium.base.test.ScreenshotOnFailureStatement.ScreenshotFile')
@@ -755,15 +759,27 @@ class LocalDeviceInstrumentationTestRun(
                                   (test[0]['class'], test[0]['method'])
                                   if isinstance(test, list) else '%s_%s' %
                                   (test['class'], test['method']))
-      extras['coverage'] = 'true'
       coverage_directory = os.path.join(
           device.GetExternalStoragePath(), 'chrome', 'test', 'coverage')
       if not device.PathExists(coverage_directory):
         device.RunShellCommand(['mkdir', '-p', coverage_directory],
                                check_return=True)
-      coverage_device_file = os.path.join(coverage_directory, coverage_basename)
-      coverage_device_file += '.exec'
-      extras['coverageFile'] = coverage_device_file
+
+      # Setting up for jacoco coverage.
+      extras['coverage'] = 'true'
+      jacoco_coverage_device_file = os.path.join(coverage_directory,
+                                                 coverage_basename)
+      jacoco_coverage_device_file += '.exec'
+      extras['coverageFile'] = jacoco_coverage_device_file
+
+      # Setting up for clang coverage.
+      clang_profile_dir = code_coverage_utils.GetDeviceClangCoverageDir(device)
+      # "%2m" is used to expand to 2 raw profiles at runtime. "%p" writes
+      # process ID.
+      # See https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
+      clang_profile_filename = '%s_%s.profraw' % (coverage_basename, '%2m_%p')
+      extras[EXTRA_CLANG_COVERAGE_DEVICE_FILE] = posixpath.join(
+          clang_profile_dir, clang_profile_filename)
 
     if self._test_instance.enable_breakpad_dump:
       # Use external storage directory so that the breakpad dump can be accessed
@@ -920,14 +936,35 @@ class LocalDeviceInstrumentationTestRun(
           try:
             if not os.path.exists(self._test_instance.coverage_directory):
               os.makedirs(self._test_instance.coverage_directory)
+
+            # Handling Jacoco coverage data.
             # Retries add time to test execution.
-            if device.PathExists(coverage_device_file, retries=0):
-              device.PullFile(coverage_device_file,
+            if device.PathExists(jacoco_coverage_device_file, retries=0):
+              device.PullFile(jacoco_coverage_device_file,
                               self._test_instance.coverage_directory)
-              device.RemovePath(coverage_device_file, True)
+              device.RemovePath(jacoco_coverage_device_file, True)
             else:
-              logging.warning('Coverage file does not exist: %s',
-                              coverage_device_file)
+              logging.warning('Jacoco coverage file does not exist: %s',
+                              jacoco_coverage_device_file)
+
+            # Handling Clang coverage data.
+            profraw_parent_dir = os.path.join(
+                self._test_instance.coverage_directory, coverage_basename)
+            # Note: The function pulls |clang_profile_dir| folder, instead of
+            # profraw files, into |profraw_parent_dir|. the function also
+            # removes |clang_profile_dir| from device.
+            code_coverage_utils.PullClangCoverageFiles(device,
+                                                       clang_profile_dir,
+                                                       profraw_parent_dir)
+            # Merge data into one merged file if llvm-profdata tool exists.
+            if os.path.isfile(code_coverage_utils.LLVM_PROFDATA_PATH):
+              profraw_folder_name = os.path.basename(
+                  os.path.normpath(clang_profile_dir))
+              profraw_dir = os.path.join(profraw_parent_dir,
+                                         profraw_folder_name)
+              code_coverage_utils.MergeClangCoverageFiles(
+                  self._test_instance.coverage_directory, profraw_dir)
+              shutil.rmtree(profraw_parent_dir)
           except (OSError, base_error.BaseError) as e:
             logging.warning('Failed to handle coverage data after tests: %s', e)
 
