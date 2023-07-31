@@ -974,7 +974,7 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
                static_cast<ContentSettingsType>(content_settings_type))) {
     std::string origin = entry.primary_pattern.ToString();
     seen_origins.push_back(origin);
-    auto hasExpiration = entry.metadata.expiration().is_null();
+    auto hasExpiration = !entry.metadata.expiration().is_null();
     auto expirationInDays = hasExpiration
                                 ? CookieControlsUtil::GetDaysToExpiration(
                                       entry.metadata.expiration())
