@@ -2012,8 +2012,16 @@ TEST_P(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
 
   // Expect extension install directory to be immediate subdir of expected
   // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
-  EXPECT_EQ(extension->path(), expected_extension_install_directory_.Append(
-                                   extension->path().BaseName()));
+  //
+  // Make sure we're comparing absolute paths to avoid failures like
+  // https://crbug.com/1453671 on macOS 14.
+  base::FilePath absolute_extension_path =
+      base::MakeAbsoluteFilePath(extension->path());
+  base::FilePath absolute_expected_extension_install_directory =
+      base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
+          extension->path().BaseName()));
+  EXPECT_EQ(absolute_extension_path,
+            absolute_expected_extension_install_directory);
 
   // Expect extension install directory to exist and be named with the right
   // prefix.
