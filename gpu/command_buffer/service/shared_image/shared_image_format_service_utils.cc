@@ -240,6 +240,9 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   // The following SharedImageFormat constants have PrefersExternalSampler()
   // false so they create a separate VkImage per plane and return the single
   // planar equivalents.
+  // TODO(crbug.com/1366495): Add external sampler support if needed for
+  // platforms with Vulkan.
+  CHECK(!format.PrefersExternalSampler());
   if (format == viz::MultiPlaneFormat::kYV12 ||
       format == viz::MultiPlaneFormat::kI420) {
     // Based on VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM.
