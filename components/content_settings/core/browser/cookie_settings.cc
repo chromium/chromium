@@ -91,14 +91,8 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
 void CookieSettings::SetCookieSettingForUserBypass(
     const GURL& first_party_url) {
   ContentSettingConstraints constraints;
-
-  // Only apply a lifetime outside incognito. In incognito, the duration is
-  // inherintly limited.
-  if (!is_incognito_) {
-    constraints.set_lifetime(
-        content_settings::features::kUserBypassUIExceptionExpiration.Get());
-  }
-
+  constraints.set_lifetime(
+      content_settings::features::kUserBypassUIExceptionExpiration.Get());
   constraints.set_session_model(SessionModel::Durable);
 
   host_content_settings_map_->SetContentSettingCustomScope(
