@@ -19,7 +19,7 @@ namespace safe_search_api {
 
 BASE_FEATURE(kCacheOnlyCertainUrlClassifications,
              "CacheOnlyCertainUrlClassifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 bool ShouldCacheUrlClassification(bool is_uncertain) {
