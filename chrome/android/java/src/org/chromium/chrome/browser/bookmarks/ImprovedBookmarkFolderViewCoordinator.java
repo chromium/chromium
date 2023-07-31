@@ -53,7 +53,7 @@ public class ImprovedBookmarkFolderViewCoordinator {
         mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
                 BookmarkUtils.getFolderIcon(mContext, type, BookmarkRowDisplayPref.VISUAL));
         mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT,
-                mBookmarkModel.getChildCount(mBookmarkId));
+                BookmarkUtils.getChildCountForDisplay(mBookmarkId, mBookmarkModel));
         mModel.set(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
                 new Pair<>(null, null));
         if (BookmarkUtils.shouldShowImagesForFolder(mBookmarkModel, mBookmarkId)) {

@@ -994,8 +994,8 @@ public class BookmarkManagerMediatorTest {
     public void testParentFolderUpdatedWhenChildDeleted() {
         finishLoading();
 
-        doReturn(1).when(mBookmarkModel).getChildCount(mFolderId2);
-        doReturn(2).when(mBookmarkModel).getChildCount(mFolderId3);
+        doReturn(1).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
+        doReturn(2).when(mBookmarkModel).getTotalBookmarkCount(mFolderId3);
         mMediator.openFolder(mFolderId1);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
 
@@ -1007,7 +1007,7 @@ public class BookmarkManagerMediatorTest {
         assertEquals(
                 1, coordinatorModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
 
-        doReturn(0).when(mBookmarkModel).getChildCount(mFolderId2);
+        doReturn(0).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
                 mFolderItem2, 0, mBookmarkItem21, false);
