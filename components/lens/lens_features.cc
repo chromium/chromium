@@ -106,13 +106,13 @@ const base::FeatureParam<int> kEncodingQualityImageSearch{
     &kLensImageFormatOptimizations, "encoding-quality-image-search", 45};
 
 const base::FeatureParam<bool> kUseWebpInRegionSearch{
-    &kLensImageFormatOptimizations, "use-webp-region-search", true};
+    &kLensImageFormatOptimizations, "use-webp-region-search", false};
 
 const base::FeatureParam<bool> kUseJpegInRegionSearch{
-    &kLensImageFormatOptimizations, "use-jpeg-region-search", false};
+    &kLensImageFormatOptimizations, "use-jpeg-region-search", true};
 
 const base::FeatureParam<int> kEncodingQualityRegionSearch{
-    &kLensImageFormatOptimizations, "encoding-quality-region-search", 45};
+    &kLensImageFormatOptimizations, "encoding-quality-region-search", 40};
 
 constexpr base::FeatureParam<std::string> kLensPingURL{
     &kEnableLensPing, "lens-ping-url",
