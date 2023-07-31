@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha10" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha10">
+<issues format="6" by="lint 8.2.0-alpha13" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha13">
 
     <issue
         id="MissingClass"
@@ -129,7 +129,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="307"
+            line="304"
             column="20"/>
     </issue>
 
@@ -140,7 +140,7 @@
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="194"
+            line="193"
             column="24"/>
     </issue>
 
@@ -162,7 +162,7 @@
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApplicationStatus.java"
-            line="351"
+            line="384"
             column="28"/>
     </issue>
 

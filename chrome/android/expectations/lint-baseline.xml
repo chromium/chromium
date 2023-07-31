@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha10" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha10">
+<issues format="6" by="lint 8.2.0-alpha13" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha13">
 
     <issue
         id="ResourceType"
@@ -74,7 +74,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="112"
+            line="117"
             column="27"/>
     </issue>
 
@@ -118,7 +118,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1158"
+            line="1177"
             column="56"/>
     </issue>
 
@@ -129,7 +129,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1167"
+            line="1186"
             column="21"/>
     </issue>
 
@@ -140,7 +140,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1182"
+            line="1201"
             column="52"/>
     </issue>
 
@@ -151,7 +151,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1248"
+            line="1267"
             column="56"/>
     </issue>
 
@@ -173,7 +173,7 @@
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="158"
+            line="163"
             column="50"/>
     </issue>
 
@@ -184,7 +184,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="158"
+            line="163"
             column="36"/>
     </issue>
 
@@ -195,7 +195,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1608"
+            line="1604"
             column="25"/>
     </issue>
 
@@ -206,7 +206,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1648"
+            line="1644"
             column="29"/>
     </issue>
 
@@ -217,7 +217,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2187"
+            line="2178"
             column="13"/>
     </issue>
 
@@ -228,7 +228,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2202"
+            line="2193"
             column="17"/>
     </issue>
 
@@ -701,7 +701,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java"
-            line="413"
+            line="411"
             column="55"/>
     </issue>
 
@@ -712,7 +712,7 @@
         errorLine2="                                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java"
-            line="416"
+            line="414"
             column="36"/>
     </issue>
 
@@ -767,7 +767,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/display/PhysicalDisplayAndroid.java"
-            line="271"
+            line="196"
             column="35"/>
     </issue>
 
@@ -778,7 +778,7 @@
         errorLine2="                              ~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/display/PhysicalDisplayAndroid.java"
-            line="280"
+            line="207"
             column="31"/>
     </issue>
 
@@ -888,7 +888,7 @@
         errorLine2="                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="252"
+            line="250"
             column="56"/>
     </issue>
 
@@ -921,7 +921,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1043"
+            line="1058"
             column="34"/>
     </issue>
 
@@ -932,7 +932,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1058"
+            line="1073"
             column="34"/>
     </issue>
 
@@ -943,7 +943,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1566"
+            line="1605"
             column="36"/>
     </issue>
 
@@ -987,7 +987,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1670"
+            line="1669"
             column="47"/>
     </issue>
 
@@ -998,7 +998,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1830"
+            line="1831"
             column="47"/>
     </issue>
 
@@ -1284,7 +1284,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="411"
+            line="410"
             column="27"/>
     </issue>
 
@@ -1295,7 +1295,7 @@
         errorLine2="                          ~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="416"
+            line="415"
             column="27"/>
     </issue>
 
@@ -1306,7 +1306,7 @@
         errorLine2="                              ~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="463"
+            line="462"
             column="31"/>
     </issue>
 
@@ -1317,7 +1317,7 @@
         errorLine2="                              ~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="1069"
+            line="1067"
             column="31"/>
     </issue>
 
@@ -1328,7 +1328,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="646"
+            line="643"
             column="36"/>
     </issue>
 
@@ -1548,7 +1548,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/webapps/browser/android/java/src/org/chromium/components/webapps/WebappsUtils.java"
-            line="71"
+            line="70"
             column="13"/>
     </issue>
 
@@ -1570,12 +1570,12 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: AdaptiveToolbarRadioButtonState.UNKNOWN, AdaptiveToolbarRadioButtonState.AUTO_WITH_NEW_TAB, AdaptiveToolbarRadioButtonState.AUTO_WITH_SHARE, AdaptiveToolbarRadioButtonState.AUTO_WITH_VOICE, AdaptiveToolbarRadioButtonState.NEW_TAB, AdaptiveToolbarRadioButtonState.SHARE, AdaptiveToolbarRadioButtonState.VOICE, AdaptiveToolbarRadioButtonState.TRANSLATE, AdaptiveToolbarRadioButtonState.AUTO_WITH_TRANSLATE, AdaptiveToolbarRadioButtonState.ADD_TO_BOOKMARKS, AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS"
+        message="Must be one of: AdaptiveToolbarRadioButtonState.UNKNOWN, AdaptiveToolbarRadioButtonState.AUTO_WITH_NEW_TAB, AdaptiveToolbarRadioButtonState.AUTO_WITH_SHARE, AdaptiveToolbarRadioButtonState.AUTO_WITH_VOICE, AdaptiveToolbarRadioButtonState.NEW_TAB, AdaptiveToolbarRadioButtonState.SHARE, AdaptiveToolbarRadioButtonState.VOICE, AdaptiveToolbarRadioButtonState.TRANSLATE, AdaptiveToolbarRadioButtonState.AUTO_WITH_TRANSLATE, AdaptiveToolbarRadioButtonState.ADD_TO_BOOKMARKS, AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS, AdaptiveToolbarRadioButtonState.READ_ALOUD, AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD"
         errorLine1="                    AdaptiveToolbarRadioButtonState.NUM_ENTRIES);"
         errorLine2="                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStats.java"
-            line="56"
+            line="60"
             column="53"/>
     </issue>
 
@@ -1608,7 +1608,7 @@
         errorLine2="                                                                                 ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/AppIndexingUtil.java"
-            line="101"
+            line="102"
             column="82"/>
     </issue>
 
@@ -1619,7 +1619,7 @@
         errorLine2="                                                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/AppIndexingUtil.java"
-            line="106"
+            line="107"
             column="81"/>
     </issue>
 
@@ -1630,7 +1630,7 @@
         errorLine2="                                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/AppIndexingUtil.java"
-            line="110"
+            line="111"
             column="71"/>
     </issue>
 
@@ -1641,7 +1641,7 @@
         errorLine2="                                                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java"
-            line="639"
+            line="625"
             column="85"/>
     </issue>
 
@@ -1817,7 +1817,7 @@
         errorLine2="                                   ~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwBrowserProcess.java"
-            line="403"
+            line="405"
             column="36"/>
     </issue>
 
@@ -1828,18 +1828,18 @@
         errorLine2="                                                                 ~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="2116"
+            line="2113"
             column="66"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: WebViewCallbackType.ON_RECEIVED_LOGIN_REQUEST, WebViewCallbackType.ON_RECEIVED_CLIENT_CERT_REQUEST, WebViewCallbackType.ON_RECEIVED_HTTP_AUTH_REQUEST, WebViewCallbackType.ON_DOWNLOAD_START, WebViewCallbackType.ON_PAGE_STARTED, WebViewCallbackType.ON_PAGE_FINISHED, WebViewCallbackType.ON_LOAD_RESOURCE, WebViewCallbackType.ON_PAGE_COMMIT_VISIBLE, WebViewCallbackType.SHOULD_OVERRIDE_URL_LOADING"
+        message="Must be one of: WebViewCallbackType.ON_RECEIVED_LOGIN_REQUEST, WebViewCallbackType.ON_RECEIVED_CLIENT_CERT_REQUEST, WebViewCallbackType.ON_RECEIVED_HTTP_AUTH_REQUEST, WebViewCallbackType.ON_DOWNLOAD_START, WebViewCallbackType.ON_PAGE_STARTED, WebViewCallbackType.ON_PAGE_FINISHED, WebViewCallbackType.ON_LOAD_RESOURCE, WebViewCallbackType.ON_PAGE_COMMIT_VISIBLE, WebViewCallbackType.SHOULD_OVERRIDE_URL_LOADING, WebViewCallbackType.SHOULD_INTERCEPT_REQUEST"
         errorLine1="                &quot;Android.WebView.Callback.Counts&quot;, result, WebViewCallbackType.NUM_ENTRIES);"
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwHistogramRecorder.java"
-            line="47"
+            line="49"
             column="80"/>
     </issue>
 
@@ -1861,7 +1861,7 @@
         errorLine2="                                                                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="100"
+            line="101"
             column="86"/>
     </issue>
 
@@ -1872,7 +1872,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="104"
+            line="105"
             column="72"/>
     </issue>
 
@@ -1883,7 +1883,7 @@
         errorLine2="                                                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="127"
+            line="128"
             column="87"/>
     </issue>
 
@@ -1894,7 +1894,7 @@
         errorLine2="                                                                                  ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="146"
+            line="147"
             column="83"/>
     </issue>
 
@@ -1905,7 +1905,7 @@
         errorLine2="                                                  ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="193"
+            line="194"
             column="51"/>
     </issue>
 
@@ -1916,7 +1916,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="564"
+            line="567"
             column="35"/>
     </issue>
 
@@ -1927,7 +1927,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="565"
+            line="568"
             column="35"/>
     </issue>
 
@@ -1960,7 +1960,7 @@
         errorLine2="                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java"
-            line="184"
+            line="183"
             column="40"/>
     </issue>
 
@@ -1971,7 +1971,7 @@
         errorLine2="                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java"
-            line="195"
+            line="194"
             column="42"/>
     </issue>
 
@@ -2048,7 +2048,7 @@
         errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1584"
+            line="1580"
             column="49"/>
     </issue>
 
@@ -2059,7 +2059,7 @@
         errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1593"
+            line="1589"
             column="65"/>
     </issue>
 
@@ -2070,7 +2070,7 @@
         errorLine2="                                                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFragment.java"
-            line="252"
+            line="227"
             column="81"/>
     </issue>
 
@@ -2147,7 +2147,7 @@
         errorLine2="                                        ~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ClosableTabGridView.java"
-            line="78"
+            line="77"
             column="41"/>
     </issue>
 
@@ -2169,7 +2169,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java"
-            line="331"
+            line="332"
             column="57"/>
     </issue>
 
@@ -2180,7 +2180,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java"
-            line="335"
+            line="336"
             column="57"/>
     </issue>
 
@@ -2191,7 +2191,7 @@
         errorLine2="                                                                  ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java"
-            line="344"
+            line="345"
             column="67"/>
     </issue>
 
@@ -2235,7 +2235,7 @@
         errorLine2="                                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/native_page/ContextMenuManager.java"
-            line="158"
+            line="157"
             column="76"/>
     </issue>
 
@@ -2389,7 +2389,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabActivityLifecycleUmaTracker.java"
-            line="59"
+            line="76"
             column="74"/>
     </issue>
 
@@ -2400,7 +2400,7 @@
         errorLine2="                                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabActivityLifecycleUmaTracker.java"
-            line="68"
+            line="85"
             column="65"/>
     </issue>
 
@@ -2411,7 +2411,7 @@
         errorLine2="                                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabActivityLifecycleUmaTracker.java"
-            line="75"
+            line="92"
             column="65"/>
     </issue>
 
@@ -2422,7 +2422,7 @@
         errorLine2="                                                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabActivityLifecycleUmaTracker.java"
-            line="96"
+            line="113"
             column="87"/>
     </issue>
 
@@ -2433,7 +2433,7 @@
         errorLine2="                                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabController.java"
-            line="368"
+            line="352"
             column="76"/>
     </issue>
 
@@ -2444,7 +2444,7 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabController.java"
-            line="395"
+            line="379"
             column="60"/>
     </issue>
 
@@ -2455,7 +2455,7 @@
         errorLine2="                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="968"
+            line="954"
             column="39"/>
     </issue>
 
@@ -2565,7 +2565,7 @@
         errorLine2="                                                              ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java"
-            line="358"
+            line="361"
             column="63"/>
     </issue>
 
@@ -2609,7 +2609,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1342"
+            line="1340"
             column="21"/>
     </issue>
 
@@ -2620,7 +2620,7 @@
         errorLine2="                ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1343"
+            line="1341"
             column="17"/>
     </issue>
 
@@ -2631,7 +2631,7 @@
         errorLine2="                   ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1344"
+            line="1342"
             column="20"/>
     </issue>
 
@@ -2664,7 +2664,7 @@
         errorLine2="                                                     ~">
         <location
             file="../../chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"
-            line="449"
+            line="447"
             column="54"/>
     </issue>
 
@@ -2675,7 +2675,7 @@
         errorLine2="                                                                                   ~~~~~">
         <location
             file="../../chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"
-            line="450"
+            line="448"
             column="84"/>
     </issue>
 
@@ -2686,7 +2686,7 @@
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/FilePersistedTabDataStorage.java"
-            line="608"
+            line="609"
             column="80"/>
     </issue>
 
@@ -2774,7 +2774,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java"
-            line="519"
+            line="515"
             column="84"/>
     </issue>
 
@@ -2785,7 +2785,7 @@
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java"
-            line="1179"
+            line="1166"
             column="37"/>
     </issue>
 
@@ -2895,29 +2895,29 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/LocationBarMediator.java"
-            line="981"
+            line="984"
             column="74"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: MenuChoice.SWITCH_PROVIDER, MenuChoice.REPORT_BUG, MenuChoice.CHECK_UPDATES, MenuChoice.CRASHES_REFRESH, MenuChoice.ABOUT_DEVTOOLS, MenuChoice.COMPONENTS_UI, MenuChoice.COMPONENTS_UPDATE"
+        message="Must be one of: MenuChoice.SWITCH_PROVIDER, MenuChoice.REPORT_BUG, MenuChoice.CHECK_UPDATES, MenuChoice.CRASHES_REFRESH, MenuChoice.ABOUT_DEVTOOLS, MenuChoice.COMPONENTS_UI, MenuChoice.COMPONENTS_UPDATE, MenuChoice.SAFEMODE_UI"
         errorLine1="                &quot;Android.WebView.DevUi.MenuSelection&quot;, selectedMenuItem, MenuChoice.COUNT);"
         errorLine2="                                                                                    ~~~~~">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/MainActivity.java"
-            line="82"
+            line="86"
             column="85"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: FragmentNavigation.HOME_FRAGMENT, FragmentNavigation.CRASHES_LIST_FRAGMENT, FragmentNavigation.FLAGS_FRAGMENT, FragmentNavigation.COMPONENTS_LIST_FRAGMENT"
+        message="Must be one of: FragmentNavigation.HOME_FRAGMENT, FragmentNavigation.CRASHES_LIST_FRAGMENT, FragmentNavigation.FLAGS_FRAGMENT, FragmentNavigation.COMPONENTS_LIST_FRAGMENT, FragmentNavigation.SAFEMODE_FRAGMENT"
         errorLine1="                FragmentNavigation.COUNT);"
         errorLine2="                                   ~~~~~">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/MainActivity.java"
-            line="138"
+            line="146"
             column="36"/>
     </issue>
 
@@ -2928,7 +2928,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialProgressBar.java"
-            line="232"
+            line="231"
             column="52"/>
     </issue>
 
@@ -2939,7 +2939,7 @@
         errorLine2="                                                                                 ~~~~~~~~~~~">
         <location
             file="../../media/base/android/java/src/org/chromium/media/MediaCodecUtil.java"
-            line="622"
+            line="628"
             column="82"/>
     </issue>
 
@@ -3027,7 +3027,7 @@
         errorLine2="                                     ~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/MessageService.java"
-            line="146"
+            line="144"
             column="38"/>
     </issue>
 
@@ -3082,7 +3082,7 @@
         errorLine2="                                                    ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="264"
+            line="269"
             column="53"/>
     </issue>
 
@@ -3225,7 +3225,7 @@
         errorLine2="                                                                 ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManager.java"
-            line="139"
+            line="140"
             column="66"/>
     </issue>
 
@@ -3236,7 +3236,7 @@
         errorLine2="                                                                             ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManager.java"
-            line="142"
+            line="143"
             column="78"/>
     </issue>
 
@@ -3247,7 +3247,7 @@
         errorLine2="                                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManager.java"
-            line="146"
+            line="147"
             column="71"/>
     </issue>
 
@@ -3533,7 +3533,7 @@
         errorLine2="                                                 ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="148"
+            line="149"
             column="50"/>
     </issue>
 
@@ -3544,7 +3544,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="177"
+            line="178"
             column="16"/>
     </issue>
 
@@ -3555,7 +3555,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="177"
+            line="178"
             column="16"/>
     </issue>
 
@@ -3742,7 +3742,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
-            line="371"
+            line="439"
             column="33"/>
     </issue>
 
@@ -3786,7 +3786,7 @@
         errorLine2="                                                                                             ~~~~~">
         <location
             file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureCallbackDelegate.java"
-            line="210"
+            line="209"
             column="94"/>
     </issue>
 
@@ -3819,7 +3819,7 @@
         errorLine2="                                                                ~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/SearchEngineLogoUtils.java"
-            line="344"
+            line="345"
             column="65"/>
     </issue>
 
@@ -3830,7 +3830,7 @@
         errorLine2="                                                                                      ~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/base/SelectFileDialog.java"
-            line="1326"
+            line="1324"
             column="87"/>
     </issue>
 
@@ -3907,7 +3907,7 @@
         errorLine2="                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java"
-            line="639"
+            line="636"
             column="37"/>
     </issue>
 
@@ -3918,7 +3918,7 @@
         errorLine2="                                                 ~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java"
-            line="540"
+            line="544"
             column="50"/>
     </issue>
 
@@ -3929,7 +3929,7 @@
         errorLine2="                                                 ~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java"
-            line="542"
+            line="546"
             column="50"/>
     </issue>
 
@@ -3940,7 +3940,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java"
-            line="1527"
+            line="1568"
             column="74"/>
     </issue>
 
@@ -3951,7 +3951,7 @@
         errorLine2="                                         ~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="1203"
+            line="1208"
             column="42"/>
     </issue>
 
@@ -3962,7 +3962,7 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="1205"
+            line="1210"
             column="60"/>
     </issue>
 
@@ -4006,7 +4006,7 @@
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManager.java"
-            line="565"
+            line="567"
             column="80"/>
     </issue>
 
@@ -4030,17 +4030,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetrics.java"
             line="150"
             column="50"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: TranslateAssistContentResult.FEATURE_DISABLED, TranslateAssistContentResult.TAB_WAS_NULL, TranslateAssistContentResult.INCOGNITO_TAB, TranslateAssistContentResult.OVERVIEW_MODE, TranslateAssistContentResult.CANNOT_TRANSLATE_TAB, TranslateAssistContentResult.MISSING_ORIGINAL_LANGUAGE, TranslateAssistContentResult.MISSING_CURRENT_LANGUAGE, TranslateAssistContentResult.JSON_EXCEPTION, TranslateAssistContentResult.TRANSLATABLE_PAGE, TranslateAssistContentResult.TRANSLATED_PAGE"
-        errorLine1="                TranslateAssistContentResult.NUM_ENTRIES);"
-        errorLine2="                                             ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/translate/TranslateAssistContent.java"
-            line="70"
-            column="46"/>
     </issue>
 
     <issue
@@ -4149,7 +4138,7 @@
         errorLine2="                                                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="677"
+            line="678"
             column="85"/>
     </issue>
 
@@ -4160,7 +4149,7 @@
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="679"
+            line="680"
             column="80"/>
     </issue>
 
@@ -4171,7 +4160,7 @@
         errorLine2="                                                                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="693"
+            line="694"
             column="86"/>
     </issue>
 
@@ -4182,7 +4171,7 @@
         errorLine2="                                                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="695"
+            line="696"
             column="81"/>
     </issue>
 
@@ -4193,7 +4182,7 @@
         errorLine2="                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="709"
+            line="710"
             column="40"/>
     </issue>
 
@@ -4204,7 +4193,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="711"
+            line="712"
             column="84"/>
     </issue>
 
@@ -4215,7 +4204,7 @@
         errorLine2="                                                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="725"
+            line="726"
             column="87"/>
     </issue>
 
@@ -4226,7 +4215,7 @@
         errorLine2="                                                                                 ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="727"
+            line="728"
             column="82"/>
     </issue>
 
@@ -4237,7 +4226,7 @@
         errorLine2="                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="741"
+            line="742"
             column="40"/>
     </issue>
 
@@ -4248,7 +4237,7 @@
         errorLine2="                                                                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="743"
+            line="744"
             column="86"/>
     </issue>
 
@@ -4259,7 +4248,7 @@
         errorLine2="                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="818"
+            line="819"
             column="56"/>
     </issue>
 
@@ -4331,12 +4320,12 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ApiCall.ADD_JAVASCRIPT_INTERFACE, ApiCall.AUTOFILL, ApiCall.CAN_GO_BACK, ApiCall.CAN_GO_BACK_OR_FORWARD, ApiCall.CAN_GO_FORWARD, ApiCall.CAN_ZOOM_IN, ApiCall.CAN_ZOOM_OUT, ApiCall.CAPTURE_PICTURE, ApiCall.CLEAR_CACHE, ApiCall.CLEAR_FORM_DATA, ApiCall.CLEAR_HISTORY, ApiCall.CLEAR_MATCHES, ApiCall.CLEAR_SSL_PREFERENCES, ApiCall.CLEAR_VIEW, ApiCall.COPY_BACK_FORWARD_LIST, ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER, ApiCall.CREATE_WEBMESSAGE_CHANNEL, ApiCall.DOCUMENT_HAS_IMAGES, ApiCall.DOES_SUPPORT_FULLSCREEN, ApiCall.EVALUATE_JAVASCRIPT, ApiCall.EXTRACT_SMART_CLIP_DATA, ApiCall.FIND_NEXT, ApiCall.GET_CERTIFICATE, ApiCall.GET_CONTENT_HEIGHT, ApiCall.GET_CONTENT_WIDTH, ApiCall.GET_FAVICON, ApiCall.GET_HIT_TEST_RESULT, ApiCall.GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.GET_ORIGINAL_URL, ApiCall.GET_PROGRESS, ApiCall.GET_SCALE, ApiCall.GET_SETTINGS, ApiCall.GET_TEXT_CLASSIFIER, ApiCall.GET_TITLE, ApiCall.GET_URL, ApiCall.GET_WEBCHROME_CLIENT, ApiCall.GET_WEBVIEW_CLIENT, ApiCall.GO_BACK, ApiCall.GO_BACK_OR_FORWARD, ApiCall.GO_FORWARD, ApiCall.INSERT_VISUAL_STATE_CALLBACK, ApiCall.INVOKE_ZOOM_PICKER, ApiCall.IS_PAUSED, ApiCall.IS_PRIVATE_BROWSING_ENABLED, ApiCall.LOAD_DATA, ApiCall.LOAD_DATA_WITH_BASE_URL, ApiCall.NOTIFY_FIND_DIALOG_DISMISSED, ApiCall.ON_PAUSE, ApiCall.ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE, ApiCall.ON_RESUME, ApiCall.OVERLAY_HORIZONTAL_SCROLLBAR, ApiCall.OVERLAY_VERTICAL_SCROLLBAR, ApiCall.PAGE_DOWN, ApiCall.PAGE_UP, ApiCall.PAUSE_TIMERS, ApiCall.POST_MESSAGE_TO_MAIN_FRAME, ApiCall.POST_URL, ApiCall.RELOAD, ApiCall.REMOVE_JAVASCRIPT_INTERFACE, ApiCall.REQUEST_FOCUS_NODE_HREF, ApiCall.REQUEST_IMAGE_REF, ApiCall.RESTORE_STATE, ApiCall.RESUME_TIMERS, ApiCall.SAVE_STATE, ApiCall.SET_DOWNLOAD_LISTENER, ApiCall.SET_FIND_LISTENER, ApiCall.SET_HORIZONTAL_SCROLLBAR_OVERLAY, ApiCall.SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.SET_INITIAL_SCALE, ApiCall.SET_NETWORK_AVAILABLE, ApiCall.SET_PICTURE_LISTENER, ApiCall.SET_SMART_CLIP_RESULT_HANDLER, ApiCall.SET_TEXT_CLASSIFIER, ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY, ApiCall.SET_WEBCHROME_CLIENT, ApiCall.SET_WEBVIEW_CLIENT, ApiCall.SHOW_FIND_DIALOG, ApiCall.STOP_LOADING, ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA, ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_CLEAR_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA, ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.COOKIE_MANAGER_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_FLUSH, ApiCall.COOKIE_MANAGER_GET_COOKIE, ApiCall.COOKIE_MANAGER_HAS_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_SET_COOKIE, ApiCall.WEB_STORAGE_DELETE_ALL_DATA, ApiCall.WEB_STORAGE_DELETE_ORIGIN, ApiCall.WEB_STORAGE_GET_ORIGINS, ApiCall.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN, ApiCall.WEB_STORAGE_GET_USAGE_FOR_ORIGIN, ApiCall.WEB_SETTINGS_GET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_GET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_CACHE_MODE, ApiCall.WEB_SETTINGS_GET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_GET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_GET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FORCE_DARK, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_GET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_GET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_GET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_GET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_GET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_GET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_GET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_GET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_SET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_CACHE_MODE, ApiCall.WEB_SETTINGS_SET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_SET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_SET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_SET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_GEOLOCATION_ENABLED, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_SET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_SET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_SET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_SET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_SET_NEED_INITIAL_FOCUS, ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_SET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_SET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_SET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SET_SUPPORT_ZOOM, ApiCall.WEB_SETTINGS_SET_TEXT_SIZE, ApiCall.WEB_SETTINGS_SET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_SET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM, ApiCall.GET_RENDERER_REQUESTED_PRIORITY, ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE, ApiCall.SET_RENDERER_PRIORITY_POLICY"
+        message="Must be one of: ApiCall.ADD_JAVASCRIPT_INTERFACE, ApiCall.AUTOFILL, ApiCall.CAN_GO_BACK, ApiCall.CAN_GO_BACK_OR_FORWARD, ApiCall.CAN_GO_FORWARD, ApiCall.CAN_ZOOM_IN, ApiCall.CAN_ZOOM_OUT, ApiCall.CAPTURE_PICTURE, ApiCall.CLEAR_CACHE, ApiCall.CLEAR_FORM_DATA, ApiCall.CLEAR_HISTORY, ApiCall.CLEAR_MATCHES, ApiCall.CLEAR_SSL_PREFERENCES, ApiCall.CLEAR_VIEW, ApiCall.COPY_BACK_FORWARD_LIST, ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER, ApiCall.CREATE_WEBMESSAGE_CHANNEL, ApiCall.DOCUMENT_HAS_IMAGES, ApiCall.DOES_SUPPORT_FULLSCREEN, ApiCall.EVALUATE_JAVASCRIPT, ApiCall.EXTRACT_SMART_CLIP_DATA, ApiCall.FIND_NEXT, ApiCall.GET_CERTIFICATE, ApiCall.GET_CONTENT_HEIGHT, ApiCall.GET_CONTENT_WIDTH, ApiCall.GET_FAVICON, ApiCall.GET_HIT_TEST_RESULT, ApiCall.GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.GET_ORIGINAL_URL, ApiCall.GET_PROGRESS, ApiCall.GET_SCALE, ApiCall.GET_SETTINGS, ApiCall.GET_TEXT_CLASSIFIER, ApiCall.GET_TITLE, ApiCall.GET_URL, ApiCall.GET_WEBCHROME_CLIENT, ApiCall.GET_WEBVIEW_CLIENT, ApiCall.GO_BACK, ApiCall.GO_BACK_OR_FORWARD, ApiCall.GO_FORWARD, ApiCall.INSERT_VISUAL_STATE_CALLBACK, ApiCall.INVOKE_ZOOM_PICKER, ApiCall.IS_PAUSED, ApiCall.IS_PRIVATE_BROWSING_ENABLED, ApiCall.LOAD_DATA, ApiCall.LOAD_DATA_WITH_BASE_URL, ApiCall.NOTIFY_FIND_DIALOG_DISMISSED, ApiCall.ON_PAUSE, ApiCall.ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE, ApiCall.ON_RESUME, ApiCall.OVERLAY_HORIZONTAL_SCROLLBAR, ApiCall.OVERLAY_VERTICAL_SCROLLBAR, ApiCall.PAGE_DOWN, ApiCall.PAGE_UP, ApiCall.PAUSE_TIMERS, ApiCall.POST_MESSAGE_TO_MAIN_FRAME, ApiCall.POST_URL, ApiCall.RELOAD, ApiCall.REMOVE_JAVASCRIPT_INTERFACE, ApiCall.REQUEST_FOCUS_NODE_HREF, ApiCall.REQUEST_IMAGE_REF, ApiCall.RESTORE_STATE, ApiCall.RESUME_TIMERS, ApiCall.SAVE_STATE, ApiCall.SET_DOWNLOAD_LISTENER, ApiCall.SET_FIND_LISTENER, ApiCall.SET_HORIZONTAL_SCROLLBAR_OVERLAY, ApiCall.SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.SET_INITIAL_SCALE, ApiCall.SET_NETWORK_AVAILABLE, ApiCall.SET_PICTURE_LISTENER, ApiCall.SET_SMART_CLIP_RESULT_HANDLER, ApiCall.SET_TEXT_CLASSIFIER, ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY, ApiCall.SET_WEBCHROME_CLIENT, ApiCall.SET_WEBVIEW_CLIENT, ApiCall.SHOW_FIND_DIALOG, ApiCall.STOP_LOADING, ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA, ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_CLEAR_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA, ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.COOKIE_MANAGER_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_FLUSH, ApiCall.COOKIE_MANAGER_GET_COOKIE, ApiCall.COOKIE_MANAGER_HAS_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_SET_COOKIE, ApiCall.WEB_STORAGE_DELETE_ALL_DATA, ApiCall.WEB_STORAGE_DELETE_ORIGIN, ApiCall.WEB_STORAGE_GET_ORIGINS, ApiCall.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN, ApiCall.WEB_STORAGE_GET_USAGE_FOR_ORIGIN, ApiCall.WEB_SETTINGS_GET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_GET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_CACHE_MODE, ApiCall.WEB_SETTINGS_GET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_GET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_GET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FORCE_DARK, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_GET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_GET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_GET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_GET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_GET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_GET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_GET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_GET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_SET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_CACHE_MODE, ApiCall.WEB_SETTINGS_SET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_SET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_SET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_SET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_GEOLOCATION_ENABLED, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_SET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_SET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_SET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_SET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_SET_NEED_INITIAL_FOCUS, ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_SET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_SET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_SET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SET_SUPPORT_ZOOM, ApiCall.WEB_SETTINGS_SET_TEXT_SIZE, ApiCall.WEB_SETTINGS_SET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_SET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM, ApiCall.GET_RENDERER_REQUESTED_PRIORITY, ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE, ApiCall.SET_RENDERER_PRIORITY_POLICY, ApiCall.LOAD_URL, ApiCall.LOAD_URL_ADDITIONAL_HEADERS"
         errorLine1="        RecordHistogram.recordEnumeratedHistogram(&quot;Android.WebView.ApiCall&quot;, sample, ApiCall.COUNT);"
         errorLine2="                                                                                             ~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="447"
+            line="450"
             column="94"/>
     </issue>
 
@@ -4347,7 +4336,7 @@
         errorLine2="    ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/gen/chrome/android/monochrome_public_bundle__base_bundle_module/AndroidManifest.xml"
-            line="605"
+            line="602"
             column="5"/>
     </issue>
 
@@ -4358,7 +4347,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="307"
+            line="304"
             column="20"/>
     </issue>
 
@@ -4382,1150 +4371,6 @@
             file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
             line="9"
             column="20"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                IconProvider.getIcon(context, R.drawable.gm_filled_location_on_24),"
-        errorLine2="                             ~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessorySheetCoordinator.java"
-            line="38"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            if (mBypassIsReadyToPayServiceInTest) app.bypassIsReadyToPayServiceInTest();"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/payments/content/android/java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java"
-            line="565"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        mHandler.onOptionsItemSelected(id);"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/appmenu/internal/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java"
-            line="391"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                CombinedPolicyProvider.get().registerProvider(new AwPolicyProvider(appContext));"
-        errorLine2="                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwBrowserProcess.java"
-            line="177"
-            column="63"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                new AwViewAndroidDelegate(mContainerView, mContentsClient, mScrollOffsetManager);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="1550"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        LoadUrlParams params = LoadUrlParams.createLoadHttpPostParams(url, postData);"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="2087"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        mWebContents.evaluateJavaScriptForTests(script, jsCallback);"
-        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="3111"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return FindAddress.findAddress(addr);"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwContentsStatics.java"
-            line="178"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This class should only be accessed from tests or within private scope"
-        errorLine1="class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {"
-        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="35"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                if (mAwContents.getNavigationController() == null) return;"
-        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="188"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                        mAwContents.getNavigationController().continuePendingReload();"
-        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="192"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                        mAwContents.getNavigationController().cancelPendingReload();"
-        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="196"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                    AwWebContentsDelegateJni.get().filesSelectedInChooser("
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="227"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            AwWebContentsDelegateJni.get().filesSelectedInChooser("
-        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="363"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This class should only be accessed from tests or within private scope"
-        errorLine1="                            0, new VisualStateCallback() {"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsObserver.java"
-            line="156"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        int playerState = mediaStatus.getPlayerState();"
-        errorLine2="                                      ~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/BaseNotificationController.java"
-            line="68"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        if (playerState == MediaStatus.PLAYER_STATE_PAUSED"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/BaseNotificationController.java"
-            line="69"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                || playerState == MediaStatus.PLAYER_STATE_PLAYING) {"
-        errorLine2="                                              ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/BaseNotificationController.java"
-            line="70"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            mNotificationBuilder.setPaused(playerState != MediaStatus.PLAYER_STATE_PLAYING);"
-        errorLine2="                                                                      ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/BaseNotificationController.java"
-            line="71"
-            column="71"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                &amp;&amp; mOverlayPanelManager.get().getActivePanel() != null) {"
-        errorLine2="                                              ~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
-            line="210"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            mOverlayPanelManager.get().getActivePanel().closePanel("
-        errorLine2="                                       ~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
-            line="211"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        BrowserImplJni.get().addTab(mNativeBrowser, tab.getNativeTab());"
-        errorLine2="                                                        ~~~~~~~~~~~~">
-        <location
-            file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="174"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        BrowserImplJni.get().setActiveTab(mNativeBrowser, tab != null ? tab.getNativeTab() : 0);"
-        errorLine2="                                                                            ~~~~~~~~~~~~">
-        <location
-            file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="267"
-            column="77"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return new CastOptions.Builder()"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="20"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setCastMediaOptions(null)"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="21"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setEnableReconnectionService(false)"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="22"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setLaunchOptions(new LaunchOptions.Builder().setRelaunchIfRunning(true).build())"
-        errorLine2="                 ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="23"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setLaunchOptions(new LaunchOptions.Builder().setRelaunchIfRunning(true).build())"
-        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="23"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setLaunchOptions(new LaunchOptions.Builder().setRelaunchIfRunning(true).build())"
-        errorLine2="                                                              ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="23"
-            column="63"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setLaunchOptions(new LaunchOptions.Builder().setRelaunchIfRunning(true).build())"
-        errorLine2="                                                                                         ~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="23"
-            column="90"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setResumeSavedSession(false)"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="24"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .setStopReceiverApplicationWhenEndingSession(true)"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="25"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .build();"
-        errorLine2="                 ~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java"
-            line="26"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        IntentHandler.setTestIntentsEnabled("
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="933"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        DownloadManagerService.getDownloadManagerService().onDownloadFailed(downloadItem, reason);"
-        errorLine2="                                                           ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/ChromeDownloadDelegate.java"
-            line="184"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            mOverviewListLayout = (OverviewListLayout) mLayoutManager.getOverviewListLayout();"
-        errorLine2="                                                                      ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="990"
-            column="71"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                IconProvider.getIcon(context, R.drawable.infobar_autofill_cc),"
-        errorLine2="                             ~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetCoordinator.java"
-            line="35"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        mConnection.cleanUpSession(sessionToken);"
-        errorLine2="                    ~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionServiceImpl.java"
-            line="106"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                    mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName,"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
-            line="136"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                    mDownloadNotificationService.notifyDownloadCanceled("
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
-            line="150"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        Set&lt;String> entries = DownloadManagerService.getStoredDownloadInfo("
-        errorLine2="                                                     ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceHelper.java"
-            line="134"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="    private static final Api.ClientKey&lt;FidoClient> BROWSER_CLIENT_KEY = new Api.ClientKey&lt;>();"
-        errorLine2="                                                                        ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/webauthn/android/java/src/org/chromium/components/webauthn/Fido2ApiCall.java"
-            line="93"
-            column="73"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="    private static final Api.ClientKey&lt;FidoClient> FIRSTPARTY_CLIENT_KEY = new Api.ClientKey&lt;>();"
-        errorLine2="                                                                           ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/webauthn/android/java/src/org/chromium/components/webauthn/Fido2ApiCall.java"
-            line="100"
-            column="76"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This class should only be accessed from tests or within private scope"
-        errorLine1="                extends Api.AbstractClientBuilder&lt;FidoClient, ApiOptions.NoOptions> {"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/webauthn/android/java/src/org/chromium/components/webauthn/Fido2ApiCall.java"
-            line="375"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        MediaInfo mediaInfo = new MediaInfo.Builder(mMediaUrl)"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="86"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                                      .setContentType(&quot;*/*&quot;)"
-        errorLine2="                                       ~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="87"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                                      .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)"
-        errorLine2="                                       ~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="88"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                                      .build();"
-        errorLine2="                                       ~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="89"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            if (mediaStatus.getPlayerState() == MediaStatus.PLAYER_STATE_IDLE"
-        errorLine2="                            ~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="157"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            if (mediaStatus.getPlayerState() == MediaStatus.PLAYER_STATE_IDLE"
-        errorLine2="                                                            ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="157"
-            column="61"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                    &amp;&amp; mediaStatus.getIdleReason() == MediaStatus.IDLE_REASON_FINISHED) {"
-        errorLine2="                                   ~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="158"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                    &amp;&amp; mediaStatus.getIdleReason() == MediaStatus.IDLE_REASON_FINISHED) {"
-        errorLine2="                                                                  ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="158"
-            column="67"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                        remoteMediaClient.isPlaying(), mediaStatus.getPlaybackRate());"
-        errorLine2="                                                                   ~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="164"
-            column="68"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                                ImageFetcher.resizeImage(bitmap, params.width, params.height));"
-        errorLine2="                                             ~~~~~~~~~~~">
-        <location
-            file="../../components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcherBridge.java"
-            line="97"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                                IncognitoNotificationServiceImpl.getRemoveAllIncognitoTabsIntent("
-        errorLine2="                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationManager.java"
-            line="53"
-            column="66"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            ClickableSpan[] spans = getClickableSpans();"
-        errorLine2="                                    ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/infobars/android/java/src/org/chromium/components/infobars/InfoBarMessageView.java"
-            line="39"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        int resId = mExternalNavHandler.canExternalAppHandleUrl(url)"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/external_intents/android/java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java"
-            line="479"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        } else if (animationsEnabled()) {"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="115"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.getPlayerState();"
-        errorLine2="                       ~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="37"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.getIdleReason();"
-        errorLine2="                       ~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="51"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        MediaInfo info = mStatus.getMediaInfo();"
-        errorLine2="                                 ~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="60"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_PAUSE);"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="74"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_PAUSE);"
-        errorLine2="                                                           ~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="74"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE);"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="82"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE);"
-        errorLine2="                                                           ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="82"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_SET_VOLUME);"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="90"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_SET_VOLUME);"
-        errorLine2="                                                           ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="90"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_SEEK);"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="98"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_SEEK);"
-        errorLine2="                                                           ~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="98"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.isMute();"
-        errorLine2="                       ~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="106"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.getStreamVolume();"
-        errorLine2="                       ~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="116"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        MediaInfo info = mStatus.getMediaInfo();"
-        errorLine2="                                 ~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="125"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mStatus.getStreamPosition();"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaStatusBridge.java"
-            line="136"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                    ((ChromeTabbedActivity) activity).saveState();"
-        errorLine2="                                                      ~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManager.java"
-            line="432"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                NavigationControllerImplJni.get().getNavigationController(tab.getNativeTab());"
-        errorLine2="                                                                              ~~~~~~~~~~~~">
-        <location
-            file="../../weblayer/browser/java/org/chromium/weblayer_private/NavigationControllerImpl.java"
-            line="43"
-            column="79"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                NewTabCallbackProxyJni.get().createNewTabCallbackProxy(this, tab.getNativeTab());"
-        errorLine2="                                                                                 ~~~~~~~~~~~~">
-        <location
-            file="../../weblayer/browser/java/org/chromium/weblayer_private/NewTabCallbackProxy.java"
-            line="26"
-            column="82"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return DownloadManagerService.getStoredDownloadInfo(sharedPrefs, type);"
-        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
-            line="921"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return VersionNumberGetter.getInstance().getCurrentlyUsedVersion();"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java"
-            line="313"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            String appId = getRequestGenerator().getAppId();"
-        errorLine2="                                                 ~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java"
-            line="337"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            mContent.destroy();"
-        errorLine2="                     ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanel.java"
-            line="548"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                IconProvider.getIcon(context, R.drawable.ic_vpn_key_grey),"
-        errorLine2="                             ~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java"
-            line="41"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        getTab().setIcon(IconProvider.getIcon("
-        errorLine2="                                      ~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java"
-            line="66"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        String distillerUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl("
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java"
-            line="653"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                new SettingsSecureBasedIdentificationGenerator(), false);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/RequestGenerator.java"
-            line="37"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        String id = new SettingsSecureBasedIdentificationGenerator().getUniqueId(ID_SALT);"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/rlz/RlzPingHandler.java"
-            line="38"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        mSearchBox.beginQuery(searchType, getOptionalIntentQuery(),"
-        errorLine2="                   ~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java"
-            line="481"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within package private scope"
-        errorLine1="                                      .getNewTabPageSigninPromoSuppressionPeriodStart();"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="94"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within package private scope"
-        errorLine1="        SigninPreferencesManager.getInstance().clearNewTabPageSigninPromoSuppressionPeriodStart();"
-        errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="101"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                &amp;&amp; clickedTab.getVisiblePercentage() >= 1.f"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelper.java"
-            line="1328"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This class should only be accessed from tests or within private scope"
-        errorLine1="                    requestId, new AwContents.VisualStateCallback() {"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromium.java"
-            line="53"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        getDownloadNotificationService().notifyDownloadCanceled(id, false);"
-        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
-            line="87"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                getDownloadNotificationService().notifyDownloadProgress(info.getContentId(),"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
-            line="163"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                getDownloadNotificationService().notifyDownloadPaused(info.getContentId(),"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
-            line="171"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                        getDownloadNotificationService().notifyDownloadSuccessful("
-        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
-            line="178"
-            column="58"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                getDownloadNotificationService().notifyDownloadFailed(info.getContentId(),"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
-            line="193"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                getDownloadNotificationService().notifyDownloadPaused(info.getContentId(),"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
-            line="198"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                                != mTabSwitcherAnimationTabStackDrawable.getTabCount();"
-        errorLine2="                                                                         ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="1625"
-            column="74"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        return mToolbarLayout.getLocationBar();"
-        errorLine2="                              ~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
-            line="695"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                status.latestVersion = VersionNumberGetter.getInstance().getLatestKnownVersion();"
-        errorLine2="                                                           ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/UpdateStatusProvider.java"
-            line="289"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This class should only be accessed from tests or within private scope"
-        errorLine1="                    requestId, callback == null ? null : new AwContents.VisualStateCallback() {"
-        errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="1271"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                mAwContents.getWebContents()));"
-        errorLine2="                            ~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="2264"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        list.add(new StorageInfo(host, type, size));"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
-            line="73"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .put(origin, new LocalStorageInfo(origin, size, important));"
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
-            line="91"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        list.add(new ChosenObjectInfo(contentSettingsType, origin, name, object, isManaged));"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
-            line="166"
-            column="18"/>
     </issue>
 
     <issue
@@ -5579,7 +4424,7 @@
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="194"
+            line="193"
             column="24"/>
     </issue>
 
@@ -5634,7 +4479,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java"
-            line="305"
+            line="320"
             column="33"/>
     </issue>
 
@@ -5645,7 +4490,7 @@
         errorLine2="                                                       ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="374"
+            line="376"
             column="56"/>
     </issue>
 
@@ -5656,7 +4501,7 @@
         errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="2639"
+            line="2651"
             column="19"/>
     </issue>
 
@@ -5821,7 +4666,7 @@
         errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                           ~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/gen/chrome/android/monochrome_public_bundle__base_bundle_module/AndroidManifest.xml"
-            line="253"
+            line="250"
             column="444"/>
     </issue>
 
@@ -5909,7 +4754,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="168"
+            line="167"
             column="13"/>
     </issue>
 
@@ -6019,7 +4864,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerCategoryView.java"
-            line="212"
+            line="211"
             column="9"/>
     </issue>
 
@@ -6085,7 +4930,7 @@
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApplicationStatus.java"
-            line="351"
+            line="384"
             column="28"/>
     </issue>
 
@@ -6184,7 +5029,7 @@
         errorLine2="                                               ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java"
-            line="156"
+            line="157"
             column="48"/>
     </issue>
 
@@ -6195,7 +5040,7 @@
         errorLine2="                                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
-            line="348"
+            line="347"
             column="68"/>
     </issue>
 
@@ -6206,7 +5051,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
-            line="235"
+            line="236"
             column="47"/>
     </issue>
 
@@ -6250,7 +5095,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkRow.java"
-            line="378"
+            line="377"
             column="9"/>
     </issue>
 
@@ -6261,7 +5106,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
-            line="282"
+            line="272"
             column="20"/>
     </issue>
 
@@ -6404,7 +5249,7 @@
         errorLine2="                                               ^">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="254"
+            line="259"
             column="48"/>
     </issue>
 
@@ -6415,7 +5260,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="274"
+            line="279"
             column="9"/>
     </issue>
 
@@ -6426,7 +5271,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="276"
+            line="281"
             column="9"/>
     </issue>
 
@@ -6448,7 +5293,7 @@
         errorLine2="                           ~~~~~~~">
         <location
             file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerVideoPlayer.java"
-            line="243"
+            line="244"
             column="28"/>
     </issue>
 
@@ -6481,7 +5326,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
-            line="242"
+            line="241"
             column="46"/>
     </issue>
 
@@ -6503,7 +5348,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="533"
+            line="535"
             column="20"/>
     </issue>
 
