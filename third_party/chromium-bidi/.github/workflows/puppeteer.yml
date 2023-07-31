@@ -1,0 +1,81 @@
+name: Puppeteer CI
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  pull_request:
+    types: [labeled]
+
+concurrency:
+  group: puppeteer-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build-bidi:
+    name: Build BiDi
+    runs-on: ubuntu-latest
+    if: contains(github.event.label.name, 'puppeteer')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Set up Node.js
+        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm i
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Build BiDi
+        run: |
+          npm run build
+      - name: Pack BiDi
+        run: npm pack
+      - name: Upload BiDi build
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        with:
+          name: bidi-build
+          if-no-files-found: error
+          path: chromium-bidi-*.tgz
+
+  puppeteer-tests:
+    name: Puppeteer tests
+    needs: build-bidi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download BiDi build
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: bidi-build
+      - name: Set up Node.js
+        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
+        with:
+          node-version: lts/*
+      - name: Checkout
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          repository: 'puppeteer/puppeteer'
+          path: 'puppeteer'
+      - name: Install dependencies
+        working-directory: puppeteer
+        run: npm ci
+      - name: Install BiDi
+        working-directory: puppeteer
+        run: |
+          bidi_pkg=(../puppeteer-*.tgz)
+          tar -xf ${bidi_pkg[0]} --strip-components 1 -C node_modules/chromium-bidi
+      - name: Setup cache for browser binaries
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: ~/.cache/chromium-bidi
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
+      - name: Install pinned browser
+        id: browser
+        run: node tools/install-browser.mjs
+      - name: Run tests
+        working-directory: puppeteer
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+        run: npm run test:chrome:bidi
