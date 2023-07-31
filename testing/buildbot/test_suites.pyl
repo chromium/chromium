@@ -1754,27 +1754,23 @@
           'shards': 20,
         },
       },
-      'cr23_browser_tests': {
+      'cr23_regressed_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter'
           ),
         ],
-        'swarming': {
-          'shards': 20,
-        },
         'test': 'browser_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
-      'cr23_interactive_ui_tests': {
+      'cr23_regressed_interactive_ui_tests': {
         'args': [
           ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter'
           ),
         ],
-        'swarming': {
-          'shards': 10,
-        },
         'test': 'interactive_ui_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
@@ -1783,7 +1779,6 @@
           'shards': 10,
         },
       },
-      'views_unittests': {},
     },
     'cr23_fyi_mac_gtests': {
       'browser_tests': {
@@ -1792,9 +1787,10 @@
         },
         'ci_only': True,
       },
-      'cr23_browser_tests': {
+      'cr23_regressed_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
           ),
         ],
@@ -1805,9 +1801,10 @@
         'ci_only': True,
         'mixins': [ 'chrome-refresh-2023' ],
       },
-      'cr23_interactive_ui_tests': {
+      'cr23_regressed_interactive_ui_tests': {
         'args': [
           ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
           ),
         ],
@@ -1822,7 +1819,6 @@
           'shards': 10,
         },
       },
-      'views_unittests': {},
     },
     'cr23_fyi_win_gtests': {
       'browser_tests': {
@@ -1830,9 +1826,10 @@
           'shards': 20,
         },
       },
-      'cr23_browser_tests': {
+      'cr23_regressed_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
           ),
         ],
@@ -1842,9 +1839,10 @@
         'test': 'browser_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
-      'cr23_interactive_ui_tests': {
+      'cr23_regressed_interactive_ui_tests': {
         'args': [
           ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
           ),
         ],
@@ -1856,28 +1854,33 @@
           'shards': 10,
         },
       },
-      'views_unittests': {},
     },
     'cr23_main_linux_gtests': {
-      'cr23_regressed_browser_tests': {
+      'cr23_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'swarming': {
+          'shards': 20,
+        },
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'browser_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
-      'cr23_regressed_interactive_ui_tests': {
+      'cr23_interactive_ui_tests': {
         'args': [
           ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'swarming': {
+          'shards': 10,
+        },
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'interactive_ui_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
@@ -1887,31 +1890,38 @@
            '../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'views_unittests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
     },
     'cr23_main_mac_gtests': {
-      'cr23_regressed_browser_tests': {
+      'cr23_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'swarming': {
+          'shards': 20,
+        },
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'browser_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
-      'cr23_regressed_interactive_ui_tests': {
+      'cr23_interactive_ui_tests': {
         'args': [
           ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'swarming': {
+          'shards': 10,
+        },
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'interactive_ui_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
@@ -1921,31 +1931,38 @@
            '../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'views_unittests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
     },
     'cr23_main_win_gtests': {
-      'cr23_regressed_browser_tests': {
+      'cr23_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'swarming': {
+          'shards': 20,
+        },
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'browser_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
-      'cr23_regressed_interactive_ui_tests': {
+      'cr23_interactive_ui_tests': {
         'args': [
           ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'swarming': {
+          'shards': 10,
+        },
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'interactive_ui_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
@@ -1955,7 +1972,8 @@
            '../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter'
           ),
         ],
-        'experiment_percentage': 1,
+        'ci_only': True,
+        'experiment_percentage': 10,
         'test': 'views_unittests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
