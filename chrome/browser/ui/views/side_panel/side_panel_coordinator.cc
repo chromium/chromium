@@ -437,6 +437,8 @@ void SidePanelCoordinator::Show(
         feature_engagement::kIPHReadingModeSidePanelFeature);
   }
 
+  SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
+
   SidePanelContentSwappingContainer* content_wrapper =
       static_cast<SidePanelContentSwappingContainer*>(
           GetContentContainerView()->GetViewByID(

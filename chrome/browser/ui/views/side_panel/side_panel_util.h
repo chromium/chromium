@@ -42,6 +42,8 @@ class SidePanelUtil {
 
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);
+  static void RecordSidePanelShowOrChangeEntryTrigger(
+      absl::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelClosed(base::TimeTicks opened_timestamp);
   static void RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
                                            int side_panel_contents_width,

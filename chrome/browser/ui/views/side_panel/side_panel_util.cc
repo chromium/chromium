@@ -155,6 +155,14 @@ void SidePanelUtil::RecordSidePanelOpen(
     base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
 }
 
+void SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+  if (trigger.has_value()) {
+    base::UmaHistogramEnumeration("SidePanel.OpenOrChangeEntryTrigger",
+                                  trigger.value());
+  }
+}
+
 void SidePanelUtil::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
   base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
 

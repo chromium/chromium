@@ -1258,6 +1258,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SidePanel.OpenOrChangeEntryTrigger"
+    enum="SidePanelOpenTrigger" expires_after="2023-12-10">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Logs the UI location from which the side panel is triggered to be opened or
+    to change the entry shown. Recorded when the side panel is shown or the
+    entry changed and a trigger is provided.
+  </summary>
+</histogram>
+
 <histogram name="SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
     expires_after="2023-12-10">
   <owner>corising@chromium.org</owner>
