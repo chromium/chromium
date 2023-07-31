@@ -64,7 +64,7 @@ enum SegmentId {
   // Target for web app install promotion.
   OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO = 32;
   // Target for ios module ranker.
-  OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER = 33;
+  OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER = 37;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not
