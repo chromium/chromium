@@ -1401,14 +1401,18 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.StyleBuilder().SetIsEnsuredOutsideFlatTree();
   }
 
-  if (match_result.HasNonUniversalHighlightPseudoStyles()) {
-    state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(true);
-  }
-  if (match_result.HasNonUaHighlightPseudoStyles()) {
-    state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(true);
-  }
-
   CascadeAndApplyMatchedProperties(state, style_request, cascade);
+
+  // NOTE: The initial value of these flags is indeterminate since
+  // they could get unwanted values from a MPC hit; they are in
+  // a raredata field group, so CopyNonInheritedFromCached will clobber
+  // them despite custom_copy, and we always need to set them.
+  // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
+  // can remove the cache-busting for ::highlight() in IsStyleCacheable
+  state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(
+      match_result.HasNonUniversalHighlightPseudoStyles());
+  state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(
+      match_result.HasNonUaHighlightPseudoStyles());
 
   if (match_result.HasFlag(MatchFlag::kAffectedByDrag)) {
     state.StyleBuilder().SetAffectedByDrag();
@@ -2061,22 +2065,8 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       is_inherited_cache_hit = true;
     }
     if (!IsForcedColorsModeEnabled() || is_inherited_cache_hit) {
-      bool non_universal_highlights =
-          state.StyleBuilder().HasNonUniversalHighlightPseudoStyles();
-      bool non_ua_highlights =
-          state.StyleBuilder().HasNonUaHighlightPseudoStyles();
-
       state.StyleBuilder().CopyNonInheritedFromCached(
           *cached_matched_properties->computed_style);
-
-      // Restore the non-universal highlight pseudo flag that was set while
-      // collecting matching rules. These fields are in a raredata field group,
-      // so CopyNonInheritedFromCached will clobber them despite custom_copy.
-      // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
-      // can remove the cache-busting for ::highlight() in IsStyleCacheable
-      state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(
-          non_universal_highlights);
-      state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(non_ua_highlights);
 
       // If the child style is a cache hit, we'll never reach StyleBuilder::
       // ApplyProperty, hence we'll never set the flag on the parent.
