@@ -173,6 +173,8 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            StorageAccessExceptions_DiffType);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_AutoGranted);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            StorageAccessExceptions_SamePrimaryPattern);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            StorageAccessExceptions_DiffPatterns);

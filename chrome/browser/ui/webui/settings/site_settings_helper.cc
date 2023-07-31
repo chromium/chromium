@@ -832,6 +832,13 @@ void GetRawExceptionsForContentSettingsType(
       continue;
     }
 
+    // Don't add auto granted permissions for storage access exceptions.
+    if (type == ContentSettingsType::STORAGE_ACCESS &&
+        setting.metadata.session_model() ==
+            content_settings::SessionModel::NonRestorableUserSession) {
+      continue;
+    }
+
     auto content_setting = setting.GetContentSetting();
 
     if (type == ContentSettingsType::COOKIES &&

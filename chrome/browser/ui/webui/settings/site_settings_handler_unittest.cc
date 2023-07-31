@@ -500,12 +500,17 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
       ContentSetting content_setting,
       size_t expected_total_calls = 1U,
       bool is_incognito = false,
-      base::TimeDelta lifetime = base::TimeDelta()) {
+      base::TimeDelta lifetime = base::TimeDelta(),
+      bool is_auto_granted = false) {
     HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
         is_incognito ? incognito_profile() : profile());
 
     content_settings::ContentSettingConstraints constraints;
     constraints.set_lifetime(lifetime);
+    if (is_auto_granted) {
+      constraints.set_session_model(
+          content_settings::SessionModel::NonRestorableUserSession);
+    }
 
     map->SetContentSettingCustomScope(
         ContentSettingsPattern::FromString(primary_pattern),
@@ -3021,6 +3026,27 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_DiffType) {
   handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
 
   // Verify that no exception is returned.
+  ValidateNoOrigin(2U);
+}
+
+TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_AutoGranted) {
+  const std::string kOrigin("https://[*.]google.com:443");
+  const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+
+  SetContentSettingCustomScope(
+      kOrigin, kEmbeddingOrigin, kPermissionStorageAccess,
+      CONTENT_SETTING_BLOCK, /*expected_total_calls=*/1U,
+      /*is_incognito=*/false, /*lifetime=*/base::TimeDelta(),
+      /*is_auto_granted=*/true);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+
+  // Verify that no exception is returned since auto granted exceptions should
+  // not be returned.
   ValidateNoOrigin(2U);
 }
 
