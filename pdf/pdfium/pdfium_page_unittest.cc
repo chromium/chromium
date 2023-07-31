@@ -546,8 +546,11 @@ TEST_P(PDFiumPageImageDataTest, ImageData) {
   EXPECT_EQ(page.images_[0].image_data.height(), 0);
 
   ASSERT_TRUE(page.images_[2].alt_text.empty());
-  EXPECT_EQ(page.images_[1].image_data.width(), 20);
-  EXPECT_EQ(page.images_[1].image_data.height(), 20);
+
+  // While the scaled image size is 20x20, `image_data` has the same size as
+  // the image in the PDF file, which is 50x50, and is not scaled.
+  EXPECT_EQ(page.images_[1].image_data.width(), 50);
+  EXPECT_EQ(page.images_[1].image_data.height(), 50);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageDataTest, testing::Bool());

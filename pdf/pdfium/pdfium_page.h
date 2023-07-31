@@ -273,7 +273,9 @@ class PDFiumPage {
     std::string alt_text;
     gfx::Rect bounding_rect;
     // Image data is only stored if the user has requested that the OCR service
-    // try to retrieve textual and layout information from this image.
+    // try to retrieve textual and layout information from this image. The
+    // bitmap will have the same size as the image in the PDF file, and will
+    // not be scaled.
     SkBitmap image_data;
   };
 

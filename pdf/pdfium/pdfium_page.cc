@@ -1284,11 +1284,39 @@ void PDFiumPage::CalculateImages() {
 
     FPDF_PAGEOBJECT page_object =
         FPDFPage_GetObject(page, image.page_object_index);
+
+    // OCR needs the image with the highest available quality. To get it, the
+    // image transform matrix is reset to no-scale, the bitmap is extracted,
+    // and then the original matrix is restored.
+    FS_MATRIX original_matrix;
+    if (!FPDFPageObj_GetMatrix(page_object, &original_matrix)) {
+      continue;
+    }
+
+    // Get the actual image size.
+    unsigned int width;
+    unsigned int height;
+    if (!FPDFImageObj_GetImagePixelSize(page_object, &width, &height)) {
+      continue;
+    }
+
+    // Resize the matrix to actual size.
+    FS_MATRIX new_matrix = {static_cast<float>(width),  0, 0,
+                            static_cast<float>(height), 0, 0};
+    if (!FPDFPageObj_SetMatrix(page_object, &new_matrix)) {
+      continue;
+    }
+
     ScopedFPDFBitmap bitmap(
         FPDFImageObj_GetRenderedBitmap(engine_->doc(), page, page_object));
+
+    // Restore the original matrix.
+    CHECK(FPDFPageObj_SetMatrix(page_object, &original_matrix));
+
     if (!bitmap)
       continue;
 
+    CHECK_EQ(FPDFBitmap_GetFormat(bitmap.get()), FPDFBitmap_BGRA);
     SkImageInfo info = SkImageInfo::Make(
         FPDFBitmap_GetWidth(bitmap.get()), FPDFBitmap_GetHeight(bitmap.get()),
         kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
