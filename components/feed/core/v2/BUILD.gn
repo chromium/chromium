@@ -16,8 +16,6 @@ if (!is_ios) {
       "public/logging_parameters.h",
       "public/ntp_feed_content_fetcher.h",
       "public/persistent_key_value_store.h",
-      "public/persistent_key_value_store.h",
-      "public/refresh_task_scheduler.h",
       "public/refresh_task_scheduler.h",
       "public/reliability_logging_bridge.h",
       "public/stream_type.h",
