@@ -4061,7 +4061,10 @@
 
     'cronet_android_mainline_clang': {
       'gn_args': ('clang_base_path = \"//third_party/cronet_android_mainline_clang/linux-amd64\" '
-      'clang_use_chrome_plugins=false use_lenient_compiler_flags=true'),
+                  'clang_use_chrome_plugins=false '
+                  'use_lenient_compiler_flags=true '
+                  'use_ml_inliner=false '  # https://crbug.com/1468680
+                 ),
     },
 
     # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
