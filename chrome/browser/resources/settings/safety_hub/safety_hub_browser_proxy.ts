@@ -13,6 +13,18 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 // clang-format on
 
+/**
+ * Constants used in safety hub C++ to JS communication.
+ * Their values need be kept in sync with their counterparts in
+ * chrome/browser/ui/webui/settings/safety_hub_handler.h and
+ * chrome/browser/ui/webui/settings/safety_hub_handler.cc
+ */
+export enum SafetyHubEvent {
+  UNUSED_PERMISSIONS_MAYBE_CHANGED =
+      'unused-permission-review-list-maybe-changed',
+  NOTIFICATION_PERMISSIONS_MAYBE_CHANGED =
+      'notification-permission-review-list-maybe-changed',
+}
 
 /**
  * The notification permission information passed from

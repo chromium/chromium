@@ -17,7 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {routes} from '../route.js';
 import {Router} from '../router.js';
-import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
+import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
 
 import {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_child.js';
 import {getTemplate} from './safety_check_notification_permissions.html.js';
@@ -64,7 +64,7 @@ export class SettingsSafetyCheckNotificationPermissionsElement extends
 
     // Register for review notification permission list updates.
     this.addWebUiListener(
-        'notification-permission-review-list-maybe-changed',
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
         (sites: NotificationPermission[]) => this.onSitesChanged_(sites));
 
     this.safetyHubBrowserProxy_.getNotificationPermissionReview().then(

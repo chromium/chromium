@@ -7,7 +7,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {SettingsReviewNotificationPermissionsElement, SafetyHubBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SettingsReviewNotificationPermissionsElement, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {CrActionMenuElement, MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions, SettingsRoutes} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -297,7 +297,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     await assertUndo('allowNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', mockData);
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, mockData);
     assertAnimation([false, false]);
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.UNDO_BLOCK);
@@ -318,7 +318,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     await assertUndo('undoIgnoreNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', mockData);
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, mockData);
     assertAnimation([false, false]);
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.UNDO_IGNORE);
@@ -339,7 +339,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     await assertUndo('allowNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', mockData);
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, mockData);
     assertAnimation([false, false]);
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.UNDO_RESET);
@@ -410,7 +410,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
   test('Block All Click single entry', async function() {
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', [{
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, [{
           origin: origin1,
           notificationInfoString: detail1,
         }]);
@@ -443,7 +443,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Through reviewing permissions the permission list is empty and only the
     // completion info is visible.
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', []);
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
     assertFalse(isChildVisible(testElement, '#review-header'));
     assertFalse(isChildVisible(testElement, '.site-list'));
@@ -452,7 +452,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // The element returns to showing the list of permissions when new items are
     // added while the completion state is visible.
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', mockData);
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, mockData);
     await flushTasks();
     assertTrue(isChildVisible(testElement, '#review-header'));
     assertTrue(isChildVisible(testElement, '.site-list'));
@@ -511,7 +511,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     // Check header string for singular case.
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', [{
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, [{
           origin: origin1,
           notificationInfoString: detail1,
         }]);

@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -317,18 +317,18 @@ suite('UnusedSitePermissionsReview', function() {
     // The element becomes visible if the list of permissions is no longer
     // empty.
     webUIListenerCallback(
-        'unused-permission-review-list-maybe-changed',
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         unusedSitePermissionMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
 
     // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback('unused-permission-review-list-maybe-changed', []);
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
     assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
 
     webUIListenerCallback(
-        'unused-permission-review-list-maybe-changed',
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         unusedSitePermissionMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));

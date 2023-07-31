@@ -22,7 +22,7 @@ import {ContentSettingsTypes} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {getLocalizationStringForContentType} from '../site_settings_page/site_settings_page_util.js';
 
-import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
+import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {SettingsSafetyHubModuleElement, SiteInfo} from './safety_hub_module.js';
 import {getTemplate} from './unused_site_permissions_module.html.js';
 
@@ -124,7 +124,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
   override async connectedCallback() {
     this.addWebUiListener(
-        'unused-permission-review-list-maybe-changed',
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
 

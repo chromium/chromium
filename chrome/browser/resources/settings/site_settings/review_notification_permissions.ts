@@ -23,7 +23,7 @@ import {BaseMixin} from '../base_mixin.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckNotificationsModuleInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin} from '../router.js';
-import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
+import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
 import {MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 import {TooltipMixin} from '../tooltip_mixin.js';
 
@@ -132,7 +132,7 @@ export class SettingsReviewNotificationPermissionsElement extends
   override async connectedCallback() {
     // Register for review notification permission list updates.
     this.addWebUiListener(
-        'notification-permission-review-list-maybe-changed',
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
 

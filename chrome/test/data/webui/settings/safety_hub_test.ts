@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {ContentSettingsTypes, SettingsSafetyHubPageElement, SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SafetyHubEvent, SettingsSafetyHubPageElement, SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse,assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -51,20 +51,20 @@ suite('SafetyHubTests', function() {
     // The element becomes visible if the list of permissions is no longer
     // empty.
     webUIListenerCallback(
-        'unused-permission-review-list-maybe-changed',
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         unusedSitePermissionMockData);
     await flushTasks();
     assertTrue(isChildVisible(
         testElement, 'settings-safety-hub-unused-site-permissions'));
 
     // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback('unused-permission-review-list-maybe-changed', []);
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
     assertTrue(isChildVisible(
         testElement, 'settings-safety-hub-unused-site-permissions'));
 
     webUIListenerCallback(
-        'unused-permission-review-list-maybe-changed',
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         unusedSitePermissionMockData);
     await flushTasks();
     assertTrue(isChildVisible(

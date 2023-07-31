@@ -189,7 +189,7 @@ export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './priva
 export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
 export {SettingsResetPageElement} from './reset_page/reset_page.js';
 export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
-export {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
+export {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
 export {SettingsSafetyHubModuleElement, SiteInfo} from './safety_hub/safety_hub_module.js';
 export {SettingsSafetyHubPageElement} from './safety_hub/safety_hub_page.js';
 export {SettingsSafetyHubUnusedSitePermissionsModuleElement} from './safety_hub/unused_site_permissions_module.js';

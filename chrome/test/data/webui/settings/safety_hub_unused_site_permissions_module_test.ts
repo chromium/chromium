@@ -10,7 +10,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {ContentSettingsTypes, SettingsSafetyHubUnusedSitePermissionsModuleElement, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SettingsSafetyHubUnusedSitePermissionsModuleElement, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {Router, routes, SettingsPluralStringProxyImpl, SettingsRoutes} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -189,7 +189,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           unusedSitePermissions.permissions, mockData[i]!.permissions);
       // UI should be back to its initial state.
       webUIListenerCallback(
-          'unused-permission-review-list-maybe-changed', mockData);
+          SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
       assertInitialUi();
     }
@@ -218,7 +218,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           unusedSitePermissions.permissions, mockData[i]!.permissions);
       // UI should be back to its initial state.
       webUIListenerCallback(
-          'unused-permission-review-list-maybe-changed', mockData);
+          SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
       assertInitialUi();
     }
@@ -246,7 +246,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertEqualsMockData(unusedSitePermissionsList);
     // UI should be back to its initial state.
     webUIListenerCallback(
-        'unused-permission-review-list-maybe-changed', mockData);
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
     assertInitialUi();
     // Check visibility of buttons
     assertTrue(isVisible(testElement.$.gotItButton));
@@ -282,7 +282,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Check header string for singular case.
     const oneElementMockData = mockData.slice(0, 1);
     webUIListenerCallback(
-        'unused-permission-review-list-maybe-changed', oneElementMockData);
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, oneElementMockData);
     await flushTasks();
 
     entries = getSiteList();
@@ -290,7 +290,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await assertPluralString('safetyCheckUnusedSitePermissionsPrimaryLabel', 1);
 
     // Check header string for completion case.
-    webUIListenerCallback('unused-permission-review-list-maybe-changed', []);
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
 
     entries = getSiteList();
