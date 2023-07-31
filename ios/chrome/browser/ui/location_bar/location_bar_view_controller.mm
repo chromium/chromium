@@ -600,7 +600,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Show Top or Bottom Address Bar action.
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+  if (IsBottomOmniboxSteadyStateEnabled() && _prefService &&
+      IsSplitToolbarMode(self)) {
     NSString* title = nil;
     NSString* imageName = nil;
     ToolbarType targetToolbarType;
