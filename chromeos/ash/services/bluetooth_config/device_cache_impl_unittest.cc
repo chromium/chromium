@@ -510,11 +510,12 @@ TEST_F(DeviceCacheImplTest, PairedDeviceBluetoothClassChanges) {
   EXPECT_EQ(mojom::DeviceType::kHeadset,
             list[0]->device_properties->device_type);
 
-  // Change its device type to an unsupported type.
+  // Change its device type to an unsupported type. Bonded devices are expected
+  // to remain in the list even if they have an unsupported type.
   ChangeDeviceType(paired_device_id, device::BluetoothDeviceType::PHONE);
   EXPECT_EQ(3u, GetNumPairedDeviceListObserverEvents());
   list = GetPairedDevices();
-  EXPECT_EQ(0u, list.size());
+  EXPECT_EQ(1u, list.size());
 }
 
 TEST_F(DeviceCacheImplTest, PairedDeviceForgotten) {
