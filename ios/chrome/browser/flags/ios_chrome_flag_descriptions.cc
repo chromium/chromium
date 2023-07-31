@@ -250,6 +250,11 @@ extern const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "
     "the phone number experience.";
 
+const char kMeasurementsName[] = "Measurements experience enable";
+const char kMeasurementsDescription[] =
+    "When enabled, one tapping or long pressing on a measurement will trigger "
+    "the measurement conversion experience.";
+
 extern const char kEnableExpKitTextClassifierName[] =
     "Text Classifier in Experience Kit";
 extern const char kEnableExpKitTextClassifierDescription[] =

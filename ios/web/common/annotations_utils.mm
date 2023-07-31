@@ -144,7 +144,8 @@ NSTextCheckingResult* MakeNSTextCheckingResultEmail(NSString* email,
 bool WebPageAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(web::features::kEnableEmails) ||
          base::FeatureList::IsEnabled(web::features::kEnablePhoneNumbers) ||
-         base::FeatureList::IsEnabled(web::features::kOneTapForMaps);
+         base::FeatureList::IsEnabled(web::features::kOneTapForMaps) ||
+         base::FeatureList::IsEnabled(web::features::kEnableMeasurements);
 }
 
 }  // namespace web

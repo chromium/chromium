@@ -66,6 +66,10 @@ BASE_FEATURE(kEnablePhoneNumbers,
              "EnablePhoneNumbersExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableMeasurements,
+             "EnableMeasurementsExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kOneTapForMapsConsentModeParamTitle[] =
     "OneTapForMapsConsentModeParam";
 const char kOneTapForMapsConsentModeDefaultParam[] = "default";
