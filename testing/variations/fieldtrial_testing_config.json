@@ -13788,6 +13788,22 @@
             ]
         }
     ],
+    "SpotlightIndexReadingListAndOpenTabs": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SpotlightOpenTabsSource",
+                        "SpotlightReadingListSource"
+                    ]
+                }
+            ]
+        }
+    ],
     "StartSurfaceSpareTab": [
         {
             "platforms": [
