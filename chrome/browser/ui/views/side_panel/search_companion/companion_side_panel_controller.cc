@@ -215,9 +215,10 @@ void CompanionSidePanelController::DidOpenRequestedURL(
              ? side_panel::mojom::LinkOpenMetadata::LinkOpenAction::kClobbered
              : side_panel::mojom::LinkOpenMetadata::LinkOpenAction::kNewTab),
         is_entry_point_default_pinned);
-    companion_helper->AddCompanionFinishedLoadingCallback(base::BindOnce(
-        &CompanionSidePanelController::NotifyLinkClick, base::Unretained(this),
-        url, std::move(metadata), tab_web_contents));
+    companion_helper->AddCompanionFinishedLoadingCallback(
+        base::BindOnce(&CompanionSidePanelController::NotifyLinkClick,
+                       weak_ptr_factory_.GetWeakPtr(), url, std::move(metadata),
+                       tab_web_contents));
   }
 }
 

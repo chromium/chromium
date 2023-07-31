@@ -79,6 +79,8 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
       companion_loaded_callbacks_;
   const raw_ptr<content::WebContents> web_contents_;
   bool has_companion_loaded = false;
+
+  base::WeakPtrFactory<CompanionSidePanelController> weak_ptr_factory_{this};
 };
 
 }  // namespace companion
