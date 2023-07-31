@@ -305,12 +305,12 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     display_->Resize(display_size);
 
     if (!root_local_surface_id_.is_valid() || display_size_ != display_size ||
-        device_scale_factor_ != frame.metadata.device_scale_factor) {
+        root_device_scale_factor_ != frame.metadata.device_scale_factor) {
       root_local_surface_id_allocator_.GenerateId();
       root_local_surface_id_ =
           root_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
       display_size_ = display_size;
-      device_scale_factor_ = frame.metadata.device_scale_factor;
+      root_device_scale_factor_ = frame.metadata.device_scale_factor;
     }
 
     display_->SetLocalSurfaceId(root_local_surface_id_,
@@ -328,6 +328,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     // the LayerTreeFrameSink client too? (We'd have to do the same for
     // hardware frames in SurfacesInstance?)
     viz::CompositorFrame embed_frame;
+    embed_frame.metadata.frame_token = ++root_next_frame_token_;
     embed_frame.metadata.begin_frame_ack = frame.metadata.begin_frame_ack;
     embed_frame.metadata.device_scale_factor =
         frame.metadata.device_scale_factor;
