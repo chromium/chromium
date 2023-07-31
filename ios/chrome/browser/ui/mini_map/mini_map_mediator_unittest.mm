@@ -1,0 +1,96 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
+
+#import "base/test/scoped_feature_list.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+class MiniMapMediatorTest : public PlatformTest {
+ protected:
+  MiniMapMediatorTest() {
+    scoped_feature_list_.InitAndEnableFeature(web::features::kOneTapForMaps);
+    TestChromeBrowserState::Builder builder;
+    builder.SetPrefService(CreatePrefService());
+    browser_state_ = builder.Build();
+
+    delegate_ = OCMStrictProtocolMock(@protocol(MiniMapMediatorDelegate));
+
+    mediator_ =
+        [[MiniMapMediator alloc] initWithPrefs:browser_state_->GetPrefs()];
+    mediator_.delegate = delegate_;
+  }
+
+  std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    user_prefs::PrefRegistrySyncable* registry = prefs->registry();
+    RegisterBrowserStatePrefs(registry);
+    return prefs;
+  }
+
+ protected:
+  web::WebTaskEnvironment environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  id<MiniMapMediatorDelegate> delegate_;
+  MiniMapMediator* mediator_;
+};
+
+// Tests that consent screen is not triggered if not needed.
+TEST_F(MiniMapMediatorTest, TestNoConsentNeeded) {
+  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
+                                         false);
+  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  OCMExpect([delegate_ showMap]);
+  [mediator_ userInitiatedMiniMapConsentRequired:NO];
+}
+
+// Tests that settings are updated correctly after user consents.
+TEST_F(MiniMapMediatorTest, TestUserConsents) {
+  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
+                                         false);
+  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  OCMExpect([delegate_ showConsentInterstitial]);
+  [mediator_ userInitiatedMiniMapConsentRequired:YES];
+  OCMExpect([delegate_ dismissConsentInterstitialWithCompletion:[OCMArg any]]);
+  OCMExpect([delegate_ showMap]);
+  [mediator_ userConsented];
+  environment_.RunUntilIdle();
+  EXPECT_TRUE(
+      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
+  EXPECT_TRUE(
+      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
+}
+
+// Tests that settings are updated correctly after user declines.
+TEST_F(MiniMapMediatorTest, TestUserDeclines) {
+  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
+                                         false);
+  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  OCMExpect([delegate_ showConsentInterstitial]);
+  [mediator_ userInitiatedMiniMapConsentRequired:YES];
+  OCMExpect([delegate_ dismissConsentInterstitialWithCompletion:[OCMArg any]]);
+  [mediator_ userDeclined];
+  environment_.RunUntilIdle();
+  EXPECT_FALSE(
+      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
+  EXPECT_FALSE(
+      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
+}

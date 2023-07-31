@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_MINI_MAP_MINI_MAP_INTERSTITIAL_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_MINI_MAP_MINI_MAP_INTERSTITIAL_VIEW_CONTROLLER_H_
+
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/ui/mini_map/mini_map_action_handler.h"
+
+// The view controller presenting the Consent screen for the Minimap feature.
+@interface MiniMapInterstitialViewController : UIViewController
+
+// The handler for UI interactions.
+@property(nonatomic, weak) id<MiniMapActionHandler> actionHandler;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_MINI_MAP_MINI_MAP_INTERSTITIAL_VIEW_CONTROLLER_H_

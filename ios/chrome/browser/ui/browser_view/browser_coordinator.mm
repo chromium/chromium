@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
@@ -138,6 +139,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
+#import "ios/chrome/browser/ui/mini_map/mini_map_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
@@ -236,6 +238,7 @@ enum class ToolbarKind {
                                   DefaultPromoNonModalPresentationDelegate,
                                   EnterprisePromptCoordinatorDelegate,
                                   FormInputAccessoryCoordinatorNavigator,
+                                  MiniMapCommands,
                                   NetExportTabHelperDelegate,
                                   NewTabPageCommands,
                                   NewTabPageTabHelperDelegate,
@@ -346,6 +349,9 @@ enum class ToolbarKind {
     OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
+
+// Coordinator in charge of presenting a mini map.
+@property(nonatomic, strong) MiniMapCoordinator* miniMapCoordinator;
 
 // The coordinator that manages net export.
 @property(nonatomic, strong) NetExportCoordinator* netExportCoordinator;
@@ -746,6 +752,7 @@ enum class ToolbarKind {
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserPromoCommands),
+    @protocol(MiniMapCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1306,6 +1313,9 @@ enum class ToolbarKind {
 
   [self.choiceCoordinator stop];
   self.choiceCoordinator = nil;
+
+  [self.miniMapCoordinator stop];
+  self.miniMapCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2871,6 +2881,49 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   [applicationCommandsHandler showPasswordDetailsForCredential:credential
                                               showCancelButton:YES];
+}
+
+#pragma mark - MiniMapCommands
+
+- (void)presentConsentThenMiniMapForText:(NSString*)text
+                              inWebState:(web::WebState*)webState {
+  self.miniMapCoordinator =
+      [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser
+                                                    webState:webState
+                                                        text:text
+                                             consentRequired:YES
+                                                        mode:MiniMapMode::kMap];
+  [self.miniMapCoordinator start];
+}
+
+- (void)presentMiniMapForText:(NSString*)text
+                   inWebState:(web::WebState*)webState {
+  self.miniMapCoordinator =
+      [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser
+                                                    webState:webState
+                                                        text:text
+                                             consentRequired:NO
+                                                        mode:MiniMapMode::kMap];
+  [self.miniMapCoordinator start];
+}
+
+- (void)presentMiniMapDirectionsForText:(NSString*)text
+                             inWebState:(web::WebState*)webState {
+  self.miniMapCoordinator = [[MiniMapCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        webState:webState
+                            text:text
+                 consentRequired:NO
+                            mode:MiniMapMode::kDirections];
+  [self.miniMapCoordinator start];
+}
+
+- (void)hideMiniMap {
+  [self.miniMapCoordinator stop];
+  self.miniMapCoordinator = nil;
 }
 
 @end

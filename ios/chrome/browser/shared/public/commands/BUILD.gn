@@ -22,6 +22,7 @@ source_set("commands") {
     "help_commands.h",
     "lens_commands.h",
     "load_query_commands.h",
+    "mini_map_commands.h",
     "new_tab_page_commands.h",
     "omnibox_commands.h",
     "open_lens_input_selection_command.h",

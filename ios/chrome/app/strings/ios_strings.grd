@@ -1728,6 +1728,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MICROPHONE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's microphone while the app is in use [Length: unlimited] [iOS only].">
         This lets you search using your voice
       </message>
+      <message name="IDS_IOS_MINI_MAP_CONSENT_ACCEPT" desc="The text of the consent button in the consent screen for mini map [iOS only].">
+        Accept
+      </message>
+      <message name="IDS_IOS_MINI_MAP_CONSENT_NO_THANKS" desc="The text of the no consent button in the consent screen for mini map [iOS only].">
+        No Thanks
+      </message>
+      <message name="IDS_IOS_MINI_MAP_CONSENT_FOOTER" desc="The text of the footer note in the consent screen for mini map. Contains a link [iOS only].">
+        You can manage this in BEGIN_LINK Content Settings END_LINK
+      </message>
+      <message name="IDS_IOS_MINI_MAP_CONSENT_SUBTITLE" desc="The subtitle of the consent screen for mini map [iOS only].">
+        Allow Chrome to use Google Maps to give you directions and local info on detected addresses.
+      </message>
+      <message name="IDS_IOS_MINI_MAP_CONSENT_TITLE" desc="The title of the consent screen for mini map [iOS only].">
+        Address Found
+      </message>
       <message name="IDS_IOS_NAVIGATION_BAR_CANCEL_BUTTON" desc="Label of the cancel button displayed on the navigation bar  [Length: 7em] [iOS only].">
         Cancel
       </message>

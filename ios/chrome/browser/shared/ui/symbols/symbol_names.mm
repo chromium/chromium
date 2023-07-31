@@ -13,6 +13,7 @@
 NSString* const kGoogleIconSymbol = @"google_icon";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kChromeSymbol = @"chrome_symbol";
+NSString* const kGoogleMapsSymbol = @"google_maps";
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 NSString* const kPrivacySymbol = @"checkerboard_shield";
 NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";
@@ -159,6 +160,7 @@ NSString* const kMovePlatterToTopPhoneSymbol =
     @"platter.filled.top.and.arrow.up.iphone";
 NSString* const kMovePlatterToBottomPhoneSymbol =
     @"platter.filled.bottom.and.arrow.down.iphone";
+NSString* const kMapSymbol = @"map";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
