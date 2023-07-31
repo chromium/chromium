@@ -78359,6 +78359,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="forced query"/>
 </enum>
 
+<enum name="OmniboxPositionType">
+  <int value="0" label="Top"/>
+  <int value="1" label="Bottom"/>
+</enum>
+
 <enum name="OmniboxRichAutocompletionType">
   <int value="0" label="None"/>
   <int value="1" label="URL non-prefix"/>

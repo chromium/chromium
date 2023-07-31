@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/ui/toolbar/public/omnibox_position_metrics.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -105,6 +107,7 @@
     // Initialize to the correct value.
     [self booleanDidChange:_bottomOmniboxEnabled];
     [self updateOmniboxDefaultPosition];
+    [self logOmniboxPosition];
   }
 }
 
@@ -282,6 +285,22 @@
 
   self.prefService->SetDefaultPrefValue(
       prefs::kBottomOmnibox, base::Value(bottomOmniboxEnabledByDefault));
+}
+
+/// Logs preferred omnibox position.
+- (void)logOmniboxPosition {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(self.prefService);
+
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    BOOL isBottomOmnibox = self.prefService->GetBoolean(prefs::kBottomOmnibox);
+    OmniboxPositionType positionType = isBottomOmnibox
+                                           ? OmniboxPositionType::kBottom
+                                           : OmniboxPositionType::kTop;
+    base::UmaHistogramEnumeration(kOmniboxSteadyStatePositionAtStartup,
+                                  positionType);
+  });
 }
 
 @end
