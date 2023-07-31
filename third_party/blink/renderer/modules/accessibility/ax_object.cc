@@ -359,8 +359,10 @@ const RoleEntry kAriaRoles[] = {
     {"gridcell", ax::mojom::blink::Role::kCell},
     {"group", ax::mojom::blink::Role::kGroup},
     {"heading", ax::mojom::blink::Role::kHeading},
-    {"image", ax::mojom::blink::Role::kImage},
     {"img", ax::mojom::blink::Role::kImage},
+    // role="image" is listed after role="img" to treat the synonym img
+    // as a computed name image
+    {"image", ax::mojom::blink::Role::kImage},
     {"insertion", ax::mojom::blink::Role::kContentInsertion},
     {"link", ax::mojom::blink::Role::kLink},
     {"list", ax::mojom::blink::Role::kList},

@@ -31,8 +31,8 @@ RootWebArea
 RootWebArea
   none
     none
-      img
-        *img
+      image
+        *image
 {
     childIds : <object>
     chromeRole : {
@@ -69,7 +69,7 @@ RootWebArea
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 

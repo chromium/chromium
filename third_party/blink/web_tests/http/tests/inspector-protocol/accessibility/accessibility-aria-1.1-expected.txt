@@ -171,7 +171,7 @@ Tests ARIA 1.1 accessibility markup.
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 {
