@@ -373,7 +373,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_ =
-      std::make_unique<WebAppRunOnOsLoginManager>(command_scheduler_.get());
+      std::make_unique<WebAppRunOnOsLoginManager>(profile);
 #endif
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
@@ -401,6 +401,7 @@ void WebAppProvider::ConnectSubsystems() {
   iwa_command_line_install_manager_->SetProvider(pass_key, *this);
 #if BUILDFLAG(IS_CHROMEOS)
   iwa_update_manager_->SetProvider(pass_key, *this);
+  web_app_run_on_os_login_manager_->SetProvider(pass_key, *this);
 #endif
   icon_manager_->SetProvider(pass_key, *this);
   translation_manager_->SetProvider(pass_key, *this);

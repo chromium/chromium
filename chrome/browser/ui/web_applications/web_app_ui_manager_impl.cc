@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
+#include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -336,6 +337,12 @@ void WebAppUiManagerImpl::MigrateLauncherState(const AppId& from_app_id,
 #else
   static_assert(false);
 #endif
+}
+
+void WebAppUiManagerImpl::DisplayRunOnOsLoginNotification(
+    const std::vector<std::string>& app_names,
+    base::WeakPtr<Profile> profile) {
+  web_app::DisplayRunOnOsLoginNotification(app_names, profile);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

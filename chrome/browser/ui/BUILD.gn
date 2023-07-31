@@ -6144,6 +6144,11 @@ static_library("ui") {
 
     if (is_chromeos) {
       deps += [ "//chromeos/components/kiosk" ]
+
+      sources += [
+        "web_applications/web_app_run_on_os_login_notification.cc",
+        "web_applications/web_app_run_on_os_login_notification.h",
+      ]
     }
     if (is_chromeos_ash) {
       deps += [

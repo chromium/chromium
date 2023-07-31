@@ -76,6 +76,10 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void MigrateLauncherState(const AppId& from_app_id,
                             const AppId& to_app_id,
                             base::OnceClosure callback) override;
+
+  void DisplayRunOnOsLoginNotification(
+      const std::vector<std::string>& app_names,
+      base::WeakPtr<Profile> profile) override;
 #endif
   content::WebContents* CreateNewTab() override;
   void TriggerInstallDialog(content::WebContents* web_contents) override;

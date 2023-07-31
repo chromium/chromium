@@ -7,22 +7,25 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/locks/all_apps_lock.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
+
+class Profile;
 
 namespace web_app {
+
+class AllAppsLock;
+class WebAppProvider;
 
 // This class runs web apps on OS Login on ChromeOS once the corresponding
 // policy has been read by the WebAppPolicyManager.
 class WebAppRunOnOsLoginManager {
  public:
-  explicit WebAppRunOnOsLoginManager(WebAppCommandScheduler* scheduler);
+  explicit WebAppRunOnOsLoginManager(Profile* profile);
   WebAppRunOnOsLoginManager(const WebAppRunOnOsLoginManager&) = delete;
   WebAppRunOnOsLoginManager& operator=(const WebAppRunOnOsLoginManager&) =
       delete;
   ~WebAppRunOnOsLoginManager();
+
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   void Start();
 
@@ -34,7 +37,10 @@ class WebAppRunOnOsLoginManager {
  private:
   void RunAppsOnOsLogin(AllAppsLock& lock);
 
-  raw_ref<WebAppCommandScheduler, DanglingUntriaged> scheduler_;
+  void ShowAppLaunchedNotification(const std::vector<std::string>& app_names);
+
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+  const raw_ptr<Profile> profile_;
 
   bool skip_startup_for_testing_ = false;
 

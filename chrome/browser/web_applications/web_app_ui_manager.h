@@ -168,6 +168,12 @@ class WebAppUiManager {
   virtual void MigrateLauncherState(const AppId& from_app_id,
                                     const AppId& to_app_id,
                                     base::OnceClosure callback) = 0;
+
+  // Displays a notification for web apps launched on login via the RunOnOsLogin
+  // feature on the provided |profile|.
+  virtual void DisplayRunOnOsLoginNotification(
+      const std::vector<std::string>& app_names,
+      base::WeakPtr<Profile> profile) = 0;
 #endif
 
   // Creates a new Browser tab on the "about:blank" URL. Creates a new browser

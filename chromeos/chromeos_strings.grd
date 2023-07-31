@@ -4454,6 +4454,27 @@
         </message>
         <!-- End of Arc Input Overlay -->
       </if>
+
+       <!-- Strings for WebAppSettings -->
+    <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MESSAGE" desc="This is the message of the notification when an application is automatically started on OS login.[ICU Syntax]">
+      {NUM_ROOL_APPS, plural, offset:2
+      =1 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> to start automatically every time you log in.}
+      =2 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> and <ph name="APP_NAME_2">{APP_NAME_2}</ph> to start automatically every time you log in.}
+      =3 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and <ph name="APP_NAME_3">{APP_NAME_3}</ph> to start automatically every time you log in.}
+      other {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and # other apps to start automatically every time you log in.}
+      }
+      </message>
+
+       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_TITLE" desc="This is the title of the notification when an application is automatically started on OS login. [ICU Syntax]">
+      {NUM_ROOL_APPS, plural,
+      =1 {<ph name="APP_NAME_1">{APP_NAME_1}</ph> was started automatically}
+      other {# apps were started automatically}
+      }
+      </message>
+
+       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_LEARN_MORE" desc="This is the button-text of the notification when an application is automatically started on OS login.">
+      Learn more
+      </message>
     </messages>
   </release>
 </grit>

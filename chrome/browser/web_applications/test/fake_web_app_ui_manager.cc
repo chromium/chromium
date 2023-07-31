@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -152,6 +153,15 @@ void FakeWebAppUiManager::MigrateLauncherState(const AppId& from_app_id,
                                                base::OnceClosure callback) {
   std::move(callback).Run();
 }
+
+void FakeWebAppUiManager::DisplayRunOnOsLoginNotification(
+    const std::vector<std::string>& app_names,
+    base::WeakPtr<Profile> profile) {
+  // Still show the notification so it can be tested using the
+  // NotificationDisplayServiceTester
+  web_app::DisplayRunOnOsLoginNotification(app_names, profile);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 content::WebContents* FakeWebAppUiManager::CreateNewTab() {
