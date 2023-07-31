@@ -527,6 +527,13 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
     cached_rects_ = ShouldUseScrollingLayout(/*ignored_items_size=*/0)
                         ? GetWindowRectsForScrollingLayout({})
                         : GetWindowRects({});
+    // When starting a continuous scroll to EXIT overview mode, hide the save
+    // desk button immediately.
+    // When starting a continuous scroll to ENTER overview mode, the save desk
+    // button will be shown once overview mode is fully entered.
+    if (IsSaveDeskButtonContainerVisible()) {
+      UpdateSaveDeskButtons();
+    }
   }
 
   // Fade in/out the minimized windows and position non-minimized windows.
@@ -553,11 +560,6 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
           scroll_ratio, gfx::RectF(window_item->GetWindow()->bounds()), rect);
       window_item->SetBounds(rect, OVERVIEW_ANIMATION_NONE);
     }
-  }
-
-  // Fade in/out the save desk button.
-  if (auto* save_desk_button = save_desk_button_container_widget()) {
-    save_desk_button->GetLayer()->SetOpacity(scroll_ratio);
   }
 
   // Move the desk bar up/down.
@@ -1974,18 +1976,6 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {
-  // Return early if a continuous scroll has ended since we have already placed
-  // the desk button to its final position.
-  const bool is_continuous_animation =
-      features::IsContinuousOverviewScrollAnimationEnabled() &&
-      overview_session_->enter_exit_overview_type() ==
-          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate;
-  if (is_continuous_animation && !Shell::Get()
-                                      ->overview_controller()
-                                      ->is_continuous_scroll_in_progress()) {
-    return;
-  }
-
   // TODO(crbug.com/1275282): The button should be updated whenever the
   // overview grid changes, i.e. switches between active desks and/or the
   // saved desk grid. This will be needed when we make it so that switching
@@ -2001,11 +1991,17 @@ void OverviewGrid::UpdateSaveDeskButtons() {
 
   // Do not create or show the save desk buttons if there are no
   // windows in this grid, during a window drag or in tablet mode, the saved
-  // desk grid is visible, or if the desks bar hasn't been created yet.
+  // desk grid is visible, if the desks bar hasn't been created yet, or if the
+  // feature ContinuousOverviewScrollAnimation is enabled and a continuous
+  // scroll is in progress.
   const bool target_visible =
       !no_items && !overview_session_->GetCurrentDraggedOverviewItem() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !IsShowingSavedDeskLibrary() && desks_widget_;
+      !IsShowingSavedDeskLibrary() && desks_widget_ &&
+      (!features::IsContinuousOverviewScrollAnimationEnabled() ||
+       !Shell::Get()
+            ->overview_controller()
+            ->is_continuous_scroll_in_progress());
 
   const bool visibility_changed =
       target_visible != IsSaveDeskButtonContainerVisible();
@@ -2080,16 +2076,9 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       num_incognito_windows_, num_unsupported_windows_, size());
 
   // Set the widget position above the overview item window and default width
-  // and height. If the feature ContinuousOverviewScrollAnimation is enabled,
-  // place it above the first cached rect item and set opacity to ~0 as it will
-  // be faded in according to future scroll offsets.
+  // and height.
   gfx::RectF first_overview_item_bounds;
-  if (is_continuous_animation) {
-    if (!cached_rects_.empty()) {
-      first_overview_item_bounds = cached_rects_[0];
-      save_desk_button_container_widget_->GetLayer()->SetOpacity(0.01f);
-    }
-  } else if (window_list_.front()->animating_to_close()) {
+  if (window_list_.front()->animating_to_close()) {
     DCHECK_GT(window_list_.size(), 1u);
     first_overview_item_bounds = window_list_[1]->target_bounds();
   } else {
@@ -2103,11 +2092,8 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // with the first overview item.
   // If `ShouldUseScrollingLayout()`, don't animate because it becomes
   // distracting to the user to have the button animate behind moving windows.
-  // If `is_continuous_animation`, don't animate because we will fade it in/out
-  // according to the scroll offset.
   const bool animate = !visibility_changed && !in_desk_animation &&
-                       !ShouldUseScrollingLayout(/*ignored_items_size=*/0) &&
-                       !is_continuous_animation;
+                       !ShouldUseScrollingLayout(/*ignored_items_size=*/0);
   ScopedOverviewAnimationSettings settings(
       animate ? OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW
               : OVERVIEW_ANIMATION_NONE,

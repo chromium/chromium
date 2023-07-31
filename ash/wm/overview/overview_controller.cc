@@ -167,13 +167,12 @@ bool OverviewController::HandleContinuousScroll(float y_offset,
   // overview mode immediately, using ToggleOverview().
   CHECK((type ==
          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) ||
-        (type == OverviewEnterExitType::kContinuousAnimationEnterOnScrollEnd) ||
         (type == OverviewEnterExitType::kNormal));
 
   // Determine if this is the last scroll update in this continuous scroll.
   is_continuous_scroll_in_progress_ =
       y_offset != WmGestureHandler::kVerticalThresholdDp &&
-      type != OverviewEnterExitType::kContinuousAnimationEnterOnScrollEnd;
+      type != OverviewEnterExitType::kNormal;
 
   if (!overview_session_) {
     ToggleOverview(type);

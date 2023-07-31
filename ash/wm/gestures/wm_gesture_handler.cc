@@ -116,7 +116,7 @@ absl::optional<OverviewEnterExitType> HandleContinuousScrollIntoOverview(
 
   // A continuous gesture has ended and we should animate into overview mode.
   if (scroll_y >= WmGestureHandler::kEnterOverviewModeThresholdDp) {
-    return OverviewEnterExitType::kContinuousAnimationEnterOnScrollEnd;
+    return OverviewEnterExitType::kNormal;
   }
 
   // A continuous gesture has ended and we should animate out of overview mode.
