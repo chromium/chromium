@@ -201,9 +201,9 @@ VariationsFieldTrialCreatorBase::VariationsFieldTrialCreatorBase(
 VariationsFieldTrialCreatorBase::~VariationsFieldTrialCreatorBase() = default;
 
 std::string VariationsFieldTrialCreatorBase::GetLatestCountry() const {
-  const std::string override_country =
+  const std::string override_country = base::ToLowerASCII(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kVariationsOverrideCountry);
+          switches::kVariationsOverrideCountry));
   return !override_country.empty()
              ? override_country
              : local_state()->GetString(prefs::kVariationsCountry);
@@ -371,9 +371,9 @@ std::string VariationsFieldTrialCreatorBase::LoadPermanentConsistencyCountry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(version.IsValid());
 
-  const std::string override_country =
+  const std::string override_country = base::ToLowerASCII(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kVariationsOverrideCountry);
+          switches::kVariationsOverrideCountry));
   if (!override_country.empty()) {
     return override_country;
   }
