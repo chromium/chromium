@@ -19,8 +19,12 @@
     }, true, false);
 
     if (window.eventSender) {
+        testRunner.waitUntilDone();
         testRunner.dumpAsText();
-        document.body.offsetTop;
-        eventSender.mouseMoveTo(150, 150);
+        requestAnimationFrame(() => {
+            document.body.offsetTop;
+            eventSender.mouseMoveTo(150, 150);
+            testRunner.notifyDone();
+        });
     }
 </script>
