@@ -6513,8 +6513,8 @@ crbug.com/1466702 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worke
 crbug.com/1462784 rootscroller/fixed-chaining-with-implicit.html [ Failure Pass ]
 
 # Gardener 2023-07-25
-crbug.com/1409152 http/tests/forms/color-picker-keyboard-cross-domain.php [ Failure Pass ]
-crbug.com/1409152 http/tests/forms/date-picker-keyboard-cross-domain.php [ Failure Pass ]
+crbug.com/1409152 http/tests/forms/color-picker-keyboard-cross-domain.php [ Failure Timeout Pass ]
+crbug.com/1409152 http/tests/forms/date-picker-keyboard-cross-domain.php [ Failure Timeout Pass ]
 
 # Tests failing on windows11-arm64
 crbug.com/1464614 [ Win11-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]  # Reftest image failure
