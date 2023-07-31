@@ -215,6 +215,11 @@ SVGImage::~SVGImage() {
   if (frame_client_)
     frame_client_->ClearImage();
 
+  // Leak the agent_group_scheduler_ when removed during GC.
+  // See https://linear.app/replay/issue/RUN-2056#comment-f827701f.
+  if (recordreplay::AreEventsDisallowed("~SVGImage"))
+    agent_group_scheduler_.release();
+
   if (page_) {
     // It is safe to allow UA events within this scope, because event
     // dispatching inside the SVG image's document doesn't trigger JavaScript
