@@ -75,6 +75,7 @@ extern const char kOverflowMenuActionsOrder[];
 extern const char kPrintingEnabled[];
 extern const char kSearchSuggestEnabled[];
 extern const char kTabPickupEnabled[];
+extern const char kTabPickupLastDisplayedTime[];
 extern const char kTrackPricesOnTabsEnabled[];
 extern const char kLensCameraAssistedSearchPolicyAllowed[];
 extern const char kWebInspectorEnabled[];

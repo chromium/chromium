@@ -60,6 +60,9 @@ class TabPickupBrowserAgent : public BrowserObserver,
   // Adds/replaces the infobar and show the banner.
   void ShowInfoBar();
 
+  // Returns whether a tab pickup can be presented or not.
+  bool CanShowTabPickupBanner();
+
   // Called when the app has been foregrounded.
   void AppWillEnterForeground();
 

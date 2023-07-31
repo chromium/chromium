@@ -68,6 +68,8 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
     local_state_.Get()->SetBoolean(prefs::kTabPickupEnabled, true);
+    local_state_.Get()->SetTime(prefs::kTabPickupLastDisplayedTime,
+                                base::Time());
 
     synced_sessions::DistantSession& session = CreateDistantSession();
     std::unique_ptr<TabPickupInfobarDelegate> delegate =

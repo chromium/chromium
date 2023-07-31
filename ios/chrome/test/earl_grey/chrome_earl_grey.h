@@ -775,11 +775,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (int)localStateIntegerPref:(const std::string&)prefName;
 - (std::string)localStateStringPref:(const std::string&)prefName;
 
-// Sets the integer values for the local state pref with `prefName`. `value`
+// Sets the integer value for the local state pref with `prefName`. `value`
 // can be either a casted enum or any other numerical value. Local State
 // contains the preferences that are shared between all browser states.
 - (void)setIntegerValue:(int)value
       forLocalStatePref:(const std::string&)prefName;
+
+// Sets the time value for the local state pref with `prefName`. `value` Local
+// State contains the preferences that are shared between all browser states.
+- (void)setTimeValue:(base::Time)value
+    forLocalStatePref:(const std::string&)prefName;
 
 // Gets the value of a user pref in the original browser state.
 - (bool)userBooleanPref:(const std::string&)prefName;

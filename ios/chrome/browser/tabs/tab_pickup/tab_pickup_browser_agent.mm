@@ -6,10 +6,13 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/infobars/core/infobar.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
@@ -21,6 +24,13 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// The minimum delay between the presentation of two tab pickup banners.
+const base::TimeDelta kDelayBetweenTwoBanners = base::Hours(2);
+
+}  // namespace
 
 BROWSER_USER_DATA_KEY_IMPL(TabPickupBrowserAgent)
 
@@ -109,7 +119,7 @@ void TabPickupBrowserAgent::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void TabPickupBrowserAgent::ForeignSessionsChanged() {
   RecordTransitionTime();
 
-  if (!IsTabPickupEnabled() || IsTabPickupDisabledByUser()) {
+  if (!CanShowTabPickupBanner()) {
     return;
   }
 
@@ -173,6 +183,19 @@ void TabPickupBrowserAgent::ShowInfoBar() {
                                          /*replace_existing=*/true);
   infobar_web_state_ = active_web_state_;
   infobar_displayed = true;
+  GetApplicationContext()->GetLocalState()->SetTime(
+      prefs::kTabPickupLastDisplayedTime, base::Time::Now());
+}
+
+bool TabPickupBrowserAgent::CanShowTabPickupBanner() {
+  if (!IsTabPickupEnabled() || IsTabPickupDisabledByUser()) {
+    return false;
+  }
+
+  const base::TimeDelta time_since_last_display =
+      base::Time::Now() - GetApplicationContext()->GetLocalState()->GetTime(
+                              prefs::kTabPickupLastDisplayedTime);
+  return kDelayBetweenTwoBanners < time_since_last_display;
 }
 
 void TabPickupBrowserAgent::RecordTransitionTime() {

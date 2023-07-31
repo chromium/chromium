@@ -260,6 +260,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
 
   registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
+  registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
 
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);

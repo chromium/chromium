@@ -295,6 +295,9 @@ const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 // Boolean that is true when the TabPickup feature is enabled.
 const char kTabPickupEnabled[] = "ios.tab_pickup_enabled";
 
+// The last time a tab pickup banner was displayed.
+const char kTabPickupLastDisplayedTime[] = "ios.tab_pickup_last_displayed_time";
+
 // Boolean indicating if displaying price drops for shopping URLs on Tabs
 // in the Tab Switching UI is enabled.
 const char kTrackPricesOnTabsEnabled[] = "track_prices_on_tabs.enabled";
