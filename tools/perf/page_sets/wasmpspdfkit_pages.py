@@ -10,9 +10,6 @@ class WasmPsPdfKitStory(press_story.PressStory):
   URL = 'https://pspdfkit.com/webassembly-benchmark/'
 
   def ExecuteTest(self, action_runner):
-    # The initial navigation to the URL fails sometimes, the second navigation
-    # works reliably.
-    action_runner.Navigate(self.URL)
     action_runner.WaitForElement(text='All done!', timeout_in_seconds=480)
 
   def ParseTestResults(self, action_runner):
