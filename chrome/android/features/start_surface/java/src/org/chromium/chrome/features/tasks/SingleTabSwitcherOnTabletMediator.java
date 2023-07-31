@@ -75,7 +75,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         mSingleTabCardClickedCallback = singleTabCardClickedCallback;
         mIsSurfacePolishEnabled = tabContentManager != null;
 
-        if (mIsMultiFeedEnabled) {
+        if (mIsMultiFeedEnabled && !mIsSurfacePolishEnabled) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
             mMarginDefaut = mResources.getDimensionPixelSize(
                     R.dimen.single_tab_card_lateral_margin_landscape_tablet);

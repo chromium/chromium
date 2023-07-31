@@ -15,7 +15,6 @@ found in the LICENSE file.
     <dimen name="single_tab_card_lateral_margin_landscape_tablet">62dp</dimen>
     <dimen name="single_tab_card_lateral_margin_portrait_tablet">14dp</dimen>
     <dimen name="single_tab_card_lateral_margin">16dp</dimen>
-    <dimen name="single_tab_card_start_padding">2dp</dimen>
 
     <!-- Surface Polish -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>

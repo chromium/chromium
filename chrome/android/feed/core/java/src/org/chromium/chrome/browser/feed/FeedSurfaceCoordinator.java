@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CommandLine;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
+import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -719,7 +721,12 @@ public class FeedSurfaceCoordinator
                     mContentManager, mViewportView, useStaggeredLayout);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
-            view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
+            if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+                view.setBackground(AppCompatResources.getDrawable(
+                        mActivity, R.drawable.home_surface_background));
+            } else {
+                view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
+            }
 
             // Work around https://crbug.com/943873 where default focus highlight shows up after
             // toggling dark mode.
@@ -816,7 +823,9 @@ public class FeedSurfaceCoordinator
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
-            if (header == mSectionHeaderView) {
+            if (header == mSectionHeaderView
+                    || ChromeFeatureList.sSurfacePolish.isEnabled()
+                            && header instanceof NewTabPageLayout) {
                 lateralPaddingsPx = 0;
             }
 

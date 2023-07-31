@@ -330,6 +330,23 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     }
 
     @Test
+    public void testNoLateralMarginWithMultiColumnFeed_SurfacePolish() {
+        TabContentManager tabContentManager = Mockito.mock(TabContentManager.class);
+        SingleTabSwitcherOnTabletMediator mediator =
+                new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), null,
+                        mPropertyModel, mActivityLifecycleDispatcher, mTabModelSelector,
+                        mTabListFaviconProvider, mTab3, true /* isMultiColumnFeedEnabled */,
+                        false /* isScrollableMvtEnabled */, null, tabContentManager);
+        verify(mActivityLifecycleDispatcher, never())
+                .register(mConfigurationChangedObserver.capture());
+
+        // Verifies the start margins are initialized.
+        assertEquals(0, mediator.getMarginDefaultForTesting());
+        assertEquals(0, mediator.getMarginSmallPortraitForTesting());
+        assertEquals(0, mPropertyModel.get(LATERAL_MARGIN));
+    }
+
+    @Test
     public void testSingleTabCardClickCallback() {
         Runnable callback = Mockito.mock(Runnable.class);
         new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), null,
