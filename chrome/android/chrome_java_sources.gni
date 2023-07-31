@@ -213,6 +213,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowView.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowViewBinder.java",
   "java/src/org/chromium/chrome/browser/bookmarks/LegacyBookmarkQueryHandler.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/PageImageServiceQueue.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRow.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkTagChipList.java",

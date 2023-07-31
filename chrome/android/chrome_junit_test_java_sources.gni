@@ -63,6 +63,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/LegacyBookmarkQueryHandlerTest.java",
+  "junit/src/org/chromium/chrome/browser/bookmarks/PageImageServiceQueueTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/ReadingListSectionHeaderTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryCoordinatorTest.java",
