@@ -50,6 +50,10 @@ cr-card-radio-button {
   box-shadow: none;
 }
 
+:host-context(.jelly-enabled) cr-card-radio-button:hover {
+  --cr-card-background-color: var(--cros-sys-app_base_shaded);
+}
+
 cr-card-radio-button:not(:last-child) {
     margin-bottom: 16px;
 }
