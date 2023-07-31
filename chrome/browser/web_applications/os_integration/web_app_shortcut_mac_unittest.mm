@@ -916,21 +916,34 @@ TEST_F(WebAppShortcutCreatorTest, CreateFailure) {
 }
 
 TEST_F(WebAppShortcutCreatorTest, UpdateIcon) {
-  gfx::Image product_logo =
+  gfx::Image product_logo_16 =
+      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
+          IDR_PRODUCT_LOGO_16);
+  gfx::Image product_logo_32 =
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
           IDR_PRODUCT_LOGO_32);
-  info_->favicon.Add(product_logo);
-  WebAppShortcutCreatorMock shortcut_creator(app_data_dir_, info_.get());
 
-  ASSERT_TRUE(shortcut_creator.UpdateIcon(shim_path_));
+  WebAppShortcutCreatorMock shortcut_creator(app_data_dir_, info_.get());
   base::FilePath icon_path =
       shim_path_.Append("Contents").Append("Resources").Append("app.icns");
 
+  // regular favicon should be used if no maskable favicons exist
+  info_->favicon.Add(product_logo_32);
+  ASSERT_TRUE(shortcut_creator.UpdateIcon(shim_path_));
   NSImage* image = [[NSImage alloc]
       initWithContentsOfFile:base::mac::FilePathToNSString(icon_path)];
   EXPECT_TRUE(image);
-  EXPECT_EQ(product_logo.Width(), image.size.width);
-  EXPECT_EQ(product_logo.Height(), image.size.height);
+  EXPECT_EQ(product_logo_32.Width(), image.size.width);
+  EXPECT_EQ(product_logo_32.Height(), image.size.height);
+
+  // maskable favicon should be used if present
+  info_->favicon_maskable.Add(product_logo_16);
+  ASSERT_TRUE(shortcut_creator.UpdateIcon(shim_path_));
+  image = [[NSImage alloc]
+      initWithContentsOfFile:base::mac::FilePathToNSString(icon_path)];
+  EXPECT_TRUE(image);
+  EXPECT_EQ(product_logo_16.Width(), image.size.width);
+  EXPECT_EQ(product_logo_16.Height(), image.size.height);
 }
 
 TEST_F(WebAppShortcutCreatorTest, RevealAppShimInFinder) {
