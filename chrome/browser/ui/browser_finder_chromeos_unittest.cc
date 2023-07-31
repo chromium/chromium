@@ -44,8 +44,6 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
     const user_manager::User* user = fake_user_manager_->AddUser(account_id);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         const_cast<user_manager::User*>(user), profile);
-    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
-        const_cast<user_manager::User*>(user));
     // Force creation of MultiProfileSupport.
     GetMultiUserWindowManager();
     MultiProfileSupport::GetInstanceForTest()->AddUser(profile);

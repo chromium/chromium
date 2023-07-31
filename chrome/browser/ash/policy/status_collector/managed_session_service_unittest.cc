@@ -72,7 +72,6 @@ class ManagedSessionServiceTest : public ::testing::Test,
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
     auto profile = profile_builder.Build();
-    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  profile.get());
     user_manager_->LoginUser(user->GetAccountId(), true);
