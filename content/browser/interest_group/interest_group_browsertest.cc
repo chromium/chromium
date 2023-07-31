@@ -4514,25 +4514,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAuctionSignals) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -4545,7 +4529,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       auctionSignals: alert,
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -4558,30 +4542,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       auctionSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
@@ -4596,30 +4565,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       auctionSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve(function() {}); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -4637,25 +4591,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidSellerSignals) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -4668,7 +4606,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       sellerSignals: function() {},
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -4680,30 +4618,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       sellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
@@ -4718,30 +4641,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       sellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve(function() {}); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -4761,30 +4669,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
@@ -4799,30 +4692,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve(52); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -4839,25 +4717,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignalsOrigin) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -4871,7 +4733,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerSignals: {'https://invalid^&': {a:1}},
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -4883,30 +4745,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
@@ -4921,30 +4768,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { resolve({'http://b.com': 52}); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -4963,25 +4795,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerTimeoutsOrigin) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -4995,7 +4811,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerTimeouts: {'https://invalid^&': 100},
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -5008,30 +4824,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerCumulativeTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
@@ -5047,30 +4848,15 @@ IN_PROC_BROWSER_TEST_F(
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerCumulativeTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { resolve({'http://b.com': 52}); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -5089,25 +4875,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerCumulativeTimeoutsOrigin) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -5120,7 +4890,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerCumulativeTimeouts: {'https://invalid^&': 100},
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -5130,25 +4900,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerCurrenciesOrigin) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -5162,7 +4916,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerCurrencies: {'https://invalid^&': 'USD'},
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -5172,25 +4926,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerCurrenciesCurrency) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -5204,7 +4942,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerCurrencies: {'*': 'usd'},
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
 }
@@ -5387,25 +5125,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignals) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -5418,7 +5140,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       perBuyerSignals: {'https://test.com': function() {}},
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -5429,30 +5151,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       directFromSellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
@@ -5465,30 +5172,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicUrl: $2,
       directFromSellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve('http://test.com/signals'); }, 10) }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -5509,23 +5201,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
@@ -5534,7 +5211,7 @@ IN_PROC_BROWSER_TEST_F(
         let o = { toString: () => { throw "Don't stringify me!"; } }
         resolve(o);
       }),
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })";
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -5549,25 +5226,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsInvalidURL) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -5581,7 +5242,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       directFromSellerSignals: 'https://invalid^&',
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -5591,25 +5252,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsNotHttps) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -5622,7 +5267,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: $1,
       decisionLogicUrl: $2,
       directFromSellerSignals: 'http://test.com/signals',
-      interestGroupBuyers: [$1]
+      interestGroupBuyers: []
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
@@ -5632,25 +5277,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsWrongOrigin) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -5675,25 +5304,9 @@ IN_PROC_BROWSER_TEST_F(
     RunAdAuctionInvalidDirectFromSellerSignalsHasQueryString) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -6056,25 +5669,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        InvalidDirectFromSellerSignalsHeaderAdSlot) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern("Uncaught (in promise) Error!");
@@ -6124,25 +5721,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAdditionalBids) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
