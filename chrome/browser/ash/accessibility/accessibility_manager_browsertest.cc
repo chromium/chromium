@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/accessibility_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -1951,6 +1952,46 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceTest,
   // The service will be constructed and start receiving accessibility events
   // when a subset of features are enabled. This simple test ensures that there
   // are no crashes when setting up the service and toggling features.
+  SetSpokenFeedbackEnabled(true);
+  SetSelectToSpeakEnabled(true);
+  SetSwitchAccessEnabled(true);
+  SetAutoclickEnabled(true);
+  SetDictationEnabled(true);
+  SetMagnifierEnabled(true);
+
+  SetSpokenFeedbackEnabled(false);
+  SetSelectToSpeakEnabled(false);
+  SetSwitchAccessEnabled(false);
+  SetAutoclickEnabled(false);
+  SetDictationEnabled(false);
+  SetMagnifierEnabled(false);
+}
+
+class AccessibilityManagerWithAccessibilityServiceOOBETest
+    : public AccessibilityManagerWithAccessibilityServiceTest {
+ public:
+  AccessibilityManagerWithAccessibilityServiceOOBETest() = default;
+  AccessibilityManagerWithAccessibilityServiceOOBETest(
+      const AccessibilityManagerWithAccessibilityServiceOOBETest&) = delete;
+  AccessibilityManagerWithAccessibilityServiceOOBETest& operator=(
+      const AccessibilityManagerWithAccessibilityServiceOOBETest&) = delete;
+  ~AccessibilityManagerWithAccessibilityServiceOOBETest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
+    AccessibilityManagerWithAccessibilityServiceTest::SetUpCommandLine(
+        command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceOOBETest,
+                       Constructs) {
+  // The service will be constructed and start receiving accessibility events
+  // when a subset of features are enabled. This simple test ensures that there
+  // are no crashes when setting up the service and toggling features
+  // in the login profile.
   SetSpokenFeedbackEnabled(true);
   SetSelectToSpeakEnabled(true);
   SetSwitchAccessEnabled(true);

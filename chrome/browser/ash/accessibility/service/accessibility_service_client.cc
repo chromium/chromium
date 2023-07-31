@@ -137,12 +137,17 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
   if (!profile_)
     return;
 
-  automation_client_ = std::make_unique<AutomationClientImpl>();
-  tts_client_ = std::make_unique<TtsClientImpl>(profile_);
-
   ax::AccessibilityServiceRouter* router =
       ax::AccessibilityServiceRouterFactory::GetForBrowserContext(
           static_cast<content::BrowserContext*>(profile_));
+
+  if (!router) {
+    return;
+  }
+
+  automation_client_ = std::make_unique<AutomationClientImpl>();
+  tts_client_ = std::make_unique<TtsClientImpl>(profile_);
+
   router->BindAssistiveTechnologyController(
       at_controller_.BindNewPipeAndPassReceiver(), enabled_features_);
   router->BindAccessibilityServiceClient(

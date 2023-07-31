@@ -665,8 +665,6 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
         profile_,
         base::BindOnce(&AccessibilityManager::PostSwitchChromeVoxProfile,
                        weak_ptr_factory_.GetWeakPtr()));
-    if (accessibility_service_client_)
-      accessibility_service_client_->SetProfile(profile_);
 
     if (::features::IsPdfOcrEnabled()) {
       // Create PdfOcrController when both the PDF OCR feature flag and
@@ -851,8 +849,6 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
   if (enabled) {
     accessibility_common_extension_loader_->SetBrowserContext(
         profile_, base::OnceClosure() /* done_callback */);
-    if (accessibility_service_client_)
-      accessibility_service_client_->SetProfile(profile_);
   }
 
   size_t pref_count = accessibility_common_enabled_features_.count(pref_name);
@@ -1249,8 +1245,6 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
       prefs::kAccessibilitySelectToSpeakEnabled);
   if (enabled) {
     select_to_speak_loader_->SetBrowserContext(profile_, base::OnceClosure());
-    if (accessibility_service_client_)
-      accessibility_service_client_->SetProfile(profile_);
   }
 
   if (select_to_speak_enabled_ == enabled)
@@ -1329,9 +1323,6 @@ void AccessibilityManager::OnSwitchAccessChanged() {
     }
 
     switch_access_loader_->SetBrowserContext(profile_, base::OnceClosure());
-
-    if (accessibility_service_client_)
-      accessibility_service_client_->SetProfile(profile_);
 
     // Make sure we always update the VK state, on every profile transition.
     ChromeKeyboardControllerClient::Get()->SetEnableFlag(
@@ -1588,15 +1579,16 @@ void AccessibilityManager::SetProfile(Profile* profile) {
             &AccessibilityManager::UpdateChromeOSAccessibilityHistograms,
             base::Unretained(this)));
 
-    if (accessibility_service_client_)
-      accessibility_service_client_->SetProfile(profile);
-
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);
     if (!extension_registry_observations_.IsObservingSource(registry))
       extension_registry_observations_.AddObservation(registry);
 
     profile_observation_.Observe(profile);
+  }
+
+  if (accessibility_service_client_) {
+    accessibility_service_client_->SetProfile(profile);
   }
 
   bool had_profile = (profile_ != nullptr);
