@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -51,6 +52,10 @@
   if ([self isRunningTest:@selector
             (testRemoveLastIdentityWithSigninErrorDialogAutomaticDismiss)]) {
     config.features_disabled.push_back(kConsistencyNewAccountInterface);
+  }
+  if ([self isRunningTest:@selector(testFromSettings)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
   return config;
 }
@@ -198,6 +203,21 @@
       selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+}
+
+// Tests that the bottom sheet doesn't wait for the cookies when being triggered
+// from the settings.
+- (void)testFromSettings {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          WebSigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 @end
