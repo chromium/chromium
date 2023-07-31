@@ -10,6 +10,7 @@ source_set("annotations") {
   deps = [
     "//base",
     "//components/shared_highlighting/ios",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/mailto_handler",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -23,6 +24,7 @@ source_set("annotations") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]
 

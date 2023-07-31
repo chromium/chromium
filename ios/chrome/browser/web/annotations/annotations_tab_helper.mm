@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 
+#import "base/containers/contains.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/rand_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "base/values.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -26,10 +30,19 @@
 #import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// A subset of GCRTextClassifierTrackingCarrier enum types for the carriers
+// included in the feature.
+static const int kCGRTextClassifierTrackingCarriers[3] = {1, 2, 4};
+
+}  // namespace
 
 AnnotationsTabHelper::AnnotationsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -136,6 +149,40 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
   if (main_frame && deferred) {
     auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
     DCHECK(manager);
+
+    // (TODO:crbug.com/1464624): Remove after investigation is complete.
+    const base::Value::List& annotations_list = deferred.value().GetList();
+    for (size_t i = 0; i < annotations_list.size(); ++i) {
+      const base::Value::Dict& annotation = annotations_list[i].GetDict();
+      const std::string* type = annotation.FindString("type");
+
+      if (type && *type == "TRACKING_NUMBER") {
+        const std::string* carrier_num =
+            annotation.FindString("TRACKING_NUMBER");
+        int carrier_val = annotation.FindInt("TRACKING_CARRIER").value();
+        CHECK(!carrier_num->empty());
+
+        // Only log UKM metric for detected parcel numbers with certain carrier
+        // values.
+        if (base::Contains(kCGRTextClassifierTrackingCarriers, carrier_val)) {
+          int randomValue = base::RandInt(0, 9);
+          // Values are in range 0-9, so > 1 covers 80%.
+          // Log random carrier value 80% of the time.
+          if (randomValue > 1) {
+            int randIndex = base::RandInt(
+                0, std::size(kCGRTextClassifierTrackingCarriers) - 1);
+            carrier_val = kCGRTextClassifierTrackingCarriers[randIndex];
+          }
+          ukm::SourceId source_id =
+              ukm::GetSourceIdForWebStateDocument(web_state_);
+          if (source_id != ukm::kInvalidSourceId) {
+            ukm::builders::IOS_ParcelTrackingNumberDetected(source_id)
+                .SetParcelCarrier(carrier_val)
+                .Record(ukm::UkmRecorder::Get());
+          }
+        }
+      }
+    }
 
     base::Value annotations(std::move(deferred.value()));
     manager->DecorateAnnotations(web_state_, annotations, seq_id);
