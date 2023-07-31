@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
+#include "chrome/browser/apps/intent_helper/chromeos_apps_navigation_throttle.h"
 
 #include <memory>
 #include <sstream>
@@ -83,8 +83,9 @@ bool IsAppDisabled(const std::string& app_id) {
       policy::SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
           app_id);
 
-  if (system_feature == policy::SystemFeature::kUnknownSystemFeature)
+  if (system_feature == policy::SystemFeature::kUnknownSystemFeature) {
     return false;
+  }
 
   return policy::SystemFeaturesDisableListPolicyHandler::
       IsSystemFeatureDisabled(system_feature, g_browser_process->local_state());
@@ -119,15 +120,17 @@ GURL RedirectUrlIfSwa(Profile* profile,
                       const std::string& app_id,
                       const GURL& url,
                       const base::TickClock* clock) {
-  if (!IsSystemWebApp(profile, app_id))
+  if (!IsSystemWebApp(profile, app_id)) {
     return url;
+  }
 
   // Projector:
   if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId &&
       url.GetWithEmptyPath() == GURL(ash::kChromeUIUntrustedProjectorPwaUrl)) {
     std::string override_url = ash::kChromeUIUntrustedProjectorUrl;
-    if (url.path().length() > 1)
+    if (url.path().length() > 1) {
       override_url += url.path().substr(1);
+    }
     std::stringstream ss;
     // Since ChromeOS doesn't reload an app if the URL doesn't change, the line
     // below appends a unique timestamp to the URL to force a reload.
@@ -178,7 +181,7 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
 
 // static
 std::unique_ptr<apps::AppsNavigationThrottle>
-CommonAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
+ChromeOsAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. portals, fenced-frame). We specifically allow
   // prerendering navigations so that we can destroy the prerender. Opening an
@@ -186,40 +189,43 @@ CommonAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
   // prerender, the prerender-activating navigation doesn't run throttles so we
   // must cancel it during initial loading to get a standard (non-prerendering)
   // navigation at link-click-time.
-  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
+  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame()) {
     return nullptr;
+  }
 
   content::WebContents* web_contents = handle->GetWebContents();
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return nullptr;
+  }
 
-  if (!ShouldCheckAppsForUrl(web_contents))
+  if (!ShouldCheckAppsForUrl(web_contents)) {
     return nullptr;
+  }
 
-  return std::make_unique<CommonAppsNavigationThrottle>(handle);
+  return std::make_unique<ChromeOsAppsNavigationThrottle>(handle);
 }
 
 // static
-const base::TickClock* CommonAppsNavigationThrottle::clock_ =
+const base::TickClock* ChromeOsAppsNavigationThrottle::clock_ =
     base::DefaultTickClock::GetInstance();
 
 // static
-void CommonAppsNavigationThrottle::SetClockForTesting(
+void ChromeOsAppsNavigationThrottle::SetClockForTesting(
     const base::TickClock* tick_clock) {
   clock_ = tick_clock;
 }
 
-CommonAppsNavigationThrottle::CommonAppsNavigationThrottle(
+ChromeOsAppsNavigationThrottle::ChromeOsAppsNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : apps::AppsNavigationThrottle(navigation_handle) {}
 
-CommonAppsNavigationThrottle::~CommonAppsNavigationThrottle() = default;
+ChromeOsAppsNavigationThrottle::~ChromeOsAppsNavigationThrottle() = default;
 
-bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
+bool ChromeOsAppsNavigationThrottle::ShouldCancelNavigation(
     content::NavigationHandle* handle) {
   content::WebContents* web_contents = handle->GetWebContents();
 
@@ -266,8 +272,9 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   // that when the link is clicked, we'll run NavigationThrottles again. If we
   // leave the prerendering alive, the activating navigation won't run
   // throttles.
-  if (handle->IsInPrerenderedMainFrame())
+  if (handle->IsInPrerenderedMainFrame()) {
     return true;
+  }
 
   // Browser & profile keep-alives must be used to keep the browser & profile
   // alive because the old window is required to be closed before the new app is
@@ -326,7 +333,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   return true;
 }
 
-bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
+bool ChromeOsAppsNavigationThrottle::ShouldShowDisablePage(
     content::NavigationHandle* handle) {
   content::WebContents* web_contents = handle->GetWebContents();
   const GURL& url = handle->GetURL();
@@ -345,7 +352,7 @@ bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
   return false;
 }
 
-ThrottleCheckResult CommonAppsNavigationThrottle::MaybeShowCustomResult() {
+ThrottleCheckResult ChromeOsAppsNavigationThrottle::MaybeShowCustomResult() {
   return ThrottleCheckResult(content::NavigationThrottle::CANCEL,
                              net::ERR_BLOCKED_BY_ADMINISTRATOR,
                              GetAppDisabledErrorPage());

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
-#define CHROME_BROWSER_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
+#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_APPS_NAVIGATION_THROTTLE_H_
+#define CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_APPS_NAVIGATION_THROTTLE_H_
 
 #include <memory>
 #include <vector>
@@ -22,11 +22,9 @@ class NavigationHandle;
 
 namespace apps {
 
-// Allows navigation to be routed to an installed app. This is a common
-// throttle that work with the App Service. This only works with Chrome OS at
-// the moment and will work with all platforms after the App Service supports
-// apps for all platforms.
-class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
+// Allows navigation to be routed to an installed app. This throttle supports
+// all type of apps in the Chrome OS platform using App Service.
+class ChromeOsAppsNavigationThrottle : public apps::AppsNavigationThrottle {
  public:
   // Possibly creates a navigation throttle that checks if any installed apps
   // can handle the URL being navigated to.
@@ -37,14 +35,15 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
   // Set clock used for timing to enable manipulation during tests.
   static void SetClockForTesting(const base::TickClock* tick_clock);
 
-  explicit CommonAppsNavigationThrottle(
+  explicit ChromeOsAppsNavigationThrottle(
       content::NavigationHandle* navigation_handle);
 
-  CommonAppsNavigationThrottle(const CommonAppsNavigationThrottle&) = delete;
-  CommonAppsNavigationThrottle& operator=(const CommonAppsNavigationThrottle&) =
+  ChromeOsAppsNavigationThrottle(const ChromeOsAppsNavigationThrottle&) =
       delete;
+  ChromeOsAppsNavigationThrottle& operator=(
+      const ChromeOsAppsNavigationThrottle&) = delete;
 
-  ~CommonAppsNavigationThrottle() override;
+  ~ChromeOsAppsNavigationThrottle() override;
 
  private:
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
@@ -58,4 +57,4 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
+#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_APPS_NAVIGATION_THROTTLE_H_
