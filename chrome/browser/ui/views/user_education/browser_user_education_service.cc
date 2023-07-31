@@ -707,8 +707,9 @@ void MaybeRegisterChromeTutorials(
     TutorialDescription::Step success_step(
         IDS_TUTORIAL_GENERIC_SUCCESS_TITLE,
         IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY,
-        ui::InteractionSequence::StepType::kShown, kTopContainerElementId,
-        std::string(), HelpBubbleArrow::kNone, ui::CustomElementEventType(),
+        ui::InteractionSequence::StepType::kShown,
+        NewTabPageUI::kCustomizeChromeButtonElementId, std::string(),
+        HelpBubbleArrow::kBottomRight, ui::CustomElementEventType(),
         /* must_remain_visible =*/false,
         /* transition_only_on_event =*/false,
         user_education::TutorialDescription::NameElementsCallback(),
