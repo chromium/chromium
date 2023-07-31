@@ -10775,6 +10775,13 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
       2);
 }
 
+// Tests that setting to bottom locked shelf should not crash. Please refer to
+// b/293625099.
+TEST_P(DeskBarTest, BottomLockedShelf) {
+  OpenDeskBar();
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottomLocked);
+}
+
 namespace {
 
 struct DeskButtonTestParams {

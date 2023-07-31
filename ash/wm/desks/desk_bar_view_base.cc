@@ -6,6 +6,7 @@
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
@@ -740,6 +741,7 @@ void DeskBarViewBase::Layout() {
   }
 
   // Refresh bounds as preferred. This is needed for dynamic width for the bar.
+  // TODO(b/293658108): Move dynamic width update out of `Layout`.
   gfx::Size preferred_size = CalculatePreferredSize();
   gfx::Rect new_bounds = GetAvailableBounds();
   switch (Shelf::ForWindow(root_)->alignment()) {
@@ -754,8 +756,8 @@ void DeskBarViewBase::Layout() {
                              new_bounds.bottom() - preferred_size.height()});
       new_bounds.set_size(preferred_size);
       break;
-    default:
-      NOTREACHED();
+    case ShelfAlignment::kBottomLocked:
+      return;
   }
   SetBoundsRect(new_bounds);
 
