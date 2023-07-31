@@ -191,6 +191,7 @@ class UserCreation extends UserCreationScreenElementBase {
 
   onBeforeShow() {
     if (this.isOobeSoftwareUpdateEnabled_) {
+      this.restoreOobeUIState();
       this.selectedUserType = '';
       this.titleKey_ = this.isBackButtonVisible_ ?
           'userCreationAddPersonUpdatedTitle' :
@@ -219,6 +220,20 @@ class UserCreation extends UserCreationScreenElementBase {
 
   getOobeUIInitialState() {
     return OOBE_UI_STATE.USER_CREATION;
+  }
+
+  // this will allows to restore the oobe UI state
+  // ex: click for child -> choose google account -> AddChild Screen is shown
+  // clicking back will display user creation screen with child setup step
+  // and we need to restore the oobe ui state.
+  restoreOobeUIState() {
+    if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE ||
+        this.uiStep === UserCreationUIState.CREATE) {
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
+    }
+    if (this.uiStep === UserCreationUIState.CHILD_SETUP) {
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.SETUP_CHILD);
+    }
   }
 
   setIsBackButtonVisible(isVisible) {
