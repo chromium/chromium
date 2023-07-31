@@ -48,6 +48,8 @@ using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Ne;
+using ::testing::Not;
+using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrEq;
@@ -540,15 +542,15 @@ class StorageQueueTest
       }
 
       // Verify local elements are not included in Record.
-      DCHECK_EQ(wrapped_record.record().has_reserved_space(), 0);
-      DCHECK(!wrapped_record.record().needs_local_unencrypted_copy());
+      EXPECT_FALSE(wrapped_record.record().has_reserved_space());
+      EXPECT_FALSE(wrapped_record.record().needs_local_unencrypted_copy());
 
       // Verify digest and its match.
       {
         std::string serialized_record;
         wrapped_record.record().SerializeToString(&serialized_record);
         const auto record_digest = crypto::SHA256HashString(serialized_record);
-        DCHECK_EQ(record_digest.size(), crypto::kSHA256Length);
+        CHECK_EQ(record_digest.size(), crypto::kSHA256Length);
         if (record_digest != wrapped_record.record_digest()) {
           sequence_bound_upload_
               .AsyncCall(&SequenceBoundUpload::DoUploadRecordFailure)
@@ -2048,7 +2050,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  DCHECK(test_encryption_module_);
+  ASSERT_THAT(test_encryption_module_, NotNull());
   EXPECT_CALL(*test_encryption_module_, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {

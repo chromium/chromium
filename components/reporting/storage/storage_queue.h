@@ -210,7 +210,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     bool is_opened() const { return handle_.get() != nullptr; }
     bool is_readonly() const {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      DCHECK(is_opened());
+      CHECK(is_opened());
       return is_readonly_.value();
     }
     uint64_t size() const { return size_; }

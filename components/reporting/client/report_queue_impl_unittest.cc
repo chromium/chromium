@@ -36,6 +36,8 @@ using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
@@ -88,9 +90,9 @@ class ReportQueueImplTest : public testing::Test {
   }
 
   TestStorageModule* test_storage_module() const {
-    TestStorageModule* test_storage_module =
+    TestStorageModule* const test_storage_module =
         google::protobuf::down_cast<TestStorageModule*>(storage_module_.get());
-    DCHECK(test_storage_module);
+    EXPECT_THAT(test_storage_module, NotNull());
     return test_storage_module;
   }
 

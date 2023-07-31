@@ -316,7 +316,7 @@ void SpeculativeReportQueueImpl::MaybeEnqueueRecordProducer(
 
 void SpeculativeReportQueueImpl::EnqueuePendingRecordProducers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(actual_report_queue_.has_value());
+  CHECK(actual_report_queue_.has_value());
   if (pending_record_producers_.empty()) {
     return;
   }

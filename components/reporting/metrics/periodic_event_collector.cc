@@ -40,7 +40,7 @@ PeriodicEventCollector::~PeriodicEventCollector() = default;
 
 void PeriodicEventCollector::SetOnEventObservedCallback(
     MetricRepeatingCallback cb) {
-  DCHECK(!on_event_observed_cb_);
+  CHECK(!on_event_observed_cb_);
   on_event_observed_cb_ = std::move(cb);
 }
 

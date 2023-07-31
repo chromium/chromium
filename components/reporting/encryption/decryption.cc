@@ -174,8 +174,8 @@ void Decryptor::RetrieveMatchingPrivateKey(
             DCHECK_CALLED_ON_VALID_SEQUENCE(decryptor->keys_sequence_checker_);
             auto key_info_it = decryptor->keys_.find(public_key_id);
             if (key_info_it != decryptor->keys_.end()) {
-              DCHECK_EQ(key_info_it->second.private_key.size(),
-                        static_cast<size_t>(kKeySize));
+              CHECK_EQ(key_info_it->second.private_key.size(),
+                       static_cast<size_t>(kKeySize));
             }
             // Schedule response on a generic thread pool.
             base::ThreadPool::PostTask(

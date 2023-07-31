@@ -35,7 +35,7 @@ RefCountedClosureList::~RefCountedClosureList() {
 
 void RefCountedClosureList::RegisterCompletionCallback(
     base::OnceClosure callback) {
-  DCHECK(callback);
+  CHECK(callback);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callbacks_.push_back(std::move(callback));
 }

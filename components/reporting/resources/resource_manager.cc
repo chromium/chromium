@@ -40,7 +40,7 @@ bool ResourceManager::Reserve(uint64_t size) {
 }
 
 void ResourceManager::Discard(uint64_t size) {
-  DCHECK_LE(size, used_.load());
+  CHECK_LE(size, used_.load());
   used_.fetch_sub(size);
 
   sequenced_task_runner_->PostTask(
@@ -142,10 +142,10 @@ bool ScopedReservation::Reduce(uint64_t new_size) {
 
 void ScopedReservation::HandOver(ScopedReservation& other) {
   if (resource_manager_.get()) {
-    DCHECK_EQ(resource_manager_.get(), other.resource_manager_.get())
+    CHECK_EQ(resource_manager_.get(), other.resource_manager_.get())
         << "Reservations are not related";
   } else {
-    DCHECK(!reserved()) << "Unattached reservation may not have size";
+    CHECK(!reserved()) << "Unattached reservation may not have size";
     resource_manager_ = other.resource_manager_;
   }
   if (!other.reserved()) {

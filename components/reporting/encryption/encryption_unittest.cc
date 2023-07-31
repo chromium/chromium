@@ -28,7 +28,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Eq;
-using ::testing::Ne;
+using ::testing::Property;
+using ::testing::StrEq;
 
 namespace reporting {
 namespace {
@@ -177,7 +178,7 @@ TEST_F(EncryptionTest, EncryptAndDecrypt) {
                      encrypted_result.ValueOrDie().encrypted_wrapped_record()));
   ASSERT_OK(decrypted_result.status()) << decrypted_result.status();
 
-  EXPECT_THAT(decrypted_result.ValueOrDie(), ::testing::StrEq(kTestString));
+  EXPECT_THAT(decrypted_result.ValueOrDie(), StrEq(kTestString));
 }
 
 TEST_F(EncryptionTest, NoPublicKey) {
@@ -185,7 +186,9 @@ TEST_F(EncryptionTest, NoPublicKey) {
 
   // Attempt to encrypt the test string.
   const auto encrypted_result = EncryptSync(kTestString);
-  EXPECT_EQ(encrypted_result.status().error_code(), error::NOT_FOUND);
+  EXPECT_THAT(encrypted_result,
+              Property(&StatusOr<EncryptedRecord>::status,
+                       Property(&Status::error_code, Eq(error::NOT_FOUND))));
 }
 
 TEST_F(EncryptionTest, EncryptAndDecryptMultiple) {
@@ -240,8 +243,7 @@ TEST_F(EncryptionTest, EncryptAndDecryptMultiple) {
     ASSERT_OK(decrypted_result.status()) << decrypted_result.status();
 
     // Verify match.
-    EXPECT_THAT(decrypted_result.ValueOrDie(),
-                ::testing::StrEq(kTestStrings[i]));
+    EXPECT_THAT(decrypted_result.ValueOrDie(), StrEq(kTestStrings[i]));
   }
 }
 
@@ -266,7 +268,7 @@ TEST_F(EncryptionTest, EncryptAndDecryptMultipleParallel) {
         delete;
 
     ~SingleEncryptionContext() {
-      DCHECK(!response_) << "Self-destruct without prior response";
+      CHECK(!response_) << "Self-destruct without prior response";
     }
 
     void Start() {
@@ -363,7 +365,7 @@ TEST_F(EncryptionTest, EncryptAndDecryptMultipleParallel) {
         delete;
 
     ~SingleDecryptionContext() {
-      DCHECK(!response_) << "Self-destruct without prior response";
+      CHECK(!response_) << "Self-destruct without prior response";
     }
 
     void Start() {
@@ -553,8 +555,7 @@ TEST_F(EncryptionTest, EncryptAndDecryptMultipleParallel) {
     const auto decryption_result = decryption_results[i].result();
     ASSERT_OK(decryption_result.status()) << decryption_result.status();
     // Verify data match.
-    EXPECT_THAT(decryption_result.ValueOrDie(),
-                ::testing::StrEq(kTestStrings[i]));
+    EXPECT_THAT(decryption_result.ValueOrDie(), StrEq(kTestStrings[i]));
   }
 }
 

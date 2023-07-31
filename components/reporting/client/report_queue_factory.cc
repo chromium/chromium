@@ -46,7 +46,7 @@ void ReportQueueFactory::Create(
 std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
 ReportQueueFactory::CreateSpeculativeReportQueue(
     ReportQueueConfiguration::Builder config_builder) {
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   auto config_result = config_builder.Build();
   if (!config_result.ok()) {
     DVLOG(1)
@@ -77,7 +77,7 @@ void ReportQueueFactory::Create(
     SuccessCallback success_cb,
     std::unique_ptr<RateLimiterInterface> rate_limiter,
     int64_t reserved_space) {
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   ReportQueueFactory::Create(
       ReportQueueConfiguration::Create({.event_type = event_type,
                                         .destination = destination,

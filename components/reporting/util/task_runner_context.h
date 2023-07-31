@@ -98,7 +98,7 @@ class TaskRunnerContext {
     OnCompletion(result);
 
     // Respond to the caller.
-    DCHECK(!callback_.is_null()) << "Already responded";
+    CHECK(!callback_.is_null()) << "Already responded";
     std::move(callback_).Run(std::forward<ResponseType>(result));
 
     // Self-destruct.
@@ -125,7 +125,7 @@ class TaskRunnerContext {
   // Context can only be deleted by calling Response method.
   virtual ~TaskRunnerContext() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(callback_.is_null()) << "Deleted without responding to the caller";
+    CHECK(callback_.is_null()) << "Deleted without responding to the caller";
   }
 
  private:

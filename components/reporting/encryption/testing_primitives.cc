@@ -52,13 +52,13 @@ void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
 
   // Decrypt the data with symmetric key using AEAD interface.
   crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
-  DCHECK_EQ(aead.KeyLength(), kKeySize);
+  CHECK_EQ(aead.KeyLength(), kKeySize);
 
   // Use the symmetric key for data decryption.
   aead.Init(base::make_span(symmetric_key, kKeySize));
 
   // Get nonce at the head of input_data.
-  DCHECK_EQ(aead.NonceLength(), kNonceSize);
+  CHECK_EQ(aead.NonceLength(), kNonceSize);
   std::string_view nonce = input_data.substr(0, kNonceSize);
 
   // Decrypt collected record.

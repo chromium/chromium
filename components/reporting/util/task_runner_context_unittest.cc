@@ -225,7 +225,7 @@ TEST_F(TaskRunner, TreeOfActions) {
 
    protected:
     virtual ~Summator() {
-      DCHECK(!callback_.is_null());
+      CHECK(!callback_.is_null());
       std::move(callback_).Run(result_);
     }
 

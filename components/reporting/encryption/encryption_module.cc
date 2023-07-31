@@ -50,7 +50,7 @@ EncryptionModule::EncryptionModule(base::TimeDelta renew_encryption_key_period)
   static_assert(std::is_same<PublicKeyId, Encryptor::PublicKeyId>::value,
                 "Public key id types must match");
   auto encryptor_result = Encryptor::Create();
-  DCHECK(encryptor_result.ok());
+  CHECK_OK(encryptor_result) << encryptor_result.status();
   encryptor_ = std::move(encryptor_result.ValueOrDie());
 }
 
