@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -193,7 +194,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                     getContext().getString(R.string.page_info_cookies_send_feedback_description),
                     new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
-            int days = calculateDaysUntilExpiration(expiration);
+            int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
             mThirdPartyCookiesTitle.setTitle(getContext().getResources().getQuantityString(
                     R.plurals.page_info_cookies_blocking_restart_title, days, days));
             mThirdPartyCookiesSummary.setSummary(SpanApplier.applySpans(
@@ -277,13 +278,14 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
     /**
      * Returns the number of days left until the exception expiration.
+     * @param currentTime Current timestamps (can be obtained using TimeUtils.currentTimeMillis())
      * @param expiration A timestamp for the expiration.
      * @return Number of days until expiration. Day boundary is considered to be the local midnight.
      */
-    public static int calculateDaysUntilExpiration(long expiration) {
-        // TODO(b/292489843): Update the days logic.
-        long currentTime = TimeUtils.currentTimeMillis();
-        return (int) ((expiration - currentTime) / DateUtils.DAY_IN_MILLIS);
+    public static int calculateDaysUntilExpiration(long currentTime, long expiration) {
+        long currentMidnight = CalendarUtils.getStartOfDay(currentTime).getTime().getTime();
+        long expirationMidnight = CalendarUtils.getStartOfDay(expiration).getTime().getTime();
+        return (int) ((expirationMidnight - currentMidnight) / DateUtils.DAY_IN_MILLIS);
     }
 
     private void updateCookieDeleteButton() {
