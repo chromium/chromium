@@ -167,7 +167,15 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         mContext.getResources().getDimensionPixelSize(
                                 R.dimen.omnibox_small_icon_rounding_radius));
                 if (mFaviconFetcher != null) {
-                    mFaviconFetcher.fetchFaviconWithBackoff(url, true, (icon, type) -> {
+                    mFaviconFetcher.fetchFavicon(url, icon -> {
+                        if (icon == null) {
+                            mFaviconFetcher.generateFavicon(url, fallback -> {
+                                tileModel.set(
+                                        TileViewProperties.ICON, new BitmapDrawable(fallback));
+                                tileModel.set(TileViewProperties.ICON_TINT, null);
+                            });
+                            return;
+                        }
                         tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
                         tileModel.set(TileViewProperties.ICON_TINT, null);
                     });

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -60,7 +59,6 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable ImageFetcher mImageFetcher;
     private @Nullable FaviconFetcher mFaviconFetcher;
-    private @Nullable LargeIconBridge mIconBridge;
     private @NonNull BookmarkState mBookmarkState;
     @Px
     private int mDropdownHeight;
@@ -88,12 +86,11 @@ class DropdownItemViewInfoListBuilder {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
         final Supplier<ImageFetcher> imageFetcherSupplier = () -> mImageFetcher;
-        final Supplier<LargeIconBridge> iconBridgeSupplier = () -> mIconBridge;
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
         if (!OmniboxFeatures.isLowMemoryDevice()) {
-            mFaviconFetcher = new FaviconFetcher(context, iconBridgeSupplier);
+            mFaviconFetcher = new FaviconFetcher(context);
         }
 
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
@@ -125,9 +122,9 @@ class DropdownItemViewInfoListBuilder {
             mImageFetcher = null;
         }
 
-        if (mIconBridge != null) {
-            mIconBridge.destroy();
-            mIconBridge = null;
+        if (mFaviconFetcher != null) {
+            mFaviconFetcher.destroy();
+            mFaviconFetcher = null;
         }
     }
 
@@ -166,24 +163,16 @@ class DropdownItemViewInfoListBuilder {
      * @param profile Current user profile.
      */
     void setProfile(Profile profile) {
-        if (mIconBridge != null) {
-            mIconBridge.destroy();
-            mIconBridge = null;
-        }
-
         if (mImageFetcher != null) {
             mImageFetcher.destroy();
             mImageFetcher = null;
         }
 
         if (mFaviconFetcher != null) {
-            mFaviconFetcher.clearCache();
+            mFaviconFetcher.setProfile(profile);
         }
 
         if (!OmniboxFeatures.isLowMemoryDevice()) {
-            mIconBridge = new LargeIconBridge(profile);
-            mIconBridge.createCache(MAX_IMAGE_CACHE_SIZE);
-
             mImageFetcher = ImageFetcherFactory.createImageFetcher(
                     ImageFetcherConfig.IN_MEMORY_ONLY, profile.getProfileKey(),
                     GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
@@ -228,7 +217,7 @@ class DropdownItemViewInfoListBuilder {
     void onUrlFocusChange(boolean hasFocus) {
         if (!hasFocus) {
             if (mImageFetcher != null) mImageFetcher.clear();
-            if (mFaviconFetcher != null) mFaviconFetcher.clearCache();
+            if (mFaviconFetcher != null) mFaviconFetcher.resetCache();
         }
 
         mHeaderProcessor.onUrlFocusChange(hasFocus);

@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
@@ -38,12 +37,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher.FaviconFetchCompleteListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
@@ -85,8 +84,10 @@ public final class MostVisitedTilesProcessorUnitTest {
     private MostVisitedTilesProcessor mProcessor;
     private AutocompleteMatch mMatch;
 
-    private ArgumentCaptor<FaviconFetchCompleteListener> mIconCallbackCaptor =
-            ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
+    private ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor =
+            ArgumentCaptor.forClass(Callback.class);
+    private ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor =
+            ArgumentCaptor.forClass(Callback.class);
     private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock FaviconFetcher mFaviconFetcher;
@@ -99,9 +100,8 @@ public final class MostVisitedTilesProcessorUnitTest {
         ShadowLog.stream = System.out;
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
-        doNothing()
-                .when(mFaviconFetcher)
-                .fetchFaviconWithBackoff(any(), anyBoolean(), mIconCallbackCaptor.capture());
+        doNothing().when(mFaviconFetcher).fetchFavicon(any(), mFavIconCallbackCaptor.capture());
+        doNothing().when(mFaviconFetcher).generateFavicon(any(), mGenIconCallbackCaptor.capture());
 
         mProcessor = new MostVisitedTilesProcessor(mActivity, mSuggestionHost, mFaviconFetcher);
         mPropertyModel = mProcessor.createModel();
@@ -140,8 +140,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testDecorations_navTile() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
-        verify(mFaviconFetcher, times(1)).fetchFaviconWithBackoff(eq(NAV_URL), anyBoolean(), any());
-        mIconCallbackCaptor.getValue().onFaviconFetchComplete(mFaviconBitmap, 0);
+        verify(mFaviconFetcher, times(1)).fetchFavicon(eq(NAV_URL), any());
+        mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
 
         // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
         assertEquals(1, tileList.size());
@@ -160,8 +160,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testDecorations_navTileWithEmptyTitle_navTitleShouldBeUrlHost() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("", NAV_URL, false));
-        verify(mFaviconFetcher, times(1)).fetchFaviconWithBackoff(eq(NAV_URL), anyBoolean(), any());
-        mIconCallbackCaptor.getValue().onFaviconFetchComplete(mFaviconBitmap, 0);
+        verify(mFaviconFetcher, times(1)).fetchFavicon(eq(NAV_URL), any());
+        mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
 
         // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
         assertEquals(1, tileList.size());
@@ -329,9 +329,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testRepeatableQuery_featureDisabled() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", SEARCH_URL, true));
-        verify(mFaviconFetcher, times(1))
-                .fetchFaviconWithBackoff(eq(SEARCH_URL), anyBoolean(), any());
-        mIconCallbackCaptor.getValue().onFaviconFetchComplete(mFaviconBitmap, 0);
+        verify(mFaviconFetcher, times(1)).fetchFavicon(eq(SEARCH_URL), any());
+        mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
         assertEquals(1, tileList.size());
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;

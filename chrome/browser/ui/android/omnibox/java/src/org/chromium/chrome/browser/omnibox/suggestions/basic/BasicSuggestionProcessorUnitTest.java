@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -30,13 +29,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher.FaviconFetchCompleteListener;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher.FaviconType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
@@ -354,16 +352,14 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
-        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
-                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher)
-                .fetchFaviconWithBackoff(eq(mSuggestion.getUrl()), eq(false), callback.capture());
-        callback.getValue().onFaviconFetchComplete(mBitmap, FaviconType.REGULAR);
+        verify(mIconFetcher).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
+        callback.getValue().onResult(mBitmap);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
@@ -377,7 +373,7 @@ public class BasicSuggestionProcessorUnitTest {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
 
-        verify(mIconFetcher, never()).fetchFaviconWithBackoff(any(), anyBoolean(), any());
+        verify(mIconFetcher, never()).fetchFavicon(any(), any());
     }
 
     @Test
@@ -387,22 +383,20 @@ public class BasicSuggestionProcessorUnitTest {
         mIsBookmarked.mState = true;
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
 
-        verify(mIconFetcher, never()).fetchFaviconWithBackoff(any(), anyBoolean(), any());
+        verify(mIconFetcher, never()).fetchFavicon(any(), any());
     }
 
     @Test
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
-                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher)
-                .fetchFaviconWithBackoff(eq(mSuggestion.getUrl()), eq(false), callback.capture());
-        callback.getValue().onFaviconFetchComplete(null, FaviconType.NONE);
+        verify(mIconFetcher).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
+        callback.getValue().onResult(null);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 

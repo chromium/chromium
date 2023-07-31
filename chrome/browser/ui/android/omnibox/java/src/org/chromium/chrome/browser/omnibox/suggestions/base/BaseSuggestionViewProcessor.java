@@ -225,7 +225,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected void fetchSuggestionFavicon(PropertyModel model, GURL url) {
         if (mFaviconFetcher == null) return;
 
-        mFaviconFetcher.fetchFaviconWithBackoff(url, false, (icon, type) -> {
+        mFaviconFetcher.fetchFavicon(url, icon -> {
             if (icon != null) {
                 setSuggestionDrawableState(model,
                         SuggestionDrawableState.Builder.forBitmap(mContext, icon)

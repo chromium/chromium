@@ -6,21 +6,19 @@ package org.chromium.chrome.browser.omnibox.styles;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,17 +28,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher.FaviconFetchCompleteListener;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher.FaviconType;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
-import org.chromium.ui.base.TestActivity;
+import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -48,70 +47,57 @@ import org.chromium.url.JUnitTestGURLs;
  * Tests for {@link FaviconFetcher}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowLooper.class})
 public final class FaviconFetcherUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
-    private static final int REGULAR_FAVICON_SIZE_PX = 100;
-    private static final int SMALL_FAVICON_SIZE_PX = REGULAR_FAVICON_SIZE_PX / 2;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    public @Rule ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
+    public @Rule JniMocker mJniMocker = new JniMocker();
 
-    private Activity mActivity;
     private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
     private FaviconFetcher mFetcher;
 
-    private @Mock Bitmap mGeneratedIconBitmap;
-    private @Mock Bitmap mFavIconBitmap;
-    private @Mock LargeIconBridge mLargeIconBridge;
+    private @Mock Bitmap mBitmap1;
+    private @Mock Bitmap mBitmap2;
     private @Mock RoundedIconGenerator mIconGenerator;
-    private @Mock FaviconFetchCompleteListener mCallback;
+    private @Mock LargeIconBridge.Natives mLargeIconBridgeJni;
+    private @Mock Callback<Bitmap> mCallback;
+    private @Mock Profile mProfile;
+    private @Px int mFaviconSize;
 
     @Before
     public void setUp() {
-        // Enable logs to be printed along with possible test failures.
-        ShadowLog.stream = System.out;
+        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
 
-        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
-
-        mFetcher = new FaviconFetcher(mActivity, () -> mLargeIconBridge);
+        var context = ContextUtils.getApplicationContext();
+        mFaviconSize = context.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_favicon_size);
+        assert mFaviconSize != 0;
+        mFetcher = new FaviconFetcher(context);
         mFetcher.setRoundedIconGeneratorForTesting(mIconGenerator);
-        mFetcher.setDesiredFaviconSizeForTesting(REGULAR_FAVICON_SIZE_PX);
 
-        when(mIconGenerator.generateIconForUrl(any(GURL.class))).thenReturn(mGeneratedIconBitmap);
-        when(mLargeIconBridge.getLargeIconForUrl(any(), anyInt(), mIconCallbackCaptor.capture()))
-                .thenReturn(true);
+        doReturn(1L).when(mLargeIconBridgeJni).init();
+        doReturn(true)
+                .when(mLargeIconBridgeJni)
+                .getLargeIconForURL(anyLong(), any(), any(), anyInt(), anyInt(), any());
     }
 
     /**
      * Confirm that icon of expected size was requested from LargeIconBridge, and report a
      * supplied bitmap back to the caller.
      *
-     * @param bitmap The bitmap to return to the caller (may be null).
+     * @param url the url to expect a lookup for
+     * @param bitmap the bitmap to return to the caller (may be null)
      */
-    private void verifyLargeIconBridgeRequest(
-            @NonNull GURL url, @Px int size, @Nullable Bitmap bitmap) {
+    private void verifyLargeIconBridgeRequest(@NonNull GURL url, @Nullable Bitmap bitmap) {
         ShadowLooper.runUiThreadTasks();
-        verify(mLargeIconBridge, times(1))
-                .getLargeIconForUrl(eq(url), eq(size), mIconCallbackCaptor.capture());
+        verify(mLargeIconBridgeJni)
+                .getLargeIconForURL(anyLong(), eq(mProfile), eq(url), eq(mFaviconSize / 2),
+                        eq(mFaviconSize), mIconCallbackCaptor.capture());
         mIconCallbackCaptor.getValue().onLargeIconAvailable(bitmap, FALLBACK_COLOR, true, 0);
-    }
-
-    /**
-     * Confirm that icon was requested from RoundedIconGenerator, and report a
-     * supplied bitmap back to the caller.
-     *
-     * @param bitmap The bitmap to return to the caller (may be null).
-     */
-    private void verifyRoundedIconRequest(@NonNull GURL url, @Nullable Bitmap bitmap) {
-        doReturn(bitmap).when(mIconGenerator).generateIconForUrl(eq(url));
-        ShadowLooper.runUiThreadTasks();
-        verify(mIconGenerator, times(1)).generateIconForUrl(eq(url));
     }
 
     /**
@@ -120,8 +106,8 @@ public final class FaviconFetcherUnitTest {
      * @param bitmap The expected bitmap.
      * @param type The expected favicon type.
      */
-    private void verifyReturnedIcon(@Nullable Bitmap bitmap, @FaviconType int type) {
-        verify(mCallback, times(1)).onFaviconFetchComplete(eq(bitmap), eq(type));
+    private void verifyReturnedIcon(@Nullable Bitmap bitmap) {
+        verify(mCallback, times(1)).onResult(eq(bitmap));
     }
 
     /**
@@ -129,149 +115,111 @@ public final class FaviconFetcherUnitTest {
      * clear all counters.
      */
     private void verifyNoOtherInteractionsAndClearInteractions() {
-        if (mLargeIconBridge != null) {
-            verifyNoMoreInteractions(mLargeIconBridge);
-            clearInvocations(mLargeIconBridge);
-        }
+        verifyNoMoreInteractions(mLargeIconBridgeJni);
+        clearInvocations(mLargeIconBridgeJni);
+
         verifyNoMoreInteractions(mIconGenerator, mCallback);
         clearInvocations(mIconGenerator, mCallback);
     }
 
     @Test
-    public void testIconRetrieval_noLargeIconBridge() {
+    public void fetchFavicon_noLargeIconBridge() {
         // Favicon service does not exist, so we should expect a _single_ call to
         // RoundedIconGenerator.
-        mLargeIconBridge = null;
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyRoundedIconRequest(NAV_URL, mGeneratedIconBitmap);
-        verifyReturnedIcon(mGeneratedIconBitmap, FaviconType.GENERATED);
+        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        verifyReturnedIcon(null);
+        verifyNoOtherInteractionsAndClearInteractions();
+    }
+
+    @Test
+    public void generateFavicon() {
+        doReturn(mBitmap1).when(mIconGenerator).generateIconForUrl(NAV_URL);
+
+        mFetcher.generateFavicon(NAV_URL, mCallback);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mIconGenerator, times(1)).generateIconForUrl(NAV_URL);
+        verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
     }
 
     @Test
     public void testIconRetrieval_largeIconAvailableWithNoBackoff() {
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, mFavIconBitmap);
-        verifyReturnedIcon(mFavIconBitmap, FaviconType.REGULAR);
+        mFetcher.setProfile(mProfile);
+        verify(mLargeIconBridgeJni, times(1)).init();
+        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        verifyLargeIconBridgeRequest(NAV_URL, mBitmap1);
+        verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
 
-        // Try again, blocking generated icons.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, false, mCallback);
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, mFavIconBitmap);
-        verifyReturnedIcon(mFavIconBitmap, FaviconType.REGULAR);
-        verifyNoOtherInteractionsAndClearInteractions();
-    }
-
-    @Test
-    public void testIconRetrieval_backOffToSmallIcon() {
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, null);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, mFavIconBitmap);
-        verifyReturnedIcon(mFavIconBitmap, FaviconType.SMALL);
-        verifyNoOtherInteractionsAndClearInteractions();
-
-        // Try again, blocking generated icons. Observe we go directly for small icon.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, false, mCallback);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, mFavIconBitmap);
-        verifyReturnedIcon(mFavIconBitmap, FaviconType.SMALL);
-        verifyNoOtherInteractionsAndClearInteractions();
-    }
-
-    @Test
-    public void testIconRetrieval_backOffToGeneratedIcon() {
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, null);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, null);
-        verifyRoundedIconRequest(NAV_URL, mGeneratedIconBitmap);
-        verifyReturnedIcon(mGeneratedIconBitmap, FaviconType.GENERATED);
-        verifyNoOtherInteractionsAndClearInteractions();
-
-        // Try again, observe we go directly for generated icon.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyRoundedIconRequest(NAV_URL, mGeneratedIconBitmap);
-        verifyReturnedIcon(mGeneratedIconBitmap, FaviconType.GENERATED);
-        verifyNoOtherInteractionsAndClearInteractions();
-    }
-
-    @Test
-    public void testIconRetrieval_backOffWithNoGeneratedIcons() {
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, false, mCallback);
-
-        // Expect _no_ calls to icon generator.
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, null);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, null);
-        verifyReturnedIcon(null, FaviconType.NONE);
-        verifyNoOtherInteractionsAndClearInteractions();
-
-        // Try again, allowing generated icons. Observe we go directly for generated icon.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyRoundedIconRequest(NAV_URL, mGeneratedIconBitmap);
-        verifyReturnedIcon(mGeneratedIconBitmap, FaviconType.GENERATED);
-        verifyNoOtherInteractionsAndClearInteractions();
-
-        // Try again, rejecting generated icons. Observe we go directly for generated icon.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, false, mCallback);
-        verifyReturnedIcon(null, FaviconType.NONE);
-        verifyNoOtherInteractionsAndClearInteractions();
-    }
-
-    @Test
-    public void testIconRetrieval_nullBitmapWhenAllMechanismFail() {
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, null);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, null);
-        verifyRoundedIconRequest(NAV_URL, null);
-        verifyReturnedIcon(null, FaviconType.NONE);
-        verifyNoOtherInteractionsAndClearInteractions();
-
-        // Note: re-trying with no generated icons should result with immediate stop.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, false, mCallback);
-        verifyReturnedIcon(null, FaviconType.NONE);
+        // Try again, expect icon to be served from LargeIconBridge cache.
+        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
     }
 
     @Test
     public void testIconRetrieval_differentUrlsDontCollide() {
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, null);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, null);
-        verifyRoundedIconRequest(NAV_URL, mGeneratedIconBitmap);
-        verifyReturnedIcon(mGeneratedIconBitmap, FaviconType.GENERATED);
+        mFetcher.setProfile(mProfile);
+        verify(mLargeIconBridgeJni, times(1)).init();
+
+        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        verifyLargeIconBridgeRequest(NAV_URL, mBitmap1);
+        verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
 
-        // Try another URL and confirm we're looking for a regular icon first.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL_2, true, mCallback);
-        verifyLargeIconBridgeRequest(NAV_URL_2, REGULAR_FAVICON_SIZE_PX, mFavIconBitmap);
-        verifyReturnedIcon(mFavIconBitmap, FaviconType.REGULAR);
-        verifyNoOtherInteractionsAndClearInteractions();
-
-        // Try the previous URL again and see we already fall back to generated icon.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyRoundedIconRequest(NAV_URL, mGeneratedIconBitmap);
-        verifyReturnedIcon(mGeneratedIconBitmap, FaviconType.GENERATED);
+        // Try another URL. Expect icon to *not* be served from any caches.
+        mFetcher.fetchFavicon(NAV_URL_2, mCallback);
+        verifyLargeIconBridgeRequest(NAV_URL_2, mBitmap1);
+        verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
     }
 
     @Test
     public void testIconRetrieval_clearingCacheRestartsEntireFlow() {
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, null);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, null);
-        verifyRoundedIconRequest(NAV_URL, null);
-        verifyReturnedIcon(null, FaviconType.NONE);
+        mFetcher.setProfile(mProfile);
+        verify(mLargeIconBridgeJni, times(1)).init();
+        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        verifyLargeIconBridgeRequest(NAV_URL, mBitmap1);
+        verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
 
-        mFetcher.clearCache();
+        mFetcher.resetCache();
 
         // Retry. Expect the exact same flow with that same URL.
-        mFetcher.fetchFaviconWithBackoff(NAV_URL, true, mCallback);
-        verifyLargeIconBridgeRequest(NAV_URL, REGULAR_FAVICON_SIZE_PX, null);
-        verifyLargeIconBridgeRequest(NAV_URL, SMALL_FAVICON_SIZE_PX, null);
-        verifyRoundedIconRequest(NAV_URL, null);
-        verifyReturnedIcon(null, FaviconType.NONE);
+        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        verifyLargeIconBridgeRequest(NAV_URL, mBitmap2);
+        verifyReturnedIcon(mBitmap2);
         verifyNoOtherInteractionsAndClearInteractions();
+    }
+
+    @Test
+    public void destroy_releasesLargeIconBridgeIfSet() {
+        mFetcher.setProfile(mProfile);
+        verify(mLargeIconBridgeJni, times(1)).init();
+        verifyNoMoreInteractions(mLargeIconBridgeJni);
+        mFetcher.destroy();
+        verify(mLargeIconBridgeJni, times(1)).destroy(anyLong());
+        verifyNoMoreInteractions(mLargeIconBridgeJni);
+    }
+
+    @Test
+    public void setProfile_destroysOldLargeIconBridgeIfPresent() {
+        mFetcher.setProfile(mProfile);
+        verify(mLargeIconBridgeJni, times(1)).init();
+        verifyNoMoreInteractions(mLargeIconBridgeJni);
+        clearInvocations(mLargeIconBridgeJni);
+
+        // We technically don't expect the change to be "to the same profile", we don't check for
+        // this.
+        mFetcher.setProfile(mProfile);
+        verify(mLargeIconBridgeJni, times(1)).destroy(anyLong());
+        verify(mLargeIconBridgeJni, times(1)).init();
+        verifyNoMoreInteractions(mLargeIconBridgeJni);
+    }
+
+    @Test
+    public void resetCache_safeWhenBridgeNotAvailable() {
+        mFetcher.resetCache();
     }
 }
