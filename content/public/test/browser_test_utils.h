@@ -2370,25 +2370,15 @@ class CookieChangeObserver : public content::WebContentsObserver {
 RegisterWebContentsCreationCallback(
     base::RepeatingCallback<void(WebContents*)> callback);
 
-// Functions to traverse history and wait until the traversal completes. These
-// are wrappers around the same-named methods of the `NavigationController`.
+// Functions to traverse history and wait until the traversal completes, even if
+// the loading is stopped halfway (e.g. if a BackForwardCache entry is evicted
+// during the restoration, causing the old NavigationRequest to be reset and a
+// new NavigationRequest to be restarted). These are wrappers around the
+// same-named methods of the `NavigationController`.
 [[nodiscard]] bool HistoryGoToIndex(WebContents* wc, int index);
 [[nodiscard]] bool HistoryGoToOffset(WebContents* wc, int offset);
 [[nodiscard]] bool HistoryGoBack(WebContents* wc);
 [[nodiscard]] bool HistoryGoForward(WebContents* wc);
-
-// The following functions are similar to the previous ones, but will wait until
-// the navigation finally commits, even if the loading is stopped halfway (e.g.,
-// if a BackForwardCache entry is evicted during restoration, causing the old
-// NavigationRequest to be reset and a new NavigationRequest to be restarted).
-[[nodiscard]] bool HistoryGoToIndexAndWaitForNavigationFinished(WebContents* wc,
-                                                                int index);
-[[nodiscard]] bool HistoryGoToOffsetAndWaitForNavigationFinished(
-    WebContents* wc,
-    int offset);
-[[nodiscard]] bool HistoryGoBackAndWaitForNavigationFinished(WebContents* wc);
-[[nodiscard]] bool HistoryGoForwardAndWaitForNavigationFinished(
-    WebContents* wc);
 
 #if BUILDFLAG(IS_MAC)
 // Grant native windows the ability to activate, allowing them to become key

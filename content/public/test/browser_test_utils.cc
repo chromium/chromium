@@ -4176,49 +4176,37 @@ void DidFinishNavigationObserver::DidFinishNavigation(
   callback_.Run(navigation_handle);
 }
 
+// Since the loading state might be switched more than once due to navigation
+// restart, the following helper methods for history traversal need to call
+// `WaitForNavigationFinished()` to ensure the navigation is finally committed
+// and `WaitForLoadStop()` to ensure the `WebContents` finishes the last
+// loading.
 bool HistoryGoToIndex(WebContents* wc, int index) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoToIndex(index);
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
 }
 
 bool HistoryGoToOffset(WebContents* wc, int offset) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoToOffset(offset);
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
 }
 
 bool HistoryGoBack(WebContents* wc) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoBack();
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
 }
 
 bool HistoryGoForward(WebContents* wc) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoForward();
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
-}
-
-bool HistoryGoToIndexAndWaitForNavigationFinished(WebContents* wc, int index) {
-  TestNavigationObserver observer(wc);
-  wc->GetController().GoToIndex(index);
-  return WaitForNavigationFinished(wc, observer);
-}
-
-bool HistoryGoToOffsetAndWaitForNavigationFinished(WebContents* wc,
-                                                   int offset) {
-  TestNavigationObserver observer(wc);
-  wc->GetController().GoToOffset(offset);
-  return WaitForNavigationFinished(wc, observer);
-}
-
-bool HistoryGoBackAndWaitForNavigationFinished(WebContents* wc) {
-  TestNavigationObserver observer(wc);
-  wc->GetController().GoBack();
-  return WaitForNavigationFinished(wc, observer);
-}
-
-bool HistoryGoForwardAndWaitForNavigationFinished(WebContents* wc) {
-  TestNavigationObserver observer(wc);
-  wc->GetController().GoForward();
-  return WaitForNavigationFinished(wc, observer);
 }
 
 CreateAndLoadWebContentsObserver::CreateAndLoadWebContentsObserver(

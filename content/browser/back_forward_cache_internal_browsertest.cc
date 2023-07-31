@@ -2988,7 +2988,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }));
 
   // 3) Do not go back to A (navigation cancelled).
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
 
   EXPECT_EQ(rfh_b, current_frame_host());
 

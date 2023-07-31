@@ -1470,7 +1470,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(shell(), "document.cookie='foo=bar'"));
 
   // 3) Go back. |rfh_a| should be evicted upon restoration.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
                     {}, {}, {}, FROM_HERE);
   EXPECT_THAT(GetTreeResult()->GetDocumentResult(),

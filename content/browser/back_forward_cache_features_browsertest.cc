@@ -1880,7 +1880,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Both sticky and non-sticky reasons are recorded here.
   ExpectNotRestored(
@@ -1936,7 +1936,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -1977,7 +1977,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -2017,7 +2017,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -2087,7 +2087,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
                     {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
@@ -2158,7 +2158,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Go back and ensure that the socketB's detail is captured.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
                     {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
@@ -2218,7 +2218,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
                     {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
@@ -2284,7 +2284,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(url_a.spec(), current_frame_host()->GetLastCommittedURL());
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
                     {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket},
@@ -2801,7 +2801,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -4562,12 +4562,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // This test is not important for Chrome OS if TTS is called in content. For
 // more details refer (content/browser/speech/tts_platform_impl.cc).
-// TODO(https://crbug.com/1467661): Test is flaky on iOS and Android.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CacheIfUsingSpeechSynthesis DISABLED_CacheIfUsingSpeechSynthesis
 #else
 #define MAYBE_CacheIfUsingSpeechSynthesis CacheIfUsingSpeechSynthesis
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithSpeechSynthesis,
                        MAYBE_CacheIfUsingSpeechSynthesis) {
   ASSERT_TRUE(embedded_test_server()->Start());
