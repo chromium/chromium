@@ -36,6 +36,8 @@ source_set("platform") {
     "condition_variable.h",
     "count_down_latch.cc",
     "count_down_latch.h",
+    "credential_storage.cc",
+    "credential_storage.h",
     "crypto.cc",
     "input_file.cc",
     "input_file.h",
@@ -85,6 +87,7 @@ source_set("platform") {
     "//net",
     "//services/network/public/mojom",
     "//third_party/abseil-cpp:absl",
+    "//third_party/nearby:platform_api_comm",
   ]
 }
 
@@ -104,6 +107,7 @@ source_set("unit_tests") {
     "bluetooth_socket_unittest.cc",
     "condition_variable_unittest.cc",
     "count_down_latch_unittest.cc",
+    "credential_storage_unittest.cc",
     "crypto_unittest.cc",
     "input_file_unittest.cc",
     "input_stream_impl_unittest.cc",
