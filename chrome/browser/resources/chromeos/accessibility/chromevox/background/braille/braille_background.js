@@ -7,7 +7,6 @@
  */
 import {BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
-import {LogType} from '../../common/log_types.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {LogStore} from '../logging/log_store.js';
 

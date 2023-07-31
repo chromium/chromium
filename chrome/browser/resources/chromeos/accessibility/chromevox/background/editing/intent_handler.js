@@ -8,7 +8,6 @@
  */
 import {AutomationPredicate} from '../../../common/automation_predicate.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {Output} from '../output/output.js';
 import {OutputRoleInfo} from '../output/output_role_info.js';
@@ -17,7 +16,6 @@ import {OutputCustomEvent} from '../output/output_types.js';
 import {EditableLine} from './editable_line.js';
 
 const AutomationIntent = chrome.automation.AutomationIntent;
-const Dir = constants.Dir;
 const IntentCommandType = chrome.automation.IntentCommandType;
 const IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
 const RoleType = chrome.automation.RoleType;

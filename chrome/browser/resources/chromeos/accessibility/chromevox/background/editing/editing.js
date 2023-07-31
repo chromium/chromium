@@ -9,9 +9,8 @@
 import {AutomationPredicate} from '../../../common/automation_predicate.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
 import {constants} from '../../../common/constants.js';
-import {Cursor, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
+import {Cursor} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
-import {LocalStorage} from '../../../common/local_storage.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
@@ -32,17 +31,13 @@ import {EditableLine} from './editable_line.js';
 import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';
 import {IntentHandler} from './intent_handler.js';
 
-const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationIntent = chrome.automation.AutomationIntent;
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
-const EventType = chrome.automation.EventType;
 const FormType = LibLouis.FormType;
 const Range = CursorRange;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-const Movement = CursorMovement;
-const Unit = CursorUnit;
 
 /**
  * A handler for automation events in a focused text field or editable root
