@@ -7,13 +7,16 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_coordinator.h"
 
-@protocol PasswordListNavigator;
+@protocol ManualFillAllPasswordCoordinatorDelegate;
 
 // Creates and manages a view controller to present all the passwords to the
 // user. The view controller contains a search bar. The presentation is done
 // with a table view presentation controller. Any selected password will be sent
 // to the current field in the active web state.
 @interface ManualFillAllPasswordCoordinator : FallbackCoordinator
+
+@property(nonatomic, weak) id<ManualFillAllPasswordCoordinatorDelegate>
+    manualFillAllPasswordCoordinatorDelegate;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_ALL_PASSWORD_COORDINATOR_H_

@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
@@ -84,6 +85,7 @@ const CGFloat kIPHVerticalOffset = -5;
     CardCoordinatorDelegate,
     FormInputAccessoryMediatorHandler,
     ManualFillAccessoryViewControllerDelegate,
+    ManualFillAllPasswordCoordinatorDelegate,
     PasswordCoordinatorDelegate,
     SecurityAlertCommands>
 
@@ -216,8 +218,7 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.formInputAccessoryMediator disconnect];
   self.formInputAccessoryMediator = nil;
 
-  [self.allPasswordCoordinator stop];
-  self.allPasswordCoordinator = nil;
+  [self stopManualFillAllPasswordCoordinator];
   [self.brandingCoordinator stop];
   self.brandingCoordinator = nil;
   [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
@@ -507,6 +508,12 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - Private
 
+- (void)stopManualFillAllPasswordCoordinator {
+  [self.allPasswordCoordinator stop];
+  self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
+  self.allPasswordCoordinator = nil;
+}
+
 - (void)dismissAlertCoordinator {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
@@ -579,6 +586,7 @@ const CGFloat kIPHVerticalOffset = -5;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
+  self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = self;
   [self.allPasswordCoordinator start];
 }
 
@@ -662,6 +670,13 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.bubblePresenter presentInViewController:self.baseViewController
                                            view:self.baseViewController.view
                                     anchorPoint:anchorPoint];
+}
+
+#pragma mark - ManualFillAllPasswordCoordinatorDelegate
+
+- (void)manualFillAllPasswordCoordinatorWantsToBeDismissed:
+    (ManualFillAllPasswordCoordinator*)coordinator {
+  [self stopManualFillAllPasswordCoordinator];
 }
 
 @end
