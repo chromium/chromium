@@ -187,7 +187,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(AccessibleNode*) override;
   void Remove(LayoutObject*) override;
   void Remove(Node*) override;
-  void Remove(Document*) override;
+  void RemovePopup(Document*) override;
   void Remove(NGAbstractInlineTextBox*) override;
   // Remove an AXObject or its subtree, and if |notify_parent| is true,
   // recompute the parent's children and reserialize the parent.
@@ -202,7 +202,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If |remove_root|, remove the root of the subtree, otherwise only
   // descendants are removed. If |notify_parent|, call ChildrenChanged() on the
   // parent.
-  void RemoveSubtreeWithFlatTraversal(Node*,
+  void RemoveSubtreeWithFlatTraversal(const Node*,
                                       bool remove_root = true,
                                       bool notify_parent = true);
   void RemoveSubtreeWhenSafe(Node*, bool remove_root);
@@ -904,7 +904,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Checks the update queue, then pauses and rebuilds it if full. Returns true
   // of the queue was paused.
-  bool PauseTreeUpdatesIfQueueFull(Document* tree_update_document);
+  bool PauseTreeUpdatesIfQueueFull();
 
   // Enqueue a callback to the given method to be run after layout is
   // complete.

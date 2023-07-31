@@ -1451,7 +1451,6 @@ void RenderAccessibilityImpl::OnLoadInlineTextBoxes(
   const WebAXObject& obj = blink_target->WebAXObject();
 
   DCHECK(!serialize_post_lifecycle_ || ax_context_);
-  ScopedFreezeAXTreeSource freeze(ax_context_.get());
   obj.OnLoadInlineTextBoxes();
 
   if (!serialize_post_lifecycle_) {

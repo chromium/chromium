@@ -600,6 +600,10 @@ AXObject::~AXObject() {
 }
 
 void AXObject::SetAncestorsHaveDirtyDescendants() const {
+  DCHECK(!IsDetached());
+  DCHECK(!AXObjectCache().HasBeenDisposed());
+  DCHECK(!AXObjectCache().IsFrozen());
+
   if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
     return;
   }
@@ -613,6 +617,8 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
   // whether AXObjectCacheImpl::UpdateTreeIfNeeded needs to update the root
   // object.
   if (IsRoot()) {
+    // Need at least the root object to be flagged in order for
+    // UpdateTreeIfNeeded() to do anything.
     has_dirty_descendants_ = true;
     return;
   }
@@ -711,8 +717,8 @@ void AXObject::Init(AXObject* parent) {
       << "\n* Parent = " << parent_->ToString(true, true)
       << "\n* Child = " << ToString(true, true);
 
-  // This is one after the role_ is computed, because the role is used to
-  // determine whether an AXObject can have children.
+  // children_dirty_ is set after the role_ is computed, because the role is
+  // used to determine whether an AXObject can have children.
   children_dirty_ = CanHaveChildren();
 
   UpdateCachedAttributeValuesIfNeeded(false);
@@ -730,6 +736,12 @@ void AXObject::Init(AXObject* parent) {
   // object.
   if (IsRoot()) {
     has_dirty_descendants_ = true;
+  } else {
+    DCHECK(ParentObjectIncludedInTree()->HasDirtyDescendants())
+        << "When adding a new child to a parent, the included parent must be "
+           "flagged as having dirty descendants:"
+        << "\n* Object: " << ToString(true, true) << "* Included parent: "
+        << ParentObjectIncludedInTree()->ToString(true, true);
   }
 }
 
@@ -748,11 +760,7 @@ void AXObject::Detach() {
 
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(ax_object_cache_);
-  // AXInlineTextBox objects are the only objects that are safe to remove during
-  // serialization. This occurs when a the serializer reaches a static text
-  // object and its ignored state changes. Ignored static text boxes should not
-  // have any inline textbox children, and they are removed by ClearChildren().
-  SANITIZER_CHECK(!ax_object_cache_->IsFrozen() || IsAXInlineTextBox())
+  SANITIZER_CHECK(!ax_object_cache_->IsFrozen())
       << "Do not detach children while the tree is frozen, in order to avoid "
          "an object detaching itself in the middle of computing its own "
          "accessibility properties.";
@@ -791,8 +799,8 @@ void AXObject::SetParent(AXObject* new_parent) const {
   if (!new_parent && !IsRoot()) {
     std::ostringstream message;
     message << "Parent cannot be null, except at the root."
-            << "\nParent: " << ToString(true, true)
-            << "\nParent chain from DOM, starting at |this|:";
+            << "\nThis: " << ToString(true, true)
+            << "\nDOM parent chain , starting at |this->GetNode()|:";
     int count = 0;
     for (Node* node = GetNode(); node;
          node = GetParentNodeForComputeParent(AXObjectCache(), node)) {
@@ -3028,8 +3036,6 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
 }
 
 void AXObject::InvalidateCachedValues() {
-  // TODO(accessibility) Try to add DCHECK that layout is not clean, that the
-  // cache is not frozen, and the the cache is not processing deferred events.
 #if DCHECK_IS_ON()
   DCHECK(!is_updating_cached_values_)
       << "Should not invalidate cached values while updating them.";
@@ -3070,6 +3076,18 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   if (IsMissingParent())
     RepairMissingParent();
+
+  // Mock objects are created by, owned and dependent on their parents.
+  // If the mock object's values change, recompute the parent's as well.
+  // Note: The only remaining use of mock objects is AXMenuListPopup.
+  // TODO(accessibility) Remove this when we remove AXMenuList* and create the
+  // AX hierarchy for <select> from the shadow dom instead.
+  // TODO(accessibility) Can this be fixed by instead invalidating the parent
+  // when invalidating the child?
+  if (IsMockObject()) {
+    DCHECK(parent_);
+    parent_->UpdateCachedAttributeValuesIfNeeded();
+  }
 
   const ComputedStyle* style = GetComputedStyle();
 
@@ -5627,6 +5645,11 @@ void AXObject::UpdateChildrenIfNecessary() {
     return;
   }
 
+  DCHECK(!AXObjectCache().IsFrozen())
+      << "Object should have already had its children updated in "
+         "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
+      << ToString(true, true);
+
 #if DCHECK_IS_ON()
   // Ensure there are no unexpected, preexisting children, before we add more.
   if (IsMenuList()) {
@@ -5652,6 +5675,7 @@ bool AXObject::NeedsToUpdateChildren() const {
 void AXObject::SetNeedsToUpdateChildren() const {
   DCHECK(!IsDetached()) << "Cannot update children on a detached node: "
                         << ToString(true, true);
+  DCHECK(!AXObjectCache().IsFrozen());
   DCHECK(!AXObjectCache().HasBeenDisposed());
   if (children_dirty_) {
     return;
@@ -5696,6 +5720,7 @@ void AXObject::DetachFromParent() {
 
 void AXObject::ClearChildren() const {
   DCHECK(!IsDetached());
+  DCHECK(!AXObjectCache().IsFrozen());
 
   // Detach all weak pointers from immediate children to their parents.
   // First check to make sure the child's parent wasn't already reassigned.
@@ -7543,13 +7568,20 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     }
     if (cached_values_only ? cached_is_inert_ : IsInert())
       string_builder = string_builder + " isInert";
-    if (IsMissingParent())
-      string_builder = string_builder + " isMissingParent";
     if (children_dirty_) {
       string_builder = string_builder + " needsToUpdateChildren";
     } else if (!children_.empty()) {
       string_builder = string_builder + " #children=";
       string_builder = string_builder + String::Number(children_.size());
+    }
+    if (parent_) {
+      if (parent_->HasDirtyDescendants()) {
+        string_builder = string_builder + " parentHasDirtyDescendants";
+      } else if (children_dirty_) {
+        string_builder = string_builder + " parentMissingHasDirtyDescendants";
+      }
+    } else if (IsMissingParent()) {
+      string_builder = string_builder + " isMissingParent";
     }
     if (!cached_values_only && !CanHaveChildren()) {
       string_builder = string_builder + " cannotHaveChildren";

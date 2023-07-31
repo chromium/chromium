@@ -105,7 +105,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void Remove(LayoutObject*) = 0;
   virtual void Remove(Node*) = 0;
   virtual void RemoveSubtreeWhenSafe(Node*) = 0;
-  virtual void Remove(Document*) = 0;
+  virtual void RemovePopup(Document*) = 0;
   virtual void Remove(NGAbstractInlineTextBox*) = 0;
 
   virtual const Element* RootAXEditableElement(const Node*) = 0;

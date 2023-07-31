@@ -2986,7 +2986,7 @@ void Document::Shutdown() {
       // This is a popup document. Clear all accessibility state related to it
       // by removing the AXObject for its root. The AXObjectCache is
       // retrieved from the main document, but it maintains both documents.
-      cache->Remove(this);
+      cache->RemovePopup(this);
     }
   }
 

@@ -325,6 +325,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // To instead invalidate on all objects in a subtree, call
   // AXObjectCacheImpl::InvalidateCachedValuesOnSubtree().
   void InvalidateCachedValues();
+  bool NeedsToUpdateCachedValues() const { return cached_values_need_update_; }
 
   // The AXObjectCacheImpl that owns this object, and its unique ID within this
   // cache.
