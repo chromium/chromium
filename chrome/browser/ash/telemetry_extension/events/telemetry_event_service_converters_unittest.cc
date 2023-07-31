@@ -29,11 +29,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertStructPtrTakesNullPtr) {
 
 TEST(TelemetryEventServiceConvertersTest, OptionalUint32) {
   constexpr double kValue = (1ULL << 31) + 1000;
-  EXPECT_EQ(ConvertEventNullablePrimitivePtr(
-                cros_healthd::mojom::NullableUint32Ptr()),
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32Ptr()),
             absl::nullopt);
-  EXPECT_EQ(ConvertEventNullablePrimitivePtr(
-                cros_healthd::mojom::NullableUint32::New(kValue)),
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32::New(kValue)),
             kValue);
 }
 
@@ -201,11 +199,12 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {
             crosapi::mojom::TelemetryKeyboardTopRightKey::kControlPanel);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertNullableUint32Ptr) {
-  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32::New(10)),
-            crosapi::mojom::UInt32Value::New(10));
+TEST(TelemetryEventServiceConvertersTest, LegacyConvertNullableUint32Ptr) {
+  EXPECT_EQ(
+      LegacyConvertStructPtr(cros_healthd::mojom::NullableUint32::New(10)),
+      crosapi::mojom::UInt32Value::New(10));
 
-  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32Ptr()),
+  EXPECT_EQ(LegacyConvertStructPtr(cros_healthd::mojom::NullableUint32Ptr()),
             crosapi::mojom::UInt32ValuePtr());
 }
 

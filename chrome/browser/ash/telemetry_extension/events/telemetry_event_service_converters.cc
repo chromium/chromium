@@ -18,7 +18,12 @@ namespace ash::converters::events {
 
 namespace unchecked {
 
-absl::optional<uint32_t> UncheckedConvertEventNullablePrimitivePtr(
+crosapi::mojom::UInt32ValuePtr LegacyUncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint32Ptr input) {
+  return crosapi::mojom::UInt32Value::New(input->value);
+}
+
+absl::optional<uint32_t> UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input) {
   return input->value;
 }
@@ -98,9 +103,9 @@ crosapi::mojom::TelemetryTouchPointInfoPtr UncheckedConvertPtr(
   result->tracking_id = input->tracking_id;
   result->x = input->x;
   result->y = input->y;
-  result->pressure = ConvertStructPtr(std::move(input->pressure));
-  result->touch_major = ConvertStructPtr(std::move(input->touch_major));
-  result->touch_minor = ConvertStructPtr(std::move(input->touch_minor));
+  result->pressure = LegacyConvertStructPtr(std::move(input->pressure));
+  result->touch_major = LegacyConvertStructPtr(std::move(input->touch_major));
+  result->touch_minor = LegacyConvertStructPtr(std::move(input->touch_minor));
   return result;
 }
 
@@ -152,13 +157,7 @@ crosapi::mojom::TelemetryStylusConnectedEventInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryStylusTouchPointInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::StylusTouchPointInfoPtr input) {
   return crosapi::mojom::TelemetryStylusTouchPointInfo::New(
-      input->x, input->y,
-      ConvertEventNullablePrimitivePtr(std::move(input->pressure)));
-}
-
-crosapi::mojom::UInt32ValuePtr UncheckedConvertPtr(
-    cros_healthd::mojom::NullableUint32Ptr input) {
-  return crosapi::mojom::UInt32Value::New(input->value);
+      input->x, input->y, ConvertStructPtr(std::move(input->pressure)));
 }
 
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(

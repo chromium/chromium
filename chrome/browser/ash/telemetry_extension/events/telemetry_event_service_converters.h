@@ -22,7 +22,10 @@ namespace ash::converters::events {
 
 namespace unchecked {
 
-absl::optional<uint32_t> UncheckedConvertEventNullablePrimitivePtr(
+crosapi::mojom::UInt32ValuePtr LegacyUncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint32Ptr input);
+
+absl::optional<uint32_t> UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input);
 
 crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(
@@ -72,9 +75,6 @@ crosapi::mojom::TelemetryStylusConnectedEventInfoPtr UncheckedConvertPtr(
 
 crosapi::mojom::TelemetryStylusTouchPointInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::StylusTouchPointInfoPtr input);
-
-crosapi::mojom::UInt32ValuePtr UncheckedConvertPtr(
-    cros_healthd::mojom::NullableUint32Ptr input);
 
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input);
@@ -141,17 +141,21 @@ std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
 }
 
 template <class InputT>
-auto ConvertEventNullablePrimitivePtr(InputT input) {
+auto LegacyConvertStructPtr(InputT input) {
   return (!input.is_null())
-             ? unchecked::UncheckedConvertEventNullablePrimitivePtr(
-                   std::move(input))
-             : absl::nullopt;
+             ? unchecked::LegacyUncheckedConvertPtr(std::move(input))
+             : nullptr;
 }
 
-template <class InputT>
-auto ConvertStructPtr(InputT input) {
+template <class InputT,
+          class... Types,
+          class OutputT = decltype(unchecked::UncheckedConvertPtr(
+              std::declval<InputT>(),
+              std::declval<Types>()...)),
+          class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
+OutputT ConvertStructPtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
-                            : nullptr;
+                            : OutputT();
 }
 
 }  // namespace ash::converters::events
