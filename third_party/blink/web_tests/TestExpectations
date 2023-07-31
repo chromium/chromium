@@ -6539,3 +6539,7 @@ crbug.com/1467833 [ Mac12 ] virtual/percent-based-scrolling/max-percent-delta-pi
 
 # Gardener 2023-07-27
 crbug.com/1468169 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-font-size-math.html [ Failure Pass ]
+
+# Gardener 2023-07-31
+crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state.html [ Failure Pass ] # flaky
+crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Failure Pass ] # flaky
