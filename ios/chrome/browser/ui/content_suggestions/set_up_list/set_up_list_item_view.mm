@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+private.h"
@@ -301,7 +302,7 @@ struct ViewConfig {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label = [[CrossfadeLabel alloc] init];
   label.text = [self descriptionText];
-  label.numberOfLines = 4;
+  label.numberOfLines = IsMagicStackEnabled() ? 2 : 4;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = [UIFont preferredFontForTextStyle:_config.description_font];
   label.adjustsFontForContentSizeCategory = YES;

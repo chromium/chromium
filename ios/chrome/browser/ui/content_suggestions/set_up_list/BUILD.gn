@@ -28,6 +28,7 @@ source_set("set_up_list") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
