@@ -89,42 +89,10 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated.
-      break;
-    case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached.
-      break;
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replaceChange =
-          change.As<WebStateListChangeReplace>();
-      if (status.index == webStateList->active_index()) {
-        [self setActiveWebState:replaceChange.inserted_web_state()];
-        [_commandHandler closeTextZoom];
-      }
-      break;
-    }
-    case WebStateListChange::Type::kInsert:
-      // Do nothing when a new WebState is inserted.
-      break;
+  if (status.active_web_state_change()) {
+    [self setActiveWebState:status.new_active_web_state];
+    [_commandHandler closeTextZoom];
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(_webStateList, webStateList);
-  [self setActiveWebState:newWebState];
-  [_commandHandler closeTextZoom];
 }
 
 #pragma mark - TextZoomHandler
