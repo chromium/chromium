@@ -51,7 +51,7 @@ void ChildNodePart::disconnect() {
   Part::disconnect();
 }
 
-PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) const {
+PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   // Since we're only cloning a part of the tree, not including this
   // ChildNodePart's `root`, we use a temporary DocumentFragment and its
   // PartRoot during the clone.
@@ -86,7 +86,10 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) const {
     CHECK(node) << "IsValid should detect invalid siblings";
   }
   data.Finalize();
-  return PartRoot::GetUnionFromPartRoot(data.ClonedPartRootFor(*this));
+  ChildNodePart* part_root =
+      static_cast<ChildNodePart*>(data.ClonedPartRootFor(*this));
+  part_root->CachePartOrderAfterClone();
+  return PartRoot::GetUnionFromPartRoot(part_root);
 }
 
 void ChildNodePart::setNextSibling(Node& next_sibling) {
@@ -191,7 +194,7 @@ ContainerNode* ChildNodePart::rootContainer() const {
 }
 
 Part* ChildNodePart::ClonePart(NodeCloningData& data) const {
-  CHECK(IsValid());
+  DCHECK(IsValid());
   PartRoot* new_part_root = data.ClonedPartRootFor(*root());
   // TODO(crbug.com/1453291) Eventually it should *not* be possible to construct
   // Parts that get cloned without their PartRoots. But as-is, that can happen
@@ -210,7 +213,7 @@ Part* ChildNodePart::ClonePart(NodeCloningData& data) const {
 }
 
 Document& ChildNodePart::GetDocument() const {
-  CHECK(IsValid());
+  DCHECK(IsValid());
   return previous_sibling_->GetDocument();
 }
 

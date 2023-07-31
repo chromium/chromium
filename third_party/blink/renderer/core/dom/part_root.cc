@@ -86,6 +86,10 @@ using NodesToParts =
 //    (and a progress marker within it) during the entire sort, and doing a
 //    sort-of-quicksort-like splitting whenever there are branches in the
 //    ancestor chain.
+//  - (Orthogonal) Convert cached_parts_list_dirty_ to a "range" of dirty
+//    parts within the sorted parts list. Then you only need to rebuild that
+//    chunk of parts and not all of them. You can maintain this during Node
+//    insertions and removals by just expanding the range accordingly.
 // It might be worthwhile to switch between these approaches depending on the
 // sizes of things, or add additional algorithms.
 HeapVector<Member<Part>> SortPartsInTreeOrder(
@@ -136,6 +140,22 @@ const DocumentPartRoot* PartRoot::GetDocumentPartRoot() {
     root = next;
   }
   return static_cast<const DocumentPartRoot*>(root);
+}
+
+void PartRoot::CachePartOrderAfterClone() {
+#if DCHECK_IS_ON()
+  {
+    // This will set cached_ordered_parts_ as a side effect, but we'll reset it
+    // again below anyway.
+    auto correct_parts_order = getParts();
+    DCHECK_EQ(correct_parts_order.size(), parts_unordered_.size());
+    for (wtf_size_t i = 0; i < correct_parts_order.size(); ++i) {
+      DCHECK_EQ(parts_unordered_[i], correct_parts_order[i]);
+    }
+  }
+#endif
+  cached_ordered_parts_ = parts_unordered_;
+  cached_parts_list_dirty_ = false;
 }
 
 // |getParts| must always return the contained parts list subject to these

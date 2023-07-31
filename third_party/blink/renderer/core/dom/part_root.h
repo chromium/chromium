@@ -54,13 +54,20 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   PartRoot() = default;
   virtual const PartRoot* GetParentPartRoot() const = 0;
 
+  // This function is only used directly after a Clone() operation, during
+  // which all parts are constructed in tree order, as they're walked.
+  // Therefore, the parts order in parts_unordered_ is actually the correct
+  // order. Further, only valid parts are cloned, so there's no need to check
+  // validity either.
+  void CachePartOrderAfterClone();
+
  private:
   const DocumentPartRoot* GetDocumentPartRoot();
   HeapVector<Member<Part>> RebuildPartsList();
 
   HeapVector<Member<Part>> parts_unordered_;
   HeapVector<Member<Part>> cached_ordered_parts_;
-  bool cached_parts_list_dirty_{true};
+  bool cached_parts_list_dirty_{false};
 };
 
 }  // namespace blink

@@ -1110,7 +1110,9 @@ void ContainerNode::ClonePartsFrom(const ContainerNode& node,
   if (node.HasDOMParts()) {
     data.ConnectNodeToClone(node, *this);
     for (Part* part : node.GetDOMParts()) {
-      data.QueueForCloning(*part);
+      if (part->NodeToSortBy() == node) {
+        data.QueueForCloning(*part);
+      }
     }
   }
 }

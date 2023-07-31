@@ -56,7 +56,7 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
 
   // ChildNodePart API
   void disconnect() override;
-  PartRootUnion* clone(ExceptionState& exception_state) const;
+  PartRootUnion* clone(ExceptionState& exception_state);
   ContainerNode* rootContainer() const override;
   ContainerNode* parentNode() const { return previous_sibling_->parentNode(); }
   Node* previousSibling() const { return previous_sibling_; }
