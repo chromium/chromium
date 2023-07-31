@@ -2937,10 +2937,6 @@
       status: "experimental",
     },
     {
-      name: "RemoveLegacySizeComputation",
-      status: "stable",
-    },
-    {
       name: "RemoveMobileViewportDoubleTap",
       public: true,
       status: "stable",

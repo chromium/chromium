@@ -120,34 +120,6 @@ bool LayoutNGMixin<Base>::IsLayoutNGObject() const {
   return true;
 }
 
-template <typename Base>
-MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
-  Base::CheckIsNotDestroyed();
-  DCHECK(!Base::IsTableCell());
-
-  NGConstraintSpace space = ConstraintSpaceForMinMaxSizes();
-  return NGBlockNode(const_cast<LayoutNGMixin<Base>*>(this))
-      .ComputeMinMaxSizes(Base::StyleRef().GetWritingMode(),
-                          MinMaxSizesType::kContent, space)
-      .sizes;
-}
-
-template <typename Base>
-NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
-  Base::CheckIsNotDestroyed();
-  DCHECK(!Base::IsTableCell());
-  const ComputedStyle& style = Base::StyleRef();
-
-  NGConstraintSpaceBuilder builder(style.GetWritingMode(),
-                                   style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
-  builder.SetAvailableSize(
-      {Base::ContainingBlockLogicalWidthForContent(),
-       LayoutBoxUtils::AvailableLogicalHeight(*this, Base::ContainingBlock())});
-
-  return builder.ToConstraintSpace();
-}
-
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlockFlow>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;

@@ -33,7 +33,6 @@ class CORE_EXPORT LayoutNGView : public LayoutNGBlockFlowMixin<LayoutView> {
   bool IsOfType(LayoutObjectType) const override;
 
  private:
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
   AtomicString NamedPageAtIndex(wtf_size_t page_index) const override;
 };
 

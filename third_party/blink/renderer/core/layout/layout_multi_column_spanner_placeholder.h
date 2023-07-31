@@ -73,7 +73,6 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
   void RecalcVisualOverflow() override;
-  MinMaxSizes PreferredLogicalWidths() const override;
   void UpdateLayout() override;
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
@@ -85,11 +84,6 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
                    HitTestPhase) override;
 
  private:
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return MinMaxSizes();
-  }
   LayoutPoint LocationInternal() const override;
   PhysicalSize Size() const override;
 

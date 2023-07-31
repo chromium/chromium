@@ -427,13 +427,6 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
 }
 
-MinMaxSizes LayoutReplaced::ComputeIntrinsicLogicalWidths() const {
-  NOT_DESTROYED();
-  MinMaxSizes sizes;
-  sizes += BorderAndPaddingLogicalWidth() + IntrinsicLogicalWidth();
-  return sizes;
-}
-
 static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     const LayoutReplaced& layout_replaced) {
   // TODO(layout-dev): This code is buggy if the replaced element is relative

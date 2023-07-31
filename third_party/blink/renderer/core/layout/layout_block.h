@@ -214,7 +214,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  public:
   void Paint(const PaintInfo&) const override;
-  MinMaxSizes PreferredLogicalWidths() const override;
 
   virtual bool HasLineIfEmpty() const;
   // Returns baseline offset if we can get |SimpleFontData| from primary font.

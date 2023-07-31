@@ -564,56 +564,6 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
   return LayoutBox::PositionForPoint(point);
 }
 
-DISABLE_CFI_PERF
-MinMaxSizes LayoutBlock::PreferredLogicalWidths() const {
-  NOT_DESTROYED();
-  MinMaxSizes sizes;
-
-  // FIXME: The isFixed() calls here should probably be checking for isSpecified
-  // since you should be able to use percentage, calc or viewport relative
-  // values for width.
-  const ComputedStyle& style_to_use = StyleRef();
-  if (!IsTableCell() && style_to_use.LogicalWidth().IsFixed() &&
-      style_to_use.LogicalWidth().Value() >= 0) {
-    sizes = AdjustBorderBoxLogicalWidthForBoxSizing(
-        LayoutUnit(style_to_use.LogicalWidth().Value()));
-  } else {
-    sizes = IntrinsicLogicalWidths();
-  }
-
-  // This implements the transferred min/max sizes per
-  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
-  if (ShouldComputeLogicalHeightFromAspectRatio()) {
-    MinMaxSizes transferred_min_max =
-        ComputeMinMaxLogicalWidthFromAspectRatio();
-    sizes.Encompass(transferred_min_max.min_size);
-    sizes.Constrain(transferred_min_max.max_size);
-  }
-  if (style_to_use.LogicalMaxWidth().IsFixed()) {
-    sizes.Constrain(AdjustBorderBoxLogicalWidthForBoxSizing(
-        LayoutUnit(style_to_use.LogicalMaxWidth().Value())));
-  }
-
-  if (style_to_use.LogicalMinWidth().IsFixed() &&
-      style_to_use.LogicalMinWidth().Value() > 0) {
-    sizes.Encompass(AdjustBorderBoxLogicalWidthForBoxSizing(
-        LayoutUnit(style_to_use.LogicalMinWidth().Value())));
-  }
-
-  // Table layout uses integers, ceil the preferred widths to ensure that they
-  // can contain the contents.
-  if (IsTableCell()) {
-    sizes.min_size = LayoutUnit(sizes.min_size.Ceil());
-    sizes.max_size = LayoutUnit(sizes.max_size.Ceil());
-  }
-
-  if (IsLayoutNGObject() && IsTable()) {
-    sizes.Encompass(IntrinsicLogicalWidths().min_size);
-  }
-
-  return sizes;
-}
-
 bool LayoutBlock::HasLineIfEmpty() const {
   NOT_DESTROYED();
   if (GetNode()) {

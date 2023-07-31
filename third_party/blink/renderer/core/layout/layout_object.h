@@ -2543,24 +2543,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // to any ancestor using, e.g., localToAncestorTransform.
   virtual gfx::RectF LocalBoundingBoxRectForAccessibility() const = 0;
 
-  // This function returns the:
-  //  - Minimal logical width this object can have without overflowing. This
-  //    means that all the opportunities for wrapping have been taken.
-  //  - Maximal logical width.
-  //
-  // See INTRINSIC SIZES / PREFERRED LOGICAL WIDTHS above.
-  //
-  // CSS 2.1 calls this width the "preferred minimum width"/"preferred width"
-  // (thus this name) and "minimum content width" (for table).
-  // However CSS 3 calls it the "min/max-content inline size".
-  // https://drafts.csswg.org/css-sizing-3/#min-content-inline-size
-  // https://drafts.csswg.org/css-sizing-3/#max-content-inline-size
-  // TODO(jchaffraix): We will probably want to rename it to match CSS 3.
-  virtual MinMaxSizes PreferredLogicalWidths() const {
-    NOT_DESTROYED();
-    return MinMaxSizes();
-  }
-
   const ComputedStyle* Style() const {
     NOT_DESTROYED();
     return style_.get();

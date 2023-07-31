@@ -821,12 +821,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                     const HitTestLocation& hit_test_location,
                     const PhysicalOffset& accumulated_offset) const;
 
-  // This function calculates the preferred widths for an object.
-  //
-  // See INTRINSIC SIZES / PREFERRED LOGICAL WIDTHS in layout_object.h for more
-  // details about those widths.
-  MinMaxSizes PreferredLogicalWidths() const override;
-
   LayoutUnit OverrideContainingBlockContentLogicalWidth() const;
   bool HasOverrideContainingBlockContentLogicalWidth() const;
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
@@ -1558,27 +1552,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
 
-  // Calculates the intrinsic logical widths for this layout box.
-  // https://drafts.csswg.org/css-sizing-3/#intrinsic
-  //
-  // intrinsicWidth is defined as:
-  //     intrinsic size of content (with our border and padding) +
-  //     scrollbarWidth.
-  //
-  // preferredWidth is defined as:
-  //     fixedWidth OR (intrinsicWidth plus border and padding).
-  //     Note: fixedWidth includes border and padding and scrollbarWidth.
-  //
-  // This is public only for use by LayoutNG. Do not call this elsewhere.
-  virtual MinMaxSizes ComputeIntrinsicLogicalWidths() const = 0;
-
-  // Returns the (maybe cached) intrinsic logical widths for this layout box.
-  MinMaxSizes IntrinsicLogicalWidths(
-      MinMaxSizesType type = MinMaxSizesType::kContent) const;
-
-  // If |IntrinsicLogicalWidthsDirty()| is true, recalculates the intrinsic
-  // logical widths.
-  void UpdateCachedIntrinsicLogicalWidthsIfNeeded();
+  // Returns cached intrinsic logical widths for this layout box.
+  MinMaxSizes CachedIntrinsicLogicalWidths() const {
+    NOT_DESTROYED();
+    DCHECK(!IntrinsicLogicalWidthsDirty());
+    return intrinsic_logical_widths_;
+  }
 
   // LayoutNG can use this function to update our cache of intrinsic logical
   // widths when the layout object is managed by NG. Should not be called by

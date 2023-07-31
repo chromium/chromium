@@ -294,8 +294,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
       StyleDifference,
       const ComputedStyle& old_style) override;
   void ToggleSpannersInSubtree(LayoutBox*);
-  MinMaxSizes PreferredLogicalWidths() const override;
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const final;

@@ -40,10 +40,6 @@ class LayoutNGMixin : public Base {
   void RecalcVisualOverflow() override;
 
   bool IsLayoutNGObject() const final;
-
- protected:
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
-  NGConstraintSpace ConstraintSpaceForMinMaxSizes() const;
 };
 
 }  // namespace blink

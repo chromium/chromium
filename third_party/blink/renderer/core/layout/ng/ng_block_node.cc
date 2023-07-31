@@ -965,7 +965,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // block constraints.
   if (can_use_cached_intrinsic_inline_sizes &&
       !box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints()) {
-    MinMaxSizes sizes = box_->IntrinsicLogicalWidths(type);
+    MinMaxSizes sizes = box_->CachedIntrinsicLogicalWidths();
     bool depends_on_block_constraints =
         box_->IntrinsicLogicalWidthsDependsOnBlockConstraints();
     return MinMaxSizesResult(sizes, depends_on_block_constraints);
@@ -988,7 +988,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       initial_block_size == box_->IntrinsicLogicalWidthsInitialBlockSize() &&
       !UseParentPercentageResolutionBlockSizeForChildren()) {
     DCHECK(box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints());
-    MinMaxSizes sizes = box_->IntrinsicLogicalWidths(type);
+    MinMaxSizes sizes = box_->CachedIntrinsicLogicalWidths();
     return MinMaxSizesResult(sizes, self_depends_on_block_constraints);
   }
 

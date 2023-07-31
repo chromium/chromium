@@ -253,20 +253,15 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
   float default_label_width = ComputeTextWidth(label, box.StyleRef());
   if (HTMLInputElement* button = input.UploadButton()) {
     if (auto* button_box = button->GetLayoutBox()) {
-      LayoutUnit max;
-      if (RuntimeEnabledFeatures::RemoveLegacySizeComputationEnabled()) {
-        const ComputedStyle& button_style = button_box->StyleRef();
-        WritingMode mode = button_style.GetWritingMode();
-        NGConstraintSpaceBuilder builder(mode,
-                                         button_style.GetWritingDirection(),
-                                         /* is_new_fc */ true);
-        max = NGBlockNode(button_box)
-                  .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
-                                      builder.ToConstraintSpace())
-                  .sizes.max_size;
-      } else {
-        max = button_box->PreferredLogicalWidths().max_size;
-      }
+      const ComputedStyle& button_style = button_box->StyleRef();
+      WritingMode mode = button_style.GetWritingMode();
+      NGConstraintSpaceBuilder builder(mode, button_style.GetWritingDirection(),
+                                       /* is_new_fc */ true);
+      LayoutUnit max =
+          NGBlockNode(button_box)
+              .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
+                                  builder.ToConstraintSpace())
+              .sizes.max_size;
       default_label_width +=
           max + (kAfterButtonSpacing * box.StyleRef().EffectiveZoom());
     }
@@ -2092,32 +2087,6 @@ bool LayoutBox::ApplyBoxClips(
   transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
 
   return does_intersect;
-}
-
-MinMaxSizes LayoutBox::PreferredLogicalWidths() const {
-  NOT_DESTROYED();
-  NOTREACHED();
-  return MinMaxSizes();
-}
-
-MinMaxSizes LayoutBox::IntrinsicLogicalWidths(MinMaxSizesType type) const {
-  NOT_DESTROYED();
-  const_cast<LayoutBox*>(this)->UpdateCachedIntrinsicLogicalWidthsIfNeeded();
-  return intrinsic_logical_widths_;
-}
-
-void LayoutBox::UpdateCachedIntrinsicLogicalWidthsIfNeeded() {
-  NOT_DESTROYED();
-  if (!IntrinsicLogicalWidthsDirty())
-    return;
-
-#if DCHECK_IS_ON()
-  SetLayoutNeededForbiddenScope layout_forbidden_scope(*this);
-#endif
-
-  intrinsic_logical_widths_ = ComputeIntrinsicLogicalWidths();
-  intrinsic_logical_widths_initial_block_size_ = LayoutUnit::Min();
-  ClearIntrinsicLogicalWidthsDirty();
 }
 
 // TODO (lajava) Shouldn't we implement these functions based on physical

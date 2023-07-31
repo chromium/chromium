@@ -156,8 +156,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
                         height_override.value_or(intrinsic_size_.height));
   }
 
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
-
   // This function calculates the placement of the replaced contents. It takes
   // intrinsic size of the replaced contents, stretch to fit CSS content box
   // according to object-fit, object-position and object-view-box.

@@ -240,19 +240,14 @@ void LayoutView::ComputeLogicalHeight(
 }
 
 LayoutUnit LayoutView::ComputeMinimumWidth() {
-  if (!RuntimeEnabledFeatures::RemoveLegacySizeComputationEnabled()) {
-    return PreferredLogicalWidths().min_size;
-  }
   const ComputedStyle& style = StyleRef();
   WritingMode mode = style.GetWritingMode();
   NGConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
                                    /* is_new_fc */ true);
-  LayoutUnit min = NGBlockNode(this)
-                       .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
-                                           builder.ToConstraintSpace())
-                       .sizes.min_size;
-  DCHECK_EQ(min, PreferredLogicalWidths().min_size);
-  return min;
+  return NGBlockNode(this)
+      .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
+                          builder.ToConstraintSpace())
+      .sizes.min_size;
 }
 
 void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {

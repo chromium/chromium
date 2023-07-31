@@ -363,11 +363,6 @@ void LayoutMultiColumnSet::UpdateLayout() {
   NOTREACHED_NORETURN();
 }
 
-MinMaxSizes LayoutMultiColumnSet::ComputeIntrinsicLogicalWidths() const {
-  NOT_DESTROYED();
-  return MinMaxSizes();
-}
-
 void LayoutMultiColumnSet::ComputeLogicalHeight(
     LayoutUnit,
     LayoutUnit logical_top,

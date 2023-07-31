@@ -95,20 +95,6 @@ void LayoutNGView::UpdateLayout() {
   is_resizing_initial_containing_block_ = false;
 }
 
-MinMaxSizes LayoutNGView::ComputeIntrinsicLogicalWidths() const {
-  NOT_DESTROYED();
-  WritingMode writing_mode = StyleRef().GetWritingMode();
-
-  NGConstraintSpace space =
-      NGConstraintSpaceBuilder(writing_mode, StyleRef().GetWritingDirection(),
-                               /* is_new_fc */ true)
-          .ToConstraintSpace();
-
-  return NGBlockNode(const_cast<LayoutNGView*>(this))
-      .ComputeMinMaxSizes(writing_mode, MinMaxSizesType::kContent, space)
-      .sizes;
-}
-
 AtomicString LayoutNGView::NamedPageAtIndex(wtf_size_t page_index) const {
   if (!PhysicalFragmentCount())
     return AtomicString();
