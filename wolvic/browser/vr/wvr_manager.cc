@@ -220,7 +220,16 @@ void WvrManager::ConnectPresentingService(
     height = std::max(height, view->viewport.height());
   }
 
-  CreateOrResizeWebXrSurface({width, height});
+  gfx::Size webxr_size(width, height);
+  DVLOG(1) << __func__ << ": resize initial to " << webxr_size.width() << "x"
+           << webxr_size.height();
+
+  // Decide which transport mechanism we want to use. This sets
+  // the webxr_use_* options as a side effect.
+  device::mojom::XRPresentationTransportOptionsPtr transport_options =
+      GetWebXrFrameTransportOptions(options);
+
+  CreateOrResizeWebXrSurface(webxr_size);
 
   auto submit_frame_sink = device::mojom::XRPresentationConnection::New();
   submit_frame_sink->client_receiver =
@@ -229,12 +238,6 @@ void WvrManager::ConnectPresentingService(
   submit_client_.set_disconnect_handler(base::BindOnce(
       &WvrManager::OnSubmitClientMojoConnectionError, GetWeakPtr()));
 
-  device::mojom::XRPresentationTransportOptionsPtr transport_options =
-      device::mojom::XRPresentationTransportOptions::New();
-  transport_options->transport_method =
-      device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
-  transport_options->wait_for_transfer_notification = true;
-  transport_options->wait_for_render_notification = true;
   submit_frame_sink->transport_options = std::move(transport_options);
   submit_frame_sink->provider =
       presentation_receiver_.BindNewPipeAndPassRemote();
@@ -262,6 +265,21 @@ void WvrManager::ConnectPresentingService(
   session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
 
   std::move(callback).Run(std::move(session));
+}
+
+device::mojom::XRPresentationTransportOptionsPtr
+WvrManager::GetWebXrFrameTransportOptions(
+    const device::mojom::XRRuntimeSessionOptionsPtr& options) {
+  device::mojom::XRPresentationTransportOptionsPtr transport_options =
+      device::mojom::XRPresentationTransportOptions::New();
+  // Only set boolean options that we need. Default is false, and we should be
+  // able to safely ignore ones that our implementation doesn't care about.
+  transport_options->wait_for_transfer_notification = true;
+  transport_options->transport_method =
+      device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
+  transport_options->wait_for_render_notification = true;
+
+  return transport_options;
 }
 
 void WvrManager::OnWebXrFrameAvailable() {
