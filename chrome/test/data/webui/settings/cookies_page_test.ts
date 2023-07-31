@@ -17,7 +17,7 @@ import {createContentSettingTypeToValuePair, createRawSiteException, createSiteS
 
 // clang-format on
 
-suite('CrSettingsCookiesPageTest', function() {
+suite('CookiesPageTest', function() {
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let page: SettingsCookiesPageElement;
@@ -353,7 +353,7 @@ suite('CrSettingsCookiesPageTest', function() {
 });
 
 // TODO(crbug.com/1378703): Remove after crbug/1378703 launched.
-suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
+suite('PrivacySandboxSettings4Disabled', function() {
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let page: SettingsCookiesPageElement;
@@ -665,7 +665,7 @@ suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
 });
 
 // TODO(crbug/1349370): Remove after crbug/1349370 is launched.
-suite('CrSettingsCookiesPageTest_FirstPartySetsUIDisabled', function() {
+suite('FirstPartySetsUIDisabled', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -743,7 +743,7 @@ suite(
 
 // <if expr="chromeos_lacros">
 // TODO(crbug/1378703): Remove after crbug/1378703 launched.
-suite('CrSettingsCookiesPageTest_lacrosSecondaryProfile', function() {
+suite('LacrosSecondaryProfile', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
 

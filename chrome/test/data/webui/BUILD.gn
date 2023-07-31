@@ -69,6 +69,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    "//build/config/coverage:buildflags",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/test:test_support",
     "//components/bookmarks/browser:browser",

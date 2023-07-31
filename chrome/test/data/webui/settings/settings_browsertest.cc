@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/config/coverage/buildflags.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -19,6 +21,8 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 };
 
 using SettingsTest = SettingsBrowserTest;
+
+// Note: Keep tests below in alphabetical ordering.
 
 // Copied from Polymer 2 test:
 // Times out on debug builders because the Settings page can take several
@@ -477,6 +481,69 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
                        DISABLED_ClearBrowsingDataForSupervisedUsers) {
   RunTest("settings/clear_browsing_data_test.js",
           "runMochaSuite('ClearBrowsingDataForSupervisedUsers')");
+}
+
+class SettingsCookiesPageTest : public SettingsBrowserTest {
+ protected:
+  SettingsCookiesPageTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            privacy_sandbox::kPrivacySandboxSettings4,
+            privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+            features::kPreloadingDesktopSettingsSubPage,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)) || \
+    BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+#define MAYBE_CookiesPageTest DISABLED_CookiesPageTest
+#else
+#define MAYBE_CookiesPageTest CookiesPageTest
+#endif
+// TODO(crbug.com/1409653): fix flakiness on Linux and ChromeOS debug and
+// Javascript code coverage builds and re-enable.
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, MAYBE_CookiesPageTest) {
+  RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, FirstPartySetsUIDisabled) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('FirstPartySetsUIDisabled')");
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, LacrosSecondaryProfile) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('LacrosSecondaryProfile')");
+}
+#endif
+
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
+    BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+#define MAYBE_PrivacySandboxSettings4Disabled2 \
+  DISABLED_PrivacySandboxSettings4Disabled
+#else
+#define MAYBE_PrivacySandboxSettings4Disabled2 PrivacySandboxSettings4Disabled
+#endif
+// TODO(crbug.com/1409653): fix flakiness on Linux debug and Javascript code
+// coverage builds and re-enable.
+// The "MAYBE..." portion of the test has a 2 at the end because there is
+// already a macro with the same name defined in this file.
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
+                       MAYBE_PrivacySandboxSettings4Disabled2) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('PrivacySandboxSettings4Disabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
+                       PreloadingDesktopSettingsSubPageDisabled) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('PreloadingDesktopSettingsSubPageDisabled')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -975,6 +1042,84 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteListTest,
                        AddExceptionDialog_PrivacySandbox4Disabled) {
   RunTest("settings/site_list_test.js",
           "runMochaSuite('AddExceptionDialog_PrivacySandbox4Disabled')");
+}
+
+class SettingsSiteSettingsPageTest : public SettingsBrowserTest {
+ protected:
+  SettingsSiteSettingsPageTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            privacy_sandbox::kPrivacySandboxSettings4,
+            content_settings::features::kSafetyCheckUnusedSitePermissions,
+            permissions::features::kPermissionStorageAccessAPI,
+            features::kSafetyHub,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/1401833): Flaky.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_SiteSettingsPage DISABLED_SiteSettingsPage
+#else
+#define MAYBE_SiteSettingsPage SiteSettingsPage
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, MAYBE_SiteSettingsPage) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('SiteSettingsPage')");
+}
+
+// TODO(crbug.com/1401833): Flaky.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_PrivacySandboxSettings4Disabled \
+  DISABLED_PrivacySandboxSettings4Disabled
+#else
+#define MAYBE_PrivacySandboxSettings4Disabled PrivacySandboxSettings4Disabled
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
+                       MAYBE_PrivacySandboxSettings4Disabled) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('PrivacySandboxSettings4Disabled')");
+}
+
+// TODO(crbug.com/1401833): Flaky.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_UnusedSitePermissionsReview DISABLED_UnusedSitePermissionsReview
+#else
+#define MAYBE_UnusedSitePermissionsReview UnusedSitePermissionsReview
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
+                       MAYBE_UnusedSitePermissionsReview) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('UnusedSitePermissionsReview')");
+}
+
+// TODO(crbug.com/1401833): Flaky.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_UnusedSitePermissionsReviewDisabled \
+  DISABLED_UnusedSitePermissionsReviewDisabled
+#else
+#define MAYBE_UnusedSitePermissionsReviewDisabled \
+  UnusedSitePermissionsReviewDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
+                       MAYBE_UnusedSitePermissionsReviewDisabled) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('UnusedSitePermissionsReviewDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
+                       PermissionStorageAccessApiDisabled) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('PermissionStorageAccessApiDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SafetyHubDisabled) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('SafetyHubDisabled')");
 }
 
 using SettingsTranslatePageTest = SettingsBrowserTest;
