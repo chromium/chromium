@@ -657,6 +657,8 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
 }
 
 void PerformDeskBarSlideAnimation(DeskBarViewBase* bar_view) {
+  TRACE_EVENT0("ui", "PerformDeskBarSlideAnimation");
+
   gfx::Transform transform;
   transform.Translate(0, -bar_view->height());
 

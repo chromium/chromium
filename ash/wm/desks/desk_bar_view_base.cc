@@ -252,6 +252,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
   // TODO(conniekxu): After CrOS Next is launched, remove function
   // `LayoutInternal`, and move this to Layout.
   void LayoutInternalCrOSNext(views::View* host) {
+    TRACE_EVENT0("ui", "DeskBarScrollViewLayout::LayoutInternalCrOSNext");
+
     const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
 
     auto* new_desk_button_label = bar_view_->new_desk_button_label();
@@ -730,6 +732,8 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
 }
 
 void DeskBarViewBase::Layout() {
+  TRACE_EVENT0("ui", "DeskBarViewBase::Layout");
+
   if (is_bounds_animation_on_going_) {
     return;
   }
@@ -1525,6 +1529,8 @@ void DeskBarViewBase::OnDeskNameChanged(const Desk* desk,
 
 void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
                                          bool expanding_bar_view) {
+  TRACE_EVENT0("ui", "DeskBarViewBase::UpdateNewMiniViews");
+
   const auto& desks = DesksController::Get()->desks();
   if (initializing_bar_view) {
     UpdateDeskButtonsVisibility();

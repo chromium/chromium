@@ -100,6 +100,8 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
                            aura::Window* root_window,
                            Desk* desk)
     : owner_bar_(owner_bar), root_window_(root_window), desk_(desk) {
+  TRACE_EVENT0("ui", "DeskMiniView::DeskMiniView");
+
   DCHECK(root_window_);
   DCHECK(root_window_->IsRootWindow());
 

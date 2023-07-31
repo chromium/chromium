@@ -296,6 +296,7 @@ void OverviewItem::EnsureVisible() {
 }
 
 void OverviewItem::Shutdown() {
+  TRACE_EVENT0("ui", "OverviewItem::Shutdown");
   // If `hide_windows` still manages the visibility of this overview item
   // window, remove it from the list without showing.
   ScopedOverviewHideWindows* hide_windows =
@@ -1338,6 +1339,8 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
 }
 
 void OverviewItem::CreateItemWidget() {
+  TRACE_EVENT0("ui", "OverviewItem::CreateItemWidget");
+
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;

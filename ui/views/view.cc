@@ -3315,6 +3315,8 @@ void View::CreateLayer(ui::LayerType layer_type) {
 }
 
 bool View::UpdateParentLayers() {
+  TRACE_EVENT1("views", "View::UpdateParentLayers", "class", GetClassName());
+
   // Attach all top-level un-parented layers.
   if (layer()) {
     if (!layer()->parent()) {

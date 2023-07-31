@@ -171,6 +171,8 @@ OverviewSession::~OverviewSession() {
 // constructed object.
 void OverviewSession::Init(const WindowList& windows,
                            const WindowList& hide_windows) {
+  TRACE_EVENT0("ui", "OverviewSession::Init");
+
   Shell::Get()->AddShellObserver(this);
 
   if (saved_desk_util::IsSavedDesksEnabled()) {
@@ -284,6 +286,8 @@ void OverviewSession::Init(const WindowList& windows,
 // may cause other, unrelated classes, to make indirect calls to
 // `restoring_minimized_windows()` on a partially destructed object.
 void OverviewSession::Shutdown() {
+  TRACE_EVENT0("ui", "OverviewSession::Shutdown");
+
   bool was_saved_desk_library_showing = false;
   for (auto& grid : grid_list_) {
     if (grid->IsShowingSavedDeskLibrary()) {

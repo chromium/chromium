@@ -417,6 +417,8 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
               ? std::make_unique<SplitViewDragIndicators>(root_window)
               : nullptr),
       bounds_(GetGridBoundsInScreen(root_window)) {
+  TRACE_EVENT0("ui", "OverviewGrid::OverviewGrid");
+
   for (auto* window : windows) {
     if (window->GetRootWindow() != root_window)
       continue;
@@ -440,6 +442,8 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
 OverviewGrid::~OverviewGrid() = default;
 
 void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
+  TRACE_EVENT0("ui", "OverviewGrid::Shutdown");
+
   EndNudge();
 
   SplitViewController::Get(root_window_)->RemoveObserver(this);
@@ -2247,6 +2251,7 @@ SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
 }
 
 void OverviewGrid::MaybeInitDesksWidget() {
+  TRACE_EVENT0("ui", "OverviewGrid::MaybeInitDesksWidget");
   if (!desks_util::ShouldDesksBarBeCreated() || desks_widget_)
     return;
 

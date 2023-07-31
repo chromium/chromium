@@ -338,6 +338,8 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
       force_occlusion_tracker_visible_(
           std::make_unique<aura::WindowOcclusionTracker::ScopedForceVisible>(
               mini_view->GetDeskContainer())) {
+  TRACE_EVENT0("ui", "DeskPreviewView::DeskPreviewView");
+
   DCHECK(mini_view_);
 
   SetFocusPainter(nullptr);
@@ -400,6 +402,8 @@ void DeskPreviewView::SetHighlightOverlayVisibility(bool visible) {
 }
 
 void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
+  TRACE_EVENT0("ui", "DeskPreviewView::RecreateDeskContentsMirrorLayers");
+
   auto* desk_container = mini_view_->GetDeskContainer();
   DCHECK(desk_container);
   DCHECK(desk_container->layer());
