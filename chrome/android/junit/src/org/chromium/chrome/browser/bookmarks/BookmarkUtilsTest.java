@@ -193,7 +193,7 @@ public class BookmarkUtilsTest {
         assertEquals(MOBILE_BOOKMARK_ID,
                 BookmarkUtils.getParentFolderForViewing(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
         assertEquals(ROOT_BOOKMARK_ID,
-                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, OTHER_BOOKMARK_ID));
     }
 
     @Test
@@ -202,6 +202,6 @@ public class BookmarkUtilsTest {
         assertEquals(ROOT_BOOKMARK_ID,
                 BookmarkUtils.getParentFolderForViewing(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
         assertEquals(ROOT_BOOKMARK_ID,
-                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, OTHER_BOOKMARK_ID));
     }
 }

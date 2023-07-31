@@ -794,7 +794,7 @@ public class BookmarkUtils {
         BookmarkId parent = item.getParentId();
         if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return parent;
 
-        boolean skipToRoot = Objects.equals(parent, bookmarkModel.getDesktopFolderId())
+        boolean skipToRoot = Objects.equals(parent, bookmarkModel.getOtherFolderId())
                 || Objects.equals(parent, bookmarkModel.getMobileFolderId());
         return skipToRoot ? bookmarkModel.getRootFolderId() : parent;
     }
