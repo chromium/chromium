@@ -523,12 +523,14 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForOptimal>(
           node);
     }
-  } else if (UNLIKELY(wrap == TextWrap::kBalance)) {
-    if (RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled() &&
-        !node.IsScoreLineBreakDisabled()) {
+    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPrettyFail);
+  } else if (UNLIKELY(wrap == TextWrap::kBalance) &&
+             RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled()) {
+    if (!node.IsScoreLineBreakDisabled()) {
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForBalance>(
           node);
     }
+    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalanceFail);
   }
   return LayoutWithSimpleInlineChildLayoutContext(node);
 }
