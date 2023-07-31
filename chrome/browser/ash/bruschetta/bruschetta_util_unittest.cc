@@ -6,6 +6,7 @@
 
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -52,6 +53,39 @@ TEST(BruschettaUtilTest, GetFirstVmNameFromPolicy) {
   EXPECT_EQ(GetFirstVmNameFromPolicy(&profile), absl::nullopt);
   SetPolicy(&profile);
   EXPECT_EQ(GetFirstVmNameFromPolicy(&profile), "def");
+}
+
+TEST(BruschettaUtilTest, GetDisplayNameNotInPrefs) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ASSERT_EQ(GetDisplayName(&profile, GetBruschettaAlphaId()), "bru");
+}
+
+TEST(BruschettaUtilTest, GetDisplayNameInPrefs) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  profile.GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
+                              base::test::ParseJsonDict(R"(
+    {
+      "config": {
+          "name": "Display Name",
+          "enabled_state": 2,
+          "display_order": 1
+      },
+    }
+  )"));
+  profile.GetPrefs()->SetList(guest_os::prefs::kGuestOsContainers,
+                              base::test::ParseJsonList(R"(
+    [
+      {
+        "vm_name": "bru",
+        "container_name": "penguin",
+        "bruschetta_config_id": "config"
+      }
+    ]
+  )"));
+
+  ASSERT_EQ(GetDisplayName(&profile, GetBruschettaAlphaId()), "Display Name");
 }
 
 }  // namespace bruschetta

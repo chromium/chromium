@@ -53,7 +53,7 @@ class BruschettaUninstallerView : public views::BubbleDialogDelegateView {
                                      guest_os::GuestId guest_id);
   ~BruschettaUninstallerView() override;
 
-  void HandleError(const std::u16string& error_message);
+  void HandleError();
   void UninstallBruschettaFinished(bool success);
 
   State state_ = State::PROMPT;

@@ -182,4 +182,17 @@ absl::optional<std::string> GetFirstVmNameFromPolicy(Profile* profile) {
   return configs[0].first;
 }
 
+std::string GetDisplayName(Profile* profile, guest_os::GuestId guest) {
+  auto config =
+      GetConfigForGuest(profile, guest, prefs::PolicyEnabledState::BLOCKED);
+  if (!config.has_value() || !config.value()) {
+    // If the config doesn't exist, the terminal will default to
+    // <vm_name>:<container_name>, but container_name isn't meaningful for us
+    // so just use the vm_name instead.
+    return guest.vm_name;
+  }
+
+  return *config.value()->FindString(prefs::kPolicyNameKey);
+}
+
 }  // namespace bruschetta

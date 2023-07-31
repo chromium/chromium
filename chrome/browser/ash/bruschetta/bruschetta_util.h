@@ -87,6 +87,9 @@ std::string GetVmUsername(const Profile* profile);
 // absl::nullopt if the policy is not available.
 absl::optional<std::string> GetFirstVmNameFromPolicy(Profile* profile);
 
+// Gets the display name of the specified `guest` running under `profile`.
+std::string GetDisplayName(Profile* profile, guest_os::GuestId guest);
+
 }  // namespace bruschetta
 
 #endif  // CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_

@@ -22,16 +22,7 @@ BruschettaTerminalProvider::BruschettaTerminalProvider(
 BruschettaTerminalProvider::~BruschettaTerminalProvider() = default;
 
 std::string BruschettaTerminalProvider::Label() {
-  auto config = GetConfigForGuest(profile_, guest_id_,
-                                  prefs::PolicyEnabledState::BLOCKED);
-  if (!config.has_value() || !config.value()) {
-    // If the config doesn't exist, the terminal will default to
-    // <vm_name>:<container_name>, but container_name isn't meaningful for us
-    // so just use the vm_name instead.
-    return guest_id_.vm_name;
-  }
-
-  return *config.value()->FindString(prefs::kPolicyNameKey);
+  return GetDisplayName(profile_, guest_id_);
 }
 
 guest_os::GuestId BruschettaTerminalProvider::GuestId() {

@@ -5335,10 +5335,10 @@
     Install failed, cleaning up
   </message>
   <message name="IDS_BRUSCHETTA_UNINSTALLER_TITLE" desc="Title of the Bruschetta (codename) uninstaller, a dialog for uninstalling Bruschetta, the associated VM and files.">
-    Remove Bruschetta
+    Remove <ph name="VM_NAME">$1<ex>Bruschetta</ex></ph>
   </message>
   <message name="IDS_BRUSCHETTA_UNINSTALLER_BODY" desc="Description for the Bruschetta (codename) uninstaller, a dialog for uninstalling Bruschetta, the associated VM and files.">
-    Remove Bruschetta from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>? This will delete all apps and data in the virtual machine!
+    Remove <ph name="VM_NAME">$1<ex>Bruschetta</ex></ph> from your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>? This will delete all apps and data in the virtual machine!
   </message>
   <message name="IDS_BRUSCHETTA_UNINSTALLER_UNINSTALL_BUTTON" desc="Label for the button in the Bruschetta uninstaller dialog to uninstall the VM.">
     Remove
@@ -5347,7 +5347,7 @@
     Removing...
   </message>
   <message name="IDS_BRUSCHETTA_UNINSTALLER_ERROR" desc="Text shown in the Bruschetta (codename) uninstaller dialog when uninstallation fails.">
-    Error removing Bruschetta. Please try again.
+    Error removing <ph name="VM_NAME">$1<ex>Bruschetta</ex></ph>. Please try again.
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_RETRY_BUTTON" desc="Button for Bruschetta (Codename) installer to retry after failing.">
     Retry
