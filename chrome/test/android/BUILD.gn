@@ -155,6 +155,7 @@ chrome_public_test_apk_tmpl("chrome_java_test_feed_test") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/embedder_support/android:util_java",
+    "//components/signin/public/android:java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",
     "//third_party/android_deps:com_android_support_drawerlayout_java",

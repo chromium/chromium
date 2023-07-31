@@ -156,6 +156,9 @@ def _EnsureDirectClasspathIsComplete(
     if os.environ.get('AUTO_ADD_MISSING_DEPS') != '1':
       print_and_maybe_exit()
     else:
+      # Normalize chrome_public_apk__java to chrome_public_apk.
+      gn_target = gn_target.split('__', 1)[0]
+
       # TODO(https://crbug.com/1099522): This should be generalized into util.
       build_file_path = _GnTargetToBuildFilePath(gn_target)
       cmd = [
@@ -174,17 +177,29 @@ def _EnsureDirectClasspathIsComplete(
         suggested_deps = dep_utils.DisambiguateDeps(suggested_deps)
         missing_deps.add(suggested_deps[0].target)
       cmd += missing_deps
+      failed = False
+
       try:
-        build_utils.CheckOutput(cmd, cwd=build_utils.DIR_SOURCE_ROOT)
+        stdout = build_utils.CheckOutput(cmd,
+                                         cwd=build_utils.DIR_SOURCE_ROOT,
+                                         fail_on_output=warnings_as_errors)
+        if f'Unable to find {gn_target}' in stdout:
+          # This can happen if a target's deps are stored in a variable instead
+          # of a list and then simply assigned: `deps = deps_variable`. These
+          # need to be manually added to the `deps_variable`.
+          failed = True
       except build_utils.CalledProcessError as e:
         if NO_VALID_GN_STR in e.output:
-          print(f'Unable to add missing dep(s) to {build_file_path}.')
-          print_and_maybe_exit()
+          failed = True
         else:
           raise
+      if failed:
+        print(f'Unable to auto-add missing dep(s) to {build_file_path}.')
+        print_and_maybe_exit()
       else:
-        print(f'Successfully updated {build_file_path} with missing direct '
-              f'deps: {missing_deps}')
+        gn_target_name = gn_target.split(':', 1)[-1]
+        print(f'Successfully updated "{gn_target_name}" in {build_file_path} '
+              f'with missing direct deps: {missing_deps}')
 
 
 def main(argv):

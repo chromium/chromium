@@ -324,6 +324,9 @@ class BuildFile:
                                                       new_dep_name)
                 dep_list.child_nodes.append(new_dep)
                 added_new_dep = True
+        if not added_new_dep:
+            # This should match the string in bytecode_processor.py.
+            print(f'Unable to find {target}')
         return added_new_dep
 
     def search_deps(self, name_query: Optional[str],

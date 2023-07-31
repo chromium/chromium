@@ -24,6 +24,7 @@ android_library("java") {
     "//components/feature_engagement/public:public_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
     "//ui/android:ui_java_resources",
     "//url:gurl_java",
   ]
