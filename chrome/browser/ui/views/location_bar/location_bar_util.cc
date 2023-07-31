@@ -19,9 +19,10 @@ void ConfigureInkDropForRefresh2023(views::View* const view,
                                     const ChromeColorIds hover_color_id,
                                     const ChromeColorIds ripple_color_id) {
   // TODO(crbug.com/1450984): Figure out if one of these are redundant.
-  CHECK(features::IsChromeRefresh2023() ||
-        OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-        base::FeatureList::IsEnabled(omnibox::kExpandedStateColors));
+  CHECK(features::CustomizeChromeSupportsChromeRefresh2023() &&
+        (features::IsChromeRefresh2023() ||
+         OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
+         base::FeatureList::IsEnabled(omnibox::kExpandedStateColors)));
 
   views::InkDrop::Get(view)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(view)->SetLayerRegion(views::LayerRegion::kAbove);

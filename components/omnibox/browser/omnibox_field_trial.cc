@@ -675,29 +675,24 @@ const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     6);
 
 bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
-  static bool enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
+  static bool enabled = omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kOmniboxCR23SteadyStateIcons);
   return enabled;
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kExpandedStateSuggestIcons);
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kExpandedStateSuggestIcons);
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kCr2023ActionChipsIcons);
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kCr2023ActionChipsIcons);
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kSuggestionHoverFillShape);
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kSuggestionHoverFillShape);
 }
 
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
@@ -741,10 +736,8 @@ bool OmniboxFieldTrial::IsCr23LayoutEnabled() {
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSteadyStateBackgroundColorEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(
-             omnibox::kOmniboxSteadyStateBackgroundColor);
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kOmniboxSteadyStateBackgroundColor);
 }
 
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
