@@ -20,6 +20,15 @@ struct VectorIcon;
 
 namespace chrome {
 
+class ScopedDeviceManagerForTesting {
+ public:
+  explicit ScopedDeviceManagerForTesting(const char* manager);
+  ~ScopedDeviceManagerForTesting();
+
+ private:
+  const char* previous_manager_ = nullptr;
+};
+
 // Returns true if a 'Managed by <...>' message should appear in
 // Chrome's App Menu, and on the following chrome:// pages:
 // - chrome://bookmarks

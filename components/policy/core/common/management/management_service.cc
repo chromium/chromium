@@ -179,6 +179,21 @@ bool ManagementService::IsManaged() {
          ManagementAuthorityTrustworthiness::NONE;
 }
 
+bool ManagementService::IsAccountManaged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return HasManagementAuthority(policy::EnterpriseManagementAuthority::CLOUD);
+}
+
+bool ManagementService::IsBrowserManaged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return HasManagementAuthority(
+             policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) ||
+         HasManagementAuthority(
+             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL) ||
+         HasManagementAuthority(
+             policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+}
+
 void ManagementService::SetManagementStatusProvider(
     std::vector<std::unique_ptr<ManagementStatusProvider>> providers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
