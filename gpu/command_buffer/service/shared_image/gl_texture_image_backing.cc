@@ -12,9 +12,9 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -368,9 +368,92 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     return nullptr;
   }
 
-  return GLTextureImageBackingHelper::ProduceDawnCommon(
-      factory(), manager, tracker, device, backend_type,
-      std::move(view_formats), this, IsPassthrough());
+  // Make SharedContextState from factory the current context
+  SharedContextState* shared_context_state = factory()->GetSharedContextState();
+  if (!shared_context_state->MakeCurrent(nullptr, true)) {
+    DLOG(ERROR) << "Cannot make util SharedContextState the current context";
+    return nullptr;
+  }
+
+  Mailbox dst_mailbox = Mailbox::GenerateForSharedImage();
+
+  bool success = factory()->CreateSharedImage(
+      dst_mailbox, format(), size(), color_space(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
+      usage() | SHARED_IMAGE_USAGE_WEBGPU, "ProduceDawnCommon");
+  if (!success) {
+    DLOG(ERROR) << "Cannot create a shared image resource for internal blit";
+    return nullptr;
+  }
+
+  // Create a representation for current backing to avoid non-expected release
+  // and using scope access methods.
+  std::unique_ptr<GLTextureImageRepresentationBase> src_image;
+  std::unique_ptr<GLTextureImageRepresentationBase> dst_image;
+  if (IsPassthrough()) {
+    src_image = manager->ProduceGLTexturePassthrough(mailbox(), tracker);
+    dst_image = manager->ProduceGLTexturePassthrough(dst_mailbox, tracker);
+  } else {
+    src_image = manager->ProduceGLTexture(mailbox(), tracker);
+    dst_image = manager->ProduceGLTexture(dst_mailbox, tracker);
+  }
+
+  if (!src_image || !dst_image) {
+    DLOG(ERROR) << "ProduceDawn: Couldn't produce shared image for copy";
+    return nullptr;
+  }
+
+  std::unique_ptr<GLTextureImageRepresentationBase::ScopedAccess>
+      source_access = src_image->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  if (!source_access) {
+    DLOG(ERROR) << "ProduceDawn: Couldn't access shared image for copy.";
+    return nullptr;
+  }
+
+  std::unique_ptr<GLTextureImageRepresentationBase::ScopedAccess> dest_access =
+      dst_image->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  if (!dest_access) {
+    DLOG(ERROR) << "ProduceDawn: Couldn't access shared image for copy.";
+    return nullptr;
+  }
+
+  GLuint source_texture = src_image->GetTextureBase()->service_id();
+  GLuint dest_texture = dst_image->GetTextureBase()->service_id();
+  DCHECK_NE(source_texture, dest_texture);
+
+  GLenum target = dst_image->GetTextureBase()->target();
+
+  // Ensure skia's internal cache of GL context state is reset before using it.
+  // TODO(crbug.com/1036142): Figure out cases that need this invocation.
+  shared_context_state->PessimisticallyResetGrContext();
+
+  if (IsPassthrough()) {
+    gl::GLApi* gl = shared_context_state->context_state()->api();
+
+    gl->glCopySubTextureCHROMIUMFn(source_texture, 0, target, dest_texture, 0,
+                                   0, 0, 0, 0, dst_image->size().width(),
+                                   dst_image->size().height(), false, false,
+                                   false);
+  } else {
+    // TODO(crbug.com/1036142): Implement copyTextureCHROMIUM for validating
+    // path.
+    NOTREACHED();
+    return nullptr;
+  }
+
+  // Set cleared flag for internal backing to prevent auto clear.
+  dst_image->SetCleared();
+
+  // Safe to destroy factory()'s ref. The backing is kept alive by GL
+  // representation ref.
+  factory()->DestroySharedImage(dst_mailbox);
+
+  return manager->ProduceDawn(dst_mailbox, tracker, device, backend_type,
+                              std::move(view_formats));
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>

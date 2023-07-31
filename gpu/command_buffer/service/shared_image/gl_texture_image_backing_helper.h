@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_IMAGE_BACKING_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_utils.h"
@@ -96,19 +95,6 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
       bool framebuffer_attachment_angle,
       scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
       raw_ptr<gles2::Texture>* texture);
-
-  // Create a Dawn backing. This will use |backing|'s ProduceGLTexture or
-  // ProduceGLTexturePassthrough method, and populate the dawn backing via
-  // CopyTextureCHROMIUM.
-  static std::unique_ptr<DawnImageRepresentation> ProduceDawnCommon(
-      SharedImageFactory* factory,
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      const wgpu::Device& device,
-      wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats,
-      SharedImageBacking* backing,
-      bool use_passthrough);
 };
 
 }  // namespace gpu
