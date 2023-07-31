@@ -141,30 +141,24 @@ def _bootstrap_properties(ctx):
                 continue
 
             builder_properties = json.decode(builder.properties)
-            builder_shadow_properties = None
-            if proto.has(builder, "shadow_builder_adjustments") and builder.shadow_builder_adjustments.properties:
-                builder_shadow_properties = json.decode(builder.shadow_builder_adjustments.properties)
             bootstrapper_args = []
 
             if recipe_bootstrappability_node.props.bootstrappability == POLYMORPHIC:
                 non_bootstrapped_properties = builder_properties
-                non_bootstrapped_shadow_properties = builder_shadow_properties
 
                 # TODO(gbeaty) Once all builder specs are migrated src-side,
                 # remove -properties-optional
                 bootstrapper_args = ["-polymorphic", "-properties-optional"]
 
             else:
-                def get_non_bootstrapped_properties(props):
-                    return {p: props[p] for p in _NON_BOOTSTRAPPED_PROPERTIES if p in props}
+                non_bootstrapped_properties = {}
 
-                non_bootstrapped_properties = get_non_bootstrapped_properties(builder_properties)
-                non_bootstrapped_shadow_properties = None
-                if builder_shadow_properties != None:
-                    non_bootstrapped_shadow_properties = get_non_bootstrapped_properties(builder_shadow_properties)
+                for p in _NON_BOOTSTRAPPED_PROPERTIES:
+                    if p in builder_properties:
+                        non_bootstrapped_properties[p] = builder_properties[p]
 
                 properties_file = "builders/{}/{}/properties.json".format(bucket_name, builder_name)
-                bootstrap_property = {
+                non_bootstrapped_properties["$bootstrap/properties"] = {
                     "top_level_project": {
                         "repo": {
                             "host": "chromium.googlesource.com",
@@ -174,12 +168,6 @@ def _bootstrap_properties(ctx):
                     },
                     "properties_file": "infra/config/generated/{}".format(properties_file),
                 }
-                if builder_shadow_properties:
-                    shadow_properties_file = "builders/{}/{}/shadow-properties.json".format(bucket_name, builder_name)
-                    bootstrap_property["shadow_properties_file"] = "infra/config/generated/{}".format(shadow_properties_file)
-                    ctx.output[shadow_properties_file] = json.indent(json.encode(builder_shadow_properties), indent = "  ")
-
-                non_bootstrapped_properties["$bootstrap/properties"] = bootstrap_property
                 ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
 
             if bootstrap_node.props.bootstrap:
@@ -191,10 +179,6 @@ def _bootstrap_properties(ctx):
                 })
 
                 builder.properties = json.encode(non_bootstrapped_properties)
-                if non_bootstrapped_shadow_properties:
-                    builder.shadow_builder_adjustments.properties = json.encode(non_bootstrapped_shadow_properties)
-                elif non_bootstrapped_shadow_properties != None:
-                    builder.shadow_builder_adjustments.properties = None
 
                 builder.exe.cipd_package = "infra/chromium/bootstrapper/${platform}"
                 builder.exe.cipd_version = "latest"
