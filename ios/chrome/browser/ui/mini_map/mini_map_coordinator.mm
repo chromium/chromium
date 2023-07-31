@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_action_handler.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_interstitial_view_controller.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/web/annotations/annotations_util.h"
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -117,16 +119,25 @@
   }];
 }
 
-- (void)mapDismissed {
+- (void)mapDismissedRequestingURL:(NSURL*)url {
   _showingMap = NO;
+  if (url) {
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithURLFromChrome:net::GURLWithNSURL(url)
+                     inIncognito:self.browser->GetBrowserState()
+                                     ->IsOffTheRecord()];
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationHandler openURLInNewTab:command];
+  }
   [self workFlowEnded];
 }
 
 - (void)actualShowMap {
   __weak __typeof(self) weakSelf = self;
   self.miniMapController =
-      ios::provider::CreateMiniMapController(self.text, ^(NSURL*) {
-        [weakSelf mapDismissed];
+      ios::provider::CreateMiniMapController(self.text, ^(NSURL* url) {
+        [weakSelf mapDismissedRequestingURL:url];
       });
   if (self.mode == MiniMapMode::kDirections) {
     [self.miniMapController
