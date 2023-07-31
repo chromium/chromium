@@ -48,7 +48,7 @@ theme_color_picker::mojom::ChromeColorPtr CreateChromeColor(
   color->seed = color_info.color;
   color->background = theme_colors.active_tab_color;
   color->foreground = theme_colors.frame_color;
-  color->variant = ui::mojom::BrowserColorVariant::kTonalSpot;
+  color->variant = ui::mojom::BrowserColorVariant::kSystem;
   return color;
 }
 
