@@ -70,6 +70,12 @@ CANONICAL_PUBLIC_TARGETS = {
     "//ios/chrome/app/strings:strings",
     "//components/strings:components_strings_grit":
     "//components/strings:strings",
+    "//components/sessions:shared":
+    "//components/sessions:sessions",
+    "//base/numerics:base_numerics":
+    "//base:base",
+    "//third_party/abseil-cpp/absl/types:optional":
+    "//base:base",
 }
 
 
