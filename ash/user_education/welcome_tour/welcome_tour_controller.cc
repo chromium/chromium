@@ -290,9 +290,15 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   session_observation_.Reset();
 
   // Welcome Tour is not supported for "existing" users.
+  // NOTE: If it is not known whether the user is "new" or "existing" when this
+  // code is reached, the user is treated as "existing" since the Welcome Tour
+  // cannot be delayed and we want to err on the side of being conservative.
   if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
-    // TODO(http://b/291970413): Enforce user eligibility requirements.
-    NOTIMPLEMENTED();
+    if (!UserEducationController::Get()
+             ->IsNewUser(UserEducationPrivateApiKey())
+             .value_or(false)) {
+      return;
+    }
   }
 
   // Welcome Tour is not supported in tablet mode.

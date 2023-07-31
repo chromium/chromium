@@ -59,7 +59,12 @@ MATCHER_P(RootWindow, matcher, "") {
 class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
  public:
   WelcomeTourInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kWelcomeTour);
+    // NOTE: These tests are not concerned with user eligibility, so explicitly
+    // force user eligibility for the Welcome Tour.
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kWelcomeTour,
+         ash::features::kWelcomeTourForceUserEligibility},
+        {});
 
     // TODO(http://b/277091006): Remove after preventing app launches.
     // Prevent the browser from launching as it is not needed to fully exercise

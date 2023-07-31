@@ -73,6 +73,7 @@ using ::testing::NotNull;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::ReturnRefOfCopy;
 using ::testing::StrictMock;
 using ::user_education::HelpBubbleArrow;
 using ::user_education::TutorialDescription;
@@ -224,6 +225,19 @@ class WelcomeTourControllerTest : public UserEducationAshTestBase {
     // feature is enabled. Controller existence is verified in test coverage
     // for the controller's owner.
     scoped_feature_list_.InitAndEnableFeature(features::kWelcomeTour);
+  }
+
+ protected:
+  // UserEducationAshTestBase:
+  void SetUp() override {
+    UserEducationAshTestBase::SetUp();
+
+    // Most tests of the `WelcomeTourController` are not concerned with user
+    // eligibility, so provide a default implementation of `IsNewUser()` which
+    // returns that the given user is "new" on invocation. "New"-ness is
+    // required for the user to be eligible for the Welcome Tour.
+    ON_CALL(*user_education_delegate(), IsNewUser)
+        .WillByDefault(ReturnRefOfCopy(absl::make_optional(true)));
   }
 
  private:
@@ -427,6 +441,78 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
   ASSERT_TRUE(cancel_button);
   LeftClickOn(cancel_button);
   EXPECT_TRUE(ended_future.Wait());
+}
+
+// WelcomeTourControllerUserEligibilityTest ------------------------------------
+
+// Base class for tests of the `WelcomeTourController` which are concerned with
+// user eligibility, parameterized by:
+// (a) whether to force user eligibility via feature flag, and
+// (b) whether the user should be considered "new", "existing" or "unknown".
+class WelcomeTourControllerUserEligibilityTest
+    : public WelcomeTourControllerTest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*force_user_eligibility=*/bool,
+          /*is_new_user=*/absl::optional<bool>>> {
+ public:
+  WelcomeTourControllerUserEligibilityTest() {
+    // Conditionally force user eligibility based on test parameterization.
+    scoped_feature_list_.InitWithFeatureState(
+        features::kWelcomeTourForceUserEligibility, ForceUserEligibility());
+  }
+
+  // Returns whether user eligibility is forced based on test parameterization.
+  bool ForceUserEligibility() const { return std::get<0>(GetParam()); }
+
+  // Returns whether the user should be considered "new" based on test
+  // parameterization.
+  const absl::optional<bool>& IsNewUser() const {
+    return std::get<1>(GetParam());
+  }
+
+ private:
+  // WelcomeTourControllerTest:
+  void SetUp() override {
+    WelcomeTourControllerTest::SetUp();
+
+    // Provide an implementation of `IsNewUser()` which returns whether a given
+    // user should be considered "new" based on test parameterization.
+    ON_CALL(*user_education_delegate(), IsNewUser)
+        .WillByDefault(ReturnRefOfCopy(IsNewUser()));
+  }
+
+  // Used to conditionally force user eligibility based on test
+  // parameterization.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WelcomeTourControllerUserEligibilityTest,
+                         ::testing::Combine(
+                             /*force_user_eligibility=*/::testing::Bool(),
+                             /*is_new_user=*/
+                             ::testing::Values(absl::make_optional(true),
+                                               absl::make_optional(false),
+                                               absl::nullopt)));
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that user eligibility for the Welcome Tour is enforced as expected.
+TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
+  // A user is eligible for the Welcome Tour if and only if:
+  // (a) user eligibility is being explicitly forced, or
+  // (b) the user is known to be "new" on session activation.
+  const bool is_user_eligibility_expected =
+      ForceUserEligibility() || IsNewUser().value_or(false);
+
+  // Set expectations for whether the Welcome Tour will run.
+  EXPECT_CALL(*user_education_delegate(),
+              StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+      .Times(is_user_eligibility_expected ? 1u : 0u);
+
+  // Login the primary user and verify expectations.
+  SimulateUserLogin("primary@test");
+  Mock::VerifyAndClearExpectations(user_education_delegate());
 }
 
 // WelcomeTourControllerRunTest ------------------------------------------------
@@ -675,8 +761,7 @@ class WelcomeTourAcceleratorHandlerRunTest
   void SetUp() override {
     WelcomeTourControllerRunTest::SetUp();
 
-    // Create a mock pre-target event handler that always consumes the received
-    // events.
+    // Create a mock pre-target event handler that always consumes key events.
     mock_pretarget_event_handler_ =
         std::make_unique<MockPretargetEventHandler>();
     ON_CALL(*mock_pretarget_event_handler_, OnKeyEvent)

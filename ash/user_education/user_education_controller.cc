@@ -71,6 +71,15 @@ UserEducationController::GetElementIdentifierForAppId(
   return delegate_->GetElementIdentifierForAppId(app_id);
 }
 
+const absl::optional<bool>& UserEducationController::IsNewUser(
+    UserEducationPrivateApiKey) const {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  return delegate_->IsNewUser(account_id);
+}
+
 void UserEducationController::LaunchSystemWebAppAsync(
     UserEducationPrivateApiKey,
     SystemWebAppType system_web_app_type,

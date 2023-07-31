@@ -49,6 +49,14 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   absl::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const;
 
+  // If present, indicates whether the currently active user is considered new.
+  // A user is considered new if the first app list sync in the session was the
+  // first sync ever across all ChromeOS devices and sessions for the given
+  // user. As such, this value is absent until the first app list sync of the
+  // session is completed.
+  // NOTE: Currently only the primary user profile is supported.
+  const absl::optional<bool>& IsNewUser(UserEducationPrivateApiKey) const;
+
   // Attempts to launch the system web app associated with the given type on
   // the display associated with the given ID asynchronously.
   // NOTE: Currently only the primary user profile is supported.
