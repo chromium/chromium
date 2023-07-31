@@ -8398,7 +8398,7 @@ bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
     const url::Origin& origin,
     const blink::mojom::PermissionsPolicyFeature feature) {
   const blink::PermissionsPolicyFeatureList& feature_list =
-      blink::GetPermissionsPolicyFeatureList(origin);
+      blink::GetPermissionsPolicyFeatureList();
 
   // Check if the outer document's permissions policies allow all of the
   // required policies.

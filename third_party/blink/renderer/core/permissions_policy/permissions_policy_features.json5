@@ -396,8 +396,6 @@
       depends_on: ["WebUSB"],
     },
     {
-      // Unload is special and can default to being disabled by default based
-      // on the DeprecateUnload flag.
       name: "Unload",
       permissions_policy_name: "unload",
       feature_default: "EnableForAll",
