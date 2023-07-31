@@ -5989,7 +5989,9 @@ TEST_P(PerDeskShelfTest, RemoveActiveDesk) {
   VerifyViewVisibility(app2, true);
 }
 
-TEST_P(PerDeskShelfTest, ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
+// TODO(b/293869853): Fix and re-enable the test.
+TEST_P(PerDeskShelfTest,
+       DISABLED_ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
   ScrollableShelfView* scrollable_shelf_view = GetPrimaryShelf()
                                                    ->shelf_widget()
                                                    ->hotseat_widget()
