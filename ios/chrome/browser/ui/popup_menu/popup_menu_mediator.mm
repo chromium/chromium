@@ -343,15 +343,15 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   self.webState = nullptr;
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
-  self.webState = newWebState;
+  if (status.active_web_state_change()) {
+    self.webState = status.new_active_web_state;
+  }
 }
 
 #pragma mark - BookmarkModelBridgeObserver
