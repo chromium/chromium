@@ -287,6 +287,18 @@ void WvrManager::OnWebXrFrameAvailable() {
   // This is called each time a frame that was drawn on the WebVR Surface
   // arrives on the SurfaceTexture.
 
+  // This event should only occur in response to a SwapBuffers from
+  // an incoming SubmitFrame call.
+  DCHECK(!pending_frames_.empty()) << ": Frame arrived before SubmitFrame";
+
+  // LIFECYCLE: we should have exactly one pending frame. This is true
+  // even after exiting a session with a not-yet-surfaced frame.
+  DCHECK_EQ(pending_frames_.size(), 1U);
+
+  int frame_index = pending_frames_.front();
+  DVLOG(2) << __func__ << "frame: " << frame_index;
+  pending_frames_.pop();
+
   if (!webxr_frame_timeout_closure_.IsCancelled())
     webxr_frame_timeout_closure_.Cancel();
 
@@ -655,12 +667,29 @@ bool WvrManager::SubmitFrameCommon(int16_t frame_index,
 void WvrManager::ProcessWebVrFrameFromMailbox(
     int16_t frame_index,
     const gpu::MailboxHolder& mailbox) {
-  DCHECK(webxr_.HaveProcessingFrame());
+  // LIFECYCLE: pending_frames_ should be empty when there's no processing
+  // frame. It gets one element here, and then is emptied again before leaving
+  // processing state. Swapping twice on a Surface without calling
+  // updateTexImage in between can lose frames, so don't draw+swap if we
+  // already have a pending frame we haven't consumed yet.
+  DCHECK(pending_frames_.empty());
 
+  // LIFECYCLE: We shouldn't have gotten here unless mailbox_bridge_ is ready.
+  DCHECK(webxr_.mailbox_bridge_ready());
+
+  // Don't allow any state changes for this processing frame until it
+  // arrives on the Surface. See OnWebXrFrameAvailable.
+  DCHECK(webxr_.HaveProcessingFrame());
   webxr_.GetProcessingFrame()->state_locked = true;
 
   bool swapped = mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox);
   DCHECK(swapped);
+  // Tell OnWebXrFrameAvailable to expect a new frame to arrive on
+  // the SurfaceTexture, and save the associated frame index.
+  pending_frames_.emplace(frame_index);
+
+  // LIFECYCLE: we should have a pending frame now.
+  DCHECK_EQ(pending_frames_.size(), 1U);
 
   // Notify the client that we're done with the mailbox so that the underlying
   // image is eligible for destruction.

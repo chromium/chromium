@@ -129,6 +129,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
       this};
   mojo::Receiver<device::mojom::XRFrameDataProvider> frame_data_receiver_{this};
   mojo::Remote<device::mojom::XRPresentationClient> submit_client_;
+  base::queue<uint16_t> pending_frames_;
 
   raw_ptr<WvrApi> wvr_api_;
   raw_ptr<WvrGraphicsDelegate> graphics_;
