@@ -71,15 +71,29 @@ class FilesPolicyNotificationManager
       std::vector<base::FilePath> blocked_files,
       dlp::FileAction action);
 
-  // Shows DLP Warning UI. If `task_id` is set, the corresponding IOTask will be
-  // paused. Otherwise a desktop notification will be shown.
-  // Virtual to allow overrides in tests.
+  // Add `blocked_files` from enterprise connectors to the information
+  // corresponding to the IOTask with `task_id`.
+  virtual void AddConnectorsBlockedFiles(
+      file_manager::io_task::IOTaskId task_id,
+      std::vector<base::FilePath> blocked_files,
+      dlp::FileAction action);
+
+  // Shows DLP Warning UI. If `task_id` is set, the corresponding IOTask
+  // will be paused. Otherwise a desktop notification will be shown. Virtual
+  // to allow overrides in tests.
   virtual void ShowDlpWarning(
       OnDlpRestrictionCheckedCallback callback,
       absl::optional<file_manager::io_task::IOTaskId> task_id,
       std::vector<base::FilePath> warning_files,
       const DlpFileDestination& destination,
       dlp::FileAction action);
+
+  // Shows Connectors Warning UI and pauses the corresponding IOTask.
+  // Virtual to allow overrides in tests.
+  virtual void ShowConnectorsWarning(OnDlpRestrictionCheckedCallback callback,
+                                     file_manager::io_task::IOTaskId task_id,
+                                     std::vector<base::FilePath> warning_files,
+                                     dlp::FileAction action);
 
   // Shows a Files Policy warning or error desktop notification with
   // `notification_id` based on `status`. Used for IO tasks.

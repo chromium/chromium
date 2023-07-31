@@ -289,6 +289,23 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
   }
 }
 
+void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
+    file_manager::io_task::IOTaskId task_id,
+    std::vector<base::FilePath> blocked_files,
+    dlp::FileAction action) {
+  // Sometimes EC checks are done before FilesPolicyNotificationManager is
+  // lazily created, so the task is not tracked and the blocked files won't
+  // be added. On the other hand, the IOTask may be aborted/canceled already so
+  // the info saved may be not needed anymore.
+  if (!HasIOTask(task_id)) {
+    AddIOTask(task_id, action);
+  }
+  for (const auto& file : blocked_files) {
+    io_tasks_.at(task_id).AddBlockedFile(DlpConfidentialFile(file),
+                                         Policy::kEnterpriseConnectors);
+  }
+}
+
 void FilesPolicyNotificationManager::ShowDlpWarning(
     OnDlpRestrictionCheckedCallback callback,
     absl::optional<file_manager::io_task::IOTaskId> task_id,
@@ -303,6 +320,15 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
     ShowDlpWarningNotification(std::move(callback), std::move(warning_files),
                                destination, action);
   }
+}
+
+void FilesPolicyNotificationManager::ShowConnectorsWarning(
+    OnDlpRestrictionCheckedCallback callback,
+    file_manager::io_task::IOTaskId task_id,
+    std::vector<base::FilePath> warning_files,
+    dlp::FileAction action) {
+  PauseIOTask(task_id, std::move(callback), std::move(warning_files), action,
+              Policy::kEnterpriseConnectors);
 }
 
 void FilesPolicyNotificationManager::ShowFilesPolicyNotification(

@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
@@ -177,6 +178,21 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
       blink::StorageKey::CreateFromStringForTesting("chrome://abc");
 };
 
+class FilesPolicyNotificationManagerDlpAndConnectorsTest
+    : public FilesPolicyNotificationManagerTest,
+      public testing::WithParamInterface<Policy> {
+ public:
+  Policy GetPolicy() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(DLP,
+                         FilesPolicyNotificationManagerDlpAndConnectorsTest,
+                         ::testing::Values(Policy::kDlp));
+
+INSTANTIATE_TEST_SUITE_P(EnterpriseConnectors,
+                         FilesPolicyNotificationManagerDlpAndConnectorsTest,
+                         ::testing::Values(Policy::kEnterpriseConnectors));
+
 TEST_F(FilesPolicyNotificationManagerTest, AddCopyTask) {
   file_manager::io_task::IOTaskId task_id = 1;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, /*is_copy=*/true).empty());
@@ -254,7 +270,8 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
 // Tests that passing task id to ShowDlpWarning will pause the corresponding
 // IOTask. Completing the task with error should abort it and run the warning
 // callback with false.
-TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
+TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
+       WarningPausesIOTask) {
   IOTaskStatusObserver observer;
   io_task_controller_->AddObserver(&observer);
 
@@ -289,9 +306,19 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
       .Times(::testing::AtLeast(1));
 
   base::MockCallback<OnDlpRestrictionCheckedCallback> mock_cb;
-  fpnm_->ShowDlpWarning(
-      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+
+  switch (GetPolicy()) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpWarning(
+          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
+          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
+                                   std::vector<base::FilePath>{src_file_path},
+                                   dlp::FileAction::kCopy);
+      break;
+  }
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
   // Task is completed with error.
@@ -318,8 +345,9 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
   EXPECT_FALSE(fpnm_->HasWarningTimerForTesting(task_id));
 }
 
-// ShowDlpBlockedFiles updates IO task info.
-TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
+// ShowDlpBlockedFiles/AddConnectorsBlockedFiles updates IO task info.
+TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
+       ShowDlpIOBlockedFiles) {
   IOTaskStatusObserver observer;
   io_task_controller_->AddObserver(&observer);
 
@@ -339,9 +367,18 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
   ASSERT_FALSE(src_file_path.empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
-  fpnm_->ShowDlpBlockedFiles(task_id,
-                             std::vector<base::FilePath>{src_file_path},
-                             dlp::FileAction::kCopy);
+  switch (GetPolicy()) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpBlockedFiles(task_id,
+                                 std::vector<base::FilePath>{src_file_path},
+                                 dlp::FileAction::kCopy);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->AddConnectorsBlockedFiles(
+          task_id, std::vector<base::FilePath>{src_file_path},
+          dlp::FileAction::kCopy);
+      break;
+  }
 
   // Task in progress.
   EXPECT_CALL(
@@ -366,13 +403,13 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   std::map<DlpConfidentialFile, Policy> expected_blocked_files{
-      {DlpConfidentialFile(src_file_path), Policy::kDlp}};
+      {DlpConfidentialFile(src_file_path), GetPolicy()}};
   EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
             expected_blocked_files);
 }
 
 // Tests that cancelling a paused IO task will run the warning callback.
-TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
+TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningCancelled) {
   IOTaskStatusObserver observer;
   io_task_controller_->AddObserver(&observer);
 
@@ -409,9 +446,18 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
       .Times(::testing::AtLeast(1));
   testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
       mock_cb;
-  fpnm_->ShowDlpWarning(
-      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+  switch (GetPolicy()) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpWarning(
+          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
+          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
+                                   std::vector<base::FilePath>{src_file_path},
+                                   dlp::FileAction::kCopy);
+      break;
+  }
 
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
@@ -433,7 +479,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
 }
 
 // Tests that resuming a paused IO task will run the warning callback.
-TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
+TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest, WarningResumed) {
   IOTaskStatusObserver observer;
   io_task_controller_->AddObserver(&observer);
 
@@ -471,9 +517,19 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
 
   testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
       mock_cb;
-  fpnm_->ShowDlpWarning(
-      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+
+  switch (GetPolicy()) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpWarning(
+          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
+          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
+                                   std::vector<base::FilePath>{src_file_path},
+                                   dlp::FileAction::kCopy);
+      break;
+  }
 
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
@@ -485,7 +541,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
 }
 
 // Tests that blocking files from non-tracked IO task will add it to FPNM.
-TEST_F(FilesPolicyNotificationManagerTest, TaskBlockedNotTracked) {
+TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
+       TaskBlockedNotTracked) {
   fpnm_->Shutdown();
   fpnm_.reset();
 
@@ -499,19 +556,29 @@ TEST_F(FilesPolicyNotificationManagerTest, TaskBlockedNotTracked) {
   fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
   ASSERT_FALSE(fpnm_->HasIOTask(task_id));
 
-  fpnm_->ShowDlpBlockedFiles(task_id,
-                             std::vector<base::FilePath>{src_file_path},
-                             dlp::FileAction::kCopy);
+  switch (GetPolicy()) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpBlockedFiles(task_id,
+                                 std::vector<base::FilePath>{src_file_path},
+                                 dlp::FileAction::kCopy);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->AddConnectorsBlockedFiles(
+          task_id, std::vector<base::FilePath>{src_file_path},
+          dlp::FileAction::kCopy);
+      break;
+  }
 
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
   std::map<DlpConfidentialFile, Policy> expected_blocked_files{
-      {DlpConfidentialFile(src_file_path), Policy::kDlp}};
+      {DlpConfidentialFile(src_file_path), GetPolicy()}};
   EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
             expected_blocked_files);
 }
 
 // Tests that warning files from non-tracked IO task will add it to FPNM.
-TEST_F(FilesPolicyNotificationManagerTest, TaskWarnedNotTracked) {
+TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsTest,
+       TaskWarnedNotTracked) {
   fpnm_->Shutdown();
   fpnm_.reset();
 
@@ -554,9 +621,18 @@ TEST_F(FilesPolicyNotificationManagerTest, TaskWarnedNotTracked) {
   fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
   ASSERT_FALSE(fpnm_->HasIOTask(task_id));
 
-  fpnm_->ShowDlpWarning(
-      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
-      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+  switch (GetPolicy()) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpWarning(
+          mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
+          DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->ShowConnectorsWarning(mock_cb.Get(), task_id,
+                                   std::vector<base::FilePath>{src_file_path},
+                                   dlp::FileAction::kCopy);
+      break;
+  }
 
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
@@ -579,10 +655,20 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
-  fpnm_->ShowDlpWarning(
-      base::DoNothing(), task_id, {base::FilePath(kFile1)},
-      DlpFileDestination("https://example.com"),
-      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
+  switch (policy) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpWarning(
+          base::DoNothing(), task_id, {base::FilePath(kFile1)},
+          DlpFileDestination("https://example.com"),
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->ShowConnectorsWarning(
+          base::DoNothing(), task_id, {base::FilePath(kFile1)},
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+  }
 
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
@@ -624,11 +710,22 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
-  fpnm_->ShowDlpWarning(
-      base::DoNothing(), task_id,
-      {base::FilePath(kFile1), base::FilePath(kFile2)},
-      DlpFileDestination("https://example.com"),
-      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
+  switch (policy) {
+    case Policy::kDlp:
+      fpnm_->ShowDlpWarning(
+          base::DoNothing(), task_id,
+          {base::FilePath(kFile1), base::FilePath(kFile2)},
+          DlpFileDestination("https://example.com"),
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+    case Policy::kEnterpriseConnectors:
+      fpnm_->ShowConnectorsWarning(
+          base::DoNothing(), task_id,
+          {base::FilePath(kFile1), base::FilePath(kFile2)},
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+  }
 
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
@@ -703,9 +800,19 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
-  fpnm_->ShowDlpBlockedFiles(
-      task_id, {base::FilePath(kFile1)},
-      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+  switch (policy) {
+    case file_manager::io_task::PolicyErrorType::kDlp:
+    case file_manager::io_task::PolicyErrorType::kDlpWarningTimeout:
+      fpnm_->ShowDlpBlockedFiles(
+          task_id, {base::FilePath(kFile1)},
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+    case file_manager::io_task::PolicyErrorType::kEnterpriseConnectors:
+      fpnm_->AddConnectorsBlockedFiles(
+          task_id, {base::FilePath(kFile1)},
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+  }
 
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
@@ -745,9 +852,19 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
-  fpnm_->ShowDlpBlockedFiles(
-      task_id, {base::FilePath(kFile1), base::FilePath(kFile2)},
-      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+  switch (policy) {
+    case file_manager::io_task::PolicyErrorType::kDlp:
+    case file_manager::io_task::PolicyErrorType::kDlpWarningTimeout:
+      fpnm_->ShowDlpBlockedFiles(
+          task_id, {base::FilePath(kFile1), base::FilePath(kFile2)},
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+    case file_manager::io_task::PolicyErrorType::kEnterpriseConnectors:
+      fpnm_->AddConnectorsBlockedFiles(
+          task_id, {base::FilePath(kFile1), base::FilePath(kFile2)},
+          is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+      break;
+  }
 
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
@@ -792,7 +909,17 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(file_manager::io_task::OperationType::kMove,
                         file_manager::io_task::PolicyErrorType::kDlp,
                         IDS_POLICY_DLP_FILES_MOVE_BLOCKED_TITLE,
-                        IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE)));
+                        IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE),
+        std::make_tuple(
+            file_manager::io_task::OperationType::kCopy,
+            file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+            IDS_POLICY_DLP_FILES_COPY_BLOCKED_TITLE,
+            IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE),
+        std::make_tuple(
+            file_manager::io_task::OperationType::kMove,
+            file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+            IDS_POLICY_DLP_FILES_MOVE_BLOCKED_TITLE,
+            IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE)));
 
 class FPNMTimeoutStatusNotification
     : public FilesPolicyNotificationManagerTest,
