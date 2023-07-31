@@ -105,6 +105,14 @@ public class ChildTab implements ITab, IPageGroup {
     }
 
     @Override
+    public ITab cloneByGroupTab(ITabGroup group) {
+        ChildTab tab = new ChildTab(group, mTabInfo, new ArrayList<>(mPages));
+        tab.mFloatingTab = mFloatingTab;
+        mTabInfo.setParentId(group.getId());
+        return tab;
+    }
+
+    @Override
     public TabInfo getTabInfo() {
         return mTabInfo;
     }

@@ -147,13 +147,23 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     private final TabInfoObserver tabInfoObserver = new EmptyTabInfoObserver() {
         @Override
         public void didAddTab(ITab tab, @TabSelectionType int type) {
-            if (mTabGroup == null) {
-                return;
-            }
             Log.d(TAG, "didAddTab state=" + mState);
-            setPosition(mTabGroup.getIndex());
-            mCurrentTouchView = null;
-            initChildren();
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void didCloseTab(int tabId, boolean incognito) {
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void didMoveTab(ITab tab) {
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void didRemoveTab(ITab tab) {
+            notifyDataSetChanged();
         }
     };
 

@@ -41,7 +41,7 @@ public class TabInfo {
     protected boolean mIsGroup;
 
     // TODO
-    protected String title;
+    protected String mTitle;
 
     private TabInfo() {
 
@@ -166,9 +166,13 @@ public class TabInfo {
         mIsGroup = isGroup;
     }
 
-//    public static TabInfo create(String groupId) {
-//        return create(groupId, System.currentTimeMillis());
-//    }
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
+    }
 
     public static TabInfo create(int id, int parentId, boolean isGroup) {
         TabInfo manager = new TabInfo();

@@ -134,6 +134,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/dialog/ContextMenuDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/DownloadDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ExitDialog.java",
+  "java/src/com/ark/browser/ui/fragment/dialog/GroupTabPickerDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/HistoryStackDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/MainMenuDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/PageActionDialog.java",

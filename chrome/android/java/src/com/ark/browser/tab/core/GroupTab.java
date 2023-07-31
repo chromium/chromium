@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.dao.ArkTabDao;
@@ -61,8 +62,12 @@ public class GroupTab implements ITabGroup {
     }
 
     public GroupTab(ITabGroup parent, TabInfo tabInfo, List<ITab> tabs) {
+        this(parent, tabInfo, tabs, new ObserverList<>());
+    }
+
+    private GroupTab(ITabGroup parent, TabInfo tabInfo, List<ITab> tabs, ObserverList<TabInfoObserver> observers) {
         mParentTab = parent;
-        mObservers = new ObserverList<>();
+        mObservers = observers;
         mTabInfo = tabInfo;
         mTabList = tabs;
     }
@@ -70,6 +75,14 @@ public class GroupTab implements ITabGroup {
     @Override
     public ITabGroup getParentTab() {
         return mParentTab;
+    }
+
+    @Override
+    public ITab cloneByGroupTab(ITabGroup group) {
+        GroupTab tab = new GroupTab(group, mTabInfo, new ArrayList<>(mTabList), mObservers);
+        mTabInfo.setParentId(group.getId());
+        tab.mPrefetchTabGroupTask = mPrefetchTabGroupTask;
+        return tab;
     }
 
     @Override
@@ -218,7 +231,9 @@ public class GroupTab implements ITabGroup {
         ArkTabImpl nativeTab = ArkTabImpl.create(newTab, currentTab);
 //        nativeTab.loadInNewPage();
 
-        for (TabInfoObserver obs : getRootGroupTab().getObservers()) {
+        // TODO optimise
+        TabGroupManager.global().notifyChanged();
+        for (TabInfoObserver obs : mObservers) {
             obs.didAddTab(newTab, type);
         }
         ArkLogger.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
@@ -258,7 +273,9 @@ public class GroupTab implements ITabGroup {
 
         ArkLogger.d(TAG, "openInNewGroup group=" + newGroup.getTabInfo());
 
-        for (TabInfoObserver obs : getRootGroupTab().getObservers()) {
+        // TODO optimise
+        TabGroupManager.global().notifyChanged();
+        for (TabInfoObserver obs : mObservers) {
             ArkLogger.d(GroupTab.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(newGroup, TabSelectionType.FROM_USER, lastId);
         }
@@ -330,13 +347,43 @@ public class GroupTab implements ITabGroup {
         return false;
     }
 
+    @Override
+    public boolean moveToNewGroup(ITab tab) {
+        if (tab.getParentTab() == this) {
+            return false;
+        }
+        if (tab.getParentTab().removeTab(tab)) {
+            ITab newTab = tab.cloneByGroupTab(this);
+            newTab.getTabInfo().setPosition(mTabList.size());
+            mTabList.add(newTab);
+            saveTabInfo();
+            newTab.saveTabInfo();
+
+            ITab current = newTab;
+            ITabGroup parent = newTab.getParentTab();
+            while (parent != null) {
+                parent.onIndexChanged(parent.indexOf(current));
+                current = parent;
+                parent = parent.getParentTab();
+            }
+
+            // TODO optimise
+            TabGroupManager.global().notifyTabMoved(newTab);
+            for (TabInfoObserver observer : mObservers) {
+                observer.didMoveTab(newTab);
+            }
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Subscribes a {@link TabInfoObserver} to be notified about changes to this model.
      *
      * @param observer The observer to be subscribed.
      */
     public void addObserver(TabInfoObserver observer) {
-        this.mObservers.addObserver(observer);
+        mObservers.addObserver(observer);
     }
 
     /**

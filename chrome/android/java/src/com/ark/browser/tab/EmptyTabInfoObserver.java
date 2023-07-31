@@ -22,4 +22,9 @@ public class EmptyTabInfoObserver implements TabInfoObserver {
     @Override
     public void didAddTab(ITab tab, @TabSelectionType int type) {}
 
+    @Override
+    public void didMoveTab(ITab tab) {}
+
+    @Override
+    public void didRemoveTab(ITab tab) {}
 }

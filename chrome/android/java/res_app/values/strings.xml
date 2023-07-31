@@ -18,6 +18,7 @@
     <string name="text_download">下载</string>
 
     <string name="text_bookmarks_select_folder">选择书签文件夹</string>
+    <string name="text_pick_tab_group">选择群组标签</string>
 
 
     <string name="text_external_open_app">打开外部应用</string>

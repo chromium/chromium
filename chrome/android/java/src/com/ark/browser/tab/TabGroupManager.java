@@ -182,21 +182,6 @@ public class TabGroupManager {
 
         private final ObserverList<TabManagerObserver> mObservers = new ObserverList<>();
 
-        private final TabInfoObserver tabInfoObserver = new EmptyTabInfoObserver() {
-            @Override
-            public void didAddTab(ITab tab, @TabLaunchType int type) {
-                ArkLogger.d(TAG, "didAddTab");
-                notifyChanged();
-            }
-
-            @Override
-            public void didSelectTab(ITab tab, @TabSelectionType int type, int lastId) {
-                ArkLogger.d(TAG, "didSelectTab");
-                notifyChanged();
-            }
-
-        };
-
         protected final List<ITabGroup> tabGroups = new ArrayList<>(0);
 
         private boolean mLoaded = false;
@@ -221,7 +206,6 @@ public class TabGroupManager {
                     group.init();
                     latch.countDown();
                     ThreadPool.runOnUIThread(() -> {
-                        group.addObserver(tabInfoObserver);
                         if (!mLoaded && latch.getCount() == 0) {
                             mLoaded = true;
                             if (callback != null) {
@@ -239,6 +223,14 @@ public class TabGroupManager {
             for (TabManagerObserver listener : mObservers) {
                 ArkLogger.d(TAG, "notifyChanged listener=" + listener);
                 listener.onChange();
+            }
+        }
+
+        public void notifyTabMoved(ITab tab) {
+            ArkLogger.d(TAG, "notifyTabMoved size=" + mObservers.size());
+            for (TabManagerObserver listener : mObservers) {
+                ArkLogger.d(TAG, "notifyTabMoved listener=" + listener);
+                listener.onTabMoved(tab);
             }
         }
 
@@ -278,11 +270,13 @@ public class TabGroupManager {
             TabInfo info = TabInfo.create(ID_DEFAULT, -1, true);
             info.setLocked(true);
             info.setIncognito(false);
+            info.setTitle("Root Default");
             tabGroups.add(new GroupTab(null, info));
 
             info = TabInfo.create(ID_INCOGNITO, -1, true);
             info.setLocked(true);
             info.setIncognito(true);
+            info.setTitle("Root Incognito");
             tabGroups.add(new GroupTab(null, info));
         }
 

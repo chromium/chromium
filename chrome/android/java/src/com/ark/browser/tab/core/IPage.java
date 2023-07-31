@@ -4,14 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.core.util.AtomicFile;
 
 import com.ark.browser.core.ArkWebManager;
-import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.io.ByteArrayOutputStream;
@@ -36,8 +34,6 @@ public interface IPage {
         PageSnapshotManager.getInstance().removeSnapshot(getId());
         ThreadPool.executeIO(this::deletePageInfo);
     }
-
-    Tab getNativePage();
 
 //    /**
 //     * Adds a {@link TabObserver} to be notified on {@link Tab} changes.

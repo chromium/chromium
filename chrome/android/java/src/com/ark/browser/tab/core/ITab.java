@@ -37,6 +37,8 @@ public interface ITab {
 
     ITabGroup getParentTab();
 
+    ITab cloneByGroupTab(ITabGroup group);
+
     /**
      * TODO modify to CompositorViewHolder
      * @return

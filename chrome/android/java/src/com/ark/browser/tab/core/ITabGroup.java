@@ -1,12 +1,14 @@
 package com.ark.browser.tab.core;
 
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabCacheManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.utils.ArkLogger;
@@ -28,7 +30,10 @@ public interface ITabGroup extends ITab {
 
     @Override
     default String getTitle() {
-        return getCount() + "个标签页";
+        if (TextUtils.isEmpty(getTabInfo().getTitle())) {
+            return getCount() + "个标签页";
+        }
+        return getTabInfo().getTitle();
     }
 
     @Override
@@ -181,7 +186,7 @@ public interface ITabGroup extends ITab {
 //            state = ArkTabDao.restorePageState(page.getId());
 //        }
 
-        ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(iTab.getId());
+        ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(iTab);
 
         if (tab == null) {
             // TODO not cast to TabImpl
@@ -194,7 +199,9 @@ public interface ITabGroup extends ITab {
         onIndexChanged(indexOf(iTab));
         tab.selectPage(page);
 
-        for (TabInfoObserver obs : getRootGroupTab().getObservers()) {
+        // TODO optimise
+        TabGroupManager.global().notifyChanged();
+        for (TabInfoObserver obs : getObservers()) {
             ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastId);
         }
@@ -218,7 +225,29 @@ public interface ITabGroup extends ITab {
 
     boolean moveToNewTab(IPage page);
 
+    boolean moveToNewGroup(ITab tab);
+
     default boolean closeTab(ITab tab) {
+        if (removeTab(tab)) {
+            int id = tab.getId();
+            ThreadPool.postOnUIThread(() -> {
+                tab.remove();
+                // TODO optimise
+                TabGroupManager.global().notifyChanged();
+                for (TabInfoObserver obs : getObservers()) {
+                    obs.didCloseTab(id, isIncognito());
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    default void closeAllTabs() {
+        Toast.makeText(ContextUtils.getApplicationContext(), "TODO 关闭所有窗口", Toast.LENGTH_SHORT).show();
+    }
+
+    default boolean removeTab(ITab tab) {
         if (tab == null) {
             return false;
         }
@@ -226,29 +255,15 @@ public interface ITabGroup extends ITab {
         if (result) {
             int index = getIndex();
             if (getTabList().isEmpty()) {
+                // TODO remove empty group
                 index = ITab.INVALID_TAB_INDEX;
             } else if (getIndex() > getTabList().size() - 1) {
                 index = getTabList().size() - 1;
             }
             onIndexChanged(index);
             saveTabInfo();
-            removeTab(tab);
         }
         return result;
-    }
-
-    default void closeAllTabs() {
-        Toast.makeText(ContextUtils.getApplicationContext(), "TODO 关闭所有窗口", Toast.LENGTH_SHORT).show();
-    }
-
-    default void removeTab(ITab tab) {
-        int id = tab.getId();
-        ThreadPool.postOnUIThread(() -> {
-            tab.remove();
-            for (TabInfoObserver obs : getRootGroupTab().getObservers()) {
-                obs.didCloseTab(id, isIncognito());
-            }
-        });
     }
 
 

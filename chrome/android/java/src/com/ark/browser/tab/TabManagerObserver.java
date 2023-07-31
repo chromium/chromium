@@ -5,11 +5,15 @@
 package com.ark.browser.tab;
 
 
+import com.ark.browser.tab.core.ITab;
+
 /**
  * Observes changes to the tab model selector.
  */
 public interface TabManagerObserver {
 
     void onChange();
+
+    void onTabMoved(ITab tab);
 
 }

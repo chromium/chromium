@@ -27,18 +27,6 @@ public class PageImpl implements IPage {
         return pageInfo;
     }
 
-//    @Override
-//    public void remove() {
-//        PageCacheManager.getInstance().removePage(pageInfo);
-//        TabSnapshotManager.getInstance().removeSnapshot(pageInfo.getPageId());
-//        pageInfo.deleteSync();
-//    }
-
-    @Override
-    public Tab getNativePage() {
-        return TabCacheManager.getInstance().findTab(getId());
-    }
-
     @Override
     public String toString() {
         return "PageImpl{" +

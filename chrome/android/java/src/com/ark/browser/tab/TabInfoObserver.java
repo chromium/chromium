@@ -42,4 +42,8 @@ public interface TabInfoObserver {
      */
     void didAddTab(ITab tab, @TabSelectionType int type);
 
+    void didMoveTab(ITab tab);
+
+    void didRemoveTab(ITab tab);
+
 }

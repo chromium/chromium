@@ -25,7 +25,10 @@ import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabGroupManager;
+import com.ark.browser.tab.TabManagerObserver;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
@@ -171,13 +174,27 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public void initCompositor(ArkWindowAndroid window) {
-        TabGroupManager.global().addObserver(() -> {
-            Tab tab = TabGroupManager.global().getCurrentNativeTab();
-            ArkLogger.d(this, "TabManagerObserver onChange tab=" + tab);
-            if (tab != null) {
-                mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
+        TabGroupManager.global().addObserver(new TabManagerObserver() {
+            @Override
+            public void onChange() {
+                ITab tab = TabGroupManager.global().getCurrentTab();
+                ArkLogger.d(this, "TabManagerObserver onChange tab=" + tab);
+                if (tab != null) {
+                    mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
+                }
+                mViewHolder.setTab(TabCacheManager.getInstance().findTab(tab));
             }
-            mViewHolder.setTab(tab);
+
+            @Override
+            public void onTabMoved(ITab tab) {
+                Tab nativeTab = mViewHolder.getTab();
+                int id = nativeTab == null ? -1 : nativeTab.getId();
+                ArkLogger.e(this, "TabManagerObserver onTabMoved id="
+                        + tab.getId() + " currentId=" + id);
+                if (id == tab.getId()) {
+                    mSwitcher.setTabGroup(tab.getParentTab());
+                }
+            }
         });
 
         mViewHolder.setFocusable(false);

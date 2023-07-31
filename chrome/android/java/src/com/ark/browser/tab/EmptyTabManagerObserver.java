@@ -4,13 +4,16 @@
 
 package com.ark.browser.tab;
 
+import com.ark.browser.tab.core.ITab;
+
 /**
  * Empty implementation of the tab model selector observer.
  */
 public class EmptyTabManagerObserver implements TabManagerObserver {
 
     @Override
-    public void onChange() {
-    }
+    public void onChange() {}
 
+    @Override
+    public void onTabMoved(ITab tab) {}
 }
