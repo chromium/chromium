@@ -91,6 +91,7 @@
 #import "net/base/net_errors.h"
 #import "net/http/http_util.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
@@ -454,8 +455,10 @@ UIView* ChromeWebClient::GetWindowedContainer() {
 
 bool ChromeWebClient::EnableFullscreenAPI() const {
   // Only use the Fullscreen API on iOS 16.4+, which fixes serious crashes in
-  // earlier versions.
+  // earlier versions. Also, only enable on iPad to match expectations of the
+  // iOS web ecosystem.
   return base::ios::IsRunningOnOrLater(16, 4, 0) &&
+         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
          base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI);
 }
 
