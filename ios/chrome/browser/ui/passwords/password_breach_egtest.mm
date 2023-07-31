@@ -7,6 +7,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_app_interface.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -59,11 +60,19 @@ id<GREYMatcher> CheckPasswordButton() {
   [[EarlGrey selectElementWithMatcher:PasswordBreachMatcher()]
       assertWithMatcher:grey_notNil()];
 
+  // Mock successful auth for opening the password manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
   [[EarlGrey selectElementWithMatcher:CheckPasswordButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordListMatcher()]
       assertWithMatcher:grey_notNil()];
+
+  // Cleanup mock reauth module.
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 @end

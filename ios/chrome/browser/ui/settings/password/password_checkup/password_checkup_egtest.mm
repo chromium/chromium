@@ -292,6 +292,16 @@ NSString* LeakedPasswordDescription() {
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+}
+
+- (void)tearDown {
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
+  [super tearDown];
 }
 
 #pragma mark - Tests

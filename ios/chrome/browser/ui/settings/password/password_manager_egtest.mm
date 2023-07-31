@@ -485,6 +485,8 @@ void CheckPasswordManagerVisitMetricCount(int count) {
               swizzlePasswordAutoFillStatusManagerWithFake]);
 
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 }
 
 - (void)tearDown {

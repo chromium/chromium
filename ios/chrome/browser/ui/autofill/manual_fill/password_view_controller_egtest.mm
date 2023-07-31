@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -104,10 +105,16 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   [ChromeEarlGrey loadURL:self.URL];
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
   [AutofillAppInterface saveExamplePasswordForm];
+
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearPasswordStore];
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [super tearDown];
 }
 

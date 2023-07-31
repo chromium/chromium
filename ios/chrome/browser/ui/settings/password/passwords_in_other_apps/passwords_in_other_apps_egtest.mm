@@ -7,6 +7,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
@@ -114,12 +115,19 @@ void OpensPasswordsInOtherApps() {
           @"PasswordAutoFillStatusManager", @"sharedManager",
           [PasswordsInOtherAppsAppInterface
               swizzlePasswordAutoFillStatusManagerWithFake]);
+
+  // Mock successful reauth when opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 }
 
 - (void)tearDown {
   [super tearDown];
   [PasswordsInOtherAppsAppInterface resetManager];
   _passwordAutoFillStatusSwizzler.reset();
+  // Remove mock to keep the app in the same state as before running the test.
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

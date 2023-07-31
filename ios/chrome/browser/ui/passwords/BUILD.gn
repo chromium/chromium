@@ -106,6 +106,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common:features",
     "//components/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

@@ -10768,6 +10768,21 @@
             ]
         }
     ],
+    "PasswordManagerAuthOnEntryIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasswordAuthOnEntry"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordMigrationWarningStudy": [
         {
             "platforms": [
