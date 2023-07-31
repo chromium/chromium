@@ -75,12 +75,25 @@
       </cr-toggle>
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
-      <settings-toggle-button id="mouseScrollAcceleration"
-          aria-describedby="mouseName"
-          pref="{{scrollAccelerationPref}}"
-          label="$i18n{mouseScrollAccelerationLabel}"
-          deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
-      </settings-toggle-button>
+      <div class="settings-box bottom-divider" id="mouseScrollAccelerationRow"
+            on-click="onMouseScrollAccelerationRowClicked_">
+        <div class="start settings-box-text">
+          <localized-link
+              aria-describedby="mouseName"
+              on-click="onLearnMoreLinkClicked_"
+              id="enableMouseScrollAccelerationLabel"
+              localized-string="$i18n{mouseScrollAccelerationLabel}"
+              link-url="$i18n{scrollAccelerationLearnMoreLink}">
+          </localized-link>
+        </div>
+        <cr-toggle id="mouseScrollAcceleration"
+            checked="{{scrollAccelerationValue}}"
+            aria-describedby="mouseName"
+            aria-label=
+                "[[getLabelWithoutLearnMore('mouseScrollAccelerationLabel')]]"
+            deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
+        </cr-toggle>
+      </div>
       <div class="settings-box">
         <div class="start" id="mouseScrollSpeedLabel" aria-hidden="true">
           $i18n{mouseScrollSpeed}

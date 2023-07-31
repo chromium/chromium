@@ -3066,7 +3066,7 @@ Press an assigned switch or key to remove assignment.
   </message>
   <!-- TODO(zhangwenyu): Remove translateable="false" once the string is finalized. -->
   <message name="IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL" translateable="false" desc="In Device Settings, the text next to the toggle for mouse scroll acceleration.">
-    Enable scroll acceleration
+    Enable scroll acceleration. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_CURSOR_SPEED_LABEL" translateable="false" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the mouse cursor.">
     Cursor speed

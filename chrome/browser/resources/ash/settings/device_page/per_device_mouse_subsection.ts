@@ -89,17 +89,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         },
       },
 
-      scrollAccelerationPref: {
-        type: Object,
-        value() {
-          return {
-            key: 'fakeScrollAccelerationPref',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          };
-        },
-      },
-
       scrollSensitivityPref: {
         type: Object,
         value() {
@@ -112,6 +101,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       },
 
       reverseScrollValue: {
+        type: Boolean,
+        value: false,
+      },
+
+      scrollAccelerationValue: {
         type: Boolean,
         value: false,
       },
@@ -194,9 +188,9 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       'onSettingsChanged(primaryRightPref.value,' +
           'accelerationPref.value,' +
           'sensitivityPref.value,' +
-          'scrollAccelerationPref.value,' +
           'scrollSensitivityPref.value,' +
-          'reverseScrollValue)',
+          'reverseScrollValue,' +
+          'scrollAccelerationValue)',
       'onPoliciesChanged(mousePolicies)',
       'updateSettingsToCurrentPrefs(mouse)',
     ];
@@ -219,9 +213,9 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
   private accelerationPref: chrome.settingsPrivate.PrefObject;
   private sensitivityPref: chrome.settingsPrivate.PrefObject;
-  private scrollAccelerationPref: chrome.settingsPrivate.PrefObject;
   private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
   private reverseScrollValue: boolean;
+  private scrollAccelerationValue: boolean;
   private isInitialized: boolean = false;
   private isPeripheralCustomizationEnabled_: boolean;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
@@ -238,10 +232,9 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     this.set('accelerationPref.value', this.mouse.settings.accelerationEnabled);
     this.set('sensitivityPref.value', this.mouse.settings.sensitivity);
     this.set(
-        'scrollAccelerationPref.value', this.mouse.settings.scrollAcceleration);
-    this.set(
         'scrollSensitivityPref.value', this.mouse.settings.scrollSensitivity);
     this.reverseScrollValue = this.mouse.settings.reverseScrolling;
+    this.scrollAccelerationValue = this.mouse.settings.scrollAcceleration;
     this.isInitialized = true;
   }
 
@@ -268,6 +261,10 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     this.reverseScrollValue = !this.reverseScrollValue;
   }
 
+  private onMouseScrollAccelerationRowClicked_(): void {
+    this.scrollAccelerationValue = !this.scrollAccelerationValue;
+  }
+
   private onSettingsChanged(): void {
     if (!this.isInitialized) {
       return;
@@ -278,9 +275,9 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       swapRight: this.primaryRightPref.value,
       accelerationEnabled: this.accelerationPref.value,
       sensitivity: this.sensitivityPref.value,
-      scrollAcceleration: this.scrollAccelerationPref.value,
       scrollSensitivity: this.scrollSensitivityPref.value,
       reverseScrolling: this.reverseScrollValue,
+      scrollAcceleration: this.scrollAccelerationValue,
     };
 
     if (settingsAreEqual(newSettings, this.mouse.settings)) {

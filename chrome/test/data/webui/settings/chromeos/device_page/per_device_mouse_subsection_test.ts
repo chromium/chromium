@@ -91,7 +91,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
         mouseReverseScrollToggleButton.checked);
 
     const mouseScrollAccelerationToggleButton =
-        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        subsection.shadowRoot!.querySelector<CrToggleElement>(
             '#mouseScrollAcceleration');
     assert(mouseScrollAccelerationToggleButton);
     mouseScrollAccelerationToggleButton.click();
@@ -99,7 +99,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
     updatedMice = await provider.getConnectedMouseSettings();
     assertEquals(
         updatedMice[0]!.settings.scrollAcceleration,
-        mouseScrollAccelerationToggleButton.pref!.value);
+        mouseScrollAccelerationToggleButton.checked);
 
     const mouseScrollSpeedSlider =
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
@@ -139,12 +139,12 @@ suite('<settings-per-device-mouse-subsection>', function() {
         fakeMice[0]!.settings.reverseScrolling,
         subsection.get('reverseScrollValue'));
     let mouseScrollAccelerationToggleButton =
-        subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+        subsection.shadowRoot!.querySelector<CrToggleElement>(
             '#mouseScrollAcceleration');
     assertTrue(isVisible(mouseScrollAccelerationToggleButton));
     assertEquals(
         fakeMice[0]!.settings.scrollAcceleration,
-        mouseScrollAccelerationToggleButton!.pref!.value);
+        mouseScrollAccelerationToggleButton!.checked);
     let mouseScrollSpeedSlider =
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
             '#mouseScrollSpeedSlider');

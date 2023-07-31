@@ -1798,6 +1798,9 @@ void DeviceSection::AddDevicePointersStrings(
 
   html_source->AddString("naturalScrollLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kNaturalScrollHelpURL));
+  html_source->AddString(
+      "scrollAccelerationLearnMoreLink",
+      GetHelpUrlWithBoard(chrome::kScrollAccelerationHelpURL));
   html_source->AddString("hapticFeedbackLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 
