@@ -4,6 +4,11 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/content_settings/one_time_permission_provider.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -24,11 +29,16 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
@@ -196,7 +206,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   void GetUserMediaAndExpectGrantedPermission(
       permissions::PermissionRequestManager::AutoResponseType auto_response,
       bool expect_prompt,
-      int tab_index) {
+      int tab_index = 0) {
     content::WebContents* contents =
         current_browser()->tab_strip_model()->GetWebContentsAt(tab_index);
     SetFrameForScriptExecutionToCurrent(contents);
@@ -563,4 +573,137 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   OtpEventExpectUniqueSample(
       ContentSettingsType::MEDIASTREAM_CAMERA,
       permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
+}
+
+class OneTimePermissionExpiryEnforcementUmaInteractiveUiTest
+    : public OneTimePermissionInteractiveUiTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  OneTimePermissionExpiryEnforcementUmaInteractiveUiTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {content_settings::features::kActiveContentSettingExpiry}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {content_settings::features::kActiveContentSettingExpiry});
+    }
+  }
+  OneTimePermissionExpiryEnforcementUmaInteractiveUiTest(
+      const OneTimePermissionExpiryEnforcementUmaInteractiveUiTest&) = delete;
+  OneTimePermissionExpiryEnforcementUmaInteractiveUiTest& operator=(
+      const OneTimePermissionExpiryEnforcementUmaInteractiveUiTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
+                       TestExpiryEnforcement) {
+  base::HistogramTester histograms;
+  const std::string kActiveExpiryHistogram =
+      "ContentSettings.ActiveExpiry.OneTimePermissionProvider."
+      "ContentSettingsType";
+
+  bool active_expiry_is_active = GetParam();
+  ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT, GetWebrtcGurl()));
+
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+  // Setup to request content setting in the past (maximum one time
+  // permission grant lifetime)
+  base::Time now(base::Time::Now());
+  base::Time past(now - permissions::kOneTimePermissionMaximumLifetime);
+  base::SimpleTestClock clock;
+  clock.SetNow(past);
+  hcsm->SetClockForTesting(&clock);
+
+  // Request permission, expect prompt and grant it.
+  GetUserMediaAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
+
+  // Manually run expiry enforcement
+  hcsm->DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
+      ContentSettingsType::MEDIASTREAM_MIC);
+  hcsm->DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
+      ContentSettingsType::MEDIASTREAM_CAMERA);
+
+  // Reload and ensure permission remains accessible without prompt.
+  ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT, GetWebrtcGurl()));
+
+  GetUserMediaAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, false);
+
+  // Set clock time to now (i.e. 16 hours later) and then manually run expiry
+  // enforcement again.
+  clock.SetNow(now + base::Seconds(5));
+  hcsm->DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
+      ContentSettingsType::MEDIASTREAM_MIC);
+  hcsm->DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
+      ContentSettingsType::MEDIASTREAM_CAMERA);
+
+  // Ensure a request without reload triggers a prompt again only if active
+  // expiry is active
+  GetUserMediaAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE,
+      active_expiry_is_active);
+
+  // Check UMA records for expiry events (only recorded if active expiry is
+  // enabled)
+  histograms.ExpectTotalCount(kActiveExpiryHistogram,
+                              active_expiry_is_active ? 2 : 0);
+  histograms.ExpectBucketCount(
+      kActiveExpiryHistogram,
+      static_cast<base::HistogramBase::Sample>(
+          content_settings_uma_util::ContentSettingTypeToHistogramValue(
+              ContentSettingsType::MEDIASTREAM_MIC)),
+      active_expiry_is_active ? 1 : 0);
+  histograms.ExpectBucketCount(
+      kActiveExpiryHistogram,
+      static_cast<base::HistogramBase::Sample>(
+          content_settings_uma_util::ContentSettingTypeToHistogramValue(
+              ContentSettingsType::MEDIASTREAM_CAMERA)),
+      active_expiry_is_active ? 1 : 0);
+
+  // Check UMA records for grant events (if expiry is disabled, there's only one
+  // grant event)
+  histograms.ExpectTotalCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      active_expiry_is_active ? 3 : 1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
+      active_expiry_is_active ? 2 : 1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME),
+      active_expiry_is_active ? 1 : 0);
+
+  histograms.ExpectTotalCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
+      active_expiry_is_active ? 3 : 1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
+      active_expiry_is_active ? 2 : 1);
+  histograms.ExpectBucketCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
+      static_cast<base::HistogramBase::Sample>(
+          permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME),
+      active_expiry_is_active ? 1 : 0);
+
+  hcsm->SetClockForTesting(base::DefaultClock::GetInstance());
 }

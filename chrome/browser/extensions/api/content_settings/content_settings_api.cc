@@ -21,6 +21,7 @@
 #include "chrome/common/extensions/api/content_settings.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -268,10 +269,10 @@ ContentSettingsContentSettingSetFunction::Run() {
 
   if (primary_pattern != secondary_pattern &&
       secondary_pattern != ContentSettingsPattern::Wildcard()) {
-    RecordContentSettingsHistogram(
+    content_settings_uma_util::RecordContentSettingsHistogram(
         "ContentSettings.ExtensionEmbeddedSettingSet", content_type);
   } else {
-    RecordContentSettingsHistogram(
+    content_settings_uma_util::RecordContentSettingsHistogram(
         "ContentSettings.ExtensionNonEmbeddedSettingSet", content_type);
   }
 

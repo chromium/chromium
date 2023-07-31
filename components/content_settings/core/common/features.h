@@ -32,6 +32,12 @@ namespace features {
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyCheckUnusedSitePermissions);
 
+// Lets the HostContentSettingsMap actively monitor when content settings expire
+// and delete them instantly. This also notifies observers that will, in turn,
+// terminate access to capabilities gated on those settings right away.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kActiveContentSettingExpiry);
+
 // Determines the frequency at which permissions of sites are checked whether
 // they are unused.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)

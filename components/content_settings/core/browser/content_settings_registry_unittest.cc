@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -232,7 +233,8 @@ TEST_F(ContentSettingsRegistryTest, SettingsHaveAHistogramMapping) {
   size_t count = 0;
   std::set<int> values;
   for (const WebsiteSettingsInfo* info : *website_settings_registry()) {
-    int value = ContentSettingTypeToHistogramValue(info->type());
+    int value = content_settings_uma_util::ContentSettingTypeToHistogramValue(
+        info->type());
     EXPECT_GT(value, 0);
     count++;
     values.insert(value);

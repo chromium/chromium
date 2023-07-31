@@ -78604,6 +78604,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Revoked one time grant manually"/>
   <int value="2" label="Expired due to tab closure or discards"/>
   <int value="3" label="Expired in the background due to non-usage"/>
+  <int value="4" label="Expired after maximum lifetime"/>
 </enum>
 
 <enum name="OnServiceConnectedTimedOutResult">

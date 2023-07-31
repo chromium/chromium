@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -290,13 +291,17 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       auto* entry = entries.front();
       ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
 
-      EXPECT_NE(ContentSettingTypeToHistogramValue(content_settings_type), -1);
+      EXPECT_NE(content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                    content_settings_type),
+                -1);
 
       EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Source"),
                 static_cast<int64_t>(PermissionSourceUI::PROMPT));
-      EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-                static_cast<int64_t>(
-                    ContentSettingTypeToHistogramValue(content_settings_type)));
+      EXPECT_EQ(
+          *ukm_recorder.GetEntryMetric(entry, "PermissionType"),
+          static_cast<int64_t>(
+              content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                  content_settings_type)));
       EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
                 static_cast<int64_t>(action.value()));
 

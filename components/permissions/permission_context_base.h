@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -41,6 +42,10 @@ class Observer : public base::CheckedObserver {
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) = 0;
 };
+
+// A one time grant will never last longer than this value.
+static constexpr base::TimeDelta kOneTimePermissionMaximumLifetime =
+    base::Hours(16);
 
 using BrowserPermissionCallback = base::OnceCallback<void(ContentSetting)>;
 
