@@ -14,15 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
-#include "content/public/test/browser_test.h"
+#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -31,10 +25,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/interaction/element_tracker_views.h"
-
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
-#endif
 
 namespace ash {
 namespace {
@@ -81,37 +71,16 @@ constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
 constexpr char kCheckJsElementIsNotChecked[] =
     "(el) => { return !el.checked; }";
 
-// Give all widgets on the same display (having the same root window) the same
-// Kombucha context. This is useful for ash system UI because it uses a variety
-// of small widgets.
-ui::ElementContext GetContextForWidget(views::Widget* widget) {
-  return ui::ElementContext(widget->GetNativeWindow()->GetRootWindow());
-}
-
-using InteractiveMixinBasedBrowserTest =
-    InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
-
-class BluetoothIntegrationTest : public InteractiveMixinBasedBrowserTest {
+class BluetoothIntegrationTest : public InteractiveAshTest {
  public:
   BluetoothIntegrationTest() {
     // Use the legacy bluez bluetooth stack.
     feature_list_.InitAndDisableFeature(floss::features::kFlossEnabled);
-
-    // This test suite does not require a browser window.
-    set_launch_browser_for_testing(nullptr);
-
-    // Give all widgets on the same display the same Kombucha context.
-    views::ElementTrackerViews::SetContextOverrideCallback(
-        base::BindRepeating(&GetContextForWidget));
   }
 
-  ~BluetoothIntegrationTest() override {
-    views::ElementTrackerViews::SetContextOverrideCallback({});
-  }
-
-  // InteractiveMixinBasedBrowserTest:
+  // InteractiveAshTest:
   void SetUpOnMainThread() override {
-    InteractiveMixinBasedBrowserTest::SetUpOnMainThread();
+    InteractiveAshTest::SetUpOnMainThread();
 
     bluez_dbus_manager_ = BluezDBusManager::Get();
     if (!bluez_dbus_manager_) {
@@ -135,27 +104,12 @@ class BluetoothIntegrationTest : public InteractiveMixinBasedBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    // Clean up any browsers we opened (including the SWA browser) otherwise
-    // the test may hang on shutdown.
-    // TODO(b/292067979): Find a better way to work around this issue.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      CloseBrowserSynchronously(browser);
-    }
-
     // Avoid dangling pointers during shutdown.
     properties_ = nullptr;
     adapter_client_ = nullptr;
     bluez_dbus_manager_ = nullptr;
 
-    InteractiveMixinBasedBrowserTest::TearDownOnMainThread();
-  }
-
-  // Sets up a context widget for Kombucha which is needed because we don't open
-  // a browser window by default in this test suite.
-  void SetUpContextWidget() {
-    views::Widget* status_area_widget =
-        Shell::GetPrimaryRootWindowController()->shelf()->GetStatusAreaWidget();
-    SetContextWidget(status_area_widget);
+    InteractiveAshTest::TearDownOnMainThread();
   }
 
   // Waits for an element to exist in the DOM.
@@ -189,11 +143,6 @@ class BluetoothIntegrationTest : public InteractiveMixinBasedBrowserTest {
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-  // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
-  // chromeos_integration_tests.
-  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
-#endif
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<BluezDBusManager> bluez_dbus_manager_ = nullptr;
   raw_ptr<BluetoothAdapterClient> adapter_client_ = nullptr;
@@ -202,7 +151,7 @@ class BluetoothIntegrationTest : public InteractiveMixinBasedBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
                        ToggleBluetoothFromQuickSettings) {
-  SetUpContextWidget();
+  SetupContextWidget();
   RunTestSequence(ObserveState(kBluetoothPowerState,
                                std::make_unique<BluetoothPowerStateObserver>(
                                    adapter_client_, properties_)),
@@ -238,12 +187,10 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
 
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
                        ToggleBluetoothFromOsSettings) {
-  SetUpContextWidget();
+  SetupContextWidget();
 
   // Ensure the OS Settings system web app (SWA) is installed.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile);
-  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  InstallSystemApps();
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsElementId);
 
@@ -269,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       Log("Opening OS settings system web app"),
       InstrumentNextTab(kOsSettingsElementId, AnyBrowser()), Do([&]() {
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            profile, kBluetoothDevicesSubpagePath);
+            GetActiveUserProfile(), kBluetoothDevicesSubpagePath);
       }),
       WaitForShow(kOsSettingsElementId),
 
