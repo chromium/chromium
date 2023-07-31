@@ -653,6 +653,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    @DisabledTest(message = "https://crbug.com/1416712")
     public void testDismissSearchViewByBackPress() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
 
