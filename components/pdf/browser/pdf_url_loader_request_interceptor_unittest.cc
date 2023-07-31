@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -37,9 +38,24 @@ class PdfURLLoaderRequestInterceptorTest
     resource_request_.url = GURL(FakePdfStreamDelegate::kDefaultOriginalUrl);
   }
 
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+
+    content::RenderFrameHostTester* tester =
+        content::RenderFrameHostTester::For(main_rfh());
+    tester->InitializeRenderFrameIfNeeded();
+    child_frame_ = tester->AppendChild("PDF content frame");
+  }
+
+  void TearDown() override {
+    child_frame_ = nullptr;
+
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
   std::unique_ptr<PdfURLLoaderRequestInterceptor> CreateInterceptor() {
     return std::make_unique<PdfURLLoaderRequestInterceptor>(
-        main_rfh()->GetFrameTreeNodeId(), std::move(stream_delegate_));
+        child_frame_->GetFrameTreeNodeId(), std::move(stream_delegate_));
   }
 
   std::unique_ptr<FakePdfStreamDelegate> stream_delegate_ =
@@ -48,6 +64,7 @@ class PdfURLLoaderRequestInterceptorTest
   network::ResourceRequest resource_request_;
   base::MockCallback<content::URLLoaderRequestInterceptor::LoaderCallback>
       loader_callback_;
+  base::raw_ptr<content::RenderFrameHost> child_frame_;
 };
 
 void RunRequestHandler(
@@ -95,6 +112,7 @@ TEST_F(PdfURLLoaderRequestInterceptorTest, MaybeCreateLoaderDeleteContents) {
   EXPECT_CALL(loader_callback_, Run(base::test::IsNullCallback()));
 
   auto interceptor = CreateInterceptor();
+  child_frame_ = nullptr;
   DeleteContents();
   interceptor->MaybeCreateLoader(resource_request_, browser_context(),
                                  loader_callback_.Get());
