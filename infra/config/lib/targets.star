@@ -671,12 +671,10 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
         if swarming.optional_dimensions:
             formatter.open_scope("'optional_dimensions': {")
             for timeout, dimensions in swarming.optional_dimensions.items():
-                formatter.open_scope("'{}': [".format(timeout))
-                formatter.open_scope("{")
+                formatter.open_scope("'{}': {{".format(timeout))
                 for dim, value in dimensions.items():
                     formatter.add_line("'{}': {},".format(dim, dimension_value(value)))
                 formatter.close_scope("},")
-                formatter.close_scope("],")
             formatter.close_scope("},")
         if swarming.containment_type:
             formatter.add_line("'containment_type': '{}',".format(swarming.containment_type))

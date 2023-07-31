@@ -40,11 +40,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -105,11 +103,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -168,11 +164,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -227,11 +221,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -287,11 +279,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -345,11 +335,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -396,11 +384,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -446,11 +432,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -504,11 +488,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -562,11 +544,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -620,11 +600,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -679,11 +657,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -738,11 +714,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -796,11 +770,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -855,11 +827,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -913,11 +883,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -971,11 +939,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1029,11 +995,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1095,11 +1059,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1162,11 +1124,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1227,11 +1187,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1286,11 +1244,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1344,11 +1300,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1404,11 +1358,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1464,11 +1416,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1523,11 +1473,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1583,11 +1531,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1641,11 +1587,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1700,11 +1644,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1758,11 +1700,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1817,11 +1757,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1875,11 +1813,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1933,11 +1869,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -1991,11 +1925,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2049,11 +1981,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2110,11 +2040,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2168,11 +2096,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2226,11 +2152,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2284,11 +2208,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2342,11 +2264,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2400,11 +2320,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2458,11 +2376,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2517,11 +2433,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2575,11 +2489,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2633,11 +2545,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2692,11 +2602,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2750,11 +2658,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2810,11 +2716,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2868,11 +2772,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2926,11 +2828,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -2984,11 +2884,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3044,11 +2942,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3102,11 +2998,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3160,11 +3054,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3218,11 +3110,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3276,11 +3166,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3334,11 +3222,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3392,11 +3278,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3450,11 +3334,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3508,11 +3390,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3566,11 +3446,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3624,11 +3502,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3682,11 +3558,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3740,11 +3614,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3799,11 +3671,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3857,11 +3727,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3915,11 +3783,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -3973,11 +3839,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -4032,11 +3896,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -4091,11 +3953,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -4149,11 +4009,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -4207,11 +4065,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android32_foldable_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android32_foldable_experimental"
+            }
           },
           "output_links": [
             {
@@ -4269,11 +4125,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4328,11 +4182,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4388,11 +4240,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4446,11 +4296,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4497,11 +4345,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -4547,11 +4393,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4605,11 +4449,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4663,11 +4505,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4721,11 +4561,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4780,11 +4618,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4839,11 +4675,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4897,11 +4731,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -4956,11 +4788,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5014,11 +4844,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5072,11 +4900,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5130,11 +4956,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5196,11 +5020,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5263,11 +5085,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5328,11 +5148,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5387,11 +5205,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5445,11 +5261,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5505,11 +5319,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5565,11 +5377,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5624,11 +5434,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5684,11 +5492,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5742,11 +5548,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5801,11 +5605,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5859,11 +5661,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5918,11 +5718,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -5976,11 +5774,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6034,11 +5830,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6092,11 +5886,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6150,11 +5942,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6211,11 +6001,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6269,11 +6057,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6327,11 +6113,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6385,11 +6169,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6443,11 +6225,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6501,11 +6281,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6559,11 +6337,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6618,11 +6394,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6676,11 +6450,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6734,11 +6506,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6793,11 +6563,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6851,11 +6619,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6911,11 +6677,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -6969,11 +6733,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7027,11 +6789,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7085,11 +6845,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7145,11 +6903,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7203,11 +6959,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7261,11 +7015,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7319,11 +7071,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7377,11 +7127,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7435,11 +7183,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7493,11 +7239,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7551,11 +7295,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7609,11 +7351,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7667,11 +7407,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7725,11 +7463,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7783,11 +7519,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7841,11 +7575,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7900,11 +7632,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -7958,11 +7688,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8016,11 +7744,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8083,11 +7809,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8154,11 +7878,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8223,11 +7945,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8282,11 +8002,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8340,11 +8058,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8398,11 +8114,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33_experimental"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33_experimental"
+            }
           },
           "output_links": [
             {
@@ -8470,11 +8184,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android28"
-              }
-            ]
+            "60": {
+              "caches": "generic_android28"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 36
@@ -8526,11 +8238,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android23"
-              }
-            ]
+            "60": {
+              "caches": "generic_android23"
+            }
           },
           "output_links": [
             {
@@ -8584,11 +8294,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android23"
-              }
-            ]
+            "60": {
+              "caches": "generic_android23"
+            }
           },
           "output_links": [
             {
@@ -8642,11 +8350,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android23"
-              }
-            ]
+            "60": {
+              "caches": "generic_android23"
+            }
           },
           "output_links": [
             {
@@ -8700,11 +8406,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android23"
-              }
-            ]
+            "60": {
+              "caches": "generic_android23"
+            }
           },
           "output_links": [
             {
@@ -8758,11 +8462,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android23"
-              }
-            ]
+            "60": {
+              "caches": "generic_android23"
+            }
           },
           "output_links": [
             {
@@ -8816,11 +8518,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android23"
-              }
-            ]
+            "60": {
+              "caches": "generic_android23"
+            }
           },
           "output_links": [
             {
@@ -8874,11 +8574,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android23"
-              }
-            ]
+            "60": {
+              "caches": "generic_android23"
+            }
           },
           "output_links": [
             {
@@ -8974,11 +8672,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9032,11 +8728,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9097,11 +8791,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9165,11 +8857,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9224,11 +8914,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9285,11 +8973,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9344,11 +9030,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9404,11 +9088,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -9473,11 +9155,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33"
+            }
           },
           "output_links": [
             {
@@ -9541,11 +9221,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android33"
-              }
-            ]
+            "60": {
+              "caches": "generic_android33"
+            }
           },
           "output_links": [
             {
@@ -9606,11 +9284,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android28"
-              }
-            ]
+            "60": {
+              "caches": "generic_android28"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 25

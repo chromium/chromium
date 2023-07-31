@@ -36,11 +36,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {
@@ -91,11 +89,9 @@
             }
           ],
           "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android31"
-              }
-            ]
+            "60": {
+              "caches": "generic_android31"
+            }
           },
           "output_links": [
             {

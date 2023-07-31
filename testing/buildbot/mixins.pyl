@@ -11,11 +11,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android29',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android29',
+        },
       },
       'named_caches': [
         {
@@ -31,11 +29,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android30',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android30',
+        },
       },
       'named_caches': [
         {
@@ -51,11 +47,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android31',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android31',
+        },
       },
       'named_caches': [
         {
@@ -71,11 +65,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android32_foldable',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android32_foldable',
+        },
       },
       'named_caches': [
         {
@@ -91,11 +83,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android32_foldable_experimental',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android32_foldable_experimental',
+        },
       },
       'named_caches': [
         {
@@ -111,11 +101,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android33',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android33',
+        },
       },
       'named_caches': [
         {
@@ -131,11 +119,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android33_experimental',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android33_experimental',
+        },
       },
       'named_caches': [
         {
@@ -224,11 +210,9 @@
         },
       ],
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'cros_vm',
-          },
-        ],
+        '60': {
+          'caches': 'cros_vm',
+        },
       },
       'named_caches': [
         {
@@ -253,11 +237,9 @@
         },
       ],
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'cros_vm',
-          },
-        ],
+        '60': {
+          'caches': 'cros_vm',
+        },
       },
       'named_caches': [
         {
@@ -283,11 +265,9 @@
         },
       ],
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'cros_vm',
-          },
-        ],
+        '60': {
+          'caches': 'cros_vm',
+        },
       },
       'named_caches': [
         {
@@ -337,11 +317,9 @@
         },
       ],
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'cros_reven_vm',
-          },
-        ],
+        '60': {
+          'caches': 'cros_reven_vm',
+        },
       },
       'named_caches': [
         {
@@ -530,11 +508,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android19',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android19',
+        },
       },
       'named_caches': [
         {
@@ -640,11 +616,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android22',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android22',
+        },
       },
       'named_caches': [
         {
@@ -913,11 +887,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android23',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android23',
+        },
       },
       'named_caches': [
         {
@@ -955,11 +927,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android24',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android24',
+        },
       },
       'named_caches': [
         {
@@ -975,11 +945,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android26',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android26',
+        },
       },
       'named_caches': [
         {
@@ -1017,11 +985,9 @@
     ],
     'swarming': {
       'optional_dimensions': {
-        '60': [
-          {
-            'caches': 'generic_android28',
-          },
-        ],
+        '60': {
+          'caches': 'generic_android28',
+        },
       },
       'named_caches': [
         {
