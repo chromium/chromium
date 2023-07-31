@@ -2102,15 +2102,6 @@
     "args": ["--disable-features=BoostImagePriority"]
   },
   {
-    "prefix": "html-pattern-regexp-unicodesets",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/forms/text/pattern.html"],
-    "args": [
-      "--enable-blink-features=HTMLPatternRegExpUnicodeSets"
-    ],
-    "expires": "Dec 1, 2023"
-  },
-  {
     "prefix": "clone-for-branch2-disabled",
     "platforms": ["Linux"],
     "bases": ["external/wpt/fetch/api/response"],

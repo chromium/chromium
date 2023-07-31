@@ -1936,12 +1936,6 @@
       name: "HTMLParserYieldAndDelayOftenForTesting",
     },
     {
-      // A kill-switch for crbug.com/1412729
-      // (enabling the `v` flag for `pattern` RegExps).
-      name: "HTMLPatternRegExpUnicodeSets",
-      status: "stable",
-    },
-    {
       // TODO(crbug.com/1307772): Enables the Popover API.
       name: "HTMLPopoverAttribute",
       status: "stable",
