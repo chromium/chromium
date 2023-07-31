@@ -287,6 +287,18 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
+  if (!upload_request_.card.cvc().empty() &&
+      personal_data_manager_->IsPaymentCvcStorageEnabled() &&
+      // kAutofillEnableNewSaveCardBubbleUi affects the overall save bubble
+      // structure, and the client signal to incorporate CVC into the ToS should
+      // only be sent if the updated UI is active. If not, CVC save notice will
+      // be built into the dialog itself, not its ToS message.
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewSaveCardBubbleUi)) {
+    upload_request_.client_behavior_signals.push_back(
+        ClientBehaviorConstants::kOfferingToSaveCvc);
+  }
+
   payments_client_->GetUploadDetails(
       country_only_profiles, upload_request_.detected_values,
       upload_request_.client_behavior_signals, app_locale_,

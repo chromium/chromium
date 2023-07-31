@@ -26,6 +26,12 @@ enum class ClientBehaviorConstants {
   // UnmaskCardRequest when a selected suggestion contains the credit card's
   // metadata (both card art image AND card product name to be shown).
   kShowingCardArtImageAndCardProductName = 2,
+
+  // For more information on this signal, see
+  // kAutofillEnableCvcStorageAndFilling flag. This enum is to be included in
+  // the client_behavior_signals as this retrieves the correct TOS in the footer
+  // for Chrome to offer to save a card's CVC.
+  kOfferingToSaveCvc = 3,
 };
 }  // namespace autofill
 
