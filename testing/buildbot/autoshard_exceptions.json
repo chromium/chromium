@@ -61,17 +61,17 @@
             },
             "webview_instrumentation_test_apk": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": "59.0",
-                    "estimated_bot_hour_delta": "-13.45",
-                    "prev_avg_pending_time_sec": "22.5",
+                    "avg_num_builds_per_peak_hour": "76.0",
+                    "estimated_bot_hour_delta": "-2.89",
+                    "prev_avg_pending_time_sec": "25.5",
                     "prev_p50_pending_time_sec": "4.0",
-                    "prev_p90_pending_time_sec": "82.0",
-                    "prev_percentile_duration_minutes": "12.01",
-                    "prev_shard_count": "28",
-                    "simulated_max_shard_duration": "15.29",
+                    "prev_p90_pending_time_sec": "91.0",
+                    "prev_percentile_duration_minutes": "14.39",
+                    "prev_shard_count": "22",
+                    "simulated_max_shard_duration": "15.08",
                     "try_builder": "android-nougat-x86-rel"
                 },
-                "shards": "22"
+                "shards": "21"
             }
         }
     },
@@ -209,17 +209,17 @@
             },
             "lacros_chrome_browsertests_run_in_series": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": "83.0",
-                    "estimated_bot_hour_delta": "1.97",
-                    "prev_avg_pending_time_sec": "155.3",
-                    "prev_p50_pending_time_sec": "20.0",
-                    "prev_p90_pending_time_sec": "432.0",
-                    "prev_percentile_duration_minutes": "15.65",
-                    "prev_shard_count": "3",
-                    "simulated_max_shard_duration": "11.74",
+                    "avg_num_builds_per_peak_hour": "76.0",
+                    "estimated_bot_hour_delta": "1.79",
+                    "prev_avg_pending_time_sec": "134.3",
+                    "prev_p50_pending_time_sec": "7.0",
+                    "prev_p90_pending_time_sec": "403.0",
+                    "prev_percentile_duration_minutes": "16.49",
+                    "prev_shard_count": "4",
+                    "simulated_max_shard_duration": "13.19",
                     "try_builder": "linux-lacros-rel"
                 },
-                "shards": "4"
+                "shards": "5"
             },
             "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta": {
                 "debug": {
