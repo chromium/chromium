@@ -42,7 +42,7 @@
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
 #include "third_party/blink/public/web/web_window_features.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 
-#if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+#if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
 
 #include "base/rand_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
 
 #include <limits>
-
 
 namespace blink::v8_compile_hints {
 
@@ -1252,7 +1251,6 @@ void V8CrowdsourcedCompileHintsProducer::AddNoise(unsigned* data) {
   *data = *data ^ mask;
 }
 
-} // namespace blink::v8_compile_hints
+}  // namespace blink::v8_compile_hints
 
-
-#endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+#endif  // BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)

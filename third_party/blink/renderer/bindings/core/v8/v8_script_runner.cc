@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
@@ -568,7 +569,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             produce_cache_options);
       }
 
-#if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+#if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
       if (page != nullptr) {
         if (compile_options == v8::ScriptCompiler::kProduceCompileHints) {
           // TODO(chromium:1406506): Add a compile hints solution for workers.
@@ -580,7 +581,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
               frame, execution_context, script, script_state);
         }
       }
-#endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+#endif  // BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
     }
 
     // TODO(crbug/1114601): Investigate whether to check CanContinue() in other

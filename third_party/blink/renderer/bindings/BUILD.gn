@@ -447,5 +447,5 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   header_dir = "third_party/blink/renderer/bindings"
 
-  flags = [ "ENABLE_V8_COMPILE_HINTS=$enable_v8_compile_hints" ]
+  flags = [ "PRODUCE_V8_COMPILE_HINTS=$produce_v8_compile_hints" ]
 }

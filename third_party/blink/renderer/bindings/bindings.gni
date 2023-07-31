@@ -136,8 +136,8 @@ blink_core_sources_bindings =
                     "core/v8/v8_code_cache.h",
                     "core/v8/v8_compile_hints_hashing.cc",
                     "core/v8/v8_compile_hints_hashing.h",
-                    "core/v8/v8_compile_hints.cc",
-                    "core/v8/v8_compile_hints.h",
+                    "core/v8/v8_compile_hints_producer.cc",
+                    "core/v8/v8_compile_hints_producer.h",
                     "core/v8/v8_context_snapshot.cc",
                     "core/v8/v8_context_snapshot.h",
                     "core/v8/v8_ctype_traits.h",
@@ -184,7 +184,7 @@ blink_core_sources_bindings =
 
 declare_args() {
   # Enable V8 to produce hints regarding which functions to compile eagerly.
-  enable_v8_compile_hints = !is_android
+  produce_v8_compile_hints = !is_android
 }
 
 # Source files to be part of

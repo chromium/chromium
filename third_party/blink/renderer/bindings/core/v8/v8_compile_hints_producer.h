@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_H_
-#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_PRODUCER_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_PRODUCER_H_
 
 #include "third_party/blink/renderer/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
-#if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+#if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
 
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -121,6 +121,6 @@ class V8CrowdsourcedCompileHintsProducer
 }  // namespace v8_compile_hints
 }  // namespace blink
 
-#endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+#endif  // BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_PRODUCER_H_
