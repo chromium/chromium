@@ -27233,6 +27233,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="80" label="Stylesheet request initiator link clicked"/>
   <int value="81" label="Breakpoint removed from gutter context menu"/>
   <int value="82" label="Breakpoint removed from gutter toggle"/>
+  <int value="83" label="Style property inside a keyframe rule edited"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
