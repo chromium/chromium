@@ -1,6 +1,16 @@
 <style include="settings-shared">
-  .column-title {
+  .container-details-list {
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .detail-content {
+    color: var(--cros-text-color-primary);
+    flex: auto;
+  }
+
+  .detail-heading {
     color: var(--cr-secondary-text-color);
+    flex: auto;
   }
 
   .vm-column {
@@ -9,28 +19,16 @@
     word-break: break-all;
   }
 
-  .vm-name {
-    color: var(--cros-text-color-primary);
-  }
-
   #createExtraContainer {
     padding-top: 10px;
   }
 
-  .expand-button {
-    --ink-color: var(--cros-text-color-primary);
-    background: none;
-    border: none;
-    box-shadow: none;
-    color: var(--cros-text-color-primary);
-    font-weight: 400;
-    margin-bottom: 12px;
-    min-height: 32px;
-    padding-inline-start: 0;
+  cr-expand-button {
+    --cr-section-vertical-padding: 0;
+    flex: auto;
   }
-
 </style>
-<div  class="settings-box first">
+<div class="settings-box first">
   <div id="extraContainersDescription" class="start">
     $i18n{crostiniExtraContainersDescription}
   </div>
@@ -45,47 +43,44 @@
   </cr-button>
 </div>
 
-
-
 <template is="dom-repeat"
     items="[[allVms_]]" as="vmName" index-as="vmIndex"
     sort="byVmName_" mutable-data>
-  <div id="vm-heading" class="settings-box hr">
-    <div class="list-item">
-      <div class="start column-title">
-        $i18n{crostiniExtraContainersVmNameLabel}:
-        <span class="vm-name">[[vmName]]</span>
-      </div>
+  <div class="settings-box hr">
+    <div class="detail-heading">
+      $i18n{crostiniExtraContainersVmNameLabel}:
+      <span class="detail-content">[[vmName]]</span>
     </div>
   </div>
   <div class="list-frame vertical-list">
     <template is="dom-repeat" items="[[allContainers_]]"
         filter="[[infoHasVmName_(vmName)]]" sort="byGuestId_" mutable-data>
       <div class="list-item">
-        <div id="containerName" class="start column-title">
+      <cr-expand-button
+          class="list-item secondary"
+          id="expand-button-[[item.id.vm_name]]-[[item.id.container_name]]"
+          expanded="{{item.detailsExpanded}}"
+          data-container-id="[[item.id]]">
+        <div class="detail-heading">
           $i18n{crostiniExtraContainersContainerNameLabel}:
-          <span class="vm-name">[[item.id.container_name]]</span>
-          <cr-button
-              id="expand-button-[[item.id.vm_name]]-[[item.id.container_name]]"
-              class="expand-button"
-              on-click="expandButtonClicked_"
-              data-container-id="[[item.id]]">
-              <iron-icon icon="[[getArrowIcon_(item.id)]]"></iron-icon>
-          </cr-button>
+          <span class="detail-content">[[item.id.container_name]]</span>
         </div>
-        <cr-icon-button id="showContainerMenu[[index]]"
-            class="icon-more-vert"
-            title="$i18n{moreActions}"
-            data-container-id="[[item.id]]"
-            on-click="onContainerMenuClick_">
-        </cr-icon-button>
+      </cr-expand-button>
+      <div class="separator"></div>
+      <cr-icon-button id="showContainerMenu[[index]]"
+          class="icon-more-vert"
+          title="$i18n{moreActions}"
+          data-container-id="[[item.id]]"
+          on-click="onContainerMenuClick_">
+      </cr-icon-button>
       </div>
       <iron-collapse
-          id="collapse-[[item.id.vm_name]]-[[item.id.container_name]]">
-        <div id="details-[[item.id.vm_name]]-[[item.id.container_name]]">
-
-          <div class="settings-box continuation embedded">
-            <div class="start column-title" aria-hidden="true">
+          id="collapse-[[item.id.vm_name]]-[[item.id.container_name]]"
+          opened="[[item.detailsExpanded]]">
+        <div class="container-details-list"
+            id="details-[[item.id.vm_name]]-[[item.id.container_name]]">
+          <div class="list-item">
+            <div class="detail-heading" aria-hidden="true">
               $i18n{crostiniExtraContainersAppBadgeColor}
             </div>
             <input type="color"
@@ -93,8 +88,8 @@
                 value="[[item.badge_color]]"
                 on-change="onContainerColorChange_">
           </div>
-          <div class="settings-box continuation embedded">
-            <div class="start column-title" aria-hidden="true">
+          <div class="list-item">
+            <div class="detail-heading" aria-hidden="true">
               $i18n{crostiniExtraContainersShareMicrophone}
             </div>
             <cr-toggle
@@ -104,10 +99,10 @@
                 on-change="onMicrophoneSharingChanged_">
             </cr-toggle>
           </div>
-          <div class="settings-box continuation embedded"
-               hidden="[[!showIp_(item)]]"
-               id="ip-[[item.id.vm_name]]-[[item.id.container_name]]">
-            <div class="start column-title" aria-hidden="true">
+          <div class="list-item"
+              hidden="[[!showIp_(item)]]"
+              id="ip-[[item.id.vm_name]]-[[item.id.container_name]]">
+            <div class="detail-heading" aria-hidden="true">
               $i18n{crostiniExtraContainersContainerIpLabel}
             </div>
             <div class="vm-column">
@@ -148,14 +143,14 @@
           role="menuitem"
           on-click="onExportContainerClick_"
           disabled="[[!enableButtons_]]">
-          $i18n{crostiniExport}
+        $i18n{crostiniExport}
       </button>
       <button id="importContainerButton"
           class="dropdown-item"
           role="menuitem"
           on-click="onImportContainerClick_"
           disabled="[[!enableButtons_]]">
-          $i18n{crostiniImport}
+        $i18n{crostiniImport}
       </button>
     </cr-action-menu>
   </template>

@@ -23,7 +23,6 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContainerInfo, GuestId, ShareableDevices, VM_DEVICE_MICROPHONE} from '../guest_os/guest_os_browser_proxy.js';
@@ -45,6 +44,10 @@ interface ExtraContainersElement {
 interface SharedVmDevices {
   id: GuestId;
   vmDevices: ShareableDevices;
+}
+
+interface CrostiniContainerInfo extends ContainerInfo {
+  detailsExpanded: boolean;
 }
 
 const ExtraContainersElementBase = WebUiListenerMixin(PolymerElement);
@@ -115,13 +118,13 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     };
   }
 
-  private allContainers_: ContainerInfo[];
+  private allContainers_: CrostiniContainerInfo[];
   private allSharedVmDevices_: SharedVmDevices[];
   private allVms_: string[];
   private browserProxy_: CrostiniBrowserProxy;
   private exportImportInProgress_: boolean;
   private installerShowing_: boolean;
-  private lastMenuContainerInfo_: ContainerInfo|null;
+  private lastMenuContainerInfo_: CrostiniContainerInfo|null;
   private showCreateContainerDialog_: boolean;
 
   constructor() {
@@ -202,11 +205,17 @@ class ExtraContainersElement extends ExtraContainersElementBase {
 
   private onContainerInfo_(containerInfos: ContainerInfo[]) {
     const vmNames: Set<string> = new Set();
-    for (const info of containerInfos) {
+    const crostiniContainerInfos = containerInfos as CrostiniContainerInfo[];
+    for (const info of crostiniContainerInfos) {
       vmNames.add(info.id.vm_name);
+      const oldContainerInfo = this.allContainers_.find(
+          container => equalContainerId(container.id, info.id));
+      info.detailsExpanded = (oldContainerInfo !== undefined) ?
+          oldContainerInfo.detailsExpanded :
+          false;
     }
     this.set('allVms_', Array.from(vmNames.values()));
-    this.set('allContainers_', containerInfos);
+    this.set('allContainers_', crostiniContainerInfos);
   }
 
   private onCreateClick_() {
@@ -342,39 +351,6 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     await this.browserProxy_.setVmDeviceShared(
         id, VM_DEVICE_MICROPHONE, shared);
     await this.updateSharedVmDevices_(id);
-  }
-
-  private expandButtonClicked_(event: Event) {
-    const target = event.currentTarget as HtmlElementWithData;
-    const id = target['dataContainerId'];
-
-    const collapse: IronCollapseElement|null =
-        this.shadowRoot!.querySelector<IronCollapseElement>(
-            `#collapse-${id.vm_name}-${id.container_name}`);
-    if (collapse) {
-      collapse.toggle();
-
-      const icon = target.querySelector('iron-icon');
-      if (icon) {
-        icon.set(
-            'icon',
-            collapse.opened ? 'cr:arrow-drop-down' : 'cr:arrow-drop-up');
-      }
-    }
-  }
-
-  private isExpanded_(id: GuestId): boolean {
-    const collapse: IronCollapseElement|null =
-        this.shadowRoot!.querySelector<IronCollapseElement>(
-            `#collapse-${id.vm_name}-${id.container_name}`);
-    if (collapse) {
-      return collapse.opened;
-    }
-    return false;
-  }
-
-  private getArrowIcon_(id: GuestId): string {
-    return this.isExpanded_(id) ? 'cr:arrow-drop-down' : 'cr:arrow-drop-up';
   }
 
   private showIp_(info: ContainerInfo): boolean {
