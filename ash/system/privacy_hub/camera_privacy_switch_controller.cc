@@ -60,7 +60,7 @@ void VCDPrivacyAdapter::SetCameraSWPrivacySwitch(
 }
 
 const base::TimeDelta kCameraLedFallbackNotificationExtensionPeriod =
-    base::Seconds(10);
+    base::Seconds(30);
 
 }  // namespace
 
