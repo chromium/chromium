@@ -45,6 +45,12 @@ void AssistiveTechnologyControllerImpl::BindTts(
   accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
 }
 
+void AssistiveTechnologyControllerImpl::BindUserInterface(
+    mojo::PendingReceiver<mojom::UserInterface> user_interface_receiver) {
+  accessibility_service_client_remote_->BindUserInterface(
+      std::move(user_interface_receiver));
+}
+
 void AssistiveTechnologyControllerImpl::EnableAssistiveTechnology(
     const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
   for (int i = static_cast<int>(mojom::AssistiveTechnologyType::kMinValue);
@@ -92,12 +98,23 @@ scoped_refptr<V8Manager> AssistiveTechnologyControllerImpl::GetOrMakeV8Manager(
 
   // Install bindings on the global context depending on the type.
   // For example, some types may need TTS and some may not. All need Automation.
+  // TODO(b/262637071): Create a easy way to map AT types to APIs needed instead
+  // of these large if statements.
   v8_manager->InstallAutomation(weak_ptr_factory_.GetWeakPtr());
   if (type == mojom::AssistiveTechnologyType::kChromeVox ||
       type == mojom::AssistiveTechnologyType::kSelectToSpeak) {
+    // TTS needs to know the type that is speaking.
     v8_manager->InstallTts(weak_ptr_factory_.GetWeakPtr());
   }
-  // TODO(crbug.com/1355633): Install other bindings based on the type
+  if (type == mojom::AssistiveTechnologyType::kChromeVox ||
+      type == mojom::AssistiveTechnologyType::kSelectToSpeak ||
+      type == mojom::AssistiveTechnologyType::kAutoClick ||
+      type == mojom::AssistiveTechnologyType::kSwitchAccess) {
+    // UserInterface needs to know the type to get extension id for focus rings.
+    // Does it? No, it can just be unique? Let's start with the full type.
+    v8_manager->InstallUserInterface(weak_ptr_factory_.GetWeakPtr());
+  }
+  // TODO(b/262637071): Install other bindings based on the type
   // once they are implemented.
 
   // After installing all bindings, initialize.

@@ -55,6 +55,10 @@ class ASH_EXPORT AccessibilityFocusRingGroup {
     return focus_layers_;
   }
 
+  AccessibilityFocusRingInfo* focus_ring_info_for_testing() const {
+    return focus_ring_info_.get();
+  }
+
  protected:
   virtual int GetMargin() const;
 

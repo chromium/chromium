@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
+#include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
@@ -20,8 +24,11 @@
 #include "content/public/test/browser_test.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/compositor/layer.h"
 
 using ax::mojom::AssistiveTechnologyType;
 
@@ -212,7 +219,8 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
   ~AccessibilityServiceClientTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(features::kAccessibilityService);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityService);
   }
 
   void SetUp() override {
@@ -853,6 +861,99 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsInterrupt) {
         second_utterance_client = std::make_unique<TtsUtteranceClientImpl>(
             std::move(result->utterance_client), std::move(second_callback));
       }));
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetFocusRings) {
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInterface();
+
+  AccessibilityFocusRingControllerImpl* controller =
+      Shell::Get()->accessibility_focus_ring_controller();
+  controller->SetNoFadeForTesting();
+
+  std::string focus_ring_id1 = AccessibilityManager::Get()->GetFocusRingId(
+      ax::mojom::AssistiveTechnologyType::kSwitchAccess, "");
+  const AccessibilityFocusRingGroup* focus_ring_group1 =
+      controller->GetFocusRingGroupForTesting(focus_ring_id1);
+  std::string focus_ring_id2 = AccessibilityManager::Get()->GetFocusRingId(
+      ax::mojom::AssistiveTechnologyType::kSwitchAccess, "mySpoonIsTooBig");
+  const AccessibilityFocusRingGroup* focus_ring_group2 =
+      controller->GetFocusRingGroupForTesting(focus_ring_id2);
+  // No focus rings to start.
+  EXPECT_EQ(nullptr, focus_ring_group1);
+  EXPECT_EQ(nullptr, focus_ring_group2);
+
+  // Number of times the focus ring observer is called.
+  int count = 0;
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetFocusRingObserverForTest(
+      base::BindLambdaForTesting([&waiter, &controller, &focus_ring_id1,
+                                  &focus_ring_group1, &focus_ring_id2,
+                                  &focus_ring_group2, &count]() {
+        if (count == 0) {
+          // Wait for this to be called twice.
+          count++;
+          return;
+        }
+        waiter.Quit();
+        // Check that the focus rings have been set appropriately.
+        focus_ring_group1 =
+            controller->GetFocusRingGroupForTesting(focus_ring_id1);
+        ASSERT_NE(nullptr, focus_ring_group1);
+        std::vector<std::unique_ptr<AccessibilityFocusRingLayer>> const&
+            focus_rings = focus_ring_group1->focus_layers_for_testing();
+        EXPECT_EQ(focus_rings.size(), 1u);
+        gfx::Rect target_bounds = focus_rings.at(0)->layer()->GetTargetBounds();
+        EXPECT_EQ(target_bounds.CenterPoint(),
+                  gfx::Rect(50, 100, 42, 84).CenterPoint());
+        AccessibilityFocusRingInfo* focus_ring_info =
+            focus_ring_group1->focus_ring_info_for_testing();
+        EXPECT_EQ(focus_ring_info->type, FocusRingType::GLOW);
+        EXPECT_EQ(focus_ring_info->color, SK_ColorRED);
+        EXPECT_EQ(focus_ring_info->behavior, FocusRingBehavior::PERSIST);
+
+        focus_ring_group2 =
+            controller->GetFocusRingGroupForTesting(focus_ring_id2);
+        ASSERT_NE(nullptr, focus_ring_group2);
+        std::vector<std::unique_ptr<AccessibilityFocusRingLayer>> const&
+            focus_rings2 = focus_ring_group2->focus_layers_for_testing();
+        EXPECT_EQ(focus_rings2.size(), 1u);
+        target_bounds = focus_rings2.at(0)->layer()->GetTargetBounds();
+        EXPECT_EQ(target_bounds.CenterPoint(),
+                  gfx::Rect(500, 200, 84, 42).CenterPoint());
+        focus_ring_info = focus_ring_group2->focus_ring_info_for_testing();
+        EXPECT_EQ(focus_ring_info->type, FocusRingType::DASHED);
+        EXPECT_EQ(focus_ring_info->color, SK_ColorBLUE);
+        EXPECT_EQ(focus_ring_info->background_color, SK_ColorGREEN);
+        EXPECT_EQ(focus_ring_info->secondary_color, SK_ColorBLACK);
+        EXPECT_EQ(focus_ring_info->behavior, FocusRingBehavior::PERSIST);
+      }));
+
+  // Set two focus rings.
+  std::vector<ax::mojom::FocusRingInfoPtr> focus_rings;
+  auto focus_ring1 = ax::mojom::FocusRingInfo::New();
+  focus_ring1->color = SK_ColorRED;
+  focus_ring1->rects.emplace_back(50, 100, 42, 84);
+  focus_ring1->type = ax::mojom::FocusType::kGlow;
+  focus_rings.emplace_back(std::move(focus_ring1));
+
+  auto focus_ring2 = ax::mojom::FocusRingInfo::New();
+  focus_ring2->color = SK_ColorBLUE;
+  focus_ring2->rects.emplace_back(500, 200, 84, 42);
+  focus_ring2->type = ax::mojom::FocusType::kDashed;
+  focus_ring2->background_color = SK_ColorGREEN;
+  focus_ring2->secondary_color = SK_ColorBLACK;
+  focus_ring2->stacking_order =
+      ax::mojom::FocusRingStackingOrder::kBelowAccessibilityBubbles;
+  focus_ring2->id = "mySpoonIsTooBig";
+  focus_rings.emplace_back(std::move(focus_ring2));
+  fake_service_->RequestSetFocusRings(
+      std::move(focus_rings),
+      ax::mojom::AssistiveTechnologyType::kSwitchAccess);
 
   waiter.Run();
 }

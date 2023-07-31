@@ -62,6 +62,8 @@ source_set("ash") {
     "accessibility/service/automation_client_impl.h",
     "accessibility/service/tts_client_impl.cc",
     "accessibility/service/tts_client_impl.h",
+    "accessibility/service/user_interface_impl.cc",
+    "accessibility/service/user_interface_impl.h",
     "account_manager/account_apps_availability.cc",
     "account_manager/account_apps_availability.h",
     "account_manager/account_apps_availability_factory.cc",

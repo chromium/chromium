@@ -44,6 +44,8 @@ source_set("lib") {
       "features/text_encoder.h",
       "features/tts_interface_binder.cc",
       "features/tts_interface_binder.h",
+      "features/user_interface_interface_binder.cc",
+      "features/user_interface_interface_binder.h",
       "features/v8_bindings_utils.cc",
       "features/v8_bindings_utils.h",
       "features/v8_manager.cc",

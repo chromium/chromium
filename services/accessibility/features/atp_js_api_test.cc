@@ -14,9 +14,10 @@
 #include "services/accessibility/fake_service_client.h"
 #include "services/accessibility/features/mojo/test/js_test_interface.h"
 #include "services/accessibility/os_accessibility_service.h"
-#include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
-#include "services/accessibility/public/mojom/tts.mojom-forward.h"
+#include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_interface.mojom-shared.h"
+#include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ax {
@@ -393,6 +394,153 @@ TEST_F(TtsJSApiTest, TtsOptions) {
     chrome.tts.speak('You have my ax', options);
   )JS");
 
+  waiter.Run();
+}
+
+class AccessibilityPrivateJSApiTest : public AtpJSApiTest {
+ public:
+  AccessibilityPrivateJSApiTest() = default;
+  AccessibilityPrivateJSApiTest(const AccessibilityPrivateJSApiTest&) = delete;
+  AccessibilityPrivateJSApiTest& operator=(
+      const AccessibilityPrivateJSApiTest&) = delete;
+  ~AccessibilityPrivateJSApiTest() override = default;
+
+  mojom::AssistiveTechnologyType GetATTypeForTest() const override {
+    return mojom::AssistiveTechnologyType::kSelectToSpeak;
+  }
+
+  const std::vector<std::string> GetJSFilePathsToLoad() const override {
+    // TODO(b:266856702): Eventually ATP will load its own JS instead of us
+    // doing it in the test. Right now the service doesn't have enough
+    // permissions so we load support JS within the test.
+    return std::vector<std::string>{
+        "services/accessibility/features/mojo/test/mojom_test_support.js",
+        "skia/public/mojom/skcolor.mojom-lite.js",
+        "ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+        "services/accessibility/public/mojom/"
+        "assistive_technology_type.mojom-lite.js",
+        "services/accessibility/public/mojom/user_interface.mojom-lite.js",
+        "services/accessibility/features/javascript/accessibility_private.js",
+    };
+  }
+};
+
+TEST_F(AccessibilityPrivateJSApiTest, SetFocusRings) {
+  base::RunLoop waiter;
+  client_->SetFocusRingsCallback(base::BindLambdaForTesting([&waiter, this]() {
+    waiter.Quit();
+    const std::vector<mojom::FocusRingInfoPtr>& focus_rings =
+        client_->GetFocusRingsForType(
+            ax::mojom::AssistiveTechnologyType::kChromeVox);
+    ASSERT_EQ(focus_rings.size(), 1u);
+    auto& focus_ring = focus_rings[0];
+    EXPECT_EQ(focus_ring->type, mojom::FocusType::kGlow);
+    EXPECT_EQ(focus_ring->color, 13369395u);
+    ASSERT_EQ(focus_ring->rects.size(), 1u);
+    EXPECT_EQ(focus_ring->rects[0], gfx::Rect(50, 100, 200, 300));
+
+    // Optional fields are not set if not passed.
+    EXPECT_FALSE(focus_ring->stacking_order.has_value());
+    EXPECT_FALSE(focus_ring->background_color.has_value());
+    EXPECT_FALSE(focus_ring->secondary_color.has_value());
+    EXPECT_FALSE(focus_ring->id.has_value());
+  }));
+  ExecuteJS(R"JS(
+    const focusRingInfo = {
+      rects: [{left: 50, top: 100, width: 200, height: 300}],
+      type: 'glow',
+      color: '#cc0033',
+    };
+    chrome.accessibilityPrivate.setFocusRings([focusRingInfo],
+        chrome.accessibilityPrivate.AssistiveTechnologyType.CHROME_VOX);
+  )JS");
+  waiter.Run();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest, EmptyFocusRings) {
+  base::RunLoop waiter;
+  client_->SetFocusRingsCallback(base::BindLambdaForTesting([&waiter, this]() {
+    waiter.Quit();
+    const std::vector<mojom::FocusRingInfoPtr>& focus_rings =
+        client_->GetFocusRingsForType(
+            ax::mojom::AssistiveTechnologyType::kAutoClick);
+    EXPECT_EQ(focus_rings.size(), 0u);
+  }));
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.setFocusRings([],
+        chrome.accessibilityPrivate.AssistiveTechnologyType.AUTO_CLICK);
+  )JS");
+  waiter.Run();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest, SetFocusRingsOptionalValues) {
+  base::RunLoop waiter;
+  client_->SetFocusRingsCallback(base::BindLambdaForTesting([&waiter, this]() {
+    waiter.Quit();
+    const std::vector<mojom::FocusRingInfoPtr>& focus_rings =
+        client_->GetFocusRingsForType(
+            ax::mojom::AssistiveTechnologyType::kSelectToSpeak);
+    ASSERT_EQ(focus_rings.size(), 2u);
+    auto& focus_ring1 = focus_rings[0];
+    EXPECT_EQ(focus_ring1->type, mojom::FocusType::kSolid);
+    EXPECT_EQ(focus_ring1->color, 13369378u);
+    ASSERT_EQ(focus_ring1->rects.size(), 2u);
+    EXPECT_EQ(focus_ring1->rects[0], gfx::Rect(150, 200, 300, 400));
+    EXPECT_EQ(focus_ring1->rects[1], gfx::Rect(0, 50, 150, 250));
+    ASSERT_TRUE(focus_ring1->stacking_order.has_value());
+    EXPECT_EQ(focus_ring1->stacking_order.value(),
+              mojom::FocusRingStackingOrder::kAboveAccessibilityBubbles);
+    ASSERT_TRUE(focus_ring1->background_color.has_value());
+    EXPECT_EQ(focus_ring1->background_color.value(), 11259375u);
+    ASSERT_TRUE(focus_ring1->secondary_color.has_value());
+    EXPECT_EQ(focus_ring1->secondary_color.value(), 1193046u);
+    ASSERT_TRUE(focus_ring1->id.has_value());
+    EXPECT_EQ(focus_ring1->id.value(), "lovelace");
+
+    auto& focus_ring2 = focus_rings[1];
+    EXPECT_EQ(focus_ring2->type, mojom::FocusType::kDashed);
+    EXPECT_EQ(focus_ring2->color, 0u);
+    ASSERT_EQ(focus_ring2->rects.size(), 1u);
+    EXPECT_EQ(focus_ring2->rects[0], gfx::Rect(4, 3, 2, 1));
+    ASSERT_TRUE(focus_ring2->stacking_order.has_value());
+    EXPECT_EQ(focus_ring2->stacking_order.value(),
+              mojom::FocusRingStackingOrder::kBelowAccessibilityBubbles);
+    ASSERT_TRUE(focus_ring2->background_color.has_value());
+    EXPECT_EQ(focus_ring2->background_color.value(), 16702650u);
+    ASSERT_TRUE(focus_ring2->secondary_color.has_value());
+    EXPECT_EQ(focus_ring2->secondary_color.value(), 6636321u);
+    ASSERT_TRUE(focus_ring2->id.has_value());
+    EXPECT_EQ(focus_ring2->id.value(), "curie");
+  }));
+  ExecuteJS(R"JS(
+    const stackingOrder = chrome.accessibilityPrivate.FocusRingStackingOrder;
+    const focusRingInfo1 = {
+      rects: [
+        {left: 150, top: 200, width: 300, height: 400},
+        {left: 0, top: 50, width: 150, height: 250}
+      ],
+      type: 'solid',
+      color: '#cc0022',
+      backgroundColor: '#abcdef',
+      secondaryColor: '#123456',
+      stackingOrder:
+          stackingOrder.ABOVE_ACCESSIBILITY_BUBBLES,
+      id: 'lovelace',
+    };
+    const focusRingInfo2 = {
+      rects: [{left: 4, top: 3, width: 2, height: 1}],
+      type: 'dashed',
+      color: '#000000',
+      backgroundColor: 'fedcba',
+      secondaryColor: '#654321',
+      stackingOrder:
+          stackingOrder.BELOW_ACCESSIBILITY_BUBBLES,
+      id: 'curie',
+    }
+    chrome.accessibilityPrivate.setFocusRings(
+      [focusRingInfo1, focusRingInfo2],
+      chrome.accessibilityPrivate.AssistiveTechnologyType.SELECT_TO_SPEAK);
+  )JS");
   waiter.Run();
 }
 

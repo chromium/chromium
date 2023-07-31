@@ -8,9 +8,12 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_interface.mojom.h"
 
 namespace ash {
 
@@ -41,6 +44,13 @@ void FakeAccessibilityService::BindAnotherTts() {
   mojo::PendingReceiver<ax::mojom::Tts> tts_receiver;
   tts_remotes_.Add(tts_receiver.InitWithNewPipeAndPassRemote());
   accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
+}
+
+void FakeAccessibilityService::BindAnotherUserInterface() {
+  mojo::PendingReceiver<ax::mojom::UserInterface> ux_receiver;
+  ux_remotes_.Add(ux_receiver.InitWithNewPipeAndPassRemote());
+  accessibility_service_client_remote_->BindUserInterface(
+      std::move(ux_receiver));
 }
 
 void FakeAccessibilityService::BindAssistiveTechnologyController(
@@ -187,6 +197,14 @@ void FakeAccessibilityService::RequestTtsVoices(
   CHECK_EQ(tts_remotes_.size(), 1u);
   for (auto& tts_client : tts_remotes_) {
     tts_client->GetVoices(std::move(callback));
+  }
+}
+
+void FakeAccessibilityService::RequestSetFocusRings(
+    std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
+    ax::mojom::AssistiveTechnologyType at_type) {
+  for (auto& ux_client : ux_remotes_) {
+    ux_client->SetFocusRings(mojo::Clone(focus_rings), at_type);
   }
 }
 

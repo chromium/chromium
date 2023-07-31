@@ -5,9 +5,11 @@
 #ifndef SERVICES_ACCESSIBILITY_FAKE_SERVICE_CLIENT_H_
 #define SERVICES_ACCESSIBILITY_FAKE_SERVICE_CLIENT_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -17,18 +19,20 @@
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_interface.mojom.h"
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
 namespace ax {
 
 // A fake AccessibilityServiceClient and AutomationClient for use in tests.
 // This allows tests to mock out the OS side of the mojom pipes.
-// TODO(crbug.com/1355633) This can be extended to allow for passing events into
+// TODO(b/262637071) This can be extended to allow for passing events into
 // the service once the mojom is landed.
-// TODO(crbug.com/1355633): This should be split for OS vs Browser ATP.
+// TODO(b/262637071): This should be split for OS vs Browser ATP.
 class FakeServiceClient : public mojom::AccessibilityServiceClient,
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
                           public mojom::Tts,
+                          public mojom::UserInterface,
 #endif
                           public mojom::AutomationClient {
  public:
@@ -45,6 +49,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       override;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
+  void BindUserInterface(
+      mojo::PendingReceiver<ax::mojom::UserInterface> ux_receiver) override;
 
   // ax::mojom::Tts:
   void Speak(const std::string& utterance,
@@ -55,6 +61,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void Resume() override;
   void IsSpeaking(IsSpeakingCallback callback) override;
   void GetVoices(GetVoicesCallback callback) override;
+
+  // ax::mojom::UserInterface:
+  void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
+                     ax::mojom::AssistiveTechnologyType at_type) override;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
   // Methods for testing.
@@ -64,12 +74,15 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   bool AutomationIsBound() const;
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
-  void SetTtsBoundClosure(base::OnceClosure closure);
-  bool TtsIsBound() const;
   void SetTtsSpeakCallback(
       base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
           callback);
   void SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event);
+
+  bool UserInterfaceIsBound() const;
+  void SetFocusRingsCallback(base::RepeatingCallback<void()> callback);
+  const std::vector<ax::mojom::FocusRingInfoPtr>& GetFocusRingsForType(
+      mojom::AssistiveTechnologyType type) const;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -78,7 +91,6 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
  private:
   raw_ptr<mojom::AccessibilityService, DanglingUntriaged> service_;
   base::OnceClosure automation_bound_closure_;
-  base::OnceClosure tts_bound_closure_;
 
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;
@@ -87,6 +99,12 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       tts_speak_callback_;
   mojo::ReceiverSet<mojom::Tts> tts_receivers_;
   mojo::Remote<ax::mojom::TtsUtteranceClient> tts_utterance_client_;
+
+  base::RepeatingCallback<void()> focus_rings_callback_;
+  mojo::ReceiverSet<mojom::UserInterface> ux_receivers_;
+  std::map<mojom::AssistiveTechnologyType,
+           std::vector<ax::mojom::FocusRingInfoPtr>>
+      focus_rings_for_type_;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   mojo::Receiver<mojom::AccessibilityServiceClient> a11y_client_receiver_{this};
 
