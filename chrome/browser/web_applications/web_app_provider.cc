@@ -432,22 +432,28 @@ void WebAppProvider::OnSyncBridgeReady() {
           },
           AsWeakPtr()));
 
+  base::OnceClosure on_web_app_policy_manager_done_callback =
+      external_manager_barrier;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  on_web_app_policy_manager_done_callback =
+      base::BindOnce(&WebAppRunOnOsLoginManager::Start,
+                     web_app_run_on_os_login_manager_->GetWeakPtr())
+          .Then(external_manager_barrier);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   registrar_->Start();
   install_finalizer_->Start();
   icon_manager_->Start();
   translation_manager_->Start();
   install_manager_->Start();
   preinstalled_web_app_manager_->Start(external_manager_barrier);
-  web_app_policy_manager_->Start(external_manager_barrier);
+  web_app_policy_manager_->Start(
+      std::move(on_web_app_policy_manager_done_callback));
   iwa_command_line_install_manager_->Start();
 
 #if BUILDFLAG(IS_CHROMEOS)
   iwa_update_manager_->Start();
-
-  on_external_managers_synchronized_.Post(
-      FROM_HERE,
-      base::BindOnce(&WebAppRunOnOsLoginManager::Start,
-                     web_app_run_on_os_login_manager_->GetWeakPtr()));
 #endif
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
