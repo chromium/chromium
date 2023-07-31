@@ -12,8 +12,12 @@ services/daemons via utilities (D-Bus wrappers, shell commands, etc.).
 ## Guidelines for using Crosier
 Getting a DUT for local development is not easy for most developers and cros VM
 setup is harder than using the linux-chromeos "emulator" environment. We should
-limit the usage of Crosier to avoid DUT testing when possible. The preferred
-order when adding a new test:
+limit the usage of Crosier and avoid DUT testing when possible.
+Running ChromeOS integration tests on DUT is only recommended for tests
+exercising hardware components (e.g. graphics tests) or testing communication
+with OS daemons (e.g. Bluetooth daemon).
+
+The preferred order when adding a new test:
 - unit_tests, ash_unittests, browser_tests in linux-chromeos environment
 - unit_tests, chromeos_integration_tests on a ChromeOS VM
 - unit_tests, chromeos_integration_tests on a ChromeOS device (DUT)
