@@ -59,12 +59,23 @@ class OpenPageAndShowHelpBubbleImpl : public OpenPageAndShowHelpBubble {
                     &OpenPageAndShowHelpBubbleImpl::OnAnchorShown,
                     base::Unretained(this)));
 
-    NavigateParams navigate_params(browser, params.target_url,
-                                   ui::PAGE_TRANSITION_LINK);
-    navigate_params.disposition =
-        params.overwrite_active_tab ? WindowOpenDisposition::CURRENT_TAB
-                                    : WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    navigate_handle_ = Navigate(&navigate_params);
+    if (params.target_url.has_value()) {
+      NavigateParams navigate_params(browser, params.target_url.value(),
+                                     ui::PAGE_TRANSITION_LINK);
+      navigate_params.disposition =
+          params.overwrite_active_tab
+              ? WindowOpenDisposition::CURRENT_TAB
+              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      navigate_handle_ = Navigate(&navigate_params);
+    } else {
+      auto* visible_element =
+          ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+              params.bubble_anchor_id);
+
+      if (visible_element) {
+        OnAnchorShown(visible_element);
+      }
+    }
 
     timeout_.Start(FROM_HERE, timeout,
                    base::BindOnce(&OpenPageAndShowHelpBubbleImpl::OnTimeout,

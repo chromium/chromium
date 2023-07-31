@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
@@ -117,6 +118,43 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   run_loop.Run();
 
   // The operation should have re-used the active tab.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  ASSERT_NE(nullptr, handle->GetHelpBubbleForTesting());
+  ASSERT_TRUE(handle->GetHelpBubbleForTesting()->is_open());
+
+  // Closing the help bubble should destroy the object.
+  handle->GetHelpBubbleForTesting()->Close();
+  ASSERT_FALSE(handle);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
+                       OpenPageAndDisplayHelpBubbleWithoutNavigation) {
+  ui_test_utils::NavigateToURL(browser(), GURL(kPageWithAnchorURL));
+
+  base::MockCallback<OpenPageAndShowHelpBubble::Callback> bubble_shown;
+
+  auto params = GetDefaultParams();
+  params.callback = bubble_shown.Get();
+
+  base::WeakPtr<OpenPageAndShowHelpBubble> handle;
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+
+  EXPECT_CALL(bubble_shown, Run)
+      .WillOnce([&](OpenPageAndShowHelpBubble* source, bool success) {
+        EXPECT_TRUE(success);
+        quit_closure.Run();
+      });
+
+  handle = OpenPageAndShowHelpBubble::Start(browser(), std::move(params));
+
+  ASSERT_NE(nullptr, handle);
+
+  run_loop.Run();
+
+  // The operation should not have changed the active tab.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   ASSERT_NE(nullptr, handle->GetHelpBubbleForTesting());

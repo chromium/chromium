@@ -65,8 +65,8 @@ class OpenPageAndShowHelpBubble {
     Params(Params&& other);
     Params& operator=(Params&& other);
 
-    // The page to open.
-    GURL target_url;
+    // The page to open. If not specified, the current page will be used.
+    absl::optional<GURL> target_url = absl::nullopt;
 
     // Whether the page should open in the current active tab. Default is false
     // and should not be set to true unless this action is triggered from the
