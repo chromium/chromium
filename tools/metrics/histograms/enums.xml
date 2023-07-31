@@ -92816,6 +92816,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Rejected due to insecure context"/>
   <int value="10" label="Approved due to being called from top-level frame"/>
   <int value="11" label="Rejected due to credentialless iframe"/>
+  <int value="12" label="Approved with a new or existing grant"/>
 </enum>
 
 <enum name="ResolutionCategory">

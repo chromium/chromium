@@ -2191,12 +2191,6 @@ class CORE_EXPORT Document : public ContainerNode,
       mojom::blink::PermissionDescriptorPtr descriptor,
       mojom::blink::PermissionStatus previous_status);
 
-  // Wraps `ProcessStorageAccessPermissionState` to handle the requested
-  // permission status.
-  void OnRequestedStorageAccessPermissionState(
-      ScriptPromiseResolver* resolver,
-      mojom::blink::PermissionStatus status);
-
   // Similar to `OnRequestedStorageAccessPermissionState`, but for the top-level
   // variant. Used to react to the result of a permission request.
   void OnRequestedTopLevelStorageAccessPermissionState(
@@ -2207,7 +2201,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // otherwise, and consumes user activation.
   void ProcessStorageAccessPermissionState(
       ScriptPromiseResolver* resolver,
-      bool use_existing_status,
       mojom::blink::PermissionStatus status);
 
   // Similar to `ProcessStorageAccessPermissionState`, but for the top-level

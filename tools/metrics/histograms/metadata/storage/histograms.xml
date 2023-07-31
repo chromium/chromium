@@ -121,16 +121,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="API.StorageAccess.RequestStorageAccess"
+<histogram name="API.StorageAccess.RequestStorageAccess2"
     enum="RequestStorageResult" expires_after="2023-12-24">
   <owner>mkwst@chromium.org</owner>
+  <owner>cfredric@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>
     Records requests to use document.requestStorageAccess and reasons the
     request may be approved or rejected.
 
-    Warning: this histogram was expired from 2020-11-27 to 08-12-2022; data may
-    be missing.
+    Recorded by the renderer exactly once for each invocation of
+    document.requestStorageAccess.
   </summary>
 </histogram>
 

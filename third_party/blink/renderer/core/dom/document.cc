@@ -394,10 +394,11 @@ enum class RequestStorageResult {
   REJECTED_INSECURE_CONTEXT = 9,
   APPROVED_PRIMARY_FRAME = 10,
   REJECTED_CREDENTIALLESS_IFRAME = 11,
-  kMaxValue = REJECTED_CREDENTIALLESS_IFRAME,
+  APPROVED_NEW_OR_EXISTING_GRANT = 12,
+  kMaxValue = APPROVED_NEW_OR_EXISTING_GRANT,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
-  base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess",
+  base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess2",
                                 result);
 }
 
@@ -6515,7 +6516,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
       ->RequestPermission(
           std::move(descriptor),
           LocalFrame::HasTransientUserActivation(GetFrame()),
-          WTF::BindOnce(&Document::OnRequestedStorageAccessPermissionState,
+          WTF::BindOnce(&Document::ProcessStorageAccessPermissionState,
                         WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
@@ -6560,19 +6561,6 @@ void Document::OnGotExistingTopLevelStorageAccessPermissionState(
               WrapPersistent(this), WrapPersistent(resolver)));
 }
 
-void Document::OnRequestedStorageAccessPermissionState(
-    ScriptPromiseResolver* resolver,
-    mojom::blink::PermissionStatus status) {
-  DCHECK(resolver);
-  DCHECK(GetFrame());
-  ScriptState* script_state = resolver->GetScriptState();
-  DCHECK(script_state);
-  ScriptState::Scope scope(script_state);
-
-  ProcessStorageAccessPermissionState(resolver,
-                                      /*use_existing_status=*/false, status);
-}
-
 void Document::OnRequestedTopLevelStorageAccessPermissionState(
     ScriptPromiseResolver* resolver,
     mojom::blink::PermissionStatus status) {
@@ -6589,19 +6577,16 @@ void Document::OnRequestedTopLevelStorageAccessPermissionState(
 
 void Document::ProcessStorageAccessPermissionState(
     ScriptPromiseResolver* resolver,
-    bool use_existing_status,
     mojom::blink::PermissionStatus status) {
   DCHECK(resolver);
   DCHECK(GetFrame());
+  ScriptState* script_state = resolver->GetScriptState();
+  DCHECK(script_state);
+  ScriptState::Scope scope(script_state);
 
   if (status == mojom::blink::PermissionStatus::GRANTED) {
-    if (use_existing_status) {
-      FireRequestStorageAccessHistogram(
-          RequestStorageResult::APPROVED_EXISTING_ACCESS);
-    } else {
-      FireRequestStorageAccessHistogram(
-          RequestStorageResult::APPROVED_NEW_GRANT);
-    }
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::APPROVED_NEW_OR_EXISTING_GRANT);
     dom_window_->SetHasStorageAccess();
     resolver->Resolve();
   } else {
@@ -6612,8 +6597,6 @@ void Document::ProcessStorageAccessPermissionState(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
         "requestStorageAccess: Permission denied."));
-    ScriptState* script_state = resolver->GetScriptState();
-    DCHECK(script_state);
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
         "requestStorageAccess not allowed"));
