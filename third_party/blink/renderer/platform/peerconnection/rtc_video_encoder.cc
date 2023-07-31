@@ -287,7 +287,7 @@ namespace features {
 
 // When disabled, SW is forced at <360p. When enabled, SW is forced at <=360p.
 BASE_FEATURE(kForcingSoftwareIncludes360,
-             "kForcingSoftwareIncludes360",
+             "ForcingSoftwareIncludes360",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
