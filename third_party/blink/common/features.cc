@@ -1857,6 +1857,11 @@ BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial,
 BASE_FEATURE(kRuntimeFeatureStateControllerApplyFeatureDiff,
              "RuntimeFeatureStateControllerApplyFeatureDiff",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGb18030_2022Enabled,
+             "Gb18030_2022Enabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kURLSetPortCheckOverflow,
              "URLSetPortCheckOverflow",
              base::FEATURE_DISABLED_BY_DEFAULT);

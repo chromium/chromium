@@ -1091,6 +1091,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kStorageAccessAPIAutoDenyOutsideFPS;
 
+// Use Gb18030-2022 for encoding/decoding GB18030.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGb18030_2022Enabled);
+
 // Kill-switch for a deprecation trial that unpartitions storage in third-party
 // contexts under the registered top-level site. If
 // `kDisableThirdPartyStoragePartitioningDeprecationTrial` is enabled, the
