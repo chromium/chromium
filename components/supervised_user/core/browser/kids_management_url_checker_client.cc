@@ -46,8 +46,8 @@ ClassifyURL(signin::IdentityManager* identity_manager,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
             const supervised_user::FetcherConfig& config,
             const kids_chrome_management::ClassifyUrlRequest& request) {
-  return supervised_user::ClassifyURL(*identity_manager, url_loader_factory,
-                                      request, config);
+  return supervised_user::CreateClassifyURLFetcher(
+      *identity_manager, url_loader_factory, request, config);
 }
 
 }  // namespace

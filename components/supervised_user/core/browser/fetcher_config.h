@@ -7,10 +7,11 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "net/base/backoff_entry.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
@@ -45,6 +46,9 @@ struct FetcherConfig {
   base::StringPiece histogram_basename;
 
   net::NetworkTrafficAnnotationTag (*const traffic_annotation)() = nullptr;
+
+  // Policy for retrying patterns that will be applied to transient errors.
+  absl::optional<net::BackoffEntry::Policy> backoff_policy;
 
   std::string GetHttpMethod() const;
 };

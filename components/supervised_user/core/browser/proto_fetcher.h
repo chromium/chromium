@@ -17,9 +17,9 @@
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto/permissions_common.pb.h"
+#include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
 
 namespace supervised_user {
 // -----------------------------------------------------------------------------
@@ -137,6 +137,7 @@ template <typename Response>
 class DeferredProtoFetcher : public ProtoFetcher<Response> {
  public:
   virtual void Start(typename ProtoFetcher<Response>::Callback callback) = 0;
+  virtual void Stop() = 0;
 };
 
 // Component for managing multiple fetches at once.
@@ -180,9 +181,16 @@ class ParallelFetchManager {
       this};
 };
 
-// Creates a disposable instance of an access token consumer that will fetch
-// list of family members.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
+template <typename Response>
+std::unique_ptr<DeferredProtoFetcher<Response>> CreateFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const google::protobuf::MessageLite& request,
+    const FetcherConfig& fetcher_config);
+
+// Fetches list family members. The returned fetcher is already started.
+std::unique_ptr<
+    DeferredProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
 FetchListFamilyMembers(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -194,10 +202,11 @@ FetchListFamilyMembers(
 // the URL for supervised user.
 std::unique_ptr<
     DeferredProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
-ClassifyURL(signin::IdentityManager& identity_manager,
-            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-            const kids_chrome_management::ClassifyUrlRequest& request,
-            const FetcherConfig& config = kClassifyUrlConfig);
+CreateClassifyURLFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const kids_chrome_management::ClassifyUrlRequest& request,
+    const FetcherConfig& config = kClassifyUrlConfig);
 
 // Creates a disposable instance of an access token consumer that will create
 // a new permission request for a given url.
@@ -213,6 +222,12 @@ CreatePermissionRequestFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kids_chrome_management::PermissionRequest& request,
     const FetcherConfig& config = kCreatePermissionRequestConfig);
+
+std::unique_ptr<DeferredProtoFetcher<Response>> CreateTestFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const Request& request,
+    const FetcherConfig& fetcher_config);
 
 }  // namespace supervised_user
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PROTO_FETCHER_H_

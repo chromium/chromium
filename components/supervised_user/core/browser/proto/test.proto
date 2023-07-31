@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package supervised_user;
+
+// Empty set of messages to test rpc client.
+message Request {}
+message Response {}

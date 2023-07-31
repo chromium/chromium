@@ -25,8 +25,10 @@
 #include "components/supervised_user/core/browser/api_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/backoff_entry.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -48,9 +50,6 @@ using ::base::StringPiece;
 using ::base::StringPrintf;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
-using ::base::UmaHistogramEnumeration;
-using ::base::UmaHistogramSparse;
-using ::base::UmaHistogramTimes;
 using ::base::Unretained;
 using ::network::ResourceRequest;
 using ::signin::IdentityManager;
@@ -90,7 +89,7 @@ std::string CreateAuthorizationHeader(
 
 // Determines the response type. See go/system-parameters to see list of
 // possible One Platform system params.
-constexpr base::StringPiece kSystemParameters("alt=proto");
+constexpr StringPiece kSystemParameters("alt=proto");
 
 // Creates a requests for kids management api which is independent from the
 // current profile (doesn't take Profile* parameter). It also adds query
@@ -135,20 +134,27 @@ class Metrics final {
   explicit Metrics(StringPiece basename) : basename_(basename) {}
 
   void RecordStatus(ProtoFetcherStatus status) const {
-    UmaHistogramEnumeration(GetMetricKey("Status"), status.state());
+    base::UmaHistogramEnumeration(GetMetricKey("Status"), status.state());
   }
   void RecordLatency() const {
-    UmaHistogramTimes(GetMetricKey("Latency"), TimeTicks::Now() - start_time_);
+    base::UmaHistogramTimes(GetMetricKey("Latency"),
+                            TimeTicks::Now() - start_time_);
   }
   void RecordStatusLatency(ProtoFetcherStatus status) const {
-    UmaHistogramTimes(GetMetricKey("Latency", ToMetricEnumLabel(status)),
-                      TimeTicks::Now() - start_time_);
+    base::UmaHistogramTimes(GetMetricKey("Latency", ToMetricEnumLabel(status)),
+                            TimeTicks::Now() - start_time_);
   }
   void RecordHttpStatusOrNetError(ProtoFetcherStatus status) const {
     CHECK(status.state() ==
           ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
-    UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
-                       status.http_status_or_net_error().value());
+    base::UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
+                             status.http_status_or_net_error().value());
+  }
+  void RecordRetryCount(int count) const {
+    // It's a prediction that it will take less than 100 retries to get a
+    // decisive response. Double exponential backoff set at 4 hour limit
+    // shouldn't exhaust this limit too soon.
+    base::UmaHistogramCounts100(GetMetricKey("RetryCount"), count);
   }
 
  private:
@@ -221,6 +227,16 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   // Not copyable.
   FetcherImpl(const FetcherImpl&) = delete;
   FetcherImpl& operator=(const FetcherImpl&) = delete;
+
+ protected:
+  std::string GetMetricKey(StringPiece metric_id) const {
+    return JoinString({config_.histogram_basename, metric_id}, ".");
+  }
+  std::string GetMetricKey(StringPiece metric_id,
+                           StringPiece metric_suffix) const {
+    return JoinString({config_.histogram_basename, metric_id, metric_suffix},
+                      ".");
+  }
 
  private:
   void RecordMetrics(ProtoFetcherStatus status) {
@@ -320,11 +336,10 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   const Metrics metrics_{config_.histogram_basename};
 };
 
-// Wraps FetcherImpl deferring its startup until explicitly invoked.
-// It is useful to have fetcher with self-reference, which will destroy
-// themselves upon completion.
+// Wraps FetcherImpl deferring its startup until explicitly invoked. This is the
+// preferred type of fetcher instances, giving the most of flexibility.
 template <typename Response>
-class DeferredFetcherImpl final : public DeferredProtoFetcher<Response> {
+class DeferredFetcherImpl : public DeferredProtoFetcher<Response> {
  private:
   using Callback = typename DeferredProtoFetcher<Response>::Callback;
 
@@ -345,6 +360,10 @@ class DeferredFetcherImpl final : public DeferredProtoFetcher<Response> {
         identity_manager_.get(), url_loader_factory_, payload_, config_,
         std::move(callback));
   }
+  void Stop() override {
+    CHECK(fetcher_) << "Only started fetcher can be stopped.";
+    fetcher_.reset();
+  }
 
  private:
   std::unique_ptr<FetcherImpl<Response>> fetcher_;
@@ -354,13 +373,104 @@ class DeferredFetcherImpl final : public DeferredProtoFetcher<Response> {
   const FetcherConfig config_;
 };
 
+// A subtype of DeferredFetcher that will take retrying strategy as specified in
+// FetcherConfig::backoff_policy.
+//
+// The retries are only performed on transient errors (see ::ShouldRetry).
+template <typename Response>
+class RetryingFetcherImpl final : public DeferredFetcherImpl<Response> {
+ public:
+  RetryingFetcherImpl() = delete;
+
+  RetryingFetcherImpl(
+      IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const google::protobuf::MessageLite& request,
+      const FetcherConfig& fetcher_config,
+      const net::BackoffEntry::Policy& backoff_policy)
+      : DeferredFetcherImpl<Response>(identity_manager,
+                                      url_loader_factory,
+                                      request,
+                                      fetcher_config),
+        backoff_entry_(&backoff_policy),
+        metrics_(fetcher_config.histogram_basename) {}
+
+  // Not copyable.
+  RetryingFetcherImpl(const RetryingFetcherImpl&) = delete;
+  RetryingFetcherImpl& operator=(const RetryingFetcherImpl&) = delete;
+
+  void Start(ProtoFetcher<Response>::Callback callback) override {
+    callback_ = std::move(callback);
+    Retry();
+  }
+  void Stop() override {
+    DeferredFetcherImpl<Response>::Stop();
+    timer_.Stop();
+  }
+
+ private:
+  void Retry() {
+    retry_count_++;
+    DeferredFetcherImpl<Response>::Start(base::BindOnce(
+        &RetryingFetcherImpl<Response>::OnResponse, Unretained(this)));
+  }
+
+  bool ShouldRetry(ProtoFetcherStatus status) {
+    return status.IsTransientError();
+  }
+
+  void OnResponse(ProtoFetcherStatus status,
+                  std::unique_ptr<Response> response) {
+    if (ShouldRetry(status)) {
+      backoff_entry_.InformOfRequest(/*succeeded=*/false);
+      timer_.Start(FROM_HERE, backoff_entry_.GetTimeUntilRelease(), this,
+                   &RetryingFetcherImpl<Response>::Retry);
+      return;
+    }
+
+    CHECK(callback_) << "Callback can be used only once.";
+    backoff_entry_.InformOfRequest(/*succeeded=*/true);
+    metrics_.RecordRetryCount(retry_count_);
+    std::move(callback_).Run(status, std::move(response));
+  }
+
+  // Client callback.
+  ProtoFetcher<Response>::Callback callback_;
+
+  // Retry controls.
+  base::OneShotTimer timer_;
+  net::BackoffEntry backoff_entry_;
+  int retry_count_{0};
+
+  const Metrics metrics_;
+};
+
 using ClassifyUrlFetcher =
     DeferredProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
 using ListFamilyMembersFetcher =
-    ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
+    DeferredProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
 using PermissionRequestFetcher = DeferredProtoFetcher<
     kids_chrome_management::CreatePermissionRequestResponse>;
 }  // namespace
+
+// Constructs a fetcher that needs to be launched with ::Start(). The fetcher
+// will be either one shot or retryable, depending on the
+// FetcherConfig::backoff_policy setting.
+template <typename Response>
+std::unique_ptr<DeferredProtoFetcher<Response>> CreateFetcher(
+    IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const google::protobuf::MessageLite& request,
+    const FetcherConfig& fetcher_config) {
+  if (fetcher_config.backoff_policy.has_value()) {
+    return std::make_unique<RetryingFetcherImpl<Response>>(
+        identity_manager, url_loader_factory, request, fetcher_config,
+        *fetcher_config.backoff_policy);
+  } else {
+    return std::make_unique<DeferredFetcherImpl<Response>>(
+        identity_manager, url_loader_factory, request, fetcher_config);
+  }
+}
 
 // Main constructor, referenced by the rest.
 ProtoFetcherStatus::ProtoFetcherStatus(
@@ -496,14 +606,12 @@ template class ParallelFetchManager<
     kids_chrome_management::PermissionRequest,
     kids_chrome_management::CreatePermissionRequestResponse>;
 
-// Fetcher factories.
-std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
+std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kids_chrome_management::ClassifyUrlRequest& request,
     const FetcherConfig& config) {
-  return std::make_unique<
-      DeferredFetcherImpl<kids_chrome_management::ClassifyUrlResponse>>(
+  return CreateFetcher<kids_chrome_management::ClassifyUrlResponse>(
       identity_manager, url_loader_factory, request, config);
 }
 
@@ -512,11 +620,12 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
-  return std::make_unique<
-      FetcherImpl<kids_chrome_management::ListFamilyMembersResponse>>(
-      identity_manager, url_loader_factory,
-      kids_chrome_management::ListFamilyMembersRequest(), config,
-      std::move(callback));
+  std::unique_ptr<ListFamilyMembersFetcher> fetcher =
+      CreateFetcher<kids_chrome_management::ListFamilyMembersResponse>(
+          identity_manager, url_loader_factory,
+          kids_chrome_management::ListFamilyMembersRequest(), config);
+  fetcher->Start(std::move(callback));
+  return fetcher;
 }
 
 std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
@@ -524,9 +633,17 @@ std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kids_chrome_management::PermissionRequest& request,
     const FetcherConfig& config) {
-  return std::make_unique<DeferredFetcherImpl<
-      kids_chrome_management::CreatePermissionRequestResponse>>(
+  return CreateFetcher<kids_chrome_management::CreatePermissionRequestResponse>(
       identity_manager, url_loader_factory, request, config);
+}
+
+std::unique_ptr<DeferredProtoFetcher<Response>> CreateTestFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const Request& request,
+    const FetcherConfig& config) {
+  return CreateFetcher<Response>(identity_manager, url_loader_factory, request,
+                                 config);
 }
 
 }  // namespace supervised_user
