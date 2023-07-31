@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/public/common/content_switches.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/bits.h"
 #include "third_party/blink/public/common/features.h"
@@ -181,6 +183,18 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
 
   message_obj[cbor::Value("interestGroups")] =
       cbor::Value(std::move(groups_map));
+
+  std::string debug_key =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProtectedAudiencesConsentedDebugToken);
+  if (!debug_key.empty()) {
+    cbor::Value::MapValue debug_map;
+    debug_map[cbor::Value("isConsented")] = cbor::Value(true);
+    debug_map[cbor::Value("token")] = cbor::Value(debug_key);
+
+    message_obj[cbor::Value("consentedDebugConfig")] =
+        cbor::Value(std::move(debug_map));
+  }
 
   cbor::Value message(std::move(message_obj));
   absl::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
