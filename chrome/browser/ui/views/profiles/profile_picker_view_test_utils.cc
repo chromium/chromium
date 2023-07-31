@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/profile_ui_test_utils.h"
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
-#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -140,6 +139,86 @@ void ViewDeletedWaiter::OnViewIsDeleting(views::View* observed_view) {
   run_loop_.Quit();
 }
 
+// -- PickerLoadStopWaiter -----------------------------------------------------
+
+PickerLoadStopWaiter::PickerLoadStopWaiter(views::WebView* web_view,
+                                           const GURL& expected_url,
+                                           Mode wait_mode)
+    : web_view_(*web_view), expected_url_(expected_url), wait_mode_(wait_mode) {
+  CHECK(!expected_url.is_empty() || wait_mode_ == Mode::kCheckUrlAtNextLoad);
+
+  // Observe attached WebContents changes. This can happen when navigating
+  // between a page rendered in the system profile and one rendered in a user's
+  // regular profile. Like the "profile type choice" -> "sign-in page"
+  // transition for example.
+  web_contents_attached_subscription_ =
+      web_view->AddWebContentsAttachedCallback(
+          base::BindRepeating(&PickerLoadStopWaiter::OnWebContentsAttached,
+                              base::Unretained(this)));
+}
+
+void PickerLoadStopWaiter::DidStopLoading() {
+  if (ShouldKeepWaiting()) {
+    DVLOG(1) << "Load completed but stop condition not met, ignoring event.";
+    return;
+  }
+
+  // Quitting the loop via a posted task to make sure that any prod work that
+  // also is triggered via this same WebContents event can complete before the
+  // test code resumes.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_.QuitClosure());
+}
+
+void PickerLoadStopWaiter::Wait() {
+  if (!ShouldKeepWaiting()) {
+    DVLOG(1) << "Stop condition already met, wait not needed.";
+    return;
+  }
+
+  DVLOG(1) << "Starting wait for the completed navigation to " << expected_url_;
+  Observe(web_view_->web_contents());
+  run_loop_.Run();
+}
+
+void PickerLoadStopWaiter::OnWebContentsAttached(views::WebView* web_view) {
+  DVLOG(1) << "New WebContents attached. Updating the observation target.";
+
+  auto* web_contents = web_view_->web_contents();
+  Observe(web_contents);
+
+  // Attempt to process a load that might have happened before the `WebContents`
+  // is swapped in. `ProfilePickerView` cross-profile page loads typically
+  // happen that way.
+  if (web_contents && !web_contents->IsLoading()) {
+    DidStopLoading();
+  }
+}
+
+bool PickerLoadStopWaiter::ShouldKeepWaiting() const {
+  auto* web_contents = web_view_->web_contents();
+  if (!web_contents || web_contents->IsLoading()) {
+    return true;
+  }
+
+  auto& current_url = web_contents->GetLastCommittedURL();
+  switch (wait_mode_) {
+    case Mode::kWaitUntilUrlLoaded:
+      if (current_url != expected_url_) {
+        DVLOG(1) << "WebContents stopped loading on URL that doesn't match the "
+                    "expected one. Actual URL: "
+                 << current_url;
+        return true;
+      }
+      return false;
+    case Mode::kCheckUrlAtNextLoad:
+      if (!expected_url_.is_empty()) {
+        EXPECT_EQ(current_url, expected_url_);
+      }
+      return false;
+  }
+}
+
 // -- ProfileManagementStepTestView --------------------------------------------
 
 ProfileManagementStepTestView::ProfileManagementStepTestView(
@@ -187,19 +266,36 @@ void WaitForPickerWidgetCreated() {
   ViewAddedWaiter(ProfilePicker::GetViewForTesting()).Wait();
 }
 
-void WaitForPickerLoadStop(const GURL& url) {
-  content::WebContents* wc = GetPickerWebContents();
-  if (wc && wc->GetLastCommittedURL() == url && !wc->IsLoading())
-    return;
+void WaitForPickerLoadStop(const GURL& expected_url) {
+  if (!ProfilePicker::IsOpen()) {
+    base::RunLoop run_loop;
+    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      url, content::NotificationService::AllSources());
-  url_observer.Wait();
+  auto* web_view = ProfilePicker::GetWebViewForTesting();
+  ASSERT_NE(web_view, nullptr);
 
-  // Update the pointer as the picker's WebContents could have changed in the
-  // meantime.
-  wc = GetPickerWebContents();
-  EXPECT_EQ(wc->GetLastCommittedURL(), url);
+  PickerLoadStopWaiter(web_view, expected_url,
+                       PickerLoadStopWaiter::Mode::kCheckUrlAtNextLoad)
+      .Wait();
+}
+
+void WaitForPickerUrl(const GURL& url) {
+  if (!ProfilePicker::IsOpen()) {
+    base::RunLoop run_loop;
+    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  auto* web_view = ProfilePicker::GetWebViewForTesting();
+  ASSERT_NE(web_view, nullptr);
+
+  PickerLoadStopWaiter(web_view, url,
+                       PickerLoadStopWaiter::Mode::kWaitUntilUrlLoaded)
+      .Wait();
 }
 
 void WaitForPickerClosed() {

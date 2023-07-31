@@ -26,11 +26,21 @@ namespace profiles::testing {
 // is not null).
 void WaitForPickerWidgetCreated();
 
-// Waits until the profile picker's current `WebContents` stops loading `url`.
+// Waits until the profile picker's current `WebContents` stops loading and if
+// `expected_url` is not empty, checks that it's the currently displaying URL.
+//
+// Unlike `contents::WaitForLoadStop()`, this also works if the profile picker's
+// current `WebContents` changes throughout the waiting as it is observing
+// whichever `WebContents` is displayed by the `WebView`.
+void WaitForPickerLoadStop(const GURL& expected_url = GURL());
+
+// Returns when the profile picker's `WebView` displays `url`, blocking to wait
+// for navigations if needed.
+//
 // This also works if the profile picker's current `WebContents` changes
-// throughout the waiting as it is
-// technically observing all web contents.
-void WaitForPickerLoadStop(const GURL& url);
+// throughout the waiting as it is observing whichever `WebContents` is
+// displayed by the `WebView`.
+void WaitForPickerUrl(const GURL& url);
 
 // Waits until the picker gets closed.
 void WaitForPickerClosed();

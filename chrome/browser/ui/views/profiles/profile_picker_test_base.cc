@@ -4,11 +4,6 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
@@ -16,12 +11,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 #include "url/gurl.h"
 
 ProfilePickerView* WithProfilePickerTestHelpers::view() {
@@ -40,15 +33,30 @@ void WithProfilePickerTestHelpers::WaitForPickerWidgetCreated() {
   profiles::testing::WaitForPickerWidgetCreated();
 }
 
+void WithProfilePickerTestHelpers::WaitForLoadStop(const GURL& url) {
+  profiles::testing::WaitForPickerUrl(url);
+}
+
 void WithProfilePickerTestHelpers::WaitForLoadStop(
     const GURL& url,
     content::WebContents* target) {
-  if (!target) {
-    profiles::testing::WaitForPickerLoadStop(url);
-    return;
-  }
+  ASSERT_NE(nullptr, target);
 
-  content::WaitForLoadStop(target);
+  LOG(WARNING)
+      << "DEPRECATION: Deprecated call to ambiguous WaitForLoadStop() from the "
+         "test fixture. Please migrate to call content::WaitForLoadStop() when "
+         "waiting for a specific WebContents instance to finish loading or "
+         "profiles::testing::WaitForPickerUrl() when waiting for a specific "
+         "URL to be loaded by the profile picker.";
+
+  if (web_contents() == target) {
+    LOG(WARNING) << "DEPRECATION: Using "
+                    "profiles::testing::WaitForPickerLoadStop";
+    profiles::testing::WaitForPickerLoadStop(url);
+  } else {
+    LOG(WARNING) << "DEPRECATION: Using content::WaitForLoadStop";
+    content::WaitForLoadStop(target);
+  }
   EXPECT_EQ(target->GetLastCommittedURL(), url);
 }
 
