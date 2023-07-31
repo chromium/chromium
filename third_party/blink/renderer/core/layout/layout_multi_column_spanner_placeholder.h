@@ -74,9 +74,6 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
   void WillBeRemovedFromTree() override;
   void RecalcVisualOverflow() override;
   void UpdateLayout() override;
-  void ComputeLogicalHeight(LayoutUnit logical_height,
-                            LayoutUnit logical_top,
-                            LogicalExtentComputedValues&) const override;
   void Paint(const PaintInfo&) const override;
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

@@ -363,14 +363,6 @@ void LayoutMultiColumnSet::UpdateLayout() {
   NOTREACHED_NORETURN();
 }
 
-void LayoutMultiColumnSet::ComputeLogicalHeight(
-    LayoutUnit,
-    LayoutUnit logical_top,
-    LogicalExtentComputedValues& computed_values) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 LayoutUnit LayoutMultiColumnSet::ColumnGap() const {
   NOT_DESTROYED();
   LayoutBlockFlow* parent_block = MultiColumnBlockFlow();

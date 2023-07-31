@@ -514,55 +514,6 @@ LayoutBlock* LayoutBoxModelObject::ContainingBlockForAutoHeightDetection(
   return cb;
 }
 
-bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight()
-    const {
-  NOT_DESTROYED();
-  // TODO(rego): Check if we can somehow reuse LayoutBlock::
-  // availableLogicalHeightForPercentageComputation() (see crbug.com/635655).
-  const auto* this_box = DynamicTo<LayoutBox>(this);
-  const Length& logical_height_length = StyleRef().LogicalHeight();
-  LayoutBlock* cb =
-      ContainingBlockForAutoHeightDetection(logical_height_length);
-  if (this_box && this_box->IsFlexItemIncludingNG()) {
-    if (const NGLayoutResult* result =
-            this_box->GetSingleCachedLayoutResult()) {
-      // TODO(dgrogan): We won't get here when laying out the FlexNG item and
-      // its descendant(s) for the first time because the item (|this_box|)
-      // doesn't have anything in its cache. That seems bad because this method
-      // returns true even when the item has a fixed definite height. There
-      // doesn't seem to be an easy way to check the flex item's definiteness
-      // here because the flex item's LayoutObject doesn't have a
-      // BoxLayoutExtraInput that we could add a flag to.
-      const NGConstraintSpace& space = result->GetConstraintSpaceForCaching();
-      if (space.IsFixedBlockSize() && !space.IsInitialBlockSizeIndefinite())
-        return false;
-    }
-  }
-
-  if ((logical_height_length.IsAutoOrContentOrIntrinsic() ||
-       logical_height_length.IsFillAvailable()) &&
-      !IsOutOfFlowPositionedWithImplicitHeight(this))
-    return true;
-
-  if (cb) {
-    // We need the containing block to have a definite block-size in order to
-    // resolve the block-size of the descendant, except when in quirks mode.
-    // Flexboxes follow strict behavior even in quirks mode, though.
-    if (!GetDocument().InQuirksMode() || cb->IsFlexibleBoxIncludingNG()) {
-      if (this_box && this_box->GetSingleCachedLayoutResult() &&
-          !this_box->GetBoxLayoutExtraInput()) {
-        return this_box->GetSingleCachedLayoutResult()
-                   ->GetConstraintSpaceForCaching()
-                   .AvailableSize()
-                   .block_size == LayoutUnit(-1);
-      }
-      return !cb->HasDefiniteLogicalHeight();
-    }
-  }
-
-  return false;
-}
-
 LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
   return ContainingBlock();
 }

@@ -242,10 +242,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   void WillBeRemovedFromTree() final;
   PhysicalSize Size() const override;
 
-  void ComputeLogicalHeight(LayoutUnit logical_height,
-                            LayoutUnit logical_top,
-                            LogicalExtentComputedValues&) const override;
-
   // This function updates frame_location_, frame_size_, and build
   // fragmentainer_groups_.
   void UpdateGeometry();

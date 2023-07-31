@@ -132,9 +132,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   virtual void AddColumnSetToThread(LayoutMultiColumnSet*) = 0;
   virtual void RemoveColumnSetFromThread(LayoutMultiColumnSet*);
 
-  void ComputeLogicalHeight(LayoutUnit logical_height,
-                            LayoutUnit logical_top,
-                            LogicalExtentComputedValues&) const override;
   virtual void UpdateLogicalWidth() = 0;
 
   bool HasColumnSets() const {
@@ -165,12 +162,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   // box. Both rectangles are completely physical in terms of writing mode.
   PhysicalRect FragmentsBoundingBox(
       const PhysicalRect& layer_bounding_box) const;
-
-  // Convert a logical position in the flow thread coordinate space to a logical
-  // position in the containing coordinate space.
-  LogicalOffset FlowThreadToContainingCoordinateSpace(
-      LayoutUnit block_position,
-      LayoutUnit inline_position) const;
 
   virtual PhysicalOffset VisualPointToFlowThreadPoint(
       const PhysicalOffset& visual_point) const = 0;

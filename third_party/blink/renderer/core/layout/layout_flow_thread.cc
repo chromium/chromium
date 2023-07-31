@@ -150,14 +150,6 @@ PaintLayerType LayoutFlowThread::LayerTypeRequired() const {
   return kNoPaintLayer;
 }
 
-void LayoutFlowThread::ComputeLogicalHeight(
-    LayoutUnit,
-    LayoutUnit logical_top,
-    LogicalExtentComputedValues& computed_values) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
                                                   Vector<gfx::QuadF>& quads,
                                                   MapCoordinatesFlags mode) {
@@ -241,22 +233,6 @@ PhysicalRect LayoutFlowThread::FragmentsBoundingBox(
     result.Unite(column_set->FragmentsBoundingBox(layer_bounding_box));
 
   return result;
-}
-
-LogicalOffset LayoutFlowThread::FlowThreadToContainingCoordinateSpace(
-    LayoutUnit block_position,
-    LayoutUnit inline_position) const {
-  NOT_DESTROYED();
-  LogicalOffset position(inline_position, block_position);
-  // First we have to make |position| physical, because that's what offsetLeft()
-  // expects and returns.
-  WritingModeConverter converter = CreateWritingModeConverter();
-  PhysicalOffset physical_position = converter.ToPhysical(position, {});
-
-  physical_position += ColumnOffset(physical_position);
-
-  // Make |physical_position| logical again, and return the value.
-  return converter.ToLogical(physical_position, {});
 }
 
 void LayoutFlowThread::MultiColumnSetSearchAdapter::CollectIfNeeded(

@@ -41,7 +41,6 @@ class CORE_EXPORT LayoutIFrame : public LayoutEmbeddedContent {
   }
 
  private:
-  bool ShouldComputeSizeAsReplaced() const override;
   bool IsInlineBlockOrInlineTable() const override;
 
   void UpdateLayout() override;

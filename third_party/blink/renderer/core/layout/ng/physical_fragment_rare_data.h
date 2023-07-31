@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class NGBoxFragmentBuilder;
 class NGTableBorders;
 struct FrameSetLayoutData;
 struct NGMathMLPaintInfo;

@@ -115,14 +115,6 @@ void LayoutMultiColumnSpannerPlaceholder::UpdateLayout() {
   NOTREACHED_NORETURN();
 }
 
-void LayoutMultiColumnSpannerPlaceholder::ComputeLogicalHeight(
-    LayoutUnit,
-    LayoutUnit logical_top,
-    LogicalExtentComputedValues& computed_values) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 void LayoutMultiColumnSpannerPlaceholder::Paint(
     const PaintInfo& paint_info) const {
   NOT_DESTROYED();

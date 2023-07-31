@@ -18,29 +18,6 @@
 
 namespace blink {
 
-LayoutUnit LayoutBoxUtils::AvailableLogicalHeight(const LayoutBox& box,
-                                                  const LayoutBlock* cb) {
-  // SVG <text> and <foreignObject> should not refer to its containing block.
-  DCHECK(!box.IsSVGChild());
-  auto writing_mode = box.StyleRef().GetWritingMode();
-  bool parallel_containing_block = IsParallelWritingMode(
-      cb ? cb->StyleRef().GetWritingMode() : writing_mode, writing_mode);
-
-  // Grid layout sets OverrideContainingBlockContentLogicalWidth.
-  if (!parallel_containing_block &&
-      box.HasOverrideContainingBlockContentLogicalWidth())
-    return box.OverrideContainingBlockContentLogicalWidth();
-
-  if (!box.Parent())
-    return box.View()->ViewLogicalHeightForPercentages();
-
-  DCHECK(cb);
-  if (parallel_containing_block)
-    return box.ContainingBlockLogicalHeightForPercentageResolution();
-
-  return box.ContainingBlockLogicalWidthForContent();
-}
-
 bool LayoutBoxUtils::SkipContainingBlockForPercentHeightCalculation(
     const LayoutBlock* cb) {
   return LayoutBox::SkipContainingBlockForPercentHeightCalculation(cb);

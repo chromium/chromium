@@ -196,22 +196,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     return ComputedCSSPadding(StyleRef().PaddingRight());
   }
-  LayoutUnit ComputedCSSPaddingBefore() const {
-    NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingBefore());
-  }
-  LayoutUnit ComputedCSSPaddingAfter() const {
-    NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingAfter());
-  }
-  LayoutUnit ComputedCSSPaddingStart() const {
-    NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingStart());
-  }
-  LayoutUnit ComputedCSSPaddingEnd() const {
-    NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingEnd());
-  }
 
   // These functions are used during layout.
   // - Table override them to exclude padding with collapsing borders.
@@ -343,31 +327,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                ? BorderRight() + PaddingRight()
                : BorderBottom() + PaddingBottom();
   }
-  LayoutUnit BorderLogicalLeft() const {
-    NOT_DESTROYED();
-    return LayoutUnit(StyleRef().IsHorizontalWritingMode() ? BorderLeft()
-                                                           : BorderTop());
-  }
-  LayoutUnit BorderLogicalRight() const {
-    NOT_DESTROYED();
-    return LayoutUnit(StyleRef().IsHorizontalWritingMode() ? BorderRight()
-                                                           : BorderBottom());
-  }
 
   LayoutUnit PaddingLogicalHeight() const {
     NOT_DESTROYED();
     return PaddingBefore() + PaddingAfter();
-  }
-
-  LayoutUnit CollapsedBorderAndCSSPaddingLogicalWidth() const {
-    NOT_DESTROYED();
-    return ComputedCSSPaddingStart() + ComputedCSSPaddingEnd() + BorderStart() +
-           BorderEnd();
-  }
-  LayoutUnit CollapsedBorderAndCSSPaddingLogicalHeight() const {
-    NOT_DESTROYED();
-    return ComputedCSSPaddingBefore() + ComputedCSSPaddingAfter() +
-           BorderBefore() + BorderAfter();
   }
 
   virtual LayoutUnit MarginTop() const = 0;
@@ -462,7 +425,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   LayoutRect LocalCaretRectForEmptyElement(LayoutUnit width,
                                            LayoutUnit text_indent_offset) const;
 
-  bool HasAutoHeightOrContainingBlockWithAutoHeight() const;
   LayoutBlock* ContainingBlockForAutoHeightDetection(
       const Length& logical_height) const;
 

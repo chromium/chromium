@@ -231,14 +231,6 @@ void LayoutView::ClearHitTestCache() {
     object->View()->ClearHitTestCache();
 }
 
-void LayoutView::ComputeLogicalHeight(
-    LayoutUnit logical_height,
-    LayoutUnit,
-    LogicalExtentComputedValues& computed_values) const {
-  NOT_DESTROYED();
-  computed_values.extent_ = LayoutUnit(ViewLogicalHeightForBoxSizing());
-}
-
 LayoutUnit LayoutView::ComputeMinimumWidth() {
   const ComputedStyle& style = StyleRef();
   WritingMode mode = style.GetWritingMode();

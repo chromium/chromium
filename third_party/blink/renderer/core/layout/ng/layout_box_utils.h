@@ -22,12 +22,6 @@ class LayoutBoxUtils {
   STATIC_ONLY(LayoutBoxUtils);
 
  public:
-  // Returns the available logical width/height for |box| accounting for:
-  //  - Orthogonal writing modes.
-  //  - Any containing block override sizes set.
-  static LayoutUnit AvailableLogicalHeight(const LayoutBox& box,
-                                           const LayoutBlock* cb);
-
   static bool SkipContainingBlockForPercentHeightCalculation(
       const LayoutBlock* cb);
 

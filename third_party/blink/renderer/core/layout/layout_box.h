@@ -45,9 +45,7 @@
 namespace blink {
 
 class CustomLayoutChild;
-class LayoutBlockFlow;
 class LayoutMultiColumnSpannerPlaceholder;
-class NGBoxFragmentBuilder;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
@@ -62,22 +60,10 @@ struct NGPhysicalBoxStrut;
 struct NonOverflowingScrollRange;
 struct PaintInfo;
 
-enum SizeType { kMainOrPreferredSize, kMinSize, kMaxSize };
-enum AvailableLogicalHeightType {
-  kExcludeMarginBorderPadding,
-  kIncludeMarginBorderPadding
-};
-// When painting, overlay scrollbars do not take up space and should not affect
-// clipping behavior. During hit testing, overlay scrollbars behave like regular
-// scrollbars and should change how hit testing is clipped.
-enum MarginDirection { kBlockDirection, kInlineDirection };
-
 enum BackgroundRectType {
   kBackgroundPaintedExtent,
   kBackgroundKnownOpaqueRect,
 };
-
-enum ShouldComputePreferred { kComputeActual, kComputePreferred };
 
 enum ShouldClampToContentBox { kDoNotClampToContentBox, kClampToContentBox };
 
@@ -279,13 +265,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return StyleRef().IsHorizontalWritingMode() ? size.height : size.width;
   }
 
-  LayoutUnit ConstrainLogicalHeightByMinMax(
-      LayoutUnit logical_height,
-      LayoutUnit intrinsic_content_height) const;
-  LayoutUnit ConstrainContentBoxLogicalHeightByMinMax(
-      LayoutUnit logical_height,
-      LayoutUnit intrinsic_content_height) const;
-
   LayoutUnit LogicalHeightForEmptyLine() const {
     NOT_DESTROYED();
     return FirstLineHeight();
@@ -465,32 +444,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* NextSiblingMultiColumnBox() const;
 
   bool CanResize() const;
-
-  bool ShouldComputeLogicalHeightFromAspectRatio() const {
-    NOT_DESTROYED();
-    if (ShouldComputeLogicalWidthFromAspectRatioAndInsets())
-      return false;
-    Length h = StyleRef().LogicalHeight();
-    return !StyleRef().AspectRatio().IsAuto() &&
-           (h.IsAuto() || h.IsMinContent() || h.IsMaxContent() ||
-            h.IsFitContent() ||
-            (!IsOutOfFlowPositioned() && h.IsPercentOrCalc() &&
-             ComputePercentageLogicalHeight(h) == kIndefiniteSize));
-  }
-  bool ShouldComputeLogicalWidthFromAspectRatioAndInsets() const {
-    NOT_DESTROYED();
-    const ComputedStyle& style = StyleRef();
-    if (style.AspectRatio().IsAuto() || !IsOutOfFlowPositioned())
-      return false;
-    if (style.UsedWidth().IsAuto() && style.UsedHeight().IsAuto() &&
-        !style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto() &&
-        (style.LogicalLeft().IsAuto() || style.LogicalRight().IsAuto())) {
-      return true;
-    }
-    return false;
-  }
-
-  MinMaxSizes ComputeMinMaxLogicalWidthFromAspectRatio() const;
 
   // Like most of the other box geometries, visual and layout overflow are also
   // in the "physical coordinates in flipped block-flow direction" of the box.
@@ -826,67 +779,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
   void ClearOverrideContainingBlockContentSize();
 
-  LayoutUnit AdjustBorderBoxLogicalWidthForBoxSizing(float width) const;
-  LayoutUnit AdjustBorderBoxLogicalHeightForBoxSizing(float height) const;
-  LayoutUnit AdjustContentBoxLogicalWidthForBoxSizing(float width) const;
-  LayoutUnit AdjustContentBoxLogicalHeightForBoxSizing(float height) const;
-
-  // ComputedMarginValues holds the actual values for margins. It ignores
-  // margin collapsing as they are handled in LayoutBlockFlow.
-  // The margins are stored in logical coordinates (see COORDINATE
-  // SYSTEMS in LayoutBoxModel) for use during layout.
-  struct ComputedMarginValues {
-    DISALLOW_NEW();
-    ComputedMarginValues() = default;
-
-    LayoutUnit before_;
-    LayoutUnit after_;
-    LayoutUnit start_;
-    LayoutUnit end_;
-  };
-
-  // LogicalExtentComputedValues is used both for the
-  // block-flow and inline-direction axis.
-  struct LogicalExtentComputedValues {
-    STACK_ALLOCATED();
-
-   public:
-    LogicalExtentComputedValues() = default;
-
-    void CopyExceptBlockMargins(LogicalExtentComputedValues* out) const {
-      out->extent_ = extent_;
-      out->position_ = position_;
-      out->margins_.start_ = margins_.start_;
-      out->margins_.end_ = margins_.end_;
-    }
-
-    // This is the dimension in the measured direction
-    // (logical height or logical width).
-    LayoutUnit extent_;
-
-    // This is the offset in the measured direction
-    // (logical top or logical left).
-    LayoutUnit position_;
-
-    // |margins_| represents the margins in the measured direction.
-    // Note that ComputedMarginValues has also the margins in
-    // the orthogonal direction to have clearer names but they are
-    // ignored in the code.
-    ComputedMarginValues margins_;
-  };
-
-  // Resolve auto margins in the chosen direction of the containing block so
-  // that objects can be pushed to the start, middle or end of the containing
-  // block.
-  void ComputeMarginsForDirection(MarginDirection for_direction,
-                                  const LayoutBlock* containing_block,
-                                  LayoutUnit container_width,
-                                  LayoutUnit child_width,
-                                  LayoutUnit& margin_start,
-                                  LayoutUnit& margin_end,
-                                  Length margin_start_length,
-                                  Length margin_start_end) const;
-
   enum PageBoundaryRule { kAssociateWithFormerPage, kAssociateWithLatterPage };
 
   bool HasInlineFragments() const final;
@@ -1067,70 +959,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ContainingBlockLogicalHeightForGetComputedStyle() const;
 
   LayoutUnit ContainingBlockLogicalWidthForContent() const override;
-  LayoutUnit ContainingBlockLogicalHeightForContent(
-      AvailableLogicalHeightType) const;
-
-  virtual void ComputeLogicalHeight(LayoutUnit logical_height,
-                                    LayoutUnit logical_top,
-                                    LogicalExtentComputedValues&) const;
-
-  bool StretchesToViewport() const {
-    NOT_DESTROYED();
-    return GetDocument().InQuirksMode() && StretchesToViewportInQuirksMode();
-  }
 
   virtual PhysicalSize IntrinsicSize() const {
     NOT_DESTROYED();
     return PhysicalSize();
   }
-  LayoutUnit IntrinsicLogicalWidth() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().width
-                                                : IntrinsicSize().height;
-  }
-  LayoutUnit IntrinsicLogicalHeight() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().height
-                                                : IntrinsicSize().width;
-  }
 
   bool AutoWidthShouldFitContent() const;
-
-  LayoutUnit ComputeLogicalHeightUsing(
-      SizeType,
-      const Length& height,
-      LayoutUnit intrinsic_content_height) const;
-  LayoutUnit ComputeContentLogicalHeight(
-      SizeType,
-      const Length& height,
-      LayoutUnit intrinsic_content_height) const;
-  LayoutUnit ComputeContentAndScrollbarLogicalHeightUsing(
-      SizeType,
-      const Length& height,
-      LayoutUnit intrinsic_content_height) const;
-  LayoutUnit ComputeReplacedLogicalHeightUsing(SizeType, Length height) const;
-  LayoutUnit ComputeReplacedLogicalHeightRespectingMinMaxHeight(
-      LayoutUnit logical_height) const;
-
-  virtual LayoutUnit ComputeReplacedLogicalHeight(
-      LayoutUnit estimated_used_width = LayoutUnit()) const;
-
-  virtual bool ShouldComputeSizeAsReplaced() const {
-    NOT_DESTROYED();
-    return IsAtomicInlineLevel() && !IsInlineBlockOrInlineTable();
-  }
-
-  // Returns the size that percentage logical heights of this box should be
-  // resolved against. This function will walk the ancestor chain of this
-  // object to determine this size.
-  //  - out_cb returns the LayoutBlock which provided the size.
-  //  - out_skipped_auto_height_containing_block returns if any auto height
-  //    blocks were skipped to obtain out_cb.
-  LayoutUnit ContainingBlockLogicalHeightForPercentageResolution(
-      LayoutBlock** out_cb = nullptr,
-      bool* out_skipped_auto_height_containing_block = nullptr) const;
-
-  LayoutUnit ComputePercentageLogicalHeight(const Length& height) const;
 
   // Block flows subclass availableWidth/Height to handle multi column layout
   // (shrinking the width/height available to children when laying out.)
@@ -1138,9 +973,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return ContentLogicalWidth();
   }
-  LayoutUnit AvailableLogicalHeight(AvailableLogicalHeightType) const;
-  LayoutUnit AvailableLogicalHeightUsing(const Length&,
-                                         AvailableLogicalHeightType) const;
 
   // Return both scrollbars and scrollbar gutters (defined by scrollbar-gutter).
   inline NGPhysicalBoxStrut ComputeScrollbars() const {
@@ -1250,8 +1082,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // for this object.
   PhysicalRect ClippingRect(const PhysicalOffset& location) const;
 
-  virtual void PaintMask(const PaintInfo&,
-                         const PhysicalOffset& paint_offset) const;
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   ResourcePriority ComputeResourcePriority() const final;
 
@@ -1275,14 +1105,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return !Parent() ||
            Parent()->StyleRef().GetWritingMode() != StyleRef().GetWritingMode();
   }
-  bool IsOrthogonalWritingModeRoot() const {
-    NOT_DESTROYED();
-    return Parent() &&
-           Parent()->IsHorizontalWritingMode() != IsHorizontalWritingMode();
-  }
 
   bool IsCustomItem() const;
-  bool IsCustomItemShrinkToFit() const;
 
   // TODO(1229581): Rename this function.
   bool IsFlexItemIncludingNG() const {
@@ -1326,11 +1150,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Inherit other flipping methods from LayoutObject.
   using LayoutObject::FlipForWritingMode;
 
-  [[nodiscard]] LayoutPoint DeprecatedFlipForWritingMode(
-      const LayoutPoint& position) const {
-    NOT_DESTROYED();
-    return LayoutPoint(FlipForWritingMode(position.X()), position.Y());
-  }
   void DeprecatedFlipForWritingMode(LayoutRect& rect) const {
     NOT_DESTROYED();
     if (LIKELY(!HasFlippedBlocksWritingMode()))
@@ -1434,14 +1253,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return nullptr;
   }
 
-  bool HasSameDirectionAs(const LayoutBox* object) const {
-    NOT_DESTROYED();
-    return StyleRef().Direction() == object->StyleRef().Direction();
-  }
-
   ShapeOutsideInfo* GetShapeOutsideInfo() const;
-
-  bool CanRenderBorderImage() const;
 
   // For snap areas, returns the snap container that owns us.
   LayoutBox* SnapContainer() const;
@@ -1682,12 +1494,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool ComputeBackgroundIsKnownToBeObscured() const;
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override;
 
-  LayoutUnit ComputeIntrinsicLogicalContentHeightUsing(
-      SizeType height_type,
-      const Length& logical_height_length,
-      LayoutUnit intrinsic_content_height,
-      LayoutUnit border_and_padding) const;
-
   virtual bool HitTestChildren(HitTestResult&,
                                const HitTestLocation&,
                                const PhysicalOffset& accumulated_offset,
@@ -1700,25 +1506,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;
 
-  LayoutUnit ContainingBlockLogicalWidthForPositioned(
-      const LayoutBoxModelObject* containing_block,
-      bool check_for_perpendicular_writing_mode = true) const;
   LayoutUnit ContainingBlockLogicalHeightForPositioned(
-      const LayoutBoxModelObject* containing_block,
-      bool check_for_perpendicular_writing_mode = true) const;
+      const LayoutBoxModelObject* containing_block) const;
 
-  static void ComputeBlockStaticDistance(
-      Length& logical_top,
-      Length& logical_bottom,
-      const LayoutBox* child,
-      const LayoutBoxModelObject* container_block,
-      const NGBoxFragmentBuilder* = nullptr);
-  static void ComputeLogicalTopPositionedOffset(
-      LayoutUnit& logical_top_pos,
-      const LayoutBox* child,
-      LayoutUnit logical_height_value,
-      const LayoutBoxModelObject* container_block,
-      LayoutUnit container_logical_height);
   static bool SkipContainingBlockForPercentHeightCalculation(
       const LayoutBox* containing_block);
 
@@ -1777,31 +1567,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ClearScrollSnapMapping();
   void AddScrollSnapMapping();
 
-  bool StretchesToViewportInQuirksMode() const;
-
-  virtual void ComputePositionedLogicalHeight(
-      LogicalExtentComputedValues&) const;
-  void ComputePositionedLogicalHeightUsing(
-      SizeType,
-      Length logical_height_length,
-      const LayoutBoxModelObject* container_block,
-      LayoutUnit container_logical_height,
-      LayoutUnit borders_plus_padding,
-      LayoutUnit logical_height,
-      const Length& logical_top,
-      const Length& logical_bottom,
-      const Length& margin_logical_top,
-      const Length& margin_logical_bottom,
-      LogicalExtentComputedValues&) const;
-
   LayoutBoxRareData& EnsureRareData() {
     NOT_DESTROYED();
     if (!rare_data_)
       rare_data_ = MakeGarbageCollected<LayoutBoxRareData>();
     return *rare_data_.Get();
   }
-
-  bool LogicalHeightComputesAsNone(SizeType) const;
 
   bool IsBox() const =
       delete;  // This will catch anyone doing an unnecessary check.
