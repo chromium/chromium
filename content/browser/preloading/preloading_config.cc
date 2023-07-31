@@ -38,6 +38,14 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
+  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prefetch",
   "preloading_predictor": "DefaultSearchEngine",
   "sampling_likelihood": 1.000000
 }, {
@@ -45,29 +53,37 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "preloading_predictor": "SpeculationRules",
   "sampling_likelihood": 1.000000
 }, {
-  "preloading_type": "Prefetch",
-  "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.074620
-}, {
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "DirectURLInput",
-  "sampling_likelihood": 0.065070
+  "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
-  "preloading_predictor": "DirectURLInput",
-  "sampling_likelihood": 0.036904
+  "preloading_predictor": "BackGestureNavigation",
+  "sampling_likelihood": 0.421717
 }, {
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": 0.016354
+  "sampling_likelihood": 0.007210
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "MouseBackButton",
+  "sampling_likelihood": 0.083610
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.007387
+  "sampling_likelihood": 0.002849
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "DirectURLInput",
+  "sampling_likelihood": 0.009888
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "BackButtonHover",
+  "sampling_likelihood": 0.008404
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": 0.000345
+  "sampling_likelihood": 0.000091
 }]
 )"};
 
