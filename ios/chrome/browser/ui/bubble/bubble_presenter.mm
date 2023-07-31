@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/utils.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -50,7 +52,7 @@ namespace {
 const CGFloat kBubblePresentationDelay = 1;
 }  // namespace
 
-@interface BubblePresenter () <URLLoadingObserver>
+@interface BubblePresenter () <SceneStateObserver, URLLoadingObserver>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
@@ -104,14 +106,17 @@ const CGFloat kBubblePresentationDelay = 1;
 
 #pragma mark - Public
 
-- (instancetype)initWithTracker:(feature_engagement::Tracker*)engagementTracker
-            hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                      webStateList:(WebStateList*)webStateList
-    deviceSwitcherResultDispatcher:
+- (instancetype)
+    initWithDeviceSwitcherResultDispatcher:
         (segmentation_platform::DeviceSwitcherResultDispatcher*)
             deviceSwitcherResultDispatcher
-                   loadingNotifier:
-                       (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier {
+                    hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
+                           loadingNotifier:(UrlLoadingNotifierBrowserAgent*)
+                                               urlLoadingNotifier
+                                sceneState:(SceneState*)sceneState
+                                   tracker:(feature_engagement::Tracker*)
+                                               engagementTracker
+                              webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
     DCHECK(webStateList);
@@ -125,6 +130,8 @@ const CGFloat kBubblePresentationDelay = 1;
     _loadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
     _loadingNotifier = urlLoadingNotifier;
     _loadingNotifier->AddObserver(_loadingObserverBridge.get());
+
+    [sceneState addObserver:self];
   }
   return self;
 }
@@ -404,9 +411,11 @@ const CGFloat kBubblePresentationDelay = 1;
 #pragma mark - Private
 
 - (void)presentBubbles {
+  // TODO(crbug.com/1448656): remove code.
   if (!self.incognitoTabTipBubblePresenter.userEngaged)
     [self presentNewIncognitoTabTipBubble];
 
+  // TODO(crbug.com/1448656): remove code.
   // The bottom toolbar and Discover feed header menu don't use the
   // isUserEngaged, so don't check if the user is engaged here.
   [self presentBottomToolbarTipBubble];
@@ -753,6 +762,15 @@ const CGFloat kBubblePresentationDelay = 1;
   }
 
   return NO;
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level >= SceneActivationLevelForegroundActive) {
+    [self presentTabGridToolbarItemBubble];
+  }
 }
 
 #pragma mark - URLLoadingObserver
