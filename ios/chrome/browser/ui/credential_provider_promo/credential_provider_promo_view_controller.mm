@@ -75,6 +75,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
       hidden || !darkModeEnabled;
 
   [self updateAnimationsPlaying];
+  [self updateAlertScreenTopAnchorConstraint];
 }
 
 #pragma mark - CredentialProviderPromoConsumer
