@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -17,6 +16,8 @@ namespace blink {
 
 class Node;
 class NodeCloningData;
+class PartRoot;
+class V8UnionChildNodePartOrDocumentPartRoot;
 
 // Implementation of the Part class, which is part of the DOM Parts API.
 class CORE_EXPORT Part : public ScriptWrappable {
@@ -34,9 +35,7 @@ class CORE_EXPORT Part : public ScriptWrappable {
   virtual Document& GetDocument() const = 0;
 
   // Part API
-  PartRootUnion* rootForBindings() const {
-    return PartRoot::GetUnionFromPartRoot(root_);
-  }
+  V8UnionChildNodePartOrDocumentPartRoot* rootForBindings() const;
   const Vector<String>& metadata() const { return metadata_; }
   virtual void disconnect();
 

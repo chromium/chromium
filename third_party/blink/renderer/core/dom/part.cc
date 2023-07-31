@@ -40,4 +40,8 @@ void Part::disconnect() {
   disconnected_ = true;
 }
 
+PartRootUnion* Part::rootForBindings() const {
+  return PartRoot::GetUnionFromPartRoot(root_);
+}
+
 }  // namespace blink

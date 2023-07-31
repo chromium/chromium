@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/part.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -21,14 +22,13 @@ void PartRoot::Trace(Visitor* visitor) const {
 void PartRoot::AddPart(Part& new_part) {
   // DCHECK because this will be slow.
   DCHECK(!parts_unordered_.Contains(&new_part));
-  parts_unordered_.push_back(new_part);
+  parts_unordered_.insert(&new_part);
   MarkPartsDirty();
 }
 
 void PartRoot::RemovePart(Part& part) {
-  auto index = parts_unordered_.Find(&part);
-  CHECK_NE(index, kNotFound);
-  parts_unordered_.EraseAt(index);
+  DCHECK(parts_unordered_.Contains(&part));
+  parts_unordered_.erase(&part);
   MarkPartsDirty();
 }
 
@@ -149,12 +149,15 @@ void PartRoot::CachePartOrderAfterClone() {
     // again below anyway.
     auto correct_parts_order = getParts();
     DCHECK_EQ(correct_parts_order.size(), parts_unordered_.size());
-    for (wtf_size_t i = 0; i < correct_parts_order.size(); ++i) {
-      DCHECK_EQ(parts_unordered_[i], correct_parts_order[i]);
+    auto unordered_iter = parts_unordered_.begin();
+    for (auto& correct : correct_parts_order) {
+      DCHECK_EQ(*unordered_iter, correct);
+      ++unordered_iter;
     }
   }
 #endif
-  cached_ordered_parts_ = parts_unordered_;
+  cached_ordered_parts_ =
+      *MakeGarbageCollected<HeapVector<Member<Part>>>(parts_unordered_);
   cached_parts_list_dirty_ = false;
 }
 
