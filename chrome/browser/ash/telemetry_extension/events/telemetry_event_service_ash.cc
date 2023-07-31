@@ -75,7 +75,7 @@ void TelemetryEventServiceAsh::IsEventSupported(
   cros_healthd::ServiceConnection::GetInstance()
       ->GetEventService()
       ->IsEventSupported(
-          converters::Convert(category),
+          converters::events::Convert(category),
           base::BindOnce(
               [](IsEventSupportedCallback callback,
                  cros_healthd::mojom::SupportStatusPtr ptr) {

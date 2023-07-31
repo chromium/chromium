@@ -13,7 +13,7 @@
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::events {
 
 namespace {
 
@@ -512,4 +512,4 @@ int Convert(uint32_t input) {
   return static_cast<int>(input);
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::events

@@ -15,9 +15,7 @@
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom-forward.h"
 
-namespace chromeos {
-
-namespace converters {
+namespace chromeos::converters::telemetry {
 
 // This file contains helper functions used by telemetry_api.cc to convert its
 // types to/from telemetry service types.
@@ -154,7 +152,6 @@ OutputT ConvertPtr(InputT input, Types... args) {
                  : OutputT();
 }
 
-}  // namespace converters
-}  // namespace chromeos
+}  // namespace chromeos::converters::telemetry
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_TELEMETRY_API_CONVERTERS_H_

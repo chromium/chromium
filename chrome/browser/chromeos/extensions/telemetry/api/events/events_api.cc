@@ -97,7 +97,7 @@ void OsEventsIsEventSupportedFunction::RunIfAllowed() {
 
   auto* event_manager = EventManager::Get(browser_context());
   event_manager->IsEventSupported(
-      converters::Convert(params->category),
+      converters::events::Convert(params->category),
       base::BindOnce(&OsEventsIsEventSupportedFunction::OnEventManagerResult,
                      this));
 }
@@ -153,7 +153,7 @@ void OsEventsStartCapturingEventsFunction::RunIfAllowed() {
   }
 
   auto result = event_manager->RegisterExtensionForEvent(
-      extension_id(), converters::Convert(params->category));
+      extension_id(), converters::events::Convert(params->category));
 
   switch (result) {
     case EventManager::kSuccess:
@@ -175,7 +175,7 @@ void OsEventsStopCapturingEventsFunction::RunIfAllowed() {
 
   auto* event_manager = EventManager::Get(browser_context());
   event_manager->RemoveObservationsForExtensionAndCategory(
-      extension_id(), converters::Convert(params->category));
+      extension_id(), converters::events::Convert(params->category));
   Respond(NoArguments());
 }
 

@@ -7,7 +7,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::diagnostics {
 
 namespace {
 
@@ -260,4 +260,4 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
             crosapi::DiagnosticsNvmeSelfTestTypeEnum::kUnknown);
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::diagnostics

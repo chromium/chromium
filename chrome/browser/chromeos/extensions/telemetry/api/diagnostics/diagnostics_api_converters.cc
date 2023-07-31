@@ -8,7 +8,7 @@
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::diagnostics {
 
 namespace {
 
@@ -219,4 +219,4 @@ crosapi::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
   }
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::diagnostics

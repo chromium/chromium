@@ -18,7 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::converters {
+namespace ash::converters::events {
 
 // Tests that `ConvertStructPtr` function returns nullptr if input is
 // nullptr. `ConvertStructPtr` is a template, so we can test this function
@@ -803,4 +803,4 @@ TEST(TelemetryEventServiceConvertersTest,
             static_cast<uint32_t>(kMaxPressure));
 }
 
-}  // namespace ash::converters
+}  // namespace ash::converters::events

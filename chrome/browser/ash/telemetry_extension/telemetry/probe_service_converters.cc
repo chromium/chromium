@@ -16,8 +16,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace converters {
+namespace ash::converters::telemetry {
 
 namespace {
 
@@ -64,7 +63,7 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
 
 }  // namespace
 
-namespace unchecked::probe {
+namespace unchecked {
 
 crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
     cros_healthd::mojom::ProbeErrorPtr input) {
@@ -619,7 +618,7 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->display_result)));
 }
 
-}  // namespace unchecked::probe
+}  // namespace unchecked
 
 crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType input) {
   switch (input) {
@@ -817,5 +816,4 @@ std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
   return output;
 }
 
-}  // namespace converters
-}  // namespace ash
+}  // namespace ash::converters::telemetry

@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::converters {
+namespace ash::converters::telemetry {
 
 using ::testing::ElementsAre;
 
@@ -842,8 +842,7 @@ TEST(ProbeServiceConverters, LogicalCpuInfoPtrNonZeroIdleTime) {
   auto input = cros_healthd::mojom::LogicalCpuInfo::New();
   input->idle_time_user_hz = kIdleTimeUserHz;
 
-  const auto output =
-      unchecked::probe::UncheckedConvertPtr(std::move(input), kUserHz);
+  const auto output = unchecked::UncheckedConvertPtr(std::move(input), kUserHz);
   ASSERT_TRUE(output);
   EXPECT_EQ(output->idle_time_ms,
             crosapi::mojom::UInt64Value::New(kIdleTimeMs));
@@ -1768,4 +1767,4 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
                 crosapi::mojom::ProbeDisplayResultPtr(nullptr)));
 }
 
-}  // namespace ash::converters
+}  // namespace ash::converters::telemetry

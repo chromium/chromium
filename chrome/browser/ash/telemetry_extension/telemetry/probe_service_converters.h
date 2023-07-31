@@ -16,12 +16,12 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::converters {
+namespace ash::converters::telemetry {
 
 // This file contains helper functions used by ProbeService to convert its
 // types to/from cros_healthd ProbeService types.
 
-namespace unchecked::probe {
+namespace unchecked {
 
 // Functions in unchecked namespace do not verify whether input pointer is
 // nullptr, they should be called only via ConvertPtr wrapper that checks
@@ -186,7 +186,7 @@ crosapi::mojom::ProbeTpmResultPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input);
 
-}  // namespace unchecked::probe
+}  // namespace unchecked
 
 crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType type);
 
@@ -228,7 +228,7 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   std::vector<OutputT> output;
   for (auto&& element : input) {
     DCHECK(!element.is_null());
-    auto converted = unchecked::probe::UncheckedConvertPtr(std::move(element));
+    auto converted = unchecked::UncheckedConvertPtr(std::move(element));
     if (!converted.is_null()) {
       output.push_back(std::move(converted));
     }
@@ -248,32 +248,31 @@ absl::optional<std::vector<OutputT>> ConvertOptionalPtrVector(
 template <class InputT>
 auto LegacyConvertProbePtr(InputT input) {
   return (!input.is_null())
-             ? unchecked::probe::LegacyUncheckedConvertPtr(std::move(input))
+             ? unchecked::LegacyUncheckedConvertPtr(std::move(input))
              : nullptr;
 }
 
 template <class InputT,
           class... Types,
-          class OutputT = decltype(unchecked::probe::UncheckedConvertPtr(
+          class OutputT = decltype(unchecked::UncheckedConvertPtr(
               std::declval<InputT>(),
               std::declval<Types>()...)),
           class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
 OutputT ConvertProbePtr(InputT input) {
-  return (!input.is_null())
-             ? unchecked::probe::UncheckedConvertPtr(std::move(input))
-             : OutputT();
+  return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
+                            : OutputT();
 }
 
 template <class InputT>
 auto ConvertProbePairPtr(InputT input) {
   return (!input.is_null())
-             ? unchecked::probe::UncheckedConvertPairPtr(std::move(input))
+             ? unchecked::UncheckedConvertPairPtr(std::move(input))
              : std::make_pair(nullptr, nullptr);
 }
 
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
     const std::vector<crosapi::mojom::ProbeCategoryEnum>& input);
 
-}  // namespace ash::converters
+}  // namespace ash::converters::telemetry
 
 #endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_PROBE_SERVICE_CONVERTERS_H_

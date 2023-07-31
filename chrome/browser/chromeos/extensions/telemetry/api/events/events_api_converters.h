@@ -15,7 +15,7 @@
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::events {
 
 namespace unchecked {
 
@@ -156,6 +156,6 @@ std::vector<OutputT> ConvertStructPtrVector(std::vector<InputT> input) {
   return output;
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::events
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENTS_API_CONVERTERS_H_

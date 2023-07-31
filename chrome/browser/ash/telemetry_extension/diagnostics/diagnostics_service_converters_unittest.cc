@@ -15,8 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace converters {
+namespace ash::converters::diagnostics {
 
 // Tests that |ConvertDiagnosticsPtr| function returns nullptr if input is
 // nullptr. ConvertDiagnosticsPtr is a template, so we can test this function
@@ -234,5 +233,4 @@ TEST(DiagnosticsServiceConvertersTest, ConvertUInt32ValuePtr) {
             cros_healthd::NullableUint32::New(42));
 }
 
-}  // namespace converters
-}  // namespace ash
+}  // namespace ash::converters::diagnostics

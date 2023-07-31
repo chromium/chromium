@@ -29,7 +29,7 @@ CrosHealthdEventForwarder::CrosHealthdEventForwarder(
       cros_healthd_receiver_(this) {
   cros_healthd::ServiceConnection::GetInstance()
       ->GetEventService()
-      ->AddEventObserver(converters::Convert(category),
+      ->AddEventObserver(converters::events::Convert(category),
                          cros_healthd_receiver_.BindNewPipeAndPassRemote());
 
   cros_healthd_receiver_.set_disconnect_with_reason_handler(
@@ -45,7 +45,7 @@ CrosHealthdEventForwarder::~CrosHealthdEventForwarder() = default;
 
 void CrosHealthdEventForwarder::OnEvent(
     cros_healthd::mojom::EventInfoPtr info) {
-  auto event = converters::ConvertStructPtr(std::move(info));
+  auto event = converters::events::ConvertStructPtr(std::move(info));
   switch (category_) {
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton: {
       if (event->is_touchpad_button_event_info()) {

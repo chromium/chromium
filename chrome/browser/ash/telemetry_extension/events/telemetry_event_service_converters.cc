@@ -14,7 +14,7 @@
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 
-namespace ash::converters {
+namespace ash::converters::events {
 
 namespace unchecked {
 
@@ -550,4 +550,4 @@ cros_healthd::mojom::EventCategoryEnum Convert(
   NOTREACHED();
 }
 
-}  // namespace ash::converters
+}  // namespace ash::converters::events

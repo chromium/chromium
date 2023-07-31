@@ -11,7 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::events {
 
 namespace {
 
@@ -700,4 +700,4 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(result.max_pressure, kMaxPressure);
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::events

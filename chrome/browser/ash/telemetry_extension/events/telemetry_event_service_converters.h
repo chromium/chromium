@@ -15,7 +15,7 @@
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 
-namespace ash::converters {
+namespace ash::converters::events {
 
 // This file contains helper functions used by TelemetryEventServiceAsh to
 // convert its types to/from cros_healthd EventService types.
@@ -154,6 +154,6 @@ auto ConvertStructPtr(InputT input) {
                             : nullptr;
 }
 
-}  // namespace ash::converters
+}  // namespace ash::converters::events
 
 #endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_

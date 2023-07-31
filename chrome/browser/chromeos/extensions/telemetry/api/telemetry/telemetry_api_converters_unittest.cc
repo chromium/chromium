@@ -19,7 +19,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::telemetry {
 
 namespace {
 
@@ -1259,4 +1259,4 @@ TEST(TelemetryApiConverters, DisplayInfo) {
   EXPECT_EQ(external_displays[1].display_name, absl::nullopt);
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::telemetry

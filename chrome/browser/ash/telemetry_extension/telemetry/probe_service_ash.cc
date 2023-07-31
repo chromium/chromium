@@ -61,13 +61,13 @@ void ProbeServiceAsh::ProbeTelemetryInfo(
     const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
   GetService()->ProbeTelemetryInfo(
-      converters::ConvertCategoryVector(categories),
+      converters::telemetry::ConvertCategoryVector(categories),
       base::BindOnce(
           [](crosapi::mojom::TelemetryProbeService::ProbeTelemetryInfoCallback
                  callback,
              cros_healthd::mojom::TelemetryInfoPtr ptr) {
             std::move(callback).Run(
-                converters::ConvertProbePtr(std::move(ptr)));
+                converters::telemetry::ConvertProbePtr(std::move(ptr)));
           },
           std::move(callback)));
 }

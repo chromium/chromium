@@ -12,8 +12,7 @@
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace converters {
+namespace ash::converters::diagnostics {
 
 namespace unchecked {
 
@@ -283,5 +282,4 @@ cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
       1);
 }
 
-}  // namespace converters
-}  // namespace ash
+}  // namespace ash::converters::diagnostics

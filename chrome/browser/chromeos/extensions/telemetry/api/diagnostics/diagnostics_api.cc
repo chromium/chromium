@@ -75,7 +75,7 @@ void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
   cx_diag::GetAvailableRoutinesResponse result;
   for (const auto in : routines) {
     cx_diag::RoutineType out;
-    if (converters::ConvertMojoRoutine(in, &out)) {
+    if (converters::diagnostics::ConvertMojoRoutine(in, &out)) {
       result.routines.push_back(out);
     }
   }
@@ -96,7 +96,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
 
   GetRemoteService()->GetRoutineUpdate(
       params->request.id,
-      converters::ConvertRoutineCommand(params->request.command),
+      converters::diagnostics::ConvertRoutineCommand(params->request.command),
       /* include_output= */ true, std::move(cb));
 }
 
@@ -121,7 +121,8 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
         kNoninteractiveUpdate: {
       auto& routine_update =
           ptr->routine_update_union->get_noninteractive_update();
-      result.status = converters::ConvertRoutineStatus(routine_update->status);
+      result.status =
+          converters::diagnostics::ConvertRoutineStatus(routine_update->status);
       result.status_message = std::move(routine_update->status_message);
       break;
     }
@@ -129,7 +130,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
       // Routine is waiting for user action. Set the status to waiting.
       result.status = cx_diag::RoutineStatus::kWaitingUserAction;
       result.status_message = "Waiting for user action. See user_message";
-      result.user_message = converters::ConvertRoutineUserMessage(
+      result.user_message = converters::diagnostics::ConvertRoutineUserMessage(
           ptr->routine_update_union->get_interactive_update()->user_message);
       break;
   }
@@ -150,7 +151,7 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResult(
 
   cx_diag::RunRoutineResponse result;
   result.id = ptr->id;
-  result.status = converters::ConvertRoutineStatus(ptr->status);
+  result.status = converters::diagnostics::ConvertRoutineStatus(ptr->status);
   Respond(WithArguments(result.ToValue()));
 }
 
@@ -168,7 +169,7 @@ void OsDiagnosticsRunAcPowerRoutineFunction::RunIfAllowed() {
   }
 
   GetRemoteService()->RunAcPowerRoutine(
-      converters::ConvertAcPowerStatusRoutineType(
+      converters::diagnostics::ConvertAcPowerStatusRoutineType(
           params->request.expected_status),
       params->request.expected_power_type, GetOnResult());
 }
@@ -274,7 +275,7 @@ void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
   }
 
   GetRemoteService()->RunDiskReadRoutine(
-      converters::ConvertDiskReadRoutineType(params->request.type),
+      converters::diagnostics::ConvertDiskReadRoutineType(params->request.type),
       params->request.length_seconds, params->request.file_size_mb,
       GetOnResult());
 }
@@ -329,7 +330,8 @@ void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
   }
 
   GetRemoteService()->RunNvmeSelfTestRoutine(
-      converters::ConvertNvmeSelfTestRoutineType(std::move(params->request)),
+      converters::diagnostics::ConvertNvmeSelfTestRoutineType(
+          std::move(params->request)),
       GetOnResult());
 }
 

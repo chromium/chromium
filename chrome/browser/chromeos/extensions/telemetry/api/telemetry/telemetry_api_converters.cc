@@ -17,7 +17,7 @@
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::telemetry {
 
 namespace {
 
@@ -410,10 +410,10 @@ cx_telem::DisplayInfo UncheckedConvertPtr(crosapi::ProbeDisplayInfoPtr input) {
   cx_telem::DisplayInfo result;
 
   result.embedded_display =
-      converters::ConvertPtr(std::move(input->embedded_display));
+      converters::telemetry::ConvertPtr(std::move(input->embedded_display));
   if (input->external_displays.has_value()) {
     result.external_displays =
-        converters::ConvertPtrVector<cx_telem::ExternalDisplayInfo>(
+        converters::telemetry::ConvertPtrVector<cx_telem::ExternalDisplayInfo>(
             std::move(input->external_displays.value()));
   }
 
@@ -620,4 +620,4 @@ cx_telem::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
   NOTREACHED();
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::telemetry
