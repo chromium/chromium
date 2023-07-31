@@ -363,6 +363,14 @@ BASE_FEATURE(kCameraAppTimeLapse,
              "CameraAppTimeLapse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the camera effects are supported by hardware.
+// Note that this feature can be overridden by login_manager based on
+// whether a per-board build sets the USE camera_feature_effects flag.
+// Refer to: chromiumos/src/platform2/login_manager/chrome_setup.cc
+BASE_FEATURE(kCameraEffectsSupportedByHardware,
+             "CameraEffectsSupportedByHardware",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 BASE_FEATURE(kCameraPrivacySwitchNotifications,
