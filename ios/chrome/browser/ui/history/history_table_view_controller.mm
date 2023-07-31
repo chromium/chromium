@@ -11,6 +11,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/model_type.h"
+#import "components/sync/service/sync_service.h"
 #import "components/url_formatter/elide_url.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -35,8 +37,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/history/history_entries_status_item.h"
 #import "ios/chrome/browser/ui/history/history_entries_status_item_delegate.h"
 #import "ios/chrome/browser/ui/history/history_entry_inserter.h"
@@ -255,11 +256,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
   // If history sync is enabled and there hasn't been a response from synced
   // history, try fetching again.
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  if (syncSetupService->IsSyncFeatureEnabled() &&
-      syncSetupService->IsDataTypeActive(syncer::HISTORY_DELETE_DIRECTIVES) &&
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+  if (syncService->GetActiveDataTypes().Has(
+          syncer::HISTORY_DELETE_DIRECTIVES) &&
       queryResultsInfo.sync_timed_out) {
     [self showHistoryMatchingQuery:_currentQuery];
     return;
