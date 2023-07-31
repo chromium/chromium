@@ -93,7 +93,7 @@ class AnnotationStorage {
 
   // Regex search for annotations using FuzzyTokenizedStringMatch to obtain
   // relevance for the `query`.
-  std::vector<FileSearchResult> Search(const std::u16string& query);
+  std::vector<FileSearchResult> PrefixSearch(const std::u16string& query);
 
  private:
   AnnotationStorage(const base::FilePath& path_to_db,

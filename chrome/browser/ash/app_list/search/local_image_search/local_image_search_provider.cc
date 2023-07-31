@@ -17,7 +17,6 @@ namespace app_list {
 namespace {
 
 constexpr char kFileSearchSchema[] = "file_search://";
-constexpr size_t kMinQueryLength = 3u;
 
 }  // namespace
 
@@ -35,8 +34,8 @@ ash::AppListSearchResultType LocalImageSearchProvider::ResultType() const {
 
 void LocalImageSearchProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (query.size() < kMinQueryLength) {
-    // Ignore short queries, which too noisy to be meaningful.
+  if (IsQueryTooShort(query)) {
+    // Ignore short queries, which are too noisy to be meaningful.
     return;
   }
 

@@ -13,6 +13,7 @@ namespace app_list {
 namespace {
 
 constexpr char kHistogramTag[] = "AnnotationStorage";
+constexpr size_t kMinQueryLength = 3u;
 
 base::FilePath ConstructPathToAnnotationDb(const Profile* const profile) {
   return profile->GetPath()
@@ -21,6 +22,10 @@ base::FilePath ConstructPathToAnnotationDb(const Profile* const profile) {
 }
 
 }  // namespace
+
+bool IsQueryTooShort(const std::u16string& query) {
+  return query.size() < kMinQueryLength;
+}
 
 LocalImageSearchService::LocalImageSearchService(Profile* profile)
     : annotation_storage_(
@@ -43,7 +48,7 @@ void LocalImageSearchService::Search(
     const std::u16string& query,
     base::OnceCallback<void(const std::vector<FileSearchResult>&)> callback)
     const {
-  annotation_storage_.AsyncCall(&AnnotationStorage::Search)
+  annotation_storage_.AsyncCall(&AnnotationStorage::PrefixSearch)
       .WithArgs(query)
       .Then(std::move(callback));
 }

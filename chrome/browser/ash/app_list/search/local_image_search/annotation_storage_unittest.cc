@@ -134,28 +134,95 @@ TEST_F(AnnotationStorageTest, FindImagePath) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(AnnotationStorageTest, LinearSearchAnnotations) {
+// Search quality test. Used to fine-tune the precision of search.
+TEST_F(AnnotationStorageTest, SearchAnnotations) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
-  ImageInfo bar_image({"test", "bar", "test1"},
-                      test_directory_.AppendASCII("bar.jpg"), base::Time::Now(),
-                      /*is_ignored=*/false);
+  ImageInfo document_image1({"test", "bar", "test1"},
+                            test_directory_.AppendASCII("document1.jpg"),
+                            base::Time::Now(),
+                            /*is_ignored=*/false);
+  ImageInfo document_image2({"testing", "testing_long"},
+                            test_directory_.AppendASCII("document2.jpg"),
+                            base::Time::Now(),
+                            /*is_ignored=*/false);
+  ImageInfo document_image3({"testing_long"},
+                            test_directory_.AppendASCII("document3.jpg"),
+                            base::Time::Now(),
+                            /*is_ignored=*/false);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
                       base::Time::Now(), /*is_ignored=*/false);
   ImageInfo ignore_image({"test2"}, test_directory_.AppendASCII("remove.png"),
                          base::Time::Now(), /*is_ignored=*/true);
-  storage_->Insert(bar_image);
+  storage_->Insert(document_image1);
+  storage_->Insert(document_image2);
+  storage_->Insert(document_image3);
   storage_->Insert(foo_image);
   storage_->Insert(ignore_image);
 
-  auto images = storage_->Search(base::UTF8ToUTF16(std::string("test")));
-
-  EXPECT_THAT(images,
+  EXPECT_THAT(storage_->PrefixSearch(base::UTF8ToUTF16(std::string("test"))),
               testing::UnorderedElementsAreArray(
-                  {FileSearchResult(bar_image.path, bar_image.last_modified, 1),
+                  {FileSearchResult(document_image1.path,
+                                    document_image1.last_modified, 1),
                    FileSearchResult(foo_image.path, foo_image.last_modified,
-                                    0.909375)}));
+                                    0.88888)}));
+
+  EXPECT_THAT(
+      storage_->PrefixSearch(base::UTF8ToUTF16(std::string("testi"))),
+      testing::UnorderedElementsAreArray({FileSearchResult(
+          document_image2.path, document_image2.last_modified, 0.833333)}));
+
+  EXPECT_THAT(
+      storage_->PrefixSearch(base::UTF8ToUTF16(std::string("testin"))),
+      testing::UnorderedElementsAreArray({FileSearchResult(
+          document_image2.path, document_image2.last_modified, 0.923077)}));
+
+  EXPECT_THAT(storage_->PrefixSearch(base::UTF8ToUTF16(std::string("testing"))),
+              testing::UnorderedElementsAreArray({FileSearchResult(
+                  document_image2.path, document_image2.last_modified, 1)}));
+
+  EXPECT_THAT(
+      storage_->PrefixSearch(base::UTF8ToUTF16(std::string("testing_"))),
+      testing::UnorderedElementsAreArray(
+          {FileSearchResult(document_image2.path, document_image2.last_modified,
+                            0.8),
+           FileSearchResult(document_image3.path, document_image3.last_modified,
+                            0.8)}));
+
+  EXPECT_THAT(
+      storage_->PrefixSearch(base::UTF8ToUTF16(std::string("testing_l"))),
+      testing::UnorderedElementsAreArray(
+          {FileSearchResult(document_image2.path, document_image2.last_modified,
+                            0.857143),
+           FileSearchResult(document_image3.path, document_image3.last_modified,
+                            0.857143)}));
+
+  EXPECT_THAT(
+      storage_->PrefixSearch(base::UTF8ToUTF16(std::string("testing-"))),
+      testing::UnorderedElementsAreArray(std::vector<FileSearchResult>()));
+
+  EXPECT_THAT(
+      storage_->PrefixSearch(base::UTF8ToUTF16(std::string("testing-l"))),
+      testing::UnorderedElementsAreArray(std::vector<FileSearchResult>()));
+
+  EXPECT_THAT(
+      storage_->PrefixSearch(base::UTF8ToUTF16(std::string("est"))),
+      testing::UnorderedElementsAreArray(std::vector<FileSearchResult>()));
+
+  EXPECT_THAT(storage_->PrefixSearch(base::UTF8ToUTF16(std::string("Test"))),
+              testing::UnorderedElementsAreArray(
+                  {FileSearchResult(document_image1.path,
+                                    document_image1.last_modified, 1),
+                   FileSearchResult(foo_image.path, foo_image.last_modified,
+                                    0.88888)}));
+
+  EXPECT_THAT(storage_->PrefixSearch(base::UTF8ToUTF16(std::string("TEST"))),
+              testing::UnorderedElementsAreArray(
+                  {FileSearchResult(document_image1.path,
+                                    document_image1.last_modified, 1),
+                   FileSearchResult(foo_image.path, foo_image.last_modified,
+                                    0.88888)}));
 
   task_environment_.RunUntilIdle();
 }

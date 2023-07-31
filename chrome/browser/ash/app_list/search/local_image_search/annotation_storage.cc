@@ -4,13 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 
-#include <algorithm>
-#include <iterator>
-#include <map>
-#include <string>
-
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,8 +12,6 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
-#include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "sql/database.h"
 #include "sql/statement.h"
 
 namespace app_list {
@@ -271,11 +263,12 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
   return matched_paths;
 }
 
-std::vector<FileSearchResult> AnnotationStorage::Search(
+std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
     const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Search";
   using TokenizedString = ash::string_matching::TokenizedString;
+  using Mode = ash::string_matching::TokenizedString::Mode;
 
   // LIKE is 10 times faster than the linear search.
   static constexpr char kQuery[] =
@@ -292,16 +285,17 @@ std::vector<FileSearchResult> AnnotationStorage::Search(
   if (!statement) {
     return {};
   }
-  statement->BindString(0, base::StrCat({"%", base::UTF16ToUTF8(query), "%"}));
+  statement->BindString(0, base::StrCat({base::UTF16ToUTF8(query), "%"}));
 
   std::vector<FileSearchResult> matched_paths;
-  TokenizedString tokenized_query(query);
-  ash::string_matching::FuzzyTokenizedStringMatch fuzzy_match;
+  TokenizedString tokenized_query(query, Mode::kWords);
   while (statement->Step()) {
-    double relevance = fuzzy_match.Relevance(
-        tokenized_query,
-        TokenizedString(base::UTF8ToUTF16(statement->ColumnString(0))),
-        /*use_weighted_ratio=*/true);
+    double relevance =
+        ash::string_matching::FuzzyTokenizedStringMatch::TokenSetRatio(
+            tokenized_query,
+            TokenizedString(base::UTF8ToUTF16(statement->ColumnString(0)),
+                            Mode::kWords),
+            /*partial=*/false);
     if (relevance < kRelevanceThreshold) {
       continue;
     }
