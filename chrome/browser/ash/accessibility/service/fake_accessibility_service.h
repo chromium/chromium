@@ -15,8 +15,6 @@
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
-#include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
-#include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -45,11 +43,12 @@ class FakeAccessibilityService
           at_controller_receiver,
       const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features)
       override;
+
   void ConnectDevToolsAgent(
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
       ax::mojom::AssistiveTechnologyType type) override;
 
-  // ax::mojom::Automation:
+  // TODO(crbug.com/1355633): Override from ax::mojom::Automation:
   void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) override;
   void DispatchActionResult(const ui::AXActionData& data, bool result) override;
   void DispatchAccessibilityEvents(
@@ -91,21 +90,12 @@ class FakeAccessibilityService
   // V8 instances in the service.
   void BindAnotherAutomation();
   void BindAnotherTts();
-  void BindAnotherUserInterface();
-
-  //
-  // Methods to pretend an AutomationClient request came from the service.
-  //
 
   // Calls ax::mojom::AutomationClient::Enable or ::Disable.
   void AutomationClientEnable(bool enabled);
 
   // Waits for Automation events to come in.
   void WaitForAutomationEvents();
-
-  //
-  // Methods to pretend a TTS request came from the service.
-  //
 
   // Sends a request for speech using the default options, but with on_event
   // set to true.
@@ -133,14 +123,6 @@ class FakeAccessibilityService
 
   // Sends a request from the service for the TTS voices list.
   void RequestTtsVoices(ax::mojom::Tts::GetVoicesCallback callback);
-
-  //
-  // Methods to pretend a UserInterface request came from the service.
-  //
-
-  void RequestSetFocusRings(
-      std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
-      ax::mojom::AssistiveTechnologyType at_type);
 
   // Getters for automation events.
   std::vector<ui::AXTreeID> tree_destroyed_events() const {
@@ -172,7 +154,6 @@ class FakeAccessibilityService
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;
 
   mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;
-  mojo::RemoteSet<ax::mojom::UserInterface> ux_remotes_;
 
   mojo::ReceiverSet<ax::mojom::AssistiveTechnologyController>
       at_controller_receivers_;

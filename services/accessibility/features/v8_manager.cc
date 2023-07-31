@@ -5,7 +5,6 @@
 #include "services/accessibility/features/v8_manager.h"
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,12 +20,9 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/features/automation_internal_bindings.h"
-#include "services/accessibility/features/interface_binder.h"
 #include "services/accessibility/features/mojo/mojo.h"
 #include "services/accessibility/features/tts_interface_binder.h"
-#include "services/accessibility/features/user_interface_interface_binder.h"
 #include "services/accessibility/features/v8_bindings_utils.h"
-#include "services/accessibility/public/mojom/accessibility_service.mojom-forward.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
@@ -107,15 +103,6 @@ void V8Manager::InstallTts(
                                 weak_ptr_factory_.GetWeakPtr(), at_controller));
 }
 
-void V8Manager::InstallUserInterface(
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
-  v8_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&V8Manager::BindUserInterfaceOnThread,
-                                weak_ptr_factory_.GetWeakPtr(), at_controller));
-}
-
 void V8Manager::AddV8Bindings() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
@@ -150,10 +137,6 @@ void V8Manager::BindInterface(const std::string& interface_name,
   // TODO(b:262637071): Add mappings for bindings for other C++/JS mojom APIs.
   // TODO(b:262637071): We may need to use associated remotes/receivers to avoid
   // messages coming in an unpredicted order compared to the Extensions system.
-  // TODO(b/290971224): Bindings should occur on main service thread; this
-  // method should forward the `pending_receiver` to the ATControllerImpl, which
-  // will own mapping them to the correct interface and passing them back to the
-  // browser process.
   for (auto& binder : interface_binders_) {
     if (binder->MatchesInterface(interface_name)) {
       binder->BindReceiver(std::move(pending_receiver));
@@ -283,15 +266,6 @@ void V8Manager::BindTtsOnThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<InterfaceBinder> binder =
       std::make_unique<TtsInterfaceBinder>(at_controller, main_runner_);
-  interface_binders_.emplace_back(std::move(binder));
-}
-
-void V8Manager::BindUserInterfaceOnThread(
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<InterfaceBinder> binder =
-      std::make_unique<UserInterfaceInterfaceBinder>(at_controller,
-                                                     main_runner_);
   interface_binders_.emplace_back(std::move(binder));
 }
 

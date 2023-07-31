@@ -6,7 +6,6 @@
 #define SERVICES_ACCESSIBILITY_FEATURES_V8_MANAGER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
@@ -21,6 +20,7 @@
 #include "services/accessibility/features/interface_binder.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-value.h"
 
 namespace v8 {
 class Isolate;
@@ -56,13 +56,10 @@ class V8Manager : public BindingsIsolateHolder,
   V8Manager& operator=(const V8Manager&) = delete;
 
   // Called from main service thread.
-  // All of the APIs needed for this V8Manager (based on the AT type) should be
-  // installed before adding V8 bindings.
+  // All of the APIs should be installed before adding V8 bindings.
   void InstallAutomation(
       base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
   void InstallTts(
-      base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
-  void InstallUserInterface(
       base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
   void AddV8Bindings();
 
@@ -100,8 +97,6 @@ class V8Manager : public BindingsIsolateHolder,
       base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
   void BindTtsOnThread(
       base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
-  void BindUserInterfaceOnThread(
-      base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
   void SetTestMojoInterfaceOnThread(
       std::unique_ptr<InterfaceBinder> test_interface);
   void ExecuteScriptOnThread(const std::string& script,
@@ -119,7 +114,6 @@ class V8Manager : public BindingsIsolateHolder,
   // TODO(crbug.com/1355633): Add more APIs including TTS, SST, etc.
   std::unique_ptr<AutomationInternalBindings> automation_bindings_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
   std::vector<std::unique_ptr<InterfaceBinder>> interface_binders_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

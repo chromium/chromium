@@ -11,8 +11,7 @@ namespace ax {
 TtsInterfaceBinder::TtsInterfaceBinder(
     base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
     scoped_refptr<base::SequencedTaskRunner> main_runner)
-    : ax_service_client_(ax_service_client),
-      main_runner_(std::move(main_runner)) {}
+    : ax_service_client_(ax_service_client), main_runner_(main_runner) {}
 
 TtsInterfaceBinder::~TtsInterfaceBinder() = default;
 
@@ -24,9 +23,9 @@ void TtsInterfaceBinder::BindReceiver(
     mojo::GenericPendingReceiver tts_receiver) {
   CHECK(main_runner_);
   auto receiver = tts_receiver.As<ax::mojom::Tts>();
-  // This method was called from the V8 thread when JS tried to bind one
-  // end of a Mojo pipe. Do the actual binding on the service main thread,
-  // where the AccessibilityServiceClient lives.
+  // This might be called on any thread because it's initiated by Mojom.
+  // Do the actual binding on the service main thread, where the
+  // AccessibilityServiceClient lives.
   main_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

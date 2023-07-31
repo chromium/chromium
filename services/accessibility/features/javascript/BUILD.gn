@@ -3,17 +3,11 @@
 # found in the LICENSE file.
 
 copy("js_api_copied_files") {
-  sources = [
-    "accessibility_private.js",
-    "tts.js",
-  ]
+  sources = [ "tts.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 group("js_api_files") {
-  data = [
-    "$target_gen_dir/tts.js",
-    "$target_gen_dir/accessibility_private.js",
-  ]
+  data = [ "$target_gen_dir/tts.js" ]
   deps = [ ":js_api_copied_files" ]
 }
