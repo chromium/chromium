@@ -14,11 +14,13 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -188,6 +190,14 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthFactorsConfiguration(
     std::move(callback).Run(absl::nullopt, *error);
     return;
   }
+
+  // The user context stored in quick_unlock storage must have a device ID, so
+  // we retrieve and set it here.
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  std::string device_id = known_user.GetDeviceId(user_context->GetAccountId());
+  LOG_IF(WARNING, device_id.empty())
+      << "Missing DeviceID for auth factor edits";
+  user_context->SetDeviceId(std::move(device_id));
 
   QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
