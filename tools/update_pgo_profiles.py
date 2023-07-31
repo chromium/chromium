@@ -141,6 +141,8 @@ def main():
           'lacros64',
           'lacros-arm',
           'lacros-arm64',
+          'android-arm32',
+          'android-arm64',
       ],
       help='Identifier of a specific target platform + architecture.')
   subparsers = parser.add_subparsers()
