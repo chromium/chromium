@@ -133,6 +133,7 @@ void ArchiveAnalyzer::NestedAnalysisFinished(base::File entry,
   // successfully.
   if (!results_->success) {
     results_->has_archive = true;
+    results_->file_count++;
     results_->archived_archive_filenames.push_back(path.BaseName());
     ClientDownloadRequest::ArchivedBinary* archived_archive =
         results_->archived_binary.Add();

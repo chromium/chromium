@@ -388,7 +388,7 @@ TEST_F(SandboxedZipAnalyzerTest,
               &results);
   ASSERT_TRUE(results.success);
   EXPECT_TRUE(results.has_executable);
-  EXPECT_TRUE(results.has_archive);
+  EXPECT_FALSE(results.has_archive);
   ASSERT_EQ(3, results.archived_binary.size());
 
   BinaryData SignedExe = kSignedExe;
@@ -397,9 +397,7 @@ TEST_F(SandboxedZipAnalyzerTest,
   UnsignedExe.file_path = "unsigned.exe.";
   ExpectBinary(SignedExe, results.archived_binary.Get(0));
   ExpectBinary(UnsignedExe, results.archived_binary.Get(1));
-  ASSERT_EQ(1u, results.archived_archive_filenames.size());
-  EXPECT_EQ(FILE_PATH_LITERAL("zipfile_no_binaries.zip  .  . "),
-            results.archived_archive_filenames[0].value());
+  ASSERT_EQ(0u, results.archived_archive_filenames.size());
 }
 
 TEST_F(SandboxedZipAnalyzerTest, ZippedJSEFile) {
