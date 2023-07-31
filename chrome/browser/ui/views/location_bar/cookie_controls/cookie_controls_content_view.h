@@ -49,6 +49,8 @@ class CookieControlsContentView : public views::View {
       base::RepeatingClosureList::CallbackType callback);
 
  private:
+  friend class CookieControlsContentViewUnitTest;
+
   void NotifyToggleButtonPressedCallback();
   void NotifyFeedbackButtonPressedCallback();
 

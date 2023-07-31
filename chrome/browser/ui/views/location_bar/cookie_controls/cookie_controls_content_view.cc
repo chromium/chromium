@@ -128,7 +128,8 @@ void CookieControlsContentView::AddToggleRow() {
 
   // TODO (crbug.com/1446230): Use plural string and update label based on
   // actual blocked sites.
-  toggle_row_->AddSecondaryLabel(u"17 sites blocked");
+  const std::u16string secondary_label = u"17 sites blocked";
+  toggle_row_->AddSecondaryLabel(secondary_label);
 
   enforced_icon_ =
       toggle_row_->AddControl(std::make_unique<views::ImageView>());
@@ -141,8 +142,14 @@ void CookieControlsContentView::AddToggleRow() {
       gfx::Size(toggle_button_->GetPreferredSize().width(),
                 toggle_row_->GetFirstLineHeight()));
 
-  // TODO(crbug.com/1446230)): Use correct tooltip.
-  toggle_button_->SetAccessibleName(u"Accesibility label");
+  const std::u16string accessible_name = base::JoinString(
+      {
+          l10n_util::GetStringUTF16(
+              IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL),
+          secondary_label,
+      },
+      u"\n");
+  toggle_button_->SetAccessibleName(accessible_name);
   toggle_button_->SetVisible(true);
   toggle_button_->SetProperty(views::kElementIdentifierKey, kToggleButton);
 }
@@ -168,13 +175,15 @@ void CookieControlsContentView::AddFeedbackSection() {
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE),
           std::u16string(),
-          // TODO(crbug.com/1446230): Add a proper tooltip string.
-          std::u16string(),
+          l10n_util::GetStringUTF16(
+              IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE),
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION),
           launch_icon));
 
   feedback_button->SetProperty(views::kElementIdentifierKey, kFeedbackButton);
+  feedback_button->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE));
 }
 
 void CookieControlsContentView::UpdateContentLabels(
