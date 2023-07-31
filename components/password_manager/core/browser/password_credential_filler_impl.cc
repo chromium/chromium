@@ -166,7 +166,8 @@ const GURL& PasswordCredentialFillerImpl::GetFrameUrl() const {
 void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {
   // TODO(crbug/1462532): Remove this function once the feature is enabled.
   if (base::FeatureList::IsEnabled(
-          features::kPasswordSuggestionBottomSheetV2)) {
+          features::kPasswordSuggestionBottomSheetV2) ||
+      !driver_) {
     return;
   }
   // TODO(crbug/1434278): Avoid using KeyboardReplacingSurfaceClosed.
