@@ -17,6 +17,10 @@ constexpr base::TimeDelta kDefaultAppUsageTelemetryCollectionRate =
 constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
     base::Minutes(15);
 
+// Default runtime counters telemetry collection rate.
+constexpr base::TimeDelta kDefaultRuntimeCountersTelemetryCollectionRate =
+    base::Days(1);
+
 // Default metric collection rate used for testing purposes.
 constexpr base::TimeDelta kDefaultCollectionRateForTesting = base::Minutes(2);
 
@@ -76,6 +80,9 @@ constexpr bool kDeviceReportNetworkEventsDefaultValue = false;
 
 // Default value for reporting device peripheral status.
 constexpr bool kReportDevicePeripheralsDefaultValue = false;
+
+// Default value for reporting runtime counters.
+constexpr bool kDeviceReportRuntimeCountersDefaultValue = false;
 
 // Default value for reporting device graphics status.
 constexpr bool kReportDeviceGraphicsStatusDefaultValue = false;

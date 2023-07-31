@@ -246,6 +246,9 @@ const MetricReportingSettingData app_event_settings = {
 const MetricReportingSettingData device_activity_telemetry_settings = {
     ::ash::kDeviceActivityHeartbeatEnabled, false,
     ::ash::kDeviceActivityHeartbeatCollectionRateMs, 1};
+const MetricReportingSettingData runtime_counters_telemetry_settings = {
+    ::ash::kDeviceReportRuntimeCounters, false,
+    ::ash::kDeviceReportRuntimeCountersCheckingRateMs, 1};
 
 struct MetricReportingManagerTestCase {
   std::string test_name;
@@ -880,6 +883,18 @@ INSTANTIATE_TEST_SUITE_P(
           /*is_affiliated=*/true, device_activity_telemetry_settings,
           /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1},
+         {"RuntimeCountersTelemetry_Unaffiliated", /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, runtime_counters_telemetry_settings,
+          /*has_init_delay=*/true,
+          /*expected_count_before_login=*/1,
+          /*expected_count_after_login=*/1},
+         {"RuntimeCountersTelemetry_Default", /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, runtime_counters_telemetry_settings,
+          /*has_init_delay=*/true,
+          /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<
         MetricReportingManagerTelemetryTest::ParamType>& info) {

@@ -269,6 +269,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitPeripheralsCollectors();
 
+  void InitRuntimeCountersCollectors();
+
   void InitDisplayCollectors();
 
   // Initializes a periodic collector that collects device activity state.

@@ -68,7 +68,7 @@ cros_healthd::TelemetryInfoPtr CreateDisplayResult(
     cros_healthd::EmbeddedDisplayInfoPtr embedded_display,
     std::vector<cros_healthd::ExternalDisplayInfoPtr> external_displays);
 
-// Create an embedded display. Used to fed into `CreateDisplayResult`.
+// Create an embedded display. Used to feed into `CreateDisplayResult`.
 cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
     bool privacy_screen_supported,
     int display_width,
@@ -81,7 +81,7 @@ cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
     int manufacture_year,
     std::string display_name);
 
-// Create an external display. Used to fed into `CreateDisplayResult`.
+// Create an external display. Used to feed into `CreateDisplayResult`.
 cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
     int display_width,
     int display_height,
@@ -92,6 +92,26 @@ cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
     int model_id,
     int manufacture_year,
     std::string display_name);
+
+// -------- system ---------
+
+// Create a system info for runtime counters tests.
+cros_healthd::TelemetryInfoPtr CreateSystemResult(
+    cros_healthd::SystemInfoPtr system_info);
+
+// Create system info with the PSR field filled in.
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsr(
+    cros_healthd::PsrInfoPtr psr_info);
+
+// Create system info with PSR unsupported.
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrUnsupported();
+
+// Create system info with PSR supported.
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrSupported(
+    uint32_t uptime_seconds,
+    uint32_t s5_counter,
+    uint32_t s4_counter,
+    uint32_t s3_counter);
 }  // namespace reporting::test
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_INFO_METRIC_SAMPLER_TEST_UTILS_H_

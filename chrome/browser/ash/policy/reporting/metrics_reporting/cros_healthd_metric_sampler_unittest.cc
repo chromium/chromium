@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_display_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_input_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_memory_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -272,6 +273,57 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
   EXPECT_EQ(usb_telemetry.name(), kProductName);
   EXPECT_EQ(usb_telemetry.vendor(), kVendorName);
   EXPECT_EQ(usb_telemetry.firmware_version(), kFirmwareVersion);
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryNoPsrInfo) {
+  const absl::optional<MetricData> optional_result =
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+                  CreateSystemResult(CreateSystemInfoWithPsr(nullptr)),
+                  cros_healthd::ProbeCategoryEnum::kSystem,
+                  CrosHealthdSamplerHandler::MetricType::kTelemetry);
+
+  EXPECT_FALSE(optional_result.has_value());
+}
+
+TEST_F(CrosHealthdMetricSamplerTest,
+       TestRuntimeCountersTelemetryPsrUnsupported) {
+  const absl::optional<MetricData> optional_result =
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+                  CreateSystemResult(CreateSystemInfoWithPsrUnsupported()),
+                  cros_healthd::ProbeCategoryEnum::kSystem,
+                  CrosHealthdSamplerHandler::MetricType::kTelemetry);
+
+  EXPECT_FALSE(optional_result.has_value());
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryPsrSupported) {
+  constexpr uint32_t kUptimeSeconds = 1u;
+  constexpr uint32_t kS5Counter = 2u;
+  constexpr uint32_t kS4Counter = 3u;
+  constexpr uint32_t kS3Counter = 4u;
+
+  const absl::optional<MetricData> optional_result =
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+                  CreateSystemResult(CreateSystemInfoWithPsrSupported(
+                      kUptimeSeconds, kS5Counter, kS4Counter, kS3Counter)),
+                  cros_healthd::ProbeCategoryEnum::kSystem,
+                  CrosHealthdSamplerHandler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_runtime_counters_telemetry());
+
+  const auto& runtime_counters_telemetry =
+      result.telemetry_data().runtime_counters_telemetry();
+  EXPECT_EQ(runtime_counters_telemetry.uptime_runtime_seconds(),
+            static_cast<int64_t>(kUptimeSeconds));
+  EXPECT_EQ(runtime_counters_telemetry.counter_enter_sleep(),
+            static_cast<int64_t>(kS3Counter));
+  EXPECT_EQ(runtime_counters_telemetry.counter_enter_hibernation(),
+            static_cast<int64_t>(kS4Counter));
+  EXPECT_EQ(runtime_counters_telemetry.counter_enter_poweroff(),
+            static_cast<int64_t>(kS5Counter));
 }
 
 TEST_P(CrosHealthdMetricSamplerMemoryInfoTest, TestMemoryInfoeporting) {
