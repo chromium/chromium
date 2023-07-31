@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -146,17 +147,23 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   isFirstAccelerator: boolean;
   isDisabled: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
+  protected isCapturing: boolean;
   private modifiers: string[];
-  private isCapturing: boolean;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
+  private eventTracker: EventTracker = new EventTracker();
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     this.categoryIsLocked = this.lookupManager.isCategoryLocked(
         this.lookupManager.getAcceleratorCategory(this.source, this.action));
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.eventTracker.removeAll();
   }
 
   private getModifiers(): string[] {
@@ -172,22 +179,18 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private registerKeyEventListeners(): void {
-    this.addEventListener('keydown', (e) => this.onKeyDown(e));
-    this.addEventListener('keyup', (e) => this.onKeyUp(e));
-    this.addEventListener('focus', () => this.startCapture());
-    this.addEventListener('mouseup', () => this.startCapture());
-    this.addEventListener(
-        'blur', () => this.endCapture(/*should_delay=*/ false));
+    this.eventTracker.add(
+        this, 'keydown', (e: KeyboardEvent) => this.onKeyDown(e));
+    this.eventTracker.add(this, 'keyup', (e: KeyboardEvent) => this.onKeyUp(e));
+    this.eventTracker.add(this, 'focus', () => this.startCapture());
+    this.eventTracker.add(this, 'mouseup', () => this.startCapture());
+    this.eventTracker.add(
+        this, 'blur', () => this.endCapture(/*should_delay=*/ false));
     this.$.container.focus();
   }
 
   private unregisterKeyEventListeners(): void {
-    this.removeEventListener('keydown', (e) => this.onKeyDown(e));
-    this.removeEventListener('keyup', (e) => this.onKeyUp(e));
-    this.removeEventListener('focus', () => this.startCapture());
-    this.removeEventListener('mouseup', () => this.startCapture());
-    this.removeEventListener(
-        'blur', () => this.endCapture(/*should_delay=*/ false));
+    this.eventTracker.removeAll();
   }
 
 
@@ -226,8 +229,10 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
 
     this.viewState = ViewState.VIEW;
-    this.statusMessage = '';
+    // Should always set `hasError` before `statusMessage` since `statusMessage`
+    // is dependent on `hasError`'s state.
     this.hasError = false;
+    this.statusMessage = '';
     this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
   }
 
@@ -479,8 +484,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   private getModifierState(modifier: Modifier): KeyState {
-    // If the accelerator is disabled, we default to the `NOT_SELECTED` state.
-    if (this.isDisabled) {
+    // If the accelerator is disabled, we default to the `NOT_SELECTED` state if
+    // the user is not editing the accelerator.
+    if (this.isDisabled && this.viewState !== ViewState.EDIT) {
       return KeyState.NOT_SELECTED;
     }
 

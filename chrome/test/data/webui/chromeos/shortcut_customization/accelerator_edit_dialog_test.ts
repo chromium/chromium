@@ -472,6 +472,73 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(1, updatedAcceleratorElements.length);
   });
 
+  test('RestoreDefaultButtonCancelFix', async () => {
+    const acceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.SHIFT,
+            /*key=*/ 71, /*keyDisplay=*/ 'g', AcceleratorState.kDisabledByUser);
+
+    const accelerators = [acceleratorInfo];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flushTasks();
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
+      shortcutName: stringToMojoString16('TestDescription'),
+    };
+
+    provider.setRestoreDefault(fakeResult);
+    const restoreDefaultButton =
+        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+    restoreDefaultButton.click();
+    await flushTasks();
+
+    // Set the fake return for `GetConflictAccelerator` which is used to display
+    // the error message.
+    const fakeConflictResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: stringToMojoString16('TestConflictDescription'),
+    };
+    provider.setFakeGetConflictAccelerator(fakeConflictResult);
+
+    // Simulate `UpdateDialogAccelerators`.
+    viewElement!.updateDialogAccelerators(accelerators);
+    await flushTasks();
+
+    const updatedAcceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(1, updatedAcceleratorElements.length);
+
+    // Click on the edit button to attempt to fix the conflict.
+    const editButton = updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
+                           '#editButton') as HTMLButtonElement;
+    editButton!.click();
+
+    // Now cancel editing.
+    const cancelButton =
+        updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
+            '#cancelButton') as HTMLButtonElement;
+    cancelButton!.click();
+
+    await flushTasks();
+
+    // Expect error message is still present.
+    const expectedErrorMessage =
+        'Shortcut is used by "TestConflictDescription". Remove or edit to ' +
+        'resolve the conflict.';
+    const statusMessageElement =
+        updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
+            '#acceleratorInfoText') as HTMLDivElement;
+    assertEquals(
+        expectedErrorMessage, statusMessageElement.textContent!.trim());
+  });
+
   test('FilterDisabledAccelerators', async () => {
     const acceleratorInfo1: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
