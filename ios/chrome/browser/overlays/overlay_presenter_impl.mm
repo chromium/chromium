@@ -59,7 +59,7 @@ OverlayPresenterImpl::OverlayPresenterImpl(Browser* browser,
     WebStateAddedToBrowser(web_state_list_->GetWebStateAt(i));
   }
   SetActiveWebState(web_state_list_->GetActiveWebState(),
-                    ActiveWebStateChangeReason::Activated);
+                    /*is_replaced=*/false);
 }
 
 OverlayPresenterImpl::~OverlayPresenterImpl() {
@@ -122,11 +122,11 @@ bool OverlayPresenterImpl::IsShowingOverlayUI() const {
 
 #pragma mark Accessors
 
-void OverlayPresenterImpl::SetActiveWebState(
-    web::WebState* web_state,
-    ActiveWebStateChangeReason reason) {
-  if (active_web_state_ == web_state)
+void OverlayPresenterImpl::SetActiveWebState(web::WebState* web_state,
+                                             bool is_replaced) {
+  if (active_web_state_ == web_state) {
     return;
+  }
 
   OverlayRequest* previously_active_request =
       removed_request_awaiting_dismissal_ != nullptr
@@ -138,23 +138,22 @@ void OverlayPresenterImpl::SetActiveWebState(
   // delegate's presentation context.  This occurs:
   // - when the presenting WebState is replaced, and
   // - when the presenting WebState is detached from the WebStateList.
-  const bool should_cancel_ui =
-      (reason == ActiveWebStateChangeReason::Replaced) ||
-      detaching_presenting_web_state_;
+  const bool should_cancel_ui = is_replaced || detaching_presenting_web_state_;
 
   active_web_state_ = web_state;
   detaching_presenting_web_state_ = false;
 
   // Early return if there's no UI delegate, since presentation cannot occur.
-  if (!presentation_context_)
+  if (!presentation_context_) {
     return;
+  }
 
   // If not already presenting, immediately show the next overlay.
   if (!presenting_) {
     PresentOverlayForActiveRequest();
     return;
   }
- 
+
   // If presenting_ is true and there is no previously active request, this
   // is likely because the presenting overlay is still in the process of being
   // dismissed and multiple tabs have been opened in the process.
@@ -385,7 +384,7 @@ void OverlayPresenterImpl::WebStateRemovedFromBrowser(
 
 void OverlayPresenterImpl::BrowserDestroyed(Browser* browser) {
   SetPresentationContext(nullptr);
-  SetActiveWebState(nullptr, ActiveWebStateChangeReason::Closed);
+  SetActiveWebState(nullptr, /*is_replaced=*/false);
 
   for (int i = 0; i < web_state_list_->count(); ++i) {
     WebStateRemovedFromBrowser(web_state_list_->GetWebStateAt(i));
@@ -538,9 +537,7 @@ void OverlayPresenterImpl::WebStateListDidChange(
     const WebStateListStatus& status) {
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateActivatedAt() to here. Note that here is reachable only when
-      // `reason` == ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
@@ -562,13 +559,9 @@ void OverlayPresenterImpl::WebStateListDidChange(
       break;
     }
   }
-}
 
-void OverlayPresenterImpl::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  SetActiveWebState(new_web_state, reason);
+  if (status.active_web_state_change()) {
+    SetActiveWebState(status.new_active_web_state,
+                      change.type() == WebStateListChange::Type::kReplace);
+  }
 }
