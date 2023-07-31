@@ -796,7 +796,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private int getToolbarColorForVisualState(final @VisualState int visualState) {
-        Resources res = getResources();
         switch (visualState) {
             case VisualState.NEW_TAB_NORMAL:
                 // We are likely in the middle of a layout animation, and the NTP cannot draw itself
@@ -875,7 +874,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private void updateLocationBarBackgroundBounds(Rect out, @VisualState int visualState) {
         // Calculate the visible boundaries of the left and right most child views of the
         // location bar.
-        float expansion = getExpansionFractionForVisualState(visualState);
         int leftViewPosition = getLeftPositionOfLocationBarBackground(visualState);
         int rightViewPosition = getRightPositionOfLocationBarBackground(visualState);
         int verticalInset = mLocationBarBackgroundVerticalInset - calculateOnFocusHeightIncrease();
@@ -2742,10 +2740,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private int getAdditionalOffsetForNTP() {
-        return getResources().getDimensionPixelSize(mShouldShowModernizeVisualUpdate
-                               ? R.dimen.location_bar_start_padding_modern
-                               : R.dimen.location_bar_start_padding)
-                - getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding);
+        return getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding)
+                - getResources().getDimensionPixelSize(mShouldShowModernizeVisualUpdate
+                                ? R.dimen.location_bar_start_padding_modern
+                                : R.dimen.location_bar_start_padding);
     }
 
     @Override
