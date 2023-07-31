@@ -7,6 +7,7 @@
 
 #import "base/ios/ios_util.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
@@ -124,7 +125,8 @@ using chrome_test_util::SecondarySignInButton;
   // Sign-out without removing data.
   [SigninEarlGrey signOut];
 
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
 

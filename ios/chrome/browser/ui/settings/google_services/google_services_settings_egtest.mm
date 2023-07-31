@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -213,7 +214,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kWaitForActionTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Turn off "Allow Chrome Sign-in" feature with Clear Data option.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -281,7 +283,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kWaitForActionTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Turn off "Allow Chrome Sign-in" feature with Keep Data option.
   [ChromeEarlGreyUI openSettingsMenu];

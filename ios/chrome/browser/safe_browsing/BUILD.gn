@@ -108,6 +108,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
+    "//components/bookmarks/common",
     "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

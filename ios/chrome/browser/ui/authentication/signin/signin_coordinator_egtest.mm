@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -280,7 +281,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out with option to keep local data.
   [SigninEarlGreyUI
@@ -317,7 +319,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out from the supervised account with option to keep local data.
   [SigninEarlGreyUI
@@ -341,7 +344,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out from the supervised account with option to clear local data.
   [SigninEarlGreyUI

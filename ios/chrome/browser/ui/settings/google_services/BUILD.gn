@@ -137,6 +137,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//components/bookmarks/common",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",

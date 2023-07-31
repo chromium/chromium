@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -179,7 +180,8 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out and clear data from Sync settings.
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleSyncSettingsButton()];
@@ -227,7 +229,8 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out and keep data from Sync settings.
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleSyncSettingsButton()];

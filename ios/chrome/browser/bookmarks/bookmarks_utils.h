@@ -15,7 +15,7 @@ namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 enum class StorageType;
-}
+}  // namespace bookmarks
 
 // Used in the preference kIosBookmarkLastUsedFolderReceivingBookmarks.
 // It means that the user has not set a folder for bookmarks explicitly.

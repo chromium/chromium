@@ -7,6 +7,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
@@ -847,9 +848,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // loaded using a bookmark, a warning is shown.
 - (void)testRealTimeWarningForBookmark {
   NSString* phishingTitle = @"Real-time phishing";
-  [BookmarkEarlGrey addBookmarkWithTitle:phishingTitle
-                                     URL:base::SysUTF8ToNSString(
-                                             _realTimePhishingURL.spec())];
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:phishingTitle
+                       URL:base::SysUTF8ToNSString(_realTimePhishingURL.spec())
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
   // Opt-in to real-time checks.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
 

@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/features.h"
@@ -104,7 +105,8 @@ using chrome_test_util::SecondarySignInButton;
 // Tests the promo view body message for sync with
 // kEnableBookmarksAccountStorage flag disabled.
 - (void)testPromoViewBodyLegacy {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Check that promo is visible.
@@ -120,7 +122,8 @@ using chrome_test_util::SecondarySignInButton;
 // Tests the promo view body message for signin with
 // kEnableBookmarksAccountStorage flag enabled.
 - (void)testPromoViewBody {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Check that promo is visible.
@@ -139,7 +142,8 @@ using chrome_test_util::SecondarySignInButton;
 // Tests that the promo view is only seen at root level and not in any of the
 // child nodes.
 - (void)testPromoViewIsSeenOnlyInRootNode {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -172,7 +176,8 @@ using chrome_test_util::SecondarySignInButton;
 
 // Tests that tapping No thanks on the promo make it disappear.
 - (void)testPromoNoThanksMakeItDisappear {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -230,7 +235,8 @@ using chrome_test_util::SecondarySignInButton;
 // on device makes the confirmaiton sheet appear, and the promo still appears
 // after dismissing the sheet.
 - (void)testSignInPromoWithIdentitiesUsingPrimaryButton {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Set up a fake identity.
@@ -263,7 +269,8 @@ using chrome_test_util::SecondarySignInButton;
 // identities on device makes the sign-in sheet appear, and the promo still
 // appears after dismissing the sheet.
 - (void)testSignInPromoWithIdentitiesUsingSecondaryButton {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -300,7 +307,8 @@ using chrome_test_util::SecondarySignInButton;
 // account. The snackbar contains an 'Undo' button that signs-out the user
 // when tapped.
 - (void)testSnackbarAfterSignInPromoWithAccount {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -336,7 +344,8 @@ using chrome_test_util::SecondarySignInButton;
 // added through the SSO Auth flow. The snackbar contains an 'Undo' button
 // that signs-out the user when tapped.
 - (void)testSnackbarAfterSignInPromoWithoutAccount {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];

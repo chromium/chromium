@@ -253,6 +253,7 @@ source_set("eg_test_support+eg2") {
     ":constants",
     "//base",
     "//base/test:test_support",
+    "//components/bookmarks/common",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",

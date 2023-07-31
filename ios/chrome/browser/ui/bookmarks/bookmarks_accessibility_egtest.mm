@@ -7,6 +7,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
@@ -51,7 +52,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that all elements on the bookmarks landing page are accessible.
 - (void)testAccessibilityOnBookmarksLandingPage {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
@@ -59,7 +61,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that all elements on mobile bookmarks are accessible.
 - (void)testAccessibilityOnMobileBookmarks {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -68,7 +71,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that all elements on the bookmarks folder Edit page are accessible.
 - (void)testAccessibilityOnBookmarksFolderEditPage {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -92,7 +96,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that all elements on the bookmarks Edit page are accessible.
 - (void)testAccessibilityOnBookmarksEditPage {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -124,7 +129,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that all elements on the bookmarks Move page are accessible.
 - (void)testAccessibilityOnBookmarksMovePage {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -155,7 +161,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that all elements on the bookmarks Move to New Folder page are
 // accessible.
 - (void)testAccessibilityOnBookmarksMoveToNewFolderPage {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -177,7 +184,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that all elements on bookmarks Delete and Undo are accessible.
 - (void)testAccessibilityOnBookmarksDeleteUndo {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -206,7 +214,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that all elements on the bookmarks Select page are accessible.
 - (void)testAccessibilityOnBookmarksSelect {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
