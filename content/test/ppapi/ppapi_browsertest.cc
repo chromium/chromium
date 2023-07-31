@@ -67,7 +67,13 @@ TEST_PPAPI_OUT_OF_PROCESS(Graphics2D)
 TEST_PPAPI_IN_PROCESS(ImageData)
 TEST_PPAPI_OUT_OF_PROCESS(ImageData)
 
-TEST_PPAPI_OUT_OF_PROCESS(InputEvent)
+// Fails on macOS; https://crbug.com/14531024
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InputEvent DISABLED_InputEvent
+#else
+#define MAYBE_InputEvent InputEvent
+#endif
+TEST_PPAPI_OUT_OF_PROCESS(MAYBE_InputEvent)
 
 // "Instance" tests are really InstancePrivate tests. InstancePrivate is not
 // supported in NaCl, so these tests are only run trusted.
