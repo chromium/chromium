@@ -279,6 +279,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
   data_pipe_for_race_network_request_.producer.reset();
   forwarding_client_->OnComplete(completion_status_.value());
   data_pipe_for_fetch_handler_.producer.reset();
+  // Cancel watching data pipes here not to call watcher callbacks after
+  // complete the response.
+  data_pipe_for_race_network_request_.watcher.Cancel();
+  data_pipe_for_fetch_handler_.watcher.Cancel();
+  body_consumer_watcher_.Cancel();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
@@ -288,9 +293,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete");
   TransitionState(State::kDataTransferFinished);
   MaybeCompleteResponse();
-  body_consumer_watcher_.Cancel();
-  data_pipe_for_race_network_request_.watcher.Cancel();
-  data_pipe_for_fetch_handler_.watcher.Cancel();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
