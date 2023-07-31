@@ -298,13 +298,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
         [self changePinnedStateForWebState:selectionOnlyChange
                                                .selected_web_state()
                                    atIndex:status.index];
-        return;
+        break;
       }
-
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated in didChangeActiveWebState:.
+      // The activation is handled after this switch statement.
       break;
     }
     case WebStateListChange::Type::kDetach:
@@ -332,7 +328,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     }
     case WebStateListChange::Type::kReplace: {
       if ([self isPinnedWebState:status.index]) {
-        return;
+        break;
       }
 
       const WebStateListChangeReplace& replaceChange =
@@ -356,7 +352,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
                                  WebStateSearchCriteria{
                                      .pinned_state = PinnedState::kNonPinned,
                                  })];
-        return;
+        break;
       }
 
       const WebStateListChangeInsert& insertChange =
@@ -377,26 +373,18 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       break;
     }
   }
-}
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress()) {
-    return;
+  if (status.active_web_state_change()) {
+    // If the selected index changes as a result of the last webstate being
+    // detached, the active index will be kInvalidIndex.
+    if (status.active_index == WebStateList::kInvalidIndex) {
+      [self.consumer selectItemWithID:nil];
+      return;
+    }
+
+    [self.consumer
+        selectItemWithID:status.new_active_web_state->GetStableIdentifier()];
   }
-
-  // If the selected index changes as a result of the last webstate being
-  // detached, atIndex will be kInvalidIndex.
-  if (atIndex == WebStateList::kInvalidIndex) {
-    [self.consumer selectItemWithID:nil];
-    return;
-  }
-
-  [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
