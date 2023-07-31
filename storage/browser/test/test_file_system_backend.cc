@@ -68,15 +68,6 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
   ~QuotaUtil() override = default;
 
   // FileSystemQuotaUtil overrides.
-  base::File::Error DeleteStorageKeyDataOnFileTaskRunner(
-      FileSystemContext* context,
-      QuotaManagerProxy* proxy,
-      const blink::StorageKey& storage_key,
-      FileSystemType type) override {
-    NOTREACHED();
-    return base::File::FILE_OK;
-  }
-
   void DeleteCachedDefaultBucket(
       const blink::StorageKey& storage_key) override {
     NOTREACHED();

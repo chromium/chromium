@@ -143,7 +143,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // filesystem directory. `known_type_strings` are known type string names that
   // this file system should care about. This info is used to determine whether
   // we could delete the entire origin directory or not in
-  // DeleteDirectoryForStorageKeyAndType. If no directory for any known type
+  // DeleteDirectoryForBucketAndType. If no directory for any known type
   // exists the origin directory may get deleted when one StorageKey/type pair
   // is deleted. NOTE: type strings are not mapped 1-to-1 with FileSystemType,
   // and as a result, directories should only be directly compared using type
@@ -234,13 +234,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
       const absl::optional<FileSystemType>& type,
       bool create);
 
-  // Deletes the topmost directory specific to this StorageKey and type. This
-  // will delete its directory database. Deletes the topmost StorageKey
-  // directory if `type` is absl::nullopt.
-  bool DeleteDirectoryForStorageKeyAndType(
-      const blink::StorageKey& storage_key,
-      const absl::optional<FileSystemType>& type);
-
   // Deletes the topmost directory specific to this BucketLocator and type. This
   // will delete its directory database. Deletes the topmost bucket
   // directory if `type` is absl::nullopt.
@@ -252,12 +245,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // the FILE thread.  The caller is responsible for deleting the returned
   // object.
   std::unique_ptr<AbstractStorageKeyEnumerator> CreateStorageKeyEnumerator();
-
-  // Deletes a directory database from the database list and destroys the
-  // database on the disk corresponding to the provided StorageKey and type.
-  void DestroyDirectoryDatabaseForStorageKey(
-      const blink::StorageKey& storage_key,
-      const absl::optional<FileSystemType>& type);
 
   // Deletes a directory database from the database list and destroys the
   // database on the disk corresponding to the provided bucket locator and type.
@@ -350,13 +337,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // filesystem.
   base::FilePath DataPathToLocalPath(const FileSystemURL& url,
                                      const base::FilePath& data_file_path);
-
-  // Deletes a directory database from the database list and destroys the
-  // database on the disk.
-  void DestroyDirectoryDatabaseHelper(
-      const absl::optional<BucketLocator>& bucket_locator,
-      const blink::StorageKey& storage_key,
-      const absl::optional<FileSystemType>& type);
 
   // This returns nullptr if `create` flag is false and a filesystem does not
   // exist for the given `url`.

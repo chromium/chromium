@@ -316,32 +316,6 @@ void SandboxFileSystemBackendDelegate::DeleteCachedDefaultBucket(
 }
 
 base::File::Error
-SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
-    FileSystemContext* file_system_context,
-    QuotaManagerProxy* proxy,
-    const blink::StorageKey& storage_key,
-    FileSystemType type) {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  int64_t usage = GetStorageKeyUsageOnFileTaskRunner(file_system_context,
-                                                     storage_key, type);
-  usage_cache()->CloseCacheFiles();
-  bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
-      storage_key, type);
-  auto bucket = BucketLocator::ForDefaultBucket(storage_key);
-  bucket.type = FileSystemTypeToQuotaStorageType(type);
-
-  if (result && proxy && usage) {
-    proxy->NotifyBucketModified(
-        QuotaClientType::kFileSystem, bucket, -usage, base::Time::Now(),
-        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
-  }
-
-  if (result)
-    return base::File::FILE_OK;
-  return base::File::FILE_ERROR_FAILED;
-}
-
-base::File::Error
 SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
     FileSystemContext* file_system_context,
     QuotaManagerProxy* proxy,

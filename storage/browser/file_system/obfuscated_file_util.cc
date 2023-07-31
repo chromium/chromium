@@ -961,59 +961,6 @@ ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
   return path;
 }
 
-bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
-    const blink::StorageKey& storage_key,
-    const absl::optional<FileSystemType>& type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DestroyDirectoryDatabaseForStorageKey(storage_key, type);
-
-  base::FileErrorOr<base::FilePath> origin_path =
-      GetDirectoryForStorageKey(storage_key, false);
-  if (!origin_path.has_value() || origin_path->empty())
-    return true;
-
-  if (type) {
-    // Delete the filesystem type directory.
-    const base::FileErrorOr<base::FilePath> origin_type_path =
-        GetDirectoryForStorageKeyAndType(storage_key, type.value(), false);
-    if (!origin_type_path.has_value() &&
-        origin_type_path.error() == base::File::FILE_ERROR_FAILED) {
-      return false;
-    }
-    if (origin_type_path.has_value() && !origin_type_path->empty() &&
-        !delegate_->DeleteFileOrDirectory(origin_type_path.value(),
-                                          true /* recursive */)) {
-      return false;
-    }
-
-    // At this point we are sure we had successfully deleted the origin/type
-    // directory (i.e. we're ready to just return true).
-    // See if we have other directories in this origin directory.
-    const std::string type_string =
-        SandboxFileSystemBackendDelegate::GetTypeString(type.value());
-    for (const std::string& known_type : known_type_strings_) {
-      if (known_type == type_string)
-        continue;
-      if (delegate_->DirectoryExists(origin_path->AppendASCII(known_type))) {
-        // Other type's directory exists; just return true here.
-        return true;
-      }
-    }
-  }
-
-  // No other directories seem exist. If we have a first-party StorageKey,
-  // try deleting the entire origin directory.
-  if (storage_key.IsFirstPartyContext()) {
-    InitOriginDatabase(storage_key.origin(), false);
-    if (origin_database_) {
-      origin_database_->RemovePathForOrigin(
-          GetIdentifierFromOrigin(storage_key.origin()));
-    }
-  }
-  return delegate_->DeleteFileOrDirectory(origin_path.value(),
-                                          true /* recursive */);
-}
-
 bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
     const BucketLocator& bucket_locator,
     const absl::optional<FileSystemType>& type) {
@@ -1089,22 +1036,8 @@ ObfuscatedFileUtil::CreateStorageKeyEnumerator() {
       origin_database_.get(), file_util_delegate, file_system_directory_);
 }
 
-void ObfuscatedFileUtil::DestroyDirectoryDatabaseForStorageKey(
-    const blink::StorageKey& storage_key,
-    const absl::optional<FileSystemType>& type) {
-  DestroyDirectoryDatabaseHelper(absl::nullopt, storage_key, type);
-}
-
 void ObfuscatedFileUtil::DestroyDirectoryDatabaseForBucket(
     const BucketLocator& bucket_locator,
-    const absl::optional<FileSystemType>& type) {
-  DestroyDirectoryDatabaseHelper(bucket_locator, bucket_locator.storage_key,
-                                 type);
-}
-
-void ObfuscatedFileUtil::DestroyDirectoryDatabaseHelper(
-    const absl::optional<BucketLocator>& bucket_locator,
-    const blink::StorageKey& storage_key,
     const absl::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1115,24 +1048,11 @@ void ObfuscatedFileUtil::DestroyDirectoryDatabaseHelper(
   // `key.bucket()` is absl::nullopt for all non-kTemporary types.
   if (type && (FileSystemTypeToQuotaStorageType(type.value()) ==
                ::blink::mojom::StorageType::kTemporary)) {
-    if (bucket_locator.has_value()) {
-      key_prefix =
-          DatabaseKey(bucket_locator->storage_key, bucket_locator, type_string);
-    } else {
-      // If we are not provided a custom bucket value we must find the default
-      // bucket corresponding to the StorageKey.
-      QuotaErrorOr<BucketLocator> default_bucket =
-          GetOrCreateDefaultBucket(storage_key);
-      // If looking up the default bucket for a given StorageKey fails, things
-      // are pretty broken, and there isn't anything this method can do.
-      if (!default_bucket.has_value()) {
-        return;
-      }
-      key_prefix =
-          DatabaseKey(storage_key, default_bucket.value(), type_string);
-    }
+    key_prefix =
+        DatabaseKey(bucket_locator.storage_key, bucket_locator, type_string);
   } else {  // All other storage types.
-    key_prefix = DatabaseKey(storage_key, absl::nullopt, type_string);
+    key_prefix =
+        DatabaseKey(bucket_locator.storage_key, absl::nullopt, type_string);
   }
 
   // If `type` is empty, delete all filesystem types under `storage_key`.
