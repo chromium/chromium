@@ -32,6 +32,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
 #endif
 
 namespace {
@@ -192,6 +193,14 @@ void PersistedData::SetCohort(const std::string& id,
                               const std::string& cohort) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetString(id, kCohort, cohort);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, we record the Cohort in ClientState as well.
+  // (Some applications read it from there.)
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppCohortKey(base::SysUTF8ToWide(id)), L"",
+                 base::SysUTF8ToWide(cohort));
+#endif
 }
 
 std::string PersistedData::GetCohortName(const std::string& id) const {
@@ -203,6 +212,14 @@ void PersistedData::SetCohortName(const std::string& id,
                                   const std::string& cohort_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetString(id, kCohortName, cohort_name);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, we record the Cohort in ClientState as well.
+  // (Some applications read it from there.)
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppCohortKey(base::SysUTF8ToWide(id)), kRegValueCohortName,
+                 base::SysUTF8ToWide(cohort_name));
+#endif
 }
 
 std::string PersistedData::GetCohortHint(const std::string& id) const {
