@@ -50,10 +50,7 @@
     return;
   }
   self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, true);
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissConsentInterstitialWithCompletion:^{
-    [weakSelf.delegate showMap];
-  }];
+  [self.delegate showMap];
 }
 
 - (void)userDeclined {

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/web/annotations/annotations_util.h"
+#import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,6 +27,9 @@
 // The view controller to get user consent.
 @property(nonatomic, strong)
     MiniMapInterstitialViewController* consentViewController;
+
+// The controller that shows the mini map.
+@property(nonatomic, strong) id<MiniMapController> miniMapController;
 
 // Mediator to handle the consent logic.
 @property(nonatomic, strong) MiniMapMediator* mediator;
@@ -46,6 +50,8 @@
 
 @implementation MiniMapCoordinator {
   BOOL _stopCalled;
+
+  BOOL _showingMap;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -92,16 +98,51 @@
                                       completion:nil];
 }
 
-- (void)showMap {
-  // TODO(crbug.com/1351353): Show map instead of doing nothing.
-  [self workflowEnded];
-}
-
 - (void)dismissConsentInterstitialWithCompletion:(ProceduralBlock)completion {
   [self.consentViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:completion];
   self.consentViewController = nil;
+}
+
+- (void)showMap {
+  _showingMap = YES;
+  if (!self.consentViewController) {
+    [self actualShowMap];
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [self dismissConsentInterstitialWithCompletion:^{
+    [weakSelf actualShowMap];
+  }];
+}
+
+- (void)mapDismissed {
+  _showingMap = NO;
+  [self workFlowEnded];
+}
+
+- (void)actualShowMap {
+  __weak __typeof(self) weakSelf = self;
+  self.miniMapController =
+      ios::provider::CreateMiniMapController(self.text, ^(NSURL*) {
+        [weakSelf mapDismissed];
+      });
+  if (self.mode == MiniMapMode::kDirections) {
+    [self.miniMapController
+        presentDirectionsWithPresentingViewController:self.baseViewController];
+  } else {
+    [self.miniMapController
+        presentMapsWithPresentingViewController:self.baseViewController];
+  }
+}
+
+- (void)workFlowEnded {
+  if (!_stopCalled) {
+    id<MiniMapCommands> miniMapHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), MiniMapCommands);
+    [miniMapHandler hideMiniMap];
+  }
 }
 
 #pragma mark - MiniMapActionHandler
@@ -116,7 +157,9 @@
 }
 
 - (void)dismissed {
-  [self workflowEnded];
+  if (!_showingMap) {
+    [self workFlowEnded];
+  }
 }
 
 - (void)userPressedContentSettings {
