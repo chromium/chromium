@@ -287,6 +287,7 @@ public class SelectActionMenuHelper {
                             .setOrderInCategory(i)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             .setClickListener(listener)
+                            .setIntent(intent)
                             .build());
         }
         return textProcessingItems;
