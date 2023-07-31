@@ -10214,6 +10214,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
     blink::AdDescriptor ad_descriptor;
     absl::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
     base::TimeDelta duration;
+    bool is_invalid_size_test = false;
     auction_worklet::mojom::RejectReason reject_reason =
         auction_worklet::mojom::RejectReason::kNotAvailable;
   } kTestCases[] = {
@@ -10301,21 +10302,20 @@ TEST_F(AuctionRunnerTest, BadBid) {
       },
 
       // HTTPS render URL with an invalid size value.
-      {
-          "Bid render ad must have a valid URL and size (if specified)",
-          1,
-          /*bid_currency=*/absl::nullopt,
-          blink::AdDescriptor(
-              GURL("https://ad1.com"),
-              blink::AdSize(0, blink::AdSize::LengthUnit::kPixels, 100,
-                            blink::AdSize::LengthUnit::kPixels)),
-          absl::nullopt,
-          base::TimeDelta(),
-      },
+      {"Validation failed for auction_worklet.mojom.GenerateBidClient.1  "
+       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]",
+       1,
+       /*bid_currency=*/absl::nullopt,
+       blink::AdDescriptor(
+           GURL("https://ad1.com"),
+           blink::AdSize(0, blink::AdSize::LengthUnit::kPixels, 100,
+                         blink::AdSize::LengthUnit::kPixels)),
+       absl::nullopt, base::TimeDelta(), true},
 
       // HTTPS render URL with an invalid size unit.
       {
-          "Bid render ad must have a valid URL and size (if specified)",
+          "Validation failed for auction_worklet.mojom.GenerateBidClient.1  "
+          "[VALIDATION_ERROR_DESERIALIZATION_FAILED]",
           1,
           /*bid_currency=*/absl::nullopt,
           blink::AdDescriptor(
@@ -10324,6 +10324,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
                             blink::AdSize::LengthUnit::kPixels)),
           absl::nullopt,
           base::TimeDelta(),
+          true,
       },
 
       // Invalid component URL.
@@ -10359,29 +10360,27 @@ TEST_F(AuctionRunnerTest, BadBid) {
       },
 
       // HTTPS component URL with an invalid size value.
-      {
-          "Bid ad component must have a valid URL and size (if specified)",
-          1,
-          /*bid_currency=*/absl::nullopt,
-          blink::AdDescriptor(GURL("https://ad1.com")),
-          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
-              GURL("https://ad1.com-component1.com"),
-              blink::AdSize(0, blink::AdSize::LengthUnit::kPixels, 100,
-                            blink::AdSize::LengthUnit::kPixels))},
-          base::TimeDelta(),
-      },
+      {"Validation failed for auction_worklet.mojom.GenerateBidClient.1  "
+       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]",
+       1,
+       /*bid_currency=*/absl::nullopt,
+       blink::AdDescriptor(GURL("https://ad1.com")),
+       std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+           GURL("https://ad1.com-component1.com"),
+           blink::AdSize(0, blink::AdSize::LengthUnit::kPixels, 100,
+                         blink::AdSize::LengthUnit::kPixels))},
+       base::TimeDelta(), true},
       // HTTPS component URL with an invalid size unit.
-      {
-          "Bid ad component must have a valid URL and size (if specified)",
-          1,
-          /*bid_currency=*/absl::nullopt,
-          blink::AdDescriptor(GURL("https://ad1.com")),
-          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
-              GURL("https://ad1.com-component1.com"),
-              blink::AdSize(100, blink::AdSize::LengthUnit::kInvalid, 100,
-                            blink::AdSize::LengthUnit::kPixels))},
-          base::TimeDelta(),
-      },
+      {"Validation failed for auction_worklet.mojom.GenerateBidClient.1  "
+       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]",
+       1,
+       /*bid_currency=*/absl::nullopt,
+       blink::AdDescriptor(GURL("https://ad1.com")),
+       std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+           GURL("https://ad1.com-component1.com"),
+           blink::AdSize(100, blink::AdSize::LengthUnit::kInvalid, 100,
+                         blink::AdSize::LengthUnit::kPixels))},
+       base::TimeDelta(), true},
 
       // Negative time.
       {
@@ -10397,7 +10396,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
       {"Invalid bid reject_reason", 1,
        /*bid_currency=*/absl::nullopt,
        blink::AdDescriptor(GURL("https://ad2.com")), absl::nullopt,
-       base::Milliseconds(10),
+       base::Milliseconds(10), false,
        auction_worklet::mojom::RejectReason::kCategoryExclusions},
   };
 
@@ -10433,7 +10432,16 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
 
     // No bidder won.
-    EXPECT_THAT(result_.errors, testing::ElementsAre());
+    // Invalid ad sizes fail in Mojom deserialization.
+    if (test_case.is_invalid_size_test) {
+      EXPECT_THAT(
+          result_.errors,
+          testing::ElementsAre(
+              "https://adplatform.com/offers.js crashed while trying to run "
+              "generateBid()."));
+    } else {
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
+    }
     EXPECT_FALSE(result_.winning_group_id);
     EXPECT_FALSE(result_.ad_descriptor);
     EXPECT_TRUE(result_.ad_component_descriptors.empty());
