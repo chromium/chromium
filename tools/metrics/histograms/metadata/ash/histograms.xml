@@ -5507,7 +5507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.QuickSettings.Button.Activated" enum="QsButtonCatalogName"
-    expires_after="2024-01-14">
+    expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5516,7 +5516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.QuickSettings.FeaturePod.{FeaturePodBehavior}"
-    enum="QsFeatureCatalogName" expires_after="2023-09-14">
+    enum="QsFeatureCatalogName" expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5534,7 +5534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.QuickSettings.PageCountOnClose" units="pages"
-    expires_after="2023-10-24">
+    expires_after="2024-07-30">
   <owner>etuck@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5547,7 +5547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.QuickSettings.Slider.{SliderBehavior}"
-    enum="QsSliderCatalogName" expires_after="2023-09-21">
+    enum="QsSliderCatalogName" expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5564,7 +5564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.QuickSettings.UserJourneyTime" units="ms"
-    expires_after="2023-12-10">
+    expires_after="2024-07-30">
   <owner>kradtke@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5575,7 +5575,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.QuickSettings.{DeviceMode}.FeaturePodCountOnOpen"
-    units="count" expires_after="2023-09-14">
+    units="count" expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -6352,7 +6352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.StatusAreaShowBubble.PresentationTime" units="ms"
-    expires_after="2023-12-10">
+    expires_after="2024-07-30">
   <owner>leandre@chromium.org</owner>
   <owner>amehfooz@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -6573,7 +6573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.UnifiedSystemView.Button.Activated"
-    enum="QsButtonCatalogName" expires_after="2024-01-21">
+    enum="QsButtonCatalogName" expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -6582,7 +6582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.UnifiedSystemView.FeaturePod.{FeaturePodBehavior}"
-    enum="QsFeatureCatalogName" expires_after="2023-09-14">
+    enum="QsFeatureCatalogName" expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -6600,7 +6600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.UnifiedSystemView.Slider.{SliderBehavior}"
-    enum="QsSliderCatalogName" expires_after="2023-09-21">
+    enum="QsSliderCatalogName" expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -6617,7 +6617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.UnifiedSystemView.{DeviceMode}.FeaturePodCountOnOpen"
-    units="count" expires_after="2023-09-14">
+    units="count" expires_after="2024-07-30">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
