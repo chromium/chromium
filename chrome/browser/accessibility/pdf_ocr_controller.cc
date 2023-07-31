@@ -109,6 +109,37 @@ void RecordAcceptLanguages(const std::string& accept_languages) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void SetStateInAsh(bool always_active) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+    VLOG(0) << "Cannot sync the preference with Ash.";
+    return;
+  }
+
+  lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+      crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
+      base::Value(always_active), base::OnceClosure());
+}
+
+void GetStateFromAsh(crosapi::mojom::Prefs::GetPrefCallback callback) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+    VLOG(0) << "Cannot get the preference from Ash.";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  lacros_service->GetRemote<crosapi::mojom::Prefs>()->GetPref(
+      crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
+      std::move(callback));
+}
+
+#endif
+
 }  // namespace
 
 namespace screen_ai {
@@ -123,14 +154,47 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
       base::BindRepeating(&PdfOcrController::OnPdfOcrAlwaysActiveChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `kAccessibilityPdfOcrAlwaysActive' pref can be changed in Ash while current
+  // profile was not active. To make Ash the source of truth, we need to fetch
+  // and apply it.
+  GetStateFromAsh(
+      base::BindOnce(&PdfOcrController::OnPdfOcrAlwaysActiveReceivedFromAsh,
+                     weak_ptr_factory_.GetWeakPtr()));
+#else
   // Trigger if the preference is already set.
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kAccessibilityPdfOcrAlwaysActive)) {
     OnPdfOcrAlwaysActiveChanged();
   }
+#endif
 }
 
 PdfOcrController::~PdfOcrController() = default;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void PdfOcrController::OnPdfOcrAlwaysActiveReceivedFromAsh(
+    absl::optional<base::Value> value) {
+  bool always_active_lacros =
+      profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
+
+  // If the preference value is received from Ash and it is different from that
+  // of Lacros, it is updated in Lacros. The pref observer will trigger
+  // `OnPdfOcrAlwaysActiveChanged` after the change.
+  if (value && value->is_bool() && value->GetBool() != always_active_lacros) {
+    profile_->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
+                                     value->GetBool());
+    return;
+  }
+
+  // If the pref value is not changed and it is `true`,
+  // `OnPdfOcrAlwaysActiveChanged` should be called to propagate the value to
+  // the renderers. This is done for non-Lacros platforms in the constructor.
+  if (always_active_lacros) {
+    OnPdfOcrAlwaysActiveChanged();
+  }
+}
+#endif
 
 // static
 std::vector<content::WebContents*>
@@ -174,18 +238,9 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // This preference should be kept in sync with Ash.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
-    VLOG(0) << "Cannot sync the preference with Ash.";
-  } else {
-    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
-        crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
-        profile_->GetPrefs()
-            ->GetValue(prefs::kAccessibilityPdfOcrAlwaysActive)
-            .Clone(),
-        base::OnceClosure());
-  }
+  SetStateInAsh(profile_->GetPrefs()
+                    ->GetValue(prefs::kAccessibilityPdfOcrAlwaysActive)
+                    .GetBool());
 #endif
 
   if (is_always_active) {
