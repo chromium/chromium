@@ -66,6 +66,7 @@ using signin_metrics::PromoAction;
       RecordAction(UserMetricsAction("Signin_Undo_Signin"));
       break;
     }
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted: {
       RecordAction(UserMetricsAction("Signin_Interrupt_Signin"));
       break;

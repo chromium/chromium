@@ -1959,9 +1959,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                identity:identity
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:promoAction
-               callback:^(BOOL success) {
+               callback:^(SigninCoordinatorResult result) {
+                 BOOL success = result == SigninCoordinatorResultSuccess;
                  if (completion)
-                   completion(success);
+                   completion(result);
                  [weakSelf didFinishSignin:success];
                }];
   [self.applicationCommandsHandler showSignin:command baseViewController:self];

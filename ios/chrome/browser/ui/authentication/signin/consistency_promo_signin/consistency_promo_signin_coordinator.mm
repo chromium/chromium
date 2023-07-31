@@ -262,6 +262,7 @@
       base::RecordAction(
           base::UserMetricsAction("Signin_BottomSheet_ClosedBySignIn"));
       break;
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
       base::RecordAction(
           base::UserMetricsAction("Signin_BottomSheet_ClosedByInterrupt"));

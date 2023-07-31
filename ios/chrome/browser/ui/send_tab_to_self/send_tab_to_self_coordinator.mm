@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
@@ -340,9 +341,11 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
           send_tab_to_self::SendingEvent::kShowSigninPromo);
 
       __weak __typeof(self) weakSelf = self;
-      ShowSigninCommandCompletionCallback callback = ^(BOOL succeeded) {
-        [weakSelf onSigninComplete:succeeded];
-      };
+      ShowSigninCommandCompletionCallback callback =
+          ^(SigninCoordinatorResult result) {
+            BOOL succeeded = result == SigninCoordinatorResultSuccess;
+            [weakSelf onSigninComplete:succeeded];
+          };
       ShowSigninCommand* command = [[ShowSigninCommand alloc]
           initWithOperation:AuthenticationOperationSigninOnly
                    identity:nil

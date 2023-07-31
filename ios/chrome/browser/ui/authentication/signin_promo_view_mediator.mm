@@ -907,11 +907,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // To make sure -[<SigninPromoViewConsumer> signinDidFinish], we have to save
   // in a variable and not get it from weakSelf (that might not exist anymore).
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
-  ShowSigninCommandCompletionCallback completion = ^(BOOL succeeded) {
-    [weakSelf signinCallback];
-    if ([weakConsumer respondsToSelector:@selector(signinDidFinish)])
-      [weakConsumer signinDidFinish];
-  };
+  ShowSigninCommandCompletionCallback completion =
+      ^(SigninCoordinatorResult result) {
+        [weakSelf signinCallback];
+        if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
+          [weakConsumer signinDidFinish];
+        }
+      };
   if ([self.consumer respondsToSelector:@selector
                      (signinPromoViewMediator:shouldOpenSigninWithIdentity
                                                 :promoAction:completion:)]) {
@@ -1021,6 +1023,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
       self.identity = info.identity;
       [self startSignInOnlyFlow];
       break;
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
       _uiBlocker.reset();

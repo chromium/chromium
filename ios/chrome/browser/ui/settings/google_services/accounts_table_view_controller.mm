@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
@@ -644,7 +645,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                identity:nil
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(BOOL success) {
+               callback:^(SigninCoordinatorResult result) {
+                 BOOL success = result == SigninCoordinatorResultSuccess;
                  [weakSelf handleDidAddAccount:success];
                }];
   [self.applicationCommandsHandler showSignin:command baseViewController:self];

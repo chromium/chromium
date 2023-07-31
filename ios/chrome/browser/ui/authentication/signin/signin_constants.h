@@ -16,6 +16,9 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in has been done, the user has been explicitly accepted or refused
   // sync.
   SigninCoordinatorResultSuccess,
+  // Sign-in did not complete because it is disabled. This can happen if
+  // enterprise policies are updated after sign-in is started.
+  SigninCoordinatorResultDisabled,
 };
 
 // User's signed-in state as defined by AuthenticationService.

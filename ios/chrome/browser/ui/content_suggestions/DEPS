@@ -1,5 +1,6 @@
 include_rules = [
   "+components/signin/internal/identity_manager/account_capabilities_constants.h",
+  "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
   "+ios/chrome/browser/ui/credential_provider_promo",
   "+ios/chrome/browser/ui/first_run/first_run_util.h",
   "+ios/chrome/browser/ui/ntp",
