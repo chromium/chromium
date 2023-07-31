@@ -37,15 +37,18 @@
     <option title="POLICY_SOURCE_CLOUD" id="sourceCloud">
       $i18n{sourceCloud}
     </option>
+    <if expr="is_chromeos">
     <option title="POLICY_SOURCE_ACTIVE_DIRECTORY" id="sourceActiveDirectory">
       $i18n{sourceActiveDirectory}
     </option>
+    </if>
     <option title="POLICY_SOURCE_PLATFORM" id="sourcePlatform">
       $i18n{sourcePlatform}
     </option>
     <option title="POLICY_SOURCE_MERGED" id="sourceMerged">
       $i18n{sourceMerged}
     </option>
+    <if expr="is_chromeos">
     <option title="POLICY_SOURCE_CLOUD_FROM_ASH" id="sourceCloudFromAsh">
       $i18n{sourceCloudFromAsh}
     </option>
@@ -54,6 +57,7 @@
           id="sourceRestrictedManagedGuestSessionOverride">
       $i18n{sourceRestrictedManagedGuestSessionOverride}
     </option>
+    </if>
   </select>
 </div>
 <div role="cell">

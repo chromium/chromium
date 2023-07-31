@@ -134,25 +134,28 @@ export class PolicyTestRowElement extends CustomElement {
       {id: 'scopeUser', value: PolicyScope.SCOPE_USER_VAL},
       {id: 'scopeDevice', value: PolicyScope.SCOPE_DEVICE_VAL},
       {id: 'levelRecommended', value: PolicyLevel.LEVEL_RECOMMENDED_VAL},
-      {id: 'levelMandatory', value: PolicyLevel.LEVEL_MANDATORY_VAL},
-      {
+      {id: 'levelMandatory', value: PolicyLevel.LEVEL_MANDATORY_VAL}, {
         id: 'sourceEnterpriseDefault',
         value: PolicySource.SOURCE_ENTERPRISE_DEFAULT,
       },
       {id: 'sourceCommandLine', value: PolicySource.SOURCE_COMMAND_LINE_VAL},
       {id: 'sourceCloud', value: PolicySource.SOURCE_CLOUD_VAL},
+      // <if expr="is_chromeos">
       {
         id: 'sourceActiveDirectory',
         value: PolicySource.SOURCE_ACTIVE_DIRECTORY_VAL,
       },
+      // </if>
       {id: 'sourcePlatform', value: PolicySource.SOURCE_PLATFORM_VAL},
       {id: 'sourceMerged', value: PolicySource.SOURCE_MERGED_VAL},
+      // <if expr="is_chromeos">
       {id: 'sourceCloudFromAsh', value: PolicySource.SOURCE_CLOUD_FROM_ASH_VAL},
       {
         id: 'sourceRestrictedManagedGuestSessionOverride',
         value:
             PolicySource.SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL,
       },
+      // </if>
     ];
 
     for (const pair of idToValue) {
