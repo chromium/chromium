@@ -1369,17 +1369,17 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL" desc="The label text shown under do not disturb button in system tray bubble. [CHAR_LIMIT=14]">
         Notifications
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB" desc="The label text shown in the Do not disturb feature tile in quick settings bubble. [CHAR_LIMIT=14]">
-        Do not disturb
+      <message name="IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB" desc="The label text shown in the Do Not Disturb feature tile in quick settings bubble. [CHAR_LIMIT=14]">
+        Do Not Disturb
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP" desc="The tooltip text of the button that toggles Do-not-disturb state for notifications">
-        Toggle Do not disturb. <ph name="STATE_TEXT">$1<ex>Do not disturb is on.</ex></ph>
+        Toggle Do Not Disturb. <ph name="STATE_TEXT">$1<ex>Do Not Disturb is on.</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_STATE" desc="The tooltip text indicating that Do-not-disturb mode is on.">
-        Do not disturb is on.
+        Do Not Disturb is on.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_STATE" desc="The tooltip text indicating that Do-not-disturb mode is off.">
-        Do not disturb is off.
+        Do Not Disturb is off.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_ON_TOOLTIP" desc="The tooltip text of the button that shows notification settings. Used when all notifications are enabled.">
         Show notification settings. Notifications are on
@@ -6756,14 +6756,14 @@ New install
         Add new task
       </message>
 
-      <!-- Do not disturb notification -->
-      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do not disturb' feature is enabled.">
-        Do not disturb is on
+      <!-- Do Not Disturb notification -->
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
+        Do Not Disturb is on
       </message>
-      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION" desc="Text description used for the notification that shows up when the 'Do not disturb' feature is enabled.">
-        Notifications are muted when Do not disturb is on
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION" desc="Text description used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
+        Notifications are muted when Do Not Disturb is on
       </message>
-      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TURN_OFF" desc="Label for a button on the 'Do not disturb' notification that turns off 'Do not disturb' mode.">
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TURN_OFF" desc="Label for a button on the 'Do Not Disturb' notification that turns off 'Do Not Disturb' mode.">
         Turn off
       </message>
 
