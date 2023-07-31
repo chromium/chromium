@@ -133,6 +133,8 @@ enum class TransportAvailabilityParam {
   kIsConditionalUI,
   kAttachmentAny,
   kAttachmentCrossPlatform,
+  kBleDisabled,
+  kBleAccessDenied,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -170,6 +172,10 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kAttachmentAny";
     case TransportAvailabilityParam::kAttachmentCrossPlatform:
       return "kAttachmentCrossPlatform";
+    case TransportAvailabilityParam::kBleDisabled:
+      return "kBleDisabled";
+    case TransportAvailabilityParam::kBleAccessDenied:
+      return "kBleAccessDenied";
   }
 }
 
@@ -249,6 +255,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto c_ui = TransportAvailabilityParam::kIsConditionalUI;
   const auto att_any = TransportAvailabilityParam::kAttachmentAny;
   const auto att_xplat = TransportAvailabilityParam::kAttachmentCrossPlatform;
+  const auto ble_off = TransportAvailabilityParam::kBleDisabled;
+  const auto ble_denied = TransportAvailabilityParam::kBleAccessDenied;
   using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
@@ -577,7 +585,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_phone_cred, two_cred},
        {psync("a")},
-       {c(other), c(other), c(phone), add, t(usb)},
+       {c(other), c(other), c(phone), add},
        mss},
       // Internal credentials + qr code.
       {L,
@@ -585,7 +593,19 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {two_cred},
        {psync("a")},
-       {c(other), c(other), add, t(usb)},
+       {c(other), c(other), add},
+       mss},
+      // qr code with ble disabled shows usb option.
+      {L, ga, {usb, cable}, {ble_off}, {}, {add, t(usb)}, mss},
+      // qr code with ble access denied shows usb option.
+      {L, ga, {usb, cable}, {ble_denied}, {}, {add, t(usb)}, mss},
+      // Internal credentials, no qr code.
+      {L,
+       ga,
+       {usb, internal},
+       {two_cred},
+       {psync("a")},
+       {c(other), c(other), t(usb)},
        mss},
       // Phone credentials only.
       {L,
@@ -593,7 +613,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {two_phone_cred},
        {psync("a")},
-       {c(phone), c(phone), add, t(usb)},
+       {c(phone), c(phone), add},
        mss},
       // Single internal credential.
       {L,
@@ -601,7 +621,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_cred},
        {psync("a")},
-       {c(other), add, t(usb)},
+       {c(other), add},
        hero},
       // Single phone credential.
       {L,
@@ -609,7 +629,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_phone_cred},
        {psync("a")},
-       {c(phone), add, t(usb)},
+       {c(phone), add},
        hero},
   };
 
@@ -687,7 +707,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 #endif
 
     TransportAvailabilityInfo transports_info;
-    transports_info.is_ble_powered = true;
+    transports_info.is_ble_powered =
+        !base::Contains(test.params, TransportAvailabilityParam::kBleDisabled);
+    transports_info.ble_access_denied = base::Contains(
+        test.params, TransportAvailabilityParam::kBleAccessDenied);
     transports_info.request_type = test.request_type;
     transports_info.available_transports = test.transports;
 

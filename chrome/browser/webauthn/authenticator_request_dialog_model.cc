@@ -1313,10 +1313,13 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
                      AuthenticatorTransport::kInternal)) {
     transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
   }
-  transports_to_list_if_active.push_back(
-      AuthenticatorTransport::kUsbHumanInterfaceDevice);
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+    transports_to_list_if_active.push_back(
+        AuthenticatorTransport::kUsbHumanInterfaceDevice);
+  }
 
   const auto kCable = AuthenticatorTransport::kHybrid;
+  const bool windows_handles_hybrid = WebAuthnApiSupportsHybrid();
   bool include_add_phone_option = false;
 
   if (cable_ui_type_) {
@@ -1324,7 +1327,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
         if (base::Contains(transport_availability_.available_transports,
                            kCable)) {
-          include_add_phone_option = true;
+          include_add_phone_option = !windows_handles_hybrid;
         }
         break;
 
@@ -1359,7 +1362,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   }
 
   bool show_windows_button = true;
-  bool windows_handles_hybrid = WebAuthnApiSupportsHybrid();
   if (is_new_get_assertion_ui) {
     if (transport_availability_.request_is_internal_only) {
       show_windows_button =
@@ -1417,16 +1419,39 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     }
   }
 
-  if (include_add_phone_option && !windows_handles_hybrid) {
-    const std::u16string label = l10n_util::GetStringUTF16(
-        specific_phones_listed
-            ? IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_OR_TABLET_LABEL
-            : IDS_WEBAUTHN_PASSKEY_PHONE_OR_TABLET_LABEL);
+  if (include_add_phone_option) {
+    std::u16string label;
+    if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+      if (base::Contains(transport_availability_.available_transports,
+                         AuthenticatorTransport::kUsbHumanInterfaceDevice)) {
+        label = specific_phones_listed
+                    ? u"Use a different phone, tablet, or security key "
+                      u"(UNTRANSLATED)"
+                    : u"Use a phone, tablet, or security key (UNTRANSLATED)";
+      } else {
+        label = specific_phones_listed
+                    ? u"Use a different phone or tablet (UNTRANSLATED)"
+                    : u"Use a phone or tablet (UNTRANSLATED)";
+      }
+    } else {
+      label = l10n_util::GetStringUTF16(
+          specific_phones_listed
+              ? IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_OR_TABLET_LABEL
+              : IDS_WEBAUTHN_PASSKEY_PHONE_OR_TABLET_LABEL);
+    }
     mechanisms_.emplace_back(
         Mechanism::AddPhone(), label, label, kQrcodeGeneratorIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this)));
+  }
+  if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
+      (!include_add_phone_option || !transport_availability_.is_ble_powered ||
+       transport_availability_.ble_access_denied)) {
+    // If the new UI is enabled, only show USB as an option if the QR code is
+    // not available or if tapping it would trigger a prompt to enable BLE.
+    transports_to_list_if_active.push_back(
+        AuthenticatorTransport::kUsbHumanInterfaceDevice);
   }
 
   for (const auto transport : transports_to_list_if_active) {
@@ -1447,6 +1472,10 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
 absl::optional<size_t>
 AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
   if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+    // If there is a single mechanism, go to that.
+    if (mechanisms_.size() == 1) {
+      return 0;
+    }
     // The index of the last mechanism of type `Credential`.
     absl::optional<size_t> cred_index;
     size_t cred_count = 0;

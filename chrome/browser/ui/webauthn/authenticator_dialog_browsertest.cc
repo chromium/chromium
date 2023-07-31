@@ -21,6 +21,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
@@ -570,6 +571,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
         transport_availability = model_->transport_availability_for_testing();
     transport_availability.request_type =
         device::FidoRequestType::kGetAssertion;
+    transport_availability.ble_access_denied = false;
     transport_availability.available_transports = {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
@@ -630,6 +632,48 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       transport_availability.recognized_credentials = {
           std::move(phone_cred1),
       };
+    } else if (name == "get_assertion_qr_with_usb") {
+      model_->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      transport_availability.is_ble_powered = true;
+      transport_availability.available_transports = {
+          AuthenticatorTransport::kHybrid,
+          AuthenticatorTransport::kUsbHumanInterfaceDevice,
+      };
+    } else if (name == "get_assertion_qr_without_usb") {
+      model_->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      transport_availability.is_ble_powered = true;
+      transport_availability.available_transports = {
+          AuthenticatorTransport::kHybrid,
+      };
+    } else if (name == "make_credential_qr_with_usb") {
+      model_->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      transport_availability.request_type =
+          device::FidoRequestType::kMakeCredential;
+      transport_availability.is_ble_powered = true;
+      transport_availability.available_transports = {
+          AuthenticatorTransport::kHybrid,
+          AuthenticatorTransport::kUsbHumanInterfaceDevice,
+      };
+    } else if (name == "make_credential_qr_without_usb") {
+      model_->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      transport_availability.request_type =
+          device::FidoRequestType::kMakeCredential;
+      transport_availability.is_ble_powered = true;
+      transport_availability.available_transports = {
+          AuthenticatorTransport::kHybrid,
+      };
     }
     model_->StartFlow(std::move(transport_availability),
                       /*is_conditional_mediation=*/false);
@@ -663,5 +707,25 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_one_phone_cred) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_get_assertion_qr_with_usb) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_get_assertion_qr_without_usb) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_make_credential_qr_with_usb) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_make_credential_qr_without_usb) {
   ShowAndVerifyUi();
 }

@@ -538,10 +538,19 @@ class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model);
   ~AuthenticatorQRSheetModel() override;
 
+  // Returns true if a label indicating the user that a security key may be used
+  // should be shown.
+  bool ShowSecurityKeyLabel() const;
+
+  // Returns the label that indicates the user they can insert and activate a
+  // hardware security key.
+  std::u16string GetSecurityKeyLabel() const;
+
  private:
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+  std::u16string GetOtherMechanismButtonLabel() const override;
 };
 
 class AuthenticatorConnectingSheetModel : public AuthenticatorSheetModelBase {
