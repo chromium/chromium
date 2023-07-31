@@ -3875,10 +3875,10 @@ if (enable_java_templates) {
         if (_enable_errorprone) {
           # Rely on the header jar to provide all .class files so that it is
           # safe to omit generated files entirely for errorprone.
-          _filtered_java_files =
-              filter_exclude(_java_files, [ "$root_gen_dir*" ])
+          _filtered_source_files =
+              filter_exclude(_source_files, [ "$root_gen_dir*" ])
         }
-        if (_enable_errorprone && _filtered_java_files == []) {
+        if (_enable_errorprone && _filtered_source_files == []) {
           # Filtering out generated files resulted in no files left.
           group(target_name) {
             not_needed(invoker, "*")
@@ -3905,7 +3905,7 @@ if (enable_java_templates) {
             build_config = _build_config
 
             if (_enable_errorprone) {
-              source_files = _filtered_java_files
+              source_files = _filtered_source_files
             } else {
               source_files = _source_files
               srcjar_deps = _srcjar_deps
