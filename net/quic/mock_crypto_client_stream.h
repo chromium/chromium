@@ -93,6 +93,8 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
     return weak_factory_.GetWeakPtr();
   }
 
+  void setHandshakeConfirmedForce(bool state);
+
   static quic::CryptoHandshakeMessage GetDummyCHLOMessage();
 
  protected:
