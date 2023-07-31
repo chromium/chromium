@@ -17,8 +17,6 @@ namespace updater {
 ScopedIPCSupportWrapper::ScopedIPCSupportWrapper() {
   mojo::core::Configuration config;
   config.is_broker_process = true;
-  // TODO(crbug.com/1418740): The implementation should be compatible with ipcz.
-  config.disable_ipcz = true;
   mojo::core::Init(config);
   ipc_thread_.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));

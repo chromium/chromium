@@ -462,11 +462,20 @@ class IntegrationTest : public ::testing::Test {
   DISABLED_UninstallIfUnusedSelfAndOldReal
 #else
 #define MAYBE_InstallLowerVersion InstallLowerVersion
-#define MAYBE_OverinstallBroken OverinstallBroken
-#define MAYBE_OverinstallWorking OverinstallWorking
 #define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
 #define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
 #define MAYBE_OverinstallBrokenSameVersion OverinstallBrokenSameVersion
+
+// OverinstallWorking can be re-enabled on POSIX after the CIPD updater version
+// uses ipcz.
+#if BUILDFLAG(IS_POSIX)
+#define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
+#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
+#else
+#define MAYBE_OverinstallWorking OverinstallWorking
+#define MAYBE_OverinstallBroken OverinstallBroken
+#endif  // BUILDFLAG(IS_POSIX)
+
 #endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 
 // The project's position is that component builds are not portable outside of
