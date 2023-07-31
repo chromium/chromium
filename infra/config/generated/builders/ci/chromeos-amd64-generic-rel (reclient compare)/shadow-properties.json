@@ -1,0 +1,11 @@
+{
+  "$build/reclient": {
+    "ensure_verified": true,
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "rewrapper_env": {
+      "RBE_compare": "true"
+    },
+    "scandeps_server": true
+  }
+}
