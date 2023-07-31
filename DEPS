@@ -509,7 +509,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling beto-core
   # and whatever else without interference from each other.
-  'betocore_revision': '45756ea770c41085d5c71156b2c46da0b10117d6',
+  'betocore_revision': 'b902b346037ea3f4aadf8177021f6f917b16e648',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
