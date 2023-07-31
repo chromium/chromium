@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -96,11 +97,7 @@ void CookieSettings::SetCookieSettingForUserBypass(
 
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
-      // TODO(njeunje): Follow up on this after decision on which scope to use
-      // is finalized. For now we will make use of an origin-scope.
-      // Ref:
-      // https://docs.google.com/document/d/12_SA875i8fPPPBdno9xlwlRsK83s67THqSQwngOfLBg/edit?disco=AAAAmN3m40k
-      ContentSettingsPattern::FromURL(first_party_url),
+      content_settings::URLToSchemefulSitePattern(first_party_url),
       ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW,
       constraints);
 }
@@ -143,10 +140,15 @@ void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
 }
 
 void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
-  // Support resetting all patterns without domain wildcard or with
-  // |first_party_url| site.
-  // TODO(): Log metrics when there is pattern that has domain as wildcard.
-  auto pattern = ContentSettingsPattern::FromURL(first_party_url);
+  // Standard third party cookie settings are, with the introduction of User
+  // Bypass, site scoped. There also may be an origin scoped exception either
+  // created manually, or through the previous UI. Resetting should support
+  // both of these.
+
+  // TODO(crbug.com/1446230): Log metrics when there is pattern that has domain
+  // as wildcard.
+  auto pattern = content_settings::URLToSchemefulSitePattern(first_party_url);
+
   SettingInfo info;
   host_content_settings_map_->GetContentSetting(
       GURL(), first_party_url, ContentSettingsType::COOKIES, &info);

@@ -1082,7 +1082,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Creating an exception changes the status to kDisabledForSite. The exception
-  // has wildcard in the domain and cannot be reset, it is enforced by cookie
+  // is set at the TLD level and cannot be reset, it is enforced by cookie
   // setting.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,

@@ -19,6 +19,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
@@ -144,7 +145,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   // site-scoped exceptions.
   const bool host_or_site_scoped_exception =
       !info.secondary_pattern.HasDomainWildcard() ||
-      info.secondary_pattern == ContentSettingsPattern::FromURL(url);
+      info.secondary_pattern == URLToSchemefulSitePattern(url);
 
   // Rules from regular mode can't be temporarily overridden in incognito.
   const bool is_exception_from_regular_mode_in_incognito =

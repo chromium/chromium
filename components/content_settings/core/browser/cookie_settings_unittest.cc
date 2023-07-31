@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
@@ -88,6 +89,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
         kBlockedSite("http://ads.thirdparty.com"),
         kAllowedSite("http://good.allays.com"),
         kFirstPartySite("http://cool.things.com"),
+        kSameSiteSite("http://other.things.com"),
         kChromeURL("chrome://foo"),
         kExtensionURL("chrome-extension://deadbeef"),
         kDomain("example.com"),
@@ -251,6 +253,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   const GURL kBlockedSite;
   const GURL kAllowedSite;
   const GURL kFirstPartySite;
+  const GURL kSameSiteSite;
   const GURL kChromeURL;
   const GURL kExtensionURL;
   const std::string kDomain;
@@ -306,6 +309,7 @@ TEST_P(CookieSettingsTest, UserBypassPermanentExceptions) {
 
 TEST_P(CookieSettingsTest, UserBypassThirdPartyCookiesPermanentExceptions) {
   GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
+  GURL same_site_url = kSameSiteSite;
   SettingInfo info;
 
   EXPECT_TRUE(
@@ -330,11 +334,21 @@ TEST_P(CookieSettingsTest, UserBypassThirdPartyCookiesPermanentExceptions) {
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
   EXPECT_EQ(exception_info.secondary_pattern,
-            ContentSettingsPattern::FromURL(first_party_url));
+            content_settings::URLToSchemefulSitePattern(first_party_url));
+
+  EXPECT_EQ(
+      settings_map_->GetContentSetting(
+          GURL(), same_site_url, ContentSettingsType::COOKIES, &exception_info),
+      CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(exception_info.secondary_pattern,
+            content_settings::URLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
       cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(same_site_url, nullptr));
   // Verify that the exception was removed.
   EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
                                              ContentSettingsType::COOKIES,
@@ -816,6 +830,7 @@ TEST_P(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
 TEST_P(CookieSettingsTestUserBypass,
        UserBypassThirdPartyCookiesTemporaryExceptions) {
   GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
+  GURL same_site_url = kSameSiteSite;
   SettingInfo info;
 
   EXPECT_TRUE(
@@ -842,11 +857,21 @@ TEST_P(CookieSettingsTestUserBypass,
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
   EXPECT_EQ(exception_info.secondary_pattern,
-            ContentSettingsPattern::FromURL(first_party_url));
+            content_settings::URLToSchemefulSitePattern(first_party_url));
+
+  EXPECT_EQ(
+      settings_map_->GetContentSetting(
+          GURL(), same_site_url, ContentSettingsType::COOKIES, &exception_info),
+      CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(exception_info.secondary_pattern,
+            content_settings::URLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
       cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(same_site_url, nullptr));
   // Verify that the exception was removed.
   EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
                                              ContentSettingsType::COOKIES,
@@ -866,6 +891,14 @@ TEST_P(CookieSettingsTestUserBypass, ResetThirdPartyCookiesExceptions) {
 
   cookie_settings_->SetThirdPartyCookieSetting(first_party_url,
                                                CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  cookie_settings_->SetCookieSettingForUserBypass(first_party_url);
   EXPECT_TRUE(
       cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
 
