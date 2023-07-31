@@ -104,11 +104,8 @@ public class BookmarkFolderSelectActivity
             Context context, boolean createFolder, BookmarkId... bookmarks) {
         Intent intent = new Intent(context, BookmarkFolderSelectActivity.class);
         intent.putExtra(INTENT_IS_CREATING_FOLDER, createFolder);
-        ArrayList<String> bookmarkStrings = new ArrayList<>(bookmarks.length);
-        for (BookmarkId id : bookmarks) {
-            bookmarkStrings.add(id.toString());
-        }
-        intent.putStringArrayListExtra(INTENT_BOOKMARKS_TO_MOVE, bookmarkStrings);
+        intent.putStringArrayListExtra(
+                INTENT_BOOKMARKS_TO_MOVE, BookmarkUtils.bookmarkIdsToStringList(bookmarks));
         return intent;
     }
 
@@ -140,7 +137,6 @@ public class BookmarkFolderSelectActivity
         mModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         List<String> stringList =
                 IntentUtils.safeGetStringArrayListExtra(getIntent(), INTENT_BOOKMARKS_TO_MOVE);
-        mBookmarksToMove = new ArrayList<>(stringList.size());
 
         // If the intent does not contain a list of bookmarks to move, return early. See
         // crbug.com/728244. If the bookmark model is not loaded, return early to avoid crashing
@@ -153,18 +149,12 @@ public class BookmarkFolderSelectActivity
             return;
         }
 
-        mModel.addObserver(mBookmarkModelObserver);
-
-        for (String string : stringList) {
-            BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(string);
-            if (mModel.doesBookmarkExist(bookmarkId)) {
-                mBookmarksToMove.add(bookmarkId);
-            }
-        }
+        mBookmarksToMove = BookmarkUtils.stringListToBookmarkIds(mModel, stringList);
         if (mBookmarksToMove.isEmpty()) {
             finish();
             return;
         }
+        mModel.addObserver(mBookmarkModelObserver);
 
         mIsCreatingFolder = getIntent().getBooleanExtra(INTENT_IS_CREATING_FOLDER, false);
         if (mIsCreatingFolder) {

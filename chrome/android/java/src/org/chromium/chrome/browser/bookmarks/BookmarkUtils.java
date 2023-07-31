@@ -525,11 +525,38 @@ public class BookmarkUtils {
     }
 
     /** Starts an {@link BookmarkFolderPickerActivity} for the given {@link BookmarkId}. */
-    public static void startFolderPickerActivity(Context context, BookmarkId bookmarkId) {
+    public static void startFolderPickerActivity(Context context, BookmarkId... bookmarkIds) {
         // TODO(crbug.com/1465757): Record user action.
         Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);
-        intent.putExtra(BookmarkFolderPickerActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
+        intent.putStringArrayListExtra(BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
+                bookmarkIdsToStringList(bookmarkIds));
         context.startActivity(intent);
+    }
+
+    /** Given the {@link BookmarkId}s, return a list of those ids serialized to string. */
+    public static ArrayList<String> bookmarkIdsToStringList(BookmarkId... bookmarkIds) {
+        ArrayList<String> bookmarkStrings = new ArrayList<>(bookmarkIds.length);
+        for (BookmarkId id : bookmarkIds) {
+            bookmarkStrings.add(id.toString());
+        }
+
+        return bookmarkStrings;
+    }
+
+    /**
+     * Given the {@link BookmarkId}s serialized {@link String}s, return a list of the
+     * {@link BookmarkIds}.
+     */
+    public static List<BookmarkId> stringListToBookmarkIds(
+            BookmarkModel bookmarkModel, List<String> bookmarkIdStrings) {
+        List<BookmarkId> bookmarkIds = new ArrayList<>(bookmarkIdStrings.size());
+        for (String string : bookmarkIdStrings) {
+            BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(string);
+            if (bookmarkModel.doesBookmarkExist(bookmarkId)) {
+                bookmarkIds.add(bookmarkId);
+            }
+        }
+        return bookmarkIds;
     }
 
     /** Starts an {@link BookmarkFolderSelectActivity} for the given {@link BookmarkId}. */
@@ -792,7 +819,7 @@ public class BookmarkUtils {
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
                 && Objects.equals(newParent, bookmarkModel.getRootFolderId())) {
-            newParent = bookmarkModel.getDesktopFolderId();
+            newParent = bookmarkModel.getOtherFolderId();
         }
         List<BookmarkId> typeSwappedReadingListItems = new ArrayList<>();
         ReadingListUtils.typeSwapBookmarksIfNecessary(

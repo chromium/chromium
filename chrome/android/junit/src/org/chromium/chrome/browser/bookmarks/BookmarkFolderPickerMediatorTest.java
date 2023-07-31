@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -189,15 +191,15 @@ public class BookmarkFolderPickerMediatorTest {
                 .fetchFirstTwoImagesForFolder(any(), any());
 
         mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
-                mBookmarkImageFetcher, mUserBookmarkId, mFinishRunnable, mBookmarkUiPrefs, mModel,
-                mModelList, mAddNewFolderCoordinator);
+                mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mFinishRunnable,
+                mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator);
     }
 
     @Test
     public void testMoveFolder() {
         mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
-                mBookmarkImageFetcher, mUserFolderId, mFinishRunnable, mBookmarkUiPrefs, mModel,
-                mModelList, mAddNewFolderCoordinator);
+                mBookmarkImageFetcher, Arrays.asList(mUserFolderId), mFinishRunnable,
+                mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator);
         mMediator.populateFoldersForParentId(mMobileFolderId);
 
         // Check that the UserFolder isn't a row since it should be filtered out because it's the
@@ -228,7 +230,7 @@ public class BookmarkFolderPickerMediatorTest {
         assertEquals(0, mModelList.size());
         assertEquals(mUserFolderItem.getTitle(),
                 mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        assertEquals(true, mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
+        assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
 
     @Test
@@ -237,7 +239,7 @@ public class BookmarkFolderPickerMediatorTest {
         assertEquals(2, mModelList.size());
         assertEquals(mMobileFolderItem.getTitle(),
                 mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        assertEquals(true, mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
 
     @Test
@@ -245,7 +247,7 @@ public class BookmarkFolderPickerMediatorTest {
         mMediator.populateFoldersForParentId(mRootFolderId);
         assertEquals(4, mModelList.size());
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        assertEquals(false, mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
 
     @Test

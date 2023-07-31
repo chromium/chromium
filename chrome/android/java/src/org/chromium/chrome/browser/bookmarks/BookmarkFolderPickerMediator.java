@@ -19,7 +19,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /** Mediator for the folder picker activity. */
@@ -29,9 +28,9 @@ class BookmarkFolderPickerMediator {
     private final BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
         public void bookmarkModelChanged() {
-            if (mBookmarkModel.doesBookmarkExist(mBookmarkId)) {
-                populateFoldersForParentId(mCurrentParentItem == null ? mBookmarkItem.getParentId()
-                                                                      : mCurrentParentItem.getId());
+            if (mBookmarkModel.doAllBookmarksExist(mBookmarkIds)) {
+                populateFoldersForParentId(
+                        mCurrentParentItem == null ? mInitialParentId : mCurrentParentItem.getId());
             } else {
                 mFinishRunnable.run();
             }
@@ -45,41 +44,50 @@ class BookmarkFolderPickerMediator {
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
     private final BookmarkImageFetcher mBookmarkImageFetcher;
-    private final BookmarkId mBookmarkId;
-    private final BookmarkItem mBookmarkItem;
+    private final List<BookmarkId> mBookmarkIds;
+    private final BookmarkId mInitialParentId;
     private final Runnable mFinishRunnable;
     private final BookmarkQueryHandler mQueryHandler;
     private final BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
 
+    private boolean mMovingAtLeastOneFolder;
+    private boolean mMovingAtLeastOneBookmark;
     private MenuItem mCreateNewFolderMenu;
     private BookmarkItem mCurrentParentItem;
 
     BookmarkFolderPickerMediator(Context context, BookmarkModel bookmarkModel,
-            BookmarkImageFetcher bookmarkImageFetcher, BookmarkId bookmarkId,
+            BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
             Runnable finishRunnable, BookmarkUiPrefs bookmarkUiPrefs, PropertyModel model,
             ModelList modelList, BookmarkAddNewFolderCoordinator addNewFolderCoordinator) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
         mBookmarkImageFetcher = bookmarkImageFetcher;
-        mBookmarkId = bookmarkId;
+        mBookmarkIds = bookmarkIds;
         mFinishRunnable = finishRunnable;
         mQueryHandler = new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
         mModel = model;
         mModelList = modelList;
         mAddNewFolderCoordinator = addNewFolderCoordinator;
 
+        mInitialParentId = mBookmarkIds.size() == 1
+                ? mBookmarkModel.getBookmarkById(mBookmarkIds.get(0)).getParentId()
+                : mBookmarkModel.getRootFolderId();
+
+        for (BookmarkId id : mBookmarkIds) {
+            BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+            if (item.isFolder()) {
+                mMovingAtLeastOneFolder = true;
+            } else {
+                mMovingAtLeastOneBookmark = true;
+            }
+        }
+
         mModel.set(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER, this::onCancelClicked);
         mModel.set(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER, this::onMoveClicked);
 
-        mBookmarkItem = mBookmarkModel.getBookmarkById(mBookmarkId);
-        if (!mBookmarkModel.doesBookmarkExist(mBookmarkId) || mBookmarkItem == null) {
-            mFinishRunnable.run();
-            return;
-        }
-
         mBookmarkModel.finishLoadingBookmarkModel(
-                () -> { populateFoldersForParentId(mBookmarkItem.getParentId()); });
+                () -> { populateFoldersForParentId(mInitialParentId); });
     }
 
     void destroy() {
@@ -104,8 +112,19 @@ class BookmarkFolderPickerMediator {
             if (!childItem.isFolder()) {
                 continue;
             }
-            // Filter out the bookmark being moved.
-            if (childItem.getId().equals(mBookmarkId)) {
+            // Filter out the bookmarks being moved.
+            if (mBookmarkIds.contains(childItem.getId())) {
+                continue;
+            }
+
+            boolean excludeForFolder = mMovingAtLeastOneFolder
+                    && !BookmarkUtils.canAddFolderWhileViewingParent(
+                            mBookmarkModel, childItem.getId());
+            boolean excludeForBookmark = mMovingAtLeastOneBookmark
+                    && !BookmarkUtils.canAddBookmarkWhileViewingParent(
+                            mBookmarkModel, childItem.getId());
+            // Remove any folders which can't have children added to them.
+            if (excludeForFolder || excludeForBookmark) {
                 continue;
             }
             mModelList.add(createFolderPickerRow(childItem));
@@ -135,13 +154,8 @@ class BookmarkFolderPickerMediator {
     }
 
     void updateButtonsForCurrentParent() {
-        boolean moveFolder = mBookmarkItem.isFolder()
-                && BookmarkUtils.canAddFolderWhileViewingParent(
-                        mBookmarkModel, mCurrentParentItem.getId());
-        boolean moveBookmark = !mBookmarkItem.isFolder()
-                && BookmarkUtils.canAddBookmarkWhileViewingParent(
-                        mBookmarkModel, mCurrentParentItem.getId());
-        mModel.set(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED, moveFolder || moveBookmark);
+        mModel.set(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED,
+                mBookmarkIds.size() > 1 || !mCurrentParentItem.getId().equals(mInitialParentId));
     }
 
     // Delegate methods for embedder.
@@ -182,8 +196,8 @@ class BookmarkFolderPickerMediator {
     }
 
     private void onMoveClicked(View v) {
-        BookmarkUtils.moveBookmarksToViewedParent(mBookmarkModel,
-                new ArrayList<>(Arrays.asList(mBookmarkId)), mCurrentParentItem.getId());
+        BookmarkUtils.moveBookmarksToViewedParent(
+                mBookmarkModel, new ArrayList<>(mBookmarkIds), mCurrentParentItem.getId());
         mFinishRunnable.run();
     }
 }

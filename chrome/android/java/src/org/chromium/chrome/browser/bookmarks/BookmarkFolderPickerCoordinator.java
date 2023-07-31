@@ -28,6 +28,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.List;
+
 /** Coordinates the views/mediators that make up the bookmark folder picker. */
 public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
@@ -49,7 +51,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     };
 
     public BookmarkFolderPickerCoordinator(Context context, BookmarkModel bookmarkModel,
-            BookmarkImageFetcher bookmarkImageFetcher, BookmarkId bookmarkId,
+            BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
             Runnable finishRunnable, BookmarkAddNewFolderCoordinator addNewFolderCoordinator) {
         mContext = context;
         mView = LayoutInflater.from(mContext).inflate(R.layout.bookmark_folder_picker, null);
@@ -66,7 +68,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         PropertyModelChangeProcessor.create(model, mView, BookmarkFolderPickerViewBinder::bind);
 
         mMediator = new BookmarkFolderPickerMediator(context, bookmarkModel, bookmarkImageFetcher,
-                bookmarkId, finishRunnable,
+                bookmarkIds, finishRunnable,
                 new BookmarkUiPrefs(SharedPreferencesManager.getInstance()), model, mModelList,
                 addNewFolderCoordinator);
 

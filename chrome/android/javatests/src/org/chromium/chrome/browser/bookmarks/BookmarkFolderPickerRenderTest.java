@@ -210,7 +210,7 @@ public class BookmarkFolderPickerRenderTest {
             mActivityTestRule.getActivity().setContentView(mContentView, params);
 
             mCoordinator = new BookmarkFolderPickerCoordinator(mActivity, mBookmarkModel,
-                    mBookmarkImageFetcher, mUserBookmarkId, mFinishRunnable,
+                    mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mFinishRunnable,
                     mAddNewFolderCoordinator);
             mContentView.addView(mCoordinator.getView());
 

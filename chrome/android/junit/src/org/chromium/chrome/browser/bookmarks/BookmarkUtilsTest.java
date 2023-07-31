@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.DESKTOP_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.OTHER_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.PARTNER_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
@@ -148,7 +149,7 @@ public class BookmarkUtilsTest {
         List<BookmarkId> bookmarksToMove = new ArrayList<>(Arrays.asList(URL_BOOKMARK_ID_A));
         BookmarkUtils.moveBookmarksToViewedParent(
                 mBookmarkModel, bookmarksToMove, ROOT_BOOKMARK_ID);
-        verify(mBookmarkModel).moveBookmarks(bookmarksToMove, DESKTOP_BOOKMARK_ID);
+        verify(mBookmarkModel).moveBookmarks(bookmarksToMove, OTHER_BOOKMARK_ID);
         assertEquals(1, bookmarksToMove.size());
         assertEquals(URL_BOOKMARK_ID_A, bookmarksToMove.get(0));
     }

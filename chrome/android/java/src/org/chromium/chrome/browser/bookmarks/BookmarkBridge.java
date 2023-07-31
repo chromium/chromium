@@ -544,6 +544,19 @@ class BookmarkBridge {
     }
 
     /**
+     * Returns whether all of the given {@link BookmarkId}s exist in the current bookmark model.
+     */
+    public boolean doAllBookmarksExist(List<BookmarkId> bookmarkIds) {
+        ThreadUtils.assertOnUiThread();
+        for (BookmarkId bookmarkId : bookmarkIds) {
+            if (!doesBookmarkExist(bookmarkId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * @return Whether the given bookmark exist in the current bookmark model, e.g., not deleted.
      */
     public boolean doesBookmarkExist(BookmarkId id) {
