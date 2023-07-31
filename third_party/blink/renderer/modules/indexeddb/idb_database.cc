@@ -216,12 +216,6 @@ DOMStringList* IDBDatabase::objectStoreNames() const {
   return object_store_names;
 }
 
-const String& IDBDatabase::GetObjectStoreName(int64_t object_store_id) const {
-  const auto& it = metadata_.object_stores.find(object_store_id);
-  DCHECK(it != metadata_.object_stores.end());
-  return it->value->name;
-}
-
 IDBObjectStore* IDBDatabase::createObjectStore(
     const String& name,
     const IDBKeyPath& key_path,

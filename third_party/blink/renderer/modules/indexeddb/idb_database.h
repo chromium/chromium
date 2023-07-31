@@ -83,7 +83,6 @@ class MODULES_EXPORT IDBDatabase final
   void SetDatabaseMetadata(const IDBDatabaseMetadata&);
   void TransactionCreated(IDBTransaction*);
   void TransactionFinished(const IDBTransaction*);
-  const String& GetObjectStoreName(int64_t object_store_id) const;
 
   // Implement the IDL
   const String& name() const { return metadata_.name; }
