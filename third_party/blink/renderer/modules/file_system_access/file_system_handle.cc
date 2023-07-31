@@ -8,9 +8,12 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_handle_permission_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_permission_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
+#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -34,22 +37,6 @@ FileSystemHandle* FileSystemHandle::CreateFromMojoEntry(
       execution_context, e->name, std::move(e->entry_handle->get_directory()));
 }
 
-namespace {
-String MojoPermissionStatusToString(mojom::blink::PermissionStatus status) {
-  switch (status) {
-    case mojom::blink::PermissionStatus::GRANTED:
-      return "granted";
-    case mojom::blink::PermissionStatus::DENIED:
-      return "denied";
-    case mojom::blink::PermissionStatus::ASK:
-      return "prompt";
-  }
-  NOTREACHED();
-  return "denied";
-}
-
-}  // namespace
-
 ScriptPromise FileSystemHandle::queryPermission(
     ScriptState* script_state,
     const FileSystemHandlePermissionDescriptor* descriptor) {
@@ -57,13 +44,13 @@ ScriptPromise FileSystemHandle::queryPermission(
   ScriptPromise result = resolver->Promise();
 
   QueryPermissionImpl(
-      descriptor->mode() == "readwrite",
+      descriptor->mode() == V8FileSystemPermissionMode::Enum::kReadwrite,
       WTF::BindOnce(
           [](FileSystemHandle* handle, ScriptPromiseResolver* resolver,
              mojom::blink::PermissionStatus result) {
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.
-            resolver->Resolve(MojoPermissionStatusToString(result));
+            resolver->Resolve(PermissionStatusToString(result));
           },
           WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -79,7 +66,7 @@ ScriptPromise FileSystemHandle::requestPermission(
   ScriptPromise result = resolver->Promise();
 
   RequestPermissionImpl(
-      descriptor->mode() == "readwrite",
+      descriptor->mode() == V8FileSystemPermissionMode::Enum::kReadwrite,
       WTF::BindOnce(
           [](FileSystemHandle*, ScriptPromiseResolver* resolver,
              FileSystemAccessErrorPtr result,
@@ -90,7 +77,7 @@ ScriptPromise FileSystemHandle::requestPermission(
               file_system_access_error::Reject(resolver, *result);
               return;
             }
-            resolver->Resolve(MojoPermissionStatusToString(status));
+            resolver->Resolve(PermissionStatusToString(status));
           },
           WrapPersistent(this), WrapPersistent(resolver)));
 

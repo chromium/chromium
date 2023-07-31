@@ -11,8 +11,8 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_handle_kind.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -35,7 +35,11 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
 
   virtual bool isFile() const { return false; }
   virtual bool isDirectory() const { return false; }
-  const String kind() const { return isFile() ? "file" : "directory"; }
+  const char* kind() const {
+    const auto kind = isFile() ? V8FileSystemHandleKind::Enum::kFile
+                               : V8FileSystemHandleKind::Enum::kDirectory;
+    return V8FileSystemHandleKind(kind).AsCStr();
+  }
   const String& name() const { return name_; }
 
   ScriptPromise queryPermission(ScriptState*,

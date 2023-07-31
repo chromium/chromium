@@ -43,7 +43,10 @@ blink_modules_sources("file_system_access") {
     "storage_manager_file_system_access.h",
   ]
 
-  deps = [ "//third_party/blink/renderer/platform" ]
+  deps = [
+    "//third_party/blink/renderer/modules/permissions:permissions",
+    "//third_party/blink/renderer/platform",
+  ]
 }
 
 source_set("unit_tests") {

@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_write_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -93,7 +93,7 @@ ScriptPromise FileSystemWritableFileStream::truncate(
     return ScriptPromise();
 
   auto* options = WriteParams::Create();
-  options->setType("truncate");
+  options->setType(V8WriteCommandType::Enum::kTruncate);
   options->setSize(size);
 
   ScriptPromise promise = writer->write(
@@ -113,7 +113,7 @@ ScriptPromise FileSystemWritableFileStream::seek(
     return ScriptPromise();
 
   auto* options = WriteParams::Create();
-  options->setType("seek");
+  options->setType(V8WriteCommandType::Enum::kSeek);
   options->setPosition(offset);
 
   ScriptPromise promise = writer->write(
