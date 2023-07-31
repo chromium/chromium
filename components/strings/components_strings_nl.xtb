@@ -231,6 +231,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1432187715652018471">De pagina wil een servicehandler installeren.</translation>
 <translation id="1432581352905426595">Zoekmachines beheren</translation>
+<translation id="1433225466058025572">Probeer je bestanden opnieuw te verplaatsen</translation>
 <translation id="1435940442311036198">Een toegangscode gebruiken op een ander apparaat</translation>
 <translation id="1436185428532214179">Kan vragen of deze site bestanden en mappen op je apparaat mag bewerken</translation>
 <translation id="1442386063175183758">Gatefold rechts</translation>
@@ -683,6 +684,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2396249848217231973">&amp;Verwijderen ongedaan maken</translation>
 <translation id="2397836504670957718">Laptops en notebooks</translation>
 <translation id="2400600116338235695">Kan vragen of deze site verbinding mag maken met seriële poorten</translation>
+<translation id="2404884497378469141">Probeer je bestanden opnieuw te kopiëren</translation>
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2414886740292270097">Donker</translation>
@@ -839,6 +841,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2759825833388495838">je wachtwoord in te vullen in <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Strips</translation>
 <translation id="2765217105034171413">Klein</translation>
+<translation id="2770159525358613612">Probeer je bestanden opnieuw te uploaden</translation>
 <translation id="277133753123645258">Verzendmethode</translation>
 <translation id="277499241957683684">Apparaatrecord ontbreekt</translation>
 <translation id="2775884851269838147">Eerste afdrukpagina</translation>
@@ -1224,6 +1227,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3632892046558972264">Scherm delen onderbroken</translation>
 <translation id="3634530185120165534">Lade 5</translation>
 <translation id="3634567936866541746">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
+<translation id="3642196846309122856">Probeer je bestanden opnieuw te downloaden</translation>
 <translation id="3642638418806704195">App:</translation>
 <translation id="3646643500201740985">Meten hoe goed een advertentie presteert</translation>
 <translation id="3647286794400715637">Elke URL-tekenreeks moet 1 of 2 URL's bevatten.</translation>
@@ -1347,6 +1351,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3890664840433101773">E-mailadres toevoegen</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">De pas is verlopen</translation>
+<translation id="390391808978419508">Time-out bij openen</translation>
 <translation id="3905894480064208252">{0,plural, =1{Bestand kan niet worden overgezet}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden overgezet}}</translation>
 <translation id="3906095212874392000">Einde van geconverteerde tekst</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1359,6 +1364,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="393316646445601645">Internet en telecom</translation>
 <translation id="3939773374150895049">WebAuthn gebruiken in plaats van CVC?</translation>
 <translation id="3941630233824954464">Verplicht opnieuw verifiëren aanzetten</translation>
+<translation id="3942048175062210325">Probeer je bestanden opnieuw te openen</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3946209740501886391">Altijd vragen op deze site</translation>
 <translation id="3947595700203588284">Kan vragen of deze site verbinding mag maken met MIDI-apparaten</translation>
@@ -1440,6 +1446,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4117700440116928470">Beleidsbereik wordt niet ondersteund.</translation>
 <translation id="4121428309786185360">Verloopt op</translation>
 <translation id="4123572138124678573">Drie perforaties onder</translation>
+<translation id="412601465078863288">Time-out bij uploaden</translation>
 <translation id="4127317221386336246">Kledingaccessoires</translation>
 <translation id="4127575959421463246">Zoek je de Chrome OS-flags? Ga naar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 andere persoon}other{# andere mensen}}</translation>
@@ -1656,6 +1663,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4540780316273593836">Er is iets misgegaan</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Lade 6</translation>
+<translation id="4546730006268514143">Time-out bij overzetten</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Je gebruikt je schermvergrendeling om wachtwoorden in te vullen</translation>
 <translation id="4558551763791394412">Probeer je extensies uit te zetten.</translation>
@@ -2089,6 +2097,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5470230812924696184">Weg- en waterbouwkunde</translation>
 <translation id="5470861586879999274">&amp;Opnieuw bewerken</translation>
 <translation id="5471337644440862957">Komische films</translation>
+<translation id="547963486735802022">Probeer je bestanden opnieuw over te zetten</translation>
 <translation id="5481076368049295676">Deze content probeert mogelijk gevaarlijke software op je apparaat te installeren die je gegevens steelt of verwijdert. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Voeg een geldig adres toe</translation>
 <translation id="5483838506518938965">Je bent helemaal klaar</translation>
@@ -2777,6 +2786,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6961733224437895943">Woningverzekering</translation>
 <translation id="6961844873822989059">Kan vragen of deze site de lettertypen mag gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="6961980518585973432">Speciale dagen</translation>
+<translation id="6962858948849099922">Time-out bij verplaatsen</translation>
 <translation id="6963520811470373926">Vervangen</translation>
 <translation id="6963574715554809750">Detailhandel</translation>
 <translation id="6963693576491380224">Banen in de publieke sector</translation>
@@ -2854,6 +2864,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7111507312244504964">Inspecties en taxatie van vastgoed</translation>
 <translation id="7112327784801341716">Is je informatie niet actueel? Neem contact op met je bank om deze te updaten.</translation>
 <translation id="7118618213916969306">Zoeken naar klembord-URL, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Time-out bij kopiëren</translation>
 <translation id="7119414471315195487">Andere tabbladen of programma's sluiten</translation>
 <translation id="7124354851782353862">Geef je CVC op</translation>
 <translation id="7129355289156517987">Als je alle Chromium-incognitotabbladen sluit, wordt je activiteit op die tabbladen van dit apparaat gewist:
@@ -3106,6 +3117,7 @@ Aanvullende informatie:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Minder dan <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan dit verzoek momenteel niet verwerken.</translation>
+<translation id="7599089013883397081">Time-out bij downloaden</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nooit vertalen</translation>
 <translation id="7601297359530599375">Meestal kun je beveiligd verbinding maken met deze site, maar deze keer is het Chrome niet gelukt. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Waarde <ph name="VALUE" /> is buiten bereik.</translation>

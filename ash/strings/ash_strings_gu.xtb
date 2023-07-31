@@ -1811,6 +1811,7 @@
 <translation id="8921624153894383499">Google Assistant આ ભાષા બોલતું નથી.</translation>
 <translation id="8924458948354692166">વિન્ડો સ્ક્રીનશૉટ કૅપ્ચર કરવા માટે Enter કી દબાવો</translation>
 <translation id="8926951137623668982">શેલ્ફ હંમેશાં છુપાવવામાં આવે છે</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>
 <translation id="8938800817013097409">USB-C ડિવાઇસ (પાછળની બાજુએ જમણું પોર્ટ)</translation>
 <translation id="8940956008527784070">બૅટરી ઓછી (<ph name="PERCENTAGE" />%)</translation>

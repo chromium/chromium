@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1432187715652018471">Бет қызмет өңдегішін орнатпақ.</translation>
 <translation id="1432581352905426595">Іздеу жүйелерін басқару</translation>
+<translation id="1433225466058025572">Файлдарды қайта жылжытып көріңіз</translation>
 <translation id="1435940442311036198">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
 <translation id="1436185428532214179">Құрылғыңыздағы файлдар мен қалталарды өзгертуге рұқсат сұрай алады.</translation>
 <translation id="1442386063175183758">Оң жағын қақпа тәрізді бүктеу</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;Жоюды болдырмау</translation>
 <translation id="2397836504670957718">Ноутбуктар</translation>
 <translation id="2400600116338235695">Тізбекті порттарға қосылуға рұқсат сұрайды.</translation>
+<translation id="2404884497378469141">Файлдарды қайта көшіріп көріңіз</translation>
 <translation id="2413155254802890957">Ескі</translation>
 <translation id="2413528052993050574">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты қайтарып алынған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> қолданбасында құпия сөздеріңізді толтырмақ</translation>
 <translation id="2764001903315068341">Комикс</translation>
 <translation id="2765217105034171413">Кіші</translation>
+<translation id="2770159525358613612">Файлдарды қайта жүктеп салып көріңіз</translation>
 <translation id="277133753123645258">Жөнелту әдісі</translation>
 <translation id="277499241957683684">Құрылғы жазбасы жоқ</translation>
 <translation id="2775884851269838147">Бірінші басып шығарылатын бет</translation>
@@ -1228,6 +1231,7 @@
 <translation id="3632892046558972264">Экранды көрсету кідіртілді</translation>
 <translation id="3634530185120165534">5-науа</translation>
 <translation id="3634567936866541746">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chrome сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
+<translation id="3642196846309122856">Файлдарды қайта жүктеп алып көріңіз</translation>
 <translation id="3642638418806704195">Қолданба:</translation>
 <translation id="3646643500201740985">Жарнама өнімділігін өлшеу</translation>
 <translation id="3647286794400715637">Әрбір URL жолы жазбасында 1–2 URL болуы керек.</translation>
@@ -1351,6 +1355,7 @@
 <translation id="3890664840433101773">Электрондық пошта мекенжайын енгізу</translation>
 <translation id="3897092660631435901">Мәзір</translation>
 <translation id="3901925938762663762">Картаның мерзімі өткен</translation>
+<translation id="390391808978419508">Ашу уақыты өтіп кетті</translation>
 <translation id="3905894480064208252">{0,plural, =1{Файлды тасымалдауға блок қойылған}other{<ph name="FILE_COUNT" /> файлды тасымалдауға блок қойылған}}</translation>
 <translation id="3906095212874392000">Түрлендірілген мәтін соңы</translation>
 <translation id="3906954721959377182">Планшет</translation>
@@ -1363,6 +1368,7 @@
 <translation id="393316646445601645">Интернет және телекоммуникация</translation>
 <translation id="3939773374150895049">CVC орнына WebAuthn қолданасыз ба?</translation>
 <translation id="3941630233824954464">Міндетті қайта аутентификациялауды қосу</translation>
+<translation id="3942048175062210325">Файлдарды қайта ашып көріңіз</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3946209740501886391">Осы сайтта әрқашан сұралсын</translation>
 <translation id="3947595700203588284">MIDI құрылғыларына қосылуға рұқсат сұрайды</translation>
@@ -1444,6 +1450,7 @@
 <translation id="4117700440116928470">Саясат аясына қолдау көрсетілмеген.</translation>
 <translation id="4121428309786185360">Аяқталу күні</translation>
 <translation id="4123572138124678573">Төменгі жағын үш рет тесу</translation>
+<translation id="412601465078863288">Жүктеп салу уақыты өтіп кетті</translation>
 <translation id="4127317221386336246">Киім аксессуарлары</translation>
 <translation id="4127575959421463246">ChromeOS жалаушаларын іздеудесіз бе? Кіру</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{тағы 1}other{тағы #}}</translation>
@@ -1660,6 +1667,7 @@
 <translation id="4540780316273593836">Бірдеңе дұрыс болмады</translation>
 <translation id="4541810033354695636">толықтырылған шындық</translation>
 <translation id="4542971377163063093">6-науа</translation>
+<translation id="4546730006268514143">Тасымалдау уақыты өтіп кетті</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Құпия сөздерді толтыру үшін экран құлпын пайдаланып жатырсыз</translation>
 <translation id="4558551763791394412">Кеңейтімдерді ажыратып көріңіз.</translation>
@@ -2093,6 +2101,7 @@
 <translation id="5470230812924696184">Азаматтық құрылыс</translation>
 <translation id="5470861586879999274">&amp;Өзгерту әрекетін қайталау</translation>
 <translation id="5471337644440862957">Комедиялар</translation>
+<translation id="547963486735802022">Файлдарды қайта тасымалдап көріңіз</translation>
 <translation id="5481076368049295676">Бұл контент құрылғыңызға ақпаратыңызды ұрлайтын не жоятын қауіпті бағдарламалық құралды орнатуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Жарамды мекенжайды енгізу</translation>
 <translation id="5483838506518938965">Барлығы дайын</translation>
@@ -2782,6 +2791,7 @@
 <translation id="6961733224437895943">Үйді сақтандыру</translation>
 <translation id="6961844873822989059">Құрылғыңызда орнатылған қаріптерді пайдалануға рұқсат сұрай алады</translation>
 <translation id="6961980518585973432">Мерейтойлар</translation>
+<translation id="6962858948849099922">Жылжыту уақыты өтіп кетті</translation>
 <translation id="6963520811470373926">Ауыстырылуда</translation>
 <translation id="6963574715554809750">Бөлшек сауда</translation>
 <translation id="6963693576491380224">Үкімет пен мемлекеттік сектордағы жұмыс орындары</translation>
@@ -2859,6 +2869,7 @@
 <translation id="7111507312244504964">Меншік тексерістері мен бағалаулары</translation>
 <translation id="7112327784801341716">Ақпарат дұрыс емес пе? Түзету үшін банкке хабарласыңыз.</translation>
 <translation id="7118618213916969306">Буфердегі URL сілтемесін (<ph name="SHORT_URL" />) іздеу</translation>
+<translation id="7119371694555167493">Көшіру уақыты өтіп кетті</translation>
 <translation id="7119414471315195487">Басқа қойындыларды не бағдарламаларды жабу</translation>
 <translation id="7124354851782353862">CVC кодыңызды енгізіңіз</translation>
 <translation id="7129355289156517987">Chromium браузерінің барлық инкогнито қойындыларын жапқан кезде, сол қойындылардағы әрекеттеріңіз құрылғыдан өшіріледі:
@@ -3111,6 +3122,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> шамасынан аз</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> қазір бұл сұрауды өңдей алмайды.</translation>
+<translation id="7599089013883397081">Жүктеп алу уақыты өтіп кетті</translation>
 <translation id="7600965453749440009">Ешқашан <ph name="LANGUAGE" /> тіліне аудармау</translation>
 <translation id="7601297359530599375">Әдетте бұл сайтқа қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Мән <ph name="VALUE" /> ауқымынан тыс.</translation>

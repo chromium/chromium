@@ -1812,6 +1812,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8921624153894383499">O Asistente de Google non fala este idioma.</translation>
 <translation id="8924458948354692166">Premer Introducir para facer captura de pantalla da ventá</translation>
 <translation id="8926951137623668982">O estante ocúltase sempre</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desactivou</translation>
 <translation id="8938800817013097409">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="8940956008527784070">Batería baixa (<ph name="PERCENTAGE" />%)</translation>

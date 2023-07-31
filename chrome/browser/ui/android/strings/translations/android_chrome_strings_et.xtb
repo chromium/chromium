@@ -358,6 +358,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> lugemata leht}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> lugemata lehte}}</translation>
 <translation id="2961210776189273067">Pealkiri</translation>
 <translation id="296370266220139811">Säästke aega ja tippige vähem</translation>
+<translation id="297771753501244313">Sorditud: viimati avatud</translation>
 <translation id="2979025552038692506">Valitud inkognito vaheleht</translation>
 <translation id="2979639724566107830">Ava uues aknas</translation>
 <translation id="2981364137500752533">Teil võib olla kuni viis akent.</translation>

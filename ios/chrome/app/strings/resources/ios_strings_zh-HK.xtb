@@ -47,6 +47,7 @@
 <translation id="122699739164161391">關閉所有分頁</translation>
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
 <translation id="1242044645101871359">再次登入</translation>
+<translation id="1248276223555153952">管理此裝置上的帳戶…</translation>
 <translation id="1254117744268754948">選擇資料夾</translation>
 <translation id="1254424942107648268">尋找上一個相符的項目</translation>
 <translation id="1258491128795710625">新功能</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">已傳送郵件。</translation>
 <translation id="1582732959743469162">這會停止所有下載進度。</translation>
 <translation id="1594034544529347967">開始時間</translation>
+<translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存至此裝置。</translation>
 <translation id="1605405588277479165">關閉 - 不建議</translation>
 <translation id="1605658421715042784">複製圖片</translation>
 <translation id="1608337082864370066">搜尋複製的圖片</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">無痕搜尋</translation>
 <translation id="277771892408211951">選取語言</translation>
 <translation id="2780046210906776326">無電郵帳戶</translation>
+<translation id="2780326741858434269">此裝置上的帳戶</translation>
 <translation id="2781325423985810933">復原</translation>
 <translation id="2781331604911854368">開啟</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
 <translation id="3577555362230509265">在其他應用程式中使用 Chrome。</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
+<translation id="3587885837929752825">你的機構已限制你可儲存在 Google 帳戶中的內容。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="3595252146048399851">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
@@ -693,6 +697,7 @@
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請填寫後再儲存。}other{部分必填欄位沒有內容，請填寫後再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5283494734135414249">輕按網址列下方顯示的捷徑。</translation>
+<translation id="5292723732574094123">已登出。重新登入即可查看帳戶中的書籤、密碼和其他資料。</translation>
 <translation id="5295239312320826323">要移除帳戶 <ph name="USER_EMAIL" /> 嗎？</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -736,6 +741,7 @@
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5626245204502895507">目前無法下載該檔案。</translation>
 <translation id="5631164295104953411">新增付款方法</translation>
+<translation id="5649795523408334796">偵測地址</translation>
 <translation id="5652623411397330904">您追蹤的產品會在此顯示。</translation>
 <translation id="5657859710142657190">前往「分頁網格」</translation>
 <translation id="5659593005791499971">電郵</translation>
@@ -1295,6 +1301,7 @@
 <translation id="8843129975935593190">您的機構已限制您可同步的內容。</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8855242995793521265">不會大幅減慢瀏覽器或裝置運作速度。</translation>
+<translation id="8863431381414769983">透過「Google 地圖」規劃路線及取得本地資料</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8876882697946675716">讓您的裝置保持同步</translation>

@@ -1811,6 +1811,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8921624153894383499">„Google“ padėjėjas nekalba šia kalba.</translation>
 <translation id="8924458948354692166">Paspauskite „Enter“, kad užfiksuotumėte lango ekrano kopiją</translation>
 <translation id="8926951137623668982">Lentyna visada slepiama</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{Vienas failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="8936501819958976551">išaktyvinta</translation>
 <translation id="8938800817013097409">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="8940956008527784070">Akumuliatorius senka (<ph name="PERCENTAGE" /> %)</translation>

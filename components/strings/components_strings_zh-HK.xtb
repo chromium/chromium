@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
+<translation id="1433225466058025572">嘗試再次移動檔案</translation>
 <translation id="1435940442311036198">在其他裝置上使用密鑰</translation>
 <translation id="1436185428532214179">可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="1442386063175183758">右半邊對摺</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">復原刪除(&amp;U)</translation>
 <translation id="2397836504670957718">手提電腦</translation>
 <translation id="2400600116338235695">可要求連接序列連接埠</translation>
+<translation id="2404884497378469141">嘗試再次複製檔案</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2414886740292270097">灰暗</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">在 <ph name="APP_NAME" /> 上填寫您的密碼</translation>
 <translation id="2764001903315068341">漫畫</translation>
 <translation id="2765217105034171413">小</translation>
+<translation id="2770159525358613612">嘗試再次上載檔案</translation>
 <translation id="277133753123645258">運送方式</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">第一列印頁</translation>
@@ -1228,6 +1231,7 @@
 <translation id="3632892046558972264">已暫停分享螢幕畫面</translation>
 <translation id="3634530185120165534">紙匣 5</translation>
 <translation id="3634567936866541746">您剛才在欺詐網站上輸入了密碼。為確保帳戶安全，Chrome 建議您檢查已儲存的密碼。</translation>
+<translation id="3642196846309122856">嘗試再次下載檔案</translation>
 <translation id="3642638418806704195">應用程式：</translation>
 <translation id="3646643500201740985">評估廣告成效</translation>
 <translation id="3647286794400715637">每個網址字串都必須包含 1 至 2 個網址。</translation>
@@ -1351,6 +1355,7 @@
 <translation id="3890664840433101773">新增電郵</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">卡片已過期</translation>
+<translation id="390391808978419508">開啟逾時</translation>
 <translation id="3905894480064208252">{0,plural, =1{禁止轉移檔案}other{禁止轉移 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="3906095212874392000">轉換文字結尾</translation>
 <translation id="3906954721959377182">平板電腦</translation>
@@ -1363,6 +1368,7 @@
 <translation id="393316646445601645">互聯網和電訊公司</translation>
 <translation id="3939773374150895049">要使用 WebAuthn 取代 CVC 嗎？</translation>
 <translation id="3941630233824954464">啟用強制重新驗證</translation>
+<translation id="3942048175062210325">嘗試再次開啟檔案</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3946209740501886391">在此網站上一律詢問</translation>
 <translation id="3947595700203588284">可要求連接 MIDI 裝置</translation>
@@ -1444,6 +1450,7 @@
 <translation id="4117700440116928470">系統不支援這項政策的範圍。</translation>
 <translation id="4121428309786185360">到期日</translation>
 <translation id="4123572138124678573">三孔 (底部)</translation>
+<translation id="412601465078863288">上載逾時</translation>
 <translation id="4127317221386336246">服裝配飾</translation>
 <translation id="4127575959421463246">在尋找 Chrome OS 標記嗎？瀏覽</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表格資料}other{以及另外 # 項表格資料}}</translation>
@@ -1660,6 +1667,7 @@
 <translation id="4540780316273593836">發生錯誤</translation>
 <translation id="4541810033354695636">擴張實境</translation>
 <translation id="4542971377163063093">紙匣 6</translation>
+<translation id="4546730006268514143">傳輸逾時</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">您正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4558551763791394412">嘗試停用擴充程式。</translation>
@@ -2093,6 +2101,7 @@
 <translation id="5470230812924696184">土木工程</translation>
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
 <translation id="5471337644440862957">喜劇電影</translation>
+<translation id="547963486735802022">嘗試再次傳輸檔案</translation>
 <translation id="5481076368049295676">此內容可能會試圖在您的裝置上安裝危險的軟件，藉此竊取或刪除您的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">新增有效地址</translation>
 <translation id="5483838506518938965">您已完成全部設定！</translation>
@@ -2782,6 +2791,7 @@
 <translation id="6961733224437895943">家居保險</translation>
 <translation id="6961844873822989059">可要求使用裝置上安裝的字型</translation>
 <translation id="6961980518585973432">週年紀念</translation>
+<translation id="6962858948849099922">移動逾時</translation>
 <translation id="6963520811470373926">取代中</translation>
 <translation id="6963574715554809750">零售交易</translation>
 <translation id="6963693576491380224">公務員職位</translation>
@@ -2859,6 +2869,7 @@
 <translation id="7111507312244504964">物業檢查和估值</translation>
 <translation id="7112327784801341716">目前的資料不正確嗎？請通知銀行更新。</translation>
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">複製逾時</translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
 <translation id="7124354851782353862">輸入 CVC</translation>
 <translation id="7129355289156517987">關閉所有 Chromium 無痕式分頁後，系統會從此裝置上清除您在這些分頁上的活動記錄：
@@ -3111,6 +3122,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">小於 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這個請求。</translation>
+<translation id="7599089013883397081">下載逾時</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">您通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改您的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>

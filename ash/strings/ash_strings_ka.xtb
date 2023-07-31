@@ -1811,6 +1811,7 @@
 <translation id="8921624153894383499">Google ასისტენტი არ საუბრობს ამ ენაზე.</translation>
 <translation id="8924458948354692166">ფანჯრის ანაბეჭდის აღსაბეჭდად დააჭირეთ Enter-ს</translation>
 <translation id="8926951137623668982">თარო ყოველთვის დამალულია</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ფაილი}other{# ფაილი}}</translation>
 <translation id="8936501819958976551">დეაქტივირებულია</translation>
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
 <translation id="8940956008527784070">კვების ბატარეა იცლება (<ph name="PERCENTAGE" />%)</translation>

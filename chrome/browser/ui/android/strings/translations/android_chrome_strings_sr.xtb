@@ -358,6 +358,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитане странице}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитаних страница}}</translation>
 <translation id="2961210776189273067">Звање</translation>
 <translation id="296370266220139811">Уштедите време и куцајте мање</translation>
+<translation id="297771753501244313">По последњем отварању</translation>
 <translation id="2979025552038692506">Изабране картице без архивирањa</translation>
 <translation id="2979639724566107830">Отворите у новом прозору</translation>
 <translation id="2981364137500752533">Можете да имате највише 5 прозора.</translation>

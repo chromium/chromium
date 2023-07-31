@@ -1808,6 +1808,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8921624153894383499">De Google Assistent spreekt deze taal niet.</translation>
 <translation id="8924458948354692166">Druk op Enter om een screenshot van het venster te maken</translation>
 <translation id="8926951137623668982">Plank altijd verborgen</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 bestand}other{# bestanden}}</translation>
 <translation id="8936501819958976551">gedeactiveerd</translation>
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="8940956008527784070">Batterij is bijna leeg (<ph name="PERCENTAGE" />%)</translation>

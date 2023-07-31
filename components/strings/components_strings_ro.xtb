@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1432187715652018471">Pagina dorește să instaleze un handler de serviciu.</translation>
 <translation id="1432581352905426595">Gestionați motoarele de căutare</translation>
+<translation id="1433225466058025572">Încearcă să muți din nou fișierele</translation>
 <translation id="1435940442311036198">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="1436185428532214179">Poate solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="1442386063175183758">Îndoire tip fereastră spre dreapta</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;Anulați ștergerea</translation>
 <translation id="2397836504670957718">Laptopuri</translation>
 <translation id="2400600116338235695">Poate solicita permisiunea de a se conecta la porturi seriale</translation>
+<translation id="2404884497378469141">Încearcă să copiezi din nou fișierele</translation>
 <translation id="2413155254802890957">Veche</translation>
 <translation id="2413528052993050574">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; este posibil ca certificatul său de securitate să fie revocat. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="2414886740292270097">Întunecat</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">completează parola pe <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Benzi desenate</translation>
 <translation id="2765217105034171413">Mic</translation>
+<translation id="2770159525358613612">Încearcă să încarci din nou fișierele</translation>
 <translation id="277133753123645258">Metodă de expediere</translation>
 <translation id="277499241957683684">Lipsește o înregistrare pentru gadget</translation>
 <translation id="2775884851269838147">Prima pagină printată</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">Permiterea accesului a fost întreruptă</translation>
 <translation id="3634530185120165534">Tava 5</translation>
 <translation id="3634567936866541746">Ai introdus parola pe un site înșelător. Pentru a-ți proteja conturile, Chrome recomandă să verifici parolele salvate.</translation>
+<translation id="3642196846309122856">Încearcă să descarci din nou fișierele</translation>
 <translation id="3642638418806704195">Aplicație:</translation>
 <translation id="3646643500201740985">Măsurarea performanței unui anunț</translation>
 <translation id="3647286794400715637">Fiecare intrare de șir de adrese URL trebuie să conțină una sau două adrese URL.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">Adaugă o adresă de e-mail</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3901925938762663762">Cardul este expirat</translation>
+<translation id="390391808978419508">Deschiderea a expirat</translation>
 <translation id="3905894480064208252">{0,plural, =1{Fișierul nu poate fi transferat}few{<ph name="FILE_COUNT" /> fișiere nu pot fi transferate}other{<ph name="FILE_COUNT" /> de fișiere nu pot fi transferate}}</translation>
 <translation id="3906095212874392000">Finalul textului convertit</translation>
 <translation id="3906954721959377182">Tabletă</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">Internet și telecomunicații</translation>
 <translation id="3939773374150895049">Folosești WebAuthn în loc de CVC?</translation>
 <translation id="3941630233824954464">Activează reautentificarea obligatorie</translation>
+<translation id="3942048175062210325">Încearcă să deschizi din nou fișierele</translation>
 <translation id="3943857333388298514">Inserează</translation>
 <translation id="3946209740501886391">Întreabă întotdeauna pe acest site</translation>
 <translation id="3947595700203588284">Poate solicita permisiunea de a se conecta la dispozitive MIDI</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">Domeniul politicii nu este acceptat.</translation>
 <translation id="4121428309786185360">Expiră la</translation>
 <translation id="4123572138124678573">Perforare triplă în partea de jos</translation>
+<translation id="412601465078863288">Încărcarea a expirat</translation>
 <translation id="4127317221386336246">Accesorii pentru îmbrăcăminte</translation>
 <translation id="4127575959421463246">Cauți semnalizatoare ChromeOS? Accesează</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{încă 1}few{încă #}other{încă #}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">A apărut o eroare</translation>
 <translation id="4541810033354695636">Realitate augmentată</translation>
 <translation id="4542971377163063093">Tava 6</translation>
+<translation id="4546730006268514143">Transferul a expirat</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Folosești blocarea ecranului pentru a completa parolele</translation>
 <translation id="4558551763791394412">Dezactivează extensiile.</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">Inginerie civilă</translation>
 <translation id="5470861586879999274">&amp;Repetați editarea</translation>
 <translation id="5471337644440862957">Filme de comedie</translation>
+<translation id="547963486735802022">Încearcă să transferi din nou fișierele</translation>
 <translation id="5481076368049295676">Acest conținut ar putea încerca să instaleze software periculos pe dispozitivul tău, care îți fură sau îți șterge informațiile. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Adaugă o adresă validă</translation>
 <translation id="5483838506518938965">Ați terminat</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6961733224437895943">Asigurarea casei</translation>
 <translation id="6961844873822989059">Poate solicita permisiunea de a folosi fonturile instalate pe dispozitiv</translation>
 <translation id="6961980518585973432">Aniversări</translation>
+<translation id="6962858948849099922">Mutarea a expirat</translation>
 <translation id="6963520811470373926">se înlocuiește</translation>
 <translation id="6963574715554809750">Comerț cu amănuntul</translation>
 <translation id="6963693576491380224">Locuri de muncă în sectorul public și guvernamental</translation>
@@ -2860,6 +2870,7 @@
 <translation id="7111507312244504964">Inspecții și evaluări ale proprietăților</translation>
 <translation id="7112327784801341716">Nu apar informațiile curente? Contactează-ți banca pentru a le actualiza.</translation>
 <translation id="7118618213916969306">Caută URL-ul din clipboard, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Copierea a expirat</translation>
 <translation id="7119414471315195487">închide celelalte file sau programe;</translation>
 <translation id="7124354851782353862">Introdu codul CVC</translation>
 <translation id="7129355289156517987">Când închizi toate filele incognito din Chromium, activitatea ta din acele file este ștearsă de pe dispozitiv:
@@ -3112,6 +3123,7 @@ Detalii suplimentare:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Mai puțin de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Momentan, <ph name="HOST_NAME" /> nu poate procesa această solicitare.</translation>
+<translation id="7599089013883397081">Descărcarea a expirat</translation>
 <translation id="7600965453749440009">Nu traduce niciodată din <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">De obicei, te conectezi în siguranță la acest site, dar Chrome nu a putut folosi o conexiune sigură de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Valoarea este în afara intervalului <ph name="VALUE" />.</translation>
@@ -3434,6 +3446,7 @@ Detalii suplimentare:
 <translation id="827820107214076967">Actualizează jurnalele</translation>
 <translation id="8279611986089885641">Notificările Chrome trebuie să fie activate. Le poți activa în <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Tava 11</translation>
+<translation id="8281730697546299650">Sunt disponibile acum și alte funcții pentru confidențialitatea anunțurilor</translation>
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8282409409360764263">Întreținerea grădinilor</translation>
 <translation id="8282947398454257691">Află identificatorul unic de dispozitiv</translation>

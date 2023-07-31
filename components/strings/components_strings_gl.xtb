@@ -231,6 +231,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">esta páxina quere instalar un controlador de servizo.</translation>
 <translation id="1432581352905426595">Xestionar motores de busca</translation>
+<translation id="1433225466058025572">Proba a mover os ficheiros de novo</translation>
 <translation id="1435940442311036198">Usar clave de acceso dun dispositivo distinto</translation>
 <translation id="1436185428532214179">Pode pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="1442386063175183758">Dobrez en ventá na parte dereita</translation>
@@ -683,6 +684,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2396249848217231973">&amp;Desfacer eliminación</translation>
 <translation id="2397836504670957718">Ordenadores notebook e portátiles</translation>
 <translation id="2400600116338235695">Pode pedirche permiso para conectarse a portos en serie</translation>
+<translation id="2404884497378469141">Proba a copiar os ficheiros de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2414886740292270097">Escuro</translation>
@@ -839,6 +841,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2759825833388495838">poñer o teu contrasinal en <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Cómics</translation>
 <translation id="2765217105034171413">Pequeno</translation>
+<translation id="2770159525358613612">Proba a cargar os ficheiros de novo</translation>
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Non se atopa o rexistro do dispositivo</translation>
 <translation id="2775884851269838147">Primeira páxina de impresión</translation>
@@ -1229,6 +1232,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3632892046558972264">Púxose en pausa a pantalla compartida</translation>
 <translation id="3634530185120165534">Bandexa 5</translation>
 <translation id="3634567936866541746">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chrome recoméndache que comprobes os contrasinais que tes gardados.</translation>
+<translation id="3642196846309122856">Proba a descargar os ficheiros de novo</translation>
 <translation id="3642638418806704195">Aplicación:</translation>
 <translation id="3646643500201740985">Medir o rendemento dun anuncio</translation>
 <translation id="3647286794400715637">Todas as cadeas de URL deben conter entre 1 e 2 URL.</translation>
@@ -1352,6 +1356,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3890664840433101773">Engadir correo electrónico</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">A tarxeta caducou</translation>
+<translation id="390391808978419508">Esgotouse o tempo de espera para a apertura</translation>
 <translation id="3905894480064208252">{0,plural, =1{Bloqueouse a transferencia do ficheiro}other{Bloqueouse a transferencia de <ph name="FILE_COUNT" /> ficheiros}}</translation>
 <translation id="3906095212874392000">Fin do texto convertido</translation>
 <translation id="3906954721959377182">Tableta</translation>
@@ -1364,6 +1369,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="393316646445601645">Internet e telecomunicacións</translation>
 <translation id="3939773374150895049">Queres usar a autenticación web en lugar do CVC?</translation>
 <translation id="3941630233824954464">Activar a reautenticación obrigatoria</translation>
+<translation id="3942048175062210325">Proba a abrir os ficheiros de novo</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3946209740501886391">Preguntar sempre sobre este sitio</translation>
 <translation id="3947595700203588284">Pode pedirche permiso para conectarse aos dispositivos MIDI</translation>
@@ -1445,6 +1451,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4117700440116928470">Ámbito da política non admitido.</translation>
 <translation id="4121428309786185360">Data de caducidade</translation>
 <translation id="4123572138124678573">Tres perforacións na parte inferior</translation>
+<translation id="412601465078863288">Esgotouse o tempo de espera para a carga</translation>
 <translation id="4127317221386336246">Accesorios de moda</translation>
 <translation id="4127575959421463246">Buscas as funcións experimentais de Chrome OS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 máis}other{# máis}}</translation>
@@ -1661,6 +1668,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4540780316273593836">Produciuse un erro</translation>
 <translation id="4541810033354695636">realidade aumentada</translation>
 <translation id="4542971377163063093">Bandexa 6</translation>
+<translation id="4546730006268514143">Esgotouse o tempo de espera para a transferencia</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estás usando o bloqueo de pantalla para completar contrasinais</translation>
 <translation id="4558551763791394412">Proba a desactivar as extensións.</translation>
@@ -2094,6 +2102,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5470230812924696184">Enxeñaría civil</translation>
 <translation id="5470861586879999274">&amp;Refacer modificación</translation>
 <translation id="5471337644440862957">Películas de comedia</translation>
+<translation id="547963486735802022">Proba a transferir os ficheiros de novo</translation>
 <translation id="5481076368049295676">É posible que con este contido se pretenda instalar software perigoso no teu dispositivo que che roube ou elimine información. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Engade un enderezo válido</translation>
 <translation id="5483838506518938965">Xa terminaches</translation>
@@ -2783,6 +2792,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6961733224437895943">Seguros do fogar</translation>
 <translation id="6961844873822989059">Pode pedirche permiso para utilizar os tipos de letra instalados no dispositivo</translation>
 <translation id="6961980518585973432">Aniversarios</translation>
+<translation id="6962858948849099922">Esgotouse o tempo de espera para a migración</translation>
 <translation id="6963520811470373926">En substitución doutro valor</translation>
 <translation id="6963574715554809750">Comercio para puntos de venda</translation>
 <translation id="6963693576491380224">Postos no Goberno e no sector público</translation>
@@ -2860,6 +2870,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7111507312244504964">Inspeccións e valoracións de propiedades</translation>
 <translation id="7112327784801341716">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
 <translation id="7118618213916969306">Buscar URL do portapapeis (<ph name="SHORT_URL" />)</translation>
+<translation id="7119371694555167493">Esgotouse o tempo de espera para a copia</translation>
 <translation id="7119414471315195487">Pecha outras pestanas ou programas</translation>
 <translation id="7124354851782353862">Introducir o teu CVC</translation>
 <translation id="7129355289156517987">Ao pechar todas as pestanas do modo de incógnito de Chromium, bórrase deste dispositivo a seguinte información sobre a actividade que realizases nelas:
@@ -3112,6 +3123,7 @@ Detalles adicionais:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Menos de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Actualmente <ph name="HOST_NAME" /> non pode procesar esta solicitude.</translation>
+<translation id="7599089013883397081">Esgotouse o tempo de espera para a descarga</translation>
 <translation id="7600965453749440009">Non traducir nunca do <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Adoitas conectarte a este sitio web de maneira segura, pero desta vez Chrome non puido usar unha conexión segura. É posible que un atacante estea tentando espiar ou modificar a túa conexión de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">O valor está fóra do rango de <ph name="VALUE" />.</translation>

@@ -231,6 +231,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1432187715652018471">orriak zerbitzu-kudeatzaile bat instalatu nahi du.</translation>
 <translation id="1432581352905426595">Kudeatu bilatzaileak</translation>
+<translation id="1433225466058025572">Saiatu berriro fitxategiak mugitzen</translation>
 <translation id="1435940442311036198">Erabili sarbide-gako bat beste gailu batean</translation>
 <translation id="1436185428532214179">Gailuko fitxategiak eta karpetak editatzea eska dezake</translation>
 <translation id="1442386063175183758">Leiho-erako tolestura eskuinean</translation>
@@ -683,6 +684,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2396249848217231973">&amp;Desegin ezabatzea</translation>
 <translation id="2397836504670957718">Ordenagailu eramangarriak eta poltsikoko ordenagailuak</translation>
 <translation id="2400600116338235695">Serieko ataketara konektatzea eska dezake</translation>
+<translation id="2404884497378469141">Saiatu berriro fitxategiak kopiatzen</translation>
 <translation id="2413155254802890957">Zaharrak</translation>
 <translation id="2413528052993050574">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiria baliogabetuta egon liteke. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="2414886740292270097">Iluna</translation>
@@ -839,6 +841,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2759825833388495838"><ph name="APP_NAME" /> helbideko pasahitza bete</translation>
 <translation id="2764001903315068341">Komikiak</translation>
 <translation id="2765217105034171413">Txikia</translation>
+<translation id="2770159525358613612">Saiatu berriro fitxategiak kargatzen</translation>
 <translation id="277133753123645258">Bidalketa-metodoa</translation>
 <translation id="277499241957683684">Gailuaren erregistroa falta da</translation>
 <translation id="2775884851269838147">Inprimatu lehenengo orria</translation>
@@ -1225,6 +1228,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3632892046558972264">Pantaila-partekatzea pausatu da</translation>
 <translation id="3634530185120165534">5. erretilua</translation>
 <translation id="3634567936866541746">Webgune engainagarri batean idatzi duzu pasahitza. Kontuak babesteko, gordetako pasahitzei begiratu bat ematea gomendatzen du Chrome-k.</translation>
+<translation id="3642196846309122856">Saiatu berriro fitxategiak deskargatzen</translation>
 <translation id="3642638418806704195">Aplikazioa:</translation>
 <translation id="3646643500201740985">Iragarkien errendimendua neurtzea</translation>
 <translation id="3647286794400715637">URL kate bakoitzak URL bat edo bi izan behar ditu.</translation>
@@ -1348,6 +1352,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3890664840433101773">Gehitu helbide elektronikoa</translation>
 <translation id="3897092660631435901">Menua</translation>
 <translation id="3901925938762663762">Txartela iraungi da</translation>
+<translation id="390391808978419508">Irekitzeko denbora-muga gainditu da</translation>
 <translation id="3905894480064208252">{0,plural, =1{Fitxategia ezin da transferitu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira transferitu}}</translation>
 <translation id="3906095212874392000">Bihurtutako testuaren amaiera</translation>
 <translation id="3906954721959377182">Tableta</translation>
@@ -1360,6 +1365,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="393316646445601645">Internet eta telekomunikazioak</translation>
 <translation id="3939773374150895049">WebAuthn erabili nahi duzu CVC kodearen ordez?</translation>
 <translation id="3941630233824954464">Gaitu derrigorrez berriro autentifikatzea</translation>
+<translation id="3942048175062210325">Saiatu berriro fitxategiak irekitzen</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3946209740501886391">Galdetu beti gune honetan</translation>
 <translation id="3947595700203588284">MIDI gailuetara konektatzea eska dezake</translation>
@@ -1441,6 +1447,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4117700440116928470">Ez da gidalerro-esparrua onartzen.</translation>
 <translation id="4121428309786185360">Iraungitze data:</translation>
 <translation id="4123572138124678573">Hiru zulo behean</translation>
+<translation id="412601465078863288">Kargatzeko denbora-muga gainditu da</translation>
 <translation id="4127317221386336246">Jantzien osagarriak</translation>
 <translation id="4127575959421463246">ChromeOS-ko eginbide esperimentalen bila zabiltza? Joan helbide honetara:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Beste 1}other{Beste #}}</translation>
@@ -1657,6 +1664,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4540780316273593836">Arazoren bat izan da</translation>
 <translation id="4541810033354695636">errealitate areagotua</translation>
 <translation id="4542971377163063093">6. erretilua</translation>
+<translation id="4546730006268514143">Transferitzeko denbora-muga gainditu da</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Pantailaren blokeoa darabilzu pasahitzen eremuak betetzeko</translation>
 <translation id="4558551763791394412">Saiatu luzapenak desgaituta.</translation>
@@ -2090,6 +2098,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5470230812924696184">Ingeniaritza zibila</translation>
 <translation id="5470861586879999274">&amp;Berregin editatzea</translation>
 <translation id="5471337644440862957">Komedia-filmak</translation>
+<translation id="547963486735802022">Saiatu berriro fitxategiak transferitzen</translation>
 <translation id="5481076368049295676">Baliteke edukiak software kaltegarria instalatzen saiatzea zure informazioa lapurtu edo ezabatzeko. <ph name="BEGIN_LINK" />Erakutsi, hala ere<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Gehitu balio duen helbide bat</translation>
 <translation id="5483838506518938965">Prest zaude</translation>
@@ -2778,6 +2787,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6961733224437895943">Etxe-aseguruak</translation>
 <translation id="6961844873822989059">Gailuan instalatutako letrak erabiltzea eska dezake</translation>
 <translation id="6961980518585973432">Urteurrenak</translation>
+<translation id="6962858948849099922">Mugitzeko denbora-muga gainditu da</translation>
 <translation id="6963520811470373926">Ordezten</translation>
 <translation id="6963574715554809750">Txikizkako merkataritza</translation>
 <translation id="6963693576491380224">Gobernuko eta sektore publikoko lanpostuak</translation>
@@ -2855,6 +2865,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7111507312244504964">Jabetza-ikuskapenak eta balioztatzeak</translation>
 <translation id="7112327784801341716">Informazioa ez dago eguneratuta? Jarri bankuarekin harremanetan egunera dezaten.</translation>
 <translation id="7118618213916969306">Bilatu arbeleko URLa (<ph name="SHORT_URL" />)</translation>
+<translation id="7119371694555167493">Kopiatzeko denbora-muga gainditu da</translation>
 <translation id="7119414471315195487">Itxi beste fitxa edo programa batzuk</translation>
 <translation id="7124354851782353862">Idatzi CVCa</translation>
 <translation id="7129355289156517987">Chromium-eko ezkutuko moduko fitxa guztiak ixten dituzunean, fitxa horietan egindako jarduerak gailutik ezabatuko dira:
@@ -3107,6 +3118,7 @@ Xehetasun gehiago:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> baino gutxiago</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> webguneak ezin du gauzatu eskaera.</translation>
+<translation id="7599089013883397081">Deskargatzeko denbora-muga gainditu da</translation>
 <translation id="7600965453749440009">Ez itzuli <ph name="LANGUAGE" /> inoiz</translation>
 <translation id="7601297359530599375">Normalean, webgune honetara modu seguruan konektatzen zara, baina oraingoan Chrome-k ezin izan du erabili konexio segururik. Baliteke erasotzaile bat zure sareko konexioa zelatatzen edo aldatzen saiatzea. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Balioa barrutitik kanpo dago: <ph name="VALUE" />.</translation>

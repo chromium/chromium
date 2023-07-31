@@ -1812,6 +1812,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8921624153894383499">Google'i assistent ei räägi selles keeles.</translation>
 <translation id="8924458948354692166">Vajutage akna ekraanipildi jäädvustamiseks sisestusklahvi</translation>
 <translation id="8926951137623668982">Riiul on alati peidetud</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fail}other{# faili}}</translation>
 <translation id="8936501819958976551">inaktiveeritud</translation>
 <translation id="8938800817013097409">C-tüüpi USB-seade (parempoolne port taga)</translation>
 <translation id="8940956008527784070">Aku tühjeneb (<ph name="PERCENTAGE" />%)</translation>

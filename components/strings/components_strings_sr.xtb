@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1432187715652018471">Страница жели да инсталира обрађивача услуге.</translation>
 <translation id="1432581352905426595">Управљај претраживачима</translation>
+<translation id="1433225466058025572">Пробајте да поново преместите фајлове</translation>
 <translation id="1435940442311036198">Користите приступни кôд на другом уређају</translation>
 <translation id="1436185428532214179">Може да тражи да мења фајлове и фолдере на уређају</translation>
 <translation id="1442386063175183758">Пресавијање на десној страни у облику прозора</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;Опозови брисање</translation>
 <translation id="2397836504670957718">Лаптопови</translation>
 <translation id="2400600116338235695">Може да тражи да се повезује са серијским портовима</translation>
+<translation id="2404884497378469141">Пробајте да поново копирате фајлове</translation>
 <translation id="2413155254802890957">Старо</translation>
 <translation id="2413528052993050574">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат ће можда бити опозван. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2414886740292270097">Тамнa</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">унесе лозинку на <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Стрипови</translation>
 <translation id="2765217105034171413">Мала</translation>
+<translation id="2770159525358613612">Пробајте да поново отпремите фајлове</translation>
 <translation id="277133753123645258">Начин слања</translation>
 <translation id="277499241957683684">Недостаје евиденција уређаја</translation>
 <translation id="2775884851269838147">Прва страница за штампање</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">Дељење садржаја екрана је паузирано</translation>
 <translation id="3634530185120165534">5. фиока</translation>
 <translation id="3634567936866541746">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chrome препоручује да проверите сачуване лозинке.</translation>
+<translation id="3642196846309122856">Пробајте да поново преузмете фајлове</translation>
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3646643500201740985">Мерење учинка огласа</translation>
 <translation id="3647286794400715637">Унос сваког стринга URL-а мора да садржи између 1 и 2 URL-а.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">Додајте имејл</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3901925938762663762">Картица је истекла</translation>
+<translation id="390391808978419508">Време за отварање је истекло</translation>
 <translation id="3905894480064208252">{0,plural, =1{Пренос фајла је блокиран}one{Пренос <ph name="FILE_COUNT" /> фајла је блокиран}few{Пренос <ph name="FILE_COUNT" /> фајла је блокиран}other{Пренос <ph name="FILE_COUNT" /> фајлова је блокиран}}</translation>
 <translation id="3906095212874392000">Крај конвертованог текста</translation>
 <translation id="3906954721959377182">Таблет</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">Интернет и телекомуникације</translation>
 <translation id="3939773374150895049">Желите ли да користите WebAuthn уместо CVC-а?</translation>
 <translation id="3941630233824954464">Омогућите обавезну поновну потврду идентитета</translation>
+<translation id="3942048175062210325">Пробајте да поново отворите фајлове</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="3946209740501886391">Увек питај на овом сајту</translation>
 <translation id="3947595700203588284">Може да тражи да се повезује са MIDI уређајима</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">Опсег смерница није подржан.</translation>
 <translation id="4121428309786185360">Истиче</translation>
 <translation id="4123572138124678573">Троструко бушење на дну</translation>
+<translation id="412601465078863288">Време за отпремање је истекло</translation>
 <translation id="4127317221386336246">Модни детаљи</translation>
 <translation id="4127575959421463246">Тражите Chrome ОС ознаке? Посети</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{још 1}one{још #}few{још #}other{још #}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">Дошло је до грешке</translation>
 <translation id="4541810033354695636">проширена реалност</translation>
 <translation id="4542971377163063093">6. фиока</translation>
+<translation id="4546730006268514143">Време за пренос је истекло</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Користите закључавање екрана за попуњавање лозинки</translation>
 <translation id="4558551763791394412">Покушајте да онемогућите додатке.</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">Грађевинарство</translation>
 <translation id="5470861586879999274">&amp;Понови измену</translation>
 <translation id="5471337644440862957">Комедије</translation>
+<translation id="547963486735802022">Пробајте да поново пренесете фајлове</translation>
 <translation id="5481076368049295676">Овај садржај ће покушати да инсталира опасан софтвер на уређај који ће украсти или обрисати ваше податке. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Додајте важећу адресу</translation>
 <translation id="5483838506518938965">Спремни сте</translation>
@@ -2782,6 +2791,7 @@
 <translation id="6961733224437895943">Осигурање дома</translation>
 <translation id="6961844873822989059">Може да тражи да користи фонтове инсталиране на уређају</translation>
 <translation id="6961980518585973432">Годишњице</translation>
+<translation id="6962858948849099922">Време за премештање је истекло</translation>
 <translation id="6963520811470373926">Замењује</translation>
 <translation id="6963574715554809750">Малопродаја</translation>
 <translation id="6963693576491380224">Послови у државном и јавном сектору</translation>
@@ -2859,6 +2869,7 @@
 <translation id="7111507312244504964">Преглед и процена вредности имовине</translation>
 <translation id="7112327784801341716">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
 <translation id="7118618213916969306">Потражите URL у привременој меморији, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Време за копирање је истекло</translation>
 <translation id="7119414471315195487">Затворите друге картице или програме</translation>
 <translation id="7124354851782353862">Унесите CVC</translation>
 <translation id="7129355289156517987">Када затворите све Chromium картице без архивирања, активност на тим картицама се брише са уређаја:
@@ -3111,6 +3122,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Мање од <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Хост <ph name="HOST_NAME" /> тренутно не може да обради овај захтев.</translation>
+<translation id="7599089013883397081">Време за преузимање је истекло</translation>
 <translation id="7600965453749440009">Никад не преводи <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Обично се безбедно повезујете с овим сајтом, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Вредност је изван опсега <ph name="VALUE" />.</translation>

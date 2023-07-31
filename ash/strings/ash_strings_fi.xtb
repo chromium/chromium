@@ -1810,6 +1810,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8921624153894383499">Google Assistant ei ole käytettävissä tällä kielellä.</translation>
 <translation id="8924458948354692166">Ota kuvakaappaus ikkunasta painamalla Enter</translation>
 <translation id="8926951137623668982">Hylly piilotetaan aina</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>
 <translation id="8940956008527784070">Akku vähissä (<ph name="PERCENTAGE" /> %)</translation>

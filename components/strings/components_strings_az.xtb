@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1432187715652018471">səhifə xidmət işləyici quraşdırmaq istəyir.</translation>
 <translation id="1432581352905426595">Axtarış sistemlərini idarə edin</translation>
+<translation id="1433225466058025572">Faylları yenidən köçürün</translation>
 <translation id="1435940442311036198">Fərqli cihazda şifrə istifadə edin</translation>
 <translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="1442386063175183758">Sağ küncə qatlayın</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;Silinməni ləğv edin</translation>
 <translation id="2397836504670957718">Laptoplar və noutbuklar</translation>
 <translation id="2400600116338235695">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
+<translation id="2404884497378469141">Faylları yenidən kopyalayın</translation>
 <translation id="2413155254802890957">Köhnə</translation>
 <translation id="2413528052993050574">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatı ləğv edilə bilər. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="2414886740292270097">Qara</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> tətbiqində parolunuzu daxil edin</translation>
 <translation id="2764001903315068341">Komiks</translation>
 <translation id="2765217105034171413">Kiçik</translation>
+<translation id="2770159525358613612">Faylları yenidən yükləyin</translation>
 <translation id="277133753123645258">Göndərmə üsulu</translation>
 <translation id="277499241957683684">Çatmayan cihaz qeydi</translation>
 <translation id="2775884851269838147">İlk çap səhifəsi</translation>
@@ -1225,6 +1228,7 @@
 <translation id="3632892046558972264">Ekran paylaşımı durdurulub</translation>
 <translation id="3634530185120165534">Qab 5</translation>
 <translation id="3634567936866541746">İndicə parolunuzu aldadıcı sayt içində yazdınız. Hesablarınızı qorumaq üçün Chrome yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
+<translation id="3642196846309122856">Faylları yenidən endirin</translation>
 <translation id="3642638418806704195">Tətbiq:</translation>
 <translation id="3646643500201740985">Bir reklamın nə qədər yaxşı performans göstərdiyini ölçmək</translation>
 <translation id="3647286794400715637">Hər bir keçid sətri daxiletməsində 1-2 keçid olmalıdır.</translation>
@@ -1348,6 +1352,7 @@
 <translation id="3890664840433101773">E-poçt ünvanı əlavə edin</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Kartın vaxtı bitib.</translation>
+<translation id="390391808978419508">Açma vaxtı bitdi</translation>
 <translation id="3905894480064208252">{0,plural, =1{Faylın ötürülməsi bloklandı}other{<ph name="FILE_COUNT" /> faylın ötürülməsi bloklandı}}</translation>
 <translation id="3906095212874392000">Çevrilmiş mətnin sonu</translation>
 <translation id="3906954721959377182">Planşet</translation>
@@ -1360,6 +1365,7 @@
 <translation id="393316646445601645">İnternet və telekom</translation>
 <translation id="3939773374150895049">CVC əvəzinə WebAuthn istifadə edilsin?</translation>
 <translation id="3941630233824954464">Məcburi təkrar identifikasiyanı aktivləşdirin</translation>
+<translation id="3942048175062210325">Faylları yenidən açın</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3946209740501886391">Həmişə bu saytda sual verin</translation>
 <translation id="3947595700203588284">Saytlar MIDI cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
@@ -1441,6 +1447,7 @@
 <translation id="4117700440116928470">Siyasət dəstəklənmir.</translation>
 <translation id="4121428309786185360">Köhnəlmə vaxtı:</translation>
 <translation id="4123572138124678573">Aşağıdan üçlü deşik açın</translation>
+<translation id="412601465078863288">Yükləmə vaxtı bitdi</translation>
 <translation id="4127317221386336246">Geyim aksesuarları</translation>
 <translation id="4127575959421463246">ChromeOS bayraqları axtarırsınız? Ziyarət edin:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{digər 1}other{digər #}}</translation>
@@ -1657,6 +1664,7 @@
 <translation id="4540780316273593836">Xəta baş verdi</translation>
 <translation id="4541810033354695636">artırılmış reallıq</translation>
 <translation id="4542971377163063093">Qab 6</translation>
+<translation id="4546730006268514143">Ötürmə vaxtı bitdi</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Parolları daxil etmək üçün ekran kilidindən istifadə edirsiniz</translation>
 <translation id="4558551763791394412">Artırmalarınız deaktiv edilir</translation>
@@ -2090,6 +2098,7 @@
 <translation id="5470230812924696184">Mülki mühəndislik</translation>
 <translation id="5470861586879999274">&amp;Düzəlişi yenidən edin</translation>
 <translation id="5471337644440862957">Komediya filmləri</translation>
+<translation id="547963486735802022">Faylları yenidən ötürün</translation>
 <translation id="5481076368049295676">Bu kontent cihazda məlumatı oğurlayan və ya silən təhlükəli proqram təminatı quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Etibarlı ünvan əlavə edin</translation>
 <translation id="5483838506518938965">Hər şey hazırdır</translation>
@@ -2779,6 +2788,7 @@
 <translation id="6961733224437895943">Ev sığortası</translation>
 <translation id="6961844873822989059">Saytlar cihazınızda quraşdırılmış şriftləri istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="6961980518585973432">İldönümləri</translation>
+<translation id="6962858948849099922">Köçürmə vaxtı bitdi</translation>
 <translation id="6963520811470373926">Əvəz edilir</translation>
 <translation id="6963574715554809750">Pərakəndə ticarət</translation>
 <translation id="6963693576491380224">Hökumət və ictimai sektor işləri</translation>
@@ -2856,6 +2866,7 @@
 <translation id="7111507312244504964">Mülk yoxlama və qiymətləndirmə</translation>
 <translation id="7112327784801341716">Cari məlumatlarınızı görmürsünüz? Yeniləmək üçün bankınızla əlaqə saxlayın.</translation>
 <translation id="7118618213916969306">Mübadilə buferindən link axtarın, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Kopyalama vaxtı bitdi</translation>
 <translation id="7119414471315195487">Digər tab və ya proqramları bağlayın</translation>
 <translation id="7124354851782353862">CVC-ni daxil edin</translation>
 <translation id="7129355289156517987">Bütün Chromium Anonim tablarını bağladığınız zaman həmin tablardakı fəaliyyətiniz bu cihazdan silinir:
@@ -3108,6 +3119,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> həcmindən az</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> hal-hazırda bu tələbi idarə edə bilmir.</translation>
+<translation id="7599089013883397081">Endirmə vaxtı bitdi</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> heç vaxt tərcümə etməyin</translation>
 <translation id="7601297359530599375">Adətən, bu sayta təhlükəsiz qoşulursunuz, lakin Chrome bu dəfə təhlükəsiz bağlantı istifadə edə bilmədi. Hücumçu şəbəkə bağlantısını dinləməyə və ya dəyişdirməyə cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Dəyər <ph name="VALUE" /> aralığından kənardır.</translation>

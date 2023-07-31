@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1432187715652018471">페이지에서 서비스 핸들러를 설치하려고 합니다.</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
+<translation id="1433225466058025572">파일을 다시 이동해 보세요.</translation>
 <translation id="1435940442311036198">다른 기기의 패스키 사용</translation>
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">삭제 실행 취소(&amp;U)</translation>
 <translation id="2397836504670957718">노트북</translation>
 <translation id="2400600116338235695">직렬 포트에 연결하도록 요청할 수 있음</translation>
+<translation id="2404884497378469141">파일을 다시 복사해 보세요.</translation>
 <translation id="2413155254802890957">이전</translation>
 <translation id="2413528052993050574">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 취소될 수 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2414886740292270097">어둡게</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
 <translation id="2764001903315068341">만화</translation>
 <translation id="2765217105034171413">작게</translation>
+<translation id="2770159525358613612">파일을 다시 업로드해 보세요.</translation>
 <translation id="277133753123645258">배송 방법</translation>
 <translation id="277499241957683684">기기 기록 없음</translation>
 <translation id="2775884851269838147">첫 인쇄 페이지</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">화면 공유 일시중지됨</translation>
 <translation id="3634530185120165534">트레이 5</translation>
 <translation id="3634567936866541746">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
+<translation id="3642196846309122856">파일을 다시 다운로드해 보세요.</translation>
 <translation id="3642638418806704195">애플리케이션:</translation>
 <translation id="3646643500201740985">광고 실적 측정</translation>
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">이메일 추가</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3901925938762663762">만료된 카드입니다.</translation>
+<translation id="390391808978419508">여는 시간 초과</translation>
 <translation id="3905894480064208252">{0,plural, =1{파일 전송 차단됨}other{파일 <ph name="FILE_COUNT" />개 전송 차단됨}}</translation>
 <translation id="3906095212874392000">변환된 텍스트의 끝</translation>
 <translation id="3906954721959377182">태블릿</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">인터넷 및 전기 통신</translation>
 <translation id="3939773374150895049">CVC 대신 WebAuthn을 사용하시겠습니까?</translation>
 <translation id="3941630233824954464">필수 재인증 사용 설정</translation>
+<translation id="3942048175062210325">파일을 다시 열어보세요.</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3946209740501886391">이 사이트에서 항상 물어보기</translation>
 <translation id="3947595700203588284">MIDI 기기에 연결하도록 요청할 수 있음</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">지원되지 않는 정책 범위입니다.</translation>
 <translation id="4121428309786185360">만료일:</translation>
 <translation id="4123572138124678573">하단 3공 펀칭</translation>
+<translation id="412601465078863288">업로드 시간 초과</translation>
 <translation id="4127317221386336246">의류 액세서리</translation>
 <translation id="4127575959421463246">ChromeOS 플래그를 찾으시나요? 방문</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">문제 발생</translation>
 <translation id="4541810033354695636">증강 현실</translation>
 <translation id="4542971377163063093">트레이 6</translation>
+<translation id="4546730006268514143">전송 시간 초과</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">비밀번호 입력 시 화면 잠금 사용 중</translation>
 <translation id="4558551763791394412">확장 프로그램 사용 중지해 보기</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">토목공학</translation>
 <translation id="5470861586879999274">수정 다시 실행(&amp;R)</translation>
 <translation id="5471337644440862957">코미디 영화</translation>
+<translation id="547963486735802022">파일을 다시 전송해 보세요.</translation>
 <translation id="5481076368049295676">이 콘텐츠는 사용자의 정보를 도용하거나 삭제하는 위험한 소프트웨어를 기기에 설치하려 할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">유효한 주소 추가</translation>
 <translation id="5483838506518938965">준비 완료</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6961733224437895943">주택 보험</translation>
 <translation id="6961844873822989059">기기에 설치된 글꼴 사용을 요청할 수 있음</translation>
 <translation id="6961980518585973432">기념일</translation>
+<translation id="6962858948849099922">이동 시간 초과</translation>
 <translation id="6963520811470373926">대체 중</translation>
 <translation id="6963574715554809750">소매업</translation>
 <translation id="6963693576491380224">정부 기관 및 공공관리직</translation>
@@ -2860,6 +2870,7 @@
 <translation id="7111507312244504964">부동산 감정</translation>
 <translation id="7112327784801341716">최신 정보가 표시되지 않나요? 은행에 문의하여 업데이트하세요.</translation>
 <translation id="7118618213916969306">클립보드 URL <ph name="SHORT_URL" /> 검색</translation>
+<translation id="7119371694555167493">복사 시간 초과</translation>
 <translation id="7119414471315195487">다른 탭 또는 프로그램 닫기</translation>
 <translation id="7124354851782353862">CVC 입력</translation>
 <translation id="7129355289156517987">Chromium 시크릿 탭을 모두 닫으면 기기에서 다음 탭의 활동이 삭제됩니다.
@@ -3111,6 +3122,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> 미만</translation>
 <translation id="759889825892636187">현재 <ph name="HOST_NAME" />에서 요청을 처리할 수 없습니다.</translation>
+<translation id="7599089013883397081">다운로드 시간 초과</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="7601297359530599375">일반적으로 이 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">값(<ph name="VALUE" />)이 범위를 벗어났습니다.</translation>

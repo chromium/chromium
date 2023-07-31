@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">ბეჭდვა</translation>
 <translation id="1432187715652018471">გვერდს სურს სერვისის დამმუშავებლის ინსტალაცია.</translation>
 <translation id="1432581352905426595">საძიებო სისტემების მართვა</translation>
+<translation id="1433225466058025572">ცადეთ თქვენი ფაილების ხელახლა გადატანა</translation>
 <translation id="1435940442311036198">წვდომის გასაღების გამოყენება სხვა მოწყობილობაზე</translation>
 <translation id="1436185428532214179">შეუძლია თქვენს მოწყობილობაზე არსებული ფაილებისა და საქაღალდეების რედაქტირების თხოვნა</translation>
 <translation id="1442386063175183758">მარჯვნივ დაკეცვა ჭიშკრის ფორმით</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">წაშლის &amp;მოქმედების გაუქმება</translation>
 <translation id="2397836504670957718">ლაპტოპები და ნოუთბუქები</translation>
 <translation id="2400600116338235695">შეუძლია თანმიმდევრულ პორტებთან დაკავშირების თხოვნა</translation>
+<translation id="2404884497378469141">ცადეთ თქვენი ფაილების ხელახლა კოპირება</translation>
 <translation id="2413155254802890957">ძველი</translation>
 <translation id="2413528052993050574">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი შესაძლოა გაუქმებულია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="2414886740292270097">მუქი</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">შეავსეთ თქვენი პაროლი <ph name="APP_NAME" />-ში</translation>
 <translation id="2764001903315068341">კომიქსები</translation>
 <translation id="2765217105034171413">პატარა</translation>
+<translation id="2770159525358613612">ცადეთ თქვენი ფაილების ხელახლა ატვირთვა</translation>
 <translation id="277133753123645258">გაგზავნის მეთოდი</translation>
 <translation id="277499241957683684">ჩანაწერი გამოტოვებული მოწყობილობის შესახებ</translation>
 <translation id="2775884851269838147">პირველი საბეჭდი გვერდი</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">ეკრანის გაზიარება შეჩერდა</translation>
 <translation id="3634530185120165534">ლანგარი 5</translation>
 <translation id="3634567936866541746">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. თქვენი ანგარიშების დაცვის მიზნით, Chrome გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
+<translation id="3642196846309122856">ცადეთ თქვენი ფაილების ხელახლა ჩამოტვირთვა</translation>
 <translation id="3642638418806704195">აპლიკაცია:</translation>
 <translation id="3646643500201740985">რეკლამის ეფექტურობის გაზომვა</translation>
 <translation id="3647286794400715637">URL-ის ფრაზის თითოეული ჩანაწერი უნდა შეიცავდეს 1-დან 2-მდე URL-ს.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">ელფოსტის დამატება</translation>
 <translation id="3897092660631435901">მენიუ</translation>
 <translation id="3901925938762663762">ბარათი ვადაგასულია</translation>
+<translation id="390391808978419508">გახსნის დრო ამოიწურა</translation>
 <translation id="3905894480064208252">{0,plural, =1{ფაილის გადაცემის შესაძლებლობა დაიბლოკა}other{<ph name="FILE_COUNT" /> ფაილის გადაცემის შესაძლებლობა დაიბლოკა}}</translation>
 <translation id="3906095212874392000">გარდაქმნილი ტექსტის დასასრული</translation>
 <translation id="3906954721959377182">ტაბლეტი</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">ინტერნეტი და ტელეკომუნიკაცია</translation>
 <translation id="3939773374150895049">გსურთ გამოიყენოთ WebAuthn ნაცვლად CVC-ისა?</translation>
 <translation id="3941630233824954464">სავალდებულო ხელახალი ავტორიზაციის ჩართვა</translation>
+<translation id="3942048175062210325">ცადეთ თქვენი ფაილების ხელახლა გახსნა</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
 <translation id="3946209740501886391">ყოველთვის შეკითხვა ამ საიტზე</translation>
 <translation id="3947595700203588284">შეუძლია MIDI-მოწყობილობებთან დაკავშირების თხოვნა</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">წესის მასშტაბი არ არის მხარდაჭერილი.</translation>
 <translation id="4121428309786185360">ვადა გასდის</translation>
 <translation id="4123572138124678573">სამმაგად გახვრეტა ქვემოთ</translation>
+<translation id="412601465078863288">ატვირთვის დრო ამოიწურა</translation>
 <translation id="4127317221386336246">ტანსაცმლის აქსესუარები</translation>
 <translation id="4127575959421463246">ChromeOS ალმებს ეძებთ? მოინახულეთ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 სხვა}other{# სხვა}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">წარმოიქმნა შეფერხება</translation>
 <translation id="4541810033354695636">აუგმენტური რეალობა</translation>
 <translation id="4542971377163063093">ლანგარი 6</translation>
+<translation id="4546730006268514143">გადაცემის დრო ამოიწურა</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">პაროლების შევსებისთვის თქვენი ეკრანის დაბლოკვის მეთოდს იყენებთ</translation>
 <translation id="4558551763791394412">ცადეთ გაფართოებების გათიშვა.</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">სამოქალაქო ინჟინერია</translation>
 <translation id="5470861586879999274">რედაქტირების &amp;გამეორება</translation>
 <translation id="5471337644440862957">კომედიური ფილმები</translation>
+<translation id="547963486735802022">ცადეთ თქვენი ფაილების ხელახლა გადაცემა</translation>
 <translation id="5481076368049295676">ამ კონტენტმა შეიძლება თქვენს მოწყობილობაზე დააინსტალიროს სახიფათო პროგრამული უზრუნველყოფა, რომელიც შეძლებს თქვენი ინფორმაციის მოპარვას ან წაშლას. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">დაამატეთ სწორი მისამართი</translation>
 <translation id="5483838506518938965">თქვენ ყველა მითითებული ხართ</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6961733224437895943">სახლის დაზღვევა</translation>
 <translation id="6961844873822989059">შეუძლია თქვენს მოწყობილობაზე არსებული შრიფტების გამოყენების თხოვნა</translation>
 <translation id="6961980518585973432">იუბილეები</translation>
+<translation id="6962858948849099922">გადატანის დრო ამოიწურა</translation>
 <translation id="6963520811470373926">ნაცვლდება</translation>
 <translation id="6963574715554809750">საცალო ვაჭრობა</translation>
 <translation id="6963693576491380224">ვაკანსიები სამთავრობო და საჯარო სექტორში</translation>
@@ -2860,6 +2870,7 @@
 <translation id="7111507312244504964">კერძო საკუთრების ინსპექტირება და შეფასება</translation>
 <translation id="7112327784801341716">თქვენი ამჟამინდელი ინფორმაცია არ ჩანს? ინფორმაციის განახლებისთვის დაუკავშირდით თქვენს ბანკს.</translation>
 <translation id="7118618213916969306">გაცვლის ბუფერში URL-ის ძიება, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">კოპირების დრო ამოიწურა</translation>
 <translation id="7119414471315195487">სხვა ჩანართების ან პროგრამების დახურვა</translation>
 <translation id="7124354851782353862">შეიყვანეთ თქვენი CVC</translation>
 <translation id="7129355289156517987">Chromium-ის ყველა ინკოგნიტო ჩანართის დახურვის შემდეგ თქვენი აქტივობა ამ ჩანართებში ამ მოწყობილობიდან წაიშლება:
@@ -3112,6 +3123,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">ნაკლები, ვიდრე <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ამჟამად ვერ ამუშავებს ამ მოთხოვნას.</translation>
+<translation id="7599089013883397081">ჩამოტვირთვის დრო ამოიწურა</translation>
 <translation id="7600965453749440009">არასოდეს თარგმნო <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">ამ საიტს, როგორც წესი, დაცულად უკავშირდებით, თუმცა Chrome-მა ამჯერად ვერ დაამყარა დაცული კავშირი. თავდამსხმელს შეეძლება თქვენს ქსელის კავშირზე თვალთვალი ან მისი შეცვლა. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">მნიშვნელობა დიაპაზონის გარეთაა <ph name="VALUE" />.</translation>

@@ -1812,6 +1812,7 @@
 <translation id="8921624153894383499">Google помоћник не говори овај језик.</translation>
 <translation id="8924458948354692166">Притисните Enter да бисте направили снимак екрана прозора</translation>
 <translation id="8926951137623668982">Полица је увек сакривена</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">Уређај са USB прикључком типа C (задњи десни порт)</translation>
 <translation id="8940956008527784070">Батерија је скоро празна (<ph name="PERCENTAGE" />%)</translation>

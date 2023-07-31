@@ -47,6 +47,7 @@
 <translation id="122699739164161391">Бүх табыг хаах</translation>
 <translation id="1229222343402087523">Chrome-с ${searchPhrase}-г хайх</translation>
 <translation id="1242044645101871359">Дахин нэвтэрнэ үү</translation>
+<translation id="1248276223555153952">Энэ төхөөрөмж дээрх бүртгэлүүдийг удирдах...</translation>
 <translation id="1254117744268754948">Хавтсыг сонгох</translation>
 <translation id="1254424942107648268">Өмнөх мөрийг олох</translation>
 <translation id="1258491128795710625">Шинэ юм юу байна</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">Шуудан илгээгдсэн байна.</translation>
 <translation id="1582732959743469162">Энэ нь таны одоогийн татан авалтын бүх үйл явцыг зогсооно.</translation>
 <translation id="1594034544529347967">Эхэлнэ</translation>
+<translation id="160275202205869636">Асаалттай үед таны Google Бүртгэлийн өгөгдлийг ашиглаж, үүнд хадгалдаг. Унтраалттай үед өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
 <translation id="1605405588277479165">Унтраалттай - Санал болгохгүй</translation>
 <translation id="1605658421715042784">Зураг хуулах</translation>
 <translation id="1608337082864370066">Хуулсан зургийг хайх</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">Нууцлалтай хайлт</translation>
 <translation id="277771892408211951">Хэл сонгоно уу</translation>
 <translation id="2780046210906776326">Ямар ч и-мэйл бүртгэл алга байна.</translation>
+<translation id="2780326741858434269">Энэ төхөөрөмж дээрх бүртгэлүүд</translation>
 <translation id="2781325423985810933">БОЛИХ</translation>
 <translation id="2781331604911854368">Асаалттай</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">Lens-р хайх</translation>
 <translation id="3577555362230509265">Бусад аппад Chrome-г ашиглана уу.</translation>
 <translation id="3581564640715911333">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
+<translation id="3587885837929752825">Танай байгууллага Google Бүртгэлдээ юу хадгалж болохыг тань хязгаарлана.</translation>
 <translation id="3588820906588687999">Зургийг шинэ цонхонд нээ</translation>
 <translation id="3595252146048399851">Та синк хийх зүйлээ <ph name="BEGIN_LINK" />тохиргоо<ph name="END_LINK" /> хэсгээс хүссэн үедээ сонгох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="3603009562372709545">Холбоосын URL-ыг хуулах</translation>
@@ -693,6 +697,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Заавал бөглөх хэсэг хоосон байна. Хадгалахаасаа өмнө үүнийг бөглөнө үү.}other{Заавал бөглөх зарим хэсэг хоосон байна. Хадгалахаасаа өмнө тэдгээрийг бөглөнө үү.}}</translation>
 <translation id="5271549068863921519">Нууц үгийг хадгал</translation>
 <translation id="5283494734135414249">Хаяг оруулах хэсгийн доор гарч ирэх товчлолыг товшино уу.</translation>
+<translation id="5292723732574094123">Гарсан. Бүртгэлийнхээ хавчуурга, нууц үг болон бусад зүйлийг харахын тулд буцаж нэвтэрнэ үү.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> бүртгэлийг хасах уу?</translation>
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
@@ -736,6 +741,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5614553682702429503">Нууц үгийг хадгалах уу?</translation>
 <translation id="5626245204502895507">Файлыг одоогоор татаж авч чадаагүй байна.</translation>
 <translation id="5631164295104953411">Төлбөрийн хэрэгсэл нэмэх</translation>
+<translation id="5649795523408334796">Хаягуудыг илрүүлэх</translation>
 <translation id="5652623411397330904">Таны хянаж буй бүтээгдэхүүнүүдийг энд харуулна.</translation>
 <translation id="5657859710142657190">Табын хүснэгт рүү очих</translation>
 <translation id="5659593005791499971">И-мэйл хаяг</translation>
@@ -1297,6 +1303,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8843129975935593190">Танай байгууллага таны юу синк хийж болохыг хязгаарлана.</translation>
 <translation id="8849001918648564819">Нуусан</translation>
 <translation id="8855242995793521265">Таны хөтөч эсвэл төхөөрөмжийг мэдэгдэхүйц хэмжээгээр удаашруулахгүй.</translation>
+<translation id="8863431381414769983">Google Газрын зургаас чиглэл болон орон нутгийн мэдээлэл авна уу</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} таб}other{{count} таб}}</translation>
 <translation id="8870413625673593573">Саяхан хаагдсан</translation>
 <translation id="8876882697946675716">Төхөөрөмжүүдээ синк хийсэн хэвээр байгаарай</translation>

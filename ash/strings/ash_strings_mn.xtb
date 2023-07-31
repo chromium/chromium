@@ -1813,6 +1813,7 @@
 <translation id="8921624153894383499">Google туслах энэ хэлээр ярьдаггүй.</translation>
 <translation id="8924458948354692166">Цонхны дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="8926951137623668982">Shelf-г тогтмол нууна</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">идэвхгүй болгосон</translation>
 <translation id="8938800817013097409">USB-C төхөөрөмж (ард талын баруун порт)</translation>
 <translation id="8940956008527784070">Цэнэг бага байна ( <ph name="PERCENTAGE" /> %)</translation>

@@ -1811,6 +1811,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8921624153894383499">Nid yw Google Assistant yn siarad yr iaith hon.</translation>
 <translation id="8924458948354692166">Pwyswch Enter i dynnu sgrinlun ffenestr</translation>
 <translation id="8926951137623668982">Silff yn cael ei guddio bob amser</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="8936501819958976551">wedi dadweithredu</translation>
 <translation id="8938800817013097409">Dyfais USB-C (porth de yn y cefn)</translation>
 <translation id="8940956008527784070">Mae'r batri'n isel (<ph name="PERCENTAGE" />%)</translation>

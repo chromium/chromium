@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1432187715652018471">પેજ સેવાનું હૅન્ડલર ઇન્સ્ટૉલ કરવા માગે છે.</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
+<translation id="1433225466058025572">તમારી ફાઇલોની ફરીથી ખસેડવાનો પ્રયાસ કરો</translation>
 <translation id="1435940442311036198">કોઈ બીજા ડિવાઇસ પર પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1436185428532214179">તમારા ડિવાઇસમાંની ફાઇલોમાં અને ફોલ્ડરોમાં ફેરફાર કરવાનું પૂછી શકે છે</translation>
 <translation id="1442386063175183758">જમણો ગેટ ફોલ્ડ</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;ડિલીટ રદ કરો</translation>
 <translation id="2397836504670957718">લૅપટૉપ અને નોટબુક</translation>
 <translation id="2400600116338235695">સીરિયલ પોર્ટ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
+<translation id="2404884497378469141">તમારી ફાઇલોની ફરીથી કૉપિ કરવાનો પ્રયાસ કરો</translation>
 <translation id="2413155254802890957">જૂનું</translation>
 <translation id="2413528052993050574">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર રદબાતલ થયું હશે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="2414886740292270097">ઘાટું</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> પર તમારો પાસવર્ડ ભરો</translation>
 <translation id="2764001903315068341">કૉમિક</translation>
 <translation id="2765217105034171413">નાનું</translation>
+<translation id="2770159525358613612">તમારી ફાઇલોને ફરીથી અપલોડ કરવાનો પ્રયાસ કરો</translation>
 <translation id="277133753123645258">વિતરણ પદ્ધતિ</translation>
 <translation id="277499241957683684">ઉપકરણ રેકોર્ડ ખૂટે છે</translation>
 <translation id="2775884851269838147">પહેલાં પેજ પ્રિન્ટ કરો</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">સ્ક્રીન શેર કરવાનું થોભાવ્યું છે</translation>
 <translation id="3634530185120165534">ટ્રે 5</translation>
 <translation id="3634567936866541746">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Chrome તમારા સાચવેલા પાસવર્ડ હમણાં જ ચેક કરવાનો સુઝાવ આપે છે.</translation>
+<translation id="3642196846309122856">તમારી ફાઇલોને ફરીથી ડાઉનલોડ કરવાનો પ્રયાસ કરો</translation>
 <translation id="3642638418806704195">ઍપ્લિકેશન:</translation>
 <translation id="3646643500201740985">કોઈ જાહેરાતના પર્ફોર્મન્સની માપણી</translation>
 <translation id="3647286794400715637">પ્રત્યે URLની સ્ટ્રિંગ ઍન્ટ્રીમાં 1થી 2ની વચ્ચે URLs શામેલ હોવી આવશ્યક છે.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">ઇમેઇલ ઉમેરો</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
 <translation id="3901925938762663762">કાર્ડની સમયસીમા સમાપ્ત થઇ ગઈ છે</translation>
+<translation id="390391808978419508">ખોલવાનો સમય સમાપ્ત થયો</translation>
 <translation id="3905894480064208252">{0,plural, =1{ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}one{<ph name="FILE_COUNT" /> ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}other{<ph name="FILE_COUNT" /> ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}}</translation>
 <translation id="3906095212874392000">રૂપાંતરિત ટેક્સ્ટની સમાપ્તિ</translation>
 <translation id="3906954721959377182">ટૅબ્લેટ</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">ઇન્ટરનેટ અને ટેલિકોમ</translation>
 <translation id="3939773374150895049">CVCને બદલે WebAuthnનો ઉપયોગ કરીએ?</translation>
 <translation id="3941630233824954464">ફરજીયાત પુન:પ્રમાણીકરણ ચાલુ કરો</translation>
+<translation id="3942048175062210325">તમારી ફાઇલોને ફરીથી ખોલવાનો પ્રયાસ કરો</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3946209740501886391">આ સાઇટ પર હંમેશાં પૂછો</translation>
 <translation id="3947595700203588284">MIDI ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">પૉલિસી મર્યાદા સમર્થિત નથી.</translation>
 <translation id="4121428309786185360">ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="4123572138124678573">નીચેની તરફ ત્રણ કાણાં પાડો</translation>
+<translation id="412601465078863288">અપલોડ કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="4127317221386336246">વસ્ત્રો સાથે પહેરાતી ઍક્સેસરી</translation>
 <translation id="4127575959421463246">ChromeOS ફ્લૅગ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 અન્ય}one{# અન્ય}other{# અન્ય}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">કંઈક ખોટું થયું હતું</translation>
 <translation id="4541810033354695636">ઑગ્મેન્ટેડ રિયાલિટી</translation>
 <translation id="4542971377163063093">ટ્રે 6</translation>
+<translation id="4546730006268514143">ટ્રાન્સફર કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">તમે પાસવર્ડ ભરવા માટે તમારા સ્ક્રીન લૉકનો ઉપયોગ કરી રહ્યાં છો</translation>
 <translation id="4558551763791394412">તમારા એક્સ્ટેન્શન્સને અક્ષમ કરવાનો પ્રયાસ કરો.</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">સિવિલ એન્જિનિયરિંગ</translation>
 <translation id="5470861586879999274">&amp;ફરી ફેરફાર કરો</translation>
 <translation id="5471337644440862957">રમૂજી મૂવી</translation>
+<translation id="547963486735802022">તમારી ફાઇલોને ફરીથી ટ્રાન્સફર કરવાનો પ્રયાસ કરો</translation>
 <translation id="5481076368049295676">આ કન્ટેન્ટ કદાચ તમારા ડિવાઇસ પર જોખમકારક સૉફ્ટવેર ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરી શકે છે કે જે તમારી માહિતીની ચોરી કરે અથવા કાઢી નાખે છે. <ph name="BEGIN_LINK" />છતાં પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">માન્ય સરનામું ઉમેરો</translation>
 <translation id="5483838506518938965">તમે બધું સેટ કરી લીધું</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6961733224437895943">ઘરનો વીમો</translation>
 <translation id="6961844873822989059">તમારા ડિવાઇસમાં ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="6961980518585973432">વર્ષગાંઠો</translation>
+<translation id="6962858948849099922">ખસેડવાનો સમય સમાપ્ત થયો</translation>
 <translation id="6963520811470373926">જગ્યા લઈ રહી છે</translation>
 <translation id="6963574715554809750">છૂટક વેપાર</translation>
 <translation id="6963693576491380224">સરકારી અને જાહેર ક્ષેત્રમાં નોકરીઓ</translation>
@@ -2860,6 +2870,7 @@
 <translation id="7111507312244504964">સંપત્તિ નિરીક્ષણ અને મૂલ્યાંકન</translation>
 <translation id="7112327784801341716">શું તમારી હાલની માહિતી દેખાઈ રહી નથી? તેને અપડેટ કરવા માટે તમારી બેંકનો સંપર્ક કરો.</translation>
 <translation id="7118618213916969306">ક્લિપબોર્ડ URL શોધો, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">કૉપિ કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="7119414471315195487">અન્ય ટૅબ અથવા પ્રોગ્રામ બંધ કરો</translation>
 <translation id="7124354851782353862">તમારો CVC દાખલ કરો</translation>
 <translation id="7129355289156517987">તમે Chromiumની બધી છૂપી ટૅબ બંધ કરી દો ત્યારે તે ટૅબની તમારી પ્રવૃત્તિ આ ડિવાઇસમાંથી સાફ કરી દેવાય છે:
@@ -3112,6 +3123,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> કરતા ઓછું</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" />, હાલમાં આ વિનંતીને હેન્ડલ કરવામાં અસમર્થ છે.</translation>
+<translation id="7599089013883397081">ડાઉનલોડ કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7601297359530599375">તમે સામાન્ય રીતે આ સાઇટ સાથે સુરક્ષિત રીતે કનેક્ટ કરો થાઓ છો, પણ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ અટૅકર તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">મૂલ્ય <ph name="VALUE" /> શ્રેણી બહારનું છે.</translation>

@@ -1811,6 +1811,7 @@
 <translation id="8921624153894383499">Google Асистент не поддържа този език.</translation>
 <translation id="8924458948354692166">Натиснете Enter за създаване на екранна снимка на прозореца</translation>
 <translation id="8926951137623668982">Лавицата е винаги скрита</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файла}}</translation>
 <translation id="8936501819958976551">деактивирана</translation>
 <translation id="8938800817013097409">Устройство с USB-C (десният порт на гърба)</translation>
 <translation id="8940956008527784070">Батерията е изтощена (<ph name="PERCENTAGE" />%)</translation>

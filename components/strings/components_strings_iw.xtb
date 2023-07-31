@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1432187715652018471">‏התקבלה מהדף הזה בקשה להתקין handler של שירות.</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
+<translation id="1433225466058025572">רוצה לנסות שוב להזיז את הקבצים?</translation>
 <translation id="1435940442311036198">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="1436185428532214179">האתר יכול לבקש הרשאה לערוך קבצים ותיקיות במכשיר</translation>
 <translation id="1442386063175183758">כנף ימנית בקיפול</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;ביטול מחיקה</translation>
 <translation id="2397836504670957718">מחשבים ניידים ונישאים</translation>
 <translation id="2400600116338235695">האתר יכול לבקש הרשאה להתחבר ליציאות טוריות</translation>
+<translation id="2404884497378469141">רוצה לנסות שוב להעתיק את הקבצים?</translation>
 <translation id="2413155254802890957">ישנה</translation>
 <translation id="2413528052993050574">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. ייתכן שאישור האבטחה שלו בוטל. הסיבה לכך עשויה להיות הגדרה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2414886740292270097">כהה</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">למלא את הסיסמה שלך באפליקציה <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">קומיקס</translation>
 <translation id="2765217105034171413">קטן</translation>
+<translation id="2770159525358613612">רוצה לנסות שוב להעלות את הקבצים?</translation>
 <translation id="277133753123645258">שיטת משלוח</translation>
 <translation id="277499241957683684">חסרה רשומת מכשיר</translation>
 <translation id="2775884851269838147">דף מודפס ראשון</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">שיתוף המסך מושהה</translation>
 <translation id="3634530185120165534">מגש 5</translation>
 <translation id="3634567936866541746">‏הזנת כרגע את הסיסמה שלך באתר מטעה. כדי להגן על החשבונות שלך, ההמלצה של Chrome היא לבדוק את הסיסמאות השמורות.</translation>
+<translation id="3642196846309122856">רוצה לנסות שוב להוריד את הקבצים?</translation>
 <translation id="3642638418806704195">אפליקציה:</translation>
 <translation id="3646643500201740985">מדידת הביצועים של מודעה מסוימת</translation>
 <translation id="3647286794400715637">‏כל רשומת מחרוזת של כתובות URL חייבת להכיל כתובת URL אחת או שתיים.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">הוספת כתובת אימייל</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3901925938762663762">תוקף הכרטיס פג</translation>
+<translation id="390391808978419508">פג הזמן הקצוב לפתיחה</translation>
 <translation id="3905894480064208252">{0,plural, =1{אין אפשרות להעביר את הקובץ}one{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}}</translation>
 <translation id="3906095212874392000">סוף הטקסט שהומר</translation>
 <translation id="3906954721959377182">טאבלט</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">אינטרנט וטלקום</translation>
 <translation id="3939773374150895049">‏האם להשתמש ב-WebAuthn במקום ב-CVC?</translation>
 <translation id="3941630233824954464">הפעלת הדרישה לאימות מחדש</translation>
+<translation id="3942048175062210325">רוצה לנסות שוב לפתוח את הקבצים?</translation>
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3946209740501886391">יש לשאול תמיד באתר הזה</translation>
 <translation id="3947595700203588284">‏האתר יכול לבקש הרשאה להתחבר אל מכשירי MIDI</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">היקף המדיניות אינו נתמך.</translation>
 <translation id="4121428309786185360">בתוקף עד </translation>
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
+<translation id="412601465078863288">פג הזמן שהוקצב להעלאה</translation>
 <translation id="4127317221386336246">אביזרי הלבשה</translation>
 <translation id="4127575959421463246">‏רוצה למצוא את התכונות הניסיוניות של ChromeOS? אפשר להיכנס אל</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}one{# נוספים}two{שניים נוספים}other{# נוספים}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">משהו השתבש</translation>
 <translation id="4541810033354695636">מציאות רבודה</translation>
 <translation id="4542971377163063093">מגש 6</translation>
+<translation id="4546730006268514143">פג הזמן שהוקצב להעברה</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">בחרת להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="4558551763791394412">יש לנסות להשבית את התוספים.</translation>
@@ -2098,6 +2106,7 @@ Del</translation>
 <translation id="5470230812924696184">הנדסה אזרחית</translation>
 <translation id="5470861586879999274">&amp;ביצוע מחדש של עריכה</translation>
 <translation id="5471337644440862957">סרטי קומדיה</translation>
+<translation id="547963486735802022">רוצה לנסות שוב להעביר את הקבצים?</translation>
 <translation id="5481076368049295676">ייתכן שהתוכן הזה מכיל אמצעים שינסו להתקין תוכנה מסוכנת, שגונבת או מוחקת את המידע שלך. <ph name="BEGIN_LINK" />אני רוצה להציג בכל זאת<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">הוספה של כתובת חוקית</translation>
 <translation id="5483838506518938965">הכל מוכן</translation>
@@ -2788,6 +2797,7 @@ Del</translation>
 <translation id="6961733224437895943">ביטוח לבית</translation>
 <translation id="6961844873822989059">האתר יכול לבקש הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
 <translation id="6961980518585973432">ימי שנה</translation>
+<translation id="6962858948849099922">פג הזמן שהוקצב להזזה</translation>
 <translation id="6963520811470373926">החלפה</translation>
 <translation id="6963574715554809750">מסחר קמעונאי</translation>
 <translation id="6963693576491380224">משרות ממשלתיות ובמגזר הציבורי</translation>
@@ -2865,6 +2875,7 @@ Del</translation>
 <translation id="7111507312244504964">בדיקה ושמאות לקניין</translation>
 <translation id="7112327784801341716">הפרטים המוצגים לא עדכניים? עליך לפנות לבנק שלך כדי לעדכן אותם.</translation>
 <translation id="7118618213916969306">‏חיפוש כתובת ה-URL שהועתקה ללוח, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">פג הזמן שהוקצב להעתקה</translation>
 <translation id="7119414471315195487">סגירת כרטיסיות או תוכניות אחרות</translation>
 <translation id="7124354851782353862">יש להזין את קוד האימות</translation>
 <translation id="7129355289156517987">‏עם הסגירה של כל הכרטיסיות הפרטיות ב-Chromium, הפעילות שלך בכרטיסיות הבאות נמחקת מהמכשיר הזה:
@@ -3117,6 +3128,7 @@ Del</translation>
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">פחות מ-<ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> לא יכול לטפל כרגע בבקשה הזו.</translation>
+<translation id="7599089013883397081">פג הזמן הקצוב להורדה</translation>
 <translation id="7600965453749440009">איני רוצה לקבל תרגום מ<ph name="LANGUAGE" /> בכלל</translation>
 <translation id="7601297359530599375">‏לרוב החיבור לאתר הזה מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">הערך מחוץ לטווח <ph name="VALUE" />.</translation>

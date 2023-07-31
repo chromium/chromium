@@ -1813,6 +1813,7 @@
 <translation id="8921624153894383499">‏Google Assistant לא מדברת בשפה הזאת.</translation>
 <translation id="8924458948354692166">‏כדי לצלם את החלון במסך, מקישים על Enter</translation>
 <translation id="8926951137623668982">המדף תמיד מוסתר</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{קובץ אחד}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="8936501819958976551">מושבתת</translation>
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
 <translation id="8940956008527784070">‏סוללה חלשה (‎<ph name="PERCENTAGE" />%‎)</translation>

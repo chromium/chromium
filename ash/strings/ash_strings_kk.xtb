@@ -1811,6 +1811,7 @@
 <translation id="8921624153894383499">Google Assistant бұл тілде жұмыс істемейді.</translation>
 <translation id="8924458948354692166">Терезе скриншотын түсіру үшін "Enter" пернесін басыңыз</translation>
 <translation id="8926951137623668982">Сөре үнемі жасырын тұрады.</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өшірілді</translation>
 <translation id="8938800817013097409">USB-C құрылғысы (артқы оң жақ порты)</translation>
 <translation id="8940956008527784070">Батарея заряды төмен (<ph name="PERCENTAGE" />%)</translation>

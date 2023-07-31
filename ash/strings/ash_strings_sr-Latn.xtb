@@ -1812,6 +1812,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8921624153894383499">Google pomoćnik ne govori ovaj jezik.</translation>
 <translation id="8924458948354692166">Pritisnite Enter da biste napravili snimak ekrana prozora</translation>
 <translation id="8926951137623668982">Polica je uvek sakrivena</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Uređaj sa USB priključkom tipa C (zadnji desni port)</translation>
 <translation id="8940956008527784070">Baterija je skoro prazna (<ph name="PERCENTAGE" />%)</translation>

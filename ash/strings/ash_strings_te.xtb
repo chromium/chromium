@@ -1812,6 +1812,7 @@
 <translation id="8921624153894383499">Google సహాయకం ఈ భాషను మాట్లాడదు.</translation>
 <translation id="8924458948354692166">విండో స్క్రీన్‌షాట్‌ను క్యాప్చర్ చేయడానికి enterను నొక్కండి</translation>
 <translation id="8926951137623668982">అర ఎల్లప్పుడూ దాచబడుతుంది</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైల్‌లు}}</translation>
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
 <translation id="8940956008527784070">బ్యాటరీ తక్కువగా ఉంది (<ph name="PERCENTAGE" />%)</translation>

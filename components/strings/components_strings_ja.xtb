@@ -101,6 +101,7 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1201895884277373915">このサイトからの他の履歴</translation>
 <translation id="1202892408424955784">トラッキングしている商品</translation>
+<translation id="1204184165594298176">{0,plural, =1{ファイルのコピーがブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルのコピーがブロックされています}}</translation>
 <translation id="1204602502194308272">魚、水槽</translation>
 <translation id="1206967143813997005">最初の署名に問題があります</translation>
 <translation id="1209206284964581585">今は表示しない</translation>
@@ -892,6 +893,7 @@
 <translation id="2916038427272391327">他のプログラムを終了する</translation>
 <translation id="2918922650248459053">ダイビング、水中アクティビティ</translation>
 <translation id="2922350208395188000">サーバーの証明書を確認できません。</translation>
+<translation id="2922792708490674">{0,plural, =1{ファイルのダウンロードがブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルのダウンロードがブロックされています}}</translation>
 <translation id="2923275635648511531">日焼け対策や日焼け用商品</translation>
 <translation id="292371311537977079">Chrome の設定</translation>
 <translation id="2925454999967523701">[ドキュメントを作成] ボタンです。実行すると、新しい Google ドキュメントをすばやく作成できます</translation>
@@ -1273,6 +1275,7 @@
 <translation id="3713662424819367124">香水、フレグランス</translation>
 <translation id="3714633008798122362">ウェブ カレンダー</translation>
 <translation id="3714780639079136834">モバイルデータまたは Wi-Fi を有効にする</translation>
+<translation id="3715016660240337709">{0,plural, =1{ファイルのアップロードがブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルのアップロードがブロックされています}}</translation>
 <translation id="3715545959749027023">セキュリティ イベントが Chrome によって報告されると、そのイベントに関するデータが管理者に送信されます。送信されるデータには、Chrome でアクセスしたページの URL、ファイルの名前やメタデータ、ブラウザやタブの障害のほか、ウェブベースのアプリケーションやデバイス、Chrome へのログインに使用したユーザー名が含まれる可能性があります。</translation>
 <translation id="3715597595485130451">Wi-Fi 接続</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />プロキシ、ファイアウォール、DNS の設定を確認する<ph name="END_LINK" /></translation>
@@ -1354,6 +1357,7 @@
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3901925938762663762">カードの有効期限が切れています</translation>
 <translation id="390391808978419508">開く処理がタイムアウトしました</translation>
+<translation id="3905894480064208252">{0,plural, =1{ファイルの転送がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの転送がブロックされています}}</translation>
 <translation id="3906095212874392000">変換されたテキストの最後</translation>
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1764,6 +1768,7 @@
 <translation id="4757993714154412917">偽のサイトでパスワードを入力しました。アカウントを保護するため、保存したパスワードをすぐに確認することをおすすめします。</translation>
 <translation id="4758311279753947758">連絡先情報を追加</translation>
 <translation id="4761104368405085019">マイクを使用する</translation>
+<translation id="4761326898079498987">詳細をご確認ください</translation>
 <translation id="4761869838909035636">Chrome の安全確認を実行</translation>
 <translation id="4764680219299728632">コンロ、オーブン</translation>
 <translation id="4764776831041365478"><ph name="URL" /> のウェブページは一時的に停止しているか、新しいウェブアドレスに移動した可能性があります。</translation>
@@ -2450,6 +2455,7 @@
 <translation id="6240447795304464094">Google Pay ロゴ</translation>
 <translation id="6241121617266208201">候補を非表示にする</translation>
 <translation id="624499991300733384">印刷コンポジター サービス</translation>
+<translation id="6251906504834538140">{0,plural, =1{ファイルの移動がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの移動がブロックされています}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome でダウンロードしたファイルを管理します</translation>
 <translation id="6254436959401408446">メモリが不足しているため、このページを開けません</translation>
 <translation id="6259156558325130047">順序変更のやり直し（&amp;R）</translation>
@@ -3164,6 +3170,7 @@
 <translation id="7682287625158474539">発送先</translation>
 <translation id="7682451652090915298">ラグビー</translation>
 <translation id="7684683146428206649">金属</translation>
+<translation id="7684928361160505327">{0,plural, =1{ポリシーにより <ph name="FILE_NAME" /> がブロックされました}other{ポリシーにより <ph name="FILE_COUNT" /> 個のファイルがブロックされました}}</translation>
 <translation id="7687186412095877299">保存したお支払い方法を使ってお支払いフォームに入力する</translation>
 <translation id="7687305263118037187">再試行のタイムアウト</translation>
 <translation id="7690647519407127574">往復はがき</translation>
@@ -3379,6 +3386,7 @@
 <translation id="8175796834047840627">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。</translation>
 <translation id="8176440868214972690">このデバイスの管理者は、次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="817820454357658398">女性向け衛生用品</translation>
+<translation id="818254048113802060">{0,plural, =1{コンテンツが原因で <ph name="FILE_NAME" /> がブロックされました}other{コンテンツが原因で <ph name="FILE_COUNT" /> 個のファイルがブロックされました}}</translation>
 <translation id="8183800802493617952">家族向けゲーム、アクティビティ</translation>
 <translation id="8184538546369750125">グローバルのデフォルト値（[許可]）を使用</translation>
 <translation id="8186706823560132848">ソフトウェア</translation>
@@ -3430,6 +3438,7 @@
 <translation id="8265992338205884890">参照可能なデータ</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> としてログイン</translation>
 <translation id="8269242089528251720">個別のドキュメント（丁合いあり）</translation>
+<translation id="8269703227894255363">{0,plural, =1{ファイルを開けません}other{<ph name="FILE_COUNT" /> 個のファイルを開けません}}</translation>
 <translation id="826991611711124547">船の旅、チャーター船</translation>
 <translation id="8270242299912238708">PDF ドキュメント</translation>
 <translation id="8275952078857499577">このサイトを翻訳するか尋ねない</translation>

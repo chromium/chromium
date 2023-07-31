@@ -1809,6 +1809,7 @@
 <translation id="8921624153894383499">Google 助理不支援這種語言。</translation>
 <translation id="8924458948354692166">㩒 Enter 掣就可以擷取視窗螢幕截圖</translation>
 <translation id="8926951137623668982">一律隱藏捷徑列</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 裝置 (後方右側連接埠)</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>

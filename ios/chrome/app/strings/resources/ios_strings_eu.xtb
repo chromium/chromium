@@ -47,6 +47,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="122699739164161391">Itxi fitxa guztiak</translation>
 <translation id="1229222343402087523">Bilatu "${searchPhrase}" Chrome-n</translation>
 <translation id="1242044645101871359">Hasi saioa berriro</translation>
+<translation id="1248276223555153952">Kudeatu gailuko kontuak…</translation>
 <translation id="1254117744268754948">Aukeratu karpeta</translation>
 <translation id="1254424942107648268">Bilatu aurrekoa</translation>
 <translation id="1258491128795710625">Berritasunak</translation>
@@ -109,6 +110,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="1580783302095112590">Mezua bidali da.</translation>
 <translation id="1582732959743469162">Eten egingo da abian den deskarga.</translation>
 <translation id="1594034544529347967">Hasiera</translation>
+<translation id="160275202205869636">Aktibatuta badago, datuak Google-ko kontuan erabiltzen eta gordetzen dira. Desaktibatuta badago, datuak gailu honetan soilik gordetzen dira.</translation>
 <translation id="1605405588277479165">Desaktibatuta: ez da gomendagarria</translation>
 <translation id="1605658421715042784">Kopiatu irudia</translation>
 <translation id="1608337082864370066">Bilatu kopiatu duzun irudia</translation>
@@ -290,6 +292,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2773292004659987824">Ezkutuko moduko bilaketa</translation>
 <translation id="277771892408211951">Hautatu hizkuntza</translation>
 <translation id="2780046210906776326">Ez dago posta-konturik</translation>
+<translation id="2780326741858434269">Gailuko kontuak</translation>
 <translation id="2781325423985810933">DESEGIN</translation>
 <translation id="2781331604911854368">Aktibatuta</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3575234738189584619">Bilatu Lens bidez</translation>
 <translation id="3577555362230509265">Erabili Chrome beste aplikazio batzuetan.</translation>
 <translation id="3581564640715911333">Eskaini beste hizkuntzetan dauden orriak itzultzea</translation>
+<translation id="3587885837929752825">Erakundeak Google-ko kontuan gorde dezakezuna mugatzen du.</translation>
 <translation id="3588820906588687999">Ireki irudia beste fitxa batean</translation>
 <translation id="3595252146048399851">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />ezarpenetara<ph name="END_LINK" />. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="3603009562372709545">Kopiatu estekaren URLa</translation>
@@ -693,6 +697,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5271265092610673171">{count,plural, =1{Derrigorrezko eremu bat hutsik dago. Bete ezazu gorde aurretik.}other{Derrigorrezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.}}</translation>
 <translation id="5271549068863921519">Gorde pasahitza</translation>
 <translation id="5283494734135414249">Sakatu helbide-barraren azpiko lasterbidea.</translation>
+<translation id="5292723732574094123">Amaitu da saioa. Hasi saioa berriro kontuko laster-markak, pasahitzak eta bestelakoak ikusteko.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> kontua kendu nahi duzu?</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5317780077021120954">Gorde</translation>
@@ -736,6 +741,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
 <translation id="5626245204502895507">Ezin izan da deskargatu fitxategia.</translation>
 <translation id="5631164295104953411">Gehitu ordainketa-metodo bat</translation>
+<translation id="5649795523408334796">Hauteman helbideak</translation>
 <translation id="5652623411397330904">Jarraipena egiten diezun produktuak hemen agertuko dira.</translation>
 <translation id="5657859710142657190">Joan fitxen saretara</translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
@@ -1297,6 +1303,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="8843129975935593190">Erakundeak sinkroniza dezakezuna mugatzen du.</translation>
 <translation id="8849001918648564819">Ezkutatuta</translation>
 <translation id="8855242995793521265">Ez du nabarmen moteltzen arakatzailea, ezta gailua ere.</translation>
+<translation id="8863431381414769983">Lortu jarraibideak eta tokiko informazioa Google Maps-en bidez</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} fitxa}other{{count} fitxa}}</translation>
 <translation id="8870413625673593573">Itxitako azkenak</translation>
 <translation id="8876882697946675716">Mantendu gailuak sinkronizatuta</translation>
