@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -23,6 +24,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
+class Clock;
 class CommandLine;
 }
 
@@ -272,6 +274,11 @@ class Tracker : public KeyedService, public base::SupportsUserData {
 
   // Returns the configuration associated with the tracker for testing purposes.
   virtual const Configuration* GetConfigurationForTesting() const = 0;
+
+  // Set a testing clock for the tracker. It's recommended to use a
+  // SimpleTestClock, so we can advacne the clock in test.
+  virtual void SetClockForTesting(const base::Clock& clock,
+                                  base::Time& initial_now) = 0;
 
  protected:
   Tracker() = default;

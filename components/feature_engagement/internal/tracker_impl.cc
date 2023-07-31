@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -19,6 +20,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/clock.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/blocked_iph_features.h"
@@ -38,6 +40,7 @@
 #include "components/feature_engagement/internal/proto/availability.pb.h"
 #include "components/feature_engagement/internal/stats.h"
 #include "components/feature_engagement/internal/system_time_provider.h"
+#include "components/feature_engagement/internal/testing_clock_time_provider.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_constants.h"
@@ -373,7 +376,15 @@ void TrackerImpl::UnregisterPriorityNotificationHandler(
 }
 
 const Configuration* TrackerImpl::GetConfigurationForTesting() const {
+  CHECK_IS_TEST();
   return configuration_.get();
+}
+
+void TrackerImpl::SetClockForTesting(const base::Clock& clock,
+                                     base::Time& initial_now) {
+  CHECK_IS_TEST();
+  time_provider_ =
+      std::make_unique<TestingClockTimeProvider>(clock, initial_now);
 }
 
 bool TrackerImpl::IsInitialized() const {

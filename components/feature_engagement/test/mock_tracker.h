@@ -12,6 +12,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Clock;
+}
+
 namespace feature_engagement {
 namespace test {
 
@@ -48,6 +52,8 @@ class MockTracker : public Tracker {
                void(const base::Feature&));
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
   MOCK_CONST_METHOD0(GetConfigurationForTesting, const Configuration*());
+  MOCK_METHOD2(SetClockForTesting,
+               void(const base::Clock& clock, base::Time& initial_now));
 };
 
 }  // namespace test

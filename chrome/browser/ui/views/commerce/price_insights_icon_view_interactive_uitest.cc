@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_clock.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -27,9 +28,9 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShoppingTab);
 
 const char kShoppingURL[] = "/shopping.html";
-const char kShoppingURL2[] = "/shopping2.html";
 const char kNonShoppingURL[] = "/non-shopping.html";
 const char kProductClusterTitle[] = "Product Cluster Title";
+int kIconExpandedMaxTimesLast28days = 3;
 
 std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
     const net::test_server::HttpRequest& request) {
@@ -172,7 +173,29 @@ class PriceInsightsIconViewEngagementTest
             ->GetFeaturePromoController();
     EXPECT_TRUE(
         user_education::test::WaitForFeatureEngagementReady(promo_controller));
+    EXPECT_TRUE(user_education::test::SetClock(promo_controller, test_clock_));
     RunTestSequence(InstrumentTab(kShoppingTab));
+  }
+
+  void NavigateToANonShoppingPage() {
+    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
+        .WillByDefault(testing::Return(false));
+    RunTestSequence(
+        NavigateWebContents(kShoppingTab,
+                            embedded_test_server()->GetURL(kNonShoppingURL)),
+        FlushEvents(), EnsureNotPresent(kPriceInsightsChipElementId));
+  }
+
+  void NavigateToAShoppingPage(bool expected_to_show_label) {
+    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
+        .WillByDefault(testing::Return(true));
+    RunTestSequence(
+        NavigateWebContents(kShoppingTab,
+                            embedded_test_server()->GetURL(kShoppingURL)),
+        FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
+        CheckViewProperty(kPriceInsightsChipElementId,
+                          &PriceInsightsIconView::ShouldShowLabel,
+                          expected_to_show_label));
   }
 
   void VerifyIconExpandedOncePerDay() {
@@ -180,54 +203,35 @@ class PriceInsightsIconViewEngagementTest
     histogram_tester.ExpectTotalCount(
         "Commerce.PriceInsights.OmniboxIconShownLabel", 0);
 
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(true));
-    RunTestSequence(
-        Log("Meil navigate to shopping url"),
-        NavigateWebContents(kShoppingTab,
-                            embedded_test_server()->GetURL(kShoppingURL)),
-        FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
-        CheckViewProperty(kPriceInsightsChipElementId,
-                          &PriceInsightsIconView::ShouldShowLabel, true));
+    NavigateToANonShoppingPage();
+    histogram_tester.ExpectTotalCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 0);
 
+    NavigateToAShoppingPage(/*expected_to_show_label=*/true);
     histogram_tester.ExpectTotalCount(
         "Commerce.PriceInsights.OmniboxIconShownLabel", 1);
     histogram_tester.ExpectBucketCount(
         "Commerce.PriceInsights.OmniboxIconShownLabel", 1, 1);
 
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(false));
-    RunTestSequence(
-        NavigateWebContents(kShoppingTab,
-                            embedded_test_server()->GetURL(kNonShoppingURL)),
-        FlushEvents(), EnsureNotPresent(kPriceInsightsChipElementId));
+    NavigateToANonShoppingPage();
+    histogram_tester.ExpectTotalCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 1);
+    histogram_tester.ExpectBucketCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 1, 1);
 
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(true));
-    RunTestSequence(
-        NavigateWebContents(kShoppingTab,
-                            embedded_test_server()->GetURL(kShoppingURL2)),
-        FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
-        CheckViewProperty(kPriceInsightsChipElementId,
-                          &PriceInsightsIconView::ShouldShowLabel, false));
-
+    NavigateToAShoppingPage(/*expected_to_show_label=*/false);
     histogram_tester.ExpectTotalCount(
         "Commerce.PriceInsights.OmniboxIconShownLabel", 2);
     histogram_tester.ExpectBucketCount(
         "Commerce.PriceInsights.OmniboxIconShownLabel", 0, 1);
-
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(false));
-    RunTestSequence(
-        NavigateWebContents(kShoppingTab,
-                            embedded_test_server()->GetURL(kNonShoppingURL)),
-        FlushEvents(), EnsureNotPresent(kPriceInsightsChipElementId));
-
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
             "Commerce.PriceInsights.OmniboxIconShownLabel"),
         BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1), base::Bucket(2, 0)));
   }
+
+ protected:
+  base::SimpleTestClock test_clock_;
 
  private:
   feature_engagement::test::ScopedIphFeatureList test_features_;
@@ -241,4 +245,25 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest,
       .Times(testing::AnyNumber());
 
   VerifyIconExpandedOncePerDay();
+}
+
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest,
+                       ExpandedIconShownMaxTimesLast28days) {
+  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl)
+      .Times(testing::AnyNumber());
+  while (kIconExpandedMaxTimesLast28days--) {
+    VerifyIconExpandedOncePerDay();
+    // Advance one day
+    test_clock_.Advance(base::Days(1));
+  }
+  // Icon should not expanded after the max has reach.
+  NavigateToANonShoppingPage();
+  NavigateToAShoppingPage(/*expected_to_show_label=*/false);
+
+  // Advance 28 days, icon should expand again.
+  test_clock_.Advance(base::Days(28));
+  NavigateToANonShoppingPage();
+  NavigateToAShoppingPage(/*expected_to_show_label=*/true);
 }

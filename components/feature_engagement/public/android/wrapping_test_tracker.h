@@ -13,6 +13,10 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Clock;
+}
+
 namespace feature_engagement {
 // This class wraps a Tracker from Java and forwards to it all calls received.
 class WrappingTestTracker : public Tracker {
@@ -47,6 +51,8 @@ class WrappingTestTracker : public Tracker {
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
   const Configuration* GetConfigurationForTesting() const override;
+  void SetClockForTesting(const base::Clock& clock,
+                          base::Time& initial_time) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tracker_;

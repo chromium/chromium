@@ -16,6 +16,10 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Clock;
+}
+
 namespace feature_engagement {
 class AvailabilityModel;
 class ConditionValidator;
@@ -64,6 +68,8 @@ class TrackerImpl : public Tracker {
   void UnregisterPriorityNotificationHandler(
       const base::Feature& feature) override;
   const Configuration* GetConfigurationForTesting() const override;
+  void SetClockForTesting(const base::Clock& clock,
+                          base::Time& initial_now) override;
 
  private:
   // Invoked by the EventModel when it has been initialized.

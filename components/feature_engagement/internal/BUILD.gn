@@ -62,6 +62,8 @@ static_library("internal") {
     "stats.h",
     "system_time_provider.cc",
     "system_time_provider.h",
+    "testing_clock_time_provider.cc",
+    "testing_clock_time_provider.h",
     "time_provider.h",
     "tracker_impl.cc",
     "tracker_impl.h",
