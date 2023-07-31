@@ -327,9 +327,9 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       return CandidateStatus::kFailBufferFormat;
   }
 
-  const SharedQuadState* sqs = quad->shared_quad_state;
+  SetDisplayRect(*quad, candidate);
 
-  candidate.display_rect = gfx::RectF(quad->rect);
+  const SharedQuadState* sqs = quad->shared_quad_state;
   if (context_.supports_arbitrary_transform) {
     gfx::Transform transform = sqs->quad_to_target_transform;
     if (y_flipped) {
@@ -352,7 +352,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         sqs->quad_to_target_transform.MapRect(candidate.display_rect);
   }
 
-  candidate.clip_rect = sqs->clip_rect;
   candidate.is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
 
@@ -369,6 +368,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     candidate.resource_size_in_pixels =
         gfx::Size(candidate.display_rect.size().width(),
                   candidate.display_rect.size().height());
+    candidate.uv_rect = {1, 1};
   }
 
   AssignDamage(quad, candidate);
@@ -390,23 +390,27 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     }
   }
 
+  candidate.clip_rect = sqs->clip_rect;
   if (context_.is_delegated_context) {
     const bool quad_within_window =
         primary_rect_.Contains(candidate.display_rect);
     const bool transform_supports_clipping =
         context_.supports_arbitrary_transform ||
         absl::holds_alternative<gfx::OverlayTransform>(candidate.transform);
-    const bool has_content_clipping = quad->visible_rect != quad->rect;
-
     // Out of window clipping is enabled on Lacros only when it is supported.
     // TODO(crbug.com/1385509): Remove the condition on `quad_within_window`
     // when M117 becomes widely supported.
     const bool can_delegate_clipping =
         context_.supports_clip_rect &&
         (quad_within_window || context_.supports_out_of_window_clip_rect) &&
-        transform_supports_clipping && !has_content_clipping;
+        transform_supports_clipping;
+
     if (can_delegate_clipping) {
-      if (candidate.clip_rect.has_value() && candidate.clip_rect->IsEmpty()) {
+      // If we know the clip_rect won't intersect the display_rect at all, we
+      // can skip it. We must account for any transform to the display_rect.
+      if (candidate.clip_rect.has_value() &&
+          !OverlayCandidate::DisplayRectInTargetSpace(candidate).Intersects(
+              gfx::RectF(*candidate.clip_rect))) {
         return CandidateStatus::kFailVisible;
       }
     } else {
@@ -421,31 +425,41 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   return CandidateStatus::kSuccess;
 }
 
+void OverlayCandidateFactory::SetDisplayRect(
+    const DrawQuad& quad,
+    OverlayCandidate& candidate) const {
+  if (context_.is_delegated_context && quad.visible_rect != quad.rect) {
+    candidate.display_rect = gfx::RectF(quad.visible_rect);
+    // Update uv_rect to account for the content clipping.
+    candidate.uv_rect = cc::MathUtil::ScaleRectProportional(
+        candidate.uv_rect, gfx::RectF(quad.rect),
+        gfx::RectF(quad.visible_rect));
+  } else {
+    candidate.display_rect = gfx::RectF(quad.rect);
+  }
+
+  if (context_.is_delegated_context) {
+    // Expand display_rect if quad is a render pass with a filter that expands
+    // its bounds.
+    if (auto* rpdq = quad.DynamicCast<AggregatedRenderPassDrawQuad>()) {
+      auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
+      if (filter_it != render_pass_filters_->end()) {
+        candidate.display_rect = gfx::RectF(
+            filter_it->second->ExpandRectForPixelMovement(quad.visible_rect));
+        // uv_rect will be updated in SkiaRenderer because the buffer size will
+        // be rounded up some.
+      }
+    }
+  }
+}
+
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
     const DrawQuad* quad,
     OverlayCandidate& candidate) const {
   gfx::RectF clip_to_apply = candidate.display_rect;
 
-  auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>();
-  if (rpdq) {
-    auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
-    if (filter_it != render_pass_filters_->end()) {
-      clip_to_apply = gfx::RectF(GetExpandedRectWithPixelMovingForegroundFilter(
-          *rpdq, *filter_it->second));
-    }
-  }
-
   if (candidate.clip_rect.has_value()) {
     clip_to_apply.Intersect(gfx::RectF(*candidate.clip_rect));
-  }
-
-  // TODO(rivr): Apply the same |visible_rect| and |display_rect| clip logic
-  // when delegating |clip_rect|.
-  if (quad->visible_rect != quad->rect) {
-    auto visible_rect = gfx::RectF(quad->visible_rect);
-    visible_rect =
-        quad->shared_quad_state->quad_to_target_transform.MapRect(visible_rect);
-    clip_to_apply.Intersect(visible_rect);
   }
 
   // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads
@@ -459,7 +473,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
 
   // Render passes must be clipped after drawing in 'PrepareRenderPassOverlay'
   // as filters can expand their display size.
-  if (!rpdq) {
+  if (quad->material != DrawQuad::Material::kAggregatedRenderPass) {
     OverlayCandidate::ApplyClip(candidate, clip_to_apply);
     candidate.clip_rect = absl::nullopt;
   }

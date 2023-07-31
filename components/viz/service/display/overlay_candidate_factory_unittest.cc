@@ -786,7 +786,7 @@ TEST_F(OverlayCandidateFactoryTest, ClipDelegation_VisibleRect) {
   gfx::Rect rect(0, 0, 75, 75);
   gfx::Rect clip(0, 0, 50, 50);
   // Use content clipping.
-  gfx::Rect visible_rect = gfx::Rect(0, 10, 65, 75);
+  gfx::Rect visible_rect = gfx::Rect(0, 10, 65, 65);
   gfx::Transform identity;
   auto* quad = AddQuad(rect, identity, &render_pass, clip, visible_rect);
 
@@ -805,12 +805,12 @@ TEST_F(OverlayCandidateFactoryTest, ClipDelegation_VisibleRect) {
   ASSERT_EQ(clip_factory.FromDrawQuad(quad, clip_cand),
             OverlayCandidate::CandidateStatus::kSuccess);
 
-  // Clip rect can't be delegated because the quad has content clipping.
+  // Clip rect can be delegated when the quad has content clipping.
   gfx::RectF clipped2(0, 10, 50, 40);
   EXPECT_RECTF_EQ(no_clip_cand.display_rect, clipped2);
   EXPECT_FALSE(no_clip_cand.clip_rect.has_value());
-  EXPECT_RECTF_EQ(clip_cand.display_rect, clipped2);
-  EXPECT_FALSE(clip_cand.clip_rect.has_value());
+  EXPECT_RECTF_EQ(clip_cand.display_rect, gfx::RectF(visible_rect));
+  EXPECT_EQ(clip_cand.clip_rect.value(), clip);
 }
 
 }  // namespace

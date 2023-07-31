@@ -3760,16 +3760,13 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   overlay->display_rect.set_origin(gfx::PointF(filter_bounds.origin()));
   overlay->display_rect.set_size(gfx::SizeF(buffer_size));
 #else   // BUILDFLAG(IS_OZONE)
-  // Adjust |display_rect| to be include the expanded |filter_bounds|, and
-  // transformed.
   // TODO(fangzhoug): Merge Ozone and Apple code paths of delegated compositing.
-  overlay->display_rect =
-      quad->shared_quad_state->quad_to_target_transform.MapRect(
-          gfx::RectF(filter_bounds));
-  // Set |uv_rect| to reflect rounding from |filter_bounds| to |buffer_size|.
-  overlay->uv_rect = gfx::RectF{
-      static_cast<float>(filter_bounds.width()) / buffer_size.width(),
-      static_cast<float>(filter_bounds.height()) / buffer_size.height()};
+
+  // |display_rect| already accounts for expanded filter bounds.
+
+  // Set |uv_rect| to reflect rounding from |display_rect| to |buffer_size|.
+  overlay->uv_rect = gfx::RectF(overlay->display_rect.size());
+  overlay->uv_rect.InvScale(buffer_size.width(), buffer_size.height());
   // TODO(rivr): Handle the case where the overlay has an arbitrary transform
   // applied.
   if (absl::holds_alternative<gfx::OverlayTransform>(overlay->transform)) {

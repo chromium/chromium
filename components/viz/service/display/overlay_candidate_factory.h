@@ -147,6 +147,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   CandidateStatus DoGeometricClipping(const DrawQuad* quad,
                                       OverlayCandidate& candidate) const;
 
+  // Set |candidate.display_rect| based on |quad|. In delegated contexts, this
+  // will also apply content clipping in the quad, and expand to a render pass's
+  // filter bounds.
+  void SetDisplayRect(const DrawQuad& quad, OverlayCandidate& candidate) const;
+
   raw_ptr<const AggregatedRenderPass> render_pass_;
   raw_ptr<DisplayResourceProvider> resource_provider_;
   raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
