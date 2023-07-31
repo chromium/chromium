@@ -752,14 +752,14 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self.removeAccountCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_LABEL)
                 action:^{
-                  [weakSelf removeSecondaryIdentity:identity];
+                  [weakSelf removeIdentity:identity];
                   [weakSelf dismissRemoveAccountCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.removeAccountCoordinator start];
 }
 
-- (void)removeSecondaryIdentity:(id<SystemIdentity>)identity {
+- (void)removeIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.removeAccountCoordinator);
   self.removeAccountCoordinator = nil;
   self.uiDisabled = YES;

@@ -15,6 +15,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
@@ -667,6 +668,7 @@ void AuthenticationService::HandleForgottenIdentity(
   } else if (should_prompt) {
     SetReauthPromptForSignInAndSync();
   }
+  ClearAccountSettingsPrefsOfRemovedAccounts();
 }
 
 void AuthenticationService::ReloadCredentialsFromIdentities(
@@ -691,6 +693,7 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
     // since this change comes from the user.
     ApproveAccountList();
   }
+  ClearAccountSettingsPrefsOfRemovedAccounts();
 }
 
 void AuthenticationService::FirePrimaryAccountRestricted() {
@@ -715,4 +718,16 @@ void AuthenticationService::FireServiceStatusNotification() {
   for (auto& observer : observer_list_) {
     observer.OnServiceStatusChanged();
   }
+}
+
+void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
+  std::vector<signin::GaiaIdHash> available_gaia_ids;
+  for (id<SystemIdentity> identity in account_manager_service_
+           ->GetAllIdentities()) {
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+        base::SysNSStringToUTF8(identity.gaiaID));
+    available_gaia_ids.push_back(gaia_id_hash);
+  }
+  sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
+      available_gaia_ids);
 }

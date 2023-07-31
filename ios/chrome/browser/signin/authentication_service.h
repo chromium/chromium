@@ -229,6 +229,9 @@ class AuthenticationService : public KeyedService,
   // Fires `OnServiceStatusChanged` on all observers.
   void FireServiceStatusNotification();
 
+  // Clears the account settings prefs of all removed accounts from device.
+  void ClearAccountSettingsPrefsOfRemovedAccounts();
+
   // The delegate for this AuthenticationService. It is invalid to call any
   // method on this object except Initialize() or Shutdown() if this pointer
   // is null.
