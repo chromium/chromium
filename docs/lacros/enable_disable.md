@@ -7,9 +7,9 @@ Navigate to `chrome://flags` on the (legacy) Ash browser.
 
 1. Set `#lacros-availability-ignore` to "Enabled".
 1. Click "Restart".
-1. Set `#lacros-support` to "Enabled".
-1. Set `#lacros-primary` to "Enabled".
 1. Set `#lacros-only` to "Enabled".
+1. Pre M116: Set `#lacros-support` to "Enabled".
+1. Pre M116: Set `#lacros-primary` to "Enabled".
 1. Click "Restart".
 1. The Chrome browser icon will now open the Lacros browser!
 1. You can leave this mode at any time and return to your previous Chrome OS
