@@ -79,6 +79,8 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/type_support.cc",
     "src/fuzztest/internal/type_support.h",
   ]
+  configs -= fuzzing_engine_remove_configs
+  configs += fuzzing_engine_add_configs
   include_dirs = [ "src" ]
   deps = [ "//third_party/abseil-cpp:absl" ]
 }
@@ -90,6 +92,7 @@ executable("centipede") {
   include_dirs = [ "src" ]
   deps = [
     ":fuzztest_internal",
+
     # Depend on fuzzing_engine_no_main so that we are automatically built in builds
     # destined for ClusterFuzz.
     "//testing/libfuzzer:fuzzing_engine",
@@ -125,7 +128,6 @@ executable("centipede") {
     "src/centipede/distill.h",
     "src/centipede/environment.cc",
     "src/centipede/execution_metadata.cc",
-    "src/centipede/runner_cmp_trace.h",
     "src/centipede/execution_metadata.h",
     "src/centipede/execution_request.cc",
     "src/centipede/execution_request.h",
@@ -145,6 +147,7 @@ executable("centipede") {
     "src/centipede/minimize_crash.cc",
     "src/centipede/remote_file.cc",
     "src/centipede/reverse_pc_table.h",
+    "src/centipede/runner_cmp_trace.h",
     "src/centipede/rusage_profiler.cc",
     "src/centipede/rusage_stats.cc",
     "src/centipede/shard_reader.cc",
