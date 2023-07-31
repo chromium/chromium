@@ -144,6 +144,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
 class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
  public:
   MOCK_METHOD(void, OnSidePanelDidClose, (), (override));
+  MOCK_METHOD(void, OnSidePanelDidOpen, (), (override));
 };
 
 TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
@@ -314,6 +315,29 @@ TEST_F(SidePanelCoordinatorTest,
   coordinator_->Close();
 
   EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+}
+
+TEST_F(SidePanelCoordinatorTest, OpeningSidePanelCallsOnSidePanelObserver) {
+  MockSidePanelViewStateObserver view_state_observer;
+  EXPECT_CALL(view_state_observer, OnSidePanelDidOpen()).Times(1);
+
+  coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
+
+  coordinator_->Show(SidePanelEntry::Id::kReadingList);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryKey().has_value());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kReadingList);
+
+  // Changing the side panel entry after it is opened, should not notify
+  // observers.
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryKey().has_value());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kBookmarks);
+
+  coordinator_->RemoveSidePanelViewStateObserver(&view_state_observer);
 }
 
 TEST_F(SidePanelCoordinatorTest, RemovingObserverDoesNotIncrementCount) {
