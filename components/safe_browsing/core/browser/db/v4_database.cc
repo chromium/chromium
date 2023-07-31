@@ -124,8 +124,15 @@ void V4Database::CreateOnTaskRunner(
   base::UmaHistogramExactLinear(
       "SafeBrowsing.V4Database.DirectoryCreationResult", -error,
       -base::File::FILE_ERROR_MAX);
+  if (error == base::File::FILE_ERROR_NOT_A_DIRECTORY) {
+    base::DeleteFile(base_path);
+    success = base::CreateDirectoryAndGetError(base_path, &error);
+    base::UmaHistogramExactLinear(
+        "SafeBrowsing.V4Database.DirectoryCreationResultAfterRetry", -error,
+        -base::File::FILE_ERROR_MAX);
+  }
   if (!success) {
-    NOTREACHED();
+    return;
   }
 
 #if BUILDFLAG(IS_APPLE)
