@@ -60,27 +60,6 @@ bool IsProtectedVideo(gfx::ProtectedVideoType protected_video_type) {
   return protected_video_type != gfx::ProtectedVideoType::kClear;
 }
 
-class ScopedReleaseKeyedMutex {
- public:
-  ScopedReleaseKeyedMutex(Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
-                          UINT64 key)
-      : keyed_mutex_(keyed_mutex), key_(key) {
-    DCHECK(keyed_mutex);
-  }
-
-  ScopedReleaseKeyedMutex(const ScopedReleaseKeyedMutex&) = delete;
-  ScopedReleaseKeyedMutex& operator=(const ScopedReleaseKeyedMutex&) = delete;
-
-  ~ScopedReleaseKeyedMutex() {
-    HRESULT hr = keyed_mutex_->ReleaseSync(key_);
-    DCHECK(SUCCEEDED(hr));
-  }
-
- private:
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
-  UINT64 key_ = 0;
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OverlayFullScreenTypes {
@@ -1482,10 +1461,6 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     input_level = 0;
   }
 
-  // Keyed mutex is not present if access is synchronized by the shared image.
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex =
-      params.overlay_image->keyed_mutex();
-
   absl::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
   if (params.hdr_metadata.IsValid()) {
     stream_metadata =
@@ -1493,8 +1468,8 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   }
 
   if (!VideoProcessorBlt(std::move(input_texture), input_level,
-                         std::move(keyed_mutex), params.content_rect,
-                         input_color_space, stream_metadata, use_vp_auto_hdr)) {
+                         params.content_rect, input_color_space,
+                         stream_metadata, use_vp_auto_hdr)) {
     return false;
   }
 
@@ -1748,7 +1723,6 @@ void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
 bool SwapChainPresenter::VideoProcessorBlt(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
     UINT input_level,
-    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
     const gfx::Rect& content_rect,
     const gfx::ColorSpace& src_color_space,
     absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata,
@@ -1826,22 +1800,6 @@ bool SwapChainPresenter::VideoProcessorBlt(
   }
 
   {
-    absl::optional<ScopedReleaseKeyedMutex> release_keyed_mutex;
-    if (keyed_mutex) {
-      // The producer may still be using this texture for a short period of
-      // time, so wait long enough to hopefully avoid glitches. For example,
-      // all levels of the texture share the same keyed mutex, so if the
-      // hardware decoder acquired the mutex to decode into a different array
-      // level then it still may block here temporarily.
-      const int kMaxSyncTimeMs = 1000;
-      HRESULT hr = keyed_mutex->AcquireSync(0, kMaxSyncTimeMs);
-      if (FAILED(hr)) {
-        DLOG(ERROR) << "Error acquiring keyed mutex: " << std::hex << hr;
-        return false;
-      }
-      release_keyed_mutex.emplace(keyed_mutex, 0);
-    }
-
     Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device =
         video_processor_wrapper->video_device;
     Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>

@@ -112,14 +112,12 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Perform a blit using video processor from given input texture to swap chain
   // backbuffer. |input_texture| is the input texture (array), and |input_level|
-  // is the index of the texture in the texture array.  |keyed_mutex| is
-  // optional, and is used to lock the resource for reading.  |content_rect| is
-  // subrectangle of the input texture that should be blitted to swap chain, and
-  // |src_color_space| is the color space of the video.
+  // is the index of the texture in the texture array. |content_rect| is the
+  // sub-rectangle of the input texture that should be blitted to swap chain,
+  // and |src_color_space| is the color space of the video.
   bool VideoProcessorBlt(
       Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
       UINT input_level,
-      Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
       const gfx::Rect& content_rect,
       const gfx::ColorSpace& src_color_space,
       absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata,
