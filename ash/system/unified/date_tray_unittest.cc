@@ -14,9 +14,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
-#include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -37,7 +35,6 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -187,15 +184,6 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
   int bubble_closed_count_ = 0;
 };
 
-class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
- public:
-  // TestNewWindowDelegate:
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, OpenUrlFrom from, Disposition disposition),
-              (override));
-};
-
 }  // namespace
 
 class DateTrayTest
@@ -206,12 +194,6 @@ class DateTrayTest
   DateTrayTest() {
     scoped_feature_list_.InitWithFeatureState(features::kGlanceablesV2,
                                               GetParam());
-
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    window_delegate_provider_ =
-        std::make_unique<ash::TestNewWindowDelegateProvider>(
-            std::move(delegate));
   }
 
   DateTrayTest(const DateTrayTest&) = delete;
@@ -260,8 +242,7 @@ class DateTrayTest
 
   void TearDown() override {
     if (AreGlanceablesV2Enabled()) {
-      Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-          account_id_, GlanceablesV2Controller::ClientsRegistration{});
+      RemoveGlanceablesClients();
     }
 
     widget_.reset();
@@ -333,8 +314,6 @@ class DateTrayTest
     return fake_glanceables_tasks_client_.get();
   }
 
-  MockNewWindowDelegate* new_window_delegate() { return new_window_delegate_; }
-
   void RemoveGlanceablesClients() {
     Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesV2Controller::ClientsRegistration{
@@ -342,6 +321,7 @@ class DateTrayTest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
@@ -353,12 +333,6 @@ class DateTrayTest
   raw_ptr<DateTray, ExperimentalAsh> date_tray_ = nullptr;
 
   raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_ = nullptr;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
-      nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(GlanceablesV2, DateTrayTest, testing::Bool());
@@ -391,100 +365,6 @@ TEST_P(DateTrayTest, InitialState) {
               fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
     EXPECT_EQ(0,
               glanceables_classroom_client()->GetAndResetBubbleClosedCount());
-  }
-}
-
-TEST_P(DateTrayTest, ShowTasksComboModel) {
-  LeftClickOn(GetDateTray());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsBubbleShown());
-  EXPECT_TRUE(AreContentsViewShown());
-
-  if (!AreGlanceablesV2Enabled()) {
-    EXPECT_EQ(GetGlanceableTrayBubble(), nullptr);
-  } else {
-    auto* tasks_view = GetGlanceableTrayBubble()->GetTasksView();
-    EXPECT_TRUE(tasks_view->GetVisible());
-    EXPECT_FALSE(tasks_view->IsMenuRunning());
-    EXPECT_TRUE(tasks_view->task_list_combo_box_view()->GetVisible());
-    tasks_view->GetWidget()->LayoutRootViewIfNecessary();
-
-    EXPECT_EQ(tasks_view->task_items_container_view()->children().size(), 2u);
-
-    tasks_view->task_list_combo_box_view()->ScrollViewToVisible();
-    tasks_view->GetWidget()->LayoutRootViewIfNecessary();
-
-    // Verify that tapping on combobox opens the selection menu.
-    GestureTapOn(tasks_view->task_list_combo_box_view());
-    base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(tasks_view->IsMenuRunning());
-
-    // Select the next task list using keyboard navigation.
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-
-    // Verify the number of items in task_items_container_view()->children().
-    EXPECT_EQ(tasks_view->task_items_container_view()->children().size(), 3u);
-  }
-}
-
-TEST_P(DateTrayTest, MarkTaskAsComplete) {
-  LeftClickOn(GetDateTray());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsBubbleShown());
-  EXPECT_TRUE(AreContentsViewShown());
-
-  if (!AreGlanceablesV2Enabled()) {
-    EXPECT_EQ(GetGlanceableTrayBubble(), nullptr);
-  } else {
-    EXPECT_TRUE(GetGlanceableTrayBubble()->GetTasksView()->GetVisible());
-    EXPECT_FALSE(GetGlanceableTrayBubble()->GetTasksView()->IsMenuRunning());
-    EXPECT_TRUE(GetGlanceableTrayBubble()
-                    ->GetTasksView()
-                    ->task_list_combo_box_view()
-                    ->GetVisible());
-    EXPECT_EQ(GetGlanceableTrayBubble()
-                  ->GetTasksView()
-                  ->task_items_container_view()
-                  ->children()
-                  .size(),
-              2u);
-
-    // Verify that tapping on combobox opens the selection menu.
-    GlanceablesTaskView* task_view = views::AsViewClass<GlanceablesTaskView>(
-        GetGlanceableTrayBubble()
-            ->GetTasksView()
-            ->task_items_container_view()
-            ->children()[0]);
-
-    ASSERT_TRUE(task_view);
-    task_view->GetWidget()->LayoutRootViewIfNecessary();
-    ASSERT_FALSE(task_view->GetCompletedForTest());
-    ASSERT_EQ(0u, fake_glanceables_tasks_client()->completed_tasks().size());
-    GestureTapOn(task_view->GetButtonForTest());
-    ASSERT_TRUE(task_view->GetCompletedForTest());
-    ASSERT_EQ(1u, fake_glanceables_tasks_client()->completed_tasks().size());
-    ASSERT_EQ("TaskListID1:TaskListItem1",
-              fake_glanceables_tasks_client()->completed_tasks().front());
-  }
-}
-
-// Tests that tapping the tasks glanceable action button opens a browser page.
-TEST_P(DateTrayTest, ShowTasksWebUI) {
-  LeftClickOn(GetDateTray());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsBubbleShown());
-  EXPECT_TRUE(AreContentsViewShown());
-
-  if (!AreGlanceablesV2Enabled()) {
-    EXPECT_EQ(GetGlanceableTrayBubble(), nullptr);
-  } else {
-    const auto* const see_all_button = views::AsViewClass<views::LabelButton>(
-        GetGlanceableTrayBubble()->GetTasksView()->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
-    EXPECT_CALL(*new_window_delegate(), OpenUrl).Times(1);
-    GestureTapOn(see_all_button);
   }
 }
 

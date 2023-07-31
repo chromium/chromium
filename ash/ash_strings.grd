@@ -6752,6 +6752,9 @@ New install
       <message name="IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL" desc="The glanceable displays classroom or tasks items fetched from Google Classroom or Google Tasks API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website.">
         See all
       </message>
+      <message name="IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL" desc="Tasks glanceable displays non-completed tasks fetched from Google Tasks API. This text in displayed on the button, which allows creating new tasks (currently it redirects to Tasks Web UI).">
+        Add new task
+      </message>
 
       <!-- Do not disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do not disturb' feature is enabled.">

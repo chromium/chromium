@@ -53,6 +53,8 @@ void FakeGlanceablesTasksClient::PopulateTasks() {
       "TaskListID1", "Task List 1 Title", base::Time::Now()));
   task_lists_->Add(std::make_unique<GlanceablesTaskList>(
       "TaskListID2", "Task List 2 Title", base::Time::Now()));
+  task_lists_->Add(std::make_unique<GlanceablesTaskList>(
+      "TaskListID3", "Task List 3 Title (empty)", base::Time::Now()));
 }
 
 void FakeGlanceablesTasksClient::PopulateTaskLists() {
@@ -82,6 +84,8 @@ void FakeGlanceablesTasksClient::PopulateTaskLists() {
       /*has_subtasks=*/false, /*has_email_link=*/false));
   tasks_in_task_lists_.emplace("TaskListID1", std::move(task_list_1));
   tasks_in_task_lists_.emplace("TaskListID2", std::move(task_list_2));
+  tasks_in_task_lists_.emplace(
+      "TaskListID3", std::make_unique<ui::ListModel<GlanceablesTask>>());
 }
 
 }  // namespace ash

@@ -27,6 +27,12 @@ enum class GlanceablesViewId {
   kClassroomItemDueDateLabel,
   kClassroomItemDueTimeLabel,
   kClassroomItemTurnedInAndGradedLabel,
+
+  // `TasksBubbleView`.
+  kTasksBubbleComboBox,
+  kTasksBubbleListContainer,
+  kTasksBubbleAddNewButton,
+  kTasksBubbleListFooter,
 };
 
 }  // namespace ash

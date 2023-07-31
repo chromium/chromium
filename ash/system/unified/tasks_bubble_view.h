@@ -16,6 +16,7 @@
 namespace views {
 class Combobox;
 class ImageView;
+class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -32,6 +33,9 @@ class TasksComboboxModel;
 // | +-----------------------------------------------------------+ |
 // | +-----------------------------------------------------------+ |
 // | |'task_items_container_view_'                               | |
+// | +-----------------------------------------------------------+ |
+// | +-----------------------------------------------------------+ |
+// | |'add_new_task_button_'                                     | |
 // | +-----------------------------------------------------------+ |
 // | +-----------------------------------------------------------+ |
 // | |'tasks_footer_view_'                                       | |
@@ -68,25 +72,15 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;
 
-  bool IsMenuRunning();
-
-  views::Combobox* task_list_combo_box_view() const {
-    return task_list_combo_box_view_;
-  }
-
-  views::View* task_items_container_view() const {
-    return task_items_container_view_;
-  }
-
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  friend class DateTrayTest;
   // Setup child views.
   void InitViews(ui::ListModel<GlanceablesTaskList>* task_list);
 
-  // Handles on-click behavior for the "See all" button in `list_footer_view_`.
+  // Handles press behavior for the "See all" button in `list_footer_view_` and
+  // `add_new_task_button_`.
   void ActionButtonPressed();
 
   // Handles switching between tasks lists.
@@ -107,6 +101,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   raw_ptr<views::Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> task_items_container_view_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> add_new_task_button_ = nullptr;
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
 
