@@ -208,30 +208,21 @@ public class CookieManagerTest {
 
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        try {
-            final String url = embeddedTestServer.getURL("/echoheader?Cookie");
-            String cookieName = "java-test";
-            mCookieManager.setCookie(url, cookieName + "=should-not-work");
-
-            // Setting cookies should still affect the CookieManager itself
-            assertHasCookies(url);
-
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            String jsValue = getCookieWithJavaScript(cookieName);
-            String message =
-                    "WebView should not expose cookies to JavaScript (with setAcceptCookie "
-                    + "disabled)";
-            Assert.assertEquals(message, "\"\"", jsValue);
-
-            final String cookieHeader = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    mAwContents, mContentsClient);
-            message = "WebView should not expose cookies via the Cookie header (with "
-                    + "setAcceptCookie disabled)";
-            Assert.assertEquals(message, "None", cookieHeader);
-        } finally {
-            embeddedTestServer.stopAndDestroyServer();
-        }
+        final String url = embeddedTestServer.getURL("/echoheader?Cookie");
+        String cookieName = "java-test";
+        mCookieManager.setCookie(url, cookieName + "=should-not-work");
+        // Setting cookies should still affect the CookieManager itself
+        assertHasCookies(url);
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        String jsValue = getCookieWithJavaScript(cookieName);
+        String message = "WebView should not expose cookies to JavaScript (with setAcceptCookie "
+                + "disabled)";
+        Assert.assertEquals(message, "\"\"", jsValue);
+        final String cookieHeader =
+                mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient);
+        message = "WebView should not expose cookies via the Cookie header (with "
+                + "setAcceptCookie disabled)";
+        Assert.assertEquals(message, "None", cookieHeader);
     }
 
     @Test

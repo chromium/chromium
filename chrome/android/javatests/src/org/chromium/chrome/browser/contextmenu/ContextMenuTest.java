@@ -168,7 +168,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
         deleteTestFiles();
     }

@@ -50,12 +50,8 @@ public class HTTPSTabsOpenedFromExternalAppTest {
     public void testReferrerPolicyHttpReferrerHttpsNavigationsPolicyDefault() {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
-        try {
-            String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-            TabsOpenedFromExternalAppTest.loadUrlAndVerifyReferrerWithPolicy(
-                    url, mActivityTestRule, ReferrerPolicy.DEFAULT, HTTP_REFERRER, HTTP_REFERRER);
-        } finally {
-            if (mTestServer != null) mTestServer.stopAndDestroyServer();
-        }
+        String url = mTestServer.getURL("/chrome/test/data/android/about.html");
+        TabsOpenedFromExternalAppTest.loadUrlAndVerifyReferrerWithPolicy(
+                url, mActivityTestRule, ReferrerPolicy.DEFAULT, HTTP_REFERRER, HTTP_REFERRER);
     }
 }

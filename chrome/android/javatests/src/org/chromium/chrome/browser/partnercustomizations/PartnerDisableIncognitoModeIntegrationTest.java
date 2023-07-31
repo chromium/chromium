@@ -129,32 +129,21 @@ public class PartnerDisableIncognitoModeIntegrationTest {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
 
-        try {
-            String[] testUrls = {
-                testServer.getURL("/chrome/test/data/android/about.html"),
+        String[] testUrls = {testServer.getURL("/chrome/test/data/android/about.html"),
                 testServer.getURL("/chrome/test/data/android/ok.txt"),
-                testServer.getURL("/chrome/test/data/android/test.html")
-            };
-
-            setParentalControlsEnabled(false);
-            mActivityTestRule.startMainActivityOnBlankPage();
-            waitForParentalControlsEnabledState(false);
-
-            mActivityTestRule.loadUrlInNewTab(testUrls[0], true);
-            mActivityTestRule.loadUrlInNewTab(testUrls[1], true);
-            mActivityTestRule.loadUrlInNewTab(testUrls[2], true);
-            mActivityTestRule.loadUrlInNewTab(testUrls[0], false);
-
-            setParentalControlsEnabled(true);
-            toggleActivityForegroundState();
-            waitForParentalControlsEnabledState(true);
-
-            CriteriaHelper.pollInstrumentationThread(() -> {
-                Criteria.checkThat(
-                        mActivityTestRule.tabsCount(true /* incognito */), Matchers.is(0));
-            });
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+                testServer.getURL("/chrome/test/data/android/test.html")};
+        setParentalControlsEnabled(false);
+        mActivityTestRule.startMainActivityOnBlankPage();
+        waitForParentalControlsEnabledState(false);
+        mActivityTestRule.loadUrlInNewTab(testUrls[0], true);
+        mActivityTestRule.loadUrlInNewTab(testUrls[1], true);
+        mActivityTestRule.loadUrlInNewTab(testUrls[2], true);
+        mActivityTestRule.loadUrlInNewTab(testUrls[0], false);
+        setParentalControlsEnabled(true);
+        toggleActivityForegroundState();
+        waitForParentalControlsEnabledState(true);
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(mActivityTestRule.tabsCount(true /* incognito */), Matchers.is(0));
+        });
     }
 }

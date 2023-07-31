@@ -12,7 +12,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -64,11 +63,6 @@ public class UrlSchemeTest {
                 ApplicationProvider.getApplicationContext(), UrlUtils.getTestFilePath(""));
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-    }
-
-    @After
-    public void tearDown() {
-        if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
     /**

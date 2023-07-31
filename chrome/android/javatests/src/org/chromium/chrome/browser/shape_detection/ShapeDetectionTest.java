@@ -56,18 +56,12 @@ public class ShapeDetectionTest {
     public void testBarcodeDetection() throws TimeoutException {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-        try {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            TabTitleObserver titleObserver =
-                    new TabTitleObserver(tab, BARCODE_TEST_EXPECTED_TAB_TITLE);
-            mActivityTestRule.loadUrl(
-                    testServer.getURL("/chrome/test/data/android/barcode_detection.html"));
-            titleObserver.waitForTitleUpdate(10);
-
-            Assert.assertEquals(BARCODE_TEST_EXPECTED_TAB_TITLE, tab.getTitle());
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        TabTitleObserver titleObserver = new TabTitleObserver(tab, BARCODE_TEST_EXPECTED_TAB_TITLE);
+        mActivityTestRule.loadUrl(
+                testServer.getURL("/chrome/test/data/android/barcode_detection.html"));
+        titleObserver.waitForTitleUpdate(10);
+        Assert.assertEquals(BARCODE_TEST_EXPECTED_TAB_TITLE, tab.getTitle());
     }
 
     /**
@@ -81,18 +75,12 @@ public class ShapeDetectionTest {
     public void testTextDetection() throws TimeoutException {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-        try {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            TabTitleObserver titleObserver =
-                    new TabTitleObserver(tab, TEXT_TEST_EXPECTED_TAB_TITLE);
-            mActivityTestRule.loadUrl(
-                    testServer.getURL("/chrome/test/data/android/text_detection.html"));
-            titleObserver.waitForTitleUpdate(10);
-            Assert.assertEquals(
-                    TEXT_TEST_EXPECTED_TAB_TITLE, ChromeTabUtils.getTitleOnUiThread(tab));
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        TabTitleObserver titleObserver = new TabTitleObserver(tab, TEXT_TEST_EXPECTED_TAB_TITLE);
+        mActivityTestRule.loadUrl(
+                testServer.getURL("/chrome/test/data/android/text_detection.html"));
+        titleObserver.waitForTitleUpdate(10);
+        Assert.assertEquals(TEXT_TEST_EXPECTED_TAB_TITLE, ChromeTabUtils.getTitleOnUiThread(tab));
     }
 
     /**

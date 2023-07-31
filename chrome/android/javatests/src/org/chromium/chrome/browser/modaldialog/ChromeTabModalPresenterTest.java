@@ -536,7 +536,6 @@ public class ChromeTabModalPresenterTest {
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;
-        server.stopAndDestroyServer();
     }
 
     @Test

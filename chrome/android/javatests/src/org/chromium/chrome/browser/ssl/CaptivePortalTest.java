@@ -10,7 +10,6 @@ import androidx.annotation.IntDef;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -96,11 +95,6 @@ public class CaptivePortalTest {
 
         CaptivePortalHelper.setOSReportsCaptivePortalForTesting(false);
         CaptivePortalHelper.setCaptivePortalCertificateForTesting("sha256/test");
-    }
-
-    @After
-    public void tearDown() {
-        mServer.stopAndDestroyServer();
     }
 
     /** Navigate the tab to an interstitial with a name mismatch error and check if this

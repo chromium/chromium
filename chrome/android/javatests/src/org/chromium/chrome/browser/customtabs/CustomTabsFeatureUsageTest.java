@@ -69,10 +69,6 @@ public class CustomTabsFeatureUsageTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
-        if (mTestServer != null) {
-            mTestServer.stopAndDestroyServer();
-            mTestServer = null;
-        }
     }
 
     private Activity startBlankUiTestActivity() {

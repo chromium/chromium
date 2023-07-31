@@ -50,10 +50,17 @@ public class EmbeddedTestServerRule implements TestRule {
     public EmbeddedTestServer getServer() {
         if (mServer == null) {
             Context context = InstrumentationRegistry.getContext();
-            mServer = mUseHttps
-                    ? EmbeddedTestServer.createAndStartHTTPSServerWithPort(
-                            context, mCertificateType, mServerPort)
-                    : EmbeddedTestServer.createAndStartServerWithPort(context, mServerPort);
+            // Need to disable ResettersForTesting because it will destroy the server too early in
+            // the case where this rule is initialized via @ClassRule and getServer() is not called
+            // until one of the tests is executing.
+            mServer = new EmbeddedTestServer();
+            mServer.mDisableResetterForTesting = true;
+            if (mUseHttps) {
+                EmbeddedTestServer.initializeAndStartHTTPSServer(
+                        mServer, context, mCertificateType, mServerPort);
+            } else {
+                EmbeddedTestServer.initializeAndStartServer(mServer, context, mServerPort);
+            }
         }
         return mServer;
     }

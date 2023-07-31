@@ -17,6 +17,7 @@ import androidx.annotation.GuardedBy;
 import org.junit.Assert;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner.ClassHook;
 import org.chromium.base.test.util.UrlUtils;
@@ -35,6 +36,7 @@ import java.io.File;
  * // serve requests...
  * s.getURL("/foo/bar.txt");
  *
+ * // Generally safe to omit as ResettersForTesting will call it.
  * s.stopAndDestroyServer();
  * </pre>
  *
@@ -46,6 +48,8 @@ public class EmbeddedTestServer {
     private static final String EMBEDDED_TEST_SERVER_SERVICE =
             "org.chromium.net.test.EMBEDDED_TEST_SERVER_SERVICE";
     private static final long SERVICE_CONNECTION_WAIT_INTERVAL_MS = 5000;
+
+    private static boolean sTestRootInitDone;
 
     @GuardedBy("mImplMonitor")
     private IEmbeddedTestServerImpl mImpl;
@@ -69,6 +73,7 @@ public class EmbeddedTestServer {
 
     private Context mContext;
     private final Object mImplMonitor = new Object();
+    boolean mDisableResetterForTesting;
 
     // Whether the server should use HTTP or HTTPS.
     public enum ServerHTTPSSetting {
@@ -172,6 +177,9 @@ public class EmbeddedTestServer {
 
             if (!initialized) {
                 throw new EmbeddedTestServerFailure("Failed to initialize native server.");
+            }
+            if (!mDisableResetterForTesting) {
+                ResettersForTesting.register(this::stopAndDestroyServer);
             }
 
             if (httpsSetting == ServerHTTPSSetting.USE_HTTPS) {
@@ -475,45 +483,29 @@ public class EmbeddedTestServer {
         return absoluteUrls;
     }
 
-    /** Shutdown the server.
-     *
-     *  @return Whether the server was successfully shut down.
-     */
-    public boolean shutdownAndWaitUntilComplete() {
-        try {
-            synchronized (mImplMonitor) {
-                checkServiceLocked();
-                return mImpl.shutdownAndWaitUntilComplete();
-            }
-        } catch (RemoteException e) {
-            throw new EmbeddedTestServerFailure("Failed to shut down.", e);
-        }
-    }
-
-    /** Destroy the native EmbeddedTestServer object. */
-    public void destroy() {
-        try {
-            synchronized (mImplMonitor) {
-                checkServiceLocked();
-                mImpl.destroy();
-                mImpl = null;
-            }
-        } catch (RemoteException e) {
-            throw new EmbeddedTestServerFailure("Failed to destroy native server.", e);
-        } finally {
-            mContext.unbindService(mConn);
-        }
-    }
-
-    /** Stop and destroy the server.
+    /**
+     * Stop and destroy the server.
      *
      *  This handles stopping the server and destroying the native object.
      */
     public void stopAndDestroyServer() {
-        if (!shutdownAndWaitUntilComplete()) {
-            throw new EmbeddedTestServerFailure("Failed to stop server.");
+        synchronized (mImplMonitor) {
+            // ResettersForTesting call can cause this to be called multiple times.
+            if (mImpl == null) {
+                return;
+            }
+            try {
+                if (!mImpl.shutdownAndWaitUntilComplete()) {
+                    throw new EmbeddedTestServerFailure("Failed to stop server.");
+                }
+                mImpl.destroy();
+                mImpl = null;
+            } catch (RemoteException e) {
+                throw new EmbeddedTestServerFailure("Failed to shut down.", e);
+            } finally {
+                mContext.unbindService(mConn);
+            }
         }
-        destroy();
     }
 
     /** Get the path of the PEM file of the root cert. */
@@ -531,8 +523,6 @@ public class EmbeddedTestServer {
     public static ClassHook getPreClassHook() {
         return (targetContext, testClass) -> EmbeddedTestServer.setUpClass(testClass);
     }
-
-    private static boolean sTestRootInitDone;
 
     public static void setUpClass(Class<?> clazz) {
         if (sTestRootInitDone) {

@@ -69,8 +69,6 @@ public class VirtualKeyboardResizeTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
-
         // Some tests set this pref. Clear it to ensure that state does not leak between tests.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getPrefService().clearPref(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT);

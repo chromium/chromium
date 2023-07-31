@@ -86,21 +86,16 @@ public class AwContentsStaticsTest {
 
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        try {
-            String url = testServer.getURL("/android_webview/test/data/hello_world.html");
-            OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
-            int errorCount = errorHelper.getCallCount();
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            Assert.assertEquals("onReceivedError should be called.", errorCount + 1,
-                    errorHelper.getCallCount());
-            Assert.assertEquals("Incorrect network error code.", WebviewErrorCode.ERROR_UNKNOWN,
-                    errorHelper.getError().errorCode);
-            Assert.assertEquals("onReceivedError was called for the wrong URL.", url,
-                    errorHelper.getRequest().url);
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        String url = testServer.getURL("/android_webview/test/data/hello_world.html");
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
+        int errorCount = errorHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        Assert.assertEquals(
+                "onReceivedError should be called.", errorCount + 1, errorHelper.getCallCount());
+        Assert.assertEquals("Incorrect network error code.", WebviewErrorCode.ERROR_UNKNOWN,
+                errorHelper.getError().errorCode);
+        Assert.assertEquals(
+                "onReceivedError was called for the wrong URL.", url, errorHelper.getRequest().url);
     }
 
     @Test
@@ -118,16 +113,11 @@ public class AwContentsStaticsTest {
 
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        try {
-            String url = testServer.getURL("/android_webview/test/data/hello_world.html");
-            OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
-            int errorCount = errorHelper.getCallCount();
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            Assert.assertEquals("onReceivedError should not be called.", errorCount,
-                    errorHelper.getCallCount());
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        String url = testServer.getURL("/android_webview/test/data/hello_world.html");
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
+        int errorCount = errorHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        Assert.assertEquals(
+                "onReceivedError should not be called.", errorCount, errorHelper.getCallCount());
     }
 }

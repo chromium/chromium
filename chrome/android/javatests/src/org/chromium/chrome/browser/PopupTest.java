@@ -76,7 +76,6 @@ public class PopupTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
         MockSafetyNetApiHandler.clearMockResponses();
     }
 

@@ -26,7 +26,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -154,11 +153,6 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         });
 
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 
     @Test
