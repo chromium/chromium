@@ -708,6 +708,24 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "SyncEnableHistoryDataType"},
 };
 
+const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
+    {web::features::kOneTapForMapsConsentModeParamTitle,
+     web::features::kOneTapForMapsConsentModeDefaultParam}};
+const FeatureEntry::FeatureParam kOneTapForMapsConsentModeForced[] = {
+    {web::features::kOneTapForMapsConsentModeParamTitle,
+     web::features::kOneTapForMapsConsentModeForcedParam}};
+const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDisabled[] = {
+    {web::features::kOneTapForMapsConsentModeParamTitle,
+     web::features::kOneTapForMapsConsentModeDisabledParam}};
+const FeatureEntry::FeatureVariation kOneTapForMapsWithVariations[] = {
+    {"Consent Default", kOneTapForMapsConsentModeDefault,
+     std::size(kOneTapForMapsConsentModeDefault), nullptr},
+    {"Consent Forced", kOneTapForMapsConsentModeForced,
+     std::size(kOneTapForMapsConsentModeForced), nullptr},
+    {"Consent Disabled", kOneTapForMapsConsentModeDisabled,
+     std::size(kOneTapForMapsConsentModeDisabled), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1068,7 +1086,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     "ExpKitTextClassifier")},
     {"one-tap-experience-maps", flag_descriptions::kOneTapForMapsName,
      flag_descriptions::kOneTapForMapsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kOneTapForMaps)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(web::features::kOneTapForMaps,
+                                    kOneTapForMapsWithVariations,
+                                    "OneTapForMaps")},
     {"https-only-mode", flag_descriptions::kHttpsOnlyModeName,
      flag_descriptions::kHttpsOnlyModeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(security_interstitials::features::kHttpsOnlyMode)},

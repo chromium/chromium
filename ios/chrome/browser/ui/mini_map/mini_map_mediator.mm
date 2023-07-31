@@ -37,8 +37,7 @@
     return;
   }
 
-  if (consentRequired &&
-      !IsAddressAutomaticDetectionAccepted(self.prefService)) {
+  if (consentRequired && ShouldPresentConsentScreen(self.prefService)) {
     [self.delegate showConsentInterstitial];
     return;
   }

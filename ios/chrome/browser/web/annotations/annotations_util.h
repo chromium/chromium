@@ -18,6 +18,9 @@ bool IsAddressAutomaticDetectionEnabled(PrefService* prefs);
 // Whether the user accepted the address detection one tap interstitial.
 bool IsAddressAutomaticDetectionAccepted(PrefService* prefs);
 
+// Whether the consent screen should be presented to the user.
+bool ShouldPresentConsentScreen(PrefService* prefs);
+
 // Returns whether the long press detection is enabled.
 // Note: If one-tap-address is disabled, the setting
 // is not present and default to true.

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web/annotations/annotations_util.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/web/common/features.h"
@@ -25,6 +26,19 @@ bool IsAddressAutomaticDetectionEnabled(PrefService* prefs) {
 bool IsAddressAutomaticDetectionAccepted(PrefService* prefs) {
   return IsAddressDetectionEnabled() &&
          prefs->GetBoolean(prefs::kDetectAddressesAccepted);
+}
+
+bool ShouldPresentConsentScreen(PrefService* prefs) {
+  std::string param = base::GetFieldTrialParamValueByFeature(
+      web::features::kOneTapForMaps,
+      web::features::kOneTapForMapsConsentModeParamTitle);
+  if (param == web::features::kOneTapForMapsConsentModeForcedParam) {
+    return true;
+  }
+  if (param == web::features::kOneTapForMapsConsentModeDisabledParam) {
+    return false;
+  }
+  return !IsAddressAutomaticDetectionAccepted(prefs);
 }
 
 bool IsAddressLongPressDetectionEnabled(PrefService* prefs) {

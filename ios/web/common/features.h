@@ -61,6 +61,11 @@ BASE_DECLARE_FEATURE(kEnableEmails);
 // Feature flag to enable Phone Numbers detection.
 BASE_DECLARE_FEATURE(kEnablePhoneNumbers);
 
+// Feature param under kOneTapForMaps to select consent behavior.
+extern const char kOneTapForMapsConsentModeParamTitle[];
+extern const char kOneTapForMapsConsentModeDefaultParam[];
+extern const char kOneTapForMapsConsentModeForcedParam[];
+extern const char kOneTapForMapsConsentModeDisabledParam[];
 // Feature flag to enable One tap experience for Maps.
 BASE_DECLARE_FEATURE(kOneTapForMaps);
 
