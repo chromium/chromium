@@ -219,6 +219,12 @@ void ChromeOsAppsNavigationThrottle::SetClockForTesting(
   clock_ = tick_clock;
 }
 
+base::OnceClosure&
+ChromeOsAppsNavigationThrottle::GetLinkCaptureLaunchCallbackForTesting() {
+  static base::NoDestructor<base::OnceClosure> callback;
+  return *callback;
+}
+
 ChromeOsAppsNavigationThrottle::ChromeOsAppsNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : apps::AppsNavigationThrottle(navigation_handle) {}
@@ -325,6 +331,9 @@ bool ChromeOsAppsNavigationThrottle::ShouldCancelNavigation(
                  LaunchResult&&) {
                 // Note: This function currently only serves to own the "keep
                 // alive" objects until the launch is complete.
+                if (GetLinkCaptureLaunchCallbackForTesting()) {
+                  std::move(GetLinkCaptureLaunchCallbackForTesting()).Run();
+                }
               },
               std::move(browser_keep_alive), std::move(profile_keep_alive))));
 

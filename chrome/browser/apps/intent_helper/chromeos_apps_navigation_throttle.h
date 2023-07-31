@@ -35,6 +35,8 @@ class ChromeOsAppsNavigationThrottle : public apps::AppsNavigationThrottle {
   // Set clock used for timing to enable manipulation during tests.
   static void SetClockForTesting(const base::TickClock* tick_clock);
 
+  static base::OnceClosure& GetLinkCaptureLaunchCallbackForTesting();
+
   explicit ChromeOsAppsNavigationThrottle(
       content::NavigationHandle* navigation_handle);
 

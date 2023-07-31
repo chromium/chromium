@@ -4,10 +4,13 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/chromeos_apps_navigation_throttle.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -47,7 +51,7 @@ namespace web_app {
 
 using ClientMode = LaunchHandler::ClientMode;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Tests that links are captured correctly into an installed WebApp using the
 // 'tabbed' display mode, which allows the webapp window to have multiple tabs.
@@ -73,6 +77,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     scope_ = start_url_.GetWithoutFilename();
 
     app_id_ = InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url_);
+    AppReadinessWaiter(profile(), app_id_).Await();
   }
 
   WebAppProvider& provider() {
@@ -147,8 +152,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   void TurnOnLinkCapturing() {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->SetSupportedLinksPreference(app_id_);
+    apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id_);
   }
 
   absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
@@ -244,6 +248,13 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 
   // Old about:blank page cleaned up.
   removed_observer.Wait();
+
+  // Must wait for link capturing launch to complete so that its keep alives go
+  // out of scope.
+  base::test::TestFuture<void> future;
+  apps::ChromeOsAppsNavigationThrottle::
+      GetLinkCaptureLaunchCallbackForTesting() = future.GetCallback();
+  ASSERT_TRUE(future.Wait());
 }
 
 // TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
@@ -306,6 +317,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
