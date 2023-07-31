@@ -82,6 +82,7 @@ import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
@@ -541,7 +542,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public void onAttachedToWindow() {
         TraceEvent.begin("WebContentsAccessibilityImpl.onAttachedToWindow");
         refreshNativeState();
-        mCaptioningController.startListening();
+
+        // Some devices (e.g. OnePlus) are enforcing a Strict Mode Violation in code outside Chrome,
+        // which can result a crash when the listener starts.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            mCaptioningController.startListening();
+        }
+
         registerLocaleChangeReceiver();
         TraceEvent.end("WebContentsAccessibilityImpl.onAttachedToWindow");
     }
