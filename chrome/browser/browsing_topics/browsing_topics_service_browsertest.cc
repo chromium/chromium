@@ -322,8 +322,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsAnnotationGoldenDataBrowserTest,
       "type.googleapis.com/com.foo.PageTopicsModelMetadata");
   optimization_guide::proto::PageTopicsModelMetadata page_topics_model_metadata;
   page_topics_model_metadata.set_version(123);
-  page_topics_model_metadata.set_taxonomy_version(
-      blink::features::kBrowsingTopicsTaxonomyVersion.Get());
+  if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() >= 2) {
+    page_topics_model_metadata.set_taxonomy_version(
+        blink::features::kBrowsingTopicsTaxonomyVersion.Get());
+  }
   page_topics_model_metadata.add_supported_output(
       optimization_guide::proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
   auto* output_params =
