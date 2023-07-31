@@ -40,20 +40,14 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingEnabled,
       base::BindRepeating(
-          &IOSChromeSafetyCheckManager::OnSafeBrowsingPrefChanged,
+          &IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState,
           weak_ptr_factory_.GetWeakPtr()));
 
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingEnhanced,
       base::BindRepeating(
-          &IOSChromeSafetyCheckManager::OnSafeBrowsingPrefChanged,
+          &IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState,
           weak_ptr_factory_.GetWeakPtr()));
-
-  // Process the initial Safe Browsing pref values.
-  OnSafeBrowsingPrefChanged();
-
-  // Query the Omaha service to process the initial Update Chrome check state.
-  StartOmahaCheck();
 }
 
 IOSChromeSafetyCheckManager::~IOSChromeSafetyCheckManager() {
@@ -72,6 +66,97 @@ void IOSChromeSafetyCheckManager::Shutdown() {
 
   pref_change_registrar_.RemoveAll();
   pref_service_ = nullptr;
+}
+
+void IOSChromeSafetyCheckManager::StartSafetyCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Do nothing if the Safety Check is already running.
+  if (running_safety_check_state_ == RunningSafetyCheckState::kRunning) {
+    return;
+  }
+
+  // Asynchronous checks
+  StartPasswordCheck();
+  StartUpdateChromeCheck();
+
+  // Synchronous checks
+  UpdateSafeBrowsingCheckState();
+}
+
+void IOSChromeSafetyCheckManager::StopSafetyCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Do nothing if the Safety Check is not running.
+  if (running_safety_check_state_ != RunningSafetyCheckState::kRunning) {
+    return;
+  }
+
+  StopPasswordCheck();
+  StopUpdateChromeCheck();
+}
+
+void IOSChromeSafetyCheckManager::StartPasswordCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Do nothing if the Password check is already running.
+  if (password_check_state_ == PasswordSafetyCheckState::kRunning) {
+    return;
+  }
+
+  ignore_password_check_changes_ = false;
+
+  previous_password_check_state_ = password_check_state_;
+
+  password_check_manager_->StartPasswordCheck();
+
+  // NOTE: There's no need to explicitly set `password_check_state_` to
+  // `kRunning` here because this class conforms to
+  // `IOSChromePasswordCheckManager::Observer`. Whenever the observer method
+  // `PasswordCheckStatusChanged()` is called with a running state,
+  // `password_check_state_` will then be set to `kRunning`.
+}
+
+void IOSChromeSafetyCheckManager::StopPasswordCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Do nothing if the Password Check is not running.
+  if (password_check_state_ != PasswordSafetyCheckState::kRunning) {
+    return;
+  }
+
+  SetPasswordCheckState(previous_password_check_state_);
+
+  ignore_password_check_changes_ = true;
+
+  password_check_manager_->StopPasswordCheck();
+}
+
+void IOSChromeSafetyCheckManager::StartUpdateChromeCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Do nothing if the Update Chrome check is already running.
+  if (update_chrome_check_state_ == UpdateChromeSafetyCheckState::kRunning) {
+    return;
+  }
+
+  ignore_omaha_changes_ = false;
+
+  previous_update_chrome_check_state_ = update_chrome_check_state_;
+
+  StartOmahaCheck();
+}
+
+void IOSChromeSafetyCheckManager::StopUpdateChromeCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (update_chrome_check_state_ != UpdateChromeSafetyCheckState::kRunning) {
+    return;
+  }
+
+  SetUpdateChromeCheckState(previous_update_chrome_check_state_);
+
+  ignore_omaha_changes_ = true;
 }
 
 void IOSChromeSafetyCheckManager::PasswordCheckStatusChanged(
@@ -169,22 +254,36 @@ void IOSChromeSafetyCheckManager::RefreshOutdatedPasswordCheckState() {
 void IOSChromeSafetyCheckManager::SetPasswordCheckState(
     PasswordSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (ignore_password_check_changes_) {
+    return;
+  }
+
   password_check_state_ = state;
 
   for (auto& observer : observers_) {
     observer.PasswordCheckStateChanged(password_check_state_);
   }
+
+  RefreshSafetyCheckRunningState();
 }
 
 // TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
 void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
     UpdateChromeSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (ignore_omaha_changes_) {
+    return;
+  }
+
   update_chrome_check_state_ = state;
 
   for (auto& observer : observers_) {
     observer.UpdateChromeCheckStateChanged(update_chrome_check_state_);
   }
+
+  RefreshSafetyCheckRunningState();
 }
 
 // TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
@@ -192,12 +291,17 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeDetails(
     GURL upgrade_url,
     std::string next_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (ignore_omaha_changes_) {
+    return;
+  }
+
   upgrade_url_ = upgrade_url;
   next_version_ = next_version;
 }
 
 // TODO(crbug.com/1462786): Add UMA logs related to the Safe Browsing check.
-void IOSChromeSafetyCheckManager::OnSafeBrowsingPrefChanged() {
+void IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(pref_service_);
 
@@ -284,6 +388,33 @@ void IOSChromeSafetyCheckManager::HandleOmahaError() {
   }
 }
 
+void IOSChromeSafetyCheckManager::RefreshSafetyCheckRunningState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RunningSafetyCheckState current_state = running_safety_check_state_;
+
+  const bool running_checks =
+      safe_browsing_check_state_ == SafeBrowsingSafetyCheckState::kRunning ||
+      password_check_state_ == PasswordSafetyCheckState::kRunning ||
+      update_chrome_check_state_ == UpdateChromeSafetyCheckState::kRunning;
+
+  RunningSafetyCheckState new_state = running_checks
+                                          ? RunningSafetyCheckState::kRunning
+                                          : RunningSafetyCheckState::kDefault;
+
+  // Do nothing if the current and new states match, i.e. there's no need to
+  // notify observers that nothing has changed.
+  if (current_state == new_state) {
+    return;
+  }
+
+  running_safety_check_state_ = new_state;
+
+  for (auto& observer : observers_) {
+    observer.RunningStateChanged(running_safety_check_state_);
+  }
+}
+
 void IOSChromeSafetyCheckManager::AddObserver(
     IOSChromeSafetyCheckManagerObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -307,4 +438,24 @@ void IOSChromeSafetyCheckManager::HandleOmahaResponseForTesting(
     UpgradeRecommendedDetails details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HandleOmahaResponse(details);
+}
+
+RunningSafetyCheckState
+IOSChromeSafetyCheckManager::GetRunningCheckStateForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return running_safety_check_state_;
+}
+
+void IOSChromeSafetyCheckManager::SetPasswordCheckStateForTesting(
+    PasswordSafetyCheckState state) {
+  SetPasswordCheckState(state);
+}
+
+void IOSChromeSafetyCheckManager::InsecureCredentialsChangedForTesting() {
+  InsecureCredentialsChanged();
+}
+
+void IOSChromeSafetyCheckManager::PasswordCheckStatusChangedForTesting(
+    PasswordCheckState state) {
+  PasswordCheckStatusChanged(state);
 }

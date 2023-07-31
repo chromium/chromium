@@ -69,7 +69,10 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
-  void TearDown() override { safety_check_manager_->Shutdown(); }
+  void TearDown() override {
+    safety_check_manager_->StopSafetyCheck();
+    safety_check_manager_->Shutdown();
+  }
 
  protected:
   web::WebTaskEnvironment task_environment_{
@@ -466,18 +469,21 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 TEST_F(IOSChromeSafetyCheckManagerTest, HandlesExpiredOmahaResponse) {
   // Starting the Omaha check sets the Update Chrome check state to running.
   safety_check_manager_->StartOmahaCheckForTesting();
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);
 
   // Even 1s before `kOmahaNetworkWaitTime` is met, the check state should still
   // be running.
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime - base::Seconds(1));
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);
 
   // Once `kOmahaNetworkWaitTime` is met, the current Omaha request should be
   // considered an Omaha error.
   task_environment_.FastForwardBy(base::Seconds(1));
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kOmahaError);
 }
@@ -485,12 +491,14 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesExpiredOmahaResponse) {
 // Tests a valid, app-up-to-date Omaha response is properly handled.
 TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppIsUpToDate) {
   safety_check_manager_->StartOmahaCheckForTesting();
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);
 
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
 
   safety_check_manager_->HandleOmahaResponseForTesting(UpdatedAppDetails());
+
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
@@ -499,7 +507,9 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppIsUpToDate) {
   // Once `kOmahaNetworkWaitTime` elapses, nothing should happen, because the
   // response was received before `kOmahaNetworkWaitTime` was met.
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
+
   task_environment_.RunUntilIdle();
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kUpToDate);
 }
@@ -507,12 +517,14 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppIsUpToDate) {
 // Tests a valid, app-outdated Omaha response is properly handled.
 TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppOutdated) {
   safety_check_manager_->StartOmahaCheckForTesting();
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);
 
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
 
   safety_check_manager_->HandleOmahaResponseForTesting(OutdatedAppDetails());
+
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
@@ -521,7 +533,191 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppOutdated) {
   // Once `kOmahaNetworkWaitTime` elapses, nothing should happen, because the
   // response was received before `kOmahaNetworkWaitTime` was met.
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
+
   task_environment_.RunUntilIdle();
+
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kOutOfDate);
+}
+
+// Tests starting the Safety Check updates all check states.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StartingSafetyCheckUpdatesAllCheckStates) {
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  // The Password check state is expected to be `kDefault` here because it's not
+  // directly controlled by the Safety Check Manager. The Safety Check Manager
+  // observes Password check changes, i.e. when the Password check begins
+  // running in the Password Check Manager, the Safety Check
+  // Manager will be notified via an observer call.
+  //
+  // At that point, the Safety Check Manager will have the new Password check
+  // state `kRunning`, but it won't necessarily be `kRunning` here.
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  // The Safe Browsing check is synchronous, so it will immediately return its
+  // value, i.e. no `kRunning` state.
+  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+            SafeBrowsingSafetyCheckState::kSafe);
+
+  EXPECT_EQ(safety_check_manager_->GetRunningCheckStateForTesting(),
+            RunningSafetyCheckState::kRunning);
+}
+
+// Tests stopping a currently running Safety Check reverts all check
+// states to their previous value.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StoppingRunningSafetyCheckRevertsAllCheckStates) {
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+            SafeBrowsingSafetyCheckState::kSafe);
+  EXPECT_EQ(safety_check_manager_->GetRunningCheckStateForTesting(),
+            RunningSafetyCheckState::kRunning);
+
+  safety_check_manager_->StopSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+            SafeBrowsingSafetyCheckState::kSafe);
+  EXPECT_EQ(safety_check_manager_->GetRunningCheckStateForTesting(),
+            RunningSafetyCheckState::kDefault);
+}
+
+// Tests cancelling a currently running Safety Check check ignores an
+// incoming Omaha response.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StoppingRunningUpdateChromeCheckIgnoresOmahaResponse) {
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  safety_check_manager_->StopSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+
+  // NOTE: Normally this call would change the Update Chrome check state to
+  // `kUpToDate`. However, this call should be ignored because the Safety
+  // Check was cancelled, reverting the check state `kDefault`, and ignoring the
+  // future update below.
+  safety_check_manager_->HandleOmahaResponseForTesting(UpdatedAppDetails());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+}
+
+// Tests cancelling a currently running Safety Check check correctly ignores an
+// incoming Omaha error.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StoppingRunningUpdateChromeCheckIgnoresOmahaError) {
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  safety_check_manager_->StopSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+
+  // NOTE: Normally this call would change the Update Chrome check state to
+  // `kOmahaError`. However, this call should be ignored because the Safety
+  // Check was cancelled, reverting the check state `kDefault`, and ignoring the
+  // future error below.
+  safety_check_manager_->HandleOmahaResponseForTesting(OutdatedAppDetails());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+}
+
+// Tests cancelling a currently running Safety Check check ignores an
+// incoming Password Check change.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StoppingRunningPasswordCheckIgnoresPasswordCheckChange) {
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kRunning);
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kRunning);
+
+  safety_check_manager_->StopSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  // NOTE: Normally this call would change the Password check state to
+  // `kError` due to the quota limit being reached. However, this call should be
+  // ignored because the Password check was cancelled, reverting the check state
+  // `kDefault`, and ignoring the future update below.
+  safety_check_manager_->PasswordCheckStatusChangedForTesting(
+      PasswordCheckState::kQuotaLimit);
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+}
+
+// Tests cancelling a currently running Safety Check check correctly ignores an
+// incoming insecure credentials change.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StoppingRunningPasswordCheckIgnoresInsecureCredentialsChange) {
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kRunning);
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kRunning);
+
+  safety_check_manager_->StopSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  // NOTE: Normally this call would change the Password check state. However,
+  // this call should be ignored because the Password check was cancelled,
+  // reverting the check state `kDefault`, and ignoring the future update
+  // below.
+  safety_check_manager_->InsecureCredentialsChangedForTesting();
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
 }

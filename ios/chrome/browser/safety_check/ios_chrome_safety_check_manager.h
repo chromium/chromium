@@ -78,6 +78,20 @@ class IOSChromeSafetyCheckManager
   // KeyedService implementation.
   void Shutdown() override;
 
+  // Starts the Safety Check, which comprises starting
+  // the: [1] Safe Browsing check, [2] Update Chrome check, and [3] Passwords
+  // Check, and notifies any observers of the change.
+  //
+  // NOTE: If the Safety Check is already running, does nothing.
+  void StartSafetyCheck();
+
+  // Stops the currently running Safety Check, if any, which comprises stopping
+  // the: [1] Safe Browsing check, [2] Update Chrome check, and [3] Passwords
+  // Check, and notifies any observers of the change.
+  //
+  // NOTE: If the Safety Check is not currently running, does nothing.
+  void StopSafetyCheck();
+
   // IOSChromePasswordCheckManager::Observer implementation.
   void PasswordCheckStatusChanged(PasswordCheckState state) override;
   void InsecureCredentialsChanged() override;
@@ -100,8 +114,28 @@ class IOSChromeSafetyCheckManager
   // For unit-testing only.
   void StartOmahaCheckForTesting();
   void HandleOmahaResponseForTesting(UpgradeRecommendedDetails details);
+  RunningSafetyCheckState GetRunningCheckStateForTesting() const;
+  void SetPasswordCheckStateForTesting(PasswordSafetyCheckState state);
+  void PasswordCheckStatusChangedForTesting(PasswordCheckState state);
+  void InsecureCredentialsChangedForTesting();
 
  private:
+  // Starts the asynchronous Password check, and notifies any observers of the
+  // change.
+  void StartPasswordCheck();
+
+  // Stops the currently running Password check, if any, and notifies any
+  // observers of the change.
+  void StopPasswordCheck();
+
+  // Starts the asynchronous Update Chrome check, and notifies any observers of
+  // the change.
+  void StartUpdateChromeCheck();
+
+  // Stops the currently running Update Chrome check, if any, and notifies any
+  // observers of the change.
+  void StopUpdateChromeCheck();
+
   // Sets `safe_browsing_check_state_` to `state` and notifies any observers
   // of the change.
   void SetSafeBrowsingCheckState(SafeBrowsingSafetyCheckState state);
@@ -127,8 +161,9 @@ class IOSChromeSafetyCheckManager
   // credentials list may change while the Password check is currently running.
   void RefreshOutdatedPasswordCheckState();
 
-  // Called when a Safe Browsing pref value changes.
-  void OnSafeBrowsingPrefChanged();
+  // Reads the latest Safe Browsing values from Prefs, and updates the internal
+  // Safe Browsing check state.
+  void UpdateSafeBrowsingCheckState();
 
   // Sets the app's upgrade details provided by the Omaha service.
   void SetUpdateChromeDetails(GURL upgrade_url, std::string next_version);
@@ -159,6 +194,39 @@ class IOSChromeSafetyCheckManager
   // `StartOmahaCheck()`.
   void HandleOmahaError();
 
+  // Checks if any checks are currently running. If so, sets
+  // `running_safety_check_state_` to the running state, and notifies any
+  // observers of the change.
+  void RefreshSafetyCheckRunningState();
+
+  // Current running state of the Safety Check. If any checks are currently
+  // running (e.g. Safe Browsing check, Update Chrome check, Passwords Check),
+  // then the Safety Check is considered to be running, too. For example:
+  //
+  //               (✓ = running, x = not running)
+  //
+  // +--------+----------+---------------+-------+--------------+
+  // | Update | Password | Safe Browsing |       | Safety Check |
+  // +--------+----------+---------------+-------+--------------+
+  // |    ✓   |     ✓    |       ✓       |   =   |       ✓      |
+  // +--------+----------+---------------+-------+--------------+
+  // |    x   |     ✓    |       ✓       |   =   |       ✓      |
+  // +--------+----------+---------------+-------+--------------+
+  // |    ✓   |     x    |       ✓       |   =   |       ✓      |
+  // +--------+----------+---------------+-------+--------------+
+  // |    ✓   |     ✓    |       x       |   =   |       ✓      |
+  // +--------+----------+---------------+-------+--------------+
+  // |    x   |     x    |       ✓       |   =   |       ✓      |
+  // +--------+----------+---------------+-------+--------------+
+  // |    ✓   |     x    |       x       |   =   |       ✓      |
+  // +--------+----------+---------------+-------+--------------+
+  // |    x   |     ✓    |       x       |   =   |       ✓      |
+  // +--------+----------+---------------+-------+--------------+
+  // |    x   |     x    |       x       |   =   |       x      |
+  // +--------+----------+---------------+-------+--------------+
+  RunningSafetyCheckState running_safety_check_state_ =
+      RunningSafetyCheckState::kDefault;
+
   // Current state of the Safe Browsing check.
   SafeBrowsingSafetyCheckState safe_browsing_check_state_ =
       SafeBrowsingSafetyCheckState::kDefault;
@@ -167,9 +235,36 @@ class IOSChromeSafetyCheckManager
   PasswordSafetyCheckState password_check_state_ =
       PasswordSafetyCheckState::kDefault;
 
+  // Previous state of the Password check. (Used as a fallback state, which
+  // enables users to cancel a currently running Password check.)
+  PasswordSafetyCheckState previous_password_check_state_ =
+      PasswordSafetyCheckState::kDefault;
+
   // Current state of the Update Chrome check.
   UpdateChromeSafetyCheckState update_chrome_check_state_ =
       UpdateChromeSafetyCheckState::kDefault;
+
+  // Previous state of the Update Chrome check. (Used as a fallback state, which
+  // enables users to cancel a currently running Update Chrome check.)
+  UpdateChromeSafetyCheckState previous_update_chrome_check_state_ =
+      UpdateChromeSafetyCheckState::kDefault;
+
+  // If `ignore_omaha_changes_` is true when either
+  // `HandleOmahaResponse()` or `HandleOmahaError()` are called, nothing
+  // happens. Effectively, this enables users to cancel a currently running
+  // Update Chrome check.
+  //
+  // NOTE: `ignore_omaha_changes_` is reset to false when the Safety Check is
+  // run again.
+  bool ignore_omaha_changes_ = false;
+
+  // If `ignore_password_check_changes_` is true when Password Check Manager
+  // observer methods are called, nothing happens. Effectively, this enables
+  // users to cancel a currently running Password check.
+  //
+  // NOTE: `ignore_password_check_changes_` is reset to false when the Safety
+  // Check is run again.
+  bool ignore_password_check_changes_ = false;
 
   // The app upgrade URL generated by the Omaha service.
   //
