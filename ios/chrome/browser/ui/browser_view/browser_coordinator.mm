@@ -995,6 +995,11 @@ enum class ToolbarKind {
   _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
   _viewControllerDependencies.webStateUpdateBrowserAgent = nil;
 
+  [_voiceSearchController dismissMicPermissionHelp];
+  [_voiceSearchController disconnect];
+  _voiceSearchController.dispatcher = nil;
+  _voiceSearchController = nil;
+
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
 
