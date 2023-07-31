@@ -13,5 +13,5 @@ include_rules = [
   "+third_party/private_membership",
   "+services/network/test",
   "+third_party/re2",
+  "+chromecast/cast_core/grpc",
 ]
-
