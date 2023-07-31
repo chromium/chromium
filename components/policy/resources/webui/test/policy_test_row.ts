@@ -8,7 +8,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {PolicyInfo, PolicyLevel, PolicyScope, PolicySource} from './policy_test.js';
+import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicyScope, PolicySource, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
 import {getTemplate} from './policy_test_row.html.js';
 
 export class PolicyTestRowElement extends CustomElement {
@@ -136,7 +136,7 @@ export class PolicyTestRowElement extends CustomElement {
       {id: 'levelRecommended', value: PolicyLevel.LEVEL_RECOMMENDED_VAL},
       {id: 'levelMandatory', value: PolicyLevel.LEVEL_MANDATORY_VAL}, {
         id: 'sourceEnterpriseDefault',
-        value: PolicySource.SOURCE_ENTERPRISE_DEFAULT,
+        value: PolicySource.SOURCE_ENTERPRISE_DEFAULT_VAL,
       },
       {id: 'sourceCommandLine', value: PolicySource.SOURCE_COMMAND_LINE_VAL},
       {id: 'sourceCloud', value: PolicySource.SOURCE_CLOUD_VAL},
@@ -164,6 +164,8 @@ export class PolicyTestRowElement extends CustomElement {
     }
   }
 
+  // Class method for setting the name, source, scope, level and value cells for
+  // this row.
   setInitialValues(initialValues: PolicyInfo) {
     const policyNameInput = this.getRequiredElement<HTMLSelectElement>('.name');
     const policySourceInput =
@@ -182,6 +184,9 @@ export class PolicyTestRowElement extends CustomElement {
     this.changeInputType_(policyNameInput);
     const policyValueInput =
         this.getRequiredElement<HTMLInputElement>('.value');
+    if (this.inputType_ === String) {
+      initialValues.value = this.trimSurroundingQuotes_(initialValues.value);
+    }
     policyValueInput.value = String(initialValues.value);
   }
 
@@ -200,6 +205,21 @@ export class PolicyTestRowElement extends CustomElement {
     this.errorEvents_.add(
         inputElement, 'focus', this.resetErrorState_.bind(this));
     this.hasAnError_ = true;
+  }
+
+  // Helper method for trimming the surrounding double quotes in the string, if
+  // any are present.
+  private trimSurroundingQuotes_(stringToTrim: string): string {
+    if (stringToTrim.length < 2) {
+      return stringToTrim;
+    }
+    stringToTrim.trim();
+    if (stringToTrim.charAt(0) === '"' &&
+        stringToTrim.charAt(stringToTrim.length - 1) === '"') {
+      stringToTrim = stringToTrim.substring(1, stringToTrim.length - 1);
+    }
+    stringToTrim.trim();
+    return stringToTrim;
   }
 
   // Class method for returning the value for this policy (the value in the
@@ -235,52 +255,22 @@ export class PolicyTestRowElement extends CustomElement {
 
   // Class method for returning the string value of the given attribute in this
   // row. Should only be used for enum attributes (level, scope and source).
-  getStringPolicyAttribute(attributeName: string): string {
+  getStringPolicyAttribute(attributeName: string): string|undefined {
     const intVal: number =
         parseInt(String(this.getPolicyAttribute(`${attributeName}`)));
     switch (attributeName) {
       case 'level':
-        switch (intVal) {
-          case PolicyLevel.LEVEL_RECOMMENDED_VAL:
-            return 'recommended';
-          case PolicyLevel.LEVEL_MANDATORY_VAL:
-            return 'mandatory';
-        }
-        break;
+        return Object.keys(LevelNamesToValues)
+            .find(name => LevelNamesToValues[name] === intVal);
       case 'scope':
-        switch (intVal) {
-          case PolicyScope.SCOPE_USER_VAL:
-            return 'user';
-          case PolicyScope.SCOPE_DEVICE_VAL:
-            return 'machine';
-        }
-        break;
+        return Object.keys(ScopeNamesToValues)
+            .find(name => ScopeNamesToValues[name] === intVal);
       case 'source':
-        switch (intVal) {
-          case PolicySource.SOURCE_ENTERPRISE_DEFAULT:
-            return 'sourceEnterpriseDefault';
-          case PolicySource.SOURCE_COMMAND_LINE_VAL:
-            return 'commandLine';
-          case PolicySource.SOURCE_CLOUD_VAL:
-            return 'cloud';
-          case PolicySource.SOURCE_ACTIVE_DIRECTORY_VAL:
-            return 'sourceActiveDirectory';
-          case PolicySource.SOURCE_PLATFORM_VAL:
-            return 'platform';
-          case PolicySource.SOURCE_MERGED_VAL:
-            return 'merged';
-          case PolicySource.SOURCE_CLOUD_FROM_ASH_VAL:
-            return 'cloud_from_ash';
-          case PolicySource
-              .SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL:
-            return 'restrictedManagedGuestSessionOverride';
-        }
-        break;
+        return Object.keys(SourceNamesToValues)
+            .find(name => SourceNamesToValues[name] === intVal);
       default:
-        break;
+        assertNotReached();
     }
-    this.setInErrorState_(this.getRequiredElement(`.${attributeName}`));
-    return '';
   }
 }
 

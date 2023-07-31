@@ -1,0 +1,98 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+
+/**
+ * Must be kept in sync with the C++ enums of the same names (see
+ * components/policy/core/common/policy_types.h).
+ */
+export enum PolicyScope {
+  SCOPE_USER_VAL = 0,
+  SCOPE_DEVICE_VAL = 1,
+}
+
+export enum PolicyLevel {
+  LEVEL_RECOMMENDED_VAL = 0,
+  LEVEL_MANDATORY_VAL = 1,
+}
+
+export enum PolicySource {
+  SOURCE_ENTERPRISE_DEFAULT_VAL = 0,
+  SOURCE_COMMAND_LINE_VAL = 1,
+  SOURCE_CLOUD_VAL = 2,
+  SOURCE_ACTIVE_DIRECTORY_VAL = 3,
+  SOURCE_PLATFORM_VAL = 5,
+  SOURCE_MERGED_VAL = 7,
+  SOURCE_CLOUD_FROM_ASH_VAL = 8,
+  SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL = 9,
+}
+
+// Object mapping policy information types to their values.
+export interface PolicyInfo {
+  name: string;
+  source: PolicySource;
+  scope: PolicyScope;
+  level: PolicyLevel;
+  value: any;
+}
+
+// Object mapping policy detail types to their values.
+export interface PolicyInfoForExport {
+  source: string;
+  scope: string;
+  level: string;
+  value: any;
+}
+
+// Object mapping policy names to their corresponding PolicyDetails objects.
+export interface PoliciesForExport {
+  policyValues: {
+    chrome: {
+      name: 'Chrome Test Policies',
+      policies: {[key: string]: PolicyInfoForExport},
+    },
+  };
+}
+
+export const SourceNamesToValues: {[key: string]: PolicySource} = {
+  sourceEnterpriseDefault: PolicySource.SOURCE_ENTERPRISE_DEFAULT_VAL,
+  commandLine: PolicySource.SOURCE_COMMAND_LINE_VAL,
+  cloud: PolicySource.SOURCE_CLOUD_VAL,
+  sourceActiveDirectory: PolicySource.SOURCE_ACTIVE_DIRECTORY_VAL,
+  platform: PolicySource.SOURCE_PLATFORM_VAL,
+  merged: PolicySource.SOURCE_MERGED_VAL,
+  cloud_from_ash: PolicySource.SOURCE_CLOUD_FROM_ASH_VAL,
+  restrictedManagedGuestSessionOverride:
+      PolicySource.SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL,
+};
+
+export const ScopeNamesToValues: {[key: string]: PolicyScope} = {
+  user: PolicyScope.SCOPE_USER_VAL,
+  machine: PolicyScope.SCOPE_DEVICE_VAL,
+};
+
+export const LevelNamesToValues: {[key: string]: PolicyLevel} = {
+  recommended: PolicyLevel.LEVEL_RECOMMENDED_VAL,
+  mandatory: PolicyLevel.LEVEL_MANDATORY_VAL,
+};
+
+let instance: PolicyTestBrowserProxy|null = null;
+
+export class PolicyTestBrowserProxy {
+  applyTestPolicies(jsonString: string) {
+    sendWithPromise('setLocalTestPolicies', jsonString);
+  }
+
+  revertTestPolicies() {
+    sendWithPromise('revertLocalTestPolicies');
+  }
+
+  restartWithTestPolicies(jsonString: string) {
+    sendWithPromise('restartBrowser', jsonString);
+  }
+
+  static getInstance(): PolicyTestBrowserProxy {
+    return instance || (instance = new PolicyTestBrowserProxy());
+  }
+}

@@ -5,7 +5,7 @@ import './policy_test_row.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {PoliciesForExport, PolicyInfo} from './policy_test.js';
+import {PoliciesForExport, PolicyInfo} from './policy_test_browser_proxy.js';
 import {PolicyTestRowElement} from './policy_test_row.js';
 import {getTemplate} from './policy_test_table.html.js';
 
