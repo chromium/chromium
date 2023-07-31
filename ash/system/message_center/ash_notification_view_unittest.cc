@@ -184,6 +184,43 @@ class MockAshNotificationDragDropDelegate
       this};
 };
 
+void TestDisableExpandCollapseForNotificationView(
+    AshNotificationView* notification_view,
+    AshNotificationExpandButton* expand_button) {
+  bool old_expanded_state = notification_view->IsExpanded();
+
+  ASSERT_TRUE(expand_button->GetVisible());
+  ASSERT_FALSE(notification_view->disable_expand_collapse_for_test());
+
+  // Test the disable expand collapse behavior.
+  notification_view->SetExpandCollapseEnabled(/*enabled=*/false);
+
+  EXPECT_TRUE(notification_view->disable_expand_collapse_for_test());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_DISABLED_TOOLTIP),
+      expand_button->GetAccessibleName());
+
+  // Clicking the expand button should not change the expand state.
+  views::test::ButtonTestApi test_api(expand_button);
+  test_api.NotifyClick(ui::test::TestEvent());
+  EXPECT_EQ(old_expanded_state, notification_view->IsExpanded());
+
+  // Test the enable expand button behavior.
+  notification_view->SetExpandCollapseEnabled(/*enabled=*/true);
+
+  EXPECT_FALSE(notification_view->disable_expand_collapse_for_test());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP),
+            expand_button->GetAccessibleName());
+
+  // Clicking the expand button should change the expand state.
+  views::test::ButtonTestApi test_api2(expand_button);
+  test_api2.NotifyClick(ui::test::TestEvent());
+
+  EXPECT_NE(old_expanded_state, notification_view->IsExpanded());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP),
+            expand_button->GetAccessibleName());
+}
+
 }  // namespace
 
 // A test base class that helps to verify notification view features.
@@ -747,41 +784,47 @@ TEST_F(AshNotificationViewTest, DisableExpandCollapse) {
   auto notification = CreateTestNotification();
   notification_view()->UpdateWithNotification(*notification);
 
-  bool old_expanded_state = notification_view()->IsExpanded();
+  TestDisableExpandCollapseForNotificationView(
+      notification_view(), GetExpandButton(notification_view()));
+}
 
-  auto* expand_button = GetExpandButton(notification_view());
-  ASSERT_TRUE(expand_button->GetVisible());
-  ASSERT_FALSE(notification_view()->disable_expand_collapse_for_test());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP),
-            expand_button->GetAccessibleName());
+TEST_F(AshNotificationViewTest, DisableExpandCollapseGroup) {
+  MakeNotificationGroupParent(notification_view(),
+                              /*group_child_num=*/2);
 
-  // Test the disable expand collapse behavior.
-  notification_view()->SetExpandCollapseEnabled(/*enabled=*/false);
+  // Test clicking the expand button on both parent and child notification
+  // views.
+  TestDisableExpandCollapseForNotificationView(
+      notification_view(), GetExpandButton(notification_view()));
 
+  for (auto* child_notification_view :
+       GetChildNotifications(notification_view())) {
+    auto* ash_notification_view =
+        static_cast<AshNotificationView*>(child_notification_view);
+    TestDisableExpandCollapseForNotificationView(
+        ash_notification_view, GetExpandButton(ash_notification_view));
+  }
+
+  // The expand/collapse state for parent and children should be in sync.
+  notification_view()->SetExpandCollapseEnabled(false);
   EXPECT_TRUE(notification_view()->disable_expand_collapse_for_test());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_DISABLED_TOOLTIP),
-      expand_button->GetAccessibleName());
 
-  // Clicking the expand button should not change the expand state.
-  views::test::ButtonTestApi test_api(expand_button);
-  test_api.NotifyClick(ui::test::TestEvent());
-  EXPECT_EQ(old_expanded_state, notification_view()->IsExpanded());
+  for (auto* child_notification_view :
+       GetChildNotifications(notification_view())) {
+    auto* ash_notification_view =
+        static_cast<AshNotificationView*>(child_notification_view);
+    EXPECT_TRUE(ash_notification_view->disable_expand_collapse_for_test());
+  }
 
-  // Test the enable expand button behavior.
-  notification_view()->SetExpandCollapseEnabled(/*enabled=*/true);
-
+  notification_view()->SetExpandCollapseEnabled(true);
   EXPECT_FALSE(notification_view()->disable_expand_collapse_for_test());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP),
-            expand_button->GetAccessibleName());
 
-  // Clicking the expand button should change the expand state.
-  views::test::ButtonTestApi test_api2(expand_button);
-  test_api2.NotifyClick(ui::test::TestEvent());
-
-  EXPECT_NE(old_expanded_state, notification_view()->IsExpanded());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP),
-            expand_button->GetAccessibleName());
+  for (auto* child_notification_view :
+       GetChildNotifications(notification_view())) {
+    auto* ash_notification_view =
+        static_cast<AshNotificationView*>(child_notification_view);
+    EXPECT_FALSE(ash_notification_view->disable_expand_collapse_for_test());
+  }
 }
 
 TEST_F(AshNotificationViewTest, WarningLevelInSummaryText) {
