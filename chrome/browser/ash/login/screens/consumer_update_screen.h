@@ -70,6 +70,31 @@ class ConsumerUpdateScreen : public BaseScreen,
   // PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
+  VersionUpdater* get_version_updater_for_testing() {
+    return version_updater_.get();
+  }
+
+  void set_delay_for_delayed_timer_for_testing(base::TimeDelta delay) {
+    delay_error_message_ = delay;
+  }
+
+  void set_exit_callback_for_testing(ScreenExitCallback exit_callback) {
+    exit_callback_ = exit_callback;
+  }
+
+  void set_wait_before_reboot_time_for_testing(
+      base::TimeDelta wait_before_reboot_time) {
+    wait_before_reboot_time_ = wait_before_reboot_time;
+  }
+
+  base::OneShotTimer* get_error_message_timer_for_testing() {
+    return &error_message_timer_;
+  }
+
+  base::OneShotTimer* get_wait_reboot_timer_for_testing() {
+    return &wait_reboot_timer_;
+  }
+
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
