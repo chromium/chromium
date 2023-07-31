@@ -46,6 +46,9 @@ class PasswordStoreAndroidBackendBridgeHelper {
   [[nodiscard]] virtual JobId GetLoginsForSignonRealm(
       const std::string& signon_realm,
       Account account) = 0;
+  [[nodiscard]] virtual JobId GetAffiliatedLoginsForSignonRealm(
+      const std::string& signon_realm,
+      Account account) = 0;
   [[nodiscard]] virtual JobId AddLogin(
       const password_manager::PasswordForm& form,
       Account account) = 0;

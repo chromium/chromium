@@ -97,6 +97,18 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
       GetJavaStringFromAccount(std::move(account)));
 }
 
+void PasswordStoreAndroidBackendDispatcherBridgeImpl::
+    GetAffiliatedLoginsForSignonRealm(JobId job_id,
+                                      const std::string& signon_realm,
+                                      Account account) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAffiliatedLoginsForSignonRealm(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      base::android::ConvertUTF8ToJavaString(
+          base::android::AttachCurrentThread(), signon_realm),
+      GetJavaStringFromAccount(std::move(account)));
+}
+
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
     JobId job_id,
     const password_manager::PasswordForm& form,

@@ -127,6 +127,20 @@ JobId PasswordStoreAndroidBackendBridgeHelperImpl::GetLoginsForSignonRealm(
   return job_id;
 }
 
+JobId PasswordStoreAndroidBackendBridgeHelperImpl::
+    GetAffiliatedLoginsForSignonRealm(const std::string& signon_realm,
+                                      Account account) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  CHECK(dispatcher_bridge_);
+  JobId job_id = GetNextJobId();
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreAndroidBackendDispatcherBridge::
+                                    GetAffiliatedLoginsForSignonRealm,
+                                base::Unretained(dispatcher_bridge_.get()),
+                                job_id, signon_realm, std::move(account)));
+  return job_id;
+}
+
 JobId PasswordStoreAndroidBackendBridgeHelperImpl::AddLogin(
     const password_manager::PasswordForm& form,
     Account account) {

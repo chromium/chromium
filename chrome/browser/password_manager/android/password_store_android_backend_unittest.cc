@@ -180,6 +180,10 @@ class MockPasswordStoreAndroidBackendBridgeHelper
   MOCK_METHOD(JobId, AddLogin, (const PasswordForm&, Account), (override));
   MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&, Account), (override));
   MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&, Account), (override));
+  MOCK_METHOD(JobId,
+              GetAffiliatedLoginsForSignonRealm,
+              (const std::string&, Account),
+              (override));
 };
 
 }  // namespace
@@ -1509,6 +1513,54 @@ TEST_F(PasswordStoreAndroidBackendTest, GetGroupedMatchingLoginsAsync) {
 
   consumer().OnCompleteWithLogins(kFirstJobId, {exact_match, psl_match});
   consumer().OnCompleteWithLogins(kSecondJobId, {android_match});
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFillingAcrossAffiliatedWebsitesAndroid);
+
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::string TestURL1("https://example.com/");
+  PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
+                                 GURL(TestURL1));
+
+  EXPECT_CALL(*bridge_helper(), GetAffiliatedLoginsForSignonRealm(TestURL1, _))
+      .WillOnce(Return(kJobId));
+  backend().GetGroupedMatchingLoginsAsync(form_digest, mock_reply.Get());
+
+  std::vector<std::unique_ptr<PasswordForm>> returned_logins;
+  returned_logins.push_back(CreateEntry("Todd Tester", "S3cr3t",
+                                        GURL(u"https://example.com/"),
+                                        PasswordForm::MatchType::kAffiliated));
+  returned_logins.push_back(CreateEntry(
+      "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
+      GURL(u"https://m.example.com/"), PasswordForm::MatchType::kGrouped));
+  returned_logins.push_back(CreateEntry(
+      "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
+      GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins;
+  // Exact match is defined as such even if it was marked as affiliated match
+  // before.
+  expected_logins.push_back(CreateEntry("Todd Tester", "S3cr3t",
+                                        GURL(u"https://example.com/"),
+                                        PasswordForm::MatchType::kExact));
+  // Grouped match is also a PSL match.
+  expected_logins.push_back(CreateEntry(
+      "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
+      GURL(u"https://m.example.com/"),
+      PasswordForm::MatchType::kGrouped | PasswordForm::MatchType::kPSL));
+  expected_logins.push_back(CreateEntry(
+      "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
+      GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
+
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  consumer().OnCompleteWithLogins(kJobId,
+                                  UnwrapForms(std::move(returned_logins)));
   RunUntilIdle();
 }
 

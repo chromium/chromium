@@ -76,6 +76,7 @@ std::unique_ptr<PasswordForm> CreateEntry(const std::string& username,
   form->username_value = base::ASCIIToUTF16(username);
   form->password_value = base::ASCIIToUTF16(password);
   form->url = origin_url;
+  form->signon_realm = origin_url.GetWithEmptyPath().spec();
   form->match_type = match_type;
   return form;
 }

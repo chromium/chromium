@@ -43,6 +43,9 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
   [[nodiscard]] JobId GetAutofillableLogins(Account account) override;
   [[nodiscard]] JobId GetLoginsForSignonRealm(const std::string& signon_realm,
                                               Account account) override;
+  [[nodiscard]] JobId GetAffiliatedLoginsForSignonRealm(
+      const std::string& signon_realm,
+      Account account) override;
   [[nodiscard]] JobId AddLogin(const password_manager::PasswordForm& form,
                                Account account) override;
   [[nodiscard]] JobId UpdateLogin(const password_manager::PasswordForm& form,

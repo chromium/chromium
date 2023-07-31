@@ -69,7 +69,11 @@ enum class PasswordStoreOperation {
   kDisableAutoSignInForOriginsAsync = 10,
   kClearAllLocalPasswords = 11,
 
-  kMaxValue = kClearAllLocalPasswords
+  // Operation that is non-modifying, but not safe to retry because it is
+  // user-visible.
+  kGetGroupedMatchingLoginsAsync = 12,
+
+  kMaxValue = kGetGroupedMatchingLoginsAsync,
 };
 
 // Android-specific password store backend that delegates every request to

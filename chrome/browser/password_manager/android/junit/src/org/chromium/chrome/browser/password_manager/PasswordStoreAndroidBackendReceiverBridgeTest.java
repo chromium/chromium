@@ -26,6 +26,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
@@ -80,6 +82,21 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
         mBackendReceiverBridge.onCompleteWithLogins(sTestJobId, kExpectedList);
         verify(mBackendReceiverBridgeJniMock)
                 .onCompleteWithLogins(sDummyNativePointer, sTestJobId, kExpectedList);
+    }
+
+    @Test
+    public void testOnCompleteWithAffiliatedLoginsCallsBridge() {
+        AffiliatedPassword affiliatedPassword =
+                AffiliatedPassword.newBuilder().setPasswordData(sTestPwdWithLocalData).build();
+
+        ListAffiliatedPasswordsResult.Builder affiliatedPasswordsResult =
+                ListAffiliatedPasswordsResult.newBuilder().addAffiliatedPasswords(
+                        affiliatedPassword);
+        final byte[] kExpectedList = affiliatedPasswordsResult.build().toByteArray();
+
+        mBackendReceiverBridge.onCompleteWithAffiliatedLogins(sTestJobId, kExpectedList);
+        verify(mBackendReceiverBridgeJniMock)
+                .onCompleteWithAffiliatedLogins(sDummyNativePointer, sTestJobId, kExpectedList);
     }
 
     @Test

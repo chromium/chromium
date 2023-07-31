@@ -34,11 +34,6 @@ using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 using LoginsResultOrError =
     absl::variant<LoginsResult, PasswordStoreBackendError>;
 
-void operator|=(absl::optional<PasswordForm::MatchType>& lhs,
-                PasswordForm::MatchType rhs) {
-  lhs = lhs.has_value() ? (lhs.value() | rhs) : rhs;
-}
-
 bool FormSupportsPSL(const PasswordFormDigest& digest) {
   return digest.scheme == PasswordForm::Scheme::kHtml &&
          !GetRegistryControlledDomain(GURL(digest.signon_realm)).empty();

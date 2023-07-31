@@ -33,6 +33,7 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_eviction_util.h"
@@ -172,6 +173,36 @@ void ValidateSignonRealm(const PasswordFormDigest& form_digest_to_match,
   std::move(callback).Run(std::move(matching_logins));
 }
 
+void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
+                                  LoginsOrErrorReply callback,
+                                  LoginsResultOrError logins_or_error) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+    std::move(callback).Run(std::move(logins_or_error));
+    return;
+  }
+  for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
+    switch (GetMatchResult(*form, form_digest)) {
+      case MatchResult::NO_MATCH:
+        // If it's not PSL nor exact match it has to be affiliated or grouped.
+        CHECK(form->match_type.has_value());
+        break;
+      case MatchResult::EXACT_MATCH:
+      case MatchResult::FEDERATED_MATCH:
+        // Rewrite match type completely for exact matches so it won't be
+        // confused as other types.
+        form->match_type = PasswordForm::MatchType::kExact;
+        break;
+      case MatchResult::PSL_MATCH:
+      case MatchResult::FEDERATED_PSL_MATCH:
+        CHECK(form->match_type.has_value());
+        form->match_type =
+            form->match_type.value() | PasswordForm::MatchType::kPSL;
+        break;
+    }
+  }
+  std::move(callback).Run(std::move(logins_or_error));
+}
+
 LoginsResultOrError JoinRetrievedLoginsOrError(
     std::vector<LoginsResultOrError> results) {
   LoginsResult joined_logins;
@@ -289,6 +320,7 @@ bool IsRetriableOperation(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
     case PasswordStoreOperation::kClearAllLocalPasswords:
+    case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
       return false;
   }
   NOTREACHED() << "Operation code not handled";
@@ -321,6 +353,8 @@ std::string GetOperationName(PasswordStoreOperation operation) {
       return "DisableAutoSignInForOriginsAsync";
     case PasswordStoreOperation::kClearAllLocalPasswords:
       return "ClearAllLocalPasswords";
+    case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
+      return "GetGroupedMatchingLoginsAsync";
   }
   NOTREACHED() << "Operation code not handled";
   return "";
@@ -660,7 +694,19 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
 void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     LoginsOrErrorReply callback) {
-  // TODO(crbug.com/1428539): Use the new API to get affiliated passwords.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kFillingAcrossAffiliatedWebsitesAndroid)) {
+    JobId job_id = bridge_helper_->GetAffiliatedLoginsForSignonRealm(
+        form_digest.signon_realm, GetAccount(GetSyncingAccount(sync_service_)));
+    QueueNewJob(job_id,
+                base::BindOnce(&ProcessGroupedLoginsAndReply, form_digest,
+                               std::move(callback)),
+                MetricInfix("GetGroupedMatchingLoginsAsync"),
+                PasswordStoreOperation::kGetGroupedMatchingLoginsAsync,
+                /*delay=*/base::Seconds(0));
+    return;
+  }
   GetLoginsWithAffiliationsRequestHandler(
       form_digest, this, affiliated_match_helper_.get(), std::move(callback));
 }
@@ -1025,6 +1071,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
         case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
         case PasswordStoreOperation::kClearAllLocalPasswords:
+        case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
           NOTREACHED();
           return;
       }

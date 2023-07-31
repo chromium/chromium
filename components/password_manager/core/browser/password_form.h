@@ -600,6 +600,11 @@ constexpr PasswordForm::MatchType operator|(PasswordForm::MatchType lhs,
                                               static_cast<int>(rhs));
 }
 
+constexpr void operator|=(absl::optional<PasswordForm::MatchType>& lhs,
+                          PasswordForm::MatchType rhs) {
+  lhs = lhs.has_value() ? (lhs.value() | rhs) : rhs;
+}
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_H_
