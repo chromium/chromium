@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -33,6 +34,10 @@ class Label;
 namespace {
 class WindowEventObserver;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class AutoPipSettingOverlayView;
+#endif
 
 class PictureInPictureBrowserFrameView
     : public BrowserNonClientFrameView,
@@ -195,7 +200,7 @@ class PictureInPictureBrowserFrameView
     kOther = 0,
     kBackToTabButton = 1,
     kCloseButton = 2,
-    kMaxValue = kCloseButton,
+    kMaxValue = kCloseButton
   };
 
   CloseReason close_reason_ = CloseReason::kOther;
@@ -256,6 +261,11 @@ class PictureInPictureBrowserFrameView
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If non-null, this displays the allow / block setting overlay for autopip.
+  raw_ptr<AutoPipSettingOverlayView> auto_pip_setting_overlay_ = nullptr;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_

@@ -1879,6 +1879,13 @@ static_library("browser") {
     "webid/federated_identity_permission_context_factory.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "picture_in_picture/auto_pip_setting_overlay_view.cc",
+      "picture_in_picture/auto_pip_setting_overlay_view.h",
+    ]
+  }
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",

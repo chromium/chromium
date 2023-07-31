@@ -6,6 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#endif
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -23,6 +26,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -372,6 +376,18 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   hide_close_button_animation_.set_continuous(false);
   hide_close_button_animation_.set_delegate(this);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1464066): Get the auto pip settings UI when needed, rather
+  // than create it here.
+  const bool is_auto_pip = base::FeatureList::IsEnabled(
+      blink::features::kMediaSessionEnterPictureInPicture);
+  const bool is_setting_ask = true;
+  if (is_auto_pip && is_setting_ask) {
+    auto_pip_setting_overlay_ = AddChildView(
+        std::make_unique<AutoPipSettingOverlayView>(base::DoNothing()));
+  }
+#endif
+
 #if BUILDFLAG(IS_LINUX)
   frame_background_ = std::make_unique<views::FrameBackground>();
 #endif
@@ -561,10 +577,17 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
 }
 
 void PictureInPictureBrowserFrameView::Layout() {
-  auto border_thickness = FrameBorderInsets();
-  top_bar_container_view_->SetBoundsRect(
-      gfx::Rect(border_thickness.left(), border_thickness.top(),
-                width() - border_thickness.width(), kTopControlsHeight));
+  gfx::Rect content_area = GetLocalBounds();
+  content_area.Inset(FrameBorderInsets());
+  gfx::Rect top_bar = content_area;
+  top_bar.set_height(kTopControlsHeight);
+  top_bar_container_view_->SetBoundsRect(top_bar);
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto_pip_setting_overlay_) {
+    auto_pip_setting_overlay_->SetBoundsRect(
+        gfx::SubtractRects(content_area, top_bar));
+  }
+#endif
 
   BrowserNonClientFrameView::Layout();
 }
