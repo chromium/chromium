@@ -34,6 +34,10 @@ constexpr CGFloat kDotSize = 10.f;
 // between itself and the surrounding UILabels `text` and `detailText`.
 constexpr CGFloat kMarginAroundDot = 5.f;
 
+// kDefaultTextLabelSpacing represents the default spacing between the text
+// labels when no dot is present.
+constexpr CGFloat kDefaultTextLabelSpacing = 4;
+
 // kBlueDotColor is the specific blue used for the blue dot notification badge.
 constexpr NSString* kBlueDotColor = @"blue_600_color";
 
@@ -126,6 +130,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
     _textStackView =
         [[UIStackView alloc] initWithArrangedSubviews:@[ _textLabel ]];
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    _textStackView.spacing = kDefaultTextLabelSpacing;
     [contentView addSubview:_textStackView];
 
     // Set up the constraints for when the icon is visible and hidden.  One of
@@ -380,7 +385,8 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
     return;
   }
 
-  [self.textStackView setCustomSpacing:0 afterView:self.textLabel];
+  [self.textStackView setCustomSpacing:UIStackViewSpacingUseDefault
+                             afterView:self.textLabel];
   [self.notificationDotUIView removeFromSuperview];
   self.notificationDotUIView = nil;
 }
