@@ -78,8 +78,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/user_manager/user.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::SSLStatus;
@@ -136,19 +136,6 @@ class MockPageInfoUI : public PageInfoUI {
       set_permission_info_callback_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class FakeAffiliatedUser : public user_manager::User {
- public:
-  explicit FakeAffiliatedUser(const AccountId& account_id) : User(account_id) {
-    SetAffiliation(true);
-  }
-
-  user_manager::UserType GetType() const override {
-    return user_manager::USER_TYPE_REGULAR;
-  }
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 class PageInfoTest : public ChromeRenderViewHostTestHarness {
  public:
   PageInfoTest() : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
@@ -173,12 +160,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(cert_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(profile()->GetProfileUserName(), "id");
-    user_ = std::make_unique<FakeAffiliatedUser>(account_id);
-    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user_.get());
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user_.get(),
-                                                                 profile());
+    fake_user_manager_->AddUserWithAffiliation(
+        AccountId::FromUserEmail(profile()->GetProfileUserName()),
+        /*is_affiliated=*/true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
@@ -339,7 +323,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<FakeAffiliatedUser> user_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 #endif
 
   scoped_refptr<net::X509Certificate> cert_;
