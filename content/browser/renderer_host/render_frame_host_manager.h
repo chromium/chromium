@@ -822,7 +822,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const UrlInfo& dest_url_info,
       SiteInstanceImpl* source_instance,
       bool was_server_redirect,
-      NavigationRequest::ErrorPageProcess error_page_process);
+      NavigationRequest::ErrorPageProcess error_page_process,
+      std::string* reason = nullptr);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the
