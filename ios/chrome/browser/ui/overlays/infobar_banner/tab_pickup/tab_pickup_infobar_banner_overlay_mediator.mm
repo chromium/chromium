@@ -93,7 +93,15 @@
   [self.consumer
       setButtonText:l10n_util::GetNSString(IDS_IOS_TAB_PICKUP_BANNER_BUTTON)];
   [self.consumer setFaviconImage:faviconImage];
-  [self.consumer setPresentsModal:NO];
+  [self.consumer setPresentsModal:YES];
+}
+
+#pragma mark InfobarBannerDelegate
+
+- (void)presentInfobarModalFromBanner {
+  [self dismissOverlay];
+
+  self.tabPickupDelegate->OpenTabPickupSettings();
 }
 
 #pragma mark - Private

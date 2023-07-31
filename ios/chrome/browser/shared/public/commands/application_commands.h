@@ -101,6 +101,9 @@ struct CredentialUIEntry;
 // Shows the Password Manager's search page.
 - (void)showPasswordSearchPage;
 
+// Shows the Tab Pickup Settings screen.
+- (void)showTabPickupSettings;
+
 @end
 
 // Protocol for commands that will generally be handled by the application,

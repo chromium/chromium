@@ -2210,6 +2210,22 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
+- (void)showTabPickupSettings {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController showTabPickupSettings];
+    return;
+  }
+  self.settingsNavigationController = [[SettingsNavigationController alloc]
+      initWithRootViewController:nil
+                         browser:self.mainInterface.browser
+                        delegate:self];
+  [self.settingsNavigationController showTabPickupSettings];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
