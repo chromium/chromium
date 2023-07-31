@@ -516,6 +516,11 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     const keyboardName = this.keyboard.isExternal ?
         this.keyboard.name :
         this.i18n('builtInKeyboardName');
+
+    if (this.isAltClickAndSixPackCustomizationEnabled) {
+      return keyboardName;
+    }
+
     return this.i18n('remapKeyboardKeysDescription', keyboardName);
   }
 
