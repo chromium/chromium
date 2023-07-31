@@ -121,6 +121,7 @@
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_kqueue.h"
 #include "base/message_loop/message_pump_mac.h"
+#include "base/synchronization/condition_variable.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -972,6 +973,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::PlatformThread::InitFeaturesPostFieldTrial();
   base::MessagePumpCFRunLoopBase::InitializeFeatures();
   base::MessagePumpKqueue::InitializeFeatures();
+  base::ConditionVariable::InitializeFeatures();
 #endif
 }
 
