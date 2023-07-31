@@ -174,17 +174,14 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
   std::unique_ptr<ClientControlledShellSurface> shell_surface1 =
       display.CreateOrGetClientControlledShellSurface(
           surface1.get(), ash::kShellWindowId_SystemModalContainer,
-          /*default_device_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true,
           /*supports_floated_state=*/true);
   ASSERT_TRUE(shell_surface1);
-  EXPECT_EQ(shell_surface1->scale(), 2.0);
 
   // Create a remote shell surface for surface2.
   std::unique_ptr<ShellSurfaceBase> shell_surface2 =
       display.CreateOrGetClientControlledShellSurface(
           surface2.get(), ash::desks_util::GetActiveDeskContainerId(),
-          /*default_device_scale_factor=*/1.0,
           /*default_scale_cancellation=*/true,
           /*supports_floated_state=*/true);
   EXPECT_TRUE(shell_surface2);
@@ -215,7 +212,6 @@ TEST_F(DisplayTest, GetClientControlledShellSurface) {
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
       display.CreateOrGetClientControlledShellSurface(
           surface_with_id.get(), ash::desks_util::GetActiveDeskContainerId(),
-          /*default_device_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true,
           /*supports_floated_state=*/true);
   EXPECT_EQ(shell_surface.get(), external_shell_surface_observer);
@@ -327,11 +323,9 @@ TEST_F(DisplayTest, PinnedAlwaysOnTopWindow) {
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
       display.CreateOrGetClientControlledShellSurface(
           surface.get(), ash::desks_util::GetActiveDeskContainerId(),
-          /*default_device_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true,
           /*supports_floated_state=*/true);
   ASSERT_TRUE(shell_surface);
-  EXPECT_EQ(shell_surface->scale(), 2.0);
 
   // This should not crash
   shell_surface->SetAlwaysOnTop(true);

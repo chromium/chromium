@@ -221,8 +221,7 @@ void remote_shell_get_input_method_surface_v2(wl_client* client,
 
   std::unique_ptr<ClientControlledShellSurface> input_method_surface =
       GetUserDataAs<WaylandRemoteShell>(resource)->CreateInputMethodSurface(
-          GetUserDataAs<Surface>(surface),
-          zcr_remote_shell::GetDefaultDeviceScaleFactor());
+          GetUserDataAs<Surface>(surface));
   if (!input_method_surface) {
     wl_resource_post_error(resource, ZCR_REMOTE_SHELL_V2_ERROR_ROLE,
                            "Cannot create an IME surface");
@@ -249,8 +248,7 @@ void remote_shell_get_toast_surface_v2(wl_client* client,
 
   std::unique_ptr<ClientControlledShellSurface> toast_surface =
       GetUserDataAs<WaylandRemoteShell>(resource)->CreateToastSurface(
-          GetUserDataAs<Surface>(surface),
-          zcr_remote_shell::GetDefaultDeviceScaleFactor());
+          GetUserDataAs<Surface>(surface));
   if (!toast_surface) {
     wl_resource_post_error(resource, ZCR_REMOTE_SHELL_V2_ERROR_ROLE,
                            "Cannot create an toast surface");

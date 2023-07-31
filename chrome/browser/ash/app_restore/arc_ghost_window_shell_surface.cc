@@ -46,14 +46,12 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kArcGhostSurface, false)
 ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
     std::unique_ptr<exo::Surface> surface,
     int container,
-    double scale_factor,
     const std::string& application_id)
-    : ClientControlledShellSurface(
-          surface.get(),
-          /*can_minimize=*/true,
-          container,
-          /*default_scale_cancellation=*/true,
-          /*supports_floated_state=*/false) {
+    : ClientControlledShellSurface(surface.get(),
+                                   /*can_minimize=*/true,
+                                   container,
+                                   /*default_scale_cancellation=*/true,
+                                   /*supports_floated_state=*/false) {
   controller_surface_ = std::move(surface);
   buffer_ = std::make_unique<exo::Buffer>(
       aura::Env::GetInstance()
@@ -65,8 +63,6 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
   SetApplicationId(application_id.c_str());
   controller_surface_->Attach(buffer_.get());
   controller_surface_->SetFrame(exo::SurfaceFrameType::NORMAL);
-  SetScale(scale_factor);
-  CommitPendingScale();
 }
 
 ArcGhostWindowShellSurface::~ArcGhostWindowShellSurface() {
@@ -86,9 +82,6 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   // created.
   int64_t display_id_value =
       restore_data->display_id.value_or(display::kInvalidDisplayId);
-  absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id_value);
-  if (!scale_factor.has_value())
-    return nullptr;
 
   const auto& window_state = restore_data->window_state_type;
   gfx::Rect local_bounds = bounds;
@@ -117,7 +110,6 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   auto surface = std::make_unique<exo::Surface>();
   std::unique_ptr<ArcGhostWindowShellSurface> shell_surface(
       new ArcGhostWindowShellSurface(std::move(surface), container,
-                                     scale_factor.value(),
                                      WrapSessionAppIdFromWindowId(window_id)));
 
   // TODO(sstan): Add set_surface_destroyed_callback.
