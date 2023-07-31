@@ -207,10 +207,6 @@
 # TODO(crbug.com/1466927): unexpected level of support for codec.
 -MediaCanPlayTypeTest.CodecSupportTest_mp4
 
-# TODO(crbug.com/1468574): AX tree dump has an unexpected final line.
--All/DumpAccessibilityTreeTest.AccessibilityAHrefUpdate/blink0
--All/DumpAccessibilityTreeTest.AccessibilityAHrefUpdate/blink1
-
 # TODO(crbug.com/1467854): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
