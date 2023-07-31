@@ -189,6 +189,26 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.sendReadyForTestSignal();
     }
 
+    protected void setupTestWithHTMLForFormControlsMode(String html) {
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mActivityTestRule.setupTestFrameworkForFormControlsMode();
+        mActivityTestRule.setAccessibilityDelegate();
+
+        mTestData = AccessibilityContentShellTestData.getInstance();
+        mActivityTestRule.sendReadyForTestSignal();
+    }
+
+    protected void setupTestWithHTMLForBasicMode(String html) {
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mActivityTestRule.setupTestFrameworkForBasicMode();
+        mActivityTestRule.setAccessibilityDelegate();
+
+        mTestData = AccessibilityContentShellTestData.getInstance();
+        mActivityTestRule.sendReadyForTestSignal();
+    }
+
     /* @Before */
     protected void setupTestFromFile(String filepath) {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(filepath));
@@ -421,7 +441,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testUMAHistograms_OnDemand_AXModeFormControls() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML("<p>This is a test 1</p>\n"
+        setupTestWithHTMLForFormControlsMode("<p>This is a test 1</p>\n"
                 + "<p>This is a test 2</p>\n"
                 + "<p>This is a test 3</p>");
 
@@ -457,7 +477,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testUMAHistograms_OnDemand_AXModeBasic() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML("<p>This is a test 1</p>\n"
+        setupTestWithHTMLForBasicMode("<p>This is a test 1</p>\n"
                 + "<p>This is a test 2</p>\n"
                 + "<p>This is a test 3</p>");
 
@@ -532,7 +552,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testUMAHistograms_OnDemand_AXModeFormControls_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML("<p>This is a test 1</p>\n"
+        setupTestWithHTMLForFormControlsMode("<p>This is a test 1</p>\n"
                 + "<p>This is a test 2</p>\n"
                 + "<p>This is a test 3</p>");
 
@@ -570,7 +590,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testUMAHistograms_OnDemand_AXModeBasic_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML("<p>This is a test 1</p>\n"
+        setupTestWithHTMLForBasicMode("<p>This is a test 1</p>\n"
                 + "<p>This is a test 2</p>\n"
                 + "<p>This is a test 3</p>");
 
