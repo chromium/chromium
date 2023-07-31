@@ -90,4 +90,27 @@ void FakeIpPeripheralServiceClient::SetZoom(const std::string& ip,
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
+void FakeIpPeripheralServiceClient::GetControl(
+    const std::string& ip,
+    const std::vector<uint8_t>& guid_le,
+    uint8_t control_selector,
+    uint8_t uvc_get_request,
+    GetControlCallback callback) {
+  get_control_call_count_++;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true, control_response_));
+}
+
+void FakeIpPeripheralServiceClient::SetControl(
+    const std::string& ip,
+    const std::vector<uint8_t>& guid_le,
+    uint8_t control_selector,
+    const std::vector<uint8_t>& control_setting,
+    SetControlCallback callback) {
+  set_control_call_count_++;
+  control_response_ = control_setting;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
 }  // namespace chromeos
