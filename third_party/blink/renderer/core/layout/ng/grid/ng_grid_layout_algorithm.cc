@@ -1614,12 +1614,11 @@ void NGGridLayoutAlgorithm::InitializeTrackCollection(
   }
 
   auto& track_collection = layout_data->SizingCollection(track_direction);
-  const auto available_size = (track_direction == kForColumns)
-                                  ? grid_available_size_.inline_size
-                                  : grid_available_size_.block_size;
-
-  track_collection.BuildSets(Style(), available_size);
-  track_collection.InitializeSets(available_size, GutterSize(track_direction));
+  track_collection.BuildSets(Style(),
+                             (track_direction == kForColumns)
+                                 ? grid_available_size_.inline_size
+                                 : grid_available_size_.block_size,
+                             GutterSize(track_direction));
 }
 
 namespace {
@@ -1779,10 +1778,11 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
   auto& track_collection =
       sizing_subtree.LayoutData().SizingCollection(track_direction);
 
-  track_collection.InitializeSets((track_direction == kForColumns)
-                                      ? grid_available_size_.inline_size
-                                      : grid_available_size_.block_size,
-                                  GutterSize(track_direction));
+  track_collection.BuildSets(Style(),
+                             (track_direction == kForColumns)
+                                 ? grid_available_size_.inline_size
+                                 : grid_available_size_.block_size,
+                             GutterSize(track_direction));
 
   // 2. Resolve intrinsic track sizing functions to absolute lengths.
   if (track_collection.HasIntrinsicTrack()) {
@@ -1986,8 +1986,7 @@ void NGGridLayoutAlgorithm::ForEachSubgrid(
     const auto space = CreateConstraintSpaceForSubgridAlgorithm(subgrid_data);
     const auto fragment_geometry = CalculateInitialFragmentGeometry(
         space, subgrid_data->node, /* break_token */ nullptr,
-        /* is_intrinsic */ space.AvailableSize().inline_size ==
-            kIndefiniteSize);
+        /* is_intrinsic */ HasIndefiniteInlineSize(space));
 
     const NGGridLayoutAlgorithm subgrid_algorithm(
         {subgrid_data->node, fragment_geometry, space});

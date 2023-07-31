@@ -1005,14 +1005,17 @@ void NGGridSizingTrackCollection::SetMinorBaseline(
 }
 
 void NGGridSizingTrackCollection::BuildSets(const ComputedStyle& grid_style,
-                                            LayoutUnit grid_available_size) {
+                                            LayoutUnit grid_available_size,
+                                            LayoutUnit gutter_size) {
   const bool is_for_columns = track_direction_ == kForColumns;
+  gutter_size_ = gutter_size;
 
   BuildSets(
       is_for_columns ? grid_style.GridTemplateColumns().track_list
                      : grid_style.GridTemplateRows().track_list,
       is_for_columns ? grid_style.GridAutoColumns() : grid_style.GridAutoRows(),
       grid_available_size == kIndefiniteSize);
+  InitializeSets(grid_available_size);
 }
 
 void NGGridSizingTrackCollection::BuildSets(
@@ -1124,9 +1127,8 @@ void NGGridSizingTrackCollection::BuildSets(
 }
 
 // https://drafts.csswg.org/css-grid-2/#algo-init
-void NGGridSizingTrackCollection::InitializeSets(LayoutUnit grid_available_size,
-                                                 LayoutUnit gutter_size) {
-  gutter_size_ = gutter_size;
+void NGGridSizingTrackCollection::InitializeSets(
+    LayoutUnit grid_available_size) {
   for (auto& set : sets_) {
     const auto& track_size = set.track_size;
 
