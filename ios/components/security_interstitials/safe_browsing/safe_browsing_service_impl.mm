@@ -173,6 +173,10 @@ SafeBrowsingServiceImpl::GetDatabaseManager() {
   return safe_browsing_db_manager_;
 }
 
+network::mojom::NetworkContext* SafeBrowsingServiceImpl::GetNetworkContext() {
+  return network_context_client_.get();
+}
+
 void SafeBrowsingServiceImpl::ClearCookies(
     const net::CookieDeletionInfo::TimeRange& creation_range,
     base::OnceClosure callback) {

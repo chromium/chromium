@@ -104,7 +104,11 @@ FakeSafeBrowsingService::GetURLLoaderFactory() {
 
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 FakeSafeBrowsingService::GetDatabaseManager() {
-  return nil;
+  return nullptr;
+}
+
+network::mojom::NetworkContext* FakeSafeBrowsingService::GetNetworkContext() {
+  return nullptr;
 }
 
 void FakeSafeBrowsingService::ClearCookies(

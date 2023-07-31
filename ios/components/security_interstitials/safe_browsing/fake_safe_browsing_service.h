@@ -38,6 +38,7 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> GetDatabaseManager()
       override;
+  network::mojom::NetworkContext* GetNetworkContext() override;
   void ClearCookies(const net::CookieDeletionInfo::TimeRange& creation_range,
                     base::OnceClosure callback) override;
 
