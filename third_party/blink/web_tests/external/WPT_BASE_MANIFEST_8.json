@@ -276072,6 +276072,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "466869ec597521fcc8ea5bc33ccae30a9cb5430f",
+     []
+    ],
+    "mtime.json": [
+     "6bc062e46973c2e5ae33bf6a7e83b69a2ea7f0a1",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -279261,7 +279271,7 @@
       []
      ],
      "set-client-hints-after-clear-all.https.html.ini": [
-      "03e063beb917719213fd645fc1874aaa4252e385",
+      "890d5d307155825621b6378bda6bdf4e1c136cda",
       []
      ],
      "set-client-hints-after-clear-cache.https-expected.txt": [
@@ -279273,7 +279283,7 @@
       []
      ],
      "set-client-hints-after-clear-cache.https.html.ini": [
-      "0f95790bcceb625b70616e7372eefd08fe0f8fd2",
+      "025210464b2033aece41db3ed19645c6b7be344e",
       []
      ],
      "set-client-hints-after-clear-client-hints.https-expected.txt": [
@@ -279285,7 +279295,7 @@
       []
      ],
      "set-client-hints-after-clear-client-hints.https.html.ini": [
-      "536c2129149959a97ad4c43653894d59716db3c4",
+      "f4edfdd47dbbe27d5b9ccc250d70ea759d67f137",
       []
      ],
      "set-client-hints-after-clear-cookies.https-expected.txt": [
@@ -279297,7 +279307,7 @@
       []
      ],
      "set-client-hints-after-clear-cookies.https.html.ini": [
-      "99b064dfa809f8d3bd8eed4ef9d6de7ca90fdd37",
+      "58781e8d2e2daf594dde2419c2950dab5fb9681b",
       []
      ],
      "set-client-hints-after-clear-storage.https.html.headers": [
@@ -279313,7 +279323,7 @@
       []
      ],
      "set-critical-client-hints-after-clear-all.https.html.ini": [
-      "ba3735b793eeca7e1b9c3f8198016838a6b8407d",
+      "18016d9dd744e29f25a13dca0985481667352e7e",
       []
      ],
      "set-critical-client-hints-after-clear-cache.https-expected.txt": [
@@ -279325,7 +279335,7 @@
       []
      ],
      "set-critical-client-hints-after-clear-cache.https.html.ini": [
-      "3d646bbc7068f9d4f3c12c53540956b080293e9d",
+      "235cb15f9e0e04545b4dde0919c7cc1bff4a422f",
       []
      ],
      "set-critical-client-hints-after-clear-client-hints.https-expected.txt": [
@@ -279337,7 +279347,7 @@
       []
      ],
      "set-critical-client-hints-after-clear-client-hints.https.html.ini": [
-      "99ac4cc6ec9842fe1c2bc380c54f1629f9563741",
+      "45b744f985911dc9e90ccff1a5fa29e7e273bbf8",
       []
      ],
      "set-critical-client-hints-after-clear-cookies.https-expected.txt": [
@@ -279349,7 +279359,7 @@
       []
      ],
      "set-critical-client-hints-after-clear-cookies.https.html.ini": [
-      "a053446b30b54f4963516df552607bcb23bbff5d",
+      "970edafcdbcc11e2e178a1e52447f15d11e4f298",
       []
      ],
      "set-critical-client-hints-after-clear-storage.https.html.headers": [
@@ -279968,7 +279978,7 @@
      []
     ],
     "frame-removal.html.ini": [
-     "76f9b5ddd27567a89d1f94fd6173401bb7a499dc",
+     "8713fb5de33d00c7e7ebdaa24f267f6a89e04834",
      []
     ],
     "inside-event-listeners-expected.txt": [
@@ -327018,6 +327028,10 @@
       "word-break-invalid-expected.txt": [
        "0750e869cd038cc98f32b6bca0133be65567cda5",
        []
+      ],
+      "word-break-invalid.html.ini": [
+       "34a85918d25af2e9b8df273209ce079deb0403d2",
+       []
       ]
      },
      "shaping": {
@@ -346477,7 +346491,7 @@
       []
      ],
      "basic-dom-part-objects.tentative.html.ini": [
-      "fdb9df2c2fd8cbfb3fbd81558abd654bfc65abc0",
+      "c432410f771917487ad67dd19ac464b7f42365a2",
       []
      ]
     },
@@ -352455,7 +352469,7 @@
       []
      ],
      "basic.tentative.https.window.js.ini": [
-      "39303d8b7f5304017762bc22583a8ad61ad280d3",
+      "95460ffde55f6821100695c2ffaf993a54820c3f",
       []
      ]
     },
@@ -353345,7 +353359,7 @@
       []
      ],
      "iframe.tentative.https.window.js.ini": [
-      "d272d0d8d991bc9fe014c12dd22002a6474c0006",
+      "2b862c08c5e5b7eeb5d5b750745a05aba99967f9",
       []
      ],
      "iframe.tentative.https.window_include=from-private-expected.txt": [
@@ -353369,7 +353383,7 @@
       []
      ],
      "iframe.tentative.window.js.ini": [
-      "039362f178a97d4eb514fea03852e912d03ed0a9",
+      "1d8013643d86e0d9a22dd115dfd2182a4acd4823",
       []
      ],
      "mixed-content-fetch.tentative.https.window-expected.txt": [
@@ -356701,7 +356715,7 @@
         []
        ],
        "about-srcdoc-navigation-blocked.window.js.ini": [
-        "4f8ca6048f226fb62bd0974492885aba74226c6f",
+        "14b7c333d0320db1573f41daefe5d1df771c2f1f",
         []
        ],
        "cross-origin-top-navigation-with-user-activation-in-parent.window.js.ini": [
@@ -360160,7 +360174,7 @@
          []
         ],
         "canvas.2d.disconnected-font-size-math.html.ini": [
-         "c60a6821bb1a5929136813ba93ee802e733d1c78",
+         "d8f2aefd11b20b5361bc88fb8062c2b9af652005",
          []
         ]
        },
@@ -361401,7 +361415,7 @@
         []
        ],
        "2d.text.measure.baselines.html.ini": [
-        "67e2db13c29522a4f42d5ee5132074c60d6c7e37",
+        "fd45fbdeb577a1bd899d2da4f0374c466908a838",
         []
        ],
        "2d.text.measure.baselines.worker-expected.txt": [
@@ -361409,7 +361423,7 @@
         []
        ],
        "2d.text.measure.baselines.worker.js.ini": [
-        "72ccb51cf20ec741d2f9f97799d226d2aea755e3",
+        "30c7b7ba2dc653da5a97e91722b017259f90ec3f",
         []
        ],
        "canvas.2d.fontStretch-ref.html": [
@@ -385240,7 +385254,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "9ebb09a0d62792eb0ccb7aff7ef7f4582a5f58aa",
+     "7b0572bafccf0dba1aa12712e466d3fe680767ac",
      []
     ],
     "modulepreload-expected.txt": [
@@ -397798,11 +397812,11 @@
      []
     ],
     "a-element-origin-xhtml.xhtml.ini": [
-     "02dcc8c14bf5eb93d73ae4e67cecde82c5f0ce00",
+     "5ade117508313c3f2d2e7d1a4b94c019fac92a62",
      []
     ],
     "a-element-origin.html.ini": [
-     "5d8e33c18371091ce97ca2193ea4670dc5464633",
+     "3c5f06be7df4bf9b46aa1ed95b9617dbfc54127e",
      []
     ],
     "a-element-xhtml.xhtml.ini": [
@@ -463503,7 +463517,7 @@
      ],
      "input": {
       "keyboard.html": [
-       "10796f23e7b6a8f1799834022057feb268e8fe1b",
+       "6f2255446149458d348ef38226b1eb89f90ca0fb",
        [
         null,
         {
