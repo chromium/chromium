@@ -27,9 +27,9 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconType;
+import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher.FaviconFetchCompleteListener;
+import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher.FaviconType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
