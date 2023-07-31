@@ -363,7 +363,7 @@ void CameraDeviceDelegate::AllocateAndStart(
   camera_hal_delegate_->OpenDevice(
       camera_hal_delegate_->GetCameraIdFromDeviceId(
           device_descriptor_.device_id),
-      device_ops_.BindNewPipeAndPassReceiver(),
+      device_descriptor_.model_id, device_ops_.BindNewPipeAndPassReceiver(),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&CameraDeviceDelegate::OnOpenedDevice, GetWeakPtr())));
   device_ops_.set_disconnect_handler(base::BindOnce(

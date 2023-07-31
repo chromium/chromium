@@ -658,6 +658,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.ModuleID" enum="PopularCamPeriphModuleID"
+    expires_after="2023-12-04">
+  <owner>dorahkim@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records a camera's module id in a format of integer when a camera is open.
+    If it is one of the top 20 popular camera peripherals, it records the module
+    id and if not it records zero.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.OpenDeviceClientType"
     enum="ChromeOSCameraClientType" expires_after="2023-12-04">
   <owner>lnishan@chromium.org</owner>

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
@@ -39,6 +40,42 @@ namespace {
 
 constexpr int32_t kDefaultFps = 30;
 constexpr char kVirtualPrefix[] = "VIRTUAL_";
+
+const std::unordered_set<int32_t> module_id_set = {
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kLifeCamHD3000_Microsoft),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kC270_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kHDC615_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kHDProC920_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kC930e_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kC925e_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kC922ProStream_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kBRIOUltraHD_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kC920HDPro_Logitech),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kC920PROHD_Logitech),
+    static_cast<int32_t>(CameraHalDelegate::PopularCamPeriphModuleID::kCam_ARC),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kLiveStreamer313_Sunplus),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kVitadeAF_Microdia),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kCam_Sonix),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kVZR_IPEVO),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::k808Camera9_Generalplus),
+    static_cast<int32_t>(
+        CameraHalDelegate::PopularCamPeriphModuleID::kNexiGoN60FHD_2MUVC),
+};
 
 constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 
@@ -632,6 +669,7 @@ const VendorTagInfo* CameraHalDelegate::GetVendorTagInfoByName(
 
 void CameraHalDelegate::OpenDevice(
     int32_t camera_id,
+    const std::string& module_id,
     mojo::PendingReceiver<cros::mojom::Camera3DeviceOps> device_ops_receiver,
     OpenDeviceCallback callback) {
   DCHECK(!ipc_task_runner_->BelongsToCurrentThread());
@@ -642,7 +680,7 @@ void CameraHalDelegate::OpenDevice(
   ipc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDelegate::OpenDeviceOnIpcThread,
-                     base::Unretained(this), camera_id,
+                     base::Unretained(this), camera_id, module_id,
                      std::move(device_ops_receiver), std::move(callback)));
 }
 
@@ -854,11 +892,27 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
   }
 }
 
+int32_t CameraHalDelegate::GetMaskedModuleID(const std::string module_id) {
+  if (module_id.size() == 9) {
+    int vid = strtol(module_id.substr(0, 4).c_str(), nullptr, 16);
+    int pid = strtol(module_id.substr(5, 8).c_str(), nullptr, 16);
+    int decimal_module_id = (vid << 16) + pid;
+    if (base::Contains(module_id_set, decimal_module_id)) {
+      return decimal_module_id;
+    }
+  }
+  return static_cast<int32_t>(PopularCamPeriphModuleID::kOthers);
+}
+
 void CameraHalDelegate::OpenDeviceOnIpcThread(
     int32_t camera_id,
+    const std::string& module_id, /* such as abcd:1234, 8 digits hex string */
     mojo::PendingReceiver<cros::mojom::Camera3DeviceOps> device_ops_receiver,
     OpenDeviceCallback callback) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  base::UmaHistogramSparse("ChromeOS.Camera.ModuleID",
+                           GetMaskedModuleID(module_id));
+
   camera_module_->OpenDevice(camera_id, std::move(device_ops_receiver),
                              std::move(callback));
 }

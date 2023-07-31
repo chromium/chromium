@@ -84985,6 +84985,27 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="11" label="Bad Key Validation Signature"/>
 </enum>
 
+<enum name="PopularCamPeriphModuleID">
+  <int value="0" label="Others"/>
+  <int value="73271312" label="LifeCamHD3000_Microsoft"/>
+  <int value="74254373" label="C270_Logitech"/>
+  <int value="74254380" label="HDC615_Logitech"/>
+  <int value="74254381" label="HDProC920_Logitech"/>
+  <int value="74254403" label="C930e_Logitech"/>
+  <int value="74254427" label="C925e_Logitech"/>
+  <int value="74254428" label="C922ProStream_Logitech"/>
+  <int value="74254430" label="BRIOUltraHD_Logitech"/>
+  <int value="74254482" label="C920HDPro_Logitech"/>
+  <int value="74254565" label="C920PROHD_Logitech"/>
+  <int value="94606129" label="Cam_ARC"/>
+  <int value="130691386" label="LiveStreamer313_Sunplus"/>
+  <int value="205874022" label="VitadeAF_Microdia"/>
+  <int value="205874027" label="Cam_Sonix"/>
+  <int value="393793569" label="VZR_IPEVO"/>
+  <int value="457121794" label="808Camera9_Generalplus"/>
+  <int value="493617411" label="NexiGoN60FHD_2MUVC"/>
+</enum>
+
 <enum name="PopularOSErrno">
   <summary>
     Popular errno values. See the descriptions on &quot;*/*/*&quot; labels for

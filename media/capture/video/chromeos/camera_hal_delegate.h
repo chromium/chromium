@@ -45,6 +45,33 @@ class VideoCaptureDeviceChromeOSDelegate;
 class CAPTURE_EXPORT CameraHalDelegate final
     : public cros::mojom::CameraModuleCallbacks {
  public:
+  // Top 20 Popular Camera peripherals from go/usb-popularity-study. Since
+  // 4 cameras of Sonix have the same vids and pids, they are
+  // aggregated to |kCam_Sonix|. Original hex strings in the format of
+  // 0123:abcd are decoded to integers. These are the same values as
+  // PopularCamPeriphModuleID in tools/metrics/histograms/enums.xml
+  enum class PopularCamPeriphModuleID {
+    kOthers = 0,
+    kLifeCamHD3000_Microsoft = 73271312,   // 045e:0810
+    kC270_Logitech = 74254373,             // 046d:0825
+    kHDC615_Logitech = 74254380,           // 046d:082c
+    kHDProC920_Logitech = 74254381,        // 046d:082d
+    kC930e_Logitech = 74254403,            // 046d:0843
+    kC925e_Logitech = 74254427,            // 046d:085b
+    kC922ProStream_Logitech = 74254428,    // 046d:085c
+    kBRIOUltraHD_Logitech = 74254430,      // 046d:085e
+    kC920HDPro_Logitech = 74254482,        // 046d:0892
+    kC920PROHD_Logitech = 74254565,        // 046d:08e5
+    kCam_ARC = 94606129,                   // 05a3:9331
+    kLiveStreamer313_Sunplus = 130691386,  // 07ca:313a
+    kVitadeAF_Microdia = 205874022,        // 0c45:6366
+    kCam_Sonix = 205874027,                // 0c45:636b
+    kVZR_IPEVO = 393793569,                // 1778:d021
+    k808Camera9_Generalplus = 457121794,   // 1b3f:2002
+    kNexiGoN60FHD_2MUVC = 493617411,       // 1d6c:0103
+    kMaxValue = kNexiGoN60FHD_2MUVC,
+  };
+
   explicit CameraHalDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
@@ -97,6 +124,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
   using OpenDeviceCallback = base::OnceCallback<void(int32_t)>;
   void OpenDevice(
       int32_t camera_id,
+      const std::string& model_id,
       mojo::PendingReceiver<cros::mojom::Camera3DeviceOps> device_ops_receiver,
       OpenDeviceCallback callback);
 
@@ -144,6 +172,11 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // |vendor_tag_ops_delegate_|.
   void OnGotVendorTagOpsOnIpcThread();
 
+  // Changes hex string |module_id| into decimal integer and check if
+  // |module_id| is one of the popular camera peripherals. If it is, it returns
+  // the decimal integer and if not, it returns 0.
+  int32_t GetMaskedModuleID(const std::string module_id);
+
   using GetCameraInfoCallback =
       base::OnceCallback<void(int32_t, cros::mojom::CameraInfoPtr)>;
   void GetCameraInfoOnIpcThread(int32_t camera_id,
@@ -156,6 +189,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // This method runs on |ipc_task_runner_|.
   void OpenDeviceOnIpcThread(
       int32_t camera_id,
+      const std::string& model_id,
       mojo::PendingReceiver<cros::mojom::Camera3DeviceOps> device_ops_receiver,
       OpenDeviceCallback callback);
 
