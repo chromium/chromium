@@ -33,6 +33,7 @@ import {SubflowBehavior} from './subflow_behavior.js';
 /** @enum {string} */
 export const ESimPageName = {
   PROFILE_LOADING: 'profileLoadingPage',
+  PROFILE_DISCOVERY_CONSENT: 'profileDiscoveryConsentPage',
   PROFILE_DISCOVERY: 'profileDiscoveryPage',
   PROFILE_DISCOVERY_LEGACY: 'profileDiscoveryPageLegacy',
   ACTIVATION_CODE: 'activationCodePage',
@@ -45,6 +46,7 @@ export const ESimPageName = {
 /** @enum {string} */
 export const ESimUiState = {
   PROFILE_SEARCH: 'profile-search',
+  PROFILE_SEARCH_CONSENT: 'profile-search-consent',
   ACTIVATION_CODE_ENTRY: 'activation-code-entry',
   ACTIVATION_CODE_ENTRY_READY: 'activation-code-entry-ready',
   ACTIVATION_CODE_ENTRY_INSTALLING: 'activation-code-entry-installing',
@@ -121,7 +123,15 @@ Polymer({
      */
     state_: {
       type: String,
-      value: ESimUiState.PROFILE_SEARCH,
+      value: function() {
+        // TODO(b/290786978): Update this to set the initial page to
+        // PROFILE_SEARCH_CONSENT when the feature flag is enabled.
+        // if (loadTimeData.valueExists('isSmdsSupportEnabled') &&
+        //     loadTimeData.getBoolean('isSmdsSupportEnabled')) {
+        //       return ESimUiState.PROFILE_SEARCH_CONSENT;
+        //     }
+            return ESimUiState.PROFILE_SEARCH;
+      },
       observer: 'onStateChanged_',
     },
 
@@ -132,6 +142,15 @@ Polymer({
      * @private
      */
     selectedESimPageName_: String,
+
+     /**
+     * Whether the user has consented to a scan for profiles.
+     * @type {boolean}
+     */
+     hasConsentedForDiscovery_: {
+      type: Boolean,
+      value: false,
+     },
 
     /**
      * Whether error state should be shown for the current page.
@@ -439,6 +458,9 @@ Polymer({
       case ESimUiState.PROFILE_SEARCH:
         this.selectedESimPageName_ = ESimPageName.PROFILE_LOADING;
         break;
+      case ESimUiState.PROFILE_SEARCH_CONSENT:
+        this.selectedESimPageName_= ESimPageName.PROFILE_DISCOVERY_CONSENT;
+        break;
       case ESimUiState.ACTIVATION_CODE_ENTRY:
       case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
         this.selectedESimPageName_ = ESimPageName.ACTIVATION_CODE;
@@ -532,6 +554,13 @@ Polymer({
           forward: ButtonState.DISABLED,
         };
         break;
+      case ESimUiState.PROFILE_SEARCH_CONSENT:
+        this.forwardButtonLabel = this.i18n('profileDiscoveryConsentScan');
+        buttonState = {
+          backward: ButtonState.HIDDEN,
+          cancel: ButtonState.ENABLED,
+          forward: ButtonState.ENABLED,
+        };
       case ESimUiState.ACTIVATION_CODE_ENTRY:
         buttonState = this.generateButtonStateForActivationPage_(
             /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
@@ -677,6 +706,12 @@ Polymer({
   navigateForward() {
     this.showError_ = false;
     switch (this.state_) {
+      // Set |this.hasConsentedForDiscovery_| to |true| since navigating
+      // forward is explicitly giving consent to perform SM-DS scans.
+      case ESimUiState.PROFILE_SEARCH_CONSENT:
+        this.hasConsentedForDiscovery_= true;
+        this.state_= ESimUiState.PROFILE_SEARCH;
+        break;
       case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
         // Assume installing the profile doesn't require a confirmation
         // code.
