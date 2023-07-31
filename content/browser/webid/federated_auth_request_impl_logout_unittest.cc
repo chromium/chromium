@@ -138,7 +138,7 @@ class FederatedAuthRequestImplLogoutTest
     mock_permission_delegate_ =
         std::make_unique<NiceMock<MockPermissionDelegate>>();
     mock_identity_registry_ = std::make_unique<NiceMock<MockIdentityRegistry>>(
-        web_contents(), federated_auth_request_impl_,
+        web_contents(), /*delegate=*/nullptr,
         url::Origin::Create(GURL(kIdpUrl)));
 
     static_cast<TestWebContents*>(web_contents())

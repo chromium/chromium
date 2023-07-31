@@ -1604,8 +1604,12 @@ void FederatedAuthRequestImpl::ShowModalDialog(const GURL& url) {
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
       url, base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                           weak_ptr_factory_.GetWeakPtr()));
-  IdentityRegistry::CreateForWebContents(web_contents, this,
-                                         url::Origin::Create(url));
+  // This may be null on Android, as the method cannot return the WebContents of
+  // the CCT that will be created.
+  if (web_contents) {
+    IdentityRegistry::CreateForWebContents(
+        web_contents, weak_ptr_factory_.GetWeakPtr(), url::Origin::Create(url));
+  }
 }
 
 void FederatedAuthRequestImpl::OnContinueOnResponseReceived(

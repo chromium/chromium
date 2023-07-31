@@ -79,7 +79,7 @@ class FederatedAuthRequestImplRegistryTest
     mock_auto_reauthn_permission_delegate_ =
         std::make_unique<NiceMock<MockAutoReauthnPermissionDelegate>>();
     mock_identity_registry_ = std::make_unique<NiceMock<MockIdentityRegistry>>(
-        web_contents(), federated_auth_request_impl_,
+        web_contents(), /*delegate=*/nullptr,
         url::Origin::Create(GURL(kIdpUrl)));
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(

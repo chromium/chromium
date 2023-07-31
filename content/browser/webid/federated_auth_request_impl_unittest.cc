@@ -722,7 +722,7 @@ class TestIdentityRegistry : public NiceMock<MockIdentityRegistry> {
 
   explicit TestIdentityRegistry(
       content::WebContents* web_contents,
-      FederatedIdentityModalDialogViewDelegate* delegate,
+      base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
       const url::Origin& registry_origin)
       : NiceMock<MockIdentityRegistry>(web_contents,
                                        delegate,
@@ -750,7 +750,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     test_auto_reauthn_permission_delegate_ =
         std::make_unique<TestAutoReauthnPermissionDelegate>();
     test_identity_registry_ = std::make_unique<TestIdentityRegistry>(
-        web_contents(), federated_auth_request_impl_,
+        web_contents(), /*delegate=*/nullptr,
         url::Origin::Create(GURL(kIdpUrl)));
 
     static_cast<TestWebContents*>(web_contents())
@@ -4229,7 +4229,7 @@ class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {
     test_auto_reauthn_permission_delegate_ =
         std::make_unique<TestAutoReauthnPermissionDelegate>();
     test_identity_registry_ = std::make_unique<TestIdentityRegistry>(
-        web_contents(), federated_auth_request_impl_,
+        web_contents(), /*delegate=*/nullptr,
         url::Origin::Create(GURL(kIdpUrl)));
 
     static_cast<TestWebContents*>(web_contents())
