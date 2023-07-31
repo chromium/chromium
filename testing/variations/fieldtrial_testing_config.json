@@ -2374,6 +2374,21 @@
             ]
         }
     ],
+    "BrokeringDiskCacheOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "BrokerDiskCache_20230728",
+                    "enable_features": [
+                        "BrokerFileOperationsOnDiskCacheInNetworkService"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserLockdownModeIOS": [
         {
             "platforms": [
