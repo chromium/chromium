@@ -333,7 +333,7 @@ void BrowserNonClientFrameViewChromeOS::OnBrowserViewInitViewsComplete() {
   // We need to wait till browser views are fully initialized to apply rounded
   // corners on the frame. This ensure that NativeViewHosts hosting browser's
   // web contents are initialized.
-  UpdateFrameRoundedCorners();
+  UpdateWindowRoundedCorners();
 }
 
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
@@ -677,7 +677,7 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
   // states changes, we need to update the rounded corners accordingly. See
   // `chromeos::GetFrameCornerRadius()` for more details.
   if (chromeos::CanPropertyEffectFrameRadius(key) && frame_header_) {
-    UpdateFrameRoundedCorners();
+    UpdateWindowRoundedCorners();
   }
 
   if (key == aura::client::kShowStateKey) {
@@ -973,7 +973,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
 #endif
 }
 
-void BrowserNonClientFrameViewChromeOS::UpdateFrameRoundedCorners() {
+void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
   const int corner_radius =
       chromeos::GetFrameCornerRadius(frame()->GetNativeWindow());
 
@@ -985,7 +985,8 @@ void BrowserNonClientFrameViewChromeOS::UpdateFrameRoundedCorners() {
     return;
   }
 
-  // TODO(zoraiznaeem): Apply rounded corners to the web_view of dev_tools.
+  // TODO(zoraiznaeem): Apply rounded corners to the web_view of dev_tools and
+  // side panel.
   ContentsWebView* web_view = browser_view()->contents_web_view();
   if (web_view && web_view->holder()) {
     web_view->SetBackgroundRadii(

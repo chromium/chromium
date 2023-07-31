@@ -80,6 +80,7 @@ class BrowserNonClientFrameViewChromeOS
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
+  void UpdateWindowRoundedCorners() override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -179,8 +180,6 @@ class BrowserNonClientFrameViewChromeOS
 
   // Updates the icon that indicates a teleported window.
   void UpdateProfileIcons();
-
-  void UpdateFrameRoundedCorners();
 
   void LayoutProfileIndicator();
 

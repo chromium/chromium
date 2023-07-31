@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/buildflags.h"
@@ -121,7 +122,8 @@ class BrowserView : public BrowserWindow,
                     public ExclusiveAccessBubbleViewsContext,
                     public extensions::ExtensionKeybindingRegistry::Delegate,
                     public ImmersiveModeController::Observer,
-                    public webapps::AppBannerManager::Observer {
+                    public webapps::AppBannerManager::Observer,
+                    public SidePanelViewStateObserver {
  public:
   METADATA_HEADER(BrowserView);
 
@@ -769,6 +771,10 @@ class BrowserView : public BrowserWindow,
   // webapps::AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated() override;
 
+  // SidePanelViewStateObserver:
+  void OnSidePanelDidOpen() override;
+  void OnSidePanelDidClose() override;
+
   // Creates an accessible tab label for screen readers that includes the tab
   // status for the given tab index. This takes the form of
   // "Page title - Tab state".
@@ -992,6 +998,8 @@ class BrowserView : public BrowserWindow,
 
   void PaintAsActiveChanged();
   void FrameColorsChanged();
+
+  void UpdateFrameRoundedCorners();
 
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;

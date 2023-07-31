@@ -147,6 +147,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
@@ -968,6 +969,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   SidePanelUI::SetSidePanelUIForBrowser(
       browser_.get(), std::make_unique<SidePanelCoordinator>(this));
+  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser_.get())
+      ->AddSidePanelViewStateObserver(this);
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -1038,7 +1041,9 @@ BrowserView::~BrowserView() {
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
   RemoveAllChildViews();
 
-  SidePanelUI::RemoveSidePanelUIForBrowser(browser_.get());
+  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+      ->RemoveSidePanelViewStateObserver(this);
+  SidePanelUI::RemoveSidePanelUIForBrowser(browser());
 }
 
 // static
@@ -2317,6 +2322,7 @@ void BrowserView::UpdateSidePanelHorizontalAlignment() {
   unified_side_panel_->SetHorizontalAlignment(
       is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
   GetBrowserViewLayout()->Layout(this);
+  UpdateFrameRoundedCorners();
 }
 
 void BrowserView::FocusBookmarksToolbar() {
@@ -4398,6 +4404,8 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
   if (new_placement != DevToolsDockedPlacement::kUnknown) {
     current_devtools_docked_placement_ = new_placement;
   }
+
+  UpdateFrameRoundedCorners();
 }
 
 void BrowserView::UpdateUIForContents(WebContents* contents) {
@@ -5028,6 +5036,17 @@ void BrowserView::OnInstallableWebAppStatusUpdated() {
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// BrowserView, SidePanelViewStateObserver implementation:
+
+void BrowserView::OnSidePanelDidOpen() {
+  UpdateFrameRoundedCorners();
+}
+
+void BrowserView::OnSidePanelDidClose() {
+  UpdateFrameRoundedCorners();
+}
+
 WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
   return web_app_frame_toolbar_;
 }
@@ -5052,6 +5071,12 @@ void BrowserView::FrameColorsChanged() {
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
   }
+}
+
+void BrowserView::UpdateFrameRoundedCorners() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  frame()->GetFrameView()->UpdateWindowRoundedCorners();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 BEGIN_METADATA(BrowserView, views::ClientView)
