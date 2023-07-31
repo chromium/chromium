@@ -510,6 +510,7 @@ public class ExportFlow implements ExportFlowInterface {
                 } else if (which == AlertDialog.BUTTON_NEGATIVE) {
                     // Re-enable exporting, the current one was just cancelled.
                     mExportState = ExportState.INACTIVE;
+                    mExportFileUri = null;
                 }
             }
         });
@@ -590,11 +591,11 @@ public class ExportFlow implements ExportFlowInterface {
                             exceptionMessage, R.string.try_again,
                             HistogramExportResult.WRITE_FAILED);
                 } else {
+                    mDelegate.onExportFlowSucceeded();
+                    mExportFileUri = null;
                     RecordHistogram.recordEnumeratedHistogram(mExportResultHistogramName,
                             HistogramExportResult.SUCCESS, HistogramExportResult.NUM_ENTRIES);
                 }
-                mExportFileUri = null;
-                mDelegate.onExportFlowSucceeded();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
