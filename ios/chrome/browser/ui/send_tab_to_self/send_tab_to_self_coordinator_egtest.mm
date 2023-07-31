@@ -6,6 +6,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -178,6 +179,8 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testShowPromoIfSignedOutAndHasDeviceAccount {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
@@ -190,9 +193,17 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-  // TODO(crbug.com/1264471): Test that clicking the sign-in button opens the
-  // device picker. In the current test the cookies aren't filled so the sign-in
-  // sheet shows ConsistencyPromoSigninMediatorErrorGeneric.
+
+  // Confirm the promo.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // The device list should be shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {

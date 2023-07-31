@@ -544,13 +544,15 @@ void TapMoreButtonIfVisible() {
 
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears.
+
+  // The signin screen should appear. Tap it.
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // TODO(crbug.com/1468408): Support testing the "Continue as..." button
-  // upstream, to verify the setup list item disappears.
+      performAction:grey_tap()];
+
+  GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],
+                 @"SetUpList item SignIn not completed.");
 }
 
 // Tests that the signin and sync screens can be dismissed by a swipe.
