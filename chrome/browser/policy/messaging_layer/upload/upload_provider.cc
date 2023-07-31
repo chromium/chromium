@@ -200,7 +200,7 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
       auto it = stored_reservations_.find(stored_records_.begin()->first);
       if (it != stored_reservations_.end()) {
         scoped_reservation.HandOver(*it->second);
-        DCHECK(!it->second->reserved());
+        CHECK(!it->second->reserved());
         stored_reservations_.erase(it);
       }
       stored_records_.erase(stored_records_.begin());
@@ -277,7 +277,7 @@ void EncryptedReportingUploadProvider::RequestUploadEncryptedRecords(
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     base::OnceCallback<void(Status)> result_cb) {
-  DCHECK(helper_);
+  CHECK(helper_);
   helper_->EnqueueUpload(need_encryption_key, std::move(records),
                          std::move(scoped_reservation), std::move(result_cb));
 }

@@ -69,7 +69,7 @@ namespace reporting {
 //   ...
 //   builder.AddRecord(recordN);
 //   auto payload_result = builder.Build();
-//   DCHECK(payload_result.has_value());
+//   CHECK(payload_result.has_value());
 //   job_payload_.Merge(payload_result.value());
 //
 // The value of an "encryptedRecord" must be a list, in which each element is a

@@ -131,7 +131,7 @@ class PayloadSizeUmaReporter {
   // Reports to UMA.
   void Report() {
     DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-    DCHECK_GE(response_payload_size_, 0);
+    CHECK_GE(response_payload_size_, 0);
 
     last_reported_time_ = base::Time::Now();
     base::UmaHistogramCounts1M("Browser.ERP.ResponsePayloadSize",

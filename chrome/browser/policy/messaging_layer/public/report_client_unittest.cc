@@ -108,7 +108,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   }
 
   SignedEncryptionInfo GenerateAndSignKey() {
-    DCHECK(decryptor_) << "Decryptor not created";
+    CHECK(decryptor_) << "Decryptor not created";
     // Generate new pair of private key and public value.
     uint8_t private_key[kKeySize];
     Encryptor::PublicKeyId public_key_id;
@@ -120,7 +120,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    DCHECK(prepare_key_result.ok());
+    CHECK_OK(prepare_key_result) << prepare_key_result.status();
     public_key_id = prepare_key_result.ValueOrDie();
     // Prepare public key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
@@ -141,7 +141,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     signed_encryption_key.set_signature(
         std::string(reinterpret_cast<const char*>(signature), kSignatureSize));
     // Double check signature.
-    DCHECK(VerifySignature(
+    EXPECT_TRUE(VerifySignature(
         signature_verification_public_key_,
         std::string_view(reinterpret_cast<const char*>(value_to_sign),
                          sizeof(value_to_sign)),

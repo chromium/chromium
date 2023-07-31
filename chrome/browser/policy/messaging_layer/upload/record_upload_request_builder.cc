@@ -118,10 +118,10 @@ absl::optional<base::Value::Dict>
 UploadEncryptedReportingRequestBuilder::Build() {
   // Ensure that if result_ has value, then it must not have a non-string
   // requestId.
-  DCHECK(!(result_.has_value() &&
-           result_->Find(UploadEncryptedReportingRequestBuilder::kRequestId) &&
-           !result_->FindString(
-               UploadEncryptedReportingRequestBuilder::kRequestId)));
+  CHECK(!(result_.has_value() &&
+          result_->Find(UploadEncryptedReportingRequestBuilder::kRequestId) &&
+          !result_->FindString(
+              UploadEncryptedReportingRequestBuilder::kRequestId)));
   if (result_.has_value() &&
       result_->FindString(UploadEncryptedReportingRequestBuilder::kRequestId) ==
           nullptr) {

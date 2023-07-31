@@ -73,7 +73,7 @@ void ReportQueueManualTestContext::OnStart() {
   }
 
   // Build queue by configuration.
-  DCHECK(queue_builder_) << "Can be only called once";
+  CHECK(queue_builder_) << "Can be only called once";
   auto report_queue_result =
       std::move(queue_builder_).Run(std::move(config_result.ValueOrDie()));
   if (!report_queue_result.ok()) {

@@ -20,7 +20,7 @@
 
 using ::testing::AllOf;
 using ::testing::Eq;
-using ::testing::Not;
+using ::testing::Lt;
 
 namespace reporting {
 namespace {
@@ -68,7 +68,7 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
   std::pair<ScopedReservation, std::vector<EncryptedRecord>>
   GetRecordListWithCorruptionAtIndex(size_t num_records,
                                      size_t corrupted_record_index) {
-    DCHECK(corrupted_record_index < num_records)
+    EXPECT_THAT(corrupted_record_index, Lt(num_records))
         << "Corrupted record index greater than or equal to record count";
 
     std::vector<EncryptedRecord> records;

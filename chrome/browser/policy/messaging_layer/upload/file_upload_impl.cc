@@ -115,7 +115,7 @@ class ActionContext {
   ActionContext& operator=(const ActionContext& other) = delete;
   virtual ~ActionContext() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!result_cb_) << "Destruct before callback";
+    CHECK(!result_cb_) << "Destruct before callback";
   }
 
  protected:
@@ -130,7 +130,7 @@ class ActionContext {
   // does not need weak pointers.
   void Complete(R result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(result_cb_) << "Already completed";
+    CHECK(result_cb_) << "Already completed";
     std::move(result_cb_).Run(std::move(result));
     delete this;
   }
@@ -163,7 +163,7 @@ class FileUploadDelegate::AccessTokenRetriever
       return;
     }
 
-    DCHECK(!access_token_request_);
+    CHECK(!access_token_request_);
     DVLOG(1) << "Requesting access token.";
 
     access_token_request_ = delegate()->StartOAuth2Request(this);
@@ -175,7 +175,7 @@ class FileUploadDelegate::AccessTokenRetriever
       const OAuth2AccessTokenManager::Request* request,
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_EQ(access_token_request_.get(), request);
+    CHECK_EQ(access_token_request_.get(), request);
     access_token_request_.reset();
     DVLOG(1) << "Token successfully acquired.";
     Complete(token_response.access_token);
@@ -184,7 +184,7 @@ class FileUploadDelegate::AccessTokenRetriever
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_EQ(access_token_request_.get(), request);
+    CHECK_EQ(access_token_request_.get(), request);
     access_token_request_.reset();
     LOG(ERROR) << "Token request failed: " << error.ToString();
     Complete(Status(error::UNAUTHENTICATED, error.ToString()));
@@ -821,14 +821,14 @@ void FileUploadDelegate::InitializeOnce() {
   upload_url_ = GURL(
       g_browser_process->browser_policy_connector()->GetDeviceManagementUrl() +
       kLogUploadUrlTail);
-  DCHECK(upload_url_.is_valid());
+  CHECK(upload_url_.is_valid());
 
   account_id_ = DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId();
   access_token_manager_ =
       DeviceOAuth2TokenServiceFactory::Get()->GetAccessTokenManager();
-  DCHECK(access_token_manager_);
+  CHECK(access_token_manager_);
   url_loader_factory_ = g_browser_process->shared_url_loader_factory();
-  DCHECK(url_loader_factory_);
+  CHECK(url_loader_factory_);
   traffic_annotation_ = std::make_unique<::net::NetworkTrafficAnnotationTag>(
       ::net::DefineNetworkTrafficAnnotation("chrome_support_tool_file_upload",
                                             R"(

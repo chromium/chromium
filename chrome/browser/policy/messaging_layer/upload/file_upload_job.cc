@@ -153,7 +153,7 @@ void FileUploadJob::Manager::Register(
                   std::make_unique<FileUploadJob>(
                       log_upload_event.upload_settings(),
                       log_upload_event.upload_tracker(), delegate));
-              DCHECK(res.second);
+              CHECK(res.second);
               it = res.first;
               DCHECK_CALLED_ON_VALID_SEQUENCE(
                   it->second->job_sequence_checker_);
@@ -230,7 +230,7 @@ void FileUploadJob::EventHelper::Run(
     const ScopedReservation& scoped_reservation,
     base::OnceCallback<void(Status)> done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!done_cb_) << "Helper already running";
+  CHECK(!done_cb_) << "Helper already running";
   done_cb_ = std::move(done_cb);
   if (job_->tracker().has_status()) {
     // The job already failed before. Upload the event as is.
@@ -289,7 +289,7 @@ void FileUploadJob::EventHelper::Run(
 
 void FileUploadJob::EventHelper::Complete(Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(done_cb_);
+  CHECK(done_cb_);
   std::move(done_cb_).Run(status);
   // Disconnect from the job, self destruct.
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_->job_sequence_checker_);
@@ -338,7 +338,7 @@ void FileUploadJob::EventHelper::RepostAndComplete() {
 
 void FileUploadJob::EventHelper::PostRetry() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(job_);
+  CHECK(job_);
   // Compose retry event that has no tracker.
   // Decrement its retry count (`FileUploadJob::Manager::Register` will then
   // register it as a new job).
@@ -381,7 +381,7 @@ base::ScopedClosureRunner FileUploadJob::CompletionCb(
             // success or the last retry failed.
             if (job) {
               DCHECK_CALLED_ON_VALID_SEQUENCE(job->job_sequence_checker_);
-              DCHECK(job->event_helper_)
+              CHECK(job->event_helper_)
                   << "Event must be associated with the job";
               if (!job->tracker_.access_parameters().empty() ||  // success
                   (job->tracker_.has_status() &&
@@ -403,7 +403,7 @@ base::ScopedClosureRunner FileUploadJob::CompletionCb(
 
 void FileUploadJob::Initiate(base::OnceClosure done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
-  DCHECK(event_helper_) << "Event must be associated with the job";
+  CHECK(event_helper_) << "Event must be associated with the job";
   base::ScopedClosureRunner done(
       FileUploadJob::CompletionCb(std::move(done_cb)));
   if (tracker_.has_status()) {
@@ -437,7 +437,7 @@ void FileUploadJob::DoneInitiate(
     StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
-  DCHECK(event_helper_) << "Event must be associated with the job";
+  CHECK(event_helper_) << "Event must be associated with the job";
   if (!result.ok()) {
     result.status().SaveTo(tracker_.mutable_status());
     return;
@@ -463,7 +463,7 @@ void FileUploadJob::DoneInitiate(
 void FileUploadJob::NextStep(const ScopedReservation& scoped_reservation,
                              base::OnceClosure done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
-  DCHECK(event_helper_) << "Event must be associated with the job";
+  CHECK(event_helper_) << "Event must be associated with the job";
   base::ScopedClosureRunner done(
       FileUploadJob::CompletionCb(std::move(done_cb)));
   if (tracker_.has_status()) {
@@ -504,7 +504,7 @@ void FileUploadJob::DoneNextStep(
     StatusOr<std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
-  DCHECK(event_helper_) << "Event must be associated with the job";
+  CHECK(event_helper_) << "Event must be associated with the job";
   if (!result.ok()) {
     result.status().SaveTo(tracker_.mutable_status());
     return;
@@ -531,7 +531,7 @@ void FileUploadJob::DoneNextStep(
 
 void FileUploadJob::Finalize(base::OnceClosure done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
-  DCHECK(event_helper_) << "Event must be associated with the job";
+  CHECK(event_helper_) << "Event must be associated with the job";
   base::ScopedClosureRunner done(
       FileUploadJob::CompletionCb(std::move(done_cb)));
   if (tracker_.has_status()) {
@@ -568,7 +568,7 @@ void FileUploadJob::DoneFinalize(
     base::ScopedClosureRunner done,
     StatusOr<std::string /*access_parameters*/> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
-  DCHECK(event_helper_) << "Event must be associated with the job";
+  CHECK(event_helper_) << "Event must be associated with the job";
   if (!result.ok()) {
     result.status().SaveTo(tracker_.mutable_status());
     return;
@@ -596,7 +596,7 @@ void FileUploadJob::AddRecordToStorage(
                        // We can only get to here from upload, which originates
                        // from Storage Module, so `storage()` below cannot be
                        // null.
-                       DCHECK(ReportingClient::GetInstance()->storage());
+                       CHECK(ReportingClient::GetInstance()->storage());
                        ReportingClient::GetInstance()->storage()->AddRecord(
                            priority, std::move(record_copy),
                            std::move(done_cb));
