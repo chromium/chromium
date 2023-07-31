@@ -1291,8 +1291,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Check that reloading an extension that runs in incognito split mode and
 // has two active background pages with registered events does not crash the
 // browser. Regression test for http://crbug.com/224094
-// Flaky on linux-lacros. See http://crbug.com/1423252
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Flaky on linux-lacros and Linux. See http://crbug.com/1423252
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_IncognitoSplitModeReload DISABLED_IncognitoSplitModeReload
 #else
 #define MAYBE_IncognitoSplitModeReload IncognitoSplitModeReload
@@ -3668,8 +3668,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
+// Flaky on Linux. See http://crbug.com/1423252
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Initiator_SplitIncognito DISABLED_Initiator_SplitIncognito
+#else
+#define MAYBE_Initiator_SplitIncognito Initiator_SplitIncognito
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       Initiator_SplitIncognito) {
+                       MAYBE_Initiator_SplitIncognito) {
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
