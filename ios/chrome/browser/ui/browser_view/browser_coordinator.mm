@@ -150,6 +150,7 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
@@ -248,6 +249,7 @@ enum class ToolbarKind {
                                   PasswordBreachCommands,
                                   PasswordControllerDelegate,
                                   PasswordProtectionCommands,
+                                  PasswordProtectionCoordinatorDelegate,
                                   PasswordSettingsCoordinatorDelegate,
                                   PasswordSuggestionCommands,
                                   PasswordSuggestionCoordinatorDelegate,
@@ -615,8 +617,7 @@ enum class ToolbarKind {
   [self.passwordBreachCoordinator stop];
   self.passwordBreachCoordinator = nil;
 
-  [self.passwordProtectionCoordinator stop];
-  self.passwordProtectionCoordinator = nil;
+  [self stopPasswordProtectionCoordinator];
 
   [self.passwordSuggestionBottomSheetCoordinator stop];
   self.passwordSuggestionBottomSheetCoordinator = nil;
@@ -647,6 +648,12 @@ enum class ToolbarKind {
 }
 
 #pragma mark - Private
+
+- (void)stopPasswordProtectionCoordinator {
+  [self.passwordProtectionCoordinator stop];
+  self.passwordProtectionCoordinator.delegate = nil;
+  self.passwordProtectionCoordinator = nil;
+}
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
   if (!self.browser->GetBrowserState() || !self.started) {
@@ -1217,8 +1224,7 @@ enum class ToolbarKind {
   [self.passwordBreachCoordinator stop];
   self.passwordBreachCoordinator = nil;
 
-  [self.passwordProtectionCoordinator stop];
-  self.passwordProtectionCoordinator = nil;
+  [self stopPasswordProtectionCoordinator];
 
   [self.passwordSuggestionBottomSheetCoordinator stop];
   self.passwordSuggestionBottomSheetCoordinator = nil;
@@ -2248,6 +2254,7 @@ enum class ToolbarKind {
       initWithBaseViewController:self.viewController
                          browser:self.browser
                      warningText:warningText];
+  self.passwordProtectionCoordinator.delegate = self;
   [self.passwordProtectionCoordinator startWithCompletion:completion];
 }
 
@@ -2924,6 +2931,14 @@ enum class ToolbarKind {
 - (void)hideMiniMap {
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
+}
+
+#pragma mark - PasswordProtectionCoordinator
+
+- (void)passwordProtectionCoordinatorWantsToBeStopped:
+    (PasswordProtectionCoordinator*)coordinator {
+  CHECK_EQ(self.passwordProtectionCoordinator, coordinator);
+  [self stopPasswordProtectionCoordinator];
 }
 
 @end

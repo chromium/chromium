@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
@@ -66,7 +67,7 @@
 
 - (void)confirmationAlertDismissAction {
   self.completion(safe_browsing::WarningAction::CLOSE);
-  [self stop];
+  [self.delegate passwordProtectionCoordinatorWantsToBeStopped:self];
 }
 
 - (void)confirmationAlertPrimaryAction {
