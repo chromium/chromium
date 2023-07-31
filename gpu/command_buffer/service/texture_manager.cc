@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
@@ -266,16 +267,17 @@ class FormatTypeValidator {
   }
 
   // This may be accessed from multiple threads.
-  bool IsValid(ContextType context_type, GLenum internal_format, GLenum format,
+  bool IsValid(ContextType context_type,
+               GLenum internal_format,
+               GLenum format,
                GLenum type) const {
-    FormatType query = { internal_format, format, type };
-    if (supported_combinations_.find(query) != supported_combinations_.end()) {
+    FormatType query = {internal_format, format, type};
+    if (base::Contains(supported_combinations_, query)) {
       return true;
     }
     if (context_type == CONTEXT_TYPE_OPENGLES2 ||
         context_type == CONTEXT_TYPE_WEBGL1) {
-      if (supported_combinations_es2_only_.find(query) !=
-          supported_combinations_es2_only_.end()) {
+      if (base::Contains(supported_combinations_es2_only_, query)) {
         return true;
       }
     }
@@ -630,7 +632,7 @@ Texture::~Texture() {
 }
 
 void Texture::AddTextureRef(TextureRef* ref) {
-  DCHECK(refs_.find(ref) == refs_.end());
+  DCHECK(!base::Contains(refs_, ref));
   refs_.insert(ref);
   ScopedMemTrackerChange change(this);
   if (!memory_tracking_ref_)

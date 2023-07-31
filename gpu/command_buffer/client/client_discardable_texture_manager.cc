@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/client/client_discardable_texture_manager.h"
 
+#include "base/containers/contains.h"
+
 namespace gpu {
 
 ClientDiscardableTextureManager::TextureEntry::TextureEntry(
@@ -22,7 +24,7 @@ ClientDiscardableHandle ClientDiscardableTextureManager::InitializeTexture(
     CommandBuffer* command_buffer,
     uint32_t texture_id) {
   base::AutoLock hold(lock_);
-  DCHECK(texture_entries_.find(texture_id) == texture_entries_.end());
+  DCHECK(!base::Contains(texture_entries_, texture_id));
   ClientDiscardableHandle::Id handle_id =
       discardable_manager_.CreateHandle(command_buffer);
   if (handle_id.is_null())
@@ -75,7 +77,7 @@ void ClientDiscardableTextureManager::FreeTexture(uint32_t texture_id) {
 bool ClientDiscardableTextureManager::TextureIsValid(
     uint32_t texture_id) const {
   base::AutoLock hold(lock_);
-  return texture_entries_.find(texture_id) != texture_entries_.end();
+  return base::Contains(texture_entries_, texture_id);
 }
 
 bool ClientDiscardableTextureManager::TextureIsDeletedForTracing(

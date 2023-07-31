@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -122,7 +123,7 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
   DCHECK(backing->mailbox().IsSharedImage());
 
   AutoLock autolock(this);
-  if (images_.find(backing->mailbox()) != images_.end()) {
+  if (base::Contains(images_, backing->mailbox())) {
     LOG(ERROR) << "SharedImageManager::Register: Trying to register an "
                   "already registered mailbox.";
     return nullptr;

@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -443,8 +444,8 @@ bool SharedImageFactory::IsNativeBufferSupported(gfx::BufferFormat format,
           gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
     }
   }
-  return supported_gmb_configurations_.find(gfx::BufferUsageAndFormat(
-             usage, format)) != supported_gmb_configurations_.end();
+  return base::Contains(supported_gmb_configurations_,
+                        gfx::BufferUsageAndFormat(usage, format));
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -414,7 +415,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBuffer(GLenum target,
     return error::kNoError;
   }
 
-  DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
+  DCHECK(base::Contains(bound_buffers_, target));
   bound_buffers_[target] = buffer;
   if (target == GL_ELEMENT_ARRAY_BUFFER) {
     bound_element_array_buffer_dirty_ = false;
@@ -434,7 +435,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBufferBase(GLenum target,
     return error::kNoError;
   }
 
-  DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
+  DCHECK(base::Contains(bound_buffers_, target));
   bound_buffers_[target] = buffer;
   if (target == GL_ELEMENT_ARRAY_BUFFER) {
     bound_element_array_buffer_dirty_ = false;
@@ -457,7 +458,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBufferRange(GLenum target,
     return error::kNoError;
   }
 
-  DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
+  DCHECK(base::Contains(bound_buffers_, target));
   bound_buffers_[target] = buffer;
   if (target == GL_ELEMENT_ARRAY_BUFFER) {
     bound_element_array_buffer_dirty_ = false;
@@ -3842,9 +3843,8 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteQueriesEXT(
       continue;
     }
 
-    auto active_queries_iter = active_queries_.find(query_info.type);
-    if (active_queries_iter != active_queries_.end()) {
-      active_queries_.erase(active_queries_iter);
+    if (base::Contains(active_queries_, query_info.type)) {
+      active_queries_.erase(query_info.type);
     }
 
     RemovePendingQuery(query_service_id);
@@ -3938,7 +3938,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBeginQueryEXT(
     linking_program_service_id_ = 0u;
   }
   if (IsEmulatedQueryTarget(target)) {
-    if (active_queries_.find(target) != active_queries_.end()) {
+    if (base::Contains(active_queries_, target)) {
       InsertError(GL_INVALID_OPERATION, "Query already active on target.");
       return error::kNoError;
     }
