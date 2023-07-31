@@ -134,6 +134,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     return jvm_args
 
+  def _ChooseNumWorkers(self, num_jobs):
+    if self._test_instance.debug_socket:
+      num_workers = 1
+    elif self._test_instance.shards is not None:
+      num_workers = self._test_instance.shards
+    else:
+      num_workers = max(1, multiprocessing.cpu_count() // 2)
+    return min(num_workers, num_jobs)
+
   @property
   def _wrapper_path(self):
     return os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
@@ -180,8 +189,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       results.append(test_run_results)
       return
 
-    num_workers = ChooseNumOfWorkers(len(grouped_tests),
-                                     self._test_instance.shards)
+    num_workers = self._ChooseNumWorkers(len(shard_list))
     if shard_filter:
       logging.warning('Running test shards: %s using %s concurrent process(es)',
                       ', '.join(str(x) for x in shard_list), num_workers)
@@ -305,13 +313,6 @@ def AddPropertiesJar(cmd_list, temp_dir, resource_apk):
   for cmd in cmd_list:
     cmd.extend(['--classpath', properties_jar_path])
 
-
-
-def ChooseNumOfWorkers(num_jobs, num_workers=None):
-  if num_workers is None:
-    num_workers = max(1, multiprocessing.cpu_count() // 2)
-
-  return min(num_workers, num_jobs)
 
 
 def GroupTestsForShard(test_list):

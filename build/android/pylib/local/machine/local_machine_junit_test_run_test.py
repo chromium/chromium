@@ -11,7 +11,6 @@ import unittest
 
 from pylib.local.machine import local_machine_junit_test_run
 from py_utils import tempfile_ext
-from mock import patch  # pylint: disable=import-error
 
 
 class LocalMachineJunitTestRunTests(unittest.TestCase):
@@ -37,25 +36,6 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
           cmd_list[1],
           ['test2', '--classpath',
            os.path.join(temp_dir, 'properties.jar')])
-
-  @patch('multiprocessing.cpu_count')
-  def testChooseNumOfShards(self, mock_cpu_count):
-    mock_cpu_count.return_value = 37
-    jobs = 500
-    shards = local_machine_junit_test_run.ChooseNumOfWorkers(jobs)
-    self.assertEqual(18, shards)
-
-    # Number of jobs is less than cpu count.
-    jobs = 5
-    shards = local_machine_junit_test_run.ChooseNumOfWorkers(jobs)
-    self.assertEqual(5, shards)
-
-    # Number of test groups is less than shard request.
-    shards = local_machine_junit_test_run.ChooseNumOfWorkers(jobs, 18)
-    self.assertEqual(5, shards)
-    # Shard request is less than job group.
-    shards = local_machine_junit_test_run.ChooseNumOfWorkers(jobs, 2)
-    self.assertEqual(2, shards)
 
   def testGroupTestsForShardWithSdk(self):
     test_list = []
