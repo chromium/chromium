@@ -83,6 +83,10 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   void ConnectPresentingService(
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback);
+
+  device::mojom::XRPresentationTransportOptionsPtr
+  GetWebXrFrameTransportOptions(
+      const device::mojom::XRRuntimeSessionOptionsPtr&);
   void CreateOrResizeWebXrSurface(const gfx::Size& size);
   void OnGpuProcessConnectionReady();
   void CreateSurfaceBridge(gl::SurfaceTexture* surface_texture);
