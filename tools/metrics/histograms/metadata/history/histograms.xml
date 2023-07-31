@@ -2168,8 +2168,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DomainCountQueryTime_V2" units="ms"
-    expires_after="2023-09-03">
+<histogram name="History.DomainCountQueryTime_V3" units="ms"
+    expires_after="2024-01-28">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
