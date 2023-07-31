@@ -400,7 +400,7 @@ void OnPrivateAggregationLoaded(
   std::move(loaded_callback).Run();
 }
 
-void OnQuotaManagedDataLoaded(
+void OnQuotaStorageLoaded(
     BrowsingDataModel* model,
     base::OnceClosure loaded_callback,
     const std::list<BrowsingDataQuotaHelper::QuotaInfo>& quota_info) {
@@ -720,7 +720,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
 
   if (is_migrate_storage_to_bdm_enabled) {
     quota_helper_->StartFetching(
-        base::BindOnce(&OnQuotaManagedDataLoaded, this, completion));
+        base::BindOnce(&OnQuotaStorageLoaded, this, completion));
     storage_partition_->GetDOMStorageContext()->GetLocalStorageUsage(
         base::BindOnce(&OnLocalStorageLoaded, this, completion));
   }

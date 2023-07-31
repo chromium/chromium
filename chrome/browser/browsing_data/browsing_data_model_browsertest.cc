@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       QuotaManagedDataHandledCorrectly) {
+                       QuotaStorageHandledCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
@@ -782,14 +782,14 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
-  std::vector<std::string> quota_managed_data_types = {
+  std::vector<std::string> quota_storage_data_types = {
       "ServiceWorker", "IndexedDb", "FileSystem", "WebSql"};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  quota_managed_data_types.push_back("MediaLicense");
+  quota_storage_data_types.push_back("MediaLicense");
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  for (auto data_type : quota_managed_data_types) {
+  for (auto data_type : quota_storage_data_types) {
     SetDataForType(data_type, web_contents());
     ASSERT_TRUE(HasDataForType(data_type, web_contents()));
 
@@ -997,17 +997,17 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       QuotaManagedDataAccessReportedCorrectly) {
-  // TODO(crbug.com/1442473): Investigate and include remaining quota managed
+                       QuotaStorageAccessReportedCorrectly) {
+  // TODO(crbug.com/1442473): Investigate and include remaining quota storage
   // data types ["ServiceWorker"].
-  std::vector<std::string> quota_managed_data_types = {"IndexedDb",
+  std::vector<std::string> quota_storage_data_types = {"IndexedDb",
                                                        "FileSystem", "WebSql"};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  quota_managed_data_types.push_back("MediaLicense");
+  quota_storage_data_types.push_back("MediaLicense");
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  for (auto data_type : quota_managed_data_types) {
+  for (auto data_type : quota_storage_data_types) {
     // Re-Navigate to the page for every data type, to prevent any cached data
     // access results from impacting whether access is reported or not.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
