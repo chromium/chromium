@@ -98,21 +98,19 @@ void JSChecker::ExecuteAsync(const std::string& expression) {
 }
 
 bool JSChecker::GetBool(const std::string& expression) {
-  bool result;
-  GetBoolImpl(expression, &result);
-  return result;
+  CHECK(web_contents_);
+  return content::EvalJs(web_contents_.get(), "!!(" + expression + ")")
+      .ExtractBool();
 }
 
 int JSChecker::GetInt(const std::string& expression) {
-  int result;
-  GetIntImpl(expression, &result);
-  return result;
+  CHECK(web_contents_);
+  return content::EvalJs(web_contents_.get(), expression).ExtractInt();
 }
 
 std::string JSChecker::GetString(const std::string& expression) {
-  std::string result;
-  GetStringImpl(expression, &result);
-  return result;
+  CHECK(web_contents_);
+  return content::EvalJs(web_contents_.get(), expression).ExtractString();
 }
 
 bool JSChecker::GetAttributeBool(
@@ -347,23 +345,6 @@ std::unique_ptr<TestConditionWaiter> JSChecker::CreateElementTextContentWaiter(
   result->set_description(description);
 
   return result;
-}
-
-void JSChecker::GetBoolImpl(const std::string& expression, bool* result) {
-  CHECK(web_contents_);
-  *result = content::EvalJs(web_contents_.get(), "!!(" + expression + ")")
-                .ExtractBool();
-}
-
-void JSChecker::GetIntImpl(const std::string& expression, int* result) {
-  CHECK(web_contents_);
-  *result = content::EvalJs(web_contents_.get(), expression).ExtractInt();
-}
-
-void JSChecker::GetStringImpl(const std::string& expression,
-                              std::string* result) {
-  CHECK(web_contents_);
-  *result = content::EvalJs(web_contents_.get(), expression).ExtractString();
 }
 
 void JSChecker::ExpectVisiblePath(

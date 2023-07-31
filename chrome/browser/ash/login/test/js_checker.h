@@ -246,10 +246,6 @@ class JSChecker {
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  void GetBoolImpl(const std::string& expression, bool* result);
-  void GetIntImpl(const std::string& expression, int* result);
-  void GetStringImpl(const std::string& expression, std::string* result);
-
   raw_ptr<content::WebContents, ExperimentalAsh> web_contents_ = nullptr;
 };
 
