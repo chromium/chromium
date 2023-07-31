@@ -2530,6 +2530,15 @@ StackingContext.prototype = {
       return;
     }
 
+    // Elements with `opacity < 0` get their own stacking context.
+    const opacity = elem.style.getPropertyValue("opacity");
+    if (opacity) {
+      const opacityVal = +opacity | 0;
+      if (opacityVal < 1) {
+        this.addContext(elem);
+      }
+    }
+
     const parentDisplay = elem.parent?.style?.getPropertyValue("display");
     if (
       position != "static" ||
