@@ -181,6 +181,8 @@ static_library("ui") {
     "simple_message_box_internal.h",
     "startup/bad_flags_prompt.cc",
     "startup/bad_flags_prompt.h",
+    "startup/bidding_and_auction_consented_debugging_infobar_delegate.cc",
+    "startup/bidding_and_auction_consented_debugging_infobar_delegate.h",
     "status_bubble.h",
     "storage_pressure_bubble.h",
     "sync/tab_contents_synced_tab_delegate.cc",
