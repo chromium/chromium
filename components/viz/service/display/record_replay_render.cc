@@ -42,6 +42,18 @@ void NotifyRasterBuffer(const viz::SharedBitmapId& shared_bitmap_id,
 static viz::SoftwareOutputSurface* gOutputSurface;
 static viz::SoftwareRenderer* gRenderer;
 
+// For now we only support drawing a single surface, which is the first one
+// which the process tried to draw.  This variable can be reset when the
+// target surface is expected to change, such as after a navigation, so that
+// the new surface is not ignored.
+// The `SetResetPaintSurfaceCallback` call below is used to install a callback
+// that chrome invokes when the target surface is expected to change.
+// See https://linear.app/replay/issue/RUN-2400
+static viz::LocalSurfaceId* gSurfaceId;
+static void ResetSurfaceId() {
+  gSurfaceId = nullptr;
+}
+
 static void InitializeRenderer() {
   std::unique_ptr<viz::SoftwareOutputDevice> output_device =
       std::make_unique<viz::SoftwareOutputDevice>();
@@ -52,6 +64,8 @@ static void InitializeRenderer() {
                                         gOutputSurface,
                                         nullptr,
                                         nullptr);
+
+  recordreplay::SetResetPaintSurfaceCallback(ResetSurfaceId);
 }
 
 static std::string SurfaceIdString(const viz::LocalSurfaceId& local_surface_id) {
@@ -61,10 +75,6 @@ static std::string SurfaceIdString(const viz::LocalSurfaceId& local_surface_id) 
                             local_surface_id.child_sequence_number(),
                             local_surface_id.embed_token().ToString().c_str());
 }
-
-// For now we only support drawing a single surface, which is the first one
-// which the process tried to draw.
-static viz::LocalSurfaceId* gSurfaceId;
 
 // Current compositor frame.
 static const viz::CompositorFrame* gCurrentFrame;

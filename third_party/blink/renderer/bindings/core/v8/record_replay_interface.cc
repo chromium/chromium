@@ -4925,7 +4925,11 @@ void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame) {
         nullptr, localFrame->GetDocument()->Url().GetString().Utf8().c_str());
   }
 
-  // 2. Initialize React and Redux Devtools stubs.
+  // 2. Reset paint surface so that paints to the new root's surface are not ignored.
+  // See: https://linear.app/replay/issue/RUN-2400
+  recordreplay::DoResetPaintSurface();
+
+  // 3. Initialize React and Redux Devtools stubs.
   if (recordreplay::FeatureEnabled("react-devtools-backend") &&
       !TestEnv("RECORD_REPLAY_DISABLE_REACT_DEVTOOLS")) {
     // Note: We use a special URL for the react devtools as this script needs

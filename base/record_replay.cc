@@ -520,4 +520,16 @@ void MaybeTerminate(void (*callback)(void*), void* data) {
   V8RecordReplayMaybeTerminate(callback, data);
 }
 
+// Callback to reset the paint surface.
+static ResetPaintSurfaceCallback gResetPaintSurfaceCallback = nullptr;
+void SetResetPaintSurfaceCallback(ResetPaintSurfaceCallback reset_paint_surface) {
+  gResetPaintSurfaceCallback = reset_paint_surface;
+}
+
+void DoResetPaintSurface() {
+  if (gResetPaintSurfaceCallback) {
+    gResetPaintSurfaceCallback();
+  }
+}
+
 } // namespace recordreplay
