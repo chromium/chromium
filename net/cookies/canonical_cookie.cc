@@ -745,16 +745,16 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   // Validate consistency of passed arguments.
   if (ParsedCookie::ParseTokenString(name) != name) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
   } else if (ParsedCookie::ParseValueString(value) != value) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
   } else if (ParsedCookie::ParseValueString(path) != path) {
     // NOTE: If `path` contains  "terminating characters" ('\r', '\n', and
     // '\0'), ';', or leading / trailing whitespace, path will be rejected,
     // but any other control characters will just get URL-encoded below.
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
   }
 
   // Validate name and value against character set and size limit constraints.

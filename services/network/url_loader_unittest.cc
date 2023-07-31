@@ -5553,7 +5553,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesInvalid) {
     EXPECT_TRUE(
         devtools_observer.raw_response_cookies()[0]
             .access_result.status.HasExactlyExclusionReasonsForTesting(
-                {net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+                {net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
 
     EXPECT_EQ("TEST", devtools_observer.devtools_request_id());
   }

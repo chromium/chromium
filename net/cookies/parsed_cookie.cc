@@ -501,10 +501,9 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   // Ignore Set-Cookie directives containing control characters. See
   // http://crbug.com/238041.
   if (!IsValidCookieName(name) || !IsValidCookieValue(value)) {
-    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
     if (status_out != nullptr) {
       status_out->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+          CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
     }
     return false;
   }
@@ -619,9 +618,8 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
       // this attribute name is one of the allowed ones here, so just re-use
       // the cookie name check.
       if (!IsValidCookieName(pair.first)) {
-        // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
         status_out.AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+            CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
         pairs_.clear();
         break;
       }
@@ -630,7 +628,7 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
         // If the attribute value contains invalid characters, the whole
         // cookie should be ignored.
         status_out.AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+            CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
         pairs_.clear();
         break;
       }

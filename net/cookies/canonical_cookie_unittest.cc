@@ -179,16 +179,16 @@ TEST(CanonicalCookieTest, CreationCornerCases) {
   CookieInclusionStatus status;
   cookie = CanonicalCookie::Create(
       GURL("http://www.example.com/test/foo.html"), "\b=foo", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status);
+      server_time, /*cookie_partition_key=*/absl::nullopt, &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER));
   cookie = CanonicalCookie::Create(
       GURL("http://www.example.com/test/foo.html"), "bar=\b", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status);
+      server_time, /*cookie_partition_key=*/absl::nullopt, &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER));
 
   // The ParsedCookie constructor unit tests cover many edge cases related to
   // invalid sizes when parsing a cookie line, and since CanonicalCookie::Create
@@ -3795,52 +3795,52 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
   // Test that malformed attributes fail to set the cookie.
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), " A", "B", std::string(), "/foo",
-      base::Time(), base::Time(), base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), "A;", "B", std::string(), "/foo",
-      base::Time(), base::Time(), base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), "A=", "B", std::string(), "/foo",
-      base::Time(), base::Time(), base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), "A\x07", "B", std::string(), "/foo",
-      one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      one_hour_ago, one_hour_from_now, base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com"), "A", " B", std::string(), "/foo",
-      base::Time(), base::Time(), base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com"), "A", "\x0fZ", std::string(), "/foo",
-      base::Time(), base::Time(), base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com"), "A", "B", "www.foo.com ", "/foo",
       base::Time(), base::Time(), base::Time(), false /*secure*/,
@@ -3867,12 +3867,12 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com"), "A", "B", std::string(), "/foo ",
-      base::Time(), base::Time(), base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), "A", "B", "%2Efoo.com", "/foo",
       one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
@@ -3938,14 +3938,15 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
 
   // Secure/URL Scheme mismatch.
-  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
-      GURL("http://www.foo.com"), "A", "B", std::string(), "/foo ",
-      base::Time(), base::Time(), base::Time(), true /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com"), "A", "B", std::string(), "/foo", base::Time(),
+      base::Time(), base::Time(), /*secure=*/true,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
+      {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
 
   // Null creation date/non-null last access date conflict.
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
@@ -4045,12 +4046,12 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
   // allowing this case would result in cookies that can't serialize correctly).
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com"), "ambiguous=name", "value", std::string(),
-      std::string(), base::Time(), base::Time(), base::Time(), false /*secure*/,
-      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/, &status));
+      std::string(), base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER}));
 
   // A __Secure- cookie must be Secure.
   EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(

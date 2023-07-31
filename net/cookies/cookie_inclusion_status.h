@@ -101,6 +101,10 @@ class NET_EXPORT CookieInclusionStatus {
     // Cookie is a domain cookie and has the same name as an origin cookie on
     // this origin.
     EXCLUDE_SHADOWING_DOMAIN = 23,
+    // Cookie contains ASCII control characters (including the tab character,
+    // when it appears in the middle of the cookie name, value, an attribute
+    // name, or an attribute value).
+    EXCLUDE_DISALLOWED_CHARACTER = 24,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS

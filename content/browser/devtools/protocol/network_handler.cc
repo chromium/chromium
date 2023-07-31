@@ -813,6 +813,11 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
         Network::SetCookieBlockedReasonEnum::NameValuePairExceedsMaxSize);
   }
   if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER)) {
+    blockedReasons->push_back(
+        Network::SetCookieBlockedReasonEnum::DisallowedCharacter);
+  }
+  if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR)) {
     blockedReasons->push_back(
         Network::SetCookieBlockedReasonEnum::UnknownError);

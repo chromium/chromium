@@ -5,7 +5,7 @@ Invalid syntax blocked set-cookies:[
         blockedReasons : [
             [0] : SyntaxError
         ]
-        cookieLine : name=val	ue
+        cookieLine : 
     }
 ]
 
