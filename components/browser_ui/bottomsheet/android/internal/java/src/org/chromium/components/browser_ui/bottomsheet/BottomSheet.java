@@ -521,9 +521,7 @@ class BottomSheet extends FrameLayout
         // If the desired content is already showing, do nothing.
         if (mSheetContent == content) return;
 
-        Log.i(TAG,
-                "Setting sheet content: state: " + mCurrentState
-                        + ", content null: " + (content == null));
+        Log.i(TAG, "Setting sheet content: state: " + mCurrentState + ", content: " + content);
         if (content == null) Thread.dumpStack();
 
         // Remove this as listener from previous content layout and size changes.

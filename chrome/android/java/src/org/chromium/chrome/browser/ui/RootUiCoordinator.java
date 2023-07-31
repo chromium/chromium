@@ -1492,8 +1492,15 @@ public class RootUiCoordinator
                     view.findViewById(R.id.bottom_sheet_snackbar_container), mWindowAndroid);
         };
 
-        Supplier<OverlayPanelManager> panelManagerSupplier = ()
-                -> mCompositorViewHolderSupplier.get().getLayoutManager().getOverlayPanelManager();
+        Supplier<OverlayPanelManager> panelManagerSupplier = () -> {
+            if (mCompositorViewHolderSupplier.get() != null
+                    && mCompositorViewHolderSupplier.get().getLayoutManager() != null) {
+                return mCompositorViewHolderSupplier.get()
+                        .getLayoutManager()
+                        .getOverlayPanelManager();
+            }
+            return null;
+        };
 
         // TODO(1094000): Initialize after inflation so we don't need to pass in view suppliers.
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
