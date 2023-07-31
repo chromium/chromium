@@ -402,6 +402,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   std::unique_ptr<MDocProvider> mdoc_provider_;
   RequestTokenCallback mdoc_request_callback_;
 
+  // Time when the accounts dialog is last shown for metrics purposes.
+  absl::optional<base::TimeTicks> accounts_dialog_shown_time_;
+
+  // Time when the mismatch dialog is last shown for metrics purposes.
+  absl::optional<base::TimeTicks> mismatch_dialog_shown_time_;
+
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
 

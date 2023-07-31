@@ -1264,6 +1264,14 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr()));
   devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host());
 
+  if (!auto_reauthn_) {
+    // We omit recording the accounts dialog shown metric for auto re-authn
+    // because the metric is used to detect IDPs flashing UI. Auto re-authn
+    // verifying UI cannot be flashed since it is destroyed automatically after
+    // 3 seconds and cannot be destroyed earlier for a11y reasons.
+    accounts_dialog_shown_time_ = base::TimeTicks::Now();
+  }
+
   // Note that accounts dialog shown after mismatch dialog is also recorded.
   // Although not useful for catching malicious IDPs, it should only be a very
   // small percentage of the samples recorded.
@@ -1356,6 +1364,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info->metadata.idp_signin_url));
   fedcm_metrics_->RecordMismatchDialogShown();
+  mismatch_dialog_shown_time_ = base::TimeTicks::Now();
 }
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
@@ -1635,6 +1644,17 @@ void FederatedAuthRequestImpl::ShowModalDialog(const GURL& url) {
     IdentityRegistry::CreateForWebContents(
         web_contents, weak_ptr_factory_.GetWeakPtr(), url::Origin::Create(url));
   }
+
+  // Samples are at most 10 minutes. This metric is used to determine a
+  // reasonable minimum duration for the mismatch dialog to be shown to prevent
+  // abuse through flashing UI. When users trigger the IDP sign-in flow, the
+  // mismatch dialog is hidden so we record this metric upon user triggering the
+  // flow.
+  if (mismatch_dialog_shown_time_.has_value()) {
+    fedcm_metrics_->RecordMismatchDialogShownDuration(
+        base::TimeTicks::Now() - mismatch_dialog_shown_time_.value());
+    mismatch_dialog_shown_time_ = absl::nullopt;
+  }
 }
 
 void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
@@ -1839,6 +1859,18 @@ void FederatedAuthRequestImpl::CompleteRequest(
     bool should_delay_callback) {
   DCHECK(result == FederatedAuthRequestResult::kSuccess || id_token.empty());
 
+  if (accounts_dialog_shown_time_.has_value()) {
+    fedcm_metrics_->RecordAccountsDialogShownDuration(
+        base::TimeTicks::Now() - accounts_dialog_shown_time_.value());
+    accounts_dialog_shown_time_ = absl::nullopt;
+  }
+
+  if (mismatch_dialog_shown_time_.has_value()) {
+    fedcm_metrics_->RecordMismatchDialogShownDuration(
+        base::TimeTicks::Now() - mismatch_dialog_shown_time_.value());
+    mismatch_dialog_shown_time_ = absl::nullopt;
+  }
+
   if (!auth_request_token_callback_) {
     return;
   }
@@ -1922,6 +1954,8 @@ void FederatedAuthRequestImpl::CleanUp() {
   show_accounts_dialog_time_ = base::TimeTicks();
   select_account_time_ = base::TimeTicks();
   token_response_time_ = base::TimeTicks();
+  accounts_dialog_shown_time_ = absl::nullopt;
+  mismatch_dialog_shown_time_ = absl::nullopt;
   idp_infos_.clear();
   idp_data_for_display_.clear();
   fetch_data_ = FetchData();

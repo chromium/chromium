@@ -1411,15 +1411,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.Timing.AccountsDialogShownDuration" units="ms"
+<histogram name="Blink.FedCm.Timing.AccountsDialogShownDuration2" units="ms"
     expires_after="M125">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the duration from when an accounts dialog is shown to when it is
-    dismissed for any reason. This duration includes the time when the accounts
-    dialog is inactive e.g. user navigates to a different tab. Samples are at
-    most 10 minutes. Records a sample when an accounts dialog is shown.
+    Records the duration from when an accounts dialog is shown to when dialog is
+    destroyed e.g. user selects an account, user closes the dialog, or the
+    developer aborts the request. This duration includes the time when the
+    accounts dialog is inactive e.g. user switches to a different tab. Samples
+    are at most 10 minutes. Records a sample when an accounts dialog which is
+    not the verifying UI for auto re-authentication is shown. In a previous
+    definition, Blink.FedCm.Timing.AccountsDialogShownDuration, a sample was
+    recorded when an accounts dialog (including the verifying UI) is shown.
   </summary>
 </histogram>
 
@@ -1464,11 +1468,11 @@ chromium-metrics-reviews@google.com.
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the duration from when a mismatch dialog is shown to when it is
-    dismissed for any reason or user triggers IDP sign-in pop-up window. This
-    duration includes the time when the mismatch dialog is inactive e.g. user
-    navigates to a different tab. Samples are at most 10 minutes. Records a
-    sample when a mismatch dialog is shown.
+    Records the duration from when a mismatch dialog is shown to when user
+    triggers IDP sign-in pop-up window or when dialog is destroyed e.g. user
+    closes the dialog. This duration includes the time when the mismatch dialog
+    is inactive e.g. user switches to a different tab. Samples are at most 10
+    minutes. Records a sample when a mismatch dialog is shown.
   </summary>
 </histogram>
 

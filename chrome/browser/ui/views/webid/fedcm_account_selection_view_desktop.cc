@@ -157,8 +157,6 @@ void FedCmAccountSelectionView::Show(
         "IdpClosePopupToBrowserShowAccountsDuration",
         base::TimeTicks::Now() - idp_close_popup_time_);
   }
-
-  accounts_dialog_shown_time_ = base::TimeTicks::Now();
 }
 
 void FedCmAccountSelectionView::ShowFailureDialog(
@@ -203,8 +201,6 @@ void FedCmAccountSelectionView::ShowFailureDialog(
   // Else:
   // The bubble is not guaranteed to be shown. The bubble will be hidden if the
   // associated web contents are hidden.
-
-  mismatch_dialog_shown_time_ = base::TimeTicks::Now();
 }
 
 std::string FedCmAccountSelectionView::GetTitle() const {
@@ -402,19 +398,6 @@ void FedCmAccountSelectionView::OnSigninToIdP() {
       PopupWindowResult::kAccountsNotReceivedAndPopupNotClosedByIdp;
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
                             MismatchDialogResult::kContinued);
-
-  // Samples are at most 10 minutes. This metric is used to determine a
-  // reasonable minimum duration for the mismatch dialog to be shown to prevent
-  // abuse through flashing UI. When users trigger the IDP sign-in flow, the
-  // mismatch dialog is hidden so we record this metric upon user triggering the
-  // flow.
-  if (mismatch_dialog_shown_time_.has_value()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Blink.FedCm.Timing.MismatchDialogShownDuration",
-        base::TimeTicks::Now() - mismatch_dialog_shown_time_.value(),
-        base::Milliseconds(1), base::Minutes(10), 50);
-    mismatch_dialog_shown_time_ = absl::nullopt;
-  }
 }
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
@@ -530,26 +513,6 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
   if (is_mismatch_continue_clicked_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.PopupWindowResult",
                               popup_window_state_);
-  }
-
-  if (accounts_dialog_shown_time_.has_value()) {
-    // Samples are at most 10 minutes. This metric is used to determine a
-    // reasonable minimum duration for the accounts dialog to be shown to
-    // prevent abuse through flashing UI.
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Blink.FedCm.Timing.AccountsDialogShownDuration",
-        base::TimeTicks::Now() - accounts_dialog_shown_time_.value(),
-        base::Milliseconds(1), base::Minutes(10), 50);
-  }
-
-  if (mismatch_dialog_shown_time_.has_value()) {
-    // Samples are at most 10 minutes. This metric is used to determine a
-    // reasonable minimum duration for the mismatch dialog to be shown to
-    // prevent abuse through flashing UI.
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Blink.FedCm.Timing.MismatchDialogShownDuration",
-        base::TimeTicks::Now() - mismatch_dialog_shown_time_.value(),
-        base::Milliseconds(1), base::Minutes(10), 50);
   }
 
   bubble_widget_->RemoveObserver(this);

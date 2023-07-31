@@ -255,12 +255,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Time when IdentityProvider.close() was called for metrics purposes.
   base::TimeTicks idp_close_popup_time_;
 
-  // Time when the accounts dialog is last shown for metrics purposes.
-  absl::optional<base::TimeTicks> accounts_dialog_shown_time_;
-
-  // Time when the mismatch dialog is last shown for metrics purposes.
-  absl::optional<base::TimeTicks> mismatch_dialog_shown_time_;
-
   // The current state of the IDP sign-in pop-up window, if initiated by user.
   PopupWindowResult popup_window_state_;
 

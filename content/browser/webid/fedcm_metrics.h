@@ -131,6 +131,14 @@ class CONTENT_EXPORT FedCmMetrics {
   // dialog was shown to when the user closed the dialog.
   void RecordCancelOnDialogTime(base::TimeDelta duration);
 
+  // Records the duration from when an accounts dialog is shown to when it is
+  // destroyed.
+  void RecordAccountsDialogShownDuration(base::TimeDelta duration);
+
+  // Records the duration from when a mismatch dialog is shown to when it is
+  // destroyed or user triggers IDP sign-in pop-up window.
+  void RecordMismatchDialogShownDuration(base::TimeDelta duration);
+
   // Records the reason that closed accounts dialog without selecting any
   // accounts. Unlike RecordCancelOnDialogTime() this metric is recorded in
   // cases that the acccounts dialog was closed without an explicit user action.
