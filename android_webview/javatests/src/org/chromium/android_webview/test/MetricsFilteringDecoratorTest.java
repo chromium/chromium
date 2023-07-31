@@ -69,6 +69,7 @@ public class MetricsFilteringDecoratorTest {
 
     @Test
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_METRICS_FILTERING)
     public void testMetricsFiltering_applied() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
@@ -100,6 +101,7 @@ public class MetricsFilteringDecoratorTest {
 
     @Test
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_METRICS_FILTERING)
     public void testMetricsFiltering_notApplied() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
@@ -118,6 +120,7 @@ public class MetricsFilteringDecoratorTest {
 
     @Test
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_METRICS_FILTERING)
     public void testMetricsFiltering_missingSystemProfile() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
