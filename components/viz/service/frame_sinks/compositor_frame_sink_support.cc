@@ -15,6 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "components/viz/common/features.h"
@@ -481,10 +482,15 @@ bool CompositorFrameSinkSupport::IsRoot() const {
 }
 
 void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
-  TRACE_EVENT_WITH_FLOW2(
-      "viz,benchmark", "Graphics.Pipeline", TRACE_ID_GLOBAL(ack.trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "DidNotProduceFrame", "FrameSinkId", frame_sink_id_.ToString());
+  TRACE_EVENT(
+      "viz,benchmark", "Graphics.Pipeline",
+      perfetto::Flow::Global(ack.trace_id), [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_DID_NOT_PRODUCE_FRAME);
+        frame_sink_id_.WriteIntoTrace(ctx.Wrap(data->set_frame_sink_id()));
+      });
   DCHECK(ack.frame_id.IsSequenceValid());
 
   begin_frame_tracker_.ReceivedAck(ack);
@@ -539,11 +545,16 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "viz,benchmark", "Graphics.Pipeline",
-      TRACE_ID_GLOBAL(frame.metadata.begin_frame_ack.trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "ReceiveCompositorFrame", "FrameSinkId", frame_sink_id_.ToString());
+      perfetto::Flow::Global((frame.metadata.begin_frame_ack.trace_id)),
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_RECEIVE_COMPOSITOR_FRAME);
+        frame_sink_id_.WriteIntoTrace(ctx.Wrap(data->set_frame_sink_id()));
+      });
 
   DCHECK(local_surface_id.is_valid());
   DCHECK(!frame.render_pass_list.empty());
@@ -901,10 +912,15 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
       adjusted_args.animate_only = false;
 
     adjusted_args.trace_id = ComputeTraceId();
-    TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
-                           TRACE_ID_GLOBAL(adjusted_args.trace_id),
-                           TRACE_EVENT_FLAG_FLOW_OUT, "step",
-                           "IssueBeginFrame");
+    TRACE_EVENT(
+        "viz,benchmark", "Graphics.Pipeline",
+        perfetto::Flow::Global((adjusted_args.trace_id)),
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_ISSUE_BEGIN_FRAME);
+        });
     adjusted_args.frames_throttled_since_last = frames_throttled_since_last_;
     frames_throttled_since_last_ = 0;
 

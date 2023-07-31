@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
@@ -700,9 +701,15 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
       (args.frame_id.sequence_number & 0xffffffff);
   host_impl_->WillSendBeginMainFrame();
   {
-    TRACE_EVENT_WITH_FLOW1(
-        "viz,benchmark", "Graphics.Pipeline", TRACE_ID_GLOBAL(args.trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "step", "SendBeginMainFrame");
+    TRACE_EVENT(
+        "viz,benchmark", "Graphics.Pipeline",
+        perfetto::TerminatingFlow::Global(args.trace_id),
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_SEND_BEGIN_MAIN_FRAME);
+        });
     TRACE_EVENT_WITH_FLOW0("viz,benchmark",
                            "MainFrame.SendBeginMainFrameOnImpl",
                            TRACE_ID_LOCAL(begin_main_frame_state->trace_id),

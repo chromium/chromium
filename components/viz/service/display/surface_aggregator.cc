@@ -20,6 +20,7 @@
 #include "base/numerics/ranges.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -866,11 +867,16 @@ void SurfaceAggregator::EmitSurfaceContent(
   scaled_quad_to_target_transform.Scale(extra_content_scale_x,
                                         extra_content_scale_y);
 
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "viz,benchmark", "Graphics.Pipeline",
-      TRACE_ID_GLOBAL(frame.metadata.begin_frame_ack.trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "SurfaceAggregation", "display_trace", display_trace_id_);
+      perfetto::Flow::Global(frame.metadata.begin_frame_ack.trace_id),
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_SURFACE_AGGREGATION);
+        data->set_display_trace_id(display_trace_id_);
+      });
 
   const gfx::Rect& surface_quad_visible_rect = surface_quad->visible_rect;
   if (ignore_undamaged) {
@@ -2177,11 +2183,17 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   const CompositorFrame& root_surface_frame =
       surface->GetActiveOrInterpolatedFrame();
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "viz,benchmark", "Graphics.Pipeline",
-      TRACE_ID_GLOBAL(root_surface_frame.metadata.begin_frame_ack.trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "SurfaceAggregation", "display_trace", display_trace_id_);
+      perfetto::Flow::Global(
+          root_surface_frame.metadata.begin_frame_ack.trace_id),
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_SURFACE_AGGREGATION);
+        data->set_display_trace_id(display_trace_id_);
+      });
 
   AggregatedFrame frame;
   frame.top_controls_visible_height =

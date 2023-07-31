@@ -13,6 +13,7 @@
 
 #include "base/hash/hash.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -65,6 +66,9 @@ class VIZ_COMMON_EXPORT FrameSinkId {
   std::string ToString() const;
 
   std::string ToString(base::StringPiece debug_label) const;
+
+  using TraceProto = perfetto::protos::pbzero::FrameSinkId;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
  private:
   uint32_t client_id_;

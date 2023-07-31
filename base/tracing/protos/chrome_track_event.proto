@@ -1327,9 +1327,54 @@ message LinuxPulseOutput {
   optional uint32 frame_size_bytes = 5;
 };
 
+message ChromeUnguessableToken {
+  optional uint64 low_token = 1;
+  optional uint64 high_token = 2;
+}
+
+message FrameSinkId {
+  optional uint32 client_id = 1;
+  optional uint32 sink_id = 2;
+}
+
+message LocalSurfaceId {
+  optional uint32 parent_sequence_number = 1;
+  optional uint32 child_sequence_number = 2;
+  optional ChromeUnguessableToken unguessable_token = 3;
+}
+
+message ChromeGraphicsPipeline {
+  enum StepName {
+    STEP_UNKNOWN = 0;
+    STEP_DID_NOT_PRODUCE_FRAME = 1;
+    STEP_GENERATE_COMPOSITOR_FRAME = 2;
+    STEP_GENERATE_RENDER_PASS = 3;
+    STEP_ISSUE_BEGIN_FRAME = 4;
+    STEP_RECEIVE_COMPOSITOR_FRAME = 5;
+    STEP_RECEIVE_BEGIN_FRAME = 6;
+    STEP_RECEIVE_BEGIN_FRAME_DISCARD = 7;
+    STEP_SEND_BEGIN_MAIN_FRAME = 8;
+    STEP_SUBMIT_COMPOSITOR_FRAME = 9;
+    STEP_SURFACE_AGGREGATION = 10;
+  }
+  enum FrameSkippedReason {
+    SKIPPED_REASON_UNKNOWN = 0;
+    SKIPPED_REASON_RECOVER_LATENCY = 1;
+    SKIPPED_REASON_NO_DAMAGE = 2;
+    SKIPPED_REASON_WAITING_ON_MAIN = 3;
+    SKIPPED_REASON_DRAW_THROTTLED = 4;
+  }
+  optional StepName step = 1;
+  optional FrameSinkId frame_sink_id = 2;
+  optional int64 display_trace_id = 3;
+  optional LocalSurfaceId local_surface_id = 4;
+  optional int64 frame_sequence = 5;
+  optional FrameSkippedReason frame_skipped_reason = 6;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1052
+  // Next ID: 1053
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1439,5 +1484,7 @@ message ChromeTrackEvent {
     optional LinuxAlsaOutput linux_alsa_output = 1050;
 
     optional LinuxPulseOutput linux_pulse_output = 1051;
+
+    optional ChromeGraphicsPipeline chrome_graphics_pipeline = 1052;
   }
 }
