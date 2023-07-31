@@ -266,8 +266,9 @@ class BrowserView : public BrowserWindow,
     return exclusive_access_bubble_.get();
   }
 
-  // Accessor for the contents WebView.
-  ContentsWebView* contents_web_view() const { return contents_web_view_; }
+  // Accessor for the contents and devtools WebViews.
+  ContentsWebView* contents_web_view() { return contents_web_view_; }
+  views::WebView* devtools_web_view() { return devtools_web_view_; }
 
   DevToolsDockedPlacement devtools_docked_placement() const {
     return current_devtools_docked_placement_;
