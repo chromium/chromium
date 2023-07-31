@@ -209,6 +209,9 @@
               managedProperties_.priority)]]">
         <div id="preferNetworkToggleLabel" class="start settings-box-text">
           $i18n{networkPrefer}
+          <div class="secondary" hidden="[[!isRevampWayfindingEnabled_]]">
+            $i18n{networkPreferDescription}
+          </div>
         </div>
         <cr-policy-network-indicator-mojo
             property="[[managedProperties_.priority]]">

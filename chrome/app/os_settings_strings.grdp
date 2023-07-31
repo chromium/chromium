@@ -2257,7 +2257,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
     Only supported devices are shown.
   </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no avaiable USB devices.">
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no available USB devices.">
     Available USB devices will appear here.
   </message>
   <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
@@ -3730,6 +3730,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MESSAGE" desc="Message describing the behavior of the known networks page.">
     Preferred networks will be preferred over other known networks if more than one is available
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_INTERNET_KNOWN_NETWORKS_MESSAGE" desc="Message describing the behavior of the known networks page.">
+    Preferred networks will be used if more than one previous network is available
+  </message>
   <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_PREFFERED" desc="Title for list of preferred networks.">
     Preferred networks
   </message>
@@ -3922,6 +3925,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_PREFER" desc="Settings > Internet > Network details: Label for the checkbox determining whether a network is preferred over other networks.">
     Prefer this network
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_PREFER_DESCRIPTION" desc="Settings > Internet > Network details: Description of the label for the checkbox determining whether a network is preferred over other networks.">
+    This network will be preferred if more than one previously connected or configured network is available
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_PRIMARY_USER_CONTROLLED" desc="Settings > Internet > Network details: Text to show when a network configuration is controlled by the primary user.">
     Network configuration is controlled by <ph name="USER_EMAIL">$1<ex>joe@gmail.com</ex></ph>.
   </message>
@@ -3972,6 +3978,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SHARED_OWNER" desc="Settings > Internet > Network details: Text to show when a network is shared and was configured by the current user.">
     You are sharing this network with other users of this device
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_SHARED_OWNER" desc="Settings > Internet > Network details: Text to show when a network is shared and was configured by the current user.">
+    Other users on this device can also use this network
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER" desc="Settings > Internet > Network details: Text to show when a network is shared with you (by another user or configured before login).">
     This network is shared with you
