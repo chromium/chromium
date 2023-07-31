@@ -32,7 +32,6 @@ class HitTester {
   // Builds a R-Tree from the underlying data.
   void Build(const PaintPreviewFrameProto& proto);
   void Build(const std::vector<LinkData>& links);
-  void Build(const std::vector<LinkDataProto>& links);
 
   // Returns false if the underlying rtree is not valid.
   bool IsValid();

@@ -150,13 +150,13 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
       WTF::BindRepeating(&NodeIsElementWithLayoutObject), &elements_);
   SortElementsByPaintOrder(elements_, document_);
   rtree_.Build(
-      elements_,
-      [](const HeapVector<Member<Node>>& items, size_t index) {
+      elements_.size(),
+      [this](size_t index) {
         return ToPixelSnappedRect(
-            GetNodeRect(items[static_cast<wtf_size_t>(index)]));
+            GetNodeRect(elements_[static_cast<wtf_size_t>(index)]));
       },
-      [](const HeapVector<Member<Node>>& items, size_t index) {
-        return items[static_cast<wtf_size_t>(index)];
+      [this](size_t index) {
+        return elements_[static_cast<wtf_size_t>(index)];
       });
 
   rtree_built_ = true;

@@ -401,11 +401,8 @@ void DiscardableImageMap::GetDiscardableImagesInRect(
     images_rtree_ = std::make_unique<RTree<const DrawImage*>>();
 
     images_rtree_->Build(
-        images_,
-        [](const std::vector<std::pair<DrawImage, gfx::Rect>>& items,
-           size_t index) { return items[index].second; },
-        [](const std::vector<std::pair<DrawImage, gfx::Rect>>& items,
-           size_t index) { return &items[index].first; });
+        images_.size(), [this](size_t index) { return images_[index].second; },
+        [this](size_t index) { return &images_[index].first; });
   }
   images_rtree_->Search(rect, images);
 }

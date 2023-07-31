@@ -10,43 +10,24 @@
 
 namespace paint_preview {
 
-namespace {
-
-LinkData ToLinkData(const LinkDataProto& proto) {
-  return {gfx::Rect(proto.rect().x(), proto.rect().y(), proto.rect().width(),
-                    proto.rect().height()),
-          GURL(proto.url())};
-}
-
-gfx::Rect BoundsGetter(const std::vector<LinkData>& links, size_t index) {
-  return links[index].rect;
-}
-
-GURL PayloadGetter(const std::vector<LinkData>& links, size_t index) {
-  return links[index].url;
-}
-
-}  // namespace
-
 HitTester::HitTester() = default;
 HitTester::~HitTester() = default;
 
 void HitTester::Build(const PaintPreviewFrameProto& proto) {
-  std::vector<LinkData> link_data;
-  link_data.reserve(proto.links_size());
-  for (const auto& link : proto.links())
-    link_data.push_back(ToLinkData(link));
-  Build(link_data);
+  const auto& links = proto.links();
+  rtree_.Build(
+      links.size(),
+      [&links](size_t index) {
+        const auto& rect = links[index].rect();
+        return gfx::Rect(rect.x(), rect.y(), rect.width(), rect.height());
+      },
+      [&links](size_t index) { return GURL(links[index].url()); });
 }
-void HitTester::Build(const std::vector<LinkDataProto>& links) {
-  std::vector<LinkData> link_data;
-  link_data.reserve(links.size());
-  for (const auto& link : links)
-    link_data.push_back(ToLinkData(link));
-  Build(link_data);
-}
+
 void HitTester::Build(const std::vector<LinkData>& links) {
-  rtree_.Build(links, &BoundsGetter, &PayloadGetter);
+  rtree_.Build(
+      links.size(), [&links](size_t index) { return links[index].rect; },
+      [&links](size_t index) { return links[index].url; });
 }
 
 bool HitTester::IsValid() {

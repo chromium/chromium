@@ -1733,13 +1733,11 @@ void BrowserAccessibilityManager::BuildAXTreeHitTestCache() {
   // Use AXNodeID for this as nodes are unchanging with this cache.
   cached_node_rtree_ = std::make_unique<cc::RTree<ui::AXNodeID>>();
   cached_node_rtree_->Build(
-      storage,
-      [](const std::vector<const BrowserAccessibility*>& storage,
-         size_t index) {
+      storage.size(),
+      [&storage](size_t index) {
         return storage[index]->GetUnclippedRootFrameBoundsRect();
       },
-      [](const std::vector<const BrowserAccessibility*>& storage,
-         size_t index) { return storage[index]->GetId(); });
+      [&storage](size_t index) { return storage[index]->GetId(); });
 }
 
 void BrowserAccessibilityManager::BuildAXTreeHitTestCacheInternal(

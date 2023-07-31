@@ -192,16 +192,9 @@ void DisplayItemList::FinalizeImpl() {
 #endif
 
   rtree_.Build(
-      visual_rects_,
-      [](const std::vector<gfx::Rect>& rects, size_t index) {
-        return rects[index];
-      },
-      [this](const std::vector<gfx::Rect>& rects, size_t index) {
-        // Ignore the given rects, since the payload comes from
-        // offsets. However, the indices match, so we can just index
-        // into offsets.
-        return offsets_[index];
-      });
+      visual_rects_.size(),
+      [this](size_t index) { return visual_rects_[index]; },
+      [this](size_t index) { return offsets_[index]; });
   visual_rects_.clear();
   visual_rects_.shrink_to_fit();
   offsets_.clear();
