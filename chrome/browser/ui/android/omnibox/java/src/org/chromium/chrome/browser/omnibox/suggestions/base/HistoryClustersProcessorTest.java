@@ -32,7 +32,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
@@ -59,7 +59,7 @@ public class HistoryClustersProcessorTest {
 
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock UrlBarEditingTextStateProvider mUrlBarText;
-    private @Mock FaviconFetcher mIconFetcher;
+    private @Mock OmniboxImageSupplier mImageSupplier;
     @Mock
     private BookmarkState mBookmarkState;
     @Mock
@@ -71,7 +71,7 @@ public class HistoryClustersProcessorTest {
     public void setUp() {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mProcessor = new HistoryClustersProcessor(mOpenHistoryClustersDelegate,
-                ContextUtils.getApplicationContext(), mSuggestionHost, mUrlBarText, mIconFetcher,
+                ContextUtils.getApplicationContext(), mSuggestionHost, mUrlBarText, mImageSupplier,
                 mBookmarkState);
     }
 

@@ -42,7 +42,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
@@ -90,7 +90,7 @@ public final class MostVisitedTilesProcessorUnitTest {
             ArgumentCaptor.forClass(Callback.class);
     private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;
-    private @Mock FaviconFetcher mFaviconFetcher;
+    private @Mock OmniboxImageSupplier mImageSupplier;
 
     @Before
     public void setUp() {
@@ -100,10 +100,10 @@ public final class MostVisitedTilesProcessorUnitTest {
         ShadowLog.stream = System.out;
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
-        doNothing().when(mFaviconFetcher).fetchFavicon(any(), mFavIconCallbackCaptor.capture());
-        doNothing().when(mFaviconFetcher).generateFavicon(any(), mGenIconCallbackCaptor.capture());
+        doNothing().when(mImageSupplier).fetchFavicon(any(), mFavIconCallbackCaptor.capture());
+        doNothing().when(mImageSupplier).generateFavicon(any(), mGenIconCallbackCaptor.capture());
 
-        mProcessor = new MostVisitedTilesProcessor(mActivity, mSuggestionHost, mFaviconFetcher);
+        mProcessor = new MostVisitedTilesProcessor(mActivity, mSuggestionHost, mImageSupplier);
         mPropertyModel = mProcessor.createModel();
     }
 
@@ -124,7 +124,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testDecorations_searchTile() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", SEARCH_URL, true));
-        verifyNoMoreInteractions(mFaviconFetcher);
+        verifyNoMoreInteractions(mImageSupplier);
 
         assertEquals(1, tileList.size());
         ListItem tileItem = tileList.get(0);
@@ -140,7 +140,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testDecorations_navTile() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
-        verify(mFaviconFetcher, times(1)).fetchFavicon(eq(NAV_URL), any());
+        verify(mImageSupplier, times(1)).fetchFavicon(eq(NAV_URL), any());
         mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
 
         // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
@@ -160,7 +160,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testDecorations_navTileWithEmptyTitle_navTitleShouldBeUrlHost() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("", NAV_URL, false));
-        verify(mFaviconFetcher, times(1)).fetchFavicon(eq(NAV_URL), any());
+        verify(mImageSupplier, times(1)).fetchFavicon(eq(NAV_URL), any());
         mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
 
         // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
@@ -247,7 +247,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .onDeleteMatchElement(eq(mMatch), eq("search1"), eq(1), eq(0));
 
         verifyNoMoreInteractions(mSuggestionHost);
-        verifyNoMoreInteractions(mFaviconFetcher);
+        verifyNoMoreInteractions(mImageSupplier);
     }
 
     @Test
@@ -272,7 +272,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         ordered.verify(mSuggestionHost, times(1)).setOmniboxEditingText(eq(SEARCH_URL.getSpec()));
 
         verifyNoMoreInteractions(mSuggestionHost);
-        verifyNoMoreInteractions(mFaviconFetcher);
+        verifyNoMoreInteractions(mImageSupplier);
     }
 
     @Test
@@ -329,7 +329,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testRepeatableQuery_featureDisabled() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", SEARCH_URL, true));
-        verify(mFaviconFetcher, times(1)).fetchFavicon(eq(SEARCH_URL), any());
+        verify(mImageSupplier, times(1)).fetchFavicon(eq(SEARCH_URL), any());
         mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
         assertEquals(1, tileList.size());
         ListItem tileItem = tileList.get(0);

@@ -44,10 +44,10 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /**
- * Tests for {@link FaviconFetcher}.
+ * Tests for {@link OmniboxImageSupplier}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public final class FaviconFetcherUnitTest {
+public final class OmniboxImageSupplierUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
@@ -58,7 +58,7 @@ public final class FaviconFetcherUnitTest {
     private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
-    private FaviconFetcher mFetcher;
+    private OmniboxImageSupplier mSupplier;
 
     private @Mock Bitmap mBitmap1;
     private @Mock Bitmap mBitmap2;
@@ -76,8 +76,8 @@ public final class FaviconFetcherUnitTest {
         mFaviconSize = context.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_favicon_size);
         assert mFaviconSize != 0;
-        mFetcher = new FaviconFetcher(context);
-        mFetcher.setRoundedIconGeneratorForTesting(mIconGenerator);
+        mSupplier = new OmniboxImageSupplier(context);
+        mSupplier.setRoundedIconGeneratorForTesting(mIconGenerator);
 
         doReturn(1L).when(mLargeIconBridgeJni).init();
         doReturn(true)
@@ -126,7 +126,7 @@ public final class FaviconFetcherUnitTest {
     public void fetchFavicon_noLargeIconBridge() {
         // Favicon service does not exist, so we should expect a _single_ call to
         // RoundedIconGenerator.
-        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        mSupplier.fetchFavicon(NAV_URL, mCallback);
         verifyReturnedIcon(null);
         verifyNoOtherInteractionsAndClearInteractions();
     }
@@ -135,7 +135,7 @@ public final class FaviconFetcherUnitTest {
     public void generateFavicon() {
         doReturn(mBitmap1).when(mIconGenerator).generateIconForUrl(NAV_URL);
 
-        mFetcher.generateFavicon(NAV_URL, mCallback);
+        mSupplier.generateFavicon(NAV_URL, mCallback);
         ShadowLooper.runUiThreadTasks();
 
         verify(mIconGenerator, times(1)).generateIconForUrl(NAV_URL);
@@ -145,31 +145,31 @@ public final class FaviconFetcherUnitTest {
 
     @Test
     public void testIconRetrieval_largeIconAvailableWithNoBackoff() {
-        mFetcher.setProfile(mProfile);
+        mSupplier.setProfile(mProfile);
         verify(mLargeIconBridgeJni, times(1)).init();
-        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        mSupplier.fetchFavicon(NAV_URL, mCallback);
         verifyLargeIconBridgeRequest(NAV_URL, mBitmap1);
         verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
 
         // Try again, expect icon to be served from LargeIconBridge cache.
-        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        mSupplier.fetchFavicon(NAV_URL, mCallback);
         verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
     }
 
     @Test
     public void testIconRetrieval_differentUrlsDontCollide() {
-        mFetcher.setProfile(mProfile);
+        mSupplier.setProfile(mProfile);
         verify(mLargeIconBridgeJni, times(1)).init();
 
-        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        mSupplier.fetchFavicon(NAV_URL, mCallback);
         verifyLargeIconBridgeRequest(NAV_URL, mBitmap1);
         verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
 
         // Try another URL. Expect icon to *not* be served from any caches.
-        mFetcher.fetchFavicon(NAV_URL_2, mCallback);
+        mSupplier.fetchFavicon(NAV_URL_2, mCallback);
         verifyLargeIconBridgeRequest(NAV_URL_2, mBitmap1);
         verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
@@ -177,17 +177,17 @@ public final class FaviconFetcherUnitTest {
 
     @Test
     public void testIconRetrieval_clearingCacheRestartsEntireFlow() {
-        mFetcher.setProfile(mProfile);
+        mSupplier.setProfile(mProfile);
         verify(mLargeIconBridgeJni, times(1)).init();
-        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        mSupplier.fetchFavicon(NAV_URL, mCallback);
         verifyLargeIconBridgeRequest(NAV_URL, mBitmap1);
         verifyReturnedIcon(mBitmap1);
         verifyNoOtherInteractionsAndClearInteractions();
 
-        mFetcher.resetCache();
+        mSupplier.resetCache();
 
         // Retry. Expect the exact same flow with that same URL.
-        mFetcher.fetchFavicon(NAV_URL, mCallback);
+        mSupplier.fetchFavicon(NAV_URL, mCallback);
         verifyLargeIconBridgeRequest(NAV_URL, mBitmap2);
         verifyReturnedIcon(mBitmap2);
         verifyNoOtherInteractionsAndClearInteractions();
@@ -195,24 +195,24 @@ public final class FaviconFetcherUnitTest {
 
     @Test
     public void destroy_releasesLargeIconBridgeIfSet() {
-        mFetcher.setProfile(mProfile);
+        mSupplier.setProfile(mProfile);
         verify(mLargeIconBridgeJni, times(1)).init();
         verifyNoMoreInteractions(mLargeIconBridgeJni);
-        mFetcher.destroy();
+        mSupplier.destroy();
         verify(mLargeIconBridgeJni, times(1)).destroy(anyLong());
         verifyNoMoreInteractions(mLargeIconBridgeJni);
     }
 
     @Test
     public void setProfile_destroysOldLargeIconBridgeIfPresent() {
-        mFetcher.setProfile(mProfile);
+        mSupplier.setProfile(mProfile);
         verify(mLargeIconBridgeJni, times(1)).init();
         verifyNoMoreInteractions(mLargeIconBridgeJni);
         clearInvocations(mLargeIconBridgeJni);
 
         // We technically don't expect the change to be "to the same profile", we don't check for
         // this.
-        mFetcher.setProfile(mProfile);
+        mSupplier.setProfile(mProfile);
         verify(mLargeIconBridgeJni, times(1)).destroy(anyLong());
         verify(mLargeIconBridgeJni, times(1)).init();
         verifyNoMoreInteractions(mLargeIconBridgeJni);
@@ -220,6 +220,6 @@ public final class FaviconFetcherUnitTest {
 
     @Test
     public void resetCache_safeWhenBridgeNotAvailable() {
-        mFetcher.resetCache();
+        mSupplier.resetCache();
     }
 }

@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -53,7 +53,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
-    private final @Nullable FaviconFetcher mFaviconFetcher;
+    private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final int mMinCarouselItemViewHeight;
     private @Nullable RecycledViewPool mMostVisitedTilesRecycledViewPool;
     private boolean mEnableOrganicRepeatableQueries;
@@ -63,14 +63,14 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
      *
      * @param context An Android context.
      * @param host SuggestionHost receiving notifications about user actions.
-     * @param faviconFetcher Class retrieving favicons for the MV Tiles.
+     * @param imageSupplier Class retrieving favicons for the MV Tiles.
      */
     public MostVisitedTilesProcessor(@NonNull Context context, @NonNull SuggestionHost host,
-            @Nullable FaviconFetcher faviconFetcher) {
+            @Nullable OmniboxImageSupplier imageSupplier) {
         super(context);
         mContext = context;
         mSuggestionHost = host;
-        mFaviconFetcher = faviconFetcher;
+        mImageSupplier = imageSupplier;
         mMinCarouselItemViewHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
     }
@@ -166,10 +166,10 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
                         mContext.getResources().getDimensionPixelSize(
                                 R.dimen.omnibox_small_icon_rounding_radius));
-                if (mFaviconFetcher != null) {
-                    mFaviconFetcher.fetchFavicon(url, icon -> {
+                if (mImageSupplier != null) {
+                    mImageSupplier.fetchFavicon(url, icon -> {
                         if (icon == null) {
-                            mFaviconFetcher.generateFavicon(url, fallback -> {
+                            mImageSupplier.generateFavicon(url, fallback -> {
                                 tileModel.set(
                                         TileViewProperties.ICON, new BitmapDrawable(fallback));
                                 tileModel.set(TileViewProperties.ICON_TINT, null);

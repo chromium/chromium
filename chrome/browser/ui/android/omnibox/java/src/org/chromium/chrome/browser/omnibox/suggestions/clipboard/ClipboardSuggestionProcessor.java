@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
@@ -34,11 +34,11 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     /**
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
-     * @param faviconFetcher Mechanism used to retrieve favicons.
+     * @param imageSupplier Supplier used to retrieve suggestion icons and images.
      */
     public ClipboardSuggestionProcessor(
-            Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
-        super(context, suggestionHost, faviconFetcher);
+            Context context, SuggestionHost suggestionHost, OmniboxImageSupplier imageSupplier) {
+        super(context, suggestionHost, imageSupplier);
     }
 
     @Override

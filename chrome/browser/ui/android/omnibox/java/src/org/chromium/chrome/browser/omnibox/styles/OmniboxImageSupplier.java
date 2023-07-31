@@ -21,11 +21,9 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 
 /**
- * Favicon fetching mechanism with multi-step fallback functionality.
- * The class supports very simple caching mechanism which remembers what type of icon is available
- * for a given URL to reduce number of JNI and object creation calls.
+ * Image fetching mechanism for Omnibox and Suggestions.
  */
-public class FaviconFetcher {
+public class OmniboxImageSupplier {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
     private int mDesiredFaviconWidthPx;
@@ -37,7 +35,7 @@ public class FaviconFetcher {
      *
      * @param context An Android context.
      */
-    public FaviconFetcher(@NonNull Context context) {
+    public OmniboxImageSupplier(@NonNull Context context) {
         mDesiredFaviconWidthPx = context.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_favicon_size);
 

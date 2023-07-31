@@ -11,7 +11,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
@@ -52,13 +52,10 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Whether the omnibox has already cleared its content for the focus event. */
     private boolean mHasClearedOmniboxForFocus;
 
-    /**
-     * @param locationBarDelegate A means of modifying the location bar.
-     */
     public EditUrlSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            UrlBarDelegate locationBarDelegate, FaviconFetcher faviconFetcher,
+            UrlBarDelegate locationBarDelegate, OmniboxImageSupplier imageSupplier,
             Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
-        super(context, suggestionHost, faviconFetcher);
+        super(context, suggestionHost, imageSupplier);
 
         mUrlBarDelegate = locationBarDelegate;
         mTabSupplier = tabSupplier;

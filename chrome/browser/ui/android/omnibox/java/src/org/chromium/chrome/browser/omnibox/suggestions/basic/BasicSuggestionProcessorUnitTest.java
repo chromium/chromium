@@ -34,7 +34,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
@@ -110,7 +110,7 @@ public class BasicSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock UrlBarEditingTextStateProvider mUrlBarText;
     private @Mock Bitmap mBitmap;
-    private @Mock FaviconFetcher mIconFetcher;
+    private @Mock OmniboxImageSupplier mImageSupplier;
 
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -131,7 +131,7 @@ public class BasicSuggestionProcessorUnitTest {
     public void setUp() {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mUrlBarText, mIconFetcher, mIsBookmarked);
+                mSuggestionHost, mUrlBarText, mImageSupplier, mIsBookmarked);
     }
 
     /**
@@ -358,7 +358,7 @@ public class BasicSuggestionProcessorUnitTest {
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
+        verify(mImageSupplier).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
         callback.getValue().onResult(mBitmap);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
@@ -373,7 +373,7 @@ public class BasicSuggestionProcessorUnitTest {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
 
-        verify(mIconFetcher, never()).fetchFavicon(any(), any());
+        verify(mImageSupplier, never()).fetchFavicon(any(), any());
     }
 
     @Test
@@ -383,7 +383,7 @@ public class BasicSuggestionProcessorUnitTest {
         mIsBookmarked.mState = true;
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
 
-        verify(mIconFetcher, never()).fetchFavicon(any(), any());
+        verify(mImageSupplier, never()).fetchFavicon(any(), any());
     }
 
     @Test
@@ -395,7 +395,7 @@ public class BasicSuggestionProcessorUnitTest {
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
+        verify(mImageSupplier).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
         callback.getValue().onResult(null);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);

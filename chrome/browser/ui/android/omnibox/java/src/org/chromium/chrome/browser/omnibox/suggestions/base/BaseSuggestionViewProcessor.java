@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
@@ -36,7 +36,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected final @NonNull Context mContext;
     protected final @NonNull SuggestionHost mSuggestionHost;
     private final @NonNull ActionChipsProcessor mActionChipsProcessor;
-    private final @Nullable FaviconFetcher mFaviconFetcher;
+    private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
@@ -44,13 +44,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     /**
      * @param context Current context.
      * @param host A handle to the object using the suggestions.
-     * @param faviconFetcher A mechanism to use to retrieve favicons.
+     * @param imageSupplier A mechanism to use to retrieve favicons.
      */
     public BaseSuggestionViewProcessor(@NonNull Context context, @NonNull SuggestionHost host,
-            @Nullable FaviconFetcher faviconFetcher) {
+            @Nullable OmniboxImageSupplier imageSupplier) {
         mContext = context;
         mSuggestionHost = host;
-        mFaviconFetcher = faviconFetcher;
+        mImageSupplier = imageSupplier;
         mDesiredFaviconWidthPx = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_favicon_size);
         mDecorationImageSizePx = mContext.getResources().getDimensionPixelSize(
@@ -223,9 +223,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param url Target URL the suggestion points to.
      */
     protected void fetchSuggestionFavicon(PropertyModel model, GURL url) {
-        if (mFaviconFetcher == null) return;
+        if (mImageSupplier == null) return;
 
-        mFaviconFetcher.fetchFavicon(url, icon -> {
+        mImageSupplier.fetchFavicon(url, icon -> {
             if (icon != null) {
                 setSuggestionDrawableState(model,
                         SuggestionDrawableState.Builder.forBitmap(mContext, icon)

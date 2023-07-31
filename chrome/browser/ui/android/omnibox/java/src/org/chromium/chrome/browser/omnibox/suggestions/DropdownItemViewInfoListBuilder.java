@@ -16,7 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
@@ -58,7 +58,7 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable ImageFetcher mImageFetcher;
-    private @Nullable FaviconFetcher mFaviconFetcher;
+    private @Nullable OmniboxImageSupplier mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
     @Px
     private int mDropdownHeight;
@@ -90,7 +90,7 @@ class DropdownItemViewInfoListBuilder {
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
         if (!OmniboxFeatures.isLowMemoryDevice()) {
-            mFaviconFetcher = new FaviconFetcher(context);
+            mImageSupplier = new OmniboxImageSupplier(context);
         }
 
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
@@ -101,19 +101,19 @@ class DropdownItemViewInfoListBuilder {
         }
         mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
-                context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
+                context, host, delegate, mImageSupplier, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
                 new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
         registerSuggestionProcessor(
-                new ClipboardSuggestionProcessor(context, host, mFaviconFetcher));
+                new ClipboardSuggestionProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new HistoryClustersProcessor(mOpenHistoryClustersDelegate,
-                context, host, textProvider, mFaviconFetcher, mBookmarkState));
+                context, host, textProvider, mImageSupplier, mBookmarkState));
         registerSuggestionProcessor(
                 new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
-        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mFaviconFetcher));
+        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
-                context, host, textProvider, mFaviconFetcher, mBookmarkState));
+                context, host, textProvider, mImageSupplier, mBookmarkState));
     }
 
     void destroy() {
@@ -122,9 +122,9 @@ class DropdownItemViewInfoListBuilder {
             mImageFetcher = null;
         }
 
-        if (mFaviconFetcher != null) {
-            mFaviconFetcher.destroy();
-            mFaviconFetcher = null;
+        if (mImageSupplier != null) {
+            mImageSupplier.destroy();
+            mImageSupplier = null;
         }
     }
 
@@ -168,8 +168,8 @@ class DropdownItemViewInfoListBuilder {
             mImageFetcher = null;
         }
 
-        if (mFaviconFetcher != null) {
-            mFaviconFetcher.setProfile(profile);
+        if (mImageSupplier != null) {
+            mImageSupplier.setProfile(profile);
         }
 
         if (!OmniboxFeatures.isLowMemoryDevice()) {
@@ -217,7 +217,7 @@ class DropdownItemViewInfoListBuilder {
     void onUrlFocusChange(boolean hasFocus) {
         if (!hasFocus) {
             if (mImageFetcher != null) mImageFetcher.clear();
-            if (mFaviconFetcher != null) mFaviconFetcher.resetCache();
+            if (mImageSupplier != null) mImageSupplier.resetCache();
         }
 
         mHeaderProcessor.onUrlFocusChange(hasFocus);

@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
@@ -42,13 +42,13 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
 
     /**
      * See {@link BasicSuggestionProcessor#BasicSuggestionProcessor(Context, SuggestionHost,
-     * OmniboxActionDelegate, UrlBarEditingTextStateProvider, FaviconFetcher, BookmarkState)}
+     * OmniboxActionDelegate, UrlBarEditingTextStateProvider, OmniboxImageSupplier, BookmarkState)}
      */
     public HistoryClustersProcessor(OpenHistoryClustersDelegate openHistoryClustersDelegate,
             @NonNull Context context, @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @NonNull FaviconFetcher faviconFetcher, @NonNull BookmarkState bookmarkState) {
-        super(context, suggestionHost, editingTextProvider, faviconFetcher, bookmarkState);
+            @NonNull OmniboxImageSupplier imageSupplier, @NonNull BookmarkState bookmarkState) {
+        super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
         mOpenHistoryClustersDelegate = openHistoryClustersDelegate;
         mContext = context;
     }

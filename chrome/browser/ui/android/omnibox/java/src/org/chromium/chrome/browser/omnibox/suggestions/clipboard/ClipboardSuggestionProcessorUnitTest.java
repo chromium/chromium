@@ -32,7 +32,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
@@ -62,7 +62,7 @@ public class ClipboardSuggestionProcessorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock SuggestionHost mSuggestionHost;
-    private @Mock FaviconFetcher mIconFetcher;
+    private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Resources mResources;
 
     private Context mContext;
@@ -80,7 +80,7 @@ public class ClipboardSuggestionProcessorUnitTest {
         mContext = new ContextThemeWrapper(
                 ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mBitmap = Bitmap.createBitmap(10, 5, Bitmap.Config.ARGB_8888);
-        mProcessor = new ClipboardSuggestionProcessor(mContext, mSuggestionHost, mIconFetcher);
+        mProcessor = new ClipboardSuggestionProcessor(mContext, mSuggestionHost, mImageSupplier);
         mRootView = new LinearLayout(mContext);
         mTitleTextView = new TextView(mContext);
         mTitleTextView.setId(R.id.line_1);
@@ -153,7 +153,7 @@ public class ClipboardSuggestionProcessorUnitTest {
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher).fetchFavicon(eq(TEST_URL), callback.capture());
+        verify(mImageSupplier).fetchFavicon(eq(TEST_URL), callback.capture());
         callback.getValue().onResult(mBitmap);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
@@ -170,7 +170,7 @@ public class ClipboardSuggestionProcessorUnitTest {
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher).fetchFavicon(eq(TEST_URL), callback.capture());
+        verify(mImageSupplier).fetchFavicon(eq(TEST_URL), callback.capture());
         callback.getValue().onResult(null);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
@@ -185,7 +185,7 @@ public class ClipboardSuggestionProcessorUnitTest {
         // URL
         createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         Assert.assertFalse(mModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));
-        verify(mIconFetcher).fetchFavicon(eq(TEST_URL), callback.capture());
+        verify(mImageSupplier).fetchFavicon(eq(TEST_URL), callback.capture());
         callback.getValue().onResult(null);
         Assert.assertEquals(TextView.TEXT_DIRECTION_LTR, mLastSetTextDirection);
 

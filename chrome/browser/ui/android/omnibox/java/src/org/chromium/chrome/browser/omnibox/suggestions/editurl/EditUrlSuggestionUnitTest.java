@@ -31,7 +31,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.styles.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
@@ -86,7 +86,7 @@ public final class EditUrlSuggestionUnitTest {
     private @Mock UrlBarDelegate mUrlBarDelegate;
     private @Mock View mEditButton;
     private @Mock View mSuggestionView;
-    private @Mock FaviconFetcher mIconFetcher;
+    private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock ClipboardManager mClipboardManager;
@@ -111,7 +111,7 @@ public final class EditUrlSuggestionUnitTest {
             mModel = new PropertyModel.Builder(SuggestionViewProperties.ALL_KEYS).build();
 
             mProcessor = new EditUrlSuggestionProcessor(ContextUtils.getApplicationContext(),
-                    mSuggestionHost, mUrlBarDelegate, mIconFetcher,
+                    mSuggestionHost, mUrlBarDelegate, mImageSupplier,
                     () -> mTab, () -> mShareDelegate);
         });
 
