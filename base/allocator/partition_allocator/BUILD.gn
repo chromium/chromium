@@ -103,6 +103,7 @@ if (!is_debug || partition_alloc_optimized_debug) {
 
 component("partition_alloc") {
   public_deps = [
+    ":allocator_base",
     ":allocator_core",
     ":allocator_shim",
   ]
@@ -152,64 +153,6 @@ source_set("allocator_core") {
     "partition_alloc-inl.h",
     "partition_alloc.cc",
     "partition_alloc.h",
-    "partition_alloc_base/atomic_ref_count.h",
-    "partition_alloc_base/augmentations/compiler_specific.h",
-    "partition_alloc_base/bit_cast.h",
-    "partition_alloc_base/bits.h",
-    "partition_alloc_base/check.cc",
-    "partition_alloc_base/check.h",
-    "partition_alloc_base/compiler_specific.h",
-    "partition_alloc_base/component_export.h",
-    "partition_alloc_base/cpu.cc",
-    "partition_alloc_base/cpu.h",
-    "partition_alloc_base/cxx17_backports.h",
-    "partition_alloc_base/cxx20_is_constant_evaluated.h",
-    "partition_alloc_base/debug/alias.cc",
-    "partition_alloc_base/debug/alias.h",
-    "partition_alloc_base/export_template.h",
-    "partition_alloc_base/gtest_prod_util.h",
-    "partition_alloc_base/immediate_crash.h",
-    "partition_alloc_base/logging.cc",
-    "partition_alloc_base/logging.h",
-    "partition_alloc_base/memory/page_size.h",
-    "partition_alloc_base/memory/ref_counted.cc",
-    "partition_alloc_base/memory/ref_counted.h",
-    "partition_alloc_base/memory/scoped_policy.h",
-    "partition_alloc_base/memory/scoped_refptr.h",
-    "partition_alloc_base/no_destructor.h",
-    "partition_alloc_base/notreached.h",
-    "partition_alloc_base/numerics/checked_math.h",
-    "partition_alloc_base/numerics/checked_math_impl.h",
-    "partition_alloc_base/numerics/clamped_math.h",
-    "partition_alloc_base/numerics/clamped_math_impl.h",
-    "partition_alloc_base/numerics/safe_conversions.h",
-    "partition_alloc_base/numerics/safe_conversions_arm_impl.h",
-    "partition_alloc_base/numerics/safe_conversions_impl.h",
-    "partition_alloc_base/numerics/safe_math.h",
-    "partition_alloc_base/numerics/safe_math_arm_impl.h",
-    "partition_alloc_base/numerics/safe_math_clang_gcc_impl.h",
-    "partition_alloc_base/numerics/safe_math_shared_impl.h",
-    "partition_alloc_base/posix/eintr_wrapper.h",
-    "partition_alloc_base/rand_util.cc",
-    "partition_alloc_base/rand_util.h",
-    "partition_alloc_base/scoped_clear_last_error.h",
-    "partition_alloc_base/strings/safe_sprintf.cc",
-    "partition_alloc_base/strings/safe_sprintf.h",
-    "partition_alloc_base/strings/stringprintf.cc",
-    "partition_alloc_base/strings/stringprintf.h",
-    "partition_alloc_base/system/sys_info.h",
-    "partition_alloc_base/thread_annotations.h",
-    "partition_alloc_base/threading/platform_thread.cc",
-    "partition_alloc_base/threading/platform_thread.h",
-    "partition_alloc_base/threading/platform_thread_ref.h",
-    "partition_alloc_base/time/time.cc",
-    "partition_alloc_base/time/time.h",
-    "partition_alloc_base/time/time_override.cc",
-    "partition_alloc_base/time/time_override.h",
-    "partition_alloc_base/types/strong_alias.h",
-    "partition_alloc_base/win/win_handle_types.h",
-    "partition_alloc_base/win/win_handle_types_list.inc",
-    "partition_alloc_base/win/windows_types.h",
     "partition_alloc_check.h",
     "partition_alloc_config.h",
     "partition_alloc_constants.h",
@@ -288,90 +231,20 @@ source_set("allocator_core") {
   if (is_win) {
     sources += [
       "page_allocator_internals_win.h",
-      "partition_alloc_base/memory/page_size_win.cc",
-      "partition_alloc_base/rand_util_win.cc",
-      "partition_alloc_base/scoped_clear_last_error_win.cc",
-      "partition_alloc_base/threading/platform_thread_win.cc",
-      "partition_alloc_base/time/time_win.cc",
       "partition_tls_win.cc",
     ]
   } else if (is_posix) {
     sources += [
       "page_allocator_internals_posix.cc",
       "page_allocator_internals_posix.h",
-      "partition_alloc_base/files/file_util.h",
-      "partition_alloc_base/files/file_util_posix.cc",
-      "partition_alloc_base/memory/page_size_posix.cc",
-      "partition_alloc_base/posix/safe_strerror.cc",
-      "partition_alloc_base/posix/safe_strerror.h",
-      "partition_alloc_base/rand_util_posix.cc",
-      "partition_alloc_base/threading/platform_thread_internal_posix.h",
-      "partition_alloc_base/threading/platform_thread_posix.cc",
-      "partition_alloc_base/time/time_conversion_posix.cc",
     ]
-
-    if (is_android || is_chromeos_ash) {
-      sources += [ "partition_alloc_base/time/time_android.cc" ]
-    }
-    if (is_apple) {
-      sources += [ "partition_alloc_base/time/time_mac.mm" ]
-    } else {
-      sources += [ "partition_alloc_base/time/time_now_posix.cc" ]
-    }
   } else if (is_fuchsia) {
-    sources += [
-      "page_allocator_internals_fuchsia.h",
-      "partition_alloc_base/fuchsia/fuchsia_logging.cc",
-      "partition_alloc_base/fuchsia/fuchsia_logging.h",
-      "partition_alloc_base/memory/page_size_posix.cc",
-      "partition_alloc_base/posix/safe_strerror.cc",
-      "partition_alloc_base/posix/safe_strerror.h",
-      "partition_alloc_base/rand_util_fuchsia.cc",
-      "partition_alloc_base/threading/platform_thread_internal_posix.h",
-      "partition_alloc_base/threading/platform_thread_posix.cc",
-      "partition_alloc_base/time/time_conversion_posix.cc",
-      "partition_alloc_base/time/time_fuchsia.cc",
-    ]
+    sources += [ "page_allocator_internals_fuchsia.h" ]
   }
   if (is_android) {
-    # Only android build requires native_library, and native_library depends
-    # on file_path. So file_path is added if is_android = true.
-    sources += [
-      "partition_alloc_base/files/file_path.cc",
-      "partition_alloc_base/files/file_path.h",
-      "partition_alloc_base/native_library.cc",
-      "partition_alloc_base/native_library.h",
-      "partition_alloc_base/native_library_posix.cc",
-    ]
-
     # The Android NDK supports PR_MTE_* macros as of NDK r23.
     if (android_ndk_major_version >= 23) {
       defines += [ "HAS_PR_MTE_MACROS" ]
-    }
-  }
-  if (is_apple) {
-    # Apple-specific utilities
-    sources += [
-      "partition_alloc_base/mac/foundation_util.h",
-      "partition_alloc_base/mac/foundation_util.mm",
-      "partition_alloc_base/mac/mach_logging.cc",
-      "partition_alloc_base/mac/mach_logging.h",
-      "partition_alloc_base/mac/scoped_cftyperef.h",
-      "partition_alloc_base/mac/scoped_typeref.h",
-    ]
-    if (is_ios) {
-      sources += [
-        "partition_alloc_base/ios/ios_util.h",
-        "partition_alloc_base/ios/ios_util.mm",
-        "partition_alloc_base/system/sys_info_ios.mm",
-      ]
-    }
-    if (is_mac) {
-      sources += [
-        "partition_alloc_base/mac/mac_util.h",
-        "partition_alloc_base/mac/mac_util.mm",
-        "partition_alloc_base/system/sys_info_mac.mm",
-      ]
     }
   }
   if (use_starscan) {
@@ -412,7 +285,7 @@ source_set("allocator_core") {
     ":partition_alloc_implementation",
     ":memory_tagging",
   ]
-  deps = []
+  deps = [ ":allocator_base" ]
   public_configs = []
   if (is_android) {
     # tagging.cc requires __arm_mte_set_* functions.
@@ -424,7 +297,6 @@ source_set("allocator_core") {
       "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
     ]
     public_deps += [
-      "//third_party/fuchsia-sdk/sdk/pkg/fit",
       "//third_party/fuchsia-sdk/sdk/pkg/sync",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
     ]
@@ -459,11 +331,181 @@ source_set("allocator_core") {
   }
 }
 
+source_set("allocator_base") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "partition_alloc_base/atomic_ref_count.h",
+    "partition_alloc_base/augmentations/compiler_specific.h",
+    "partition_alloc_base/bit_cast.h",
+    "partition_alloc_base/bits.h",
+    "partition_alloc_base/check.cc",
+    "partition_alloc_base/check.h",
+    "partition_alloc_base/compiler_specific.h",
+    "partition_alloc_base/component_export.h",
+    "partition_alloc_base/cpu.cc",
+    "partition_alloc_base/cpu.h",
+    "partition_alloc_base/cxx17_backports.h",
+    "partition_alloc_base/cxx20_is_constant_evaluated.h",
+    "partition_alloc_base/debug/alias.cc",
+    "partition_alloc_base/debug/alias.h",
+    "partition_alloc_base/export_template.h",
+    "partition_alloc_base/gtest_prod_util.h",
+    "partition_alloc_base/immediate_crash.h",
+    "partition_alloc_base/logging.cc",
+    "partition_alloc_base/logging.h",
+    "partition_alloc_base/memory/page_size.h",
+    "partition_alloc_base/memory/ref_counted.cc",
+    "partition_alloc_base/memory/ref_counted.h",
+    "partition_alloc_base/memory/scoped_policy.h",
+    "partition_alloc_base/memory/scoped_refptr.h",
+    "partition_alloc_base/no_destructor.h",
+    "partition_alloc_base/notreached.h",
+    "partition_alloc_base/numerics/checked_math.h",
+    "partition_alloc_base/numerics/checked_math_impl.h",
+    "partition_alloc_base/numerics/clamped_math.h",
+    "partition_alloc_base/numerics/clamped_math_impl.h",
+    "partition_alloc_base/numerics/safe_conversions.h",
+    "partition_alloc_base/numerics/safe_conversions_arm_impl.h",
+    "partition_alloc_base/numerics/safe_conversions_impl.h",
+    "partition_alloc_base/numerics/safe_math.h",
+    "partition_alloc_base/numerics/safe_math_arm_impl.h",
+    "partition_alloc_base/numerics/safe_math_clang_gcc_impl.h",
+    "partition_alloc_base/numerics/safe_math_shared_impl.h",
+    "partition_alloc_base/posix/eintr_wrapper.h",
+    "partition_alloc_base/rand_util.cc",
+    "partition_alloc_base/rand_util.h",
+    "partition_alloc_base/scoped_clear_last_error.h",
+    "partition_alloc_base/strings/safe_sprintf.cc",
+    "partition_alloc_base/strings/safe_sprintf.h",
+    "partition_alloc_base/strings/stringprintf.cc",
+    "partition_alloc_base/strings/stringprintf.h",
+    "partition_alloc_base/system/sys_info.h",
+    "partition_alloc_base/thread_annotations.h",
+    "partition_alloc_base/threading/platform_thread.cc",
+    "partition_alloc_base/threading/platform_thread.h",
+    "partition_alloc_base/threading/platform_thread_ref.h",
+    "partition_alloc_base/time/time.cc",
+    "partition_alloc_base/time/time.h",
+    "partition_alloc_base/time/time_override.cc",
+    "partition_alloc_base/time/time_override.h",
+    "partition_alloc_base/types/strong_alias.h",
+    "partition_alloc_base/win/win_handle_types.h",
+    "partition_alloc_base/win/win_handle_types_list.inc",
+    "partition_alloc_base/win/windows_types.h",
+  ]
+
+  if (is_win) {
+    sources += [
+      "partition_alloc_base/memory/page_size_win.cc",
+      "partition_alloc_base/rand_util_win.cc",
+      "partition_alloc_base/scoped_clear_last_error_win.cc",
+      "partition_alloc_base/threading/platform_thread_win.cc",
+      "partition_alloc_base/time/time_win.cc",
+    ]
+  } else if (is_posix) {
+    sources += [
+      "partition_alloc_base/files/file_util.h",
+      "partition_alloc_base/files/file_util_posix.cc",
+      "partition_alloc_base/memory/page_size_posix.cc",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
+      "partition_alloc_base/rand_util_posix.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
+      "partition_alloc_base/time/time_conversion_posix.cc",
+    ]
+
+    if (is_android || is_chromeos_ash) {
+      sources += [ "partition_alloc_base/time/time_android.cc" ]
+    }
+    if (is_apple) {
+      sources += [ "partition_alloc_base/time/time_mac.mm" ]
+    } else {
+      sources += [ "partition_alloc_base/time/time_now_posix.cc" ]
+    }
+  } else if (is_fuchsia) {
+    sources += [
+      "partition_alloc_base/fuchsia/fuchsia_logging.cc",
+      "partition_alloc_base/fuchsia/fuchsia_logging.h",
+      "partition_alloc_base/memory/page_size_posix.cc",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
+      "partition_alloc_base/rand_util_fuchsia.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
+      "partition_alloc_base/time/time_conversion_posix.cc",
+      "partition_alloc_base/time/time_fuchsia.cc",
+    ]
+  }
+  if (is_android) {
+    # Only android build requires native_library, and native_library depends
+    # on file_path. So file_path is added if is_android = true.
+    sources += [
+      "partition_alloc_base/files/file_path.cc",
+      "partition_alloc_base/files/file_path.h",
+      "partition_alloc_base/native_library.cc",
+      "partition_alloc_base/native_library.h",
+      "partition_alloc_base/native_library_posix.cc",
+    ]
+  }
+  if (is_apple) {
+    # Apple-specific utilities
+    sources += [
+      "partition_alloc_base/mac/foundation_util.h",
+      "partition_alloc_base/mac/foundation_util.mm",
+      "partition_alloc_base/mac/mach_logging.cc",
+      "partition_alloc_base/mac/mach_logging.h",
+      "partition_alloc_base/mac/scoped_cftyperef.h",
+      "partition_alloc_base/mac/scoped_typeref.h",
+    ]
+    if (is_ios) {
+      sources += [
+        "partition_alloc_base/ios/ios_util.h",
+        "partition_alloc_base/ios/ios_util.mm",
+        "partition_alloc_base/system/sys_info_ios.mm",
+      ]
+    }
+    if (is_mac) {
+      sources += [
+        "partition_alloc_base/mac/mac_util.h",
+        "partition_alloc_base/mac/mac_util.mm",
+        "partition_alloc_base/system/sys_info_mac.mm",
+      ]
+    }
+  }
+
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":partition_alloc_buildflags",
+  ]
+
+  configs += [ ":partition_alloc_implementation" ]
+
+  deps = []
+  if (is_fuchsia) {
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit" ]
+  }
+
+  frameworks = []
+  if (is_apple) {
+    frameworks += [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+    ]
+  }
+
+  configs -= _remove_configs
+  configs += _add_configs
+}
+
 source_set("allocator_shim") {
   visibility = [ ":*" ]
 
   sources = []
-  deps = []
+  deps = [ ":allocator_base" ]
   all_dependent_configs = []
   configs += [ ":partition_alloc_implementation" ]
 
@@ -533,6 +575,7 @@ source_set("allocator_shim") {
     }
 
     deps += [
+      ":allocator_base",
       ":allocator_core",
       ":buildflags",
     ]
@@ -550,6 +593,7 @@ source_set("allocator_shim") {
     # low-level Objective-C and having ARC would interfere.
     configs -= [ "//build/config/compiler:enable_arc2" ]
     deps += [
+      ":allocator_base",
       ":allocator_core",
       ":buildflags",
     ]
