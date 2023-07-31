@@ -5,6 +5,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/display_move_window_util.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
@@ -19,8 +20,10 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chromeos/ui/base/nudge_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
@@ -246,6 +249,74 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
   EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
 }
 
+TEST_F(MultitaskMenuNudgeControllerTest, Metrics) {
+  base::HistogramTester histogram_tester;
+
+  // Create and activate a window. Test the histogram is recorded.
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   chromeos::kNotifierFrameworkNudgeShownCountHistogram,
+                   NudgeCatalogName::kMultitaskMenuClamshell));
+
+  // Simulate opening the multitask menu within 1 minute. Test that the
+  // "Within1m" histogram is recorded.
+  test_clock_.Advance(base::Seconds(50));
+  GetNudgeControllerForWindow(window.get())
+      ->OnMenuOpened(/*tablet_mode=*/false);
+
+  const std::string kHistogramPrefix =
+      "Ash.NotifierFramework.Nudge.TimeToAction.";
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts[kHistogramPrefix + "Within1m"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kHistogramPrefix),
+              testing::ContainerEq(expected_counts));
+
+  // Once the user opens the multitask menu, the nudge is no longer shown.
+  // Forcefully reset it so we can proceed to the next test. Also advance the
+  // clock as the nudge only shows after 24 hours have elapsed.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kMultitaskMenuNudgeClamshellShownCount, 0);
+  test_clock_.Advance(base::Days(2));
+
+  // Destroy the window and recreate and activate it.
+  window.reset();
+  window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   chromeos::kNotifierFrameworkNudgeShownCountHistogram,
+                   NudgeCatalogName::kMultitaskMenuClamshell));
+
+  // Simulate opening the multitask menu within 1 hour. Test that the "Within1h"
+  // histogram is recorded.
+  test_clock_.Advance(base::Minutes(50));
+  GetNudgeControllerForWindow(window.get())
+      ->OnMenuOpened(/*tablet_mode=*/false);
+  expected_counts[kHistogramPrefix + "Within1h"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kHistogramPrefix),
+              testing::ContainerEq(expected_counts));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kMultitaskMenuNudgeClamshellShownCount, 0);
+  test_clock_.Advance(base::Days(2));
+
+  window.reset();
+  window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
+  EXPECT_EQ(3, histogram_tester.GetBucketCount(
+                   chromeos::kNotifierFrameworkNudgeShownCountHistogram,
+                   NudgeCatalogName::kMultitaskMenuClamshell));
+
+  // Simulate opening the multitask menu after a long time. Test that the
+  // "WithinSession" histogram is recorded.
+  test_clock_.Advance(base::Hours(50));
+  GetNudgeControllerForWindow(window.get())
+      ->OnMenuOpened(/*tablet_mode=*/false);
+  expected_counts[kHistogramPrefix + "WithinSession"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kHistogramPrefix),
+              testing::ContainerEq(expected_counts));
+}
+
 // Tests that the nudge bounds is within display bounds when the associated
 // window is maximized.
 TEST_F(MultitaskMenuNudgeControllerTest, ClamshellNudgeBounds) {
@@ -332,7 +403,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgePreferences) {
   FireDismissNudgeTimer(window.get());
   ASSERT_FALSE(GetNudgeWidgetForWindow(window.get()));
 
-  // Advance the clock and attempt to show the nudge for a forth time. Verify
+  // Advance the clock and attempt to show the nudge for a fourth time. Verify
   // that it will not show.
   test_clock_.Advance(base::Hours(25));
   window.reset();

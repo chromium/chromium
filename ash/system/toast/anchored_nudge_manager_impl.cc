@@ -17,7 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
+#include "chromeos/ui/base/nudge_util.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
@@ -30,21 +30,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-std::string GetNudgeTimeToActionHistogramName(const base::TimeDelta& time) {
-  std::string time_range;
-  if (time <= base::Minutes(1)) {
-    return "Ash.NotifierFramework.Nudge.TimeToAction.Within1m";
-  }
-  if (time <= base::Hours(1)) {
-    return "Ash.NotifierFramework.Nudge.TimeToAction.Within1h";
-  }
-  return "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
-}
-
-}  // namespace
 
 // Owns a `base::OneShotTimer` that can be paused and resumed.
 class AnchoredNudgeManagerImpl::PausableTimer {
@@ -345,8 +330,8 @@ void AnchoredNudgeManagerImpl::MaybeRecordNudgeAction(
     return;
   }
 
-  const base::TimeDelta delta = base::TimeTicks::Now() - it->second;
-  base::UmaHistogramEnumeration(GetNudgeTimeToActionHistogramName(delta),
+  base::UmaHistogramEnumeration(chromeos::GetNudgeTimeToActionHistogramName(
+                                    base::TimeTicks::Now() - it->second),
                                 catalog_name);
 
   nudge_registry.erase(it);
@@ -435,8 +420,8 @@ AnchoredNudgeManagerImpl::GetNudgeRegistry() {
 }
 
 void AnchoredNudgeManagerImpl::RecordNudgeShown(NudgeCatalogName catalog_name) {
-  base::UmaHistogramEnumeration("Ash.NotifierFramework.Nudge.ShownCount",
-                                catalog_name);
+  base::UmaHistogramEnumeration(
+      chromeos::kNotifierFrameworkNudgeShownCountHistogram, catalog_name);
 
   // Record nudge shown time in the nudge registry.
   auto& nudge_registry = GetNudgeRegistry();

@@ -4,9 +4,12 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/nudge_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -208,6 +211,14 @@ void MultitaskMenuNudgeController::DismissNudge() {
 }
 
 void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
+  if (!nudge_shown_time_.is_null()) {
+    base::UmaHistogramEnumeration(
+        GetNudgeTimeToActionHistogramName(GetTime() - nudge_shown_time_),
+        tablet_mode ? ash::NudgeCatalogName::kMultitaskMenuTablet
+                    : ash::NudgeCatalogName::kMultitaskMenuClamshell);
+    nudge_shown_time_ = base::Time();
+  }
+
   // Avoid sending prefs through the cros API or recording user actions if the
   // nudge isn't shown.
   if (!nudge_widget_ || nudge_widget_->IsClosed()) {
@@ -358,6 +369,12 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   anchor_view_ = anchor_view;
 
   nudge_widget_->Show();
+
+  base::UmaHistogramEnumeration(
+      kNotifierFrameworkNudgeShownCountHistogram,
+      tablet_mode ? ash::NudgeCatalogName::kMultitaskMenuTablet
+                  : ash::NudgeCatalogName::kMultitaskMenuClamshell);
+  nudge_shown_time_ = GetTime();
 
   // Note that order matters because in some cases, creating the widget may
   // trigger some window observations.
