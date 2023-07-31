@@ -43,6 +43,8 @@ extern const char kIosShareChromeLastShare[];
 extern const char kIosSyncSegmentsNewTabPageDisplayCount[];
 extern const char kIosDiscoverFeedLastRefreshTime[];
 extern const char kIosDiscoverFeedLastUnseenRefreshTime[];
+extern const char kIosLatestMostVisitedSites[];
+extern const char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[];
 extern const char kIosPasswordBottomSheetDismissCount[];
 extern const char kIosPreRestoreAccountInfo[];
 extern const char kIosPromosManagerActivePromos[];

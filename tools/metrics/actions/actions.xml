@@ -12466,6 +12466,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSMostVisitedTopSitesChanged" not_user_triggered="true">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <description>
+    Recorded when the top four most visited sites changes.
+  </description>
+</action>
+
 <action name="IOSOpenByMainIntent">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>

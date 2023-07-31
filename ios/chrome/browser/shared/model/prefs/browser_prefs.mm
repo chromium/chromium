@@ -251,6 +251,15 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
+
+  // Pref used to store the latest Most Visited Sites to detect changes
+  // to the top Most Visited Sites.
+  registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
+                             PrefRegistry::LOSSY_PREF);
+  // Pref used to store the number of impressions of the Most Visited Sites
+  // since a freshness signal of the Most Visited Sites.
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
