@@ -273,6 +273,19 @@ export class DiagnoseInfoViewElement extends CustomElement {
     this.wifiPollingPolicyTable_.updateTable(
         WIFI_POLLING_POLICY_TABLE_ID, [row]);
   }
+
+  outputTables(): Record<string, any> {
+    const tables = this.$all<DiagnoseInfoTableElement>('diagnose-info-table');
+    const output: Record<string, any> = {};
+    output['LocationInternals'] = [];
+    for (const table of tables) {
+      if (!table.visible()) {
+        continue;
+      }
+      output['LocationInternals'].push(table.outputTable());
+    }
+    return output;
+  }
 }
 
 declare global {

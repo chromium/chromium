@@ -20,6 +20,7 @@ export class DiagnoseInfoTableElement extends CustomElement {
   private tableHead_: HTMLElement;
   private tableBody_: HTMLElement;
   private tableFooter_: HTMLElement;
+  private lastTableEntries_: Array<Record<string, string>>;
 
   constructor() {
     super();
@@ -29,6 +30,8 @@ export class DiagnoseInfoTableElement extends CustomElement {
     this.tableBody_ = this.getRequiredElement<HTMLElement>('tbody');
     this.tableFooter_ =
         this.getRequiredElement<HTMLElement>('caption#table-footer');
+    this.style.display = 'none';
+    this.lastTableEntries_ = [];
   }
 
   hideTable() {
@@ -39,6 +42,10 @@ export class DiagnoseInfoTableElement extends CustomElement {
     this.tableFooter_.textContent = '';
   }
 
+  visible(): boolean {
+    return !(this.style.display === 'none');
+  }
+
   updateTable(
       tableName: string, entries: Array<Record<string, string>>,
       footer: string|undefined = undefined) {
@@ -46,6 +53,7 @@ export class DiagnoseInfoTableElement extends CustomElement {
       this.hideTable();
       return;
     }
+    this.lastTableEntries_ = entries;
     this.style.display = 'block';
     this.tableTitle_.textContent = tableName;
     this.tableHead_.innerHTML = getTrustedHTML``;
@@ -72,6 +80,13 @@ export class DiagnoseInfoTableElement extends CustomElement {
     } else {
       this.tableFooter_.textContent = footer;
     }
+  }
+
+  outputTable(): Record<string, any> {
+    const table: Record<string, any> = {};
+    const name = this.tableTitle_.textContent;
+    table[name!] = this.lastTableEntries_;
+    return table;
   }
 }
 
