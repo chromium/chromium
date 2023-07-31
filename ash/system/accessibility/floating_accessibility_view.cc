@@ -178,6 +178,7 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
     ime_button_ = ime_button_container->AddChildView(
         std::make_unique<ImeMenuTray>(shelf));
     ime_button_container->SetVisible(true);
+    ime_button_->SetVisiblePreferred(true);
 
     AddChildView(std::move(ime_button_container));
     AddChildView(CreateSeparator());

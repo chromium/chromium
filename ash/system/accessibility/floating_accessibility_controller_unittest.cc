@@ -23,6 +23,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/compositor/layer.h"
 
 namespace ash {
 
@@ -102,7 +103,7 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
 
   bool IsButtonVisible(FloatingAccessibilityView::ButtonId button_id) {
     views::View* button = GetMenuButton(button_id);
-    return button != nullptr;
+    return button != nullptr && button->layer()->opacity() > 0;
   }
 
   ImeMenuTray* GetImeTray() {
