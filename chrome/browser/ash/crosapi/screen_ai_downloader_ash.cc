@@ -85,9 +85,4 @@ void ScreenAIDownloaderAsh::StateChanged(
   pending_download_callbacks_.clear();
 }
 
-void ScreenAIDownloaderAsh::AttachObserverForTesting() {
-  install_state_observer_.Observe(
-      screen_ai::ScreenAIInstallState::GetInstance());
-}
-
 }  // namespace crosapi

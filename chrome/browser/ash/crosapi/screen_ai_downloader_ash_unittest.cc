@@ -30,16 +30,31 @@ class ScreenAIDownloaderAshTest
           bool /*fake_download_success_*/>> {
  public:
   ScreenAIDownloaderAshTest() {
+    if (start_observing_before_call_) {
+      base::RunLoop run_loop;
+      // Calling `GetComponentFolder` for the first time sets the observer.
+      downloader_ash_.GetComponentFolder(
+          /*download_if_needed=*/true,
+          base::BindOnce(
+              [](base::RunLoop* run_loop,
+                 const absl::optional<::base::FilePath>& file_path) {
+                run_loop->Quit();
+              },
+              &run_loop));
+      run_loop.Run();
+
+      // Remove downloaded component path and reset state.
+      install_state_.ResetForTesting();
+
+      EXPECT_TRUE(downloader_ash_.install_state_observer_.IsObserving());
+    }
+
     if (prior_state_ == screen_ai::ScreenAIInstallState::State::kDownloaded ||
         prior_state_ == screen_ai::ScreenAIInstallState::State::kReady) {
       // The component is already downloaded in these two states.
       install_state_.DownloadComponentInternal();
     }
     install_state_.SetStateForTesting(prior_state_);
-
-    if (start_observing_before_call_) {
-      downloader_ash_.AttachObserverForTesting();
-    }
   }
 
   void GetComponentFolder(
@@ -63,6 +78,7 @@ class ScreenAIDownloaderAshTest
   bool request_download_if_needed_ = std::get<2>(GetParam());
   bool fake_download_success_ = std::get<3>(GetParam());
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   crosapi::ScreenAIDownloaderAsh downloader_ash_;
   FakeScreenAIDownloader install_state_;
 };
@@ -76,8 +92,6 @@ class ScreenAIDownloaderAshTest
 //  - Call parameter `download_if_needed`.
 //  - If fake download should result successful.
 TEST_P(ScreenAIDownloaderAshTest, EnsureReplyInAllStates) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   base::RunLoop run_loop;
   GetComponentFolder(
       /*download_if_needed=*/request_download_if_needed_,

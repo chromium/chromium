@@ -27,8 +27,6 @@ class ScreenAIDownloaderAsh : public mojom::ScreenAIDownloader,
   void Bind(mojo::PendingReceiver<crosapi::mojom::ScreenAIDownloader>
                 screen_ai_downloader);
 
-  void AttachObserverForTesting();
-
  private:
   friend class ScreenAIDownloaderAshTest;
 
