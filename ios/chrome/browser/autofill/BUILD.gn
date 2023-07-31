@@ -67,6 +67,7 @@ source_set("autofill") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/webdata_services",
+    "//ios/chrome/common/ui/colors:colors",
     "//ios/web/common",
     "//ios/web/public/js_messaging",
     "//third_party/leveldatabase",

@@ -11,6 +11,7 @@
 #import "components/autofill/core/browser/payments/constants.h"
 #import "components/image_fetcher/core/image_fetcher_impl.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
@@ -67,12 +68,36 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
 
   // The image has been fetched at Size(32, 20) * the screen pixel density,
   // however image_fetcher::IOSImageDecoderImpl creates a UIImage with scale=1
-  // (irregardless of pixel density). Re-scale the UIImage so that it is 32x20
-  // when rendered.
+  // (irregardless of pixel density). We re-scale the UIImage so that it is
+  // 32x20 when rendered, and also apply rounded corners and a border.
   UIImage* image = card_art_image.ToUIImage();
-  image = [UIImage imageWithCGImage:[image CGImage]
-                              scale:screen_scale_
-                        orientation:image.imageOrientation];
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = screen_scale_;
+  CGRect targetRect = CGRectMake(0, 0, 32, 20);
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:targetRect.size
+                                             format:format];
+  image = [renderer imageWithActions:^(
+                        UIGraphicsImageRendererContext* context) {
+    // Copy over the downloaded image, clipped to have 2dp rounded corners.
+    UIBezierPath* clipCornersPath =
+        [UIBezierPath bezierPathWithRoundedRect:targetRect cornerRadius:2.0];
+    [clipCornersPath addClip];
+    [image drawInRect:targetRect blendMode:kCGBlendModeNormal alpha:1.0];
+
+    // Draw a 1dp inside stroke, with corner radius 2dp., Gray 300 @ 100%
+    // opacity. This is intended to overlap the card icon image.
+    [[UIColor colorNamed:kGrey300Color] setStroke];
+    CGFloat lineWidth = 1.0;
+    CGContextSetLineWidth(context.CGContext, lineWidth);
+    CGRect insetTarget = CGRectInset(targetRect, lineWidth / 2, lineWidth / 2);
+    UIBezierPath* path = [UIBezierPath bezierPathWithRoundedRect:insetTarget
+                                                    cornerRadius:2.0];
+    [path stroke];
+  }];
+
   return gfx::Image(image);
 }
 
