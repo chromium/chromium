@@ -477,6 +477,12 @@ BASE_FEATURE(kHaTSDesktopDevToolsIssuesCSP,
              "HaTSDesktopDevToolsIssuesCSP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Privacy Guide v3 update of the Privacy Guide feature
+// in Chrome Settings.
+BASE_FEATURE(kPrivacyGuide3,
+             "PrivacyGuide3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Happiness Tracking System for Desktop Privacy Guide.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
              "HappinessTrackingSurveysForDesktopPrivacyGuide",

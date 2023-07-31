@@ -320,6 +320,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild();
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
 
+  html_source->AddBoolean("enablePrivacyGuide3", base::FeatureList::IsEnabled(
+                                                     features::kPrivacyGuide3));
+
   html_source->AddBoolean(
       "enableExtendedSettingsDescriptions",
       base::FeatureList::IsEnabled(features::kExtendedSettingsDescriptions));
