@@ -101,6 +101,25 @@ TEST(IPCMessageUtilsTest, StackVector) {
     EXPECT_EQ(stack_vector[i], output[i]);
 }
 
+TEST(IPCMessageUtilsTest, InlinedVector) {
+  static constexpr size_t stack_capacity = 5;
+  absl::InlinedVector<double, stack_capacity> inlined_vector;
+  for (size_t i = 0; i < 2 * stack_capacity; i++) {
+    inlined_vector.push_back(i * 2.0);
+  }
+
+  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  IPC::WriteParam(&msg, inlined_vector);
+
+  absl::InlinedVector<double, stack_capacity> output;
+  base::PickleIterator iter(msg);
+  EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
+  ASSERT_EQ(inlined_vector.size(), output.size());
+  for (size_t i = 0; i < 2 * stack_capacity; i++) {
+    EXPECT_EQ(inlined_vector[i], output[i]);
+  }
+}
+
 TEST(IPCMessageUtilsTest, MojoChannelHandle) {
   mojo::MessagePipe message_pipe;
   IPC::ChannelHandle channel_handle(message_pipe.handle0.release());
