@@ -71,10 +71,6 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
                            base::WeakPtr<VideoDecoderMixin::Client> client);
   ~V4L2StatefulVideoDecoder() override;
 
-  // Checks whether there is a pending V4L2_EVENT_SOURCE_CHANGE in |device_fd_|,
-  // returning true if so, or false if there's no event or any error.
-  bool PollOnceForResolutionChangeEvent();
-
   // Tries to create, configure and fill |CAPTURE_queue_|. This method, which
   // should be called after PollOnceForResolutionChangeEvent() has returned
   // true, queries the native |CAPTURE_queue_| configuration and supported
@@ -96,8 +92,9 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // default, conservative value).
   size_t GetNumberOfReferenceFrames();
 
-  // Convenience method to PostTask a wait for a |CAPTURE_queue_| event with a
-  // callback pointing to TryAndDequeueCAPTUREQueueBuffers().
+  // Convenience method to PostTask a wait for a |CAPTURE_queue_| event with
+  // callbacks pointing to TryAndDequeueCAPTUREQueueBuffers() (for data
+  // available) and InitializeCAPTUREQueue() (for re/configuration events).
   void RearmCAPTUREQueueMonitoring();
   // Dequeues all the available |CAPTURE_queue_| buffers and sends their
   // associated VideoFrames to |output_cb_|. If all goes well, it will

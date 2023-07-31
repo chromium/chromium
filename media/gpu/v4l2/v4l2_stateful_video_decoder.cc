@@ -42,27 +42,27 @@ void* Mmap(int fd,
 }
 
 // This method blocks waiting for an event from either |device_fd| or
-// |wake_event|; then if it's of the type POLLIN (meaning there's data) and
-// from |device_fd|, this function calls |dequeue_callback|. Since it blocks,
-// it needs to work on its own SequencedTaskRunner, in this case
-// |event_task_runner_|.
+// |wake_event|; then if it's of the type POLLIN (meaning there's data) or
+// POLLPRI (meaning a resolution change event) and from |device_fd|, this
+// function calls |dequeue_callback| or |resolution_change_callback|,
+// respectively. Since it blocks, it needs to work on its own
+// SequencedTaskRunner, in this case |event_task_runner_|.
 // TODO(mcasas): Add an error callback too.
-void WaitOnceForCAPTUREQueueEvent(int device_fd,
-                                  int wake_event,
-                                  base::OnceClosure dequeue_callback) {
-  VLOGF(4) << "Going to poll()";
+void WaitOnceForEvents(int device_fd,
+                       int wake_event,
+                       base::OnceClosure dequeue_callback,
+                       base::OnceClosure resolution_change_callback) {
+  VLOGF(5) << "Going to poll()";
 
-  // We only want POLLIN for either |device_fd| (because that's the only
-  // possibility for |CAPTURE_queue_|) and |wake_event|. POLLERR, POLLHUP, or
-  // POLLNVAL are always return-able and anyway ignored when set in
-  // pollfd.events.
+  // POLLERR, POLLHUP, or POLLNVAL are always return-able and anyway ignored
+  // when set in pollfd.events.
   // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
-  struct pollfd pollfds[] = {{.fd = device_fd, .events = POLLIN},
+  struct pollfd pollfds[] = {{.fd = device_fd, .events = POLLIN | POLLPRI},
                              {.fd = wake_event, .events = POLLIN}};
   constexpr int kInfiniteTimeout = -1;
   if (HANDLE_EINTR(poll(pollfds, std::size(pollfds), kInfiniteTimeout)) <
       kIoctlOk) {
-    PLOG(ERROR) << "Polling for CAPTURE queue events failed";
+    PLOG(ERROR) << "Poll()ing for events failed";
     return;
   }
 
@@ -72,18 +72,42 @@ void WaitOnceForCAPTUREQueueEvent(int device_fd,
   //  https://man7.org/linux/man-pages/man2/poll.2.html
   if (events_from_device & POLLIN) {
     std::move(dequeue_callback).Run();
-  } else if (other_events & POLLIN) {
+    return;
+  }
+  // "If an event occurred (see ioctl VIDIOC_DQEVENT) then POLLPRI will be set
+  //  in the revents field and poll() will return."
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
+  if (events_from_device & POLLPRI) {
+    VLOGF(2) << "Resolution change event";
+
+    // Dequeue the event otherwise it'll be stuck in the driver forever.
+    struct v4l2_event event;
+    memset(&event, 0, sizeof(event));  // Must do: v4l2_event has a union.
+    if (HandledIoctl(device_fd, VIDIOC_DQEVENT, &event) != kIoctlOk) {
+      PLOG(ERROR) << "Failed dequeing an event";
+      return;
+    }
+    // If we get an event, it must be an V4L2_EVENT_SOURCE_CHANGE since it's the
+    // only one we're subscribed to.
+    DCHECK_EQ(event.type, static_cast<unsigned int>(V4L2_EVENT_SOURCE_CHANGE));
+    DCHECK(event.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION);
+
+    std::move(resolution_change_callback).Run();
+    return;
+  }
+  if (other_events & POLLIN) {
     // Somebody woke us up because they didn't want us waiting on |device_fd|.
     // Do nothing.
-  } else {
-    // This could mean that |device_fd| has become invalid (closed, maybe);
-    // there's little we can do here.
-    // TODO(mcasas): Use the error callback to be added.
-    CHECK((events_from_device & (POLLERR | POLLHUP | POLLNVAL)) ||
-          (other_events & (POLLERR | POLLHUP | POLLNVAL)));
-    VLOG(2) << "Unhandled |events_from_device|: 0x" << std::hex
-            << events_from_device << ", or |other_events|: 0x" << other_events;
+    return;
   }
+
+  // This could mean that |device_fd| has become invalid (closed, maybe);
+  // there's little we can do here.
+  // TODO(mcasas): Use the error callback to be added.
+  CHECK((events_from_device & (POLLERR | POLLHUP | POLLNVAL)) ||
+        (other_events & (POLLERR | POLLHUP | POLLNVAL)));
+  VLOG(2) << "Unhandled |events_from_device|: 0x" << std::hex
+          << events_from_device << ", or |other_events|: 0x" << other_events;
 }
 
 }  // namespace
@@ -324,24 +348,13 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  if (PollOnceForResolutionChangeEvent()) {
-    VLOGF(3) << "Got a resolution change event.";
-    if (!CAPTURE_queue_) {  // It's the first configuration event.
-      if (!InitializeCAPTUREQueue()) {
-        std::move(decode_cb).Run(DecoderStatus::Codes::kPlatformDecodeFailure);
-        return;
-      }
-      if (!event_task_runner_) {
-        event_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-        CHECK(event_task_runner_);
-
-        RearmCAPTUREQueueMonitoring();
-      }
-    } else {
-      NOTIMPLEMENTED() << "Midstream resolution change";
-    }
+  if (!event_task_runner_) {
+    CHECK(!CAPTURE_queue_);  // It's the first configuration event.
+    event_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    CHECK(event_task_runner_);
   }
+  RearmCAPTUREQueueMonitoring();
 
   std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
 }
@@ -385,7 +398,7 @@ bool V4L2StatefulVideoDecoder::IsPlatformDecoder() const {
 void V4L2StatefulVideoDecoder::ApplyResolutionChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(2);
-  NOTIMPLEMENTED();
+  InitializeCAPTUREQueue();
 }
 
 size_t V4L2StatefulVideoDecoder::GetMaxOutputFramePoolSize() const {
@@ -443,35 +456,6 @@ V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
         FROM_HERE,
         base::BindOnce([](base::ScopedFD fd) {}, std::move(wake_event_)));
   }
-}
-
-bool V4L2StatefulVideoDecoder::PollOnceForResolutionChangeEvent() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // POLLERR, POLLHUP, or POLLNVAL are always return-able and anyway ignored
-  // when set in pollfd.events.
-  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
-  struct pollfd pollfds[1] = {{.fd = device_fd_.get(), .events = POLLPRI}};
-  if (HANDLE_EINTR(poll(pollfds, std::size(pollfds), /*timeout=*/0)) <
-      kIoctlOk) {
-    PLOG(ERROR) << "Polling for events failed";
-    return false;
-  }
-  if (!(pollfds[0].revents & POLLPRI)) {
-    return false;
-  }
-
-  // There is an event: dequeue it.
-  struct v4l2_event event;
-  memset(&event, 0, sizeof(event));  // Must do: v4l2_event has a union.
-  if (HandledIoctl(device_fd_.get(), VIDIOC_DQEVENT, &event) != kIoctlOk) {
-    PLOG(ERROR) << "Failed dequeing an event";
-    return false;
-  }
-  // If we get an event, it must be an V4L2_EVENT_SOURCE_CHANGE since it's the
-  // only one we're subscribed to.
-  DCHECK_EQ(event.type, static_cast<unsigned int>(V4L2_EVENT_SOURCE_CHANGE));
-  DCHECK(event.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION);
-  return true;
 }
 
 bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
@@ -633,6 +617,14 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
 void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto dequeue_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers, weak_this_));
+  // |client_| needs to be told of a hypothetical resolution change (to wait for
+  // frames in flight etc). Once that's done they will ping us via
+  // ApplyResolutionChange().
+  auto resolution_change_callback =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &VideoDecoderMixin::Client::PrepareChangeResolution, client_));
   // Here we launch a single "wait for a |CAPTURE_queue_| event" monitoring
   // Task (via an infinite-wait POSIX poll()). It lives on a background
   // SequencedTaskRunner whose lifetime we don't control (comes from a pool), so
@@ -640,24 +632,22 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   // V4L2StatefulVideoDecoder destruction:
   // - |cancelable_task_tracker_| is used to try to drop all such Tasks that
   //   have not been serviced.
-  // - Any WeakPtr used for WaitOnceForCAPTUREQueueEvent() callbacks will be
-  //   invalidated.
+  // - Any WeakPtr used for WaitOnceForEvents() callbacks will be invalidated
+  //   (in particular, |client_| is a WeakPtr).
   // - A |wake_event_| is sent to break a hypothetical poll() wait;
-  //   WaitOnceForCAPTUREQueueEvent() should return immediately upon this
-  //   happening. (|wake_event_| is needed because we cannot rely on POSIX to
-  //   wake a thread that is blocked on a poll() upon the closing of an FD from
-  //   a different thread, concretely the "result is unspecified").
+  //   WaitOnceForEvents() should return immediately upon this happening.
+  //   (|wake_event_| is needed because we cannot rely on POSIX to wake a
+  //   thread that is blocked on a poll() upon the closing of an FD from a
+  //   different thread, concretely the "result is unspecified").
   // - Both |device_fd_| and |wake_event_| are posted for destruction on said
   //   background SequencedTaskRunner so that the FDs monitored by poll() are
   //   guaranteed to stay alive until poll() returns, thus avoiding unspecified
   //   behavior.
   cancelable_task_tracker_.PostTask(
       event_task_runner_.get(), FROM_HERE,
-      base::BindOnce(
-          &WaitOnceForCAPTUREQueueEvent, device_fd_.get(), wake_event_.get(),
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers,
-              weak_this_))));
+      base::BindOnce(&WaitOnceForEvents, device_fd_.get(), wake_event_.get(),
+                     std::move(dequeue_callback),
+                     std::move(resolution_change_callback)));
 }
 
 void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
@@ -700,7 +690,11 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       if (flush_cb_) {
         std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
       }
-    } else {
+    } else if (!dequeued_buffer->IsError()) {
+      // IsError() doesn't flag a fatal error, but more a discard-this-buffer
+      // marker. This is seen -seldom- from venus driver (QC) when entering a
+      // dynamic resolution mode: the driver flushes the queue with errored
+      // buffers before sending the IsLast() buffer.
       scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
       CHECK(video_frame);
       video_frame->set_timestamp(
@@ -798,7 +792,7 @@ bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
 void V4L2StatefulVideoDecoder::PrintOutQueueStatesForVLOG(
     const base::Location& from_here) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(4) << from_here.function_name() << " |OUTPUT_queue_| "
+  VLOG(4) << from_here.function_name() << "(): |OUTPUT_queue_| "
           << OUTPUT_queue_->QueuedBuffersCount() << "/"
           << OUTPUT_queue_->AllocatedBuffersCount() << ", |CAPTURE_queue_| "
           << (CAPTURE_queue_ ? CAPTURE_queue_->QueuedBuffersCount() : 0) << "/"

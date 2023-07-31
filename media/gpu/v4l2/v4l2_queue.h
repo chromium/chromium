@@ -198,6 +198,8 @@ class MEDIA_GPU_EXPORT V4L2ReadableBuffer
   bool IsLast() const;
   // Returns whether the V4L2_BUF_FLAG_KEYFRAME flag is set for this buffer.
   bool IsKeyframe() const;
+  // Returns whether the V4L2_BUF_FLAG_ERROR flag is set for this buffer.
+  bool IsError() const;
   // Return the timestamp set by the driver on this buffer.
   struct timeval GetTimeStamp() const;
   // Returns the number of planes in this buffer.

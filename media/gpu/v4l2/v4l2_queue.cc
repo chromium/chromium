@@ -914,6 +914,19 @@ bool V4L2ReadableBuffer::IsKeyframe() const {
   return buffer_data_->v4l2_buffer_.flags & V4L2_BUF_FLAG_KEYFRAME;
 }
 
+bool V4L2ReadableBuffer::IsError() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(buffer_data_);
+  // "The driver may also set V4L2_BUF_FLAG_ERROR in the flags field. It
+  //  indicates a non-critical (recoverable) streaming error. In such case the
+  //  application may continue as normal, but should be aware that data in the
+  //  dequeued buffer might be corrupted." IOW it is more a discard-this-buffer
+  //  marker than a fatal error indication, so it's down to the caller to take
+  //  action if needed/desired.
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/vidioc-qbuf.html#description
+  return buffer_data_->v4l2_buffer_.flags & V4L2_BUF_FLAG_ERROR;
+}
+
 struct timeval V4L2ReadableBuffer::GetTimeStamp() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
