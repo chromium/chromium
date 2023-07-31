@@ -23,7 +23,6 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
   ~FakeIdentityRequestDialogController() override;
 
   void ShowAccountsDialog(
-      content::WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,

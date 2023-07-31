@@ -149,7 +149,6 @@ class TestDialogController
   TestDialogController& operator=(TestDialogController&) = delete;
 
   void ShowAccountsDialog(
-      WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,

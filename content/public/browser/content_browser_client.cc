@@ -1422,7 +1422,8 @@ bool ContentBrowserClient::HasErrorPage(int http_status_code) {
 }
 
 std::unique_ptr<IdentityRequestDialogController>
-ContentBrowserClient::CreateIdentityRequestDialogController() {
+ContentBrowserClient::CreateIdentityRequestDialogController(
+    WebContents* web_contents) {
   return std::make_unique<IdentityRequestDialogController>();
 }
 

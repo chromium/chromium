@@ -75,19 +75,22 @@ std::string ComputeUrlEncodedTokenPostData(
     const std::vector<std::string>& responseType,
     const base::flat_map<std::string, std::string>& params) {
   std::string query;
-  if (!client_id.empty())
+  if (!client_id.empty()) {
     query +=
         "client_id=" + base::EscapeUrlEncodedData(client_id, /*use_plus=*/true);
+  }
 
   if (!nonce.empty()) {
-    if (!query.empty())
+    if (!query.empty()) {
       query += "&";
+    }
     query += "nonce=" + base::EscapeUrlEncodedData(nonce, /*use_plus=*/true);
   }
 
   if (!account_id.empty()) {
-    if (!query.empty())
+    if (!query.empty()) {
       query += "&";
+    }
     query += "account_id=" +
              base::EscapeUrlEncodedData(account_id, /*use_plus=*/true);
   }
@@ -96,8 +99,9 @@ std::string ComputeUrlEncodedTokenPostData(
   // disclosure text is not necessary. This field indicates in the request
   // whether the user has been shown such disclosure text.
   std::string disclosure_text_shown = is_sign_in ? "false" : "true";
-  if (!query.empty())
+  if (!query.empty()) {
     query += "&disclosure_text_shown=" + disclosure_text_shown;
+  }
 
   if (IsFedCmAuthzEnabled()) {
     // We keep the scope and response_type parameters consistenct with the OIDC
@@ -859,8 +863,9 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
   // an RP embedding a tracker resource that would set this signin status
   // for the tracker, enabling the FedCM request.
   // This behavior may change in https://crbug.com/1382193
-  if (!origin().IsSameOriginWith(idp_origin))
+  if (!origin().IsSameOriginWith(idp_origin)) {
     return;
+  }
   permission_delegate_->SetIdpSigninStatus(
       idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
 }
@@ -1085,8 +1090,9 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
   AddDevToolsIssue(result);
   AddConsoleErrorMessage(result);
 
-  if (IsFedCmMetricsEndpointEnabled())
+  if (IsFedCmMetricsEndpointEnabled()) {
     SendFailedTokenRequestMetrics(idp_info->endpoints.metrics, result);
+  }
 
   metrics_endpoints_.erase(idp_config_url);
 
@@ -1248,7 +1254,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
-      WebContents::FromRenderFrameHost(&render_frame_host()),
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
       auto_reauthn_ ? SignInMode::kAuto : SignInMode::kExplicit,
@@ -1322,8 +1327,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // TODO(crbug.com/1357790): we should figure out how to handle multiple IDP
   // w.r.t. showing a static failure UI. e.g. one IDP is always successful and
   // one always returns 404.
-  WebContents* rp_web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host());
+
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
   // TODO(crbug.com/1382495): Handle failure UI in the multi IDP case.
@@ -1340,9 +1344,9 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // ShowFailureDialog() a 2nd time should notify the user that sign-in
   // failed.
   request_dialog_controller_->ShowFailureDialog(
-      rp_web_contents, GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
-      iframe_for_display, FormatOriginForDisplay(idp_origin),
-      idp_info->rp_context, idp_info->metadata,
+      GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+      FormatOriginForDisplay(idp_origin), idp_info->rp_context,
+      idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr(),
                      FederatedAuthRequestResult::kError,
@@ -1355,10 +1359,16 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
 }
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
+#if BUILDFLAG(IS_ANDROID)
+  // On android, invoke NotifyClose on the modal dialog, as the UI code needs to
+  // then notify the opener.
+  NotifyClose();
+#else
+  // On desktop, invoke NotifyClose on the opener.
   if (identity_registry_) {
     identity_registry_->NotifyClose(origin());
   }
-  // TODO(crbug.com/1456368): notify Android UI about closing.
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
@@ -1493,8 +1503,9 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
     // We set the login state based on the IDP response if it sends
     // back an approved_clients list. If it does not, we need to set
     // it here based on browser state.
-    if (account.login_state)
+    if (account.login_state) {
       continue;
+    }
     LoginState login_state = LoginState::kSignUp;
     // Consider this a sign-in if we have seen a successful sign-up for
     // this account before.
@@ -1748,8 +1759,9 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       if (IsFedCmMetricsEndpointEnabled()) {
         for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
           const GURL& metrics_endpoint = metrics_endpoint_kv.second;
-          if (!metrics_endpoint.is_valid())
+          if (!metrics_endpoint.is_valid()) {
             continue;
+          }
 
           if (metrics_endpoint_kv.first == idp->config_url) {
             network_manager_->SendSuccessfulTokenRequestMetrics(
@@ -1856,8 +1868,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
     AddConsoleErrorMessage(result);
 
     if (IsFedCmMetricsEndpointEnabled()) {
-      for (const auto& metrics_endpoint_kv : metrics_endpoints_)
+      for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
         SendFailedTokenRequestMetrics(metrics_endpoint_kv.second, result);
+      }
     }
   }
 
@@ -1885,8 +1898,9 @@ void FederatedAuthRequestImpl::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint,
     blink::mojom::FederatedAuthRequestResult result) {
   DCHECK(IsFedCmMetricsEndpointEnabled());
-  if (!metrics_endpoint.is_valid())
+  if (!metrics_endpoint.is_valid()) {
     return;
+  }
 
   network_manager_->SendFailedTokenRequestMetrics(
       metrics_endpoint,
@@ -1993,8 +2007,9 @@ void FederatedAuthRequestImpl::CompleteUserInfoRequest(
 
 std::unique_ptr<IdpNetworkRequestManager>
 FederatedAuthRequestImpl::CreateNetworkManager() {
-  if (mock_network_manager_)
+  if (mock_network_manager_) {
     return std::move(mock_network_manager_);
+  }
 
   return IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
@@ -2002,8 +2017,9 @@ FederatedAuthRequestImpl::CreateNetworkManager() {
 
 std::unique_ptr<IdentityRequestDialogController>
 FederatedAuthRequestImpl::CreateDialogController() {
-  if (mock_dialog_controller_)
+  if (mock_dialog_controller_) {
     return std::move(mock_dialog_controller_);
+  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForFedCM)) {
@@ -2016,7 +2032,8 @@ FederatedAuthRequestImpl::CreateDialogController() {
             : absl::optional<std::string>(selected_account));
   }
 
-  return GetContentClient()->browser()->CreateIdentityRequestDialogController();
+  return GetContentClient()->browser()->CreateIdentityRequestDialogController(
+      WebContents::FromRenderFrameHost(&render_frame_host()));
 }
 
 std::unique_ptr<MDocProvider> FederatedAuthRequestImpl::CreateMDocProvider() {
@@ -2046,12 +2063,15 @@ void FederatedAuthRequestImpl::SetDialogControllerForTests(
 }
 
 void FederatedAuthRequestImpl::NotifyClose() {
-  // TODO(crbug.com/1456368): Fix Android UI such that token request survives
-  // the tab becoming hidden, so that |request_dialog_controller_| is always
-  // non-null.
-  if (request_dialog_controller_) {
-    request_dialog_controller_->CloseModalDialog();
+#if BUILDFLAG(IS_ANDROID)
+  // We invoke this method on the modal dialog on Android, so we may need to
+  // create the controller at this point.
+  if (!request_dialog_controller_) {
+    request_dialog_controller_ = CreateDialogController();
   }
+#endif  // BUILDFLAG(IS_ANDROID)
+  CHECK(request_dialog_controller_);
+  request_dialog_controller_->CloseModalDialog();
 }
 
 bool FederatedAuthRequestImpl::NotifyResolve(const std::string& token) {

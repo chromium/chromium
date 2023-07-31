@@ -571,7 +571,6 @@ class TestDialogController
   void SetState(State* state) { state_ = state; }
 
   void ShowAccountsDialog(
-      WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -612,7 +611,6 @@ class TestDialogController
   }
 
   void ShowFailureDialog(
-      content::WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -2779,7 +2777,6 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       DisableApiWhenDialogShownDialogController&) = delete;
 
   void ShowAccountsDialog(
-      content::WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -2794,7 +2791,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
     // Call parent class method in order to store callback parameters.
     TestDialogController::ShowAccountsDialog(
-        rp_web_contents, top_frame_for_display, iframe_for_display,
+        top_frame_for_display, iframe_for_display,
         std::move(identity_provider_data), sign_in_mode,
         show_auto_reauthn_checkbox, std::move(on_selected),
         std::move(dismiss_callback));
@@ -4144,11 +4141,22 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(parameters, error, config);
 }
 
-// Test that IdentityRegistry is notified when modal dialog view is closed.
-TEST_F(FederatedAuthRequestImplTest, IdentityRegistryIsNotified) {
+TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
+#if BUILDFLAG(IS_ANDROID)
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(kConfigurationValid);
+  TestDialogController* dialog_controller_ptr = dialog_controller.get();
+  EXPECT_CALL(*dialog_controller_ptr, CloseModalDialog()).Times(1);
+  federated_auth_request_impl_->SetDialogControllerForTests(
+      std::move(dialog_controller));
+  federated_auth_request_impl_->CloseModalDialogView();
+#else
+  // On desktop, test that IdentityRegistry is notified when modal dialog view
+  // is closed.
   EXPECT_FALSE(test_identity_registry_->notified_);
   federated_auth_request_impl_->CloseModalDialogView();
   EXPECT_TRUE(test_identity_registry_->notified_);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(FederatedAuthRequestImplTest, ShouldNotMediateAuthz) {
