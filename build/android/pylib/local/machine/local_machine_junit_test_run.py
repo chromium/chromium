@@ -41,7 +41,7 @@ _FAILURE_TYPES = (
 _JOB_TIMEOUT = 30
 
 # RegExp to detect logcat lines, e.g., 'I/AssetManager: not found'.
-_LOGCAT_RE = re.compile(r'(:?\d+\| )?[A-Z]/[\w\d_-]+:')
+_LOGCAT_RE = re.compile(r' ?\d+\| (:?\d+\| )?[A-Z]/[\w\d_-]+:')
 
 # Regex to detect start or failure of tests. Matches
 # [ RUN      ] org.ui.ForeignSessionItemViewBinderUnitTest.test_phone[28]
