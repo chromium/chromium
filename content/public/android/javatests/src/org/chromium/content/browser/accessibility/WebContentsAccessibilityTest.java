@@ -636,7 +636,7 @@ public class WebContentsAccessibilityTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(CACHE_MAX_NODES_HISTOGRAM, 3)
+                        .expectIntRecord(CACHE_MAX_NODES_HISTOGRAM, 4)
                         .expectAnyRecord(CACHE_PERCENTAGE_RETRIEVED_FROM_CACHE_HISTOGRAM)
                         .build();
 

@@ -327,6 +327,21 @@ String GetTitle(blink::Element* element) {
   return element->title();
 }
 
+bool CanHaveInlineTextBoxChildren(blink::AXObject* obj) {
+  if (!ui::CanHaveInlineTextBoxChildren(obj->RoleValue())) {
+    return false;
+  }
+
+  // Inline textboxes are included if and only if the parent is unignored.
+  // If the parent is ignored but included in tree, the inline textbox is
+  // still withheld.
+  if (obj->LastKnownIsIgnoredValue()) {
+    return false;
+  }
+
+  return obj->GetLayoutObject() && obj->GetLayoutObject()->IsText();
+}
+
 }  // namespace
 
 namespace blink {
@@ -4329,7 +4344,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
     if (!work_obj || !work_obj->AccessibilityIsIncludedInTree())
       continue;
 
-    if (ui::CanHaveInlineTextBoxChildren(work_obj->RoleValue())) {
+    if (CanHaveInlineTextBoxChildren(work_obj)) {
       if (work_obj->CachedChildrenIncludingIgnored().empty()) {
         // We only need to add inline textbox children if they aren't present.
         // Although some platforms (e.g. Android), load inline text boxes
@@ -4361,25 +4376,16 @@ void AXNodeObject::ForceAddInlineTextBoxChildren() {
   // If inline text box children were added, mark the node dirty so that the
   // results are serialized.
   if (!CachedChildrenIncludingIgnored().empty()) {
-    AXObjectCache().MarkAXObjectDirty(this);
+    AXObjectCache().MarkAXObjectDirtyWithDetails(
+        this, /*subtree*/ false, ax::mojom::blink::EventFrom::kNone,
+        ax::mojom::blink::Action::kNone, {});
   }
 }
 
 void AXNodeObject::AddInlineTextBoxChildren() {
   DCHECK(GetDocument());
-  DCHECK(ui::CanHaveInlineTextBoxChildren(RoleValue()));
-  if (!GetLayoutObject() || !GetLayoutObject()->IsText()) {
-    return;
-  }
-
+  DCHECK(CanHaveInlineTextBoxChildren(this));
   DCHECK(!GetLayoutObject()->NeedsLayout());
-
-  if (LastKnownIsIgnoredValue()) {
-    // Inline textboxes are included if and only if the parent is unignored.
-    // If the parent is ignored but included in tree, the inline textbox is
-    // still withheld.
-    return;
-  }
 
   auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;
@@ -4541,7 +4547,7 @@ void AXNodeObject::AddChildrenImpl() {
     return;
   }
 
-  if (ui::CanHaveInlineTextBoxChildren(RoleValue())) {
+  if (CanHaveInlineTextBoxChildren(this)) {
 #if BUILDFLAG(IS_ANDROID)
     // On Android, once an object has loaded inline text boxes, it will keep
     // them refreshed.
