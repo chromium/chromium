@@ -2361,9 +2361,8 @@ void InterestGroupAuction::NotifyComponentAdditionalBidsConfig(
   auto it = component_auctions_.find(pos);
 
   if (it == component_auctions_.end()) {
-    // TODO(morlovich): We drop empty components at database loading stage
-    // (see InterestGroupAuction::OnComponentInterestGroupsRead),
-    // that's probably a problem for doing additional_bids!
+    // Empty component auctions shouldn't be dropped, but component
+    // auctions may still be dropped if they fail permissions checks.
     return;
   }
 
