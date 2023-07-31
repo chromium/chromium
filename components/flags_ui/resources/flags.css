@@ -2,11 +2,10 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* Adjustment for anchor links which would normally be hidden underneath the
-   sticky header. */
-flags-experiment {
-  margin-top: calc(-1 * var(--header-height));
-  padding-top: var(--header-height);
+html,
+body {
+  height: 100%;
+  overflow: hidden;
 }
 
 html {
@@ -45,10 +44,7 @@ html {
   --separator-color: rgba(0, 0, 0, .06);
   --toolbar-color: white;
 
-  --header-height: 57px;
-
   background: white;
-  overflow-y: scroll;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -70,9 +66,9 @@ html {
 
 body {
   color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
   font-size: 0.8125em;
-  /* Force the vertical scrollbar to always be displayed, to avoid UI jumps. */
-  height: 100%;
   margin: 0;
 }
 
@@ -95,17 +91,18 @@ button {
 }
 
 #body-container {
-  --side-padding: 20px;
-  display: flex;
   flex: 1;
-  flex-direction: column;
-  margin: 0 auto;
-  max-width: calc(700px + 2 * var(--side-padding));
-  width: 100%;
+  /* Force the vertical scrollbar to always be displayed, to avoid UI jumps. */
+  overflow-y: scroll;
 }
 
 #flagsTemplate {
+  --side-padding: 20px;
+  box-sizing: border-box;
   padding: 1rem var(--side-padding) 8px;
+  margin: 0 auto;
+  max-width: calc(700px + 2 * var(--side-padding));
+  width: 100%;
 }
 
 :focus-visible {
@@ -146,11 +143,6 @@ button {
   background: var(--toolbar-color);
   box-shadow: 0 2px 2px 0 var(--shadow-color);
   box-sizing: border-box;
-  left: 0;
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 9;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -161,7 +153,6 @@ button {
 
 #header .flex-container {
   box-sizing: border-box;
-  height: var(--header-height);
   margin: 0 auto;
   max-width: 700px;
 }
