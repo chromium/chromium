@@ -104,21 +104,6 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 
-TEST_F(ArcEnterpriseReportingServiceTest, ReportManagementState_RemoveData) {
-  arc_session_manager()->Initialize();
-  service()->ReportManagementState(mojom::ManagementState::MANAGED_DO_LOST);
-  ASSERT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
-}
-
-TEST_F(ArcEnterpriseReportingServiceTest,
-       ReportManagementState_DoNotRemoveData) {
-  arc_session_manager()->Initialize();
-  service()->ReportManagementState(mojom::ManagementState::UNMANAGED);
-  ASSERT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
-}
-
 TEST_F(ArcEnterpriseReportingServiceTest, ReportCloudDpcOperationTime_Success) {
   base::HistogramTester tester;
   service()->ReportCloudDpcOperationTime(

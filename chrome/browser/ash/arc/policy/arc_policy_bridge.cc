@@ -612,16 +612,6 @@ void ArcPolicyBridge::ReportCompliance(const std::string& request,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
-    base::Time time,
-    const std::vector<std::string>& package_names) {
-  const std::set<std::string> packages_set(package_names.begin(),
-                                           package_names.end());
-  for (Observer& observer : observers_) {
-    observer.OnReportForceInstallMainLoopFailed(time, packages_set);
-  }
-}
-
 void ArcPolicyBridge::ReportDPCVersion(const std::string& version) {
   arc_dpc_version_ = version;
 

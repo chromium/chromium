@@ -109,19 +109,6 @@ void ArcAppInstallEventLogCollector::OnConnectionStateChanged(
   delegate_->AddForAllPackages(std::move(event));
 }
 
-void ArcAppInstallEventLogCollector::OnReportForceInstallMainLoopFailed(
-    base::Time time,
-    const std::set<std::string>& package_names) {
-  for (const std::string& package_name : package_names) {
-    auto event = std::make_unique<em::AppInstallReportLogEvent>();
-    event->set_event_type(
-        em::AppInstallReportLogEvent::CLOUDDPC_MAIN_LOOP_FAILED);
-    SetTimestampFromTime(event.get(), time);
-    delegate_->Add(package_name, true /* gather_disk_space_info */,
-                   std::move(event));
-  }
-}
-
 void ArcAppInstallEventLogCollector::OnInstallationStarted(
     const std::string& package_name) {
   if (!pending_packages_.count(package_name)) {

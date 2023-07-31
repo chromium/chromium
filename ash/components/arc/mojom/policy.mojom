@@ -59,7 +59,7 @@ enum CommandResultType {
   SUCCESS = 2,  // The command was successfully executed.
 };
 
-// Deprecated method IDs: 2,3,4,5
+// Deprecated method IDs: 2,3,4,5,6
 // Next Method ID: 9
 interface PolicyHost {
   // Get policies from Chrome OS, as JSON-encoded dictionary with the policies'
@@ -72,11 +72,6 @@ interface PolicyHost {
   // in JSON format as in CloudDps PolicyComplianceReportResponse.
   // ChromeOS always returns that it's compliant with the report.
   [MinVersion=1] ReportCompliance@1(string request) => (string response);
-
-  // Reports that CloudDPC is giving up after several retries to
-  // force install the packages.
-  [MinVersion=5] ReportForceInstallMainLoopFailed@6(mojo_base.mojom.Time time,
-                                          array<string> package_names);
 
   // Reports the version of ARC DPC.
   [MinVersion=6] ReportDPCVersion@7(string version);

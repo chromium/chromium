@@ -70,12 +70,6 @@ class ArcPolicyBridge : public KeyedService,
     virtual void OnComplianceReportReceived(
         const base::Value* compliance_report) {}
 
-    // Called when in CloudDPC the main loop of retries to install apps failed
-    // to install some apps.
-    virtual void OnReportForceInstallMainLoopFailed(
-        base::Time time,
-        const std::set<std::string>& package_names) {}
-
     // Called when ARC DPC starts.
     virtual void OnReportDPCVersion(const std::string& version) {}
 
@@ -133,9 +127,6 @@ class ArcPolicyBridge : public KeyedService,
   void GetPolicies(GetPoliciesCallback callback) override;
   void ReportCompliance(const std::string& request,
                         ReportComplianceCallback callback) override;
-  void ReportForceInstallMainLoopFailed(
-      base::Time time,
-      const std::vector<std::string>& package_names) override;
   void ReportDPCVersion(const std::string& version) override;
   void ReportPlayStoreLocalPolicySet(
       base::Time time,

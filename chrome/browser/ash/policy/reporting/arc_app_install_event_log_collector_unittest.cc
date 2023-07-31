@@ -411,16 +411,6 @@ TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
             delegate()->last_event().event_type());
   EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
   EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
-
-  base::Time time = base::Time::Now();
-  collector->OnReportForceInstallMainLoopFailed(time, {kPackageName2});
-  EXPECT_EQ(5, delegate()->add_count());
-  EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPC_MAIN_LOOP_FAILED,
-            delegate()->last_event().event_type());
-  EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
-  EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
-
-  EXPECT_EQ(0, delegate()->add_for_all_count());
 }
 
 TEST_F(ArcAppInstallEventLogCollectorTest, OnPlayStoreLocalPolicySet) {

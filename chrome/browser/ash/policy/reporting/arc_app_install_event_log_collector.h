@@ -76,9 +76,6 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // arc::ArcPolicyBridge::Observer:
-  void OnReportForceInstallMainLoopFailed(
-      base::Time time,
-      const std::set<std::string>& package_names) override;
   void OnPlayStoreLocalPolicySet(
       base::Time time,
       const std::set<std::string>& package_names) override;
