@@ -346,6 +346,9 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Downloads",
   "network.ConfigBaseline.login",
 
+  # http://b/293820699
+  "bruschetta.*",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
