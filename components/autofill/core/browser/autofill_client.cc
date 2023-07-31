@@ -201,13 +201,6 @@ void AutofillClient::CloseAutofillProgressDialog(
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
-void AutofillClient::HandleParsedForms(
-    AutofillDriver* driver,
-    const std::vector<autofill::FormStructure*>& forms) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClientIOS implements this.
-}
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

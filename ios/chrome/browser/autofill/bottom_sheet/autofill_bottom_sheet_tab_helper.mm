@@ -131,32 +131,6 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
                   /*must_be_empty = */ false);
 }
 
-void AutofillBottomSheetTabHelper::AttachPaymentsListeners(
-    const std::vector<autofill::FormStructure*>& forms,
-    const std::string& frame_id) {
-  // Verify that the payments bottom sheet feature is enabled
-  if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {
-    return;
-  }
-
-  std::vector<autofill::FieldRendererId> renderer_ids;
-  for (const autofill::FormStructure* form : forms) {
-    if (form->IsCompleteCreditCardForm()) {
-      for (const auto& field : form->fields()) {
-        if (IsPaymentsBottomSheetTriggeringField(
-                field->Type().GetStorableType())) {
-          renderer_ids.emplace_back(field->unique_renderer_id);
-        }
-      }
-    }
-  }
-
-  if (!renderer_ids.empty()) {
-    AttachListeners(renderer_ids, registered_payments_renderer_ids_, frame_id,
-                    /*must_be_empty = */ true);
-  }
-}
-
 void AutofillBottomSheetTabHelper::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     std::set<autofill::FieldRendererId>& registered_renderer_ids,

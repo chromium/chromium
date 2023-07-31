@@ -255,9 +255,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Invoked when the "suggestions" popup is hidden.
   void DidHidePopup();
 
-  // Handle the parsed forms for the given web frame.
-  void HandleParsedForms(const std::vector<autofill::FormStructure*>& forms);
-
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
   CreditCardAccessManager* GetCreditCardAccessManager() override;

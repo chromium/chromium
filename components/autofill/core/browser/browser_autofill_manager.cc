@@ -1979,11 +1979,6 @@ void BrowserAutofillManager::PropagateAutofillPredictions(
   client().PropagateAutofillPredictions(&driver(), forms);
 }
 
-void BrowserAutofillManager::HandleParsedForms(
-    const std::vector<autofill::FormStructure*>& forms) {
-  client().HandleParsedForms(&driver(), forms);
-}
-
 void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
                                                  const CreditCard* credit_card,
                                                  const std::u16string& cvc) {

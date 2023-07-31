@@ -15,7 +15,6 @@
 
 namespace autofill {
 struct FormActivityParams;
-class FormStructure;
 }  // namespace autofill
 
 namespace web {
@@ -52,11 +51,6 @@ class AutofillBottomSheetTabHelper
   // Prepare bottom sheet using data from the password form prediction.
   void AttachPasswordListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
-      const std::string& frame_id);
-
-  // Prepare bottom sheet using data from the credit card form prediction.
-  void AttachPaymentsListeners(
-      const std::vector<autofill::FormStructure*>& forms,
       const std::string& frame_id);
 
   // Detach the password listeners, which will deactivate the password bottom
