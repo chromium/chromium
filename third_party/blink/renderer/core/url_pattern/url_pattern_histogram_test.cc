@@ -8,9 +8,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -352,6 +356,22 @@ TEST_F(URLPatternHistogramTest, BaseURLInheritance) {
         pattern, KURL("https://example.com/login?a=1#privacy"),
         WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL));
   }
+}
+
+TEST_F(URLPatternHistogramTest, ChangedPatternInDocumentRule) {
+  ScopedSpeculationRulesDocumentRulesForTest enable_document_rules(true);
+  GetFrame().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"(<a href="https://example.com/?a=1">example</a>)");
+  auto* script = MakeGarbageCollected<HTMLScriptElement>(GetDocument(),
+                                                         CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
+  script->setTextContent(
+      R"({"prefetch":[{"source":"document","where":{"href_matches": "https://example.com/*"}}]})");
+  GetDocument().body()->appendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kURLPatternReliantOnImplicitURLComponentsInString));
 }
 
 }  // namespace

@@ -754,12 +754,12 @@ bool URLPattern::Match(ScriptState* script_state,
                  match(search_, search, search_group_list_ref) &&
                  match(hash_, hash, hash_group_list_ref);
 
-  if (affected_by_string_format_change) {
+  if (affected_by_string_format_change && script_state) {
     UseCounter::Count(
         ExecutionContext::From(script_state),
         WebFeature::kURLPatternReliantOnImplicitURLComponentsInString);
   }
-  if (affected_by_base_url_change) {
+  if (affected_by_base_url_change && script_state) {
     UseCounter::Count(
         ExecutionContext::From(script_state),
         WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL);

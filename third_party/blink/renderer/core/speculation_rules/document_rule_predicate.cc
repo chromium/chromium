@@ -175,8 +175,9 @@ class Negation : public DocumentRulePredicate {
 // https://wicg.github.io/nav-speculation/speculation-rules.html#document-rule-url-pattern-predicate
 class URLPatternPredicate : public DocumentRulePredicate {
  public:
-  explicit URLPatternPredicate(HeapVector<Member<URLPattern>> patterns)
-      : patterns_(std::move(patterns)) {}
+  explicit URLPatternPredicate(HeapVector<Member<URLPattern>> patterns,
+                               ExecutionContext* execution_context)
+      : patterns_(std::move(patterns)), execution_context_(execution_context) {}
   ~URLPatternPredicate() override = default;
 
   bool Matches(const HTMLAnchorElement& el) const override {
@@ -185,10 +186,12 @@ class URLPatternPredicate : public DocumentRulePredicate {
     // For each pattern of predicate’s patterns:
     for (const auto& pattern : patterns_) {
       // Match given pattern and href. If the result is not null, return true.
-      if (pattern->test(/*script_state=*/nullptr,
-                        MakeGarbageCollected<V8URLPatternInput>(href),
-                        ASSERT_NO_EXCEPTION))
+      if (pattern->test(
+              ToScriptState(execution_context_, DOMWrapperWorld::MainWorld()),
+              MakeGarbageCollected<V8URLPatternInput>(href),
+              ASSERT_NO_EXCEPTION)) {
         return true;
+      }
     }
     return false;
   }
@@ -215,11 +218,13 @@ class URLPatternPredicate : public DocumentRulePredicate {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(patterns_);
+    visitor->Trace(execution_context_);
     DocumentRulePredicate::Trace(visitor);
   }
 
  private:
   HeapVector<Member<URLPattern>> patterns_;
+  Member<ExecutionContext> execution_context_;
 };
 
 // Represents a document rule CSS selector predicate:
@@ -567,7 +572,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       patterns.push_back(pattern);
     }
     // Return a document rule URL pattern predicate whose patterns is patterns.
-    return MakeGarbageCollected<URLPatternPredicate>(std::move(patterns));
+    return MakeGarbageCollected<URLPatternPredicate>(std::move(patterns),
+                                                     execution_context);
   }
 
   // If predicateType is "selector_matches"
