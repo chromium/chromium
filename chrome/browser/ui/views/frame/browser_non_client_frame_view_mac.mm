@@ -162,10 +162,11 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
 }
 
 bool BrowserNonClientFrameViewMac::CaptionButtonsOnLeadingEdge() const {
-  // TODO(https://crbug.com/860627): In "partial" RTL mode (where the OS is in
-  // LTR mode while Chrome is in RTL mode, or vice versa) this should return
-  // false rather than true.
-  return true;
+  // In "partial" RTL mode (where the OS is in LTR mode while Chrome is in RTL
+  // mode, or vice versa), the traffic lights are on the trailing edge rather
+  // than the leading edge.
+  return base::i18n::IsRTL() == (NSApp.userInterfaceLayoutDirection ==
+                                 NSUserInterfaceLayoutDirectionRightToLeft);
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
