@@ -974,10 +974,9 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
   // |Update| should be used for full updates.
   DCHECK(!needs_update_);
 
-  const auto& repainted_chunks = repainted_artifact->PaintChunks();
 #if DCHECK_IS_ON()
   // Any property tree state change should have caused a full update.
-  for (const auto& chunk : repainted_chunks) {
+  for (const auto& chunk : repainted_artifact->PaintChunks()) {
     // If this fires, a property tree value has changed but we are missing a
     // call to |PaintArtifactCompositor::SetNeedsUpdate|.
     DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
@@ -986,33 +985,11 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
 #endif
 
   cc::LayerSelection layer_selection;
-
-  // The loop below iterates over the existing PendingLayers and issues updates.
-  auto* repainted_chunk_iterator = repainted_chunks.begin();
   for (auto& pending_layer : pending_layers_) {
-    // We need to both copy the repainted paint chunks and update the cc::Layer.
-    // To do this, we need the previous PaintChunks (from the PendingLayer) and
-    // the matching repainted PaintChunks (from |repainted_chunks|). Because
-    // repaint-only updates cannot add, remove, or re-order PaintChunks,
-    // |repainted_chunk_iterator| searches forward in |repainted_chunks| for
-    // the matching paint chunk, ensuring this function is O(chunks).
-    const PaintChunk& first = *pending_layer.Chunks().begin();
-    while (repainted_chunk_iterator != repainted_chunks.end()) {
-      if (repainted_chunk_iterator->Matches(first))
-        break;
-      ++repainted_chunk_iterator;
-    }
-    // If we do not find a matching PaintChunk, PaintChunks must have been
-    // added, removed, or re-ordered, and we should be doing a full update
-    // instead of a repaint update.
-    CHECK(repainted_chunk_iterator != repainted_chunks.end());
-
     pending_layer.UpdateCompositedLayerForRepaint(repainted_artifact,
                                                   layer_selection);
   }
-
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
-
   UpdateDebugInfo();
 
   previous_update_for_testing_ = PreviousUpdateType::kRepaint;
