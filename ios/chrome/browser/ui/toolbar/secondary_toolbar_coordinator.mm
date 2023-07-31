@@ -51,6 +51,11 @@
   [super start];
 }
 
+- (void)stop {
+  [self.viewController disconnect];
+  [super stop];
+}
+
 #pragma mark - SecondaryToolbarKeyboardStateProvider
 
 // TODO(crbug.com/1462578): Move this to SecondaryToolbarMediator once the

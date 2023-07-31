@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -37,7 +38,10 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
 @end
 
-@implementation SecondaryToolbarViewController
+@implementation SecondaryToolbarViewController {
+  /// The disabler created when the keyboard is visible.
+  std::unique_ptr<ScopedFullscreenDisabler> _keyboardDisabler;
+}
 
 @dynamic view;
 
@@ -60,6 +64,11 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
                name:UIKeyboardWillShowNotification
              object:nil];
   }
+}
+
+- (void)disconnect {
+  _fullscreenController = nullptr;
+  _keyboardDisabler = nullptr;
 }
 
 #pragma mark - AdaptiveToolbarViewController
@@ -124,7 +133,8 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   // the keyboard.
   // - Fullscreen should not resize the toolbar it's above the keyboard.
   if (_fullscreenController) {
-    _fullscreenController->IncrementDisabledCounter();
+    _keyboardDisabler =
+        std::make_unique<ScopedFullscreenDisabler>(_fullscreenController);
     _fullscreenController->ForceEnterFullscreen();
   }
   self.view.locationBarTopConstraint.constant = 0;
@@ -134,7 +144,7 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 - (void)removeFromKeyboard {
   if (_fullscreenController) {
     _fullscreenController->ExitFullscreenWithoutAnimation();
-    _fullscreenController->DecrementDisabledCounter();
+    _keyboardDisabler = nullptr;
   }
 }
 
