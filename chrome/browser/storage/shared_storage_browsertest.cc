@@ -800,6 +800,11 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
   console_observer.SetFilter(MakeFilter({"Finish executing simple_module.js"}));
 
+  content::WebContentsConsoleObserver attestations_console_observer(
+      GetActiveWebContents());
+  attestations_console_observer.SetPattern(
+      "Attestation check for Shared Storage on * failed.");
+
   content::EvalJsResult result = content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )");
@@ -813,6 +818,13 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
     histogram_tester_.ExpectUniqueSample(
         kErrorTypeHistogram,
         blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
+
+    if (GetEnforcementAndEnrollmentStatus() ==
+        EnforcementAndEnrollmentStatus::
+            kAttestationsEnforcedMainHostUnenrolled) {
+      ASSERT_TRUE(attestations_console_observer.Wait());
+      EXPECT_FALSE(attestations_console_observer.messages().empty());
+    }
     return;
   }
 
@@ -824,6 +836,8 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
   EXPECT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ("Finish executing simple_module.js",
             base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  EXPECT_TRUE(attestations_console_observer.messages().empty());
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),

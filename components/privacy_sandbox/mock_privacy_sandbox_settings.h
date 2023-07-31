@@ -21,7 +21,7 @@ class MockPrivacySandboxSettings
   MOCK_METHOD(bool, IsTopicsAllowed, (), (override, const));
   MOCK_METHOD(bool,
               IsTopicsAllowedForContext,
-              (const url::Origin&, const GURL&),
+              (const url::Origin&, const GURL&, content::RenderFrameHost*),
               (override, const));
   MOCK_METHOD(bool,
               IsTopicAllowed,
@@ -36,11 +36,16 @@ class MockPrivacySandboxSettings
   MOCK_METHOD(bool, IsAttributionReportingEverAllowed, (), (override, const));
   MOCK_METHOD(bool,
               IsAttributionReportingAllowed,
-              (const url::Origin&, const url::Origin&),
+              (const url::Origin&,
+               const url::Origin&,
+               content::RenderFrameHost*),
               (override, const));
   MOCK_METHOD(bool,
               MaySendAttributionReport,
-              (const url::Origin&, const url::Origin&, const url::Origin&),
+              (const url::Origin&,
+               const url::Origin&,
+               const url::Origin&,
+               content::RenderFrameHost*),
               (override, const));
   MOCK_METHOD(void,
               SetFledgeJoiningAllowed,
@@ -54,7 +59,8 @@ class MockPrivacySandboxSettings
               IsFledgeAllowed,
               (const url::Origin&,
                const url::Origin&,
-               content::InterestGroupApiOperation),
+               content::InterestGroupApiOperation,
+               content::RenderFrameHost*),
               (override, const));
   MOCK_METHOD(
       bool,
@@ -64,7 +70,9 @@ class MockPrivacySandboxSettings
       (override, const));
   MOCK_METHOD(bool,
               IsSharedStorageAllowed,
-              (const url::Origin&, const url::Origin&),
+              (const url::Origin&,
+               const url::Origin&,
+               content::RenderFrameHost*),
               (override, const));
   MOCK_METHOD(bool,
               IsSharedStorageSelectURLAllowed,

@@ -2393,6 +2393,9 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
 
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
+
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
 
@@ -2400,6 +2403,8 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
 
   std::string result = InvokeTopicsAPI(web_contents());
   EXPECT_EQ(result, kExpectedApiResult);
+
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 // Site a.test is not attested for Topics, so it should receive no topics. Note:
@@ -2416,12 +2421,18 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
 
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
+
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   EXPECT_EQ("[]", InvokeTopicsAPI(web_contents()));
+
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
 }
 
 // Site a.test is attested, but not for Topics, so no topics should be returned.
@@ -2436,12 +2447,18 @@ IN_PROC_BROWSER_TEST_F(
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
 
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
+
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   EXPECT_EQ("[]", InvokeTopicsAPI(web_contents()));
+
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
@@ -2453,6 +2470,9 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
 
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
@@ -2471,6 +2491,8 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
 
   EXPECT_TRUE(topics_header_value);
   EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteA);
+
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
@@ -2482,6 +2504,9 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
 
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
@@ -2499,6 +2524,9 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
           "/browsing_topics/page_with_custom_topics_header.html");
 
   EXPECT_FALSE(topics_header_value);
+
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2512,6 +2540,9 @@ IN_PROC_BROWSER_TEST_F(
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
 
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
+
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -2528,6 +2559,9 @@ IN_PROC_BROWSER_TEST_F(
           "/browsing_topics/page_with_custom_topics_header.html");
 
   EXPECT_FALSE(topics_header_value);
+
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
 }
 
 // Site a.test is attested, so when an x-origin request is made to it from
@@ -2542,6 +2576,9 @@ IN_PROC_BROWSER_TEST_F(
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
 
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
@@ -2584,6 +2621,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(api_usage_contexts[1].hashed_main_frame_host,
             HashMainFrameHostForStorage("foo1.com"));
   EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
+
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 // Site a.test is not attested, so this should not generate a Topics header in a
@@ -2597,6 +2636,9 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
 
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
@@ -2629,6 +2671,9 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   std::vector<ApiUsageContext> api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
   EXPECT_EQ(api_usage_contexts.size(), 1u);
+
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
 }
 
 // Site a.test is attested, but not for Topics, so the fetch request to a.test
@@ -2644,6 +2689,9 @@ IN_PROC_BROWSER_TEST_F(
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
 
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Attestation check for Topics on * failed.");
+
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -2675,6 +2723,9 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<ApiUsageContext> api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
   EXPECT_EQ(api_usage_contexts.size(), 1u);
+
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
 }
 
 }  // namespace browsing_topics

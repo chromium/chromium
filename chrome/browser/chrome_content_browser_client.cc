@@ -3354,7 +3354,7 @@ bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
   DCHECK(privacy_sandbox_settings);
 
   bool allowed = privacy_sandbox_settings->IsFledgeAllowed(
-      top_frame_origin, api_origin, operation);
+      top_frame_origin, api_origin, operation, render_frame_host);
 
   if (operation == InterestGroupApiOperation::kJoin) {
     content_settings::PageSpecificContentSettings::InterestGroupJoined(
@@ -3423,7 +3423,7 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
       DCHECK(source_origin);
       DCHECK(reporting_origin);
       bool allowed = privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *source_origin, *reporting_origin);
+          *source_origin, *reporting_origin, rfh);
       if (rfh) {
         content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
             rfh, content::AttributionDataModel::DataKey(*reporting_origin),
@@ -3437,13 +3437,13 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
       DCHECK(source_origin);
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *source_origin, *reporting_origin);
+          *source_origin, *reporting_origin, rfh);
     case AttributionReportingOperation::kTrigger:
     case AttributionReportingOperation::kOsTrigger: {
       DCHECK(destination_origin);
       DCHECK(reporting_origin);
       bool allowed = privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *destination_origin, *reporting_origin);
+          *destination_origin, *reporting_origin, rfh);
       if (rfh) {
         content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
             rfh, content::AttributionDataModel::DataKey(*reporting_origin),
@@ -3457,13 +3457,13 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
       DCHECK(destination_origin);
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *destination_origin, *reporting_origin);
+          *destination_origin, *reporting_origin, rfh);
     case AttributionReportingOperation::kReport:
       DCHECK(source_origin);
       DCHECK(destination_origin);
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->MaySendAttributionReport(
-          *source_origin, *destination_origin, *reporting_origin);
+          *source_origin, *destination_origin, *reporting_origin, rfh);
     case AttributionReportingOperation::kAny:
       return privacy_sandbox_settings->IsAttributionReportingEverAllowed();
   }
@@ -3479,7 +3479,7 @@ bool ChromeContentBrowserClient::IsSharedStorageAllowed(
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
   bool allowed = privacy_sandbox_settings->IsSharedStorageAllowed(
-      top_frame_origin, accessing_origin);
+      top_frame_origin, accessing_origin, rfh);
   if (rfh) {
     content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
         rfh, blink::StorageKey::CreateFirstParty(accessing_origin),

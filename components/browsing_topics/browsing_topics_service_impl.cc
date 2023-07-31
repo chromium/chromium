@@ -384,7 +384,7 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
 
   if (!privacy_sandbox_settings_->IsTopicsAllowedForContext(
           /*top_frame_origin=*/main_frame->GetLastCommittedOrigin(),
-          context_origin.GetURL())) {
+          context_origin.GetURL(), main_frame)) {
     RecordBrowsingTopicsApiResultMetrics(
         ApiAccessResult::kAccessDisallowedBySettings, main_frame, get_topics);
     return false;
