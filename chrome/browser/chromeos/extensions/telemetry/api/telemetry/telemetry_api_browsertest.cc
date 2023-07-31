@@ -1186,7 +1186,8 @@ class TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest
       delete;
 
  protected:
-  std::string GetManifestFile(const std::string& matches_origin) override {
+  std::string GetManifestFile(const std::string& manifest_key,
+                              const std::string& matches_origin) override {
     return base::StringPrintf(R"(
           {
             "key": "%s",
@@ -1206,7 +1207,7 @@ class TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest
             "options_page": "options.html"
           }
         )",
-                              public_key().c_str(), matches_origin.c_str());
+                              manifest_key.c_str(), matches_origin.c_str());
   }
 };
 

@@ -37,7 +37,7 @@ void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
     const std::string& service_worker_content) {
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
-  test_dir.WriteManifest(GetManifestFile(matches_origin()));
+  test_dir.WriteManifest(GetManifestFile(public_key(), matches_origin()));
   test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), service_worker_content);
   test_dir.WriteFile(FILE_PATH_LITERAL("options.html"), "");
 
@@ -51,6 +51,7 @@ void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
 }
 
 std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
+    const std::string& manifest_key,
     const std::string& matches_origin) {
   return base::StringPrintf(R"(
       {
@@ -78,7 +79,7 @@ std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
         "options_page": "options.html"
       }
     )",
-                            public_key().c_str(), matches_origin.c_str());
+                            manifest_key.c_str(), matches_origin.c_str());
 }
 
 std::string BaseTelemetryExtensionBrowserTest::extension_id() const {

@@ -85,7 +85,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
 
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir_receiver;
-  test_dir_receiver.WriteManifest(GetManifestFile(matches_origin()));
+  test_dir_receiver.WriteManifest(
+      GetManifestFile(public_key(), matches_origin()));
   test_dir_receiver.WriteFile(FILE_PATH_LITERAL("options.html"), "");
   test_dir_receiver.WriteFile("sw.js",
                               base::StringPrintf(R"(
@@ -140,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
 
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
-  test_dir.WriteManifest(GetManifestFile(matches_origin()));
+  test_dir.WriteManifest(GetManifestFile(public_key(), matches_origin()));
   test_dir.WriteFile(FILE_PATH_LITERAL("options.html"),
                      "<script>chrome.test.sendMessage('done')</script>");
   test_dir.WriteFile("sw.js", "chrome.test.sendMessage('ready');");

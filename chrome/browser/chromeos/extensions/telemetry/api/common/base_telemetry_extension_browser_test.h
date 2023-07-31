@@ -34,7 +34,8 @@ class BaseTelemetryExtensionBrowserTest
   virtual std::string matches_origin() const;
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
-  virtual std::string GetManifestFile(const std::string& matches_origin);
+  virtual std::string GetManifestFile(const std::string& manifest_key,
+                                      const std::string& matches_origin);
 
   std::unique_ptr<ApiGuardDelegate::Factory> api_guard_delegate_factory_;
 };
