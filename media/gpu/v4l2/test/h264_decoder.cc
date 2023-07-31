@@ -4,15 +4,13 @@
 
 #include "media/gpu/v4l2/test/h264_decoder.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/h264-ctrls-upstream.h>
-#endif
+#include <linux/v4l2-controls.h>
+#include <linux/videodev2.h>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 
 namespace media {
 

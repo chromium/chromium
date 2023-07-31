@@ -4,11 +4,7 @@
 
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h265.h"
 
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/hevc-ctrls-upstream.h>
-#endif
-
+#include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
 
 #include <algorithm>

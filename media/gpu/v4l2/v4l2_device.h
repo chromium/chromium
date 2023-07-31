@@ -42,39 +42,18 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 
-// TODO(b/255770680): Remove this once V4L2 header is updated.
-// https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
+// This has not been accepted upstream.
 #ifndef V4L2_PIX_FMT_AV1
 #define V4L2_PIX_FMT_AV1 v4l2_fourcc('A', 'V', '0', '1') /* AV1 */
 #endif
+// This has been upstreamed and backported for ChromeOS, but has not been
+// picked up by the Chromium sysroots.
 #ifndef V4L2_PIX_FMT_AV1_FRAME
 #define V4L2_PIX_FMT_AV1_FRAME                        \
   v4l2_fourcc('A', 'V', '1', 'F') /* AV1 parsed frame \
                                    */
 #endif
 
-// TODO(b/278157861): Remove this once ChromeOS V4L2 header is updated
-// Add it directly instead of including hevc-ctrls-upstream.h
-#ifndef V4L2_PIX_FMT_HEVC_SLICE
-#define V4L2_PIX_FMT_HEVC_SLICE \
-  v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
-#endif
-
-// TODO(b/260863940): Remove this once V4L2 header is updated
-#ifndef V4L2_CID_MPEG_VIDEO_HEVC_PROFILE
-#define V4L2_CID_MPEG_VIDEO_HEVC_PROFILE (V4L2_CID_MPEG_BASE + 615)
-#endif
-
-// TODO(b/132589320): remove this once V4L2 header is updated.
-#ifndef V4L2_PIX_FMT_MM21
-// MTK 8-bit block mode, two non-contiguous planes.
-#define V4L2_PIX_FMT_MM21 v4l2_fourcc('M', 'M', '2', '1')
-#endif
-
-#ifndef V4L2_PIX_FMT_P010
-#define V4L2_PIX_FMT_P010 \
-  v4l2_fourcc('P', '0', '1', '0') /* 24  Y/CbCr 4:2:0 10-bit per component */
-#endif
 #ifndef V4L2_PIX_FMT_MT2T
 #define V4L2_PIX_FMT_MT2T v4l2_fourcc('M', 'T', '2', 'T')
 #endif

@@ -4,10 +4,11 @@
 
 #include "media/gpu/v4l2/test/h265_decoder.h"
 
+#include <linux/videodev2.h>
+
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "media/video/h265_parser.h"
 
 namespace media {

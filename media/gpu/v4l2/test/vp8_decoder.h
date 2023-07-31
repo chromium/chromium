@@ -5,13 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 
-// build_config.h must come before BUILDFLAG()
-#include "build/build_config.h"
-
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/vp8-ctrls-upstream.h>
-#endif
+#include <linux/v4l2-controls.h>
 
 #include <set>
 

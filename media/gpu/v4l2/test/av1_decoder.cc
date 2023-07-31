@@ -4,7 +4,8 @@
 
 #include "media/gpu/v4l2/test/av1_decoder.h"
 
-#include <linux/media/av1-ctrls.h>
+#include <linux/v4l2-controls.h>
+#include <linux/videodev2.h>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

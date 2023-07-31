@@ -9,11 +9,6 @@
 
 #include <linux/v4l2-controls.h>
 
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/vp9-ctrls-upstream.h>
-#endif
-
 #include <set>
 
 #include "base/files/memory_mapped_file.h"

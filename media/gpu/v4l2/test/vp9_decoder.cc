@@ -5,11 +5,7 @@
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
 #include <linux/v4l2-controls.h>
-
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/vp9-ctrls-upstream.h>
-#endif
+#include <linux/videodev2.h>
 
 #include <sys/ioctl.h>
 
@@ -20,7 +16,6 @@
 #include "media/filters/ivf_parser.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 
 namespace media {
 

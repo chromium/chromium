@@ -4,19 +4,14 @@
 
 #include "media/gpu/v4l2/test/vp8_decoder.h"
 
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/vp8-ctrls-upstream.h>
-#endif
-
 #include <linux/v4l2-controls.h>
+#include <linux/videodev2.h>
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/parsers/vp8_parser.h"
 
