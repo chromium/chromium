@@ -709,18 +709,4 @@ public class LocationBarCoordinator
         return isIncognito ? mSuggestionIncognitoBackgroundColor
                            : mSuggestionStandardBackgroundColor;
     }
-
-    /**
-     * Function used to position the url bar inside the location bar during omnibox animation.
-     *
-     * @param urlExpansionPercent The current expansion percent, 1 is fully focused and 0 is
-     *                            completely unfocused.
-     * @param isOnNtp True if tab mode is the NTP.
-     * @return The X translation for the URL bar, used in the toolbar animation.
-     */
-    public float getUrlBarTranslationXForToolbarAnimation(
-            float urlExpansionPercent, boolean isOnNtp) {
-        return mLocationBarMediator.getUrlBarTranslationXForToolbarAnimation(
-                urlExpansionPercent, isOnNtp);
-    }
 }

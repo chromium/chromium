@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class LocationBarLayout extends FrameLayout {
     protected CompositeTouchDelegate mCompositeTouchDelegate;
     protected SearchEngineLogoUtils mSearchEngineLogoUtils;
     private float mUrlFocusPercentage;
+    private boolean mUrlBarLaidOutAtFocusedWidth;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -228,6 +230,9 @@ public class LocationBarLayout extends FrameLayout {
                         // During animation this will be compensated against using translation of
                         // decreasing magnitude to avoid a jump.
                         startMargin += getFocusedStatusViewSpacingDelta();
+                        mUrlBarLaidOutAtFocusedWidth = true;
+                    } else {
+                        mUrlBarLaidOutAtFocusedWidth = false;
                     }
 
                     MarginLayoutParamsCompat.setMarginStart(childLayoutParams, startMargin);
@@ -405,17 +410,29 @@ public class LocationBarLayout extends FrameLayout {
         }
 
         if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()) {
-            // If focus % is non-zero, translate back towards start to compensate for the increased
-            // start margin set in #updateLayoutParams. The magnitude of the compensation decreases
-            // as % increases and is 0 at full focus %.
-            if (percent > 0.0f) {
-                float translationX = getFocusedStatusViewSpacingDelta() * (-1 + percent);
-                mUrlBar.setTranslationX(MathUtils.flipSignIf(
-                        translationX, getLayoutDirection() == LAYOUT_DIRECTION_RTL));
+            // If the url bar is laid out at its smaller, focused width, translate back towards
+            // start to compensate for the increased start margin set in #updateLayoutParams. The
+            // magnitude of the compensation decreases as % increases and is 0 at full focus %.
+            float translationX;
+            if (mUrlBarLaidOutAtFocusedWidth) {
+                translationX = getFocusedStatusViewSpacingDelta() * (-1.0f + percent);
+                boolean scrollingOnNtp = !mUrlBar.hasFocus()
+                        && mStatusCoordinator.isSearchEngineStatusIconVisible()
+                        && UrlUtilities.isCanonicalizedNTPUrl(
+                                mLocationBarDataProvider.getCurrentUrl());
+                if (scrollingOnNtp) {
+                    translationX -= (1.0f - percent)
+                            * (mStatusCoordinator.getStatusIconWidth()
+                                    - getResources().getDimensionPixelSize(
+                                            R.dimen.location_bar_status_icon_holding_space_size));
+                }
             } else {
                 // No compensation is needed at 0% because the margin is reset to normal.
-                mUrlBar.setTranslationX(0.0f);
+                translationX = 0.0f;
             }
+
+            mUrlBar.setTranslationX(MathUtils.flipSignIf(
+                    translationX, getLayoutDirection() == LAYOUT_DIRECTION_RTL));
         } else {
             // Set the right space expansion width.
             ViewGroup.LayoutParams rightSpacingParams = mStatusViewRightSpace.getLayoutParams();
