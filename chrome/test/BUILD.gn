@@ -2591,6 +2591,12 @@ if (!is_android) {
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
+    if (enable_search_engine_choice) {
+      sources += [
+        "../browser/search_engine_choice/search_engine_choice_browsertest.cc",
+      ]
+    }
+
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
     }

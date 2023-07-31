@@ -1,1 +1,1 @@
-mixins: "//chrome/browser/ui/search_engine_choice/COMMON_METADATA"
+mixins: "//chrome/browser/search_engine_choice/COMMON_METADATA"

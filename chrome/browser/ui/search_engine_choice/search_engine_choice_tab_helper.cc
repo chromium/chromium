@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 
-#include "chrome/browser/browser_process.h"
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -45,30 +46,12 @@ void SearchEngineChoiceTabHelper::DidFinishNavigation(
     return;
   }
 
-  auto* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  CHECK(profile);
-  bool is_regular_profile = profile->IsRegularProfile();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  is_regular_profile &= !profiles::IsPublicSession() &&
-                        !chromeos::IsKioskSession() &&
-                        !profiles::IsChromeAppKioskSession();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  is_regular_profile &= !profiles::IsGuestSession();
-#endif
-
-  if (!search_engines::ShouldShowChoiceScreen(
-          *g_browser_process->policy_service(),
-          /*profile_properties=*/{.is_regular_profile = is_regular_profile})) {
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());
+  if (!SearchEngineChoiceService::ShouldDisplayDialog(CHECK_DEREF(browser))) {
     return;
   }
-
-  if (auto* browser = chrome::FindBrowserWithWebContents(
-          navigation_handle->GetWebContents())) {
-    ShowSearchEngineChoiceDialog(*browser);
-  }
+  ShowSearchEngineChoiceDialog(*browser);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineChoiceTabHelper);

@@ -140,6 +140,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
@@ -210,6 +211,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -984,6 +986,13 @@ void ChromeBrowserMainExtraPartsProfiles::
   SCTReportingServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   search_resumption_module::StartSuggestServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    SearchEngineChoiceServiceFactory::GetInstance();
+  }
+#endif
+#if BUILDFLAG(IS_ANDROID)
   SearchPermissionsService::Factory::GetInstance();
 #endif
   SearchPrefetchServiceFactory::GetInstance();

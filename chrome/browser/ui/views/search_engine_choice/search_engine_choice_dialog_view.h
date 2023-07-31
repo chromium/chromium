@@ -30,7 +30,7 @@ class SearchEngineChoiceDialogView : public views::View {
   void ShowNativeView(int content_height);
 
   raw_ptr<views::WebView> web_view_ = nullptr;
-  const raw_ptr<const Browser> browser_;
+  const raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_VIEW_H_

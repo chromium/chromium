@@ -2525,6 +2525,15 @@ static_library("browser") {
     }
   }
 
+  if (enable_search_engine_choice) {
+    sources += [
+      "search_engine_choice/search_engine_choice_service.cc",
+      "search_engine_choice/search_engine_choice_service.h",
+      "search_engine_choice/search_engine_choice_service_factory.cc",
+      "search_engine_choice/search_engine_choice_service_factory.h",
+    ]
+  }
+
   if (is_linux || is_chromeos) {
     deps += [ "//chrome/browser/error_reporting" ]
   }

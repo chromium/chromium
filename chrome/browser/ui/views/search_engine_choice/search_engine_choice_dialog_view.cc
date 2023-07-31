@@ -7,6 +7,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -50,6 +52,10 @@ SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(Browser* browser)
 }
 
 void SearchEngineChoiceDialogView::Initialize() {
+  auto* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(browser_->profile());
+  search_engine_choice_service->NotifyDialogOpened(browser_);
+
   web_view_->LoadInitialURL(GURL(chrome::kChromeUISearchEngineChoiceURL));
 
   const int max_width = browser_->window()
