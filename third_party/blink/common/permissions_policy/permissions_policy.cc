@@ -96,7 +96,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin) {
   return CreateFromParentPolicy(parent_policy, container_policy, origin,
-                                GetPermissionsPolicyFeatureList());
+                                GetPermissionsPolicyFeatureList(origin));
 }
 
 // static
@@ -107,7 +107,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CopyStateFrom(
 
   std::unique_ptr<PermissionsPolicy> new_policy =
       base::WrapUnique(new PermissionsPolicy(
-          source->origin_, GetPermissionsPolicyFeatureList()));
+          source->origin_, GetPermissionsPolicyFeatureList(source->origin_)));
 
   new_policy->inherited_policies_ = source->inherited_policies_;
   new_policy->allowlists_ = source->allowlists_;
@@ -120,7 +120,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
     const ParsedPermissionsPolicy& parsed_policy,
     const url::Origin& origin) {
   return CreateFromParsedPolicy(parsed_policy, origin,
-                                GetPermissionsPolicyFeatureList());
+                                GetPermissionsPolicyFeatureList(origin));
 }
 
 // static
@@ -380,7 +380,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
     base::span<const blink::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
-  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(),
+  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(origin),
                               effective_enabled_permissions);
 }
 

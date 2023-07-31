@@ -9,6 +9,7 @@
 
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -46,8 +47,10 @@ enum class PermissionsPolicyFeatureDefault {
 using PermissionsPolicyFeatureList =
     std::map<mojom::PermissionsPolicyFeature, PermissionsPolicyFeatureDefault>;
 
+// `origin` is used, in combination with flags, to decide whether the "unload"
+// feature will be enabled or disabled by default.
 BLINK_COMMON_EXPORT const PermissionsPolicyFeatureList&
-GetPermissionsPolicyFeatureList();
+GetPermissionsPolicyFeatureList(const url::Origin& origin);
 
 // Updates the PermissionPolicyFeatureList based on the current feature flags.
 // For efficiency, `GetPermissionPolicyFeatureList()` only calculates the

@@ -737,6 +737,18 @@ BASE_FEATURE(kEventTimingReportAllEarlyEntriesOnPaintedPresentation,
 BASE_FEATURE(kDeprecateUnload,
              "DeprecateUnload",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, each user experiences the deprecation on a certain % of origins.
+// Which origins varies per user. This has no effect with DeprecateUnload.
+BASE_FEATURE(kDeprecateUnloadByUserAndOrigin,
+             "DeprecateUnloadByUserAndOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// This controls what % of origins have the deprecation for this user.
+const base::FeatureParam<int> kDeprecateUnloadPercent{
+    &kDeprecateUnloadByUserAndOrigin, "rollout_percent", 0};
+// This buckets users, with users in each bucket having a consistent experience
+// of the unload deprecation rollout.
+const base::FeatureParam<int> kDeprecateUnloadBucket{
+    &kDeprecateUnloadByUserAndOrigin, "rollout_bucket", 0};
 
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
