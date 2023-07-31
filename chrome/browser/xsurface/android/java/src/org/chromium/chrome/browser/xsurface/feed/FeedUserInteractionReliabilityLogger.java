@@ -72,6 +72,11 @@ public interface FeedUserInteractionReliabilityLogger {
     default void onPaginationIndicatorShown() {}
 
     /**
+     * Called when the user scrolled away from the waiting indicator for the pagination.
+     */
+    default void onPaginationUserScrolledAwayFromIndicator() {}
+
+    /**
      * Called when the action upload request has started.
      */
     default void onPaginationActionUploadRequestStarted() {}
