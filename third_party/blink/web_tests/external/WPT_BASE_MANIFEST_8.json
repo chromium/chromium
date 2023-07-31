@@ -5068,6 +5068,13 @@
        {}
       ]
      ],
+     "removeformat-from-DOMNodeRemoved.html": [
+      "3f78f9943621df75c5192df6b604b4402aff89f8",
+      [
+       null,
+       {}
+      ]
+     ],
      "removeformat-in-number-input-immediately-after-type-change-and-stepUp.html": [
       "d83c2e00790f1a9d825ffa4742bd7504f5cc7f63",
       [
@@ -276072,16 +276079,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "466869ec597521fcc8ea5bc33ccae30a9cb5430f",
-     []
-    ],
-    "mtime.json": [
-     "6bc062e46973c2e5ae33bf6a7e83b69a2ea7f0a1",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -566797,8 +566794,18 @@
         {}
        ]
       ],
+      "popover-light-dismiss-with-anchor.tentative.html": [
+       "c4e545c4fb97133cf6ad74ed73e2ade827c3721b",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
       "popover-light-dismiss.html": [
-       "eb148941fbf30073d0285be97117185923cfa604",
+       "4c31bed1635f68774f4368e834b3793d3f857495",
        [
         null,
         {
