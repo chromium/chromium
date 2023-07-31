@@ -142,6 +142,7 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   heartbeat_scheduler_.reset();
   syslog_uploader_.reset();
   status_uploader_.reset();
+  state_keys_broker_ = nullptr;
   managed_session_service_.reset();
   euicc_status_uploader_.reset();
   external_data_manager_->Disconnect();
