@@ -6,36 +6,14 @@
 # pylint: disable=protected-access
 
 
-import os
 import unittest
 
 from pylib.local.machine import local_machine_junit_test_run
-from py_utils import tempfile_ext
 
 
 class LocalMachineJunitTestRunTests(unittest.TestCase):
   def setUp(self):
     local_machine_junit_test_run._MAX_TESTS_PER_JOB = 150
-
-  def testAddPropertiesJar(self):
-    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-      apk = 'resource_apk'
-      cmd_list = []
-      local_machine_junit_test_run.AddPropertiesJar(cmd_list, temp_dir, apk)
-      self.assertEqual(cmd_list, [])
-      cmd_list = [['test1']]
-      local_machine_junit_test_run.AddPropertiesJar(cmd_list, temp_dir, apk)
-      self.assertEqual(
-          cmd_list[0],
-          ['test1', '--classpath',
-           os.path.join(temp_dir, 'properties.jar')])
-      cmd_list = [['test1'], ['test2']]
-      local_machine_junit_test_run.AddPropertiesJar(cmd_list, temp_dir, apk)
-      self.assertEqual(len(cmd_list[0]), 3)
-      self.assertEqual(
-          cmd_list[1],
-          ['test2', '--classpath',
-           os.path.join(temp_dir, 'properties.jar')])
 
   def testGroupTestsForShardWithSdk(self):
     test_list = []

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import itertools
 import json
 import logging
@@ -36,10 +37,6 @@ _FAILURE_TYPES = (
     base_test_result.ResultType.TIMEOUT,
 )
 
-# Test suites are broken up into batches or "jobs" of about 150 tests.
-# Each job should take no longer than 30 seconds.
-_JOB_TIMEOUT = 30
-
 # RegExp to detect logcat lines, e.g., 'I/AssetManager: not found'.
 _LOGCAT_RE = re.compile(r' ?\d+\| (:?\d+\| )?[A-Z]/[\w\d_-]+:')
 
@@ -54,6 +51,15 @@ _TEST_FAILED_RE = re.compile(r'.*\[\s+(?:FAILED|CRASHED|TIMEOUT)\s+\]')
 _TEST_SDK_VERSION = re.compile(r'(.*\.\w+)#\w+(?:\[(\d+)\])?')
 
 
+@dataclasses.dataclass
+class _Job:
+  shard_id: int
+  cmd: str
+  timeout: int
+  gtest_filter: str
+  results_json_path: str
+
+
 class LocalMachineJunitTestRun(test_run.TestRun):
   # override
   def TestPackage(self):
@@ -63,11 +69,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   def SetUp(self):
     pass
 
-  def _GetFilterArgs(self, shard_test_filter=None):
+  def _GetFilterArgs(self):
     ret = []
-    if shard_test_filter:
-      ret += ['-gtest-filter', ':'.join(shard_test_filter)]
-
     for test_filter in self._test_instance.test_filters:
       ret += ['-gtest-filter', test_filter]
 
@@ -78,18 +81,22 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     return ret
 
-  def _CreateJarArgsList(self, json_result_file_paths, grouped_tests, shards):
-    # Creates a list of jar_args. The important thing is each jar_args list
-    # has a different json_results file for writing test results to and that
-    # each list of jar_args has its own test to run as specified in the
-    # -gtest-filter.
-    jar_args_list = [['-json-results-file', result_file]
-                     for result_file in json_result_file_paths]
-    for index, jar_arg in enumerate(jar_args_list):
-      shard_test_filter = grouped_tests[index] if shards > 1 else None
-      jar_arg += self._GetFilterArgs(shard_test_filter)
-
-    return jar_args_list
+  def _CreatePropertiesJar(self, temp_dir):
+    # Create properties file for Robolectric test runners so they can find the
+    # binary resources.
+    properties_jar_path = os.path.join(temp_dir, 'properties.jar')
+    resource_apk = self._test_instance.resource_apk
+    with zipfile.ZipFile(properties_jar_path, 'w') as z:
+      z.writestr('com/android/tools/test_config.properties',
+                 'android_resource_apk=%s\n' % resource_apk)
+      props = [
+          'application = android.app.Application',
+          'sdk = 28',
+          ('shadows = org.chromium.testing.local.'
+           'CustomShadowApplicationPackageManager'),
+      ]
+      z.writestr('robolectric.properties', '\n'.join(props))
+    return properties_jar_path
 
   def _CreateJvmArgsList(self, for_listing=False):
     # Creates a list of jvm_args (robolectric, code coverage, etc...)
@@ -155,7 +162,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       jvm_args = self._CreateJvmArgsList(for_listing=True)
       if jvm_args:
         cmd += ['--jvm-args', '"%s"' % ' '.join(jvm_args)]
-      AddPropertiesJar([cmd], temp_dir, self._test_instance.resource_apk)
+      cmd += ['--classpath', self._CreatePropertiesJar(temp_dir)]
+
       try:
         lines = subprocess.check_output(cmd, encoding='utf8').splitlines()
       except subprocess.CalledProcessError:
@@ -166,6 +174,24 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     prefix_len = len(PREFIX)
     # Filter log messages other than test names (Robolectric logs to stdout).
     return sorted(l[prefix_len:] for l in lines if l.startswith(PREFIX))
+
+  def _MakeJob(self, shard_id, temp_dir, tests, properties_jar_path):
+    results_json_path = os.path.join(temp_dir, f'results{shard_id}.json')
+    gtest_filter = ':'.join(tests)
+
+    cmd = [self._wrapper_path]
+    cmd += ['--jvm-args', '"%s"' % ' '.join(self._CreateJvmArgsList())]
+    cmd += ['--classpath', properties_jar_path]
+    cmd += ['-json-results-file', results_json_path]
+    cmd += ['-gtest-filter', gtest_filter]
+
+    # 20 seconds for process init + 2 seconds per test.
+    timeout = 20 + len(tests) * 2
+    return _Job(shard_id=shard_id,
+                cmd=cmd,
+                timeout=timeout,
+                gtest_filter=gtest_filter,
+                results_json_path=results_json_path)
 
   # override
   def RunTests(self, results, raw_logs_fh=None):
@@ -196,36 +222,21 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     else:
       logging.warning(
           'Running tests with %d shard(s) using %s concurrent process(es).',
-          len(grouped_tests), num_workers)
+          len(shard_list), num_workers)
 
     with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-      cmd_list = [[self._wrapper_path] for _ in shard_list]
-      json_result_file_paths = [
-          os.path.join(temp_dir, 'results%d.json' % i) for i in shard_list
+      properties_jar_path = self._CreatePropertiesJar(temp_dir)
+      jobs = [
+          self._MakeJob(i, temp_dir, grouped_tests[i], properties_jar_path)
+          for i in shard_list
       ]
-      active_groups = [
-          g for i, g in enumerate(grouped_tests) if i in shard_list
-      ]
-      jar_args_list = self._CreateJarArgsList(json_result_file_paths,
-                                              active_groups, num_workers)
-      if jar_args_list:
-        for cmd, jar_args in zip(cmd_list, jar_args_list):
-          cmd += ['--jar-args', '"%s"' % ' '.join(jar_args)]
-
-      jvm_args = self._CreateJvmArgsList()
-      if jvm_args:
-        for cmd in cmd_list:
-          cmd.extend(['--jvm-args', '"%s"' % ' '.join(jvm_args)])
-
-      AddPropertiesJar(cmd_list, temp_dir, self._test_instance.resource_apk)
 
       show_logcat = logging.getLogger().isEnabledFor(logging.INFO)
       num_omitted_lines = 0
       failed_test_logs = {}
       log_lines = []
       current_test = None
-      for line in _RunCommandsAndSerializeOutput(cmd_list, num_workers,
-                                                 shard_list):
+      for line in _RunCommandsAndSerializeOutput(jobs, num_workers):
         if raw_logs_fh:
           raw_logs_fh.write(line)
         if show_logcat or not _LOGCAT_RE.match(line):
@@ -254,20 +265,21 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         raw_logs_fh.flush()
 
       results_list = []
-      failed_shards = []
+      failed_jobs = []
       try:
-        for i, json_file_path in enumerate(json_result_file_paths):
-          with open(json_file_path, 'r') as f:
+        for job in jobs:
+          with open(job.results_json_path, 'r') as f:
             parsed_results = json_results.ParseResultsFromJson(
                 json.loads(f.read()))
-            for r in parsed_results:
-              if r.GetType() in _FAILURE_TYPES:
-                r.SetLog(failed_test_logs.get(r.GetName().replace('#', '.'),
-                                              ''))
+          has_failed = False
+          for r in parsed_results:
+            if r.GetType() in _FAILURE_TYPES:
+              has_failed = True
+              r.SetLog(failed_test_logs.get(r.GetName().replace('#', '.'), ''))
 
-            results_list += parsed_results
-            if any(r for r in parsed_results if r.GetType() in _FAILURE_TYPES):
-              failed_shards.append(shard_list[i])
+          results_list += parsed_results
+          if has_failed:
+            failed_jobs.append(job)
       except IOError:
         # In the case of a failure in the JUnit or Robolectric test runner
         # the output json file may never be written.
@@ -276,15 +288,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                                             base_test_result.ResultType.UNKNOWN)
         ]
 
-      if num_workers > 1 and failed_shards:
-        for i in failed_shards:
-          filt = ':'.join(grouped_tests[i])
-          print(f'Test filter for failed shard {i}: --test-filter "{filt}"')
+      if num_workers > 1 and failed_jobs:
+        for job in failed_jobs:
+          print(f'Test filter for failed shard {job.shard_id}: '
+                f'--test-filter "{job.gtest_filter}"')
 
         print(
-            f'{len(failed_shards)} shards had failing tests. To re-run only '
+            f'{len(failed_jobs)} shards had failing tests. To re-run only '
             f'these shards, use the above filter flags, or use: '
-            f'--shard-filter', ','.join(str(x) for x in failed_shards))
+            f'--shard-filter', ','.join(str(j.shard_id) for j in failed_jobs))
 
       test_run_results = base_test_result.TestRunResults()
       test_run_results.AddResults(results_list)
@@ -293,26 +305,6 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   # override
   def TearDown(self):
     pass
-
-
-def AddPropertiesJar(cmd_list, temp_dir, resource_apk):
-  # Create properties file for Robolectric test runners so they can find the
-  # binary resources.
-  properties_jar_path = os.path.join(temp_dir, 'properties.jar')
-  with zipfile.ZipFile(properties_jar_path, 'w') as z:
-    z.writestr('com/android/tools/test_config.properties',
-               'android_resource_apk=%s\n' % resource_apk)
-    props = [
-        'application = android.app.Application',
-        'sdk = 28',
-        ('shadows = org.chromium.testing.local.'
-         'CustomShadowApplicationPackageManager'),
-    ]
-    z.writestr('robolectric.properties', '\n'.join(props))
-
-  for cmd in cmd_list:
-    cmd.extend(['--classpath', properties_jar_path])
-
 
 
 def GroupTestsForShard(test_list):
@@ -375,14 +367,8 @@ def _DumpJavaStacks(pid):
   return result.stdout
 
 
-def _RunCommandsAndSerializeOutput(cmd_list, num_workers, shard_list):
+def _RunCommandsAndSerializeOutput(jobs, num_workers):
   """Runs multiple commands in parallel and yields serialized output lines.
-
-  Args:
-    cmd_list: List of command lists to run.
-    num_workers: The number of concurrent processes to run jobs in the
-        shard_list.
-    shard_list: Shard index of each command list.
 
   Raises:
     TimeoutError: If timeout is exceeded.
@@ -390,18 +376,17 @@ def _RunCommandsAndSerializeOutput(cmd_list, num_workers, shard_list):
   Yields:
     Command output.
   """
-  num_shards = len(shard_list)
-  assert num_shards > 0
+  assert jobs
   temp_files = [None]  # First shard is streamed directly to stdout.
-  for _ in range(num_shards - 1):
+  for _ in range(len(jobs) - 1):
     temp_files.append(tempfile.TemporaryFile(mode='w+t', encoding='utf-8'))
 
   yield '\n'
-  yield f'Shard {shard_list[0]} output:\n'
+  yield f'Shard {jobs[0].shard_id} output:\n'
 
   timeout_dumps = {}
 
-  def run_proc(cmd, idx):
+  def run_proc(idx):
     if idx == 0:
       s_out = subprocess.PIPE
       s_err = subprocess.STDOUT
@@ -409,14 +394,15 @@ def _RunCommandsAndSerializeOutput(cmd_list, num_workers, shard_list):
       s_out = temp_files[idx]
       s_err = temp_files[idx]
 
-    proc = cmd_helper.Popen(cmd, stdout=s_out, stderr=s_err)
+    job = jobs[idx]
+    proc = cmd_helper.Popen(job.cmd, stdout=s_out, stderr=s_err)
     # Need to return process so that output can be displayed on stdout
     # in real time.
     if idx == 0:
       return proc
 
     try:
-      proc.wait(timeout=(time.time() + _JOB_TIMEOUT))
+      proc.wait(timeout=job.timeout)
     except subprocess.TimeoutExpired:
       timeout_dumps[idx] = _DumpJavaStacks(proc.pid)
       proc.kill()
@@ -425,23 +411,21 @@ def _RunCommandsAndSerializeOutput(cmd_list, num_workers, shard_list):
     return None
 
   with ThreadPoolExecutor(max_workers=num_workers) as pool:
-    futures = []
-    for i, cmd in enumerate(cmd_list):
-      futures.append(pool.submit(run_proc, cmd=cmd, idx=i))
+    futures = [pool.submit(run_proc, idx=i) for i in range(len(jobs))]
 
-    yield from _StreamFirstShardOutput(shard_list[0], futures[0].result(),
-                                       time.time() + _JOB_TIMEOUT)
+    yield from _StreamFirstShardOutput(jobs[0], futures[0].result())
 
-    for i, shard in enumerate(shard_list[1:]):
+    for i, job in enumerate(jobs[1:], 1):
+      shard_id = job.shard_id
       # Shouldn't cause timeout as run_proc terminates the process with
       # a proc.wait().
-      futures[i + 1].result()
-      f = temp_files[i + 1]
+      futures[i].result()
+      f = temp_files[i]
       yield '\n'
-      yield f'Shard {shard} output:\n'
+      yield f'Shard {shard_id} output:\n'
       f.seek(0)
       for line in f.readlines():
-        yield f'{shard:2}| {line}'
+        yield f'{shard_id:2}| {line}'
       f.close()
 
   # Output stacks
@@ -450,8 +434,9 @@ def _RunCommandsAndSerializeOutput(cmd_list, num_workers, shard_list):
     yield ('=' * 80) + '\n'
     yield '\nOne or mord shards timed out.\n'
     yield ('=' * 80) + '\n'
-    for i, dump in timeout_dumps.items():
-      yield f'Index of timed out shard: {shard_list[i]}\n'
+    for i, dump in sorted(timeout_dumps.items()):
+      job = jobs[i]
+      yield f'Shard {job.shard_id} timed out after {job.timeout} seconds.\n'
       yield 'Thread dump:\n'
       yield dump
       yield '\n'
@@ -459,7 +444,8 @@ def _RunCommandsAndSerializeOutput(cmd_list, num_workers, shard_list):
     raise cmd_helper.TimeoutError('Junit shards timed out.')
 
 
-def _StreamFirstShardOutput(shard, shard_proc, deadline):
+def _StreamFirstShardOutput(job, shard_proc):
+  shard_id = job.shard_id
   # The following will be run from a thread to pump Shard 0 results, allowing
   # live output while allowing timeout.
   shard_queue = queue.Queue()
@@ -471,13 +457,14 @@ def _StreamFirstShardOutput(shard, shard_proc, deadline):
 
   shard_0_pump = threading.Thread(target=pump_stream_to_queue)
   shard_0_pump.start()
+  deadline = time.time() + job.timeout
   # Print the first process until timeout or completion.
   while shard_0_pump.is_alive():
     try:
-      line = shard_queue.get(timeout=deadline - time.time())
+      line = shard_queue.get(timeout=max(0, deadline - time.time()))
       if line is None:
         break
-      yield f'{shard:2}| {line}'
+      yield f'{shard_id:2}| {line}'
     except queue.Empty:
       if time.time() > deadline:
         break
@@ -487,4 +474,4 @@ def _StreamFirstShardOutput(shard, shard_proc, deadline):
   while not shard_queue.empty():
     line = shard_queue.get()
     if line:
-      yield f'{shard:2}| {line}'
+      yield f'{shard_id:2}| {line}'
