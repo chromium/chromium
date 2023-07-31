@@ -9,6 +9,12 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -25,15 +31,25 @@ ExpsRegistrationSuccessObserver::ExpsRegistrationSuccessObserver(
   for (const auto& url_string : url_strings_to_match) {
     urls_to_match_against_.emplace_back(url_string);
   }
+
+  const auto& blocklisted_url_strings_to_match =
+      base::SplitString(companion::GetCompanionIPHBlocklistedPageURLs(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& url_string : blocklisted_url_strings_to_match) {
+    blocklisted_iph_urls_to_match_against_.emplace_back(url_string);
+  }
 }
 
 ExpsRegistrationSuccessObserver::~ExpsRegistrationSuccessObserver() = default;
 
 void ExpsRegistrationSuccessObserver::PrimaryPageChanged(content::Page& page) {
-  PrefService* pref_service =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-          ->GetPrefs();
-  if (pref_service->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
+  if (!web_contents() || !pref_service()) {
+    return;
+  }
+
+  MaybeShowIPH();
+
+  if (pref_service()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
     return;
   }
   bool matches_exps_url = false;
@@ -50,7 +66,66 @@ void ExpsRegistrationSuccessObserver::PrimaryPageChanged(content::Page& page) {
   }
 
   // Save the status to a pref.
-  pref_service->SetBoolean(kHasNavigatedToExpsSuccessPage, true);
+  pref_service()->SetBoolean(kHasNavigatedToExpsSuccessPage, true);
+}
+
+void ExpsRegistrationSuccessObserver::MaybeShowIPH() {
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    return;
+  }
+
+  const auto& url = web_contents()->GetVisibleURL();
+  if (!IsValidPageURLForCompanion(url)) {
+    return;
+  }
+
+  if (!IsSearchInCompanionSidePanelSupported()) {
+    return;
+  }
+
+  if (IsUrlBlockListedForIPH(url)) {
+    return;
+  }
+
+  bool has_pinned_entry = pref_service()->GetBoolean(
+      prefs::kSidePanelCompanionEntryPinnedToToolbar);
+  if (!has_pinned_entry) {
+    return;
+  }
+
+  ShowIPH();
+}
+
+void ExpsRegistrationSuccessObserver::ShowIPH() {
+  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (!browser || !browser->window()) {
+    return;
+  }
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHCompanionSidePanelFeature);
+}
+
+PrefService* ExpsRegistrationSuccessObserver::pref_service() {
+  auto* profile =
+      web_contents()
+          ? Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+          : nullptr;
+  return profile ? profile->GetPrefs() : nullptr;
+}
+
+bool ExpsRegistrationSuccessObserver::IsSearchInCompanionSidePanelSupported() {
+  return companion::IsSearchInCompanionSidePanelSupported(
+      chrome::FindBrowserWithWebContents(web_contents()));
+}
+
+bool ExpsRegistrationSuccessObserver::IsUrlBlockListedForIPH(const GURL& url) {
+  for (const auto& url_to_match : blocklisted_iph_urls_to_match_against_) {
+    if (url == url_to_match) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ExpsRegistrationSuccessObserver);

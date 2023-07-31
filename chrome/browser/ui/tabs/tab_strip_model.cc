@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
-#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -665,12 +664,6 @@ void TabStripModel::UpdateWebContentsStateAt(int index,
 
   for (auto& observer : observers_) {
     observer.TabChangedAt(web_contents, index, change_type);
-  }
-
-  // Maybe trigger side panel companion feature IPH if supported.
-  if (companion::IsSearchInCompanionSidePanelSupported(
-          chrome::FindBrowserWithWebContents(web_contents))) {
-    companion::MaybeTriggerCompanionFeaturePromo(web_contents);
   }
 }
 
