@@ -66,8 +66,6 @@ WelcomeTourDialog::WelcomeTourDialog(base::OnceClosure accept_callback,
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
-  // TODO(http://b/285027636): Update the image source when the lottie JSON with
-  // dynamic tokens is ready.
   views::Builder<SystemDialogDelegateView>(this)
       .SetAcceptButtonText(l10n_util::GetStringUTF16(
           IDS_ASH_WELCOME_TOUR_DIALOG_ACCEPT_BUTTON_TEXT))
