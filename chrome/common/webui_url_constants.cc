@@ -739,7 +739,7 @@ const char* const kChromeHostURLs[] = {
     content::kChromeUIWebXrInternalsHost,
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     kChromeUIAppLauncherPageHost,
 #endif
     kChromeUIBookmarksHost,
