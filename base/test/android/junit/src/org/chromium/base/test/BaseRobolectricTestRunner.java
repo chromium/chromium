@@ -11,12 +11,10 @@ import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.TestLifecycle;
 import org.robolectric.internal.SandboxTestRunner;
-import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 import org.robolectric.internal.bytecode.Sandbox;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.TimeoutTimer;
 
 import java.lang.reflect.Method;
 
@@ -110,14 +108,5 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
         }
         Class<?> testSuiteClass = method.getDeclaringClass();
         return testSuiteClass.getAnnotation(DisabledTest.class) != null;
-    }
-
-    @Override
-    protected InstrumentationConfiguration createClassLoaderConfig(final FrameworkMethod method) {
-        return new InstrumentationConfiguration.Builder(super.createClassLoaderConfig(method))
-                .doNotAcquireClass(HelperTestRunner.class)
-                .doNotAcquireClass(TimeoutTimer.class) // Requires access to non-fake SystemClock.
-                .doNotAcquireClass(ResettersForTesting.class)
-                .build();
     }
 }
