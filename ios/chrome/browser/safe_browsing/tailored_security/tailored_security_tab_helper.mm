@@ -30,21 +30,6 @@ TailoredSecurityTabHelper::TailoredSecurityTabHelper(
     safe_browsing::TailoredSecurityService* service)
     : service_(service), web_state_(web_state) {
   bool focused = false;
-  application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationDidEnterBackgroundNotification
-                  object:nil
-                   queue:nil
-              usingBlock:^(NSNotification*) {
-                this->AppDidEnterBackground();
-              }];
-
-  application_foregrounding_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationWillEnterForegroundNotification
-                  object:nil
-                   queue:nil
-              usingBlock:^(NSNotification*) {
-                this->AppWillEnterForeground();
-              }];
 
   if (service_) {
     service_->AddObserver(this);
@@ -64,20 +49,6 @@ TailoredSecurityTabHelper::~TailoredSecurityTabHelper() {
       service_->RemoveQueryRequest();
       has_query_request_ = false;
     }
-  }
-
-  DCHECK(application_foregrounding_observer_);
-  DCHECK(application_backgrounding_observer_);
-  if (application_backgrounding_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_backgrounding_observer_];
-    application_backgrounding_observer_ = nil;
-  }
-
-  if (application_foregrounding_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_foregrounding_observer_];
-    application_foregrounding_observer_ = nil;
   }
 }
 
@@ -232,16 +203,4 @@ void TailoredSecurityTabHelper::ShowInfoBar(
       InfobarType::kInfobarTypeTailoredSecurityService, std::move(delegate));
   infobar_ = infobar_manager->AddInfoBar(std::move(infobar),
                                          /*replace_existing=*/true);
-}
-
-void TailoredSecurityTabHelper::AppDidEnterBackground() {
-  if (service_) {
-    service_->SetCanQuery(false);
-  }
-}
-
-void TailoredSecurityTabHelper::AppWillEnterForeground() {
-  if (service_) {
-    service_->SetCanQuery(true);
-  }
 }
