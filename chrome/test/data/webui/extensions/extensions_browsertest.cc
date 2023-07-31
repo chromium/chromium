@@ -16,6 +16,83 @@ class ExtensionsBrowserTest : public WebUIMochaBrowserTest {
   }
 };
 
+using CrExtensionsTest = ExtensionsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLog) {
+  RunTest("extensions/activity_log_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLogHistory) {
+  RunTest("extensions/activity_log_history_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLogHistoryItem) {
+  RunTest("extensions/activity_log_history_item_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLogStream) {
+  RunTest("extensions/activity_log_stream_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLogStreamItem) {
+  RunTest("extensions/activity_log_stream_item_test.js", "mocha.run()");
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, KioskModeManagerUnit) {
+  RunTest("extensions/kiosk_mode_manager_unit_test.js", "mocha.run()");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ToggleRow) {
+  RunTest("extensions/toggle_row_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, RuntimeHostsDialog) {
+  RunTest("extensions/runtime_hosts_dialog_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, RuntimeHostPermissions) {
+  RunTest("extensions/runtime_host_permissions_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, HostPermissionsToggleList) {
+  RunTest("extensions/host_permissions_toggle_list_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SafetyCheckReviewPanel) {
+  RunTest("extensions/review_panel_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissions) {
+  RunTest("extensions/site_permissions_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsBySite) {
+  RunTest("extensions/site_permissions_by_site_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsEditUrlDialog) {
+  RunTest("extensions/site_permissions_edit_url_dialog_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsList) {
+  RunTest("extensions/site_permissions_list_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, UrlUtil) {
+  RunTest("extensions/url_util_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsEditPermissionsDialog) {
+  RunTest("extensions/site_permissions_edit_permissions_dialog_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsSiteGroup) {
+  RunTest("extensions/site_permissions_site_group_test.js", "mocha.run()");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Sidebar Tests
 
@@ -141,31 +218,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, RepairButton) {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, InspectableViewSortOrder) {
   RunTestCase("InspectableViewSortOrder");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsActivityLogTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsActivityLogTest, All) {
-  RunTest("extensions/activity_log_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsActivityLogHistoryTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsActivityLogHistoryTest, All) {
-  RunTest("extensions/activity_log_history_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsActivityLogHistoryItemTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsActivityLogHistoryItemTest, All) {
-  RunTest("extensions/activity_log_history_item_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsActivityLogStreamTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsActivityLogStreamTest, All) {
-  RunTest("extensions/activity_log_stream_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsActivityLogStreamItemTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsActivityLogStreamItemTest, All) {
-  RunTest("extensions/activity_log_stream_item_test.js", "mocha.run()");
 }
 
 class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
@@ -333,13 +385,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, ToggleIncognito) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, EnableAndDisable) {
   RunTestCase("EnableAndDisable");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-typedef ExtensionsBrowserTest CrExtensionsKioskModeManagerUnitTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeManagerUnitTest, KioskMode) {
-  RunTest("extensions/kiosk_mode_manager_unit_test.js", "mocha.run()");
-}
-#endif
 
 class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
     : public ExtensionSettingsTestBase {
@@ -702,67 +747,4 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, PushAndReplaceState) {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, SupportedRoutes) {
   RunTestCase("SupportedRoutes");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsToggleRowTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsToggleRowTest, ToggleRowTest) {
-  RunTest("extensions/toggle_row_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsRuntimeHostsDialogTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsRuntimeHostsDialogTest, All) {
-  RunTest("extensions/runtime_hosts_dialog_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsRuntimeHostPermissionsTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsRuntimeHostPermissionsTest, All) {
-  RunTest("extensions/runtime_host_permissions_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsHostPermissionsToggleListTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsHostPermissionsToggleListTest, All) {
-  RunTest("extensions/host_permissions_toggle_list_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsSafetyCheckReviewPanelTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsSafetyCheckReviewPanelTest, All) {
-  RunTest("extensions/review_panel_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsSitePermissionsTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsTest, All) {
-  RunTest("extensions/site_permissions_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsSitePermissionsBySiteTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsBySiteTest, All) {
-  RunTest("extensions/site_permissions_by_site_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsSitePermissionsEditUrlDialogTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsEditUrlDialogTest, All) {
-  RunTest("extensions/site_permissions_edit_url_dialog_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsSitePermissionsListTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsListTest, All) {
-  RunTest("extensions/site_permissions_list_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrUrlUtilTest;
-IN_PROC_BROWSER_TEST_F(CrUrlUtilTest, All) {
-  RunTest("extensions/url_util_test.js", "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest
-    CrExtensionsSitePermissionsEditPermissionsDialogTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsEditPermissionsDialogTest,
-                       All) {
-  RunTest("extensions/site_permissions_edit_permissions_dialog_test.js",
-          "mocha.run()");
-}
-
-typedef ExtensionsBrowserTest CrExtensionsSitePermissionsSiteGroupTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsSiteGroupTest, All) {
-  RunTest("extensions/site_permissions_site_group_test.js", "mocha.run()");
 }
