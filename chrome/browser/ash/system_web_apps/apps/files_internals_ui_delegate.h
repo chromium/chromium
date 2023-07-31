@@ -22,7 +22,8 @@ class ChromeFilesInternalsUIDelegate : public ash::FilesInternalsUIDelegate {
       const ChromeFilesInternalsUIDelegate&) = delete;
   ~ChromeFilesInternalsUIDelegate() override;
 
-  base::Value GetDebugJSON() const override;
+  void GetDebugJSON(
+      base::OnceCallback<void(const base::Value&)> callback) const override;
 
   bool GetSmbfsEnableVerboseLogging() const override;
   void SetSmbfsEnableVerboseLogging(bool enabled) override;

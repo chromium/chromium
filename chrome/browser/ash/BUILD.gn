@@ -3181,6 +3181,7 @@ source_set("ash") {
     "system_web_apps/apps/face_ml_system_web_app_info.h",
     "system_web_apps/apps/file_manager_web_app_info.cc",
     "system_web_apps/apps/file_manager_web_app_info.h",
+    "system_web_apps/apps/files_internals_debug_json_provider.h",
     "system_web_apps/apps/files_internals_ui_delegate.cc",
     "system_web_apps/apps/files_internals_ui_delegate.h",
     "system_web_apps/apps/firmware_update_system_web_app_info.cc",

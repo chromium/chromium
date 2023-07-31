@@ -54,8 +54,13 @@ void FilesInternalsUI::SetRequestFilterDebugJson(
 void FilesInternalsUI::HandleRequestDebugJson(
     const std::string& url,
     content::WebUIDataSource::GotDataCallback callback) {
-  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-      delegate_->GetDebugJSON().DebugString()));
+  delegate_->GetDebugJSON(base::BindOnce(
+      [](content::WebUIDataSource::GotDataCallback callback,
+         const base::Value& value) {
+        std::move(callback).Run(
+            base::MakeRefCounted<base::RefCountedString>(value.DebugString()));
+      },
+      std::move(callback)));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FilesInternalsUI)

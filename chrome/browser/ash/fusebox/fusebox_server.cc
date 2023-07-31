@@ -812,7 +812,9 @@ base::FilePath Server::InverseResolveFSURL(
   return base::FilePath();
 }
 
-base::Value Server::GetDebugJSON() {
+void Server::GetDebugJSONForKey(
+    std::string_view key,
+    base::OnceCallback<void(JSONKeyValuePair)> callback) {
   base::Value::Dict subdirs;
   subdirs.Set(kMonikerSubdir, base::Value("[special]"));
   for (const auto& i : prefix_map_) {
@@ -825,7 +827,7 @@ base::Value Server::GetDebugJSON() {
   base::Value::Dict dict;
   dict.Set("monikers", moniker_map_.GetDebugJSON());
   dict.Set("subdirs", std::move(subdirs));
-  return base::Value(std::move(dict));
+  std::move(callback).Run(std::make_pair(key, base::Value(std::move(dict))));
 }
 
 void Server::Close2(const Close2RequestProto& request_proto,
