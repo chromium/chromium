@@ -3604,13 +3604,6 @@
       base_feature: "none",
     },
     {
-      // Allow unbalanced columns (no implicit breaks), even if the block-size
-      // of the multicol container isn't constrained, rather than forcing column
-      // balancing in such cases. See crbug.com/1156312
-      name: "UnconstrainedColumnFillAuto",
-      status: "stable",
-    },
-    {
       name: "UnexposedTaskIds",
       base_feature: "none",
     },
