@@ -20,19 +20,15 @@ TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
   SetImageCentered(true);
   bool is_chrome_refresh = features::IsChromeRefresh2023();
 
+  foreground_frame_active_color_id_ = kColorTabForegroundInactiveFrameActive;
+  foreground_frame_inactive_color_id_ =
+      kColorNewTabButtonCRForegroundFrameInactive;
   if (is_chrome_refresh) {
-    foreground_frame_active_color_id_ =
-        kColorNewTabButtonCRForegroundFrameActive;
-    foreground_frame_inactive_color_id_ =
-        kColorNewTabButtonCRForegroundFrameInactive;
     background_frame_active_color_id_ =
         kColorNewTabButtonCRBackgroundFrameActive;
     background_frame_inactive_color_id_ =
         kColorNewTabButtonCRBackgroundFrameInactive;
   } else {
-    foreground_frame_active_color_id_ = kColorNewTabButtonForegroundFrameActive;
-    foreground_frame_inactive_color_id_ =
-        kColorNewTabButtonForegroundFrameInactive;
     background_frame_active_color_id_ = kColorNewTabButtonBackgroundFrameActive;
     background_frame_inactive_color_id_ =
         kColorNewTabButtonBackgroundFrameInactive;

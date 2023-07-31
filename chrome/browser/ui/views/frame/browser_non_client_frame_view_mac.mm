@@ -226,7 +226,9 @@ int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
 
   // Mac seems to reserve 1 DIP of the top inset as a resize handle.
   constexpr int kTabstripTopInset = 8;
-  int top_inset = kTabstripTopInset;
+  constexpr int kCR23TabstripTopInset = 6;
+  int top_inset = features::IsChromeRefresh2023() ? kCR23TabstripTopInset
+                                                  : kTabstripTopInset;
   if (EverHasVisibleBackgroundTabShapes()) {
     top_inset =
         std::max(top_inset, BrowserNonClientFrameView::kMinimumDragHeight +

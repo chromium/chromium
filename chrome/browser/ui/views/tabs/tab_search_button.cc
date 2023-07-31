@@ -35,6 +35,9 @@ TabSearchButton::TabSearchButton(TabStrip* tab_strip)
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
   SetFocusRingCornerRadius(GetCornerRadius());
 
+  UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  UpdateForegroundFrameInactiveColorId(
+      kColorNewTabButtonForegroundFrameInactive);
   UpdateColors();
 }
 
