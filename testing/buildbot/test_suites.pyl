@@ -1960,6 +1960,48 @@
         'mixins': [ 'chrome-refresh-2023' ],
       },
     },
+
+    'cr23_pixel_browser_tests_gtests': {
+      'cr23_pixel_browser_tests': {
+        'args': [
+          '--browser-ui-tests-verify-pixels',
+          '--enable-pixel-output-in-tests',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/pixel_tests.filter;'
+           '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
+          ),
+          '--test-launcher-jobs=1',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+        'test': 'browser_tests',
+        'mixins': [
+          'skia_gold_test',
+          'chrome-refresh-2023',
+        ],
+        'experiment_percentage': 100,
+        'ci_only': True,
+      },
+      'cr23_pixel_interactive_ui_tests': {
+        'args': [
+          '--browser-ui-tests-verify-pixels',
+          '--enable-pixel-output-in-tests',
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/pixel_tests.filter;'
+           '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
+          ),
+        ],
+        'test': 'interactive_ui_tests',
+        'mixins': [
+          'skia_gold_test',
+          'chrome-refresh-2023',
+        ],
+        'experiment_percentage': 100,
+        'ci_only': True,
+      },
+    },
+
     'cronet_gtests': {
       'cronet_sample_test_apk': {},
       'cronet_smoketests_missing_native_library_instrumentation_apk': {},
@@ -6387,6 +6429,7 @@
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_win_and_linux_only',
       'cr23_main_win_gtests',
+      'cr23_pixel_browser_tests_gtests',
       'fieldtrial_browser_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
