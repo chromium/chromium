@@ -115,7 +115,8 @@ std::string GetUpdateResponse(const std::string& app_id,
                               const base::Version& version,
                               const base::FilePath& update_file,
                               const std::string& run_action,
-                              const std::string& arguments) {
+                              const std::string& arguments,
+                              const std::string& file_hash) {
   return base::StringPrintf(
       ")]}'\n"
       R"({"response":{)"
@@ -152,7 +153,19 @@ std::string GetUpdateResponse(const std::string& app_id,
           : "",
       codebase.c_str(), version.GetString().c_str(), run_action.c_str(),
       arguments.c_str(), update_file.BaseName().AsUTF8Unsafe().c_str(),
-      GetHashHex(update_file).c_str());
+      file_hash.c_str());
+}
+
+std::string GetUpdateResponse(const std::string& app_id,
+                              const std::string& install_data_index,
+                              const std::string& codebase,
+                              const base::Version& version,
+                              const base::FilePath& update_file,
+                              const std::string& run_action,
+                              const std::string& arguments) {
+  return GetUpdateResponse(app_id, install_data_index, codebase, version,
+                           update_file, run_action, arguments,
+                           GetHashHex(update_file));
 }
 
 void RunUpdaterWithSwitch(const base::Version& version,
@@ -710,6 +723,53 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const base::Version& to_version) {
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/3, from_version, to_version);
+}
+
+void ExpectUpdateSequenceBadHash(UpdaterScope scope,
+                                 ScopedServer* test_server,
+                                 const std::string& app_id,
+                                 const std::string& install_data_index,
+                                 UpdateService::Priority priority,
+                                 const base::Version& from_version,
+                                 const base::Version& to_version) {
+  base::FilePath test_data_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
+                                .AppendASCII(kDoNothingCRXName);
+  ASSERT_TRUE(base::PathExists(crx_path));
+
+  // First request: update check.
+  test_server->ExpectOnce(
+      {request::GetPathMatcher(test_server->update_path()),
+       request::GetContentMatcher(
+           {base::StringPrintf(R"("appid":"%s")", app_id.c_str()),
+            install_data_index.empty()
+                ? ""
+                : base::StringPrintf(
+                      R"("data":\[{"index":"%s","name":"install"}],.*)",
+                      install_data_index.c_str())
+                      .c_str()}),
+       request::GetScopeMatcher(scope),
+       request::GetAppPriorityMatcher(app_id, priority)},
+      GetUpdateResponse(
+          app_id, install_data_index, test_server->update_url().spec(),
+          to_version, crx_path, kDoNothingCRXRun, {},
+          "badbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbad1"));
+
+  // Second request: update download.
+  std::string crx_bytes;
+  base::ReadFileToString(crx_path, &crx_bytes);
+  test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+
+  // Third request: event ping.
+  test_server->ExpectOnce(
+      {request::GetPathMatcher(test_server->update_path()),
+       request::GetContentMatcher({base::StringPrintf(
+           R"(.*"errorcat":1,"errorcode":12,"eventresult":0,"eventtype":3,)"
+           R"("nextversion":"%s","previousversion":"%s".*)",
+           to_version.GetString().c_str(), from_version.GetString().c_str())}),
+       request::GetScopeMatcher(scope)},
+      ")]}'\n");
 }
 
 void ExpectInstallSequence(UpdaterScope scope,

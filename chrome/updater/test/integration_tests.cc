@@ -374,6 +374,17 @@ class IntegrationTest : public ::testing::Test {
                                          from_version, to_version);
   }
 
+  void ExpectUpdateSequenceBadHash(ScopedServer* test_server,
+                                   const std::string& app_id,
+                                   const std::string& install_data_index,
+                                   UpdateService::Priority priority,
+                                   const base::Version& from_version,
+                                   const base::Version& to_version) {
+    test_commands_->ExpectUpdateSequenceBadHash(test_server, app_id,
+                                                install_data_index, priority,
+                                                from_version, to_version);
+  }
+
   void ExpectSelfUpdateSequence(ScopedServer* test_server) {
     test_commands_->ExpectSelfUpdateSequence(test_server);
   }
@@ -742,6 +753,21 @@ TEST_F(IntegrationTest, CheckForUpdate) {
       &test_server, kAppId, UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("1")));
   ASSERT_NO_FATAL_FAILURE(CheckForUpdate(kAppId));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, UpdateBadHash) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  const std::string kAppId("test");
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequenceBadHash(
+      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), base::Version("1")));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
