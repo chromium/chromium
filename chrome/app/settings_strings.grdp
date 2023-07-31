@@ -3963,7 +3963,7 @@
   <message name="IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL" translateable="false" desc="Text after a url (e.g. google.com) that explains that that a website permission is allowed or blocked until a set date in the future.">
     {COUNT, plural,
               =0 {Expires today}
-              =1 {Expires in 1 day}
+              =1 {Expires tomorrow}
               other {Expires in # days}}
   </message>
 
