@@ -2127,7 +2127,12 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
 
   // Clear the title-bar-area rect when window controls overlay is disabled.
   if (!window_controls_overlay_enabled_) {
-    GetActiveWebContents()->UpdateWindowControlsOverlay(gfx::Rect());
+    content::WebContents* web_contents = GetActiveWebContents();
+    // `web_contents` can be null while the window is closing, but possibly
+    // also at other times. See https://crbug.com/1467247.
+    if (web_contents) {
+      web_contents->UpdateWindowControlsOverlay(gfx::Rect());
+    }
   }
 
   if (web_app_frame_toolbar()) {
