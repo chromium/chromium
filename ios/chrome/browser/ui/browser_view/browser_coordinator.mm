@@ -1171,6 +1171,11 @@ enum class ToolbarKind {
         _promosManagerCoordinator;
     [_credentialProviderPromoCoordinator start];
   }
+
+  [_voiceSearchController dismissMicPermissionHelp];
+  [_voiceSearchController disconnect];
+  _voiceSearchController.dispatcher = nil;
+  _voiceSearchController = nil;
 }
 
 // Stops child coordinators.
