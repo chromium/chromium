@@ -1595,24 +1595,26 @@ class PortTest(LoggingTestCase):
 
     def test_args_for_test(self):
         port = self.make_port(with_tests=True)
-        self.assertEqual([], port.args_for_test('non/virtual'))
-        self.assertEqual([], port.args_for_test('passes/text.html'))
-        self.assertEqual([],
+        self.assertEqual(['--disable-threaded-compositing'],
+                         port.args_for_test('non/virtual'))
+        self.assertEqual(['--disable-threaded-compositing'],
+                         port.args_for_test('passes/text.html'))
+        self.assertEqual(['--disable-threaded-compositing'],
                          port.args_for_test('virtual/non-existing/test.html'))
 
         self.assertEqual(
-            ['--virtual-arg'],
+            ['--virtual-arg', '--disable-threaded-compositing'],
             port.args_for_test('virtual/virtual_passes/passes/text.html'))
         self.assertEqual(
-            ['--virtual-arg'],
+            ['--virtual-arg', '--disable-threaded-compositing'],
             port.args_for_test('virtual/virtual_passes/passes/any.html'))
-        self.assertEqual(['--virtual-arg'],
+        self.assertEqual(['--virtual-arg', '--disable-threaded-compositing'],
                          port.args_for_test('virtual/virtual_passes/passes/'))
-        self.assertEqual(['--virtual-arg'],
+        self.assertEqual(['--virtual-arg', '--disable-threaded-compositing'],
                          port.args_for_test('virtual/virtual_passes/passes'))
-        self.assertEqual(['--virtual-arg'],
+        self.assertEqual(['--virtual-arg', '--disable-threaded-compositing'],
                          port.args_for_test('virtual/virtual_passes/'))
-        self.assertEqual(['--virtual-arg'],
+        self.assertEqual(['--virtual-arg', '--disable-threaded-compositing'],
                          port.args_for_test('virtual/virtual_passes'))
 
     def test_missing_virtual_test_suite_file(self):
@@ -1894,6 +1896,7 @@ class PortTest(LoggingTestCase):
         port = self.make_port(with_tests=True, options=options)
         with mock.patch('time.strftime', return_value='TIME'):
             self.assertEqual([
+                '--disable-threaded-compositing',
                 '--trace-startup=*,-blink',
                 '--trace-startup-duration=0',
                 '--trace-startup-file=trace_layout_test_non_virtual_TIME.json',

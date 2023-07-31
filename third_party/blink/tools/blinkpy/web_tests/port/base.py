@@ -129,6 +129,8 @@ ARTIFACTS_SUB_DIR = 'layout-test-results'
 ARCHIVED_RESULTS_LIMIT = 25
 
 ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
+DISABLE_THREADED_COMPOSITING_FLAG = '--disable-threaded-compositing'
+
 
 class Port(object):
     """Abstract class for Port-specific hooks for the web_test package."""
@@ -1556,7 +1558,6 @@ class Port(object):
 
     def version(self):
         """Returns a string indicating the version of a given platform
-
         For example, "win10" or "trusty". This is used to help identify the
         exact port when parsing test expectations, determining search paths,
         and logging information.
@@ -1614,8 +1615,14 @@ class Port(object):
     def args_for_test(self, test_name):
         args = self._lookup_virtual_test_args(test_name)
 
-        if self._is_in_allowlist_for_threaded_compositing(test_name):
-            if (ENABLE_THREADED_COMPOSITING_FLAG not in args):
+        if self._should_run_single_threaded(test_name):
+            if (DISABLE_THREADED_COMPOSITING_FLAG not in args
+                    and ENABLE_THREADED_COMPOSITING_FLAG not in args):
+                args.append(DISABLE_THREADED_COMPOSITING_FLAG)
+        else:
+            if not ENABLE_THREADED_COMPOSITING_FLAG in args:
+                # There are no virtual suites with
+                # --disable-threaded-compositing arg
                 args.append(ENABLE_THREADED_COMPOSITING_FLAG)
 
         pac_url = self.extract_wpt_pac(test_name)
@@ -1635,6 +1642,10 @@ class Port(object):
                 self._filesystem.sanitize_filename(test_name), current_time)
             args.append('--trace-startup-file=' + file_name)
 
+        assert (ENABLE_THREADED_COMPOSITING_FLAG in args
+                and DISABLE_THREADED_COMPOSITING_FLAG not in args) or (
+                    DISABLE_THREADED_COMPOSITING_FLAG in args
+                    and ENABLE_THREADED_COMPOSITING_FLAG not in args)
         return args
 
     @memoized
@@ -2590,26 +2601,26 @@ class Port(object):
                                      'TestLists/SingleThreadedTests')
         return set(self._filesystem.read_text_file(path).split('\n'))
 
-    def _is_in_allowlist_for_threaded_compositing(self, test_name):
+    def _should_run_single_threaded(self, test_name):
         # We currently only turn on threaded compositing tests for Linux
         if not self.host.platform.is_linux():
-            return False
+            return True
         # We currently only turn on threaded compositing for web_tests
         if self.is_wpt_test(test_name):
-            return False
+            return True
 
         block_list = self._get_blocked_tests_for_threaded_compositing_testing()
 
         if test_name in block_list:
-            return False
+            return True
 
         # We apply the setting of a base test to all of its virtual versions
         base_name = self.lookup_virtual_test_base(test_name)
         if base_name:
             if base_name in block_list:
-                return False
+                return True
 
-        return True
+        return False
 
     def build_path(self, *comps):
         """Returns a path from the build directory."""
