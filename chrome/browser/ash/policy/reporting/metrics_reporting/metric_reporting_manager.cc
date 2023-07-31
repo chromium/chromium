@@ -89,9 +89,10 @@ BASE_FEATURE(kEnableAppEventsObserver,
              "EnableAppEventsObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) const {
+bool MetricReportingManager::Delegate::IsUserAffiliated(
+    Profile& profile) const {
   const user_manager::User* const user =
-      ::ash::ProfileHelper::Get()->GetUserByProfile(profile);
+      ::ash::ProfileHelper::Get()->GetUserByProfile(&profile);
   return user && user->IsAffiliated();
 }
 
@@ -141,7 +142,8 @@ MetricReportingManager::~MetricReportingManager() {
 
 void MetricReportingManager::OnLogin(Profile* profile) {
   managed_session_observation_.Reset();
-  if (!delegate_->IsAffiliated(profile)) {
+  CHECK_NE(profile, nullptr);
+  if (!delegate_->IsUserAffiliated(*profile)) {
     return;
   }
 

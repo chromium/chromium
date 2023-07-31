@@ -137,8 +137,9 @@ MetricReportingManagerDelegateBase::CreateEventObserverManager(
       init_delay);
 }
 
-bool MetricReportingManagerDelegateBase::IsAffiliated(Profile* profile) const {
-  return ::chrome::enterprise_util::IsProfileAffiliated(profile);
+bool MetricReportingManagerDelegateBase::IsUserAffiliated(
+    Profile& profile) const {
+  return ::chrome::enterprise_util::IsProfileAffiliated(&profile);
 }
 
 base::TimeDelta MetricReportingManagerDelegateBase::GetInitDelay() const {

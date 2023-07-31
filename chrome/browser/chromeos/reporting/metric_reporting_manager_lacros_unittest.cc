@@ -26,6 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
+using ::testing::Address;
 using ::testing::AllOf;
 using ::testing::ByMove;
 using ::testing::Eq;
@@ -72,7 +73,7 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
   MockDelegate& operator=(const MockDelegate& other) = delete;
   ~MockDelegate() override = default;
 
-  MOCK_METHOD(bool, IsAffiliated, (Profile * profile), (const, override));
+  MOCK_METHOD(bool, IsUserAffiliated, (Profile & profile), (const, override));
 
   MOCK_METHOD(
       void,
@@ -131,8 +132,10 @@ const MetricReportingSettingData network_telemetry_settings = {
 
 struct TestCase {
   std::string test_name;
+  // Is the user affiliated.
   bool is_affiliated;
   MetricReportingSettingData setting_data;
+  // Count of initialized components.
   int expected_count;
 };
 
@@ -182,7 +185,8 @@ TEST_F(MetricReportingManagerLacrosTest, InitiallyDeprovisioned) {
                   Property(&SourceInfo::source_version, Not(IsEmpty()))))))
       .WillByDefault(Return(ByMove(std::move(telemetry_queue_))));
 
-  ON_CALL(*delegate_, IsAffiliated(profile_.get())).WillByDefault(Return(true));
+  ON_CALL(*delegate_, IsUserAffiliated(Address(profile_)))
+      .WillByDefault(Return(true));
 
   ON_CALL(*delegate_, CheckDeviceDeprovisioned(_))
       .WillByDefault([](crosapi::mojom::DeviceSettingsService::
@@ -239,7 +243,7 @@ TEST_P(MetricReportingManagerLacrosTelemetryTest, Default) {
         return std::make_unique<FakeCollector>(&periodic_collector_count);
       });
 
-  ON_CALL(*delegate_, IsAffiliated(profile_.get()))
+  ON_CALL(*delegate_, IsUserAffiliated(Address(profile_)))
       .WillByDefault(Return(test_case.is_affiliated));
 
   auto* const delegate_ptr = delegate_.get();

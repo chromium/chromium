@@ -105,7 +105,7 @@ class MetricReportingManagerDelegateBase {
 
   // Checks for profile affiliation and returns true if affiliated. False
   // otherwise.
-  virtual bool IsAffiliated(Profile* profile) const;
+  virtual bool IsUserAffiliated(Profile& profile) const;
 
   // Returns the delay interval used with `MetricReportingManager`
   // initialization.

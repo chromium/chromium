@@ -136,7 +136,8 @@ MetricReportingManagerLacros::MetricReportingManagerLacros(
       delegate_(std::move(delegate)),
       device_reporting_settings_(delegate_->CreateDeviceReportingSettings()),
       is_device_deprovisioned_(false) {
-  if (!delegate_->IsAffiliated(profile_)) {
+  CHECK_NE(profile, nullptr);
+  if (!delegate_->IsUserAffiliated(*profile_)) {
     // We only report data for affiliated users on managed devices as of today.
     return;
   }

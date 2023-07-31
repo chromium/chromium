@@ -56,7 +56,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
     ~Delegate() override = default;
 
-    bool IsAffiliated(Profile* profile) const override;
+    bool IsUserAffiliated(Profile& profile) const override;
 
     virtual bool IsDeprovisioned() const;
 

@@ -122,7 +122,7 @@ class MockDelegate : public MetricReportingManager::Delegate {
 
   ~MockDelegate() override = default;
 
-  MOCK_METHOD(bool, IsAffiliated, (Profile * profile), (const, override));
+  MOCK_METHOD(bool, IsUserAffiliated, (Profile & profile), (const, override));
 
   MOCK_METHOD(bool, IsDeprovisioned, (), (const, override));
 
@@ -251,10 +251,14 @@ struct MetricReportingManagerTestCase {
   std::string test_name;
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
+  // Is the user affiliated.
   bool is_affiliated;
   MetricReportingSettingData setting_data;
   bool has_init_delay;
+  // Count of initialized components before login.
   int expected_count_before_login;
+  // Count of initialized components after login. This count is cumulative,
+  // which means that it also includes the count before login.
   int expected_count_after_login;
 };
 
@@ -356,7 +360,7 @@ TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   int observer_manager_count = 0;
 
   ON_CALL(*mock_delegate_, IsDeprovisioned).WillByDefault(Return(true));
-  ON_CALL(*mock_delegate_, IsAffiliated).WillByDefault(Return(true));
+  ON_CALL(*mock_delegate_, IsUserAffiliated).WillByDefault(Return(true));
   ON_CALL(*mock_delegate_, IsAppServiceAvailableForProfile)
       .WillByDefault(Return(true));
 
@@ -401,7 +405,7 @@ TEST_P(MetricReportingManagerInfoTest, Default) {
 
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int collector_count = 0;
-  ON_CALL(*mock_delegate_ptr, IsAffiliated)
+  ON_CALL(*mock_delegate_ptr, IsUserAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
   ON_CALL(*mock_delegate_ptr,
           CreateOneShotCollector(
@@ -486,7 +490,7 @@ TEST_P(MetricReportingManagerEventTest, Default) {
       std::make_unique<test::FakeReportingSettings>();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int observer_manager_count = 0;
-  ON_CALL(*mock_delegate_ptr, IsAffiliated)
+  ON_CALL(*mock_delegate_ptr, IsUserAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
   ON_CALL(*mock_delegate_ptr, IsAppServiceAvailableForProfile)
       .WillByDefault(Return(true));
@@ -546,7 +550,7 @@ TEST_F(MetricReportingManagerEventTest,
       std::make_unique<test::FakeReportingSettings>();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int observer_manager_count = 0;
-  ON_CALL(*mock_delegate_ptr, IsAffiliated).WillByDefault(Return(true));
+  ON_CALL(*mock_delegate_ptr, IsUserAffiliated).WillByDefault(Return(true));
   ON_CALL(*mock_delegate_ptr, IsAppServiceAvailableForProfile)
       .WillByDefault(Return(false));
   ON_CALL(
@@ -675,7 +679,7 @@ TEST_P(MetricReportingManagerPeripheralTest, Default) {
       std::make_unique<test::FakeReportingSettings>();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int observer_manager_count = 0;
-  ON_CALL(*mock_delegate_ptr, IsAffiliated)
+  ON_CALL(*mock_delegate_ptr, IsUserAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
 
   // Mock app service unavailability to eliminate noise.
@@ -772,7 +776,7 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
   const auto upload_delay = mock_delegate_->GetInitialUploadDelay();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int collector_count = 0;
-  ON_CALL(*mock_delegate_ptr, IsAffiliated)
+  ON_CALL(*mock_delegate_ptr, IsUserAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
   // Mock app service unavailability to eliminate noise.
   ON_CALL(*mock_delegate_ptr, IsAppServiceAvailableForProfile)
@@ -970,7 +974,7 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
                                         base::Value(std::move(telemetry_list)));
 
   ON_CALL(*mock_delegate_, IsDeprovisioned).WillByDefault(Return(false));
-  ON_CALL(*mock_delegate_, IsAffiliated).WillByDefault(Return(true));
+  ON_CALL(*mock_delegate_, IsUserAffiliated).WillByDefault(Return(true));
   ON_CALL(*mock_delegate_, IsAppServiceAvailableForProfile)
       .WillByDefault(Return(false));
 
