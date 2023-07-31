@@ -25,6 +25,7 @@
 namespace {
 const char kRegistrationParamsPref[] =
     "bound_session_credentials_registration_params";
+const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 }
 
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
@@ -57,6 +58,20 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
   ResetBoundSession();
 
   OnBoundSessionUpdated();
+}
+
+void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
+    const net::HttpResponseHeaders* headers) {
+  if (!headers) {
+    return;
+  }
+
+  std::string session_id;
+  if (headers->GetNormalizedHeader(kGoogleSessionTerminationHeader,
+                                   &session_id)) {
+    // TODO(b/293433229): Verify `session_id` matches the current session's id.
+    TerminateSession();
+  }
 }
 
 bool BoundSessionCookieRefreshServiceImpl::IsBoundSession() const {

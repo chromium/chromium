@@ -30,6 +30,7 @@ constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 constexpr char kRegistrationParamsPref[] =
     "bound_session_credentials_registration_params";
+const char kSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 constexpr char kWrappedKey[] = "wrapped_key";
 
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
@@ -181,6 +182,13 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  void VerifyBoundSession() {
+    CHECK(cookie_refresh_service_);
+    EXPECT_TRUE(cookie_refresh_service_->IsBoundSession());
+    EXPECT_TRUE(cookie_refresh_service_->GetBoundSessionParams());
+    EXPECT_TRUE(cookie_controller());
+  }
 
   void VerifyNoBoundSession() {
     CHECK(cookie_refresh_service_);
@@ -335,6 +343,31 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
 
   SCOPED_TRACE("No bound session on Startup.");
   VerifyNoBoundSession();
+}
+
+// TODO(b/293433229): Verify session terminated only if `session_id` matches the
+// current session's id.
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       TerminateSessionOnSessionTerminationHeader) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeader, "session-id");
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->MaybeTerminateSession(headers.get());
+  VerifyNoBoundSession();
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       DontTerminateSessionWithoutSessionTerminationHeader) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->MaybeTerminateSession(headers.get());
+  VerifyBoundSession();
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,

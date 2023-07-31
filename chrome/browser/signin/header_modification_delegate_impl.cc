@@ -153,6 +153,10 @@ void HeaderModificationDelegateImpl::ProcessResponse(
     BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
     if (bound_session_cookie_refresh_service) {
+      // Terminate the session if session termination header is set.
+      bound_session_cookie_refresh_service->MaybeTerminateSession(
+          response_adapter->GetHeaders());
+
       auto params = BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           response_adapter->GetUrl(), response_adapter->GetHeaders());
       if (params.has_value()) {

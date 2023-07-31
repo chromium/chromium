@@ -46,6 +46,7 @@ class BoundSessionCookieRefreshServiceImpl
   // Can be called iff the kBoundSessionExplicitRegistration feature is enabled.
   void RegisterNewBoundSession(
       const bound_session_credentials::RegistrationParams& params) override;
+  void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
   bool IsBoundSession() const override;
   chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
   void AddBoundSessionRequestThrottledListenerReceiver(
