@@ -1877,7 +1877,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   const CachedMatchedProperties* cached_matched_properties =
       key.IsValid() ? matched_properties_cache_.Find(key, state) : nullptr;
 
-  recordreplay::Assert("[RUN-1436-2237] StyleResolver::ApplyMatchedCache %d %d",
+  recordreplay::Assert("[RUN-2424-2425] StyleResolver::ApplyMatchedCache %d %d",
                        !!cached_matched_properties,
                        MatchedPropertiesCache::IsCacheable(state));
 
