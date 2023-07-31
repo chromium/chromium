@@ -1777,6 +1777,16 @@ config("default_warnings") {
         ]
       }
     }
+
+    # Some builders, such as Cronet, use a different version of Clang than
+    # Chromium. This can cause minor errors when compiling Chromium changes. We
+    # want to avoid these errors.
+    if (use_lenient_compiler_flags) {
+      cflags += [
+        "-Wno-error=unknown-warning-option",
+        "-Wno-error=unused-command-line-argument",
+      ]
+    }
   }
 
   # Rust warnings
