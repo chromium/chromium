@@ -345,6 +345,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   };
 
   virtual ui::TextInputClient::EditingContext GetTextEditingContext();
+
+  // Notifies TSF when a frame with a committed Url receives focus.
+  virtual void NotifyOnFrameFocusChanged() {}
 #endif
 
   // Called before ui::InputMethod dispatches a not-consumed event to PostIME

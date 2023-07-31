@@ -68,6 +68,8 @@ bool MockTSFBridge::IsInputLanguageCJK() {
   return false;
 }
 
+void MockTSFBridge::OnUrlChanged() {}
+
 void MockTSFBridge::Reset() {
   enable_ime_call_count_ = 0;
   disable_ime_call_count_ = 0;

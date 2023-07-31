@@ -1901,6 +1901,12 @@ RenderWidgetHostViewAura::GetTextEditingContext() {
     editing_context.page_url = frame->GetLastCommittedURL();
   return editing_context;
 }
+
+void RenderWidgetHostViewAura::NotifyOnFrameFocusChanged() {
+  if (GetInputMethod()) {
+    GetInputMethod()->OnUrlChanged();
+  }
+}
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

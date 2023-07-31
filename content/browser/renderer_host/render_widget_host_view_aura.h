@@ -297,6 +297,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // content.
   // https://docs.microsoft.com/en-us/windows/win32/tsf/predefined-properties
   ui::TextInputClient::EditingContext GetTextEditingContext() override;
+
+  // Notify TSF (via text store) when URL of the frame in focus changes.
+  void NotifyOnFrameFocusChanged() override;
 #endif
 
   // Overridden from display::DisplayObserver:
