@@ -8,7 +8,9 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
@@ -17,6 +19,19 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 };
 
 using SettingsTest = SettingsBrowserTest;
+
+// Copied from Polymer 2 test:
+// Times out on debug builders because the Settings page can take several
+// seconds to load in a Release build and several times that in a Debug build.
+// See https://crbug.com/558434.
+#if !defined(NDEBUG)
+#define MAYBE_AdvancedPage DISABLED_AdvancedPage
+#else
+#define MAYBE_AdvancedPage AdvancedPage
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_AdvancedPage) {
+  RunTest("settings/advanced_page_test.js", "mocha.run()");
+}
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, AntiAbusePage) {
   RunTest("settings/anti_abuse_page_test.js", "mocha.run()");
@@ -529,6 +544,20 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardExceptionImprovementsTest,
           "runMochaSuite('TabDiscardExceptionList')");
 }
 
+using SettingsPersonalizationOptionsTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, AllBuilds) {
+  RunTest("settings/personalization_options_test.js",
+          "runMochaSuite('AllBuilds')");
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, OfficialBuild) {
+  RunTest("settings/personalization_options_test.js",
+          "runMochaSuite('OfficialBuild')");
+}
+#endif
+
 using SettingsPrivacyGuideTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
@@ -649,6 +678,81 @@ IN_PROC_BROWSER_TEST_F(
     RestrictedWithNotice) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('PrivacySandbox4EnabledButRestrictedWithNotice')");
+}
+
+class SettingsPrivacyPageTest : public SettingsBrowserTest {
+ protected:
+  SettingsPrivacyPageTest() {
+    scoped_feature_list1_.InitWithFeatures(
+        {privacy_sandbox::kPrivacySandboxSettings4,
+         permissions::features::kPermissionStorageAccessAPI},
+        {});
+    scoped_feature_list2_.InitAndEnableFeatureWithParameters(
+        features::kFedCm, {
+                              {"DesktopSettings", "true"},
+                          });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list1_;
+  base::test::ScopedFeatureList scoped_feature_list2_;
+};
+
+// TODO(crbug.com/1351019): Flaky on Linux Tests(dbg).
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PrivacyPage DISABLED_PrivacyPage
+#else
+#define MAYBE_PrivacyPage PrivacyPage
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, MAYBE_PrivacyPage) {
+  RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
+}
+
+// TODO(crbug.com/1378703): Remove once PrivacySandboxSettings4 has been rolled
+// out.
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox4Disabled) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('PrivacySandbox4Disabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox4Enabled) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('PrivacySandbox4Enabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
+  RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyGuideRow')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, NotificationPermissionReview) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('NotificationPermissionReview')");
+}
+
+// TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_PrivacyPageSound) {
+  RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPageSound')");
+}
+
+// TODO(crbug.com/1113912): flaky failure on multiple platforms
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       DISABLED_HappinessTrackingSurveys) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('HappinessTrackingSurveys')");
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1043665): disabling due to failures on several builders.
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_CertificateManager) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('NativeCertificateManager')");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       EnableWebBluetoothNewPermissionsBackend) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('EnableWebBluetoothNewPermissionsBackend')");
 }
 
 class SettingsPrivacySandboxPageTest : public SettingsBrowserTest {

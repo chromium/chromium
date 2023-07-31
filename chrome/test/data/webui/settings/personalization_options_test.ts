@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrivacyPageVisibility, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="chromeos_ash">
+// <if expr="_google_chrome and chromeos_ash">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -23,7 +23,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
-suite('PersonalizationOptionsTests_AllBuilds', function() {
+suite('AllBuilds', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let customPageVisibility: PrivacyPageVisibility;
@@ -264,7 +264,8 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   });
 });
 
-suite('PersonalizationOptionsTests_OfficialBuild', function() {
+// <if expr="_google_chrome">
+suite('OfficialBuild', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let testElement: SettingsPersonalizationOptionsElement;
 
@@ -389,3 +390,4 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       });
   // </if>
 });
+// </if>

@@ -60,103 +60,6 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
   mocha.run();
 });
 
-var CrSettingsPersonalizationOptionsTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/personalization_options_test.js';
-  }
-};
-
-TEST_F('CrSettingsPersonalizationOptionsTest', 'AllBuilds', function() {
-  runMochaSuite('PersonalizationOptionsTests_AllBuilds');
-});
-
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-TEST_F('CrSettingsPersonalizationOptionsTest', 'OfficialBuild', function() {
-  runMochaSuite('PersonalizationOptionsTests_OfficialBuild');
-});
-GEN('#endif');
-
-var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'privacy_sandbox::kPrivacySandboxSettings4',
-        'permissions::features::kPermissionStorageAccessAPI',
-      ],
-    };
-  }
-
-  get featuresWithParameters() {
-    return [{
-      featureName: 'features::kFedCm',
-      parameters: [{name: 'DesktopSettings', value: true}],
-    }];
-  }
-};
-
-// TODO(crbug.com/1351019): Flaky on Linux Tests(dbg).
-GEN('#if BUILDFLAG(IS_LINUX)');
-GEN('#define MAYBE_PrivacyPageTests DISABLED_PrivacyPageTests');
-GEN('#else');
-GEN('#define MAYBE_PrivacyPageTests PrivacyPageTests');
-GEN('#endif');
-TEST_F('CrSettingsPrivacyPageTest', 'MAYBE_PrivacyPageTests', function() {
-  runMochaSuite('PrivacyPage');
-});
-
-// TODO(crbug.com/1378703): Remove once PrivacySandboxSettings4 has been rolled
-// out.
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandbox4Disabled', function() {
-  runMochaSuite('PrivacySandbox4Disabled');
-});
-
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandbox4Enabled', function() {
-  runMochaSuite('PrivacySandbox4Enabled');
-});
-
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideRowTests', function() {
-  runMochaSuite('PrivacyGuideRowTests');
-});
-
-TEST_F('CrSettingsPrivacyPageTest', 'NotificationPermissionReview', function() {
-  runMochaSuite('NotificationPermissionReview');
-});
-
-// TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
-TEST_F(
-    'CrSettingsPrivacyPageTest', 'DISABLED_PrivacyPageSoundTests', function() {
-      runMochaSuite('PrivacyPageSound');
-    });
-
-// TODO(crbug.com/1113912): flaky failure on multiple platforms
-TEST_F(
-    'CrSettingsPrivacyPageTest', 'DISABLED_HappinessTrackingSurveysTests',
-    function() {
-      runMochaSuite('HappinessTrackingSurveys');
-    });
-
-GEN('#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)');
-// TODO(crbug.com/1043665): disabling due to failures on several builders.
-TEST_F(
-    'CrSettingsPrivacyPageTest', 'DISABLED_CertificateManagerTests',
-    function() {
-      runMochaSuite('NativeCertificateManager');
-    });
-GEN('#endif');
-
-TEST_F(
-    'CrSettingsPrivacyPageTest', 'enableWebBluetoothNewPermissionsBackendTests',
-    function() {
-      runMochaSuite('enableWebBluetoothNewPermissionsBackend');
-    });
-
 var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -217,26 +120,6 @@ TEST_F(
     function() {
       runMochaSuite('PreloadingDesktopSettingsSubPageDisabled');
     });
-
-var CrSettingsAdvancedPageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/advanced_page_test.js';
-  }
-};
-
-// Copied from Polymer 2 test:
-// Times out on debug builders because the Settings page can take several
-// seconds to load in a Release build and several times that in a Debug build.
-// See https://crbug.com/558434.
-GEN('#if !defined(NDEBUG)');
-GEN('#define MAYBE_Load DISABLED_Load');
-GEN('#else');
-GEN('#define MAYBE_Load Load');
-GEN('#endif');
-TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
-  mocha.run();
-});
 
 var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
   /** @override */

@@ -570,7 +570,7 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
   });
 });
 
-suite('PrivacyGuideRowTests', function() {
+suite('PrivacyGuideRow', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -890,7 +890,7 @@ suite('NotificationPermissionReview', function() {
   });
 });
 
-suite('enableWebBluetoothNewPermissionsBackend', function() {
+suite('EnableWebBluetoothNewPermissionsBackend', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
