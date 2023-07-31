@@ -4040,7 +4040,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230627",
+                    "name": "EnabledLauncherQueryAnalytics_20230731",
+                    "enable_features": [
+                        "FederatedService",
+                        "FederatedServiceScheduleTasks",
+                        "LauncherQueryFederatedAnalyticsPHH"
+                    ],
+                    "disable_features": [
+                        "FederatedTimezoneCodePhh"
+                    ]
+                },
+                {
+                    "name": "EnabledTimezoneCodePhh_20230731",
                     "params": {
                         "launch_stage": "prod"
                     },
@@ -4048,6 +4059,9 @@
                         "FederatedService",
                         "FederatedServiceScheduleTasks",
                         "FederatedTimezoneCodePhh"
+                    ],
+                    "disable_features": [
+                        "LauncherQueryFederatedAnalyticsPHH"
                     ]
                 }
             ]
