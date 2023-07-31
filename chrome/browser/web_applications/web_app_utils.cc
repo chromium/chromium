@@ -500,6 +500,17 @@ std::vector<std::u16string> TransformFileExtensionsForDisplay(
   return extensions_for_display;
 }
 
+bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode) {
+  switch (login_mode) {
+    case RunOnOsLoginMode::kWindowed:
+      return true;
+    case RunOnOsLoginMode::kMinimized:
+      return true;
+    case RunOnOsLoginMode::kNotRun:
+      return false;
+  }
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsWebAppsCrosapiEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

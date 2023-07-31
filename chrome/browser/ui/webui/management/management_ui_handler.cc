@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -35,6 +36,10 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
@@ -632,6 +637,10 @@ void ManagementUIHandler::RegisterMessages() {
       base::BindRepeating(&ManagementUIHandler::HandleGetManagedWebsites,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getApplications",
+      base::BindRepeating(&ManagementUIHandler::HandleGetApplications,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "initBrowserReportingInfo",
       base::BindRepeating(&ManagementUIHandler::HandleInitBrowserReportingInfo,
                           base::Unretained(this)));
@@ -908,8 +917,11 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
 
   if (enterprise_manager.empty()) {
     response.Set(
-        "extensionReportingTitle",
+        "extensionReportingSubtitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+    response.Set(
+        "applicationReportingSubtitle",
+        l10n_util::GetStringUTF16(IDS_MANAGEMENT_APPLICATIONS_INSTALLED));
     response.Set(
         "managedWebsitesSubtitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
@@ -932,8 +944,12 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
 
   } else {
     response.Set(
-        "extensionReportingTitle",
+        "extensionReportingSubtitle",
         l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
+                                   base::UTF8ToUTF16(enterprise_manager)));
+    response.Set(
+        "applicationReportingSubtitle",
+        l10n_util::GetStringFUTF16(IDS_MANAGEMENT_APPLICATIONS_INSTALLED_BY,
                                    base::UTF8ToUTF16(enterprise_manager)));
     response.Set("managedWebsitesSubtitle",
                  l10n_util::GetStringFUTF16(
@@ -1052,6 +1068,45 @@ base::Value::List ManagementUIHandler::GetManagedWebsitesInfo(
   }
 
   return managed_websites;
+}
+
+base::Value::List ManagementUIHandler::GetApplicationsInfo(
+    Profile* profile) const {
+  base::Value::List applications;
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  // Only display web apps for the profile that contains them e.g. Lacros
+  // primary profile when Lacros is enabled.
+  if (provider == nullptr) {
+    return applications;
+  }
+
+  auto& registrar = provider->registrar_unsafe();
+
+  for (const web_app::AppId& app_id : registrar.GetAppIds()) {
+    base::Value::List permission_messages;
+    // Display RunOnOsLogin if it is set to autostart by admin policy.
+    web_app::ValueWithPolicy<web_app::RunOnOsLoginMode> policy =
+        registrar.GetAppRunOnOsLoginMode(app_id);
+    if (!policy.user_controllable &&
+        web_app::IsRunOnOsLoginModeEnabledForAutostart(policy.value)) {
+      permission_messages.Append(l10n_util::GetStringUTF16(
+          IDS_MANAGEMENT_APPLICATIONS_RUN_ON_OS_LOGIN));
+    }
+
+    if (!permission_messages.empty()) {
+      base::Value::Dict app_info;
+      app_info.Set("name", registrar.GetAppShortName(app_id));
+      // We try to match the same icon size as used for the extensions
+      GURL icon = apps::AppIconSource::GetIconURL(
+          app_id, extension_misc::EXTENSION_ICON_SMALLISH);
+      app_info.Set("icon", icon.spec());
+      app_info.Set("permissions", std::move(permission_messages));
+      applications.Append(std::move(app_info));
+    }
+  }
+
+  return applications;
 }
 
 policy::PolicyService* ManagementUIHandler::GetPolicyService() {
@@ -1268,6 +1323,13 @@ void ManagementUIHandler::HandleGetManagedWebsites(
   ResolveJavascriptCallback(
       args[0] /* callback_id */,
       GetManagedWebsitesInfo(Profile::FromWebUI(web_ui())));
+}
+
+void ManagementUIHandler::HandleGetApplications(const base::Value::List& args) {
+  AllowJavascript();
+
+  ResolveJavascriptCallback(args[0] /* callback_id */,
+                            GetApplicationsInfo(Profile::FromWebUI(web_ui())));
 }
 
 void ManagementUIHandler::HandleInitBrowserReportingInfo(

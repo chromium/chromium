@@ -172,6 +172,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   base::Value::Dict GetContextualManagedData(Profile* profile);
   base::Value::Dict GetThreatProtectionInfo(Profile* profile);
   base::Value::List GetManagedWebsitesInfo(Profile* profile) const;
+  base::Value::List GetApplicationsInfo(Profile* profile) const;
   virtual policy::PolicyService* GetPolicyService();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   virtual device_signals::UserPermissionService* GetUserPermissionService();
@@ -214,6 +215,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void HandleGetContextualManagedData(const base::Value::List& args);
   void HandleGetThreatProtectionInfo(const base::Value::List& args);
   void HandleGetManagedWebsites(const base::Value::List& args);
+  void HandleGetApplications(const base::Value::List& args);
   void HandleInitBrowserReportingInfo(const base::Value::List& args);
 
   void AsyncUpdateLogo();

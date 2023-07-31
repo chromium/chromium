@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 
@@ -44,8 +45,8 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
   // With a full system lock acquired, getting all apps is safe and no filtering
   // of uninstalling apps etc. is required
   for (const AppId& app_id : lock.registrar().GetAppIds()) {
-    if (lock.registrar().GetAppRunOnOsLoginMode(app_id).value ==
-        RunOnOsLoginMode::kNotRun) {
+    if (!IsRunOnOsLoginModeEnabledForAutostart(
+            lock.registrar().GetAppRunOnOsLoginMode(app_id).value)) {
       continue;
     }
 

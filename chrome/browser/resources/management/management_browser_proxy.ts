@@ -4,8 +4,15 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+export interface Application {
+  name: string;
+  icon?: string;
+  permissions: string[];
+}
+
 export interface Extension {
   name: string;
+  icon?: string;
   permissions: string[];
 }
 
@@ -23,8 +30,9 @@ export interface BrowserReportingResponse {
 }
 
 interface ManagedDataResponse {
+  applicationReportingSubtitle: string;
   browserManagementNotice: string;
-  extensionReportingTitle: string;
+  extensionReportingSubtitle: string;
   managedWebsitesSubtitle: string;
   pageSubtitle: string;
   managed: boolean;
@@ -85,6 +93,8 @@ export interface ManagementBrowserProxy {
 
   getManagedWebsites(): Promise<string[]>;
 
+  getApplications(): Promise<Application[]>;
+
   // <if expr="is_chromeos">
   /**
    * @return Whether trust root configured or not.
@@ -119,6 +129,10 @@ export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
 
   getManagedWebsites() {
     return sendWithPromise('getManagedWebsites');
+  }
+
+  getApplications() {
+    return sendWithPromise('getApplications');
   }
 
   // <if expr="is_chromeos">

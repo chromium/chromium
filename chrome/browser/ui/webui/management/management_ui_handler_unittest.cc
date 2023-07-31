@@ -122,7 +122,7 @@ using testing::Return;
 using testing::ReturnRef;
 
 struct ContextualManagementSourceUpdate {
-  std::u16string extension_reporting_title;
+  std::u16string extension_reporting_subtitle;
   std::u16string managed_websites_title;
   std::u16string subtitle;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -141,7 +141,6 @@ const char kUser[] = "user@domain.com";
 const char kGaiaId[] = "gaia_id";
 }  // namespace
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // This class is just to mock the behaviour of the few flags we need for
 // simulating the behaviour of the policy::DeviceStatusCollector.
@@ -343,8 +342,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   }
 
   void ExtractContextualSourceUpdate(const base::Value::Dict& data) {
-    extracted_.extension_reporting_title =
-        ExtractPathFromDict(data, "extensionReportingTitle");
+    extracted_.extension_reporting_subtitle =
+        ExtractPathFromDict(data, "extensionReportingSubtitle");
     extracted_.managed_websites_title =
         ExtractPathFromDict(data, "managedWebsitesSubtitle");
     extracted_.subtitle = ExtractPathFromDict(data, "pageSubtitle");
@@ -561,8 +560,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
 #endif
 
-  std::u16string GetExtensionReportingTitle() const {
-    return extracted_.extension_reporting_title;
+  std::u16string GetExtensionReportingSubtitle() const {
+    return extracted_.extension_reporting_subtitle;
   }
 
   std::u16string GetManagedWebsitesTitle() const {
@@ -745,7 +744,7 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().managed_account = false;
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
@@ -765,7 +764,7 @@ TEST_F(ManagementUIHandlerTests,
   ResetTestConfig();
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
@@ -787,7 +786,7 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().override_policy_connector_is_managed = true;
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
@@ -812,7 +811,7 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().managed_account = false;
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        base::UTF8ToUTF16(domain)));
   EXPECT_EQ(
@@ -836,7 +835,7 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().managed_account = false;
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
@@ -860,7 +859,7 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().override_policy_connector_is_managed = true;
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        base::UTF8ToUTF16(domain)));
   EXPECT_EQ(
@@ -892,7 +891,7 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().device_domain = "";
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        base::UTF8ToUTF16(domain)));
   EXPECT_EQ(
@@ -917,7 +916,7 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().device_domain = "";
   SetUpProfileAndHandler();
 
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
@@ -942,7 +941,7 @@ TEST_F(ManagementUIHandlerTests,
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                        l10n_util::GetStringUTF16(device_type),
                                        device_domain()));
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
   EXPECT_EQ(
@@ -966,7 +965,7 @@ TEST_F(ManagementUIHandlerTests,
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                        l10n_util::GetStringUTF16(device_type),
                                        device_domain()));
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
   EXPECT_EQ(GetManagementOverview(),
@@ -994,7 +993,7 @@ TEST_F(ManagementUIHandlerTests,
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                        l10n_util::GetStringUTF16(device_type),
                                        device_domain()));
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
   EXPECT_EQ(
@@ -1020,7 +1019,7 @@ TEST_F(ManagementUIHandlerTests, ManagementContextualSourceUpdateUnmanaged) {
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                        l10n_util::GetStringUTF16(device_type)));
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
@@ -1048,7 +1047,7 @@ TEST_F(ManagementUIHandlerTests,
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                        l10n_util::GetStringUTF16(device_type),
                                        device_domain()));
-  EXPECT_EQ(GetExtensionReportingTitle(),
+  EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
   EXPECT_EQ(

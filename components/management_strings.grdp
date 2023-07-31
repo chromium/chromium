@@ -213,6 +213,25 @@
       Permissions
     </message>
 
+     <!-- Strings related to application reporting section of the management page -->
+    <message name="IDS_MANAGEMENT_APPLICATION_REPORTING" desc="Title of the force installed applications section of the page">
+      Applications
+    </message>
+    <message name="IDS_MANAGEMENT_APPLICATIONS_INSTALLED" desc="Message describing that the administrator has installed some powerful applications on the managed user's browser">
+      The administrator of this device has installed applications for additional functions. Applications have access to some of your data.
+    </message>
+    <message name="IDS_MANAGEMENT_APPLICATIONS_INSTALLED_BY" desc="Message describing that the administrator has installed some powerful applications on the managed user's browser from a specific domain">
+      <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> has installed applications for additional functions. Applications have access to some of your data.
+    </message>
+    <message name="IDS_MANAGEMENT_APPLICATIONS_NAME" desc="Title of a column of the application table showing the name of the application" meaning="Name of an inanimate object">
+      Name
+    </message>
+    <message name="IDS_MANAGEMENT_APPLICATIONS_PERMISSIONS" desc="Title of a column of the application table showing the permissions of the application">
+      Permissions
+    </message>  <message name="IDS_MANAGEMENT_APPLICATIONS_RUN_ON_OS_LOGIN" desc="Permission to run on OS login">
+      Auto-start on your device
+    </message>
+
     <!-- Strings related to website managed configuration of the management page -->
     <message name="IDS_MANAGEMENT_MANAGED_WEBSITES" desc="Title of the configured websites section of the page">
       Websites with info from your organization

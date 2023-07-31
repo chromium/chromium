@@ -2512,6 +2512,7 @@ if (!is_android) {
       "../browser/ui/webui/management/management_a11y_browsertest.cc",
       "../browser/ui/webui/management/management_a11y_browsertest.h",
       "../browser/ui/webui/management/management_ui_browsertest.cc",
+      "../browser/ui/webui/management/management_ui_pwa_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.h",
       "../browser/ui/webui/new_tab_page/webui_ntp_browsertest.cc",
