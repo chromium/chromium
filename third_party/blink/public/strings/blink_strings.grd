@@ -749,7 +749,7 @@ below:
       </message>
 
       <message name="IDS_MEDIA_SESSION_FILE_SOURCE" desc="The name of the media session source if the media is a local file.">
-        Local File
+        File on your device
       </message>
       <message name="IDS_MEDIA_OVERFLOW_MENU_CLOSED_CAPTIONS" desc="Media controls overflow menu item label for a closed captions button. The text for this overflow menu should be short.">
         Captions

@@ -2655,7 +2655,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, MetadataWhenFileUrlScheme) {
 
   media_session::MediaMetadata expected_metadata;
   expected_metadata.title = shell()->web_contents()->GetTitle();
-  expected_metadata.source_title = u"Local File";
+  expected_metadata.source_title = u"File on your device";
   observer.WaitForExpectedMetadata(expected_metadata);
 }
 
