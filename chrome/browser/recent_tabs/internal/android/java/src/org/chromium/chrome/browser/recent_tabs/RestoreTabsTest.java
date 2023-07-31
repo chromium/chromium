@@ -21,6 +21,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -38,6 +40,7 @@ import org.mockito.Spy;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
@@ -113,7 +116,11 @@ public class RestoreTabsTest {
 
     @Test
     @MediumTest
-    public void testRestoreTabsPromo_triggerBottomSheetView() {
+    @DisableIf.
+    Build(supported_abis_includes = "armeabi-v7a", sdk_is_less_than = Build.VERSION_CODES.O,
+            message = "Flaky only on test-n-phone, crbug.com/1469008")
+    public void
+    testRestoreTabsPromo_triggerBottomSheetView() {
         // Test using triggerHelpUI methods instead of skip_feature_engagement param
         RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
 
