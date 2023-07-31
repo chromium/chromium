@@ -38,6 +38,8 @@ per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
 per-file *settings*strings*.grdp=file://ui/webui/PLATFORM_OWNERS
 per-file *settings*strings*.grdp=sauski@google.com
 
+per-file support_tool_strings.grdp=file://chrome/browser/support_tool/OWNERS
+
 per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 
 per-file password_manager_ui_strings.grdp=file://chrome/browser/password_manager/OWNERS
