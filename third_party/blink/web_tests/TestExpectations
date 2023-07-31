@@ -693,9 +693,6 @@ crbug.com/1046784 http/tests/devtools/elements/styles-3/styles-disable-then-dele
 # Temporarily disabled to unblock https://crrev.com/c/4417276
 crbug.com/1427397 http/tests/devtools/elements/styles-4/style-update-during-selector-edit.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/4706005
-crbug.com/792101 http/tests/devtools/tracing/timeline-xhr-event.js [ Failure Pass ]
-
 # Subpixel rounding differences that are incorrect.
 crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
 # Flaky subpixel AA difference (not necessarily incorrect, but flaky)
