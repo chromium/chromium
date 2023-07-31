@@ -112,7 +112,11 @@ void EntityAnnotatorHolder::ResetEntityAnnotator() {
 
   if (entity_annotator_) {
     DCHECK(entity_annotator_native_library_);
-    entity_annotator_native_library_->DeleteEntityAnnotator(entity_annotator_);
+    // The `entity_annotator_` raw_ptr cannot be deleted through a custom
+    // deleter because it depends on `entity_annotator_native_library_`. See
+    // docs/dangling_ptr_guide.md.
+    entity_annotator_native_library_->DeleteEntityAnnotator(
+        entity_annotator_.ExtractAsDangling());
 
     entity_annotator_ = nullptr;
   }
