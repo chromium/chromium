@@ -27,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -970,7 +971,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   const size_t kNumberContentSettingListeners = 2;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   raw_ptr<Profile, DanglingUntriaged> incognito_profile_ = nullptr;
@@ -2307,11 +2309,15 @@ TEST_F(SiteSettingsHandlerTest, TemporaryCookieExceptions) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& exception_list = data.arg3()->GetList();
   EXPECT_EQ(1UL, exception_list.size());
-  EXPECT_EQ(
 
-      l10n_util::GetPluralStringFUTF8(IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL,
-                                      kExpirationDurationInDays),
-      CHECK_DEREF(exception_list[0].GetDict().FindString("description")));
+  // Mirror the logic in the helper to avoid flakes on time edges.
+  auto time_diff = (base::Time::Now() + base::Days(kExpirationDurationInDays))
+                       .LocalMidnight() -
+                   base::Time::Now().LocalMidnight();
+
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF8(
+                IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL, time_diff.InDays()),
+            CHECK_DEREF(exception_list[0].GetDict().FindString("description")));
 }
 
 class SiteSettingsHandlerIsolatedWebAppTest : public SiteSettingsHandlerTest {
