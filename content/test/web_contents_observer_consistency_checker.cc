@@ -439,8 +439,7 @@ std::string WebContentsObserverConsistencyChecker::Format(
 
 bool WebContentsObserverConsistencyChecker::NavigationIsOngoing(
     NavigationHandle* navigation_handle) {
-  auto it = ongoing_navigations_.find(navigation_handle);
-  return it != ongoing_navigations_.end();
+  return base::Contains(ongoing_navigations_, navigation_handle);
 }
 
 void WebContentsObserverConsistencyChecker::EnsureStableParentValue(
@@ -521,9 +520,8 @@ void WebContentsObserverConsistencyChecker::AddInputEventObserver(
 
 void WebContentsObserverConsistencyChecker::RemoveInputEventObserver(
     RenderFrameHost* render_frame_host) {
-  auto it = input_observer_map_.find(render_frame_host);
-  CHECK(it != input_observer_map_.end());
-  input_observer_map_.erase(it);
+  DCHECK(base::Contains(input_observer_map_, render_frame_host));
+  input_observer_map_.erase(render_frame_host);
 }
 
 WebContentsObserverConsistencyChecker::TaskChecker::TaskChecker()

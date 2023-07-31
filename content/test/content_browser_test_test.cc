@@ -8,6 +8,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/process/launch.h"
@@ -134,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
       "#0 ";
 #endif
 
-  if (output.find(crash_string) == std::string::npos) {
+  if (!base::Contains(output, crash_string)) {
     GTEST_FAIL() << "Couldn't find\n" << crash_string << "\n in output\n "
                  << output;
   }
@@ -187,9 +188,9 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_BrowserCrashCallStack) {
       "#0 ";
 #endif
 
-  if (output.find(crash_string) == std::string::npos) {
-    GTEST_FAIL() << "Couldn't find\n" << crash_string << "\n in output\n "
-                 << output;
+  if (!base::Contains(output, crash_string)) {
+    GTEST_FAIL() << "Couldn't find\n"
+                 << crash_string << "\n in output\n " << output;
   }
 }
 

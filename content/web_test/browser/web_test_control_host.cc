@@ -2036,8 +2036,7 @@ mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
 WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
   GlobalRenderFrameHostId key(frame->GetProcess()->GetID(),
                               frame->GetRoutingID());
-  if (web_test_render_frame_map_.find(key) ==
-      web_test_render_frame_map_.end()) {
+  if (!base::Contains(web_test_render_frame_map_, key)) {
     mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
         web_test_render_frame_map_[key];
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&new_ptr);
@@ -2051,8 +2050,7 @@ WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
 
 mojo::AssociatedRemote<mojom::WebTestRenderThread>&
 WebTestControlHost::GetWebTestRenderThreadRemote(RenderProcessHost* process) {
-  if (web_test_render_thread_map_.find(process) ==
-      web_test_render_thread_map_.end()) {
+  if (!base::Contains(web_test_render_thread_map_, process)) {
     IPC::ChannelProxy* channel = process->GetChannel();
     // channel might be null in tests.
     if (process->IsInitializedAndNotDead() && channel) {

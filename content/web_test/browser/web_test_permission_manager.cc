@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include <base/containers/contains.h>
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -171,11 +172,12 @@ void WebTestPermissionManager::ResetPermission(blink::PermissionType permission,
 
   base::AutoLock lock(permissions_lock_);
 
-  auto it = permissions_.find(
-      PermissionDescription(permission, requesting_origin, embedding_origin));
-  if (it == permissions_.end())
+  const auto key =
+      PermissionDescription(permission, requesting_origin, embedding_origin);
+  if (!base::Contains(permissions_, key)) {
     return;
-  permissions_.erase(it);
+  }
+  permissions_.erase(key);
 }
 
 void WebTestPermissionManager::RequestPermissionsFromCurrentDocument(
