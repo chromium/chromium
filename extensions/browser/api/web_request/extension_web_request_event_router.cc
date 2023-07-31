@@ -405,6 +405,50 @@ ExtensionWebRequestTimeTracker& GetExtensionWebRequestTimeTracker() {
   return *instance.get();
 }
 
+class CrossContextData {
+ public:
+  CrossContextData() = default;
+  ~CrossContextData() = default;
+  CrossContextData(const CrossContextData&) = delete;
+  CrossContextData& operator=(const CrossContextData&) = delete;
+
+  static CrossContextData& Get() {
+    static base::NoDestructor<CrossContextData> instance;
+    return *instance.get();
+  }
+
+  content::BrowserContext* GetCrossBrowserContext(
+      content::BrowserContext* browser_context) {
+    const auto it = cross_context_data_.find(browser_context);
+    return it == cross_context_data_.end() ? nullptr : it->second;
+  }
+
+  void AddContext(content::BrowserContext* original_browser_context,
+                  content::BrowserContext* otr_browser_context) {
+    cross_context_data_[original_browser_context] = otr_browser_context;
+    cross_context_data_[otr_browser_context] = original_browser_context;
+  }
+
+  void RemoveContext(content::BrowserContext* browser_context) {
+    // This context can be either the original one, or the OTR one. Either
+    // way, we need to remove both entries.
+    auto it = cross_context_data_.find(browser_context);
+    if (it != cross_context_data_.end()) {
+      cross_context_data_.erase(it->second);
+      cross_context_data_.erase(it);
+    }
+  }
+
+ private:
+  using CrossContextMap =
+      std::map<content::BrowserContext*, content::BrowserContext*>;
+
+  // For each each on-the-record context that has an off-the-record context,
+  // this bi-map contains an entry for both contexts where the value is the
+  // other context.
+  CrossContextMap cross_context_data_;
+};
+
 }  // namespace
 
 // static
@@ -1332,8 +1376,10 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
   Listeners& inactive_listeners = data.inactive_listeners[event_name];
   Listeners* cross_active_listeners = nullptr;
   Listeners* cross_inactive_listeners = nullptr;
-  if (data.cross_context) {
-    auto& cross_data = data_[GetBrowserContextID(data.cross_context.get())];
+  content::BrowserContext* const cross_context =
+      GetCrossBrowserContext(browser_context);
+  if (cross_context) {
+    auto& cross_data = data_[GetBrowserContextID(cross_context)];
     cross_active_listeners = &cross_data.active_listeners[event_name];
     cross_inactive_listeners = &cross_data.inactive_listeners[event_name];
   }
@@ -1618,9 +1664,10 @@ void ExtensionWebRequestEventRouter::RemoveLazyListener(
 
   check_list(data.active_listeners[event_name], original_context_id);
   check_list(data.inactive_listeners[event_name], original_context_id);
-  if (data.cross_context) {
-    BrowserContextID cross_context_id =
-        GetBrowserContextID(data.cross_context.get());
+  content::BrowserContext* const cross_context =
+      GetCrossBrowserContext(original_context);
+  if (cross_context) {
+    BrowserContextID cross_context_id = GetBrowserContextID(cross_context);
     BrowserContextData& cross_data = data_[cross_context_id];
     check_list(cross_data.active_listeners[event_name], cross_context_id);
     check_list(cross_data.inactive_listeners[event_name], cross_context_id);
@@ -1726,16 +1773,14 @@ void ExtensionWebRequestEventRouter::RemoveWebViewEventListeners(
 void ExtensionWebRequestEventRouter::OnOTRBrowserContextCreated(
     content::BrowserContext* original_browser_context,
     content::BrowserContext* otr_browser_context) {
-  data_[GetBrowserContextID(original_browser_context)].cross_context =
-      otr_browser_context;
-  auto& otr_data = data_[GetBrowserContextID(otr_browser_context)];
-  otr_data.cross_context = original_browser_context;
+  CrossContextData::Get().AddContext(original_browser_context,
+                                     otr_browser_context);
 }
 
 void ExtensionWebRequestEventRouter::OnOTRBrowserContextDestroyed(
     content::BrowserContext* original_browser_context,
     content::BrowserContext* otr_browser_context) {
-  data_[GetBrowserContextID(original_browser_context)].cross_context = nullptr;
+  CrossContextData::Get().RemoveContext(original_browser_context);
   OnBrowserContextShutdown(otr_browser_context);
   DCHECK(!base::Contains(data_, GetBrowserContextID(otr_browser_context)));
 }
@@ -1841,8 +1886,7 @@ void ExtensionWebRequestEventRouter::NotifyPageLoad() {
 
 content::BrowserContext* ExtensionWebRequestEventRouter::GetCrossBrowserContext(
     content::BrowserContext* browser_context) const {
-  auto iter = data_.find(GetBrowserContextID(browser_context));
-  return iter == data_.end() ? nullptr : iter->second.cross_context;
+  return CrossContextData::Get().GetCrossBrowserContext(browser_context);
 }
 
 bool ExtensionWebRequestEventRouter::WasSignaled(

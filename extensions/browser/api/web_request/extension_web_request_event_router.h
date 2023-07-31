@@ -423,11 +423,6 @@ class ExtensionWebRequestEventRouter {
     // events. Modified through `IncrementExtraHeadersListenerCount()` and
     // `DecrementExtraHeadersListenerCount()`.
     int extra_headers_count = 0;
-    // The corresponding incognito or on-the-record context for this
-    // BrowserContext. That is, if this context is incognito, `cross_context`
-    // will point to the original context; if this context is the original,
-    // `cross_context` will point to the incognito context (if any).
-    raw_ptr<content::BrowserContext> cross_context = nullptr;
   };
 
   using DataMap = std::map<BrowserContextID, BrowserContextData>;
