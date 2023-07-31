@@ -47,6 +47,9 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 @property(nonatomic, strong) UIView* popupContainerView;
 /// Separator for the bottom edge of the popup on iPad.
 @property(nonatomic, strong) UIView* bottomSeparator;
+/// Top constraint between the popup and it's container. This is used to animate
+/// suggestions when focusing the omnibox.
+@property(nonatomic, strong) NSLayoutConstraint* popupTopConstraint;
 
 // The layout guide center to use to refer to the omnibox.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
@@ -108,7 +111,12 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
       _popupContainerView.layer.borderWidth = 2.0f;
       AddSameConstraints(viewController.view, _popupContainerView);
     } else {
-      AddSameConstraints(viewController.view, _popupContainerView);
+      AddSameConstraintsToSides(viewController.view, _popupContainerView,
+                                LayoutSides::kLeading | LayoutSides::kTrailing |
+                                    LayoutSides::kBottom);
+      _popupTopConstraint = [viewController.view.topAnchor
+          constraintEqualToAnchor:_popupContainerView.topAnchor];
+      _popupTopConstraint.active = YES;
     }
 
     // Add bottom separator. This will only be visible on iPad where
@@ -262,18 +270,29 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   [[popup superview] layoutIfNeeded];
 
   if (isAnimated) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
-    popup.alpha = 0.0;
-    topConstraint.constant = kVerticalOffset + kFadeAnimationVerticalOffset;
-    [[popup superview] layoutIfNeeded];
-
-    [UIView animateWithDuration:kFadeInAnimationDuration
-                     animations:^{
-                       popup.alpha = 1.0;
-                       topConstraint.constant = kVerticalOffset;
-                       [[popup superview] layoutIfNeeded];
-                     }];
+    [self animatePopupOnOmniboxFocus];
   }
+}
+
+/// Animates the popup for omnibox focus.
+- (void)animatePopupOnOmniboxFocus {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  __weak __typeof__(self) weakSelf = self;
+  self.viewController.view.alpha = 0.0;
+  self.popupTopConstraint.constant = kFadeAnimationVerticalOffset;
+  [self.popupContainerView.superview layoutIfNeeded];
+
+  auto constraintForVisiblePopup = ^{
+    weakSelf.viewController.view.alpha = 1.0;
+    weakSelf.popupTopConstraint.constant = 0.0;
+    [weakSelf.popupContainerView.superview layoutIfNeeded];
+  };
+
+  [UIView animateWithDuration:kFadeInAnimationDuration
+                   animations:constraintForVisiblePopup
+                   completion:^(BOOL _) {
+                     constraintForVisiblePopup();
+                   }];
 }
 
 @end
