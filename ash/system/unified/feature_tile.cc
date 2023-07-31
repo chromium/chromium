@@ -218,6 +218,7 @@ void FeatureTile::CreateDecorativeDrillInArrow() {
   drill_in_arrow_->SetProperty(views::kMarginsKey, kDrillInArrowMargins);
   // Allow hover events to fall through to show tooltips from the main view.
   drill_in_arrow_->SetCanProcessEventsWithinSubtree(false);
+  drill_in_arrow_->SetFlipCanvasOnPaintForRTLUI(true);
   UpdateDrillInArrowColor();
 }
 

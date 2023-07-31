@@ -9,6 +9,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/rtl.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -67,7 +68,7 @@ class FeatureTilePixelTest : public AshTestBase {
 
 TEST_F(FeatureTilePixelTest, PrimaryTile) {
   auto* tile = widget_->GetContentsView()->AddChildView(
-      std::make_unique<FeatureTile>(base::DoNothing(), /*toggleable=*/true,
+      std::make_unique<FeatureTile>(base::DoNothing(), /*is_togglable=*/true,
                                     FeatureTile::TileType::kPrimary));
   // Use the default size from go/cros-quick-settings-spec
   tile->SetPreferredSize(gfx::Size(180, 64));
@@ -100,9 +101,34 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
       /*revision_number=*/0, widget_.get()));
 }
 
+TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
+  // Turn on RTL mode.
+  base::i18n::SetRTLForTesting(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(base::i18n::IsRTL());
+
+  auto* tile = widget_->GetContentsView()->AddChildView(
+      std::make_unique<FeatureTile>(base::DoNothing(), /*is_togglable=*/true,
+                                    FeatureTile::TileType::kPrimary));
+
+  // Use the default size from go/cros-quick-settings-spec
+  tile->SetPreferredSize(gfx::Size(180, 64));
+  tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+  tile->SetLabel(u"Label");
+  tile->SetSubLabel(u"Sub-label");
+  tile->CreateDecorativeDrillInArrow();
+
+  // Needed for accessibility paint checks.
+  tile->SetTooltipText(u"Tooltip");
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "basic",
+      /*revision_number=*/0, widget_.get()));
+}
+
 TEST_F(FeatureTilePixelTest, CompactTile) {
   auto* tile = widget_->GetContentsView()->AddChildView(
-      std::make_unique<FeatureTile>(base::DoNothing(), /*toggleable=*/true,
+      std::make_unique<FeatureTile>(base::DoNothing(), /*is_togglable=*/true,
                                     FeatureTile::TileType::kCompact));
   // Use the default size from go/cros-quick-settings-spec
   tile->SetPreferredSize(gfx::Size(86, 64));
