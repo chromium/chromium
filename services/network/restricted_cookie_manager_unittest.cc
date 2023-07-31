@@ -1751,154 +1751,6 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
             listener->observed_changes()[0].access_result.access_semantics);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RestrictedCookieManagerTest,
-    testing::Combine(
-        testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
-                        mojom::RestrictedCookieManagerRole::NETWORK),
-        testing::Values(
-            net::CookieSettingOverrides(),
-            net::CookieSettingOverrides(
-                {net::CookieSettingOverride::kForceThirdPartyByUser}))));
-
-class UnpartitionedCookiesRestrictedCookieManagerTest
-    : public RestrictedCookieManagerTest {
- public:
-  UnpartitionedCookiesRestrictedCookieManagerTest() {
-    feature_list_.InitAndDisableFeature(net::features::kPartitionedCookies);
-  }
-  ~UnpartitionedCookiesRestrictedCookieManagerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test Partitioned cookie behavior when feature is disabled.
-TEST_P(UnpartitionedCookiesRestrictedCookieManagerTest, PartitionedCookies) {
-  const GURL kCookieURL("https://example.com");
-  const GURL kTopFrameURL("https://foo.com");
-  const net::SiteForCookies kSiteForCookies =
-      net::SiteForCookies::FromUrl(kTopFrameURL);
-  const url::Origin kTopFrameOrigin = url::Origin::Create(kTopFrameURL);
-  const net::IsolationInfo kIsolationInfo =
-      net::IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
-
-  service_->OverrideIsolationInfoForTesting(kIsolationInfo);
-  sync_service_->SetCookieFromString(
-      kCookieURL, kSiteForCookies, kTopFrameOrigin,
-      /*has_storage_access=*/false,
-      "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned");
-
-  {  // Test request from the same top-level site.
-    auto options = mojom::CookieManagerGetOptions::New();
-    options->name = "";
-    options->match_type = mojom::CookieMatchType::STARTS_WITH;
-
-    net::CookieList cookies = sync_service_->GetAllForUrl(
-        kCookieURL, kSiteForCookies, kTopFrameOrigin,
-        /*has_storage_access=*/false, std::move(options));
-    ASSERT_EQ(1u, cookies.size());
-    EXPECT_FALSE(cookies[0].IsPartitioned());
-    EXPECT_EQ("__Host-foo", cookies[0].Name());
-
-    auto listener =
-        CreateCookieChangeListener(kCookieURL, kSiteForCookies, kTopFrameOrigin,
-                                   /*has_storage_access=*/false);
-
-    // Update partitioned cookie Max-Age: None -> 7200.
-    EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
-            kCookieURL,
-            "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
-            "Max-Age=7200",
-            base::Time::Now(), absl::nullopt /* server_time */,
-            net::CookiePartitionKey::FromNetworkIsolationKey(
-                kIsolationInfo.network_isolation_key())),
-        "https", false /* can_modify_httponly */));
-
-    // If Partitioned cookies are disabled, the change listener should see the
-    // change to the cookie on this top-level site.
-    listener->WaitForChange();
-    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
-  }
-
-  {  // Test request from another top-level site.
-    const GURL kOtherTopFrameURL("https://bar.com");
-    const net::SiteForCookies kOtherSiteForCookies =
-        net::SiteForCookies::FromUrl(kOtherTopFrameURL);
-    const url::Origin kOtherTopFrameOrigin =
-        url::Origin::Create(kOtherTopFrameURL);
-    const net::IsolationInfo kOtherIsolationInfo =
-        net::IsolationInfo::CreateForInternalRequest(kOtherTopFrameOrigin);
-
-    service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
-
-    auto options = mojom::CookieManagerGetOptions::New();
-    options->name = "";
-    options->match_type = mojom::CookieMatchType::STARTS_WITH;
-
-    net::CookieList cookies = sync_service_->GetAllForUrl(
-        kCookieURL, kOtherSiteForCookies, kOtherTopFrameOrigin,
-        /*has_storage_access=*/false, std::move(options));
-    ASSERT_EQ(1u, cookies.size());
-    EXPECT_FALSE(cookies[0].IsPartitioned());
-    EXPECT_EQ("__Host-foo", cookies[0].Name());
-
-    auto listener = CreateCookieChangeListener(kCookieURL, kOtherSiteForCookies,
-                                               kOtherTopFrameOrigin,
-                                               /*has_storage_access=*/false);
-
-    // Update partitioned cookie Max-Age: 7200 -> 3600.
-    EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
-            kCookieURL,
-            "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
-            "Max-Age=3600",
-            base::Time::Now(), absl::nullopt /* server_time */,
-            net::CookiePartitionKey::FromNetworkIsolationKey(
-                kIsolationInfo.network_isolation_key())),
-        "https", false /* can_modify_httponly */));
-
-    // If Partitioned cookies are disabled, the change listener should see the
-    // change to the cookie on the other top-level site as well.
-    listener->WaitForChange();
-    ASSERT_THAT(listener->observed_changes(), testing::SizeIs(1));
-  }
-}
-
-TEST_P(UnpartitionedCookiesRestrictedCookieManagerTest,
-       PartitionKeyFromScript) {
-  const GURL kCookieURL("https://example.com");
-  const GURL kTopFrameURL("https://foo.com");
-  const net::SiteForCookies kSiteForCookies =
-      net::SiteForCookies::FromUrl(kTopFrameURL);
-  const url::Origin kTopFrameOrigin = url::Origin::Create(kTopFrameURL);
-  const net::IsolationInfo kIsolationInfo =
-      net::IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
-  service_->OverrideIsolationInfoForTesting(kIsolationInfo);
-
-  EXPECT_TRUE(sync_service_->SetCanonicalCookie(
-      *net::CanonicalCookie::Create(
-          kCookieURL,
-          "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned",
-          base::Time::Now(), absl::nullopt /* server_time */,
-          net::CookiePartitionKey::FromScript()),
-      kCookieURL, kSiteForCookies, kTopFrameOrigin,
-      /*has_storage_access=*/false));
-
-  auto options = mojom::CookieManagerGetOptions::New();
-  options->name = "";
-  options->match_type = mojom::CookieMatchType::STARTS_WITH;
-
-  net::CookieList cookies = sync_service_->GetAllForUrl(
-      kCookieURL, kSiteForCookies, kTopFrameOrigin,
-      /*has_storage_access=*/false, std::move(options));
-  ASSERT_EQ(1u, cookies.size());
-  EXPECT_FALSE(cookies[0].IsPartitioned());
-  EXPECT_EQ("__Host-foo", cookies[0].Name());
-}
-
 // Test Partitioned cookie behavior when feature is enabled.
 TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
   const GURL kCookieURL("https://example.com");
@@ -2049,7 +1901,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyFromScript) {
   EXPECT_EQ("__Host-foo", cookies[0].Name());
 }
 
-TEST_P(UnpartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
+TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -2199,8 +2051,8 @@ TEST_P(UnpartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    SameParty,
-    UnpartitionedCookiesRestrictedCookieManagerTest,
+    All,
+    RestrictedCookieManagerTest,
     testing::Combine(
         testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
                         mojom::RestrictedCookieManagerRole::NETWORK),
