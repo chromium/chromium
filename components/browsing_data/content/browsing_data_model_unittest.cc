@@ -5,6 +5,7 @@
 #include "components/browsing_data/content/browsing_data_model.h"
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -187,6 +188,16 @@ TEST_F(BrowsingDataModelTest, ConcurrentDeletions) {
           [&](network::TestNetworkContext::GetStoredTrustTokenCountsCallback
                   callback) { std::move(callback).Run(std::move(tokens)); });
 
+  if (base::FeatureList::IsEnabled(
+          network::features::kCompressionDictionaryTransportBackend)) {
+    EXPECT_CALL(*mock_network_context(),
+                GetSharedDictionaryUsageInfo(testing::_))
+        .WillOnce([&](network::TestNetworkContext::
+                          GetSharedDictionaryUsageInfoCallback callback) {
+          std::move(callback).Run({});
+        });
+  }
+
   base::RunLoop run_loop;
   BuildModel(run_loop.QuitWhenIdleClosure());
   run_loop.Run();
@@ -294,6 +305,16 @@ TEST_F(BrowsingDataModelTest, DelegateDataDeleted) {
       .WillOnce(
           [&](network::TestNetworkContext::GetStoredTrustTokenCountsCallback
                   callback) { std::move(callback).Run({}); });
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kCompressionDictionaryTransportBackend)) {
+    EXPECT_CALL(*mock_network_context(),
+                GetSharedDictionaryUsageInfo(testing::_))
+        .WillOnce([&](network::TestNetworkContext::
+                          GetSharedDictionaryUsageInfoCallback callback) {
+          std::move(callback).Run({});
+        });
+  }
 
   base::RunLoop run_loop;
   BuildModel(run_loop.QuitWhenIdleClosure());
