@@ -31,6 +31,8 @@ consoles.list_view(
 try_.builder(
     name = "dawn-android-arm-deps-rel",
     mirrors = [
+        "ci/Dawn Android arm DEPS Builder",
+        "ci/Dawn Android arm DEPS Release (Nexus 5X)",
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
     main_list_view = "try",
@@ -203,6 +205,8 @@ try_.builder(
 try_.builder(
     name = "android-dawn-arm-rel",
     mirrors = [
+        "ci/Dawn Android arm Builder",
+        "ci/Dawn Android arm Release (Nexus 5X)",
         "ci/Dawn Android arm Release (Pixel 4)",
     ],
     test_presentation = resultdb.test_presentation(

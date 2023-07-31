@@ -33,7 +33,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Android arm Release (Pixel 4)",
+              "builder": "Dawn Android arm Release (Nexus 5X)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -67,7 +67,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Dawn Android arm Release (Pixel 4)",
+          "builder": "Dawn Android arm Release (Nexus 5X)",
           "project": "chromium"
         }
       ],

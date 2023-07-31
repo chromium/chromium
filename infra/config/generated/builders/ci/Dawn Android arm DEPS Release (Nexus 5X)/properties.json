@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Android arm Builder",
+              "builder": "Dawn Android arm DEPS Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -22,8 +22,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android",
-                  "dawn_top_of_tree"
+                  "android"
                 ],
                 "config": "chromium"
               },
@@ -33,7 +32,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Android arm Release (Pixel 4)",
+              "builder": "Dawn Android arm DEPS Release (Nexus 5X)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -49,14 +48,13 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android",
-                  "dawn_top_of_tree"
+                  "android"
                 ],
                 "config": "chromium"
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "Dawn Android arm Builder",
+                "builder": "Dawn Android arm DEPS Builder",
                 "project": "chromium"
               },
               "run_tests_serially": true
@@ -67,13 +65,13 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Dawn Android arm Release (Pixel 4)",
+          "builder": "Dawn Android arm DEPS Release (Nexus 5X)",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-dawn-arm-rel",
+          "builder": "dawn-android-arm-deps-rel",
           "group": "tryserver.chromium.dawn"
         }
       ]

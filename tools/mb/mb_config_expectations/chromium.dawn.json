@@ -1,5 +1,5 @@
 {
-  "Dawn Android arm DEPS Release (Pixel 4)": {
+  "Dawn Android arm Builder": {
     "gn_args": {
       "dcheck_always_on": true,
       "debuggable_apks": false,
@@ -12,7 +12,7 @@
       "use_remoteexec": true
     }
   },
-  "Dawn Android arm Release (Pixel 4)": {
+  "Dawn Android arm DEPS Builder": {
     "gn_args": {
       "dcheck_always_on": true,
       "debuggable_apks": false,

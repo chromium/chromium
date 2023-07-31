@@ -2420,6 +2420,18 @@
       'timeout_30m',
     ],
     'machines': {
+      'Dawn Android arm DEPS Release (Nexus 5X)': {
+        'os_type': 'android',
+        'browser_config': 'android-chromium',
+        'mixins': [
+          'nougat',
+          'bullhead',
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Dawn Android arm DEPS Release (Pixel 4)': {
         'os_type': 'android',
         'browser_config': 'android-chromium',
@@ -2433,6 +2445,18 @@
           'gpu_telemetry_tests': 'gpu_dawn_android_telemetry_tests',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_android_isolated_scripts',
+        },
+      },
+      'Dawn Android arm Release (Nexus 5X)': {
+        'os_type': 'android',
+        'browser_config': 'android-chromium',
+        'mixins': [
+          'nougat',
+          'bullhead',
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Dawn Android arm Release (Pixel 4)': {

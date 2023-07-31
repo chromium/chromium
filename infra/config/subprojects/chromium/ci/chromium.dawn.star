@@ -99,8 +99,63 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
-    name = "Dawn Android arm DEPS Release (Pixel 4)",
+    name = "Dawn Android arm DEPS Builder",
     builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Android|Builder",
+        short_name = "arm",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "Dawn Android arm DEPS Release (Nexus 5X)",
+    triggered_by = ["ci/Dawn Android arm DEPS Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Android",
+        short_name = "n5x",
+    ),
+)
+
+ci.thin_tester(
+    name = "Dawn Android arm DEPS Release (Pixel 4)",
+    triggered_by = ["ci/Dawn Android arm DEPS Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -121,7 +176,6 @@ ci.gpu.linux_builder(
         category = "DEPS|Android",
         short_name = "p4",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(
@@ -238,8 +292,65 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
-    name = "Dawn Android arm Release (Pixel 4)",
+    name = "Dawn Android arm Builder",
     builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android|Builder",
+        short_name = "arm",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "Dawn Android arm Release (Nexus 5X)",
+    triggered_by = ["ci/Dawn Android arm Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android",
+        short_name = "n5x",
+    ),
+)
+
+ci.thin_tester(
+    name = "Dawn Android arm Release (Pixel 4)",
+    triggered_by = ["ci/Dawn Android arm Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -261,7 +372,6 @@ ci.gpu.linux_builder(
         category = "ToT|Android",
         short_name = "p4",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(

@@ -263,8 +263,8 @@
     },
 
     'chromium.dawn': {
-      'Dawn Android arm DEPS Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
-      'Dawn Android arm Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
+      'Dawn Android arm Builder': 'dawn_tests_android_release_trybot_reclient',
+      'Dawn Android arm DEPS Builder': 'dawn_tests_android_release_trybot_reclient',
       'Dawn Android arm64 DEPS Release (Pixel 6)': 'dawn_tests_android_arm64_release_trybot_reclient',
       'Dawn Android arm64 Release (Pixel 6)': 'dawn_tests_android_arm64_release_trybot_reclient',
 
