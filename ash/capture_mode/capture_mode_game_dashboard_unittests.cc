@@ -9,6 +9,8 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
+#include "ash/capture_mode/capture_mode_settings_test_api.h"
+#include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
@@ -469,6 +471,84 @@ TEST_F(GameDashboardCaptureModeTest, NoLabelInTabletMode) {
   views::Label* label_internal_view =
       CaptureModeSessionTestApi(session).GetCaptureLabelInternalView();
   EXPECT_FALSE(label_internal_view->GetVisible());
+}
+
+TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightFull) {
+  UpdateDisplay("1000x500");
+  game_window()->SetBounds(gfx::Rect(0, 50, 500, 450));
+  StartGameCaptureModeSession();
+  CaptureModeSession* session =
+      CaptureModeController::Get()->capture_mode_session();
+  ASSERT_TRUE(session);
+
+  // Open the settings menu.
+  ClickOnView(GetSettingsButton(), GetEventGenerator());
+  CaptureModeSessionTestApi test_api(session);
+  ASSERT_TRUE(test_api.GetCaptureModeSettingsWidget());
+
+  const gfx::Rect settings_bounds =
+      test_api.GetCaptureModeSettingsWidget()->GetWindowBoundsInScreen();
+
+  // There is space for the settings menu to take up its entire preferred size.
+  EXPECT_GE(settings_bounds.y(),
+            capture_mode::kMinDistanceFromSettingsToScreen);
+  EXPECT_EQ(settings_bounds.height(),
+            test_api.GetCaptureModeSettingsView()->GetPreferredSize().height());
+  EXPECT_EQ(
+      settings_bounds.size(),
+      CaptureModeSettingsTestApi().GetSettingsView()->GetVisibleRect().size());
+}
+
+TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightConstrained) {
+  UpdateDisplay("1000x250");
+  game_window()->SetBounds(gfx::Rect(0, 50, 500, 200));
+  StartGameCaptureModeSession();
+  CaptureModeSession* session =
+      CaptureModeController::Get()->capture_mode_session();
+  ASSERT_TRUE(session);
+
+  // Open the settings menu.
+  ClickOnView(GetSettingsButton(), GetEventGenerator());
+  CaptureModeSessionTestApi test_api(session);
+  ASSERT_TRUE(test_api.GetCaptureModeSettingsWidget());
+
+  const gfx::Rect settings_bounds =
+      test_api.GetCaptureModeSettingsWidget()->GetWindowBoundsInScreen();
+
+  // The menu height has been constrained, but has not reached its minimum size.
+  EXPECT_EQ(settings_bounds.y(),
+            capture_mode::kMinDistanceFromSettingsToScreen);
+  EXPECT_LT(settings_bounds.height(),
+            test_api.GetCaptureModeSettingsView()->GetPreferredSize().height());
+  EXPECT_GT(settings_bounds.height(), capture_mode::kSettingsMenuMinHeight);
+  EXPECT_EQ(
+      settings_bounds.size(),
+      CaptureModeSettingsTestApi().GetSettingsView()->GetVisibleRect().size());
+}
+
+TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimum) {
+  UpdateDisplay("1000x80");
+  game_window()->SetBounds(gfx::Rect(0, 50, 500, 30));
+  StartGameCaptureModeSession();
+  CaptureModeSession* session =
+      CaptureModeController::Get()->capture_mode_session();
+  ASSERT_TRUE(session);
+
+  // Open the settings menu.
+  ClickOnView(GetSettingsButton(), GetEventGenerator());
+  CaptureModeSessionTestApi test_api(session);
+  ASSERT_TRUE(test_api.GetCaptureModeSettingsWidget());
+
+  const gfx::Rect settings_bounds =
+      test_api.GetCaptureModeSettingsWidget()->GetWindowBoundsInScreen();
+
+  // The menu is at its minimum size and height.
+  EXPECT_EQ(settings_bounds.y(),
+            capture_mode::kMinDistanceFromSettingsToScreen);
+  EXPECT_EQ(settings_bounds.height(), capture_mode::kSettingsMenuMinHeight);
+  EXPECT_EQ(
+      settings_bounds.size(),
+      CaptureModeSettingsTestApi().GetSettingsView()->GetVisibleRect().size());
 }
 
 // -----------------------------------------------------------------------------

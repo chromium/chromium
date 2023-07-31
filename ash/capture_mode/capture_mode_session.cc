@@ -1357,6 +1357,12 @@ void CaptureModeSession::HighlightWindowForTab(aura::Window* window) {
 void CaptureModeSession::MaybeUpdateSettingsBounds() {
   if (!capture_mode_settings_widget_)
     return;
+
+  // Set the content of the CaptureModeSettingsView to its maximum preferred
+  // size so the menu will update and scroll properly.
+  capture_mode_settings_view_->contents()->SetSize(
+      capture_mode_settings_view_->contents()->GetPreferredSize());
+
   capture_mode_settings_widget_->SetBounds(CaptureModeSettingsView::GetBounds(
       capture_mode_bar_view_, capture_mode_settings_view_));
 }

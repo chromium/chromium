@@ -131,6 +131,13 @@ constexpr int kGameCaptureBarBottomPadding = 24;
 // Height of the capture bar.
 constexpr int kCaptureBarHeight = 64;
 
+// The minimum distance from the top of the screen to the top of the settings
+// menu.
+constexpr int kMinDistanceFromSettingsToScreen = 8;
+
+// The minimum height of the settings menu while constrained and scrollable.
+constexpr int kSettingsMenuMinHeight = 50;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_
