@@ -76,6 +76,18 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
           &feature_engagement::kIPHScalableIphUnlockedBasedEightFeature,
           &feature_engagement::kIPHScalableIphUnlockedBasedNineFeature,
           &feature_engagement::kIPHScalableIphUnlockedBasedTenFeature,
+          // Help App based.
+          &feature_engagement::kIPHScalableIphHelpAppBasedTriggerFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedOneFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedTwoFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedThreeFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedFourFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedFiveFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedSixFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedSevenFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedEightFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedNineFeature,
+          &feature_engagement::kIPHScalableIphHelpAppBasedTenFeature,
       });
   return *feature_list;
 }

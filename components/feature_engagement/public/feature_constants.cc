@@ -592,6 +592,39 @@ BASE_FEATURE(kIPHScalableIphUnlockedBasedNineFeature,
 BASE_FEATURE(kIPHScalableIphUnlockedBasedTenFeature,
              "IPH_ScalableIphUnlockedBasedTen",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedTriggerFeature,
+             "IPH_ScalableIphHelpAppBasedTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedOneFeature,
+             "IPH_ScalableIphHelpAppBasedOne",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedTwoFeature,
+             "IPH_ScalableIphHelpAppBasedTwo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedThreeFeature,
+             "IPH_ScalableIphHelpAppBasedThree",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedFourFeature,
+             "IPH_ScalableIphHelpAppBasedFour",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedFiveFeature,
+             "IPH_ScalableIphHelpAppBasedFive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedSixFeature,
+             "IPH_ScalableIphHelpAppBasedSix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedSevenFeature,
+             "IPH_ScalableIphHelpAppBasedSeven",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedEightFeature,
+             "IPH_ScalableIphHelpAppBasedEight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedNineFeature,
+             "IPH_ScalableIphHelpAppBasedNine",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphHelpAppBasedTenFeature,
+             "IPH_ScalableIphHelpAppBasedTen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

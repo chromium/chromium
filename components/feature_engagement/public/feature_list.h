@@ -384,6 +384,28 @@ DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedNineFeature,
                        "IPH_ScalableIphUnlockedBasedNine");
 DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedTenFeature,
                        "IPH_ScalableIphUnlockedBasedTen");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTriggerFeature,
+                       "IPH_ScalableIphHelpAppBasedTrigger");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedOneFeature,
+                       "IPH_ScalableIphHelpAppBasedOne");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTwoFeature,
+                       "IPH_ScalableIphHelpAppBasedTwo");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedThreeFeature,
+                       "IPH_ScalableIphHelpAppBasedThree");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedFourFeature,
+                       "IPH_ScalableIphHelpAppBasedFour");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedFiveFeature,
+                       "IPH_ScalableIphHelpAppBasedFive");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedSixFeature,
+                       "IPH_ScalableIphHelpAppBasedSix");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedSevenFeature,
+                       "IPH_ScalableIphHelpAppBasedSeven");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedEightFeature,
+                       "IPH_ScalableIphHelpAppBasedEight");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedNineFeature,
+                       "IPH_ScalableIphHelpAppBasedNine");
+DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTenFeature,
+                       "IPH_ScalableIphHelpAppBasedTen");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -587,6 +609,17 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHScalableIphUnlockedBasedEightFeature),
         VARIATION_ENTRY(kIPHScalableIphUnlockedBasedNineFeature),
         VARIATION_ENTRY(kIPHScalableIphUnlockedBasedTenFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTriggerFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedOneFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTwoFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedThreeFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedFourFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedFiveFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedSixFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedSevenFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedEightFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedNineFeature),
+        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTenFeature),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
