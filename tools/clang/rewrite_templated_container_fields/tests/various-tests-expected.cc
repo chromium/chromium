@@ -308,6 +308,12 @@ struct obj2 {
   RAW_PTR_EXCLUSION std::vector<S*> member;
 };
 
+struct obj3 {
+  // No rewrite expected as this is assigned to obj2::member which is annotated
+  // with RAW_PTR_EXCLUSION.
+  std::vector<S*> member;
+};
+
 namespace temporary {
 std::vector<raw_ptr<S>> ge_t() {
   return {};
@@ -351,6 +357,15 @@ void fct() {
     std::vector<const char*> s;
     A* a = new A(temp4, s);
     (void)a;
+  }
+
+  {
+    std::vector<S*> t;
+    // creates a link between obj2::member and obj3::member through t;
+    // this leads to obj3::member to not be rewritten as it becomes reachable
+    // from a RAW_PTR_EXCLUSION annotated field.
+    obj3 o3{t};
+    obj2 o2{t};
   }
 }
 
@@ -637,8 +652,36 @@ struct S {
 namespace {
 class AA {
  public:
+  // No rewrite expected as this is not reachable from a fieldDecl.
+  using VECTOR = std::vector<S*>;
+
+  // Expected rewrite: using VECTOR2 = std::vector<raw_ptr<S>>;
+  using VECTOR2 = std::vector<raw_ptr<S>>;
+
   // Expected rewrite: set(std::vector<raw_ptr<int>> arg)
   virtual void set(std::vector<raw_ptr<int>> arg) = 0;
+
+  // Expected rewrite: get(std::vector<raw_ptr<int>>& arg)
+  virtual void get(std::vector<raw_ptr<int>>& arg) const = 0;
+
+  // Expected rewrite: get2(std::vector<raw_ptr<int>>* arg)
+  virtual void get2(std::vector<raw_ptr<int>>* arg) const = 0;
+
+  virtual void get3(VECTOR& arg) const = 0;
+
+  virtual void get4(VECTOR2& arg) const = 0;
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  virtual void GetNotifications(std::vector<const int*>* a) const = 0;
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  virtual void GetNotifications2(std::vector<const int*> a) const = 0;
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  virtual void GetNotifications3(std::vector<const int*>& a) const = 0;
 };
 
 class BB : public AA {
@@ -646,21 +689,95 @@ class BB : public AA {
   // Expected rewrite: set(std::vector<raw_ptr<int>> arg)
   void set(std::vector<raw_ptr<int>> arg) override { member = arg; }
 
+  // Expected rewrite: get(std::vector<raw_ptr<int>>& arg)
+  void get(std::vector<raw_ptr<int>>& arg) const override { arg = member; }
+
+  // Expected rewrite: get2(std::vector<raw_ptr<int>>* arg)
+  void get2(std::vector<raw_ptr<int>>* arg) const override { *arg = member; }
+
+  void get3(VECTOR& arg) const override {}
+
+  // Expected rewrite: get4(std::vector<raw_ptr<S>>& arg)
+  void get4(std::vector<raw_ptr<S>>& arg) const override { arg = member2; }
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  void GetNotifications(std::vector<const int*>*) const override {}
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  void GetNotifications2(std::vector<const int*> a) const override {}
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  void GetNotifications3(std::vector<const int*>& a) const override {}
+
  private:
   // Expected rewrite: std::vector<raw_ptr<int>> member;
   std::vector<raw_ptr<int>> member;
+  VECTOR2 member2;
 };
 
 class Mocked1 : public AA {
  public:
   // Expected rewrite: void, set, (std::vector<raw_ptr<int>>)
   MOCK_METHOD(void, set, (std::vector<raw_ptr<int>>));
+
+  // Expected rewrite: get, void(std::vector<raw_ptr<int>>&)
+  MOCK_CONST_METHOD1(get, void(std::vector<raw_ptr<int>>&));
+
+  // Expected rewrite: get2, void(std::vector<raw_ptr<int>>*)
+  MOCK_CONST_METHOD1(get2, void(std::vector<raw_ptr<int>>*));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(get3, void(std::vector<S*>&));
+
+  // Expected rewrite: get4, void(std::vector<raw_ptr<S>>&)
+  MOCK_CONST_METHOD1(get4, void(std::vector<raw_ptr<S>>&));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(GetNotifications, void(std::vector<const int*>*));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(GetNotifications2, void(std::vector<const int*>&));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(GetNotifications3, void(std::vector<const int*>));
 };
 
 class Mocked2 : public AA {
  public:
   // Expected rewrite: set, void(std::vector<raw_ptr<int>> arg)
   MOCK_METHOD1(set, void(std::vector<raw_ptr<int>> args));
+
+  // Expected rewrite: get, void(std::vector<raw_ptr<int>>&)
+  MOCK_CONST_METHOD1(get, void(std::vector<raw_ptr<int>>&));
+
+  // Expected rewrite: get2, void(std::vector<raw_ptr<int>>*)
+  MOCK_CONST_METHOD1(get2, void(std::vector<raw_ptr<int>>*));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(get3, void(VECTOR&));
+
+  // Expected rewrite: get4, void(std::vector<raw_ptr<S>>&)
+  MOCK_CONST_METHOD1(get4, void(std::vector<raw_ptr<S>>&));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(GetNotifications, void(std::vector<const int*>*));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(GetNotifications2, void(std::vector<const int*>&));
+
+  // No rewrite expected as the argument is not connected/reachable from a
+  // rewritten field.
+  MOCK_CONST_METHOD1(GetNotifications3, void(std::vector<const int*>));
 };
 
 }  // namespace

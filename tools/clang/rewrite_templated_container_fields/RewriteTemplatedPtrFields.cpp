@@ -939,7 +939,13 @@ class VectorRawPtrRewriter {
     auto field_exclusions =
         anyOf(isExpansionInSystemHeader(), isInExternCContext(),
               isInThirdPartyLocation(), isInGeneratedLocation(),
-              ImplicitFieldDeclaration(), exclude_callbacks);
+              ImplicitFieldDeclaration(), exclude_callbacks,
+              // Exclude fieldDecls in macros.
+              // `isInMacroLocation()` is also true for fields annotated with
+              // RAW_PTR_EXCLUSION. The annotated fields are not included in
+              // `field_exclusions` as they are handled differently by the
+              // `excluded_field_decl` matcher.
+              allOf(isInMacroLocation(), unless(isRawPtrExclusionAnnotated())));
 
     // Supports typedefs as well.
     auto lhs_type_loc =
@@ -1342,20 +1348,37 @@ class VectorRawPtrRewriter {
             .bind("fct_decl"));
     match_finder_.addMatcher(fct_decls_returns, &fct_sig_nodes_);
 
-    auto macro_fct_signatures =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 templateSpecializationTypeLoc(
-                     rhs_location,
-                     hasAncestor(cxxMethodDecl(
-                                     isInMacroLocation(),
-                                     anyOf(isExpandedFromMacro("MOCK_METHOD"),
-                                           isExpandedFromMacro("MOCK_METHOD0"),
-                                           isExpandedFromMacro("MOCK_METHOD1"),
-                                           isExpandedFromMacro("MOCK_METHOD2"),
-                                           isExpandedFromMacro("MOCK_METHOD3"),
-                                           isExpandedFromMacro("MOCK_METHOD4")),
-                                     unless(isExpansionInSystemHeader()))
-                                     .bind("fct_decl"))));
+    auto macro_fct_signatures = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        templateSpecializationTypeLoc(
+            rhs_location,
+            hasAncestor(
+                cxxMethodDecl(isInMacroLocation(),
+                              anyOf(isExpandedFromMacro("MOCK_METHOD"),
+                                    isExpandedFromMacro("MOCK_METHOD0"),
+                                    isExpandedFromMacro("MOCK_METHOD1"),
+                                    isExpandedFromMacro("MOCK_METHOD2"),
+                                    isExpandedFromMacro("MOCK_METHOD3"),
+                                    isExpandedFromMacro("MOCK_METHOD4"),
+                                    isExpandedFromMacro("MOCK_METHOD5"),
+                                    isExpandedFromMacro("MOCK_METHOD6"),
+                                    isExpandedFromMacro("MOCK_METHOD7"),
+                                    isExpandedFromMacro("MOCK_METHOD8"),
+                                    isExpandedFromMacro("MOCK_METHOD9"),
+                                    isExpandedFromMacro("MOCK_METHOD10"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD0"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD1"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD2"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD3"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD4"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD5"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD6"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD7"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD8"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD9"),
+                                    isExpandedFromMacro("MOCK_CONST_METHOD10")),
+                              unless(isExpansionInSystemHeader()))
+                    .bind("fct_decl"))));
     match_finder_.addMatcher(macro_fct_signatures, &fct_sig_nodes_);
 
     // TODO: handle calls to templated functions
