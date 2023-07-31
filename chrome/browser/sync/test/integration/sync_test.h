@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
 #include "components/sync/base/model_type.h"
@@ -288,9 +287,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // used for UI Signin. Blocks until profile is created.
   static Profile* MakeProfileForUISignin(base::FilePath profile_path);
 
-  // Stops notificatinos being sent to a client.
-  void DisableNotificationsForClient(int index);
-
   // Sets up fake responses for kClientLoginUrl, kIssueAuthTokenUrl,
   // kGetUserInfoUrl and kSearchDomainCheckUrl in order to mock out calls to
   // GAIA servers.
@@ -310,11 +306,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // Handles Profile creation for given index. Profile's path and type is
   // determined at runtime based on server type.
   bool CreateProfile(int index);
-
-  static std::unique_ptr<KeyedService> CreateProfileInvalidationProvider(
-      std::map<const Profile*, invalidation::FCMNetworkHandler*>*
-          profile_to_fcm_network_handler_map,
-      content::BrowserContext* context);
 
   // Creates a fake GCMProfileService to simulate sync invalidations.
   std::unique_ptr<KeyedService> CreateGCMProfileService(
@@ -350,10 +341,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Initializes any custom services needed for the |profile| at |index|.
   void InitializeProfile(int index, Profile* profile);
-
-  // Sets up the client-side invalidations infrastructure depending on the
-  // value of |server_type_|.
-  void SetUpInvalidations(int index);
 
   // Internal routine for setting up sync.
   void SetupSyncInternal(SetupSyncMode setup_mode);
@@ -429,16 +416,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // with a sync profile, and implements methods that sync the contents of the
   // profile with the server.
   std::vector<std::unique_ptr<SyncServiceImplHarness>> clients_;
-
-  // Owns the FakeServerInvalidationSender for each profile.
-  std::vector<std::unique_ptr<fake_server::FakeServerInvalidationSender>>
-      fake_server_invalidation_observers_;
-
-  // Maps a profile to the corresponding FCMNetworkHandler. Contains one entry
-  // per profile. It is used to simulate an incoming FCM messages to different
-  // profiles within the FakeServerInvalidationSender.
-  std::map<const Profile*, invalidation::FCMNetworkHandler*>
-      profile_to_fcm_network_handler_map_;
 
   // Used to deliver invalidations to different profiles within
   // FakeSyncServerInvalidationSender.
