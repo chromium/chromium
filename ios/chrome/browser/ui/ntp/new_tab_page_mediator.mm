@@ -141,12 +141,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   return self;
 }
 
-- (void)dealloc {
-  CHECK(!_webStateObserver);
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!self.accountManagerService);
-}
-
 - (void)setUp {
   DCHECK(!_webStateObserver);
 

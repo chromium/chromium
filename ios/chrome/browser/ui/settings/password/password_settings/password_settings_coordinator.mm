@@ -128,11 +128,6 @@
 
 @implementation PasswordSettingsCoordinator
 
-- (void)dealloc {
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!_mediator);
-}
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {
