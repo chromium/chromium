@@ -18,6 +18,12 @@ import java.util.Map;
  */
 public interface PageInsightsSurfaceRenderer {
     /**
+     * Prepares for logging. Should be called when the surface is created, before any calls to
+     * {@link #render} or {@link #onEvent}.
+     */
+    default void onSurfaceCreated(PageInsightsLoggingParameters loggingParameters) {}
+
+    /**
      * Renders a server-provided UI, and returns a View containing it.
      *
      * @param renderData server-provided UI to be rendered.
@@ -32,4 +38,13 @@ public interface PageInsightsSurfaceRenderer {
      * the View is no longer shown to the user.
      */
     default void unbindView(View view) {}
+
+    /** Carries out any required logging activities for the given event. */
+    default void onEvent(@PageInsightsEvent int event) {}
+
+    /**
+     * Logs the surface as closed, and cleans up logging. Should be called when the surface is
+     * closed, after any calls to {@link #unbindView} or {@link #onEvent}.
+     */
+    default void onSurfaceClosed() {}
 }
