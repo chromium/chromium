@@ -1143,7 +1143,9 @@ TEST_F(PersistentPermissionsSiteSettingsHelperTest,
   // Initialize and populate the `grants` object with permissions.
   ChromeFileSystemAccessPermissionContext* context =
       FileSystemAccessPermissionContextFactory::GetForProfile(&profile);
-  auto empty_grants = context->GetPermissionGrants(kTestOrigin);
+  context->SetOriginHasExtendedPermissionForTesting();
+  auto empty_grants =
+      context->ConvertObjectsToGrants(context->GetGrantedObjects(kTestOrigin));
   EXPECT_TRUE(empty_grants.file_write_grants.empty());
 
   auto file_write_grant = context->GetWritePermissionGrant(
@@ -1154,7 +1156,8 @@ TEST_F(PersistentPermissionsSiteSettingsHelperTest,
       kTestOrigin, kTestPath2,
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
       ChromeFileSystemAccessPermissionContext::UserAction::kSave);
-  auto populated_grants = context->GetPermissionGrants(kTestOrigin);
+  auto populated_grants =
+      context->ConvertObjectsToGrants(context->GetGrantedObjects(kTestOrigin));
   EXPECT_FALSE(populated_grants.file_write_grants.empty());
 
   base::Value::List exceptions;

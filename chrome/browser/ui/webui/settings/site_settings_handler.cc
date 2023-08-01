@@ -1638,10 +1638,7 @@ void SiteSettingsHandler::HandleRevokeFileSystemGrant(
   ChromeFileSystemAccessPermissionContext* permission_context =
       FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
 
-  permission_context->RevokeGrant(
-      origin, file_path,
-      ChromeFileSystemAccessPermissionContext::PersistedPermissionOptions::
-          kUpdatePersistedPermission);
+  permission_context->RevokeGrant(origin, file_path);
 }
 
 void SiteSettingsHandler::HandleRevokeFileSystemGrants(
@@ -1661,9 +1658,7 @@ void SiteSettingsHandler::HandleRevokeFileSystemGrants(
   ChromeFileSystemAccessPermissionContext* permission_context =
       FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
 
-  permission_context->RevokeGrants(
-      origin, ChromeFileSystemAccessPermissionContext::
-                  PersistedPermissionOptions::kUpdatePersistedPermission);
+  permission_context->RevokeGrants(origin);
 }
 
 void SiteSettingsHandler::HandleSetOriginPermissions(
@@ -2570,7 +2565,8 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
 
   for (auto& origin : origins_with_grants) {
     ChromeFileSystemAccessPermissionContext::Grants grantObj =
-        permission_context->GetPermissionGrants(origin);
+        permission_context->ConvertObjectsToGrants(
+            permission_context->GetGrantedObjects(origin));
     if (grantObj.file_read_grants.empty() &&
         grantObj.file_write_grants.empty() &&
         grantObj.directory_read_grants.empty() &&
