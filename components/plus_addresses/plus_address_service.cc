@@ -24,9 +24,9 @@ absl::optional<std::string> PlusAddressService::GetPlusAddress(
 }
 
 void PlusAddressService::SavePlusAddress(std::string facet,
-                                         PreAllocatedPlusAddress plus_address) {
+                                         std::string plus_address) {
   PlusProfile profile;
-  profile.address = plus_address.address;
+  profile.address = plus_address;
   plus_profiles_[facet] = profile;
   plus_addresses_.insert(profile.address);
 }

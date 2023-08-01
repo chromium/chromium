@@ -18,9 +18,7 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
   const std::string test_address = "mattwashere";
   PlusAddressService service;
   EXPECT_FALSE(service.IsPlusAddress(test_address));
-  PreAllocatedPlusAddress pre_allocated_plus_address;
-  pre_allocated_plus_address.address = test_address;
-  service.SavePlusAddress(test_facet, pre_allocated_plus_address);
+  service.SavePlusAddress(test_facet, test_address);
   EXPECT_TRUE(service.IsPlusAddress(test_address));
   EXPECT_EQ(service.GetPlusAddress(test_facet), test_address);
   EXPECT_EQ(service.GetPlusAddress("notanactualfacet"), absl::nullopt);

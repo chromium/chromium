@@ -17,13 +17,6 @@ struct PlusProfile {
   std::string address;
 };
 
-// Represents a pre-allocated plus address, which can expire (note that the
-// expiration concept is best-effort, as clock skew can't be ruled out).
-struct PreAllocatedPlusAddress {
-  std::string address;
-  base::Time expiry;
-};
-
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
 class PlusAddressService {
@@ -39,7 +32,7 @@ class PlusAddressService {
   // Get a plus address, if one exists, for the passed-in facet.
   absl::optional<std::string> GetPlusAddress(std::string facet);
   // Save a plus address for the given facet.
-  void SavePlusAddress(std::string facet, PreAllocatedPlusAddress plus_address);
+  void SavePlusAddress(std::string facet, std::string plus_address);
   // Check whether the passed-in string is a known plus address.
   bool IsPlusAddress(std::string potential_plus_address);
 
@@ -50,9 +43,6 @@ class PlusAddressService {
   // Used to drive the `IsPlusAddress` function, and derived from the values of
   // `plus_profiles`.
   std::unordered_set<std::string> plus_addresses_;
-
-  // Pre-allocated plus addresses.
-  std::vector<PreAllocatedPlusAddress> pre_allocated_plus_addresses_;
 };
 
 }  // namespace plus_addresses
