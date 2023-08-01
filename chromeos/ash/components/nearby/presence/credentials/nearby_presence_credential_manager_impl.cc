@@ -38,6 +38,17 @@ const char kUploadCredentialsFieldMaskPath[] = "certificates";
 const base::TimeDelta kServerResponseTimeout = base::Seconds(5);
 constexpr int kServerCommunicationMaxAttempts = 5;
 const base::TimeDelta kSyncCredentialsDailyTimePeriod = base::Hours(24);
+constexpr int kMaxUpdateCredentialRequestCount = 6;
+std::vector<base::TimeDelta> kUpdateCredentialCoolDownPeriods = {
+    base::Seconds(0), base::Seconds(15), base::Seconds(30), base::Minutes(1),
+    base::Minutes(2), base::Minutes(5),  base::Minutes(10)};
+
+bool HasCoolOffPeriodPassed(int update_credential_request_count,
+                            base::Time last_daily_sync_success_time) {
+  CHECK(update_credential_request_count <= kMaxUpdateCredentialRequestCount);
+  return (base::Time::Now() - last_daily_sync_success_time) >=
+         kUpdateCredentialCoolDownPeriods[update_credential_request_count];
+}
 
 }  // namespace
 
@@ -204,7 +215,33 @@ void NearbyPresenceCredentialManagerImpl::RegisterPresence(
 }
 
 void NearbyPresenceCredentialManagerImpl::UpdateCredentials() {
-  // TODO(b/276307539): Implement `UpdateCredentials`.
+  if (is_daily_sync_in_progress_) {
+    return;
+  }
+
+  // Reset the request counter if we are at the max request count and the max
+  // request cooloff period has passed.
+  if (update_credential_request_count_ >= kMaxUpdateCredentialRequestCount) {
+    CHECK(last_daily_sync_success_time_.has_value());
+    if (HasCoolOffPeriodPassed(kMaxUpdateCredentialRequestCount,
+                               last_daily_sync_success_time_.value())) {
+      update_credential_request_count_ = 0;
+    } else {
+      // We're still in a cool-off period. Don't continue yet.
+      return;
+    }
+  }
+
+  // Trigger daily sync if:
+  //   a. No daily sync has yet occurred during this profile session lifetime
+  //      (signaled by `last_daily_sync_success_time_` being unset).
+  //   b. The cool-off period between successful daily sync attempts has passed.
+  if (!last_daily_sync_success_time_.has_value() ||
+      HasCoolOffPeriodPassed(update_credential_request_count_,
+                             last_daily_sync_success_time_.value())) {
+    update_credential_request_count_++;
+    daily_credential_sync_scheduler_->MakeImmediateRequest();
+  }
 }
 
 void NearbyPresenceCredentialManagerImpl::InitializeDeviceMetadata(
@@ -416,6 +453,8 @@ void NearbyPresenceCredentialManagerImpl::StartDailySync() {
     return;
   }
 
+  is_daily_sync_in_progress_ = true;
+
   // The flow for first time registration is as follows:
   //      1. Fetch this device's credentials.
   //      2. Upload this device's credentials if they have changed.
@@ -549,6 +588,9 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncRemoteCredentialsSaved(
   // Signal success to the scheduler, which causes it to reschedule for the
   // next daily sync.
   daily_credential_sync_scheduler_->HandleResult(/*success=*/true);
+
+  is_daily_sync_in_progress_ = false;
+  last_daily_sync_success_time_ = base::Time::Now();
 }
 
 void NearbyPresenceCredentialManagerImpl::ScheduleUploadCredentials(

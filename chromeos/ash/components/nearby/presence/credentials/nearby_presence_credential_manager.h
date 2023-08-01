@@ -42,7 +42,22 @@ class NearbyPresenceCredentialManager {
       base::OnceCallback<void(bool)> on_registered_callback) = 0;
 
   // Schedules an immediate task to upload/download credentials to/from the
-  // server.
+  // server if `UpdateCredentials()` is called when there is:
+  //     a. Not an in-flight daily sync in progress
+  //     b. The request to `UpdateCredentials()` occurs after a cooloff period,
+  //        which prevents the server from being overwhelmed with requests. The
+  //        cooloff periods are as follows:
+  //            - 1st call to `UpdateCredentials()`: no cooloff required
+  //            - 2nd call to `UpdateCredentials()`: 15 seconds
+  //            - 3rd call to `UpdateCredentials()`: 30 seconds
+  //            - 4th call to `UpdateCredentials()`: 1 minute
+  //            - 5th call to `UpdateCredentials()`: 2 minutes
+  //            - 6th call to `UpdateCredentials()`: 5 minutes
+  //            - [Max] 7th call to `UpdateCredentials()`: 10 minutes
+  // Otherwise, the call to `UpdateCredentials()` is ignored. The counter that
+  // tracks the number of calls made to `UpdateCredentials()` resets after the
+  // max cooloff has been exceeded, and when the user signs out (not persisted
+  // between sessions).
   virtual void UpdateCredentials() = 0;
 
   // Retrieves local device metadata from the `LocalDeviceDataProvider`

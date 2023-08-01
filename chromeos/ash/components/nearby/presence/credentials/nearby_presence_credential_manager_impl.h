@@ -278,6 +278,17 @@ class NearbyPresenceCredentialManagerImpl
   std::unique_ptr<ash::nearby::NearbyScheduler>
       daily_credential_sync_scheduler_;
 
+  bool is_daily_sync_in_progress_ = false;
+
+  // Stores the last success time of a daily sync to prevent slamming the
+  // server with requests to `UpdateCredentials()`.
+  absl::optional<base::Time> last_daily_sync_success_time_;
+
+  // Stores a count of the number of requests to `UpdateCredentials()` made
+  // to match with a corresponding cool off period in between requests to
+  // prevent overwhelming the server.
+  int update_credential_request_count_ = 0;
+
   // Callback to return the result of the first time registration. Not
   // guaranteed to be a valid callback, as this is set only during first time
   // registration flow via |RegisterPresence|.
