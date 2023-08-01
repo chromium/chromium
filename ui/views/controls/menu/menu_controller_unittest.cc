@@ -2098,16 +2098,7 @@ TEST_F(MenuControllerTest, AsynchronousRepostEventDeletesController) {
 
 // Tests that having the MenuController deleted during OnGestureEvent does not
 // cause a crash. ASAN bots should not detect use-after-free in MenuController.
-//
-// TODO(https://crbug.com/1468172): Failing on Win11.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AsynchronousGestureDeletesController \
-  DISABLED_AsynchronousGestureDeletesController
-#else
-#define MAYBE_AsynchronousGestureDeletesController \
-  AsynchronousGestureDeletesController
-#endif
-TEST_F(MenuControllerTest, MAYBE_AsynchronousGestureDeletesController) {
+TEST_F(MenuControllerTest, AsynchronousGestureDeletesController) {
   views::test::DisableMenuClosureAnimations();
   MenuController* controller = menu_controller();
   std::unique_ptr<TestMenuControllerDelegate> nested_delegate(
@@ -2124,7 +2115,10 @@ TEST_F(MenuControllerTest, MAYBE_AsynchronousGestureDeletesController) {
   SubmenuView* sub_menu = item->GetSubmenu();
   MenuHost::InitParams params;
   params.parent = owner();
-  params.bounds = gfx::Rect(0, 0, 100, 100);
+  auto size = sub_menu->GetPreferredSize();
+  const auto insets = sub_menu->GetScrollViewContainer()->GetInsets();
+  size.Enlarge(insets.width(), insets.height());
+  params.bounds = gfx::Rect(size);
   params.do_capture = true;
   sub_menu->ShowAt(params);
 
@@ -2968,7 +2962,10 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
                   MenuAnchorPosition::kTopLeft, false, false);
   MenuHost::InitParams params;
   params.parent = owner();
-  params.bounds = item->bounds();
+  auto size = sub_menu->GetPreferredSize();
+  const auto insets = sub_menu->GetScrollViewContainer()->GetInsets();
+  size.Enlarge(insets.width(), insets.height());
+  params.bounds = gfx::Rect(size);
   params.do_capture = true;
   sub_menu->ShowAt(params);
 
