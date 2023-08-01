@@ -466,7 +466,7 @@ const CGFloat kBubblePresentationDelay = 1;
                 anchorPoint:(CGPoint)anchorPoint {
   return [self presentBubbleForFeature:feature
                              direction:direction
-                             alignment:BubbleAlignmentTrailing
+                             alignment:BubbleAlignmentBottomOrTrailing
                                   text:text
                  voiceOverAnnouncement:voiceOverAnnouncement
                            anchorPoint:anchorPoint
@@ -598,7 +598,7 @@ const CGFloat kBubblePresentationDelay = 1;
       [self presentBubbleForFeature:feature_engagement::
                                         kIPHiOSNewTabToolbarItemFeature
                           direction:arrowDirection
-                          alignment:BubbleAlignmentTrailing
+                          alignment:BubbleAlignmentBottomOrTrailing
                                text:text
               voiceOverAnnouncement:text
                         anchorPoint:newTabButtonAnchor
@@ -655,7 +655,7 @@ const CGFloat kBubblePresentationDelay = 1;
       [self presentBubbleForFeature:feature_engagement::
                                         kIPHiOSTabGridToolbarItemFeature
                           direction:arrowDirection
-                          alignment:BubbleAlignmentTrailing
+                          alignment:BubbleAlignmentBottomOrTrailing
                                text:text
               voiceOverAnnouncement:text
                         anchorPoint:tabGridButtonAnchor

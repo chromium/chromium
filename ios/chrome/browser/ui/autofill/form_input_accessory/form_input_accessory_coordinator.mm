@@ -611,7 +611,7 @@ const CGFloat kIPHVerticalOffset = -5;
                       title:nil
                       image:nil
              arrowDirection:BubbleArrowDirectionDown
-                  alignment:BubbleAlignmentLeading
+                  alignment:BubbleAlignmentTopOrLeading
                  bubbleType:BubbleViewTypeWithClose
           dismissalCallback:dismissalCallback];
   bubbleViewControllerPresenter.voiceOverAnnouncement = l10n_util::GetNSString(

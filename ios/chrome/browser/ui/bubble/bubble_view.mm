@@ -688,7 +688,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   CGFloat offset;
   BOOL vertical = IsArrowDirectionVertical(self.direction);
   switch (self.alignment) {
-    case BubbleAlignmentLeading:
+    case BubbleAlignmentTopOrLeading:
       // The anchor point is at a distance of `alignmentOffset`
       // from the bubble's leading edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the leading edge of the
@@ -704,7 +704,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                         : (NSLayoutAnchor*)self.centerYAnchor;
       offset = 0.0f;
       break;
-    case BubbleAlignmentTrailing:
+    case BubbleAlignmentBottomOrTrailing:
       // The anchor point is at a distance of `alignmentOffset`
       // from the bubble's trailing edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the trailing edge of the

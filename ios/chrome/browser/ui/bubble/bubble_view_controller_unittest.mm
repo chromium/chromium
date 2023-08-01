@@ -22,7 +22,7 @@ class BubbleViewControllerTest : public PlatformTest {
         titleText_(@"Title"),
         image_([[UIImage alloc] init]),
         arrowDirection_(BubbleArrowDirectionUp),
-        alignment_(BubbleAlignmentLeading) {}
+        alignment_(BubbleAlignmentTopOrLeading) {}
 
  protected:
   // Text for the bubble view.

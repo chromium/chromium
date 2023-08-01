@@ -189,7 +189,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
       [[BubbleViewControllerPresenter alloc]
           initDefaultBubbleWithText:text
                      arrowDirection:arrowDirection
-                          alignment:BubbleAlignmentTrailing
+                          alignment:BubbleAlignmentBottomOrTrailing
                isLongDurationBubble:NO
                   dismissalCallback:dismissalCallback];
   bubbleViewControllerPresenter.voiceOverAnnouncement = text;
@@ -291,8 +291,8 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
       };
 
   BubbleAlignment alignment = anchorXInParent < 0.5 * parentViewWidth
-                                  ? BubbleAlignmentLeading
-                                  : BubbleAlignmentTrailing;
+                                  ? BubbleAlignmentTopOrLeading
+                                  : BubbleAlignmentBottomOrTrailing;
 
   // Create the BubbleViewControllerPresenter.
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionUp;

@@ -48,13 +48,13 @@ CGFloat LeadingDistance(CGPoint anchorPoint,
     case BubbleArrowDirectionUp:
     case BubbleArrowDirectionDown:
       switch (alignment) {
-        case BubbleAlignmentLeading:
+        case BubbleAlignmentTopOrLeading:
           leadingOffset = bubbleAlignmentOffset;
           break;
         case BubbleAlignmentCenter:
           leadingOffset = bubbleWidth / 2.0f;
           break;
-        case BubbleAlignmentTrailing:
+        case BubbleAlignmentBottomOrTrailing:
           leadingOffset = bubbleWidth - bubbleAlignmentOffset;
           break;
         default:
@@ -100,13 +100,13 @@ CGFloat OriginY(CGPoint anchorPoint,
     case BubbleArrowDirectionLeading:
     case BubbleArrowDirectionTrailing:
       switch (alignment) {
-        case BubbleAlignmentLeading:
+        case BubbleAlignmentTopOrLeading:
           originY = anchorPoint.y - bubbleAlignmentOffset;
           break;
         case BubbleAlignmentCenter:
           originY = anchorPoint.y - bubbleHeight / 2;
           break;
-        case BubbleAlignmentTrailing:
+        case BubbleAlignmentBottomOrTrailing:
           originY = anchorPoint.y - (bubbleHeight - bubbleAlignmentOffset);
           break;
       }
@@ -141,7 +141,7 @@ CGFloat BubbleMaxWidth(CGFloat anchorPointX,
     case BubbleArrowDirectionUp:
     case BubbleArrowDirectionDown:
       switch (alignment) {
-        case BubbleAlignmentLeading:
+        case BubbleAlignmentTopOrLeading:
           // The bubble can use the space from the anchor point to the trailing
           // edge.
           maxWidth = (isRTL ? distanceToLeftEdge : distanceToRightEdge) +
@@ -152,7 +152,7 @@ CGFloat BubbleMaxWidth(CGFloat anchorPointX,
           // anchor point to the closest edge of the superview.
           maxWidth = MIN(distanceToLeftEdge, distanceToRightEdge) * 2.0f;
           break;
-        case BubbleAlignmentTrailing:
+        case BubbleAlignmentBottomOrTrailing:
           // The bubble can use the space from the anchor point to the leading
           // edge.
           maxWidth = (isRTL ? distanceToRightEdge : distanceToLeftEdge) +
@@ -205,7 +205,7 @@ CGFloat BubbleMaxHeight(CGFloat anchorPointY,
     case BubbleArrowDirectionLeading:
     case BubbleArrowDirectionTrailing:
       switch (alignment) {
-        case BubbleAlignmentLeading:
+        case BubbleAlignmentTopOrLeading:
           // The bubble can use the space from the anchor point to the bottom
           // edge.
           maxHeight = distanceToBottomEdge + bubbleAlignmentOffset;
@@ -215,7 +215,7 @@ CGFloat BubbleMaxHeight(CGFloat anchorPointY,
           // anchor point to the closest edge of the superview.
           maxHeight = MIN(distanceToTopEdge, distanceToBottomEdge) * 2.0f;
           break;
-        case BubbleAlignmentTrailing:
+        case BubbleAlignmentBottomOrTrailing:
           // The bubble can use the space from the anchor point to the top
           // edge.
           maxHeight = distanceToTopEdge + bubbleAlignmentOffset;
@@ -344,13 +344,13 @@ CGFloat FloatingArrowAlignmentOffset(CGFloat boundingWidth,
   BOOL isRTL = base::i18n::IsRTL();
   // TODO(crbug.com/1467873): Leading and trailing direction.
   switch (alignment) {
-    case BubbleAlignmentLeading:
+    case BubbleAlignmentTopOrLeading:
       alignmentOffset = isRTL ? boundingWidth - anchorPoint.x : anchorPoint.x;
       break;
     case BubbleAlignmentCenter:
       alignmentOffset = 0.0f;  // value is ignored when laying out the arrow.
       break;
-    case BubbleAlignmentTrailing:
+    case BubbleAlignmentBottomOrTrailing:
       alignmentOffset = isRTL ? anchorPoint.x : boundingWidth - anchorPoint.x;
       break;
   }

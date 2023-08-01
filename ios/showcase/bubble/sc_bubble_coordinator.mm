@@ -28,7 +28,7 @@
   self.containerViewController.title = @"Bubble";
 
   BubbleArrowDirection direction = BubbleArrowDirectionUp;
-  BubbleAlignment alignment = BubbleAlignmentTrailing;
+  BubbleAlignment alignment = BubbleAlignmentBottomOrTrailing;
   CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
   self.bubbleViewController =
       [[BubbleViewController alloc] initWithText:@"Lorem ipsum dolor"
