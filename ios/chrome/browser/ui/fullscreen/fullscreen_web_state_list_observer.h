@@ -43,11 +43,6 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) override;
 
   // Called when `web_state` is activated in `web_state_list_`.
   void WebStateWasActivated(web::WebState* web_state);
