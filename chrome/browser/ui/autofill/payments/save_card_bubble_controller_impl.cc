@@ -488,6 +488,11 @@ SaveCardBubbleControllerImpl::GetPaymentBubbleType() const {
   return PaymentBubbleType::kCreditCard;
 }
 
+int SaveCardBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
+  return options_.cvc_save_only ? IDS_AUTOFILL_CVC_SAVED
+                                : IDS_AUTOFILL_CARD_SAVED;
+}
+
 PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
 }

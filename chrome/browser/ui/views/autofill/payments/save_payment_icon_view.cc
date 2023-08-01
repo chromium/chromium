@@ -93,11 +93,7 @@ void SavePaymentIconView::UpdateImpl() {
   }
 
   if (command_enabled && controller->ShouldShowPaymentSavedLabelAnimation()) {
-    if (command_id_ == IDC_SAVE_CREDIT_CARD_FOR_PAGE) {
-      AnimateIn(IDS_AUTOFILL_CARD_SAVED);
-    } else if (command_id_ == IDC_SAVE_IBAN_FOR_PAGE) {
-      AnimateIn(IDS_AUTOFILL_IBAN_SAVED);
-    }
+    AnimateIn(controller->GetSaveSuccessAnimationStringId());
   }
 }
 

@@ -69,6 +69,7 @@ class IbanBubbleControllerImpl
   bool IsIconVisible() const override;
   AutofillBubbleBase* GetPaymentBubbleView() const override;
   PaymentBubbleType GetPaymentBubbleType() const override;
+  int GetSaveSuccessAnimationStringId() const override;
 
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {

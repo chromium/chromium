@@ -145,6 +145,7 @@ class SaveCardBubbleControllerImpl
   bool IsIconVisible() const override;
   AutofillBubbleBase* GetPaymentBubbleView() const override;
   PaymentBubbleType GetPaymentBubbleType() const override;
+  int GetSaveSuccessAnimationStringId() const override;
 
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);

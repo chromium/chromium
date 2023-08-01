@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -506,12 +507,14 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ClickSaveButton();
   CloseAndReshowBubble();
   // After closing the sign-in promo, clicking the icon should bring up the
-  // Manage cards bubble. Verify that the icon tooltip and the title for the
-  // bubble reflect the correct info.
+  // Manage cards bubble. Verify that the icon tooltip, the title for the
+  // bubble, and the save animation reflect the correct info.
   EXPECT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
   EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Card saved");
   EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save card");
+  EXPECT_EQ(controller()->GetSaveSuccessAnimationStringId(),
+            IDS_AUTOFILL_CARD_SAVED);
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,
@@ -526,12 +529,14 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ClickSaveButton();
   CloseAndReshowBubble();
   // After closing the sign-in promo, clicking the icon should bring up the
-  // Manage cards bubble. Verify that the icon tooltip and the title for the
-  // bubble reflect the correct info.
+  // Manage cards bubble. Verify that the icon tooltip, the title for the
+  // bubble, and the save animation reflect the correct info.
   EXPECT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
   EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"CVC saved");
   EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save CVC");
+  EXPECT_EQ(controller()->GetSaveSuccessAnimationStringId(),
+            IDS_AUTOFILL_CVC_SAVED);
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,

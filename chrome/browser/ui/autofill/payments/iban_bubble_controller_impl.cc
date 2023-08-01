@@ -265,6 +265,10 @@ IbanBubbleControllerImpl::GetPaymentBubbleType() const {
   }
 }
 
+int IbanBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
+  return IDS_AUTOFILL_IBAN_SAVED;
+}
+
 PageActionIconType IbanBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveIban;
 }
