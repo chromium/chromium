@@ -15,6 +15,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -22,14 +23,16 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 class WaitForNetworkCallbackHelper;
+class SessionBindingHelper;
 
 class BoundSessionRefreshCookieFetcherImpl
     : public BoundSessionRefreshCookieFetcher,
       public network::mojom::CookieAccessObserver {
  public:
-  explicit BoundSessionRefreshCookieFetcherImpl(
+  BoundSessionRefreshCookieFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       WaitForNetworkCallbackHelper& wait_for_network_callback_helper,
+      SessionBindingHelper& session_binding_helper,
       const GURL& cookie_url,
       base::flat_set<std::string> cookie_names);
   ~BoundSessionRefreshCookieFetcherImpl() override;
@@ -46,12 +49,19 @@ class BoundSessionRefreshCookieFetcherImpl
   FRIEND_TEST_ALL_PREFIXES(BoundSessionRefreshCookieFetcherImplTest,
                            OnCookiesAccessedChange);
 
-  void StartRefreshRequest();
+  void StartRefreshRequest(
+      absl::optional<std::string> sec_session_challenge_response);
   void OnURLLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers);
   Result GetResultFromNetErrorAndHttpStatusCode(
       net::Error net_error,
       absl::optional<int> response_code);
   void ReportRefreshResult();
+
+  // Returns an empty string if assertion isn't required.
+  std::string GetChallengeIfBindingKeyAssertionRequired(
+      const scoped_refptr<net::HttpResponseHeaders>& headers);
+  void RefreshWithChallenge(const std::string& challenge);
+  void OnGenerateBindingKeyAssertion(std::string assertion);
 
   // network::mojom::CookieAccessObserver:
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
@@ -61,6 +71,7 @@ class BoundSessionRefreshCookieFetcherImpl
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ref<WaitForNetworkCallbackHelper> wait_for_network_callback_helper_;
+  const raw_ref<SessionBindingHelper> session_binding_helper_;
 
   // Used to check whether the refresh request has set the required cookie.
   // Otherwise, the request is considered a failure.
@@ -75,7 +86,8 @@ class BoundSessionRefreshCookieFetcherImpl
 
   // Refresh request result.
   Result result_;
-  bool url_loader_completed_ = false;
+  bool cookie_refresh_completed_ = false;
+  bool has_assertion_been_already_requested_ = false;
 
   // Non-null after a fetch has started.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

@@ -116,8 +116,8 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    client_->GetURLLoaderFactory(),
-                   *wait_for_network_callback_helper_, url_,
-                   std::move(cookie_names))
+                   *wait_for_network_callback_helper_, *session_binding_helper_,
+                   url_, std::move(cookie_names))
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    client_, url_, std::move(cookie_names));
 }
@@ -151,8 +151,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
 
-  if (result == Result::kServerPersistentError ||
-      result == Result::kServerUnexepectedResponse) {
+  if (BoundSessionRefreshCookieFetcher::IsPersistentError(result)) {
     delegate_->TerminateSession();
     // `this` should be deleted.
   }

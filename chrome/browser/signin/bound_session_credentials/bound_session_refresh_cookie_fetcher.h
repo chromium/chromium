@@ -20,7 +20,10 @@ class BoundSessionRefreshCookieFetcher {
     kServerTransientError = 2,
     kServerPersistentError = 3,
     kServerUnexepectedResponse = 4,
+    kSignChallengeFailed = 5,
   };
+
+  static bool IsPersistentError(Result result);
 
   // Reports the result of the fetch request.
   using RefreshCookieCompleteCallback = base::OnceCallback<void(Result)>;
