@@ -80,6 +80,13 @@ bool AppendPosition(StringBuilder& result,
     return false;
   }
 
+  if (IsA<CSSIdentifierValue>(x) &&
+      To<CSSIdentifierValue>(x)->GetValueID() == CSSValueID::kCenter &&
+      IsA<CSSIdentifierValue>(y) &&
+      To<CSSIdentifierValue>(y)->GetValueID() == CSSValueID::kCenter) {
+    return false;
+  }
+
   if (wrote_something) {
     result.Append(' ');
   }
