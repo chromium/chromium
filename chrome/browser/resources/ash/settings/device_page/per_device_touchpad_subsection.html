@@ -7,6 +7,7 @@
     <settings-toggle-button id="enableTapToClick"
         pref="{{enableTapToClickPref}}"
         label="$i18n{touchpadTapToClickEnabledLabel}"
+        sub-label="[[getTouchpadTapToClickDescription()]]"
         aria-describedby="touchpadName"
         deep-link-focus-id$="[[Setting.kTouchpadTapToClick]]">
     </settings-toggle-button>
@@ -26,6 +27,7 @@
         class="hr"
         pref="{{enableTapDraggingPref}}"
         label="$i18n{tapDraggingLabel}"
+        sub-label="[[getTouchpadTapDraggingDescription()]]"
         aria-describedby="touchpadName"
         deep-link-focus-id$="[[Setting.kTouchpadTapDragging]]">
     </settings-toggle-button>
@@ -33,6 +35,7 @@
         class="hr"
         pref="{{accelerationPref}}"
         label="$i18n{touchpadAccelerationLabel}"
+        sub-label="[[getTouchpadAccelerationDescription()]]"
         aria-describedby="touchpadName"
         deep-link-focus-id$="[[Setting.kTouchpadAcceleration]]">
     </settings-toggle-button>
@@ -119,15 +122,18 @@
             aria-describedby="touchpadName"
             on-click="onLearnMoreLinkClicked_"
             id="enableReverseScrollingLabel"
-            localized-string="$i18n{touchPadScrollLabel}"
+            localized-string="$i18n{touchpadScrollLabel}"
             link-url="$i18n{naturalScrollLearnMoreLink}">
         </localized-link>
+        <div class="secondary" hidden="[[!isRevampWayfindingEnabled_]]">
+          $i18n{touchpadScrollDescription}
+        </div>
       </div>
       <cr-toggle id="enableReverseScrollingToggle"
           checked="{{reverseScrollValue}}"
           aria-describedby="touchpadName"
           aria-label=
-              "[[getLabelWithoutLearnMore('touchPadScrollLabel')]]"
+              "[[getLabelWithoutLearnMore('touchpadScrollLabel')]]"
           deep-link-focus-id$="[[Setting.kTouchpadReverseScrolling]]">
       </cr-toggle>
     </div>

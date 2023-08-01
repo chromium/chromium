@@ -1187,9 +1187,16 @@ DeviceSection::~DeviceSection() {
 }
 
 void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kDeviceStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kDeviceStrings[] = {
       {"devicePageTitle", IDS_SETTINGS_DEVICE_TITLE},
-      {"touchPadScrollLabel", IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
+      {"touchpadScrollLabel",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_LABEL
+                        : IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
+      {"touchpadScrollDescription",
+       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kDeviceStrings);
 
@@ -1719,7 +1726,10 @@ void DeviceSection::UpdateStylusSearchTags() {
 
 void DeviceSection::AddDevicePointersStrings(
     content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kPointersStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kPointersStrings[] = {
       {"mouseTitle", IDS_SETTINGS_MOUSE_TITLE},
       {"builtInPointingStickName", IDS_SETTINGS_BUILT_IN_POINTING_STICK_NAME},
       {"pointingStickTitle", IDS_SETTINGS_POINTING_STICK_TITLE},
@@ -1727,7 +1737,10 @@ void DeviceSection::AddDevicePointersStrings(
       {"touchpadTitle", IDS_SETTINGS_TOUCHPAD_TITLE},
       {"mouseAndTouchpadTitle", IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE},
       {"touchpadTapToClickEnabledLabel",
-       IDS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_ENABLED_LABEL},
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_LABEL
+                        : IDS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_ENABLED_LABEL},
+      {"touchpadTapToClickDescription",
+       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_DESCRIPTION},
       {"touchpadSpeed", IDS_SETTINGS_TOUCHPAD_SPEED_LABEL},
       {"pointerSlow", IDS_SETTINGS_POINTER_SPEED_SLOW_LABEL},
       {"pointerFast", IDS_SETTINGS_POINTER_SPEED_FAST_LABEL},
@@ -1750,7 +1763,11 @@ void DeviceSection::AddDevicePointersStrings(
        IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL},
       {"pointingStickAccelerationLabel",
        IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL},
-      {"touchpadAccelerationLabel", IDS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL},
+      {"touchpadAccelerationLabel",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_LABEL
+                        : IDS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL},
+      {"touchpadAccelerationDescription",
+       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_DESCRIPTION},
       {"touchpadHapticClickSensitivityLabel",
        IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL},
       {"touchpadHapticFeedbackTitle",
@@ -1832,7 +1849,10 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
 
 void DeviceSection::AddDeviceDisplayStrings(
     content::WebUIDataSource* html_source) const {
-  static constexpr webui::LocalizedString kDisplayStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kDisplayStrings[] = {
       {"displayAmbientColorTitle", IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_TITLE},
       {"displayAmbientColorSubtitle",
        IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_SUBTITLE},
@@ -1894,7 +1914,8 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayScreenTitle", IDS_SETTINGS_DISPLAY_SCREEN},
       {"displaySizeSliderMaxLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MAXIMUM},
       {"displaySizeSliderMinLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MINIMUM},
-      {"displayTitle", IDS_SETTINGS_DISPLAY_TITLE},
+      {"displayTitle", kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE
+                                        : IDS_SETTINGS_DISPLAY_TITLE},
       {"displayTouchCalibrationText",
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT},
       {"displayTouchCalibrationTitle",

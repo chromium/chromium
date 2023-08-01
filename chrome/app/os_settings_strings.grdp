@@ -859,6 +859,12 @@
   <message name="IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL">
     Enable reverse scrolling. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_LABEL">
+    Reverse scrolling. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_DESCRIPTION" desc="In Device Settings, the description for the label to set reverse scrolling.">
+    Swipe up to move the page down
+  </message>
   <message name="IDS_SETTINGS_DEVICE_TITLE" desc="Name of the settings page which displays device and peripheral settings.">
     Device
   </message>
@@ -1494,6 +1500,12 @@ Use Ctrl + Alt + Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_TAP_DRAGGING_LABEL" desc="Label for checkbox which enables tap dragging.">
     Enable tap dragging
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_LABEL" desc="Label for checkbox which enables tap dragging.">
+    Tap and drag to move items
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_DESCRIPTION" desc="Description for checkbox which enables tap dragging.">
+    Double-tap an item, hold down on the second tap, and then drag the item to move it
   </message>
   <message name="IDS_SETTINGS_CLICK_ON_STOP_LABEL" desc="Label for checkbox which enables automatically do a mouse action when the mouse cursor stops.">
     Automatic clicks
@@ -3014,8 +3026,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_TITLE" desc="In Device Settings, the title of the touchpad settings subpage.">
     Touchpad
   </message>
-    <message name="IDS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_ENABLED_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
+  <message name="IDS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_ENABLED_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
     Enable tap-to-click
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
+    Tap to click
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_DESCRIPTION" desc="In Device Settings, the description of the label next to the checkbox that allows tapping the touchpad to work as a click.">
+    To click, tap your touchpad instead of pressing it
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the touchpad.">
     Touchpad speed
@@ -3079,6 +3097,12 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable touchpad acceleration.">
     Enable touchpad acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable touchpad acceleration.">
+    Touchpad acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_DESCRIPTION" desc="In Device Settings, the description of the label next to the checkbox to disable touchpad acceleration.">
+    Faster movements on your touchpad will move the cursor farther
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL" desc="In Device Settings, the text next to the toggle for touchpad scroll acceleration.">
     Enable touchpad scroll acceleration
@@ -4932,6 +4956,9 @@ Press an assigned switch or key to remove assignment.
   <!-- Device display (OS settings) -->
   <message name="IDS_SETTINGS_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
     Displays
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
+    Display
   </message>
   <message name="IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT" desc="In Device Settings > Displays, text describing how to use a mouse or keyboard to change arrangement of displays.">
     Drag or use arrow keys to move a display
