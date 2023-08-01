@@ -65,6 +65,15 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
     NSString* text,
     UIViewController* presenting_view_controller);
 
+// Returns `CRWContextMenuItem` items for the given `match`, for the given
+// `web_state`.
+NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
+    web::WebState* web_state,
+    NSTextCheckingResult* match,
+    NSString* text,
+    CGPoint location,
+    UIViewController* presenting_view_controller);
+
 // Returns a full set of intents of `handled_types`, located inside `text`. The
 // `model_path` for the give web state should be passed in if a detection by
 // model is required. (Note that some flags might still not allow it.)
