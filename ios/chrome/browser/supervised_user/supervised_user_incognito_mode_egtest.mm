@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -18,7 +19,9 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -100,6 +103,27 @@ using chrome_test_util::ToolsMenuView;
 
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+}
+
+// Test that the disabled incognito tab grid shows a link to Family Link.
+// TODO(b/264669964): Enable this test once the tab grid state is refreshed on
+// sign-in.
+- (void)DISABLED_testIncognitoTabGridTapFamilyLinkLearnMore {
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_TOOLBAR_SHOW_TABS)]
+      performAction:grey_tap()];
+
+  // Side swipe right on the tab grid to show incognito disabled menu.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGridScrollViewIdentifier)]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_TAB_GRID_SUPERVISED_INCOGNITO_MESSAGE))]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateVisible];
 }
 
 @end

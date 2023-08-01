@@ -81,6 +81,10 @@ bool AreWebFilterPrefsDefault(const PrefService& pref_service);
 // Returns true if one or more histograms were emitted.
 bool EmitLogSegmentHistogram(const std::vector<AccountInfo>& primary_accounts);
 
+// Returns true if the primary account is a child account subject to parental
+// controls.
+bool IsSubjectToParentalControls(const PrefService& pref_service);
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_UTILS_H_

@@ -9,10 +9,18 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
 
+@protocol TabGridConsumer;
 @protocol TabGridPageMutator;
+
+class PrefService;
 
 // Mediates between model layer and tab grid UI layer.
 @interface TabGridMediator : NSObject <TabGridMutator>
+
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Mutator for regular Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> regularPageMutator;
@@ -20,6 +28,8 @@
 @property(nonatomic, weak) id<TabGridPageMutator> incognitoPageMutator;
 // Mutator for remote Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> remotePageMutator;
+// Consumer for state changes in tab grid.
+@property(nonatomic, weak) id<TabGridConsumer> consumer;
 
 // Set the current displayed page (incognito, regular or remote).
 - (void)setPage:(TabGridPage)page;

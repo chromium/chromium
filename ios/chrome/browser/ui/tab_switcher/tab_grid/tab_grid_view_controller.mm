@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_collection_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_empty_state_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
@@ -203,6 +204,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       case TabGridPageConfiguration::kIncognitoPageDisabled:
         _incognitoDisabledTabViewController = [[DisabledTabViewController alloc]
             initWithPage:TabGridPageIncognitoTabs];
+        _incognitoDisabledTabViewController.delegate = self;
         _regularTabsViewController = [[GridViewController alloc] init];
         _remoteTabsViewController =
             [[RecentTabsTableViewController alloc] init];
@@ -215,8 +217,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         _incognitoTabsViewController = [[GridViewController alloc] init];
         _regularDisabledTabViewController = [[DisabledTabViewController alloc]
             initWithPage:TabGridPageRegularTabs];
+        _regularDisabledTabViewController.delegate = self;
         _recentDisabledTabViewController = [[DisabledTabViewController alloc]
             initWithPage:TabGridPageRemoteTabs];
+        _recentDisabledTabViewController.delegate = self;
         _pageViewControllers = @[
           _incognitoTabsViewController, _regularDisabledTabViewController,
           _recentDisabledTabViewController
@@ -2449,6 +2453,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didTapLinkWithURL:(const GURL&)URL {
   [self.delegate openLinkWithURL:URL];
+}
+
+- (bool)isViewControllerSubjectToParentalControls {
+  return _isSubjectToParentalControls;
+}
+
+#pragma mark - TabGridConsumer
+
+- (void)updateParentalControlStatus:(BOOL)isSubjectToParentalControls {
+  _isSubjectToParentalControls = isSubjectToParentalControls;
 }
 
 #pragma mark - IncognitoReauthObserver

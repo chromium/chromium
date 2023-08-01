@@ -14,6 +14,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
@@ -703,7 +704,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.dispatcher startDispatchingToTarget:reauthAgent
                                 forProtocol:@protocol(IncognitoReauthCommands)];
 
-  _mediator = [[TabGridMediator alloc] init];
+  _mediator = [[TabGridMediator alloc]
+      initWithPrefService:self.regularBrowser->GetBrowserState()->GetPrefs()];
 
   TabGridViewController* baseViewController = [[TabGridViewController alloc]
       initWithPageConfiguration:_pageConfiguration];
@@ -717,6 +719,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.delegate = self;
   baseViewController.mutator = _mediator;
   _baseViewController = baseViewController;
+
+  _mediator.consumer = _baseViewController;
 
   _toolbarsCoordinator =
       [[TabGridToolbarsCoordinator alloc] initWithBaseViewController:nil

@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_delegate_wrangler.h"
@@ -33,6 +34,7 @@ class GURL;
 @protocol TabContextMenuProvider;
 @protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
+@protocol TabGridConsumer;
 @class TabGridTopToolbar;
 @class TabGridViewController;
 
@@ -86,6 +88,7 @@ enum class TabGridPageConfiguration {
     : UIViewController <LegacyGridTransitionAnimationLayoutProviding,
                         IncognitoReauthObserver,
                         KeyCommandActions,
+                        TabGridConsumer,
                         TabGridPaging,
                         TabGridToolbarsActionWrangler,
                         TabGridToolbarsDelegateWrangler,
@@ -166,6 +169,9 @@ enum class TabGridPageConfiguration {
 // Top and bottom toolbars. Those must be set before -viewDidLoad is called.
 @property(nonatomic, strong) TabGridTopToolbar* topToolbar;
 @property(nonatomic, strong) TabGridBottomToolbar* bottomToolbar;
+
+// Whether the primary signed-in account is subject to parental controls.
+@property(nonatomic, assign) BOOL isSubjectToParentalControls;
 
 // Temporary handler for sending commands to the toolbar.
 // TODO(crbug.com/1456659): Remove this.
