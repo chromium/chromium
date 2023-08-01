@@ -4,20 +4,60 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "base/functional/bind.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/views/interaction/element_tracker_views.h"
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
+#endif
 
 namespace ash {
 namespace {
 
-using AppListIntegrationTest = InteractiveAshTest;
+using InteractiveMixinBasedBrowserTest =
+    InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+
+class AppListIntegrationTest : public InteractiveMixinBasedBrowserTest {
+ public:
+  AppListIntegrationTest() {
+    // This test suite does not require a browser window.
+    set_launch_browser_for_testing(nullptr);
+
+    // Give all widgets the same Kombucha context.This is useful for ash system
+    // UI because the UI uses a variety of small widgets. Note that if this test
+    // used multiple displays we would need to provide a different context per
+    // display (i.e. the widget's native window's root window). Elements like
+    // the home button, shelf, etc. appear once per display.
+    views::ElementTrackerViews::SetContextOverrideCallback(
+        base::BindRepeating([](views::Widget* widget) {
+          return ui::ElementContext(Shell::GetPrimaryRootWindow());
+        }));
+  }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
+  // chromeos_integration_tests.
+  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
+#endif
+};
 
 IN_PROC_BROWSER_TEST_F(AppListIntegrationTest, OpenAndClose) {
-  SetupContextWidget();
+  // Kombucha needs a widget to be able to click on things.
+  views::Widget* navigation_widget =
+      Shell::GetPrimaryRootWindowController()->shelf()->navigation_widget();
+  SetContextWidget(navigation_widget);
 
   const gfx::Point screen_origin(0, 0);
   const ui::Accelerator escape_key(ui::VKEY_ESCAPE, ui::EF_NONE);

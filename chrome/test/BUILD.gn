@@ -969,12 +969,6 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
         "../browser/ui/ash/app_list/app_list_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
-
-        # These cannot live in ":test_support" because they use
-        # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
-        "base/chromeos/crosier/interactive_ash_test.cc",
-        "base/chromeos/crosier/interactive_ash_test.h",
-        "base/chromeos/crosier/interactive_ash_test_uitest.cc",
       ]
     }
   }
@@ -10490,12 +10484,6 @@ if (!is_android) {
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
-
-          # These cannot live in ":test_support" because they use
-          # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
-          "base/chromeos/crosier/interactive_ash_test.cc",
-          "base/chromeos/crosier/interactive_ash_test.h",
-          "base/chromeos/crosier/interactive_ash_test_uitest.cc",
         ]
         deps += [
           "//ash:ash",
