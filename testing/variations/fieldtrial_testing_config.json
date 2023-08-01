@@ -10473,9 +10473,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230724",
+                    "name": "Enabled_20230801",
                     "enable_features": [
-                        "ClearingCookiesKeepsSupervisedUsersSignedIn",
                         "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
                         "EnableManagedByParentUi",
                         "EnableSupervisionOnDesktopAndIOS",
