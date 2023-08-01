@@ -297,7 +297,7 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
