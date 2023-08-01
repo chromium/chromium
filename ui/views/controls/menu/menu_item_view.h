@@ -50,8 +50,8 @@ class ImageView;
 class MenuController;
 class MenuDelegate;
 class Separator;
-class TestMenuItemView;
 class SubmenuView;
+class TestMenuItemView;
 
 // MenuItemView --------------------------------------------------------------
 
@@ -445,7 +445,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   friend class internal::MenuRunnerImpl;        // For access to ~MenuItemView.
   friend class test::TestMenuItemViewShown;     // for access to |submenu_|;
   friend class test::TestMenuItemViewNotShown;  // for access to |submenu_|;
-  friend class TestMenuItemView;  // For access to AddEmptyMenus();
+  friend class TestMenuItemView;
 
   enum class PaintMode { kNormal, kForDrag };
 
@@ -465,11 +465,6 @@ class VIEWS_EXPORT MenuItemView : public View {
     return parent_menu_item_->GetSubmenu();
   }
 
-  // Calculates all sizes that we can from the OS.
-  //
-  // This is invoked prior to Running a menu.
-  void UpdateMenuPartSizes();
-
   // The RunXXX methods call into this to set up the necessary state before
   // running.
   void PrepareForRun(bool has_mnemonics, bool show_mnemonics);
@@ -481,13 +476,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   const gfx::FontList GetFontList() const;
   const absl::optional<SkColor> GetMenuLabelColor() const;
 
-  // If this menu item has no children a child is added showing it has no
-  // children. Otherwise AddEmtpyMenus is recursively invoked on child menu
-  // items that have children.
-  void AddEmptyMenus();
-
-  // Undoes the work of AddEmptyMenus.
-  void RemoveEmptyMenus();
+  // Ensures the submenu has an empty menu item iff it needs one, then updates
+  // its metrics.
+  void UpdateEmptyMenusAndMetrics();
 
   // Given bounds within our View, this helper routine mirrors the bounds if
   // necessary.

@@ -23,7 +23,7 @@ class TestMenuItemView : public MenuItemView {
 
   ~TestMenuItemView() override;
 
-  using MenuItemView::AddEmptyMenus;
+  using MenuItemView::UpdateEmptyMenusAndMetrics;
 
   void set_has_mnemonics(bool has_mnemonics) { has_mnemonics_ = has_mnemonics; }
 

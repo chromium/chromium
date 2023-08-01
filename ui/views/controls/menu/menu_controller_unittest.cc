@@ -308,7 +308,7 @@ class TestMenuItemViewShown : public MenuItemView {
 
   void SetController(MenuController* controller) { set_controller(controller); }
 
-  void AddEmptyMenusForTest() { AddEmptyMenus(); }
+  using MenuItemView::UpdateEmptyMenusAndMetrics;
 
   void SetActualMenuPosition(MenuItemView::MenuPosition position) {
     set_actual_menu_position(position);
@@ -2571,7 +2571,7 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   auto sub_menu_item =
       std::make_unique<TestMenuItemViewShown>(sub_menu_item_delegate.get());
   sub_menu_item->SetController(controller);
-  sub_menu_item->AddEmptyMenusForTest();
+  sub_menu_item->UpdateEmptyMenusAndMetrics();
   SubmenuView* sub_menu_view = sub_menu_item->GetSubmenu();
   const auto insets = sub_menu_view->GetScrollViewContainer()->GetInsets();
   const gfx::Rect bounds(0, 50, 50 + insets.width(), 50 + insets.height());

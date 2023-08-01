@@ -69,14 +69,6 @@ SubmenuView::~SubmenuView() {
   Close();
 }
 
-bool SubmenuView::HasEmptyMenuItemView() const {
-  return base::ranges::any_of(children(), &IsViewClass<EmptyMenuMenuItem>);
-}
-
-bool SubmenuView::HasVisibleChildren() const {
-  return base::ranges::any_of(GetMenuItems(), &MenuItemView::GetVisible);
-}
-
 std::vector<MenuItemView*> SubmenuView::GetMenuItems() {
   return GetMenuItemsFromChildren<MenuItemView, View>(children());
 }
