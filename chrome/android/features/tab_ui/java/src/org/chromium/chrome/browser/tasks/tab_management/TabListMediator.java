@@ -884,7 +884,7 @@ class TabListMediator {
                     if (mActionsOnAllRelatedTabs) {
                         if (isUngroupingLastTabInGroup) return;
 
-                        Tab currentSelectedTab = mTabModelSelector.getCurrentTab();
+                        final int currentSelectedTabId = mTabModelSelector.getCurrentTabId();
                         if (isShowingTabsInMRUOrder()) {
                             int groupTabIndex = mModel.indexFromId(groupTab.getId());
                             if (groupTabIndex == TabModel.INVALID_TAB_INDEX) {
@@ -893,7 +893,7 @@ class TabListMediator {
                                 groupTabIndex = mModel.indexFromId(movedTab.getId());
                             }
                             if (!isValidMovePosition(groupTabIndex)) return;
-                            boolean isSelected = currentSelectedTab.getId() == groupTab.getId();
+                            boolean isSelected = currentSelectedTabId == groupTab.getId();
                             // We may need to adjust the group's index after removing the movedTab
                             // from the group.
                             int newGroupTabIndexMRU =
@@ -913,7 +913,7 @@ class TabListMediator {
 
                             int modelIndex = mModel.getNewPositionInMruOrderList(movedTab.getId());
                             addTabInfoToModel(PseudoTab.fromTab(movedTab), modelIndex,
-                                    currentSelectedTab.getId() == movedTab.getId());
+                                    currentSelectedTabId == movedTab.getId());
                         } else {
                             // Only add a tab to the model if it represents a new card (new group or
                             // new singular tab). However, always update the previous group to clean
@@ -923,10 +923,9 @@ class TabListMediator {
                                 int filterIndex = filter.indexOf(movedTab);
                                 addTabInfoToModel(PseudoTab.fromTab(movedTab),
                                         mModel.indexOfNthTabCard(filterIndex),
-                                        currentSelectedTab.getId() == movedTab.getId());
+                                        currentSelectedTabId == movedTab.getId());
                             }
-                            boolean isSelected =
-                                    mTabModelSelector.getCurrentTabId() == groupTab.getId();
+                            boolean isSelected = currentSelectedTabId == groupTab.getId();
                             updateTab(mModel.indexOfNthTabCard(prevFilterIndex),
                                     PseudoTab.fromTab(groupTab), isSelected, true, false);
                         }
