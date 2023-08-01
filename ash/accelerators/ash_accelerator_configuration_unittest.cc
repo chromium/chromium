@@ -351,6 +351,11 @@ TEST_F(AshAcceleratorConfigurationTest, IsDefaultAccelerator) {
           AcceleratorAction::kToggleMirrorMode);
   EXPECT_EQ(1u, default_accelerators.size());
   EXPECT_EQ(expected_default, default_accelerators[0]);
+
+  std::vector<ui::Accelerator> nonexistent_defaults =
+      config_->GetDefaultAcceleratorsForId(
+          /*id=*/789987);
+  EXPECT_EQ(0u, nonexistent_defaults.size());
 }
 
 TEST_F(AshAcceleratorConfigurationTest, MultipleDefaultAccelerators) {

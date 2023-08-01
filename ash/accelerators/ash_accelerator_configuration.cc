@@ -220,7 +220,7 @@ const std::vector<ui::Accelerator>&
 AshAcceleratorConfiguration::GetAcceleratorsForAction(
     AcceleratorActionId action_id) {
   const auto accelerator_iter = id_to_accelerators_.find(action_id);
-  DCHECK(accelerator_iter != id_to_accelerators_.end());
+  CHECK(accelerator_iter != id_to_accelerators_.end());
 
   return accelerator_iter->second;
 }
@@ -267,7 +267,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
 AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  DCHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(::features::IsShortcutCustomizationEnabled());
   AcceleratorConfigResult result =
       DoRemoveAccelerator(action_id, accelerator, /*save_override=*/true);
 
@@ -313,7 +313,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
   // Clear reverse mapping first.
   for (const auto& accelerator : accelerators_for_id) {
     // There should never be a mismatch between the two maps, `Get()` does an
-    // implicit DCHECK too.
+    // implicit CHECK too.
     auto& found_id = accelerator_to_id_.Get(accelerator);
     if (found_id != action_id) {
       VLOG(1) << "ResetAction called for ActionID: " << action_id
@@ -332,7 +332,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
   // Users will have to manually re-add the default accelerator if there exists
   // a conflict.
   const auto& defaults = default_id_to_accelerators_cache_.find(action_id);
-  DCHECK(defaults != default_id_to_accelerators_cache_.end());
+  CHECK(defaults != default_id_to_accelerators_cache_.end());
 
   AcceleratorConfigResult result = AcceleratorConfigResult::kSuccess;
   // Iterate through the default and only add back the default if they're not
@@ -455,7 +455,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator,
     bool save_override) {
-  DCHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(::features::IsShortcutCustomizationEnabled());
 
   // If the accelerator is deprecated, remove it.
   const AcceleratorAction* deprecated_action_id =
@@ -484,7 +484,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
     return AcceleratorConfigResult::kNotFound;
   }
 
-  DCHECK(*found_id == action_id);
+  CHECK(*found_id == action_id);
 
   // Remove accelerator from lookup map.
   base::Erase(found_accelerators_iter->second, accelerator);
@@ -606,7 +606,11 @@ std::vector<ui::Accelerator>
 AshAcceleratorConfiguration::GetDefaultAcceleratorsForId(
     AcceleratorActionId id) {
   const auto iter = default_id_to_accelerators_cache_.find(id);
-  DCHECK(iter != default_id_to_accelerators_cache_.end());
+
+  if (iter == default_id_to_accelerators_cache_.end()) {
+    VLOG(1) << "No default accelerators were found for id: " << id;
+    return std::vector<ui::Accelerator>();
+  }
 
   return iter->second;
 }
