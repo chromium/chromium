@@ -59,8 +59,9 @@ import pathlib
 import sys
 from typing import Dict, List
 
-_HERE_DIR = pathlib.Path(__file__).parent
-_SRC_DIR = _HERE_DIR.parent.parent.parent.parent.parent.parent.parent
+_SRC_DIR = pathlib.Path(__file__).parents[7]
+assert _SRC_DIR.joinpath('LICENSE').exists(), (
+    'cannot find root src dir, please update editor_tsconfig.py')
 
 
 def _relative_to_with_parents(path: pathlib.Path, other: pathlib.Path) -> str:
