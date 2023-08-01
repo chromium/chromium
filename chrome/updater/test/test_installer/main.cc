@@ -31,7 +31,7 @@ base::CommandLine::StringType ExtensionFromResourceName(
   return {};
 }
 
-base::CommandLine::StringType CommandWrapperForScrip(
+base::CommandLine::StringType CommandWrapperForScript(
     const base::FilePath& script_path) {
   const base::FilePath::StringType extension = script_path.Extension();
   if (extension == FILE_PATH_LITERAL(".ps1")) {
@@ -48,11 +48,11 @@ bool RunScript(const base::FilePath& script_path) {
   // Copy current process's command line so all arguments are forwarded.
   base::CommandLine command = *base::CommandLine::ForCurrentProcess();
   command.SetProgram(script_path);
-  command.PrependWrapper(CommandWrapperForScrip(script_path));
-  int exit_code = 0;
+  command.PrependWrapper(CommandWrapperForScript(script_path));
+  int exit_code = -1;
   return base::LaunchProcess(command, {})
              .WaitForExitWithTimeout(base::Minutes(1), &exit_code) &&
-         exit_code != 0;
+         exit_code == 0;
 }
 
 BOOL CALLBACK OnResourceFound(HMODULE module,

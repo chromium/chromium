@@ -22,10 +22,10 @@ def main():
                         required=False,
                         help='App ID.')
     parser.add_argument('--system',
-                        type=bool,
                         default=False,
                         required=False,
-                        help='Whether this is a system install.')
+                        action='store_true',
+                        help='Specify that this is a system install.')
     parser.add_argument('--product_version',
                         default='1.0.0.0',
                         required=False,
