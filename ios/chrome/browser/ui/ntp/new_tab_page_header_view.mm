@@ -120,11 +120,6 @@ const CGFloat kEndButtonSeparation = 19.0;
   self = [super initWithFrame:frame];
   if (self) {
     self.clipsToBounds = YES;
-    if (IsMagicStackEnabled()) {
-      self.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
-    } else {
-      self.backgroundColor = ntp_home::NTPBackgroundColor();
-    }
   }
   return self;
 }
@@ -165,13 +160,7 @@ const CGFloat kEndButtonSeparation = 19.0;
 
 - (void)addViewsToSearchField:(UIView*)searchField {
   // Fake Toolbar.
-  ToolbarButtonFactory* buttonFactory =
-      [[ToolbarButtonFactory alloc] initWithStyle:ToolbarStyle::kNormal];
   self.fakeToolbar = [[UIView alloc] init];
-  self.fakeToolbar.backgroundColor =
-      IsMagicStackEnabled()
-          ? [UIColor clearColor]
-          : buttonFactory.toolbarConfiguration.backgroundColor;
   [searchField insertSubview:self.fakeToolbar atIndex:0];
   self.fakeToolbar.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -385,14 +374,14 @@ const CGFloat kEndButtonSeparation = 19.0;
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
-  if (IsMagicStackEnabled()) {
-    // Update background color of fake toolbar if stuck to top of NTP so that it
-    // has a non-clear background that matches the NTP background. Otherwise,
-    // return to clear background.
-    self.fakeToolbar.backgroundColor =
-        percent == 1.0f ? [UIColor colorNamed:@"ntp_background_color"]
-                        : [UIColor clearColor];
-  }
+  // Update the opacity of the header background color as the user scrolls so
+  // that content does not appear beneath it. Since the NTP background might be
+  // a gradient, the opacity must be 0 by default.
+  self.backgroundColor =
+      IsMagicStackEnabled()
+          ? [[UIColor colorNamed:@"ntp_background_color"]
+                colorWithAlphaComponent:percent]
+          : [ntp_home::NTPBackgroundColor() colorWithAlphaComponent:percent];
 
   // Offset the hint label constraints with half of the change in width
   // from the original scale, since constraints are calculated before
