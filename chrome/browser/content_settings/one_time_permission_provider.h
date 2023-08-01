@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
@@ -30,7 +31,8 @@ class OneTimePermissionsTracker;
 // - The grant is manually revoked (via page info, settings, or a policy)
 class OneTimePermissionProvider
     : public content_settings::UserModifiableProvider,
-      public OneTimePermissionsTrackerObserver {
+      public OneTimePermissionsTrackerObserver,
+      public base::PowerSuspendObserver {
  public:
   explicit OneTimePermissionProvider(
       OneTimePermissionsTracker* one_time_permissions_tracker);
@@ -73,6 +75,9 @@ class OneTimePermissionProvider
   void ExpireWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                             const ContentSettingsPattern& secondary_pattern,
                             ContentSettingsType content_settings_type) override;
+
+  // PowerSuspendObserver:
+  void OnSuspend() override;
 
   // OneTimePermissionsTrackerObserver:
   void OnLastPageFromOriginClosed(const url::Origin&) override;

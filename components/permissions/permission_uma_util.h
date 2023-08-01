@@ -276,7 +276,10 @@ enum class OneTimePermissionEvent {
   // `kOneTimePermissionMaximumLifetime`
   EXPIRED_AFTER_MAXIMUM_LIFETIME = 4,
 
-  kMaxValue = EXPIRED_AFTER_MAXIMUM_LIFETIME
+  // Recorded when a one time grant expires because the device was suspended.
+  EXPIRED_ON_SUSPEND = 5,
+
+  kMaxValue = EXPIRED_ON_SUSPEND
 };
 
 enum class PermissionAutoRevocationHistory {
