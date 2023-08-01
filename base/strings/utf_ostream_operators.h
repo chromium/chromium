@@ -6,6 +6,7 @@
 #define BASE_STRINGS_UTF_OSTREAM_OPERATORS_H_
 
 #include <iosfwd>
+#include <string>
 #include <string_view>
 
 #include "base/base_export.h"
