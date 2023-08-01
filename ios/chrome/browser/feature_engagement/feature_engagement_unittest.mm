@@ -24,6 +24,18 @@ const int kMinChromeOpensRequiredForReadingList = 5;
 // to be displayed.
 const int kMinURLOpensRequiredForNewTabIPH = 2;
 
+// The minimum number of times url must be opened in order for the History IPH
+// to be displayed.
+const int kMinURLOpensRequiredForHistoryOnOverflowMenuIPH = 2;
+
+// The maximum number of times the tab grid is used in a week that can allow the
+// tab grid IPH to be triggered.
+const int kMaxTabGridUsedForTabGridIPH = 2;
+
+// The maximum number of times the history on overflow menu is used in a week
+// that can allow the history IPH to be triggered.
+const int kMaxHistoryUsedForHistoryIPH = 2;
+
 }  // namespace
 
 // Unittests related to the triggering of In Product Help features. Anything
@@ -68,6 +80,32 @@ class FeatureEngagementTest : public PlatformTest {
                               "7";
     params["event_used"] =
         "name:new_tab_toolbar_item_used;comparator:==0;window:1;storage:1";
+    params["session_rate"] = "==0";
+    params["availability"] = "any";
+    return params;
+  }
+
+  std::map<std::string, std::string> IPHiOSTabGridToolbarItemParams() {
+    std::map<std::string, std::string> params;
+    params["event_trigger"] = "name:iph_tab_grid_toolbar_item_trigger;"
+                              "comparator:==0;window:7;storage:"
+                              "7";
+    params["event_used"] =
+        "name:tab_grid_toolbar_item_used;comparator:<2;window:7;storage:30";
+    params["session_rate"] = "==0";
+    params["availability"] = "any";
+    return params;
+  }
+
+  std::map<std::string, std::string> IPHiOSHistoryOnOverflowMenuParams() {
+    std::map<std::string, std::string> params;
+    params["event_1"] =
+        "name:open_url_from_omnibox;comparator:>=2;window:7;storage:30";
+    params["event_trigger"] = "name:history_on_overflow_menu_trigger;"
+                              "comparator:==0;window:7;storage:"
+                              "7";
+    params["event_used"] =
+        "name:history_on_overflow_menu_used;comparator:<2;window:30;storage:30";
     params["session_rate"] = "==0";
     params["availability"] = "any";
     return params;
@@ -284,6 +322,130 @@ TEST_F(FeatureEngagementTest, TestNewTabToolbarItemIPHShouldNotShow) {
 
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSNewTabToolbarItemFeature));
+}
+
+// Verifies that the Tab Grid IPH is triggered after the proper conditions
+// are met.
+TEST_F(FeatureEngagementTest, TestTabGridToolbarItemIPHShouldShow) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSTabGridToolbarItemFeature,
+        IPHiOSTabGridToolbarItemParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Ensure that tab grid has been tapped < `kMaxTabGridUsedForTabGridIPH` times
+  // in a week.
+  tracker->NotifyEvent(feature_engagement::events::kTabGridToolbarItemUsed);
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridToolbarItemFeature));
+}
+
+// Verifies that the Tab Grid IPH is not triggered.
+TEST_F(FeatureEngagementTest, TestTabGridToolbarItemIPHShouldNotShow) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSTabGridToolbarItemFeature,
+        IPHiOSTabGridToolbarItemParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Ensure the usage condition is not met.
+  for (int index = 0; index < kMaxTabGridUsedForTabGridIPH + 1; index++) {
+    tracker->NotifyEvent(feature_engagement::events::kTabGridToolbarItemUsed);
+  }
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridToolbarItemFeature));
+}
+
+// Verifies that the History IPH is triggered after the proper conditions
+// are met.
+TEST_F(FeatureEngagementTest, TestHistoryOnOverflowMenuIPHShouldShow) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature,
+        IPHiOSHistoryOnOverflowMenuParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Ensure that the usage condition is met.
+  tracker->NotifyEvent(feature_engagement::events::kHistoryOnOverflowMenuUsed);
+
+  // Ensure that url event is met.
+  for (int index = 0; index < kMinURLOpensRequiredForHistoryOnOverflowMenuIPH;
+       index++) {
+    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
+  }
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature));
+}
+
+// Verifies that the History IPH is not triggered due to being used too many
+// times.
+TEST_F(FeatureEngagementTest,
+       TestHistoryOnOverflowMenuIPHShouldNotShowDueToUsage) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature,
+        IPHiOSHistoryOnOverflowMenuParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Ensure that the history has been used too many times to trigger the IPH.
+  for (int index = 0; index < kMaxHistoryUsedForHistoryIPH + 1; index++) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kHistoryOnOverflowMenuUsed);
+  }
+  // Ensure that the url event condition is met.
+  for (int index = 0; index < kMinURLOpensRequiredForHistoryOnOverflowMenuIPH;
+       index++) {
+    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
+  }
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature));
+}
+
+// Verifies that the History IPH is not triggered due to not enough urls have
+// been opened.
+TEST_F(FeatureEngagementTest,
+       TestHistoryOnOverflowMenuIPHShouldNotShowDueToNotEnoughUrls) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature,
+        IPHiOSHistoryOnOverflowMenuParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Ensure that < `kMinURLOpensRequiredForHistoryOnOverflowMenuIPH` urls have
+  // been opened.
+  tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature));
 }
 
 // Verifies that the bottom toolbar tip triggers.
