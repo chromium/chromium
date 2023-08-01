@@ -180,6 +180,12 @@ void DeviceCacheImpl::OnDeviceNicknameChanged(
   BLUETOOTH_LOG(ERROR) << "Device nickname changed but device was not found";
 }
 
+void DeviceCacheImpl::OnFastPairableDevicesChanged(
+    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
+        fast_pairable_devices) {
+  NOTIMPLEMENTED();
+}
+
 void DeviceCacheImpl::FetchInitialDeviceLists() {
   device::BluetoothAdapter::DeviceList devices = FilterBluetoothDeviceList(
       bluetooth_adapter_->GetDevices(), device::BluetoothFilterType::KNOWN,
