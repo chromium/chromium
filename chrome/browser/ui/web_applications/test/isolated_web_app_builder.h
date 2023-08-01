@@ -58,7 +58,8 @@ class TestSignedWebBundleBuilder {
   // Adds a image/PNG type payload to the bundle.
   void AddPngImage(base::StringPiece url, base::StringPiece image_string);
 
-  TestSignedWebBundle Build();
+  TestSignedWebBundle Build(
+      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
 
  private:
   web_package::WebBundleSigner::KeyPair key_pair_;
@@ -67,6 +68,9 @@ class TestSignedWebBundleBuilder {
 
 TestSignedWebBundle BuildDefaultTestSignedWebBundle(
     const base::Version& version = base::Version("1.0.0"));
+
+TestSignedWebBundle BuildErroneousTestSignedWebBundle(
+    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
 
 }  // namespace web_app
 
