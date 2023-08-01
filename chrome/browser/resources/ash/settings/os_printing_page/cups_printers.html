@@ -164,6 +164,10 @@
   cr-button.prefix-icon {
     padding-inline: 12px 16px;
   }
+
+  :host([is-printer-settings-revamp-enabled_]) .section-title {
+    font: var(--cros-button-2-font);
+  }
 </style>
 
 <template is="dom-if" if="[[!canAddPrinter]]">
@@ -171,7 +175,7 @@
       class="layout horizontal padded">
     <iron-icon id="cloudOffIcon" icon="settings20:cloud-off"></iron-icon>
     <div id="connectionMessage" class="layout vertical">
-      <div>$i18n{noInternetConnection}</div>
+      <div class="section-title">$i18n{noInternetConnection}</div>
       <div class="secondary">$i18n{checkNetworkAndTryAgain}</div>
     </div>
   </div>
@@ -182,7 +186,7 @@
   <div id="savedPrintersContainer">
     <div id="savedPrintersDescription" class="settings-box first">
       <div class="start">
-        <span aria-label$="[[savedPrintersAriaLabel_]]">
+        <span aria-label$="[[savedPrintersAriaLabel_]]" class="section-title">
           $i18n{savedPrintersTitle}
         </span>
         <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]"
@@ -206,7 +210,7 @@
 <template is="dom-if" if="[[attemptedLoadingPrinters_]]">
   <div id="nearbyPrinters" class="padded first nearby-printers-section"
       hidden="[[isPrinterSettingsRevampEnabled_]]">
-    <div aria-label$="[[nearbyPrintersAriaLabel_]]">
+    <div aria-label$="[[nearbyPrintersAriaLabel_]]" class="section-title">
       $i18n{nearbyPrintersListTitle}
     </div>
     <localized-link class="secondary"
@@ -226,7 +230,8 @@
     <div id="nearbyPrintersDescription"
         aria-hidden="[[isPrinterSettingsRevampEnabled_]]">
       <div id="availablePrintersReadyTitle"
-          aria-label$="[[nearbyPrintersAriaLabel_]]">
+          aria-label$="[[nearbyPrintersAriaLabel_]]"
+          class="section-title">
         $i18n{availablePrintersReadyTitle}
       </div>
       <div id="availablePrintersReadySubtext" class="secondary"
