@@ -32,10 +32,11 @@
 // Number of times user copy-pasted in omnibox in the last
 // `kTriggerCriteriaExperimentStatExpiration` days.
 @property(nonatomic, assign) int omniboxClipboardUseCount;
+// Number of times user used the bookmarks or bookmark manager in the last
+// `kTriggerCriteriaExperimentStatExpiration` days.
+@property(nonatomic, assign) int bookmarkUseCount;
 
 // TODO(crbug.com/1456438): Implement rest of the metrics:
-// OmniboxClipboardUseCount
-// BookmarkUseCount
 // AutofillUseCount
 // SpecialTabsUseCount
 

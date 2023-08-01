@@ -1667,7 +1667,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   // there.
   web::WebState* currentWebState = self.webState;
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  LogBookmarkUseForDefaultBrowserPromo();
   if (!currentWebState) {
     return;
   }
@@ -1753,7 +1753,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens bookmarks.
 - (void)openBookmarks {
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  LogBookmarkUseForDefaultBrowserPromo();
   [self.dispatcher showBookmarksManager];
 }
 

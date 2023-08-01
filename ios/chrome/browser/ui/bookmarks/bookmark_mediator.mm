@@ -102,7 +102,7 @@ using bookmarks::BookmarkNode;
                                         URL:(const GURL&)URL
                                  editAction:(void (^)())editAction {
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  LogBookmarkUseForDefaultBrowserPromo();
 
   const BookmarkNode* defaultFolder = GetDefaultBookmarkFolder(
       _prefs, bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService),
@@ -139,7 +139,7 @@ using bookmarks::BookmarkNode;
 
 - (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
                            toFolder:(const BookmarkNode*)folder {
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  LogBookmarkUseForDefaultBrowserPromo();
 
   BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(
       folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());

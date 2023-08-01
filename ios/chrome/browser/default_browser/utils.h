@@ -92,6 +92,11 @@ extern NSString* const kLastSignificantUserEventStaySafe;
 // a omnibox copy-paste event up to allowed maximum number of past events.
 extern NSString* const kOmniboxUseCount;
 
+// Key in storage containing an array of dates. Each date correspond to
+// a bookmark or bookmark manager use event up to allowed maximum number of past
+// events.
+extern NSString* const kBookmarkUseCount;
+
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 
@@ -194,6 +199,9 @@ void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
 
 // Logs in NSUserDefaults that user copy-pasted in the omnibox.
 void LogCopyPasteInOmniboxForDefaultBrowserPromo();
+
+// Logs in NSUserDefaults that user used bookmarks or bookmark manager.
+void LogBookmarkUseForDefaultBrowserPromo();
 
 // Returns YES if the user has opened the app through first-party intent 2
 // times in the last 7 days, but across 2 user sessions (default 6 hours). Also

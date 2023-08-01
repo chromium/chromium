@@ -464,7 +464,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         recordShortcutTileTapped:mostVisitedItem.collectionShortcutType];
     switch (mostVisitedItem.collectionShortcutType) {
       case NTPCollectionShortcutTypeBookmark:
-        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+        LogBookmarkUseForDefaultBrowserPromo();
         [self.dispatcher showBookmarksManager];
         break;
       case NTPCollectionShortcutTypeReadingList:

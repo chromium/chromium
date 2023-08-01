@@ -405,8 +405,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ChromeOpen) {
 
   // Adding timestamps that are older than 14 days should not change the promo
   // stats.
-  NSDate* moreThan14DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan14Days.InSecondsF()];
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
   SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
                              @[ moreThan14DaysAgo ]);
   SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
@@ -421,8 +420,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ChromeOpen) {
   }
 
   // Adding timestamps that are between 7 - 14 days should be counted.
-  NSDate* moreThan7DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()];
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
 
   SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
                              @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
@@ -479,8 +477,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ActiveDayCount) {
 
   // Adding timestamps that are older than 14 days should not change the promo
   // stats.
-  NSDate* moreThan14DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan14Days.InSecondsF()];
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
   SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
                              @[ moreThan14DaysAgo ]);
   SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
@@ -493,8 +490,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ActiveDayCount) {
   }
 
   // Adding timestamps that are between 7 - 14 days should be counted.
-  NSDate* moreThan7DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()];
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
 
   SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
                              @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
@@ -530,8 +526,7 @@ TEST_F(DefaultBrowserUtilsTest,
 
   // Adding timestamps that are older than 14 days should not change the promo
   // stats.
-  NSDate* moreThan14DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan14Days.InSecondsF()];
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
   SetObjectIntoStorageForKey(kLastSignificantUserEventStaySafe,
                              @[ moreThan14DaysAgo ]);
   {
@@ -540,8 +535,7 @@ TEST_F(DefaultBrowserUtilsTest,
   }
 
   // Adding timestamps that are between 7 - 14 days should be counted.
-  NSDate* moreThan7DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()];
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
 
   SetObjectIntoStorageForKey(kLastSignificantUserEventStaySafe,
                              @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
@@ -571,8 +565,7 @@ TEST_F(DefaultBrowserUtilsTest,
 
   // Adding timestamps that are older than 14 days should not change the promo
   // stats.
-  NSDate* moreThan14DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan14Days.InSecondsF()];
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
   SetObjectIntoStorageForKey(kOmniboxUseCount, @[ moreThan14DaysAgo ]);
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
@@ -580,8 +573,7 @@ TEST_F(DefaultBrowserUtilsTest,
   }
 
   // Adding timestamps that are between 7 - 14 days should be counted.
-  NSDate* moreThan7DaysAgo = [[NSDate alloc]
-      initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()];
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
 
   SetObjectIntoStorageForKey(kOmniboxUseCount,
                              @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
@@ -596,6 +588,43 @@ TEST_F(DefaultBrowserUtilsTest,
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(2, promo_stats.omniboxClipboardUseCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` for bookmark use count.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_BookmarkUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.bookmarkUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kBookmarkUseCount, @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.bookmarkUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kBookmarkUseCount,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.bookmarkUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogBookmarkUseForDefaultBrowserPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.bookmarkUseCount);
   }
 }
 }  // namespace
