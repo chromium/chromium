@@ -272,6 +272,8 @@ html[chrome-refresh-2023] {
 
   --cr-fallback-color-on-surface-subtle: rgb(71, 71, 71);
 
+  --cr-fallback-color-inverse-on-surface: rgb(242, 242, 242);
+
   --cr-fallback-color-tonal-container: rgb(211, 227, 253);
   --cr-fallback-color-on-tonal-container: rgb(4, 30, 73);
 
@@ -342,6 +344,7 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-surface-variant: rgb(68, 71, 70);
     --cr-fallback-color-on-surface-variant: rgb(196, 199, 197);
     --cr-fallback-color-on-surface-subtle: rgb(199, 199, 199);
+    --cr-fallback-color-inverse-on-surface: rgb(31, 31, 31);
     --cr-fallback-color-tonal-container: rgb(0, 74, 119);
     --cr-fallback-color-on-tonal-container: rgb(194, 231, 255);
     --cr-fallback-color-tonal-outline: rgb(0, 99, 155);

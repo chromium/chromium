@@ -31,9 +31,11 @@
 
   :host-context([chrome-refresh-2023]) cr-theme-color-check-mark-wrapper {
     --cr-theme-color-check-mark-wrapper-background: var(
-        --color-side-panel-customize-chrome-color-picker-checkmark-background);
+        --color-theme-color-picker-checkmark-background,
+        var(--cr-fallback-color-on-surface));
     --cr-theme-color-check-mark-wrapper-color: var(
-        --color-side-panel-customize-chrome-color-picker-checkmark-foreground);
+        --color-theme-color-picker-checkmark-foreground,
+        var(--cr-fallback-color-inverse-on-surface));
   }
 
   #background {
