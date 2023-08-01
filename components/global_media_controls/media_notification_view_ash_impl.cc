@@ -219,7 +219,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       media_message_center::kPlayArrowIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      theme_.secondary_container_color_id, kPlayPauseButtonSize.height() / 2));
+      theme_.system_container_color_id, kPlayPauseButtonSize.height() / 2));
 
   // |controls_row| holds all the available media action buttons and the
   // progress view.

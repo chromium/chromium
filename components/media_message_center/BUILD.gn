@@ -27,6 +27,7 @@ component("media_message_center") {
     "media_notification_volume_slider_view.h",
     "media_squiggly_progress_view.cc",
     "media_squiggly_progress_view.h",
+    "notification_theme.cc",
     "notification_theme.h",
   ]
 
