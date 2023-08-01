@@ -15,6 +15,9 @@
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/pref_names.h"
@@ -160,4 +163,13 @@ void MarkProfileDirectoryForDeletion(const base::FilePath& path) {
   ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
                                         prefs::kProfilesDeleted);
   deleted_profiles->Append(base::FilePathToValue(path));
+
+  // Set profile as ephemeral.
+  ProfileAttributesEntry* entry = g_browser_process->profile_manager()
+                                      ->GetProfileAttributesStorage()
+                                      .GetProfileAttributesWithPath(path);
+  if (!entry->IsEphemeral()) {
+    entry->SetIsEphemeral(true);
+    entry->SetIsOmitted(true);
+  }
 }
