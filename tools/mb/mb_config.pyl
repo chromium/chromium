@@ -145,7 +145,6 @@
       'android-annotator-rel': 'android_release_bot_minimal_symbols_arm64_webview_google_reclient',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-cronet-asan-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_clang_asan_reclient',
-      'android-cronet-mainline-clang-arm-dbg': 'android_cronet_mainline_clang_debug_static_bot_arm_no_neon_reclient',
       'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google_reclient',
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
     },
@@ -1584,10 +1583,6 @@
 
     'android_cronet_mainline_clang_debug_static_bot_arm64_reclient': [
       'android', 'cronet_android', 'debug_static_bot_reclient', 'arm64', 'cronet_android_mainline_clang',
-    ],
-
-    'android_cronet_mainline_clang_debug_static_bot_arm_no_neon_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'arm_no_neon', 'release_java', 'cronet_android_mainline_clang',
     ],
 
     'android_cronet_mainline_clang_release_bot_minimal_symbols_arm64_reclient': [
