@@ -55,7 +55,6 @@ suite('Main', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
-      showHttpsOnlyModeSetting: true,
       showChromeRootStoreCertificates: true,
       enableFriendlierSafeBrowsingSettingsStandardProtection: true,
     });
@@ -179,7 +178,6 @@ suite('FlagsDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
-      showHttpsOnlyModeSetting: false,
       enableFriendlierSafeBrowsingSettingsStandardProtection: false,
     });
   });
@@ -214,10 +212,6 @@ suite('FlagsDisabled', function() {
         routes.SECURITY_KEYS_PHONES, Router.getInstance().getCurrentRoute());
   });
   // </if>
-
-  test('HttpsOnlyModeSettingHidden', function() {
-    assertFalse(isChildVisible(page, '#httpsOnlyModeToggle'));
-  });
 
   // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
   // standard protection is launched.

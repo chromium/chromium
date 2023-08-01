@@ -45,8 +45,7 @@ HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kHttpsOnlyMode) || !prefs ||
-      !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+  if (!prefs || !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
     return nullptr;
   }
 

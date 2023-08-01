@@ -1940,10 +1940,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       chromeos::settings::mojom::kPrivacyAndSecuritySectionPath);
 #endif
 
-  html_source->AddBoolean(
-      "showHttpsOnlyModeSetting",
-      base::FeatureList::IsEnabled(features::kHttpsOnlyMode));
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   html_source->AddBoolean("showChromeRootStoreCertificates",
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)

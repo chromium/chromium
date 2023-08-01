@@ -56,7 +56,7 @@ class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kHttpsOnlyMode},
+        /*enabled_features=*/{},
         /*disabled_features=*/{features::kHttpsFirstModeV2,
                                features::kHttpsUpgrades});
     InProcessBrowserTest::SetUp();
@@ -1050,11 +1050,6 @@ class HttpsOnlyModePrefsBrowserTest : public InProcessBrowserTest {
   HttpsOnlyModePrefsBrowserTest() = default;
   ~HttpsOnlyModePrefsBrowserTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHttpsOnlyMode);
-    InProcessBrowserTest::SetUp();
-  }
-
  protected:
   void SetPref(bool enabled) {
     auto* prefs = browser()->profile()->GetPrefs();
@@ -1120,13 +1115,10 @@ class HttpsOnlyModeForAdvancedProtectionBrowserTest
   void SetUp() override {
     if (is_enabled_for_advanced_protection()) {
       feature_list()->InitWithFeatures(
-          {features::kHttpsOnlyMode,
-           features::kHttpsFirstModeForAdvancedProtectionUsers},
-          {});
+          {features::kHttpsFirstModeForAdvancedProtectionUsers}, {});
     } else {
       feature_list()->InitWithFeatures(
-          {features::kHttpsOnlyMode},
-          {features::kHttpsFirstModeForAdvancedProtectionUsers});
+          {}, {features::kHttpsFirstModeForAdvancedProtectionUsers});
     }
     InProcessBrowserTest::SetUp();
   }
@@ -1190,8 +1182,7 @@ class HttpsOnlyModeTestSubresourceNotifications
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kHttpsOnlyMode,
-                              features::kReduceSubresourceResponseStartedIPC},
+        /*enabled_features=*/{features::kReduceSubresourceResponseStartedIPC},
         /*disabled_features=*/{features::kHttpsFirstModeV2,
                                features::kHttpsUpgrades});
     InProcessBrowserTest::SetUp();
@@ -1306,5 +1297,3 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   nav_observer.Wait();
   EXPECT_EQ(http_url, tab->GetLastCommittedURL());
 }
-
-

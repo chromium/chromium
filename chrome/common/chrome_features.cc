@@ -675,9 +675,6 @@ BASE_FEATURE(kHideWebAppOriginText,
              "HideWebAppOriginText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Sets whether the HTTPS-Only Mode setting is displayed in the settings UI.
-BASE_FEATURE(kHttpsOnlyMode, "HttpsOnlyMode", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for crbug.com/1414633.
 BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,
              "HttpsOnlyModeForAdvancedProtectionUsers",

@@ -82,8 +82,6 @@ public class PrivacySettings extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        PrivacyPreferencesManagerImpl privacyPrefManager =
-                PrivacyPreferencesManagerImpl.getInstance();
         getActivity().setTitle(R.string.prefs_privacy_security);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
@@ -150,8 +148,6 @@ public class PrivacySettings extends PreferenceFragmentCompat
 
         ChromeSwitchPreference httpsFirstModePref =
                 (ChromeSwitchPreference) findPreference(PREF_HTTPS_FIRST_MODE);
-        httpsFirstModePref.setVisible(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.HTTPS_FIRST_MODE));
         httpsFirstModePref.setOnPreferenceChangeListener(this);
         httpsFirstModePref.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
             @Override

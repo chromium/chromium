@@ -98,17 +98,6 @@ export class SettingsSecurityPageElement extends
       // </if>
 
       /**
-       * Whether the HTTPS-Only Mode setting should be displayed.
-       */
-      showHttpsOnlyModeSetting_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('showHttpsOnlyModeSetting');
-        },
-      },
-
-      /**
        * Whether the secure DNS setting should be displayed.
        */
       showSecureDnsSetting_: {
@@ -180,7 +169,6 @@ export class SettingsSecurityPageElement extends
   // <if expr="chrome_root_store_supported">
   private showChromeRootStoreCertificates_: boolean;
   // </if>
-  private showHttpsOnlyModeSetting_: boolean;
   private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">
