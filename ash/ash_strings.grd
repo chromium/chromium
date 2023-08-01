@@ -2015,6 +2015,9 @@ Style notes:
       <message name="IDS_ASH_VERSION_IN_LAUNCHER_MESSAGE" desc="Message content for the title of the answer card with the current version in the launcher.">
         Version <ph name="VERSION_NAME">$1<ex>109.0.5414.125</ex></ph> (<ph name="OFFICIAL_STATUS">$2<ex>Official Build</ex></ph>) <ph name="CHANNEL_NAME">$3<ex>Beta</ex></ph> <ph name="PROCESSOR_VARIATION">$4<ex>(64-bit)</ex></ph>
       </message>
+      <message name="IDS_ASH_VERSION_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the answer card with the current version in the launcher.">
+        Click to check for details
+      </message>
       <message name="IDS_ASH_CPU_IN_LAUNCHER_TITLE" desc="Message content for the title of the answer card with the current CPU system information in the launcher.">
         CPU usage snapshot: <ph name="CPU_USEAGE">$1<ex>89</ex></ph>%
       </message>

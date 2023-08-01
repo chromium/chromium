@@ -392,7 +392,7 @@ TEST_F(SystemInfoCardProviderTest, Version) {
   ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
   const auto& details = results()[0]->details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(details.GetText(), u"Check for updates");
+  EXPECT_EQ(details.GetText(), u"Click to check for details");
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 

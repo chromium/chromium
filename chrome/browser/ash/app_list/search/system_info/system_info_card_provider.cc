@@ -396,7 +396,7 @@ void SystemInfoCardProvider::UpdateChromeOsVersion() {
           chrome::GetChannelName(chrome::WithExtendedStable(true))),
       processor_variation);
   std::u16string description =
-      l10n_util::GetStringUTF16(IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES);
+      l10n_util::GetStringUTF16(IDS_ASH_VERSION_IN_LAUNCHER_DESCRIPTION);
 
   AnswerCardInfo answer_card_info(
       ash::SystemInfoAnswerCardDisplayType::kTextCard);
