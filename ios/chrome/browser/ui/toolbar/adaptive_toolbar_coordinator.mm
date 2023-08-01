@@ -149,6 +149,14 @@
   // Implemented in primary and secondary toolbars directly.
 }
 
+- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
+  [self.mediator updateConsumerWithTabGridButtonIPHHighlighted:iphHighlighted];
+}
+
+- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
+  [self.mediator updateConsumerWithNewTabButtonIPHHighlighted:iphHighlighted];
+}
+
 #pragma mark - ToolbarCoordinatee
 
 - (id<PopupMenuUIUpdating>)popupMenuUIUpdater {

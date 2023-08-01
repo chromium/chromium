@@ -81,6 +81,10 @@
         [[PrimaryToolbarCoordinator alloc] initWithBrowser:browser];
     _secondaryToolbarCoordinator =
         [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser];
+
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(ToolbarCommands)];
   }
   return self;
 }
@@ -94,9 +98,6 @@
   _omniboxPosition = ToolbarType::kPrimary;
 
   Browser* browser = self.browser;
-  [browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(ToolbarCommands)];
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
@@ -447,6 +448,18 @@
 - (void)triggerToolbarSlideInAnimation {
   for (id<ToolbarCommands> coordinator in self.coordinators) {
     [coordinator triggerToolbarSlideInAnimation];
+  }
+}
+
+- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
+  for (id<ToolbarCommands> coordinator in self.coordinators) {
+    [coordinator setTabGridButtonIPHHighlighted:iphHighlighted];
+  }
+}
+
+- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
+  for (id<ToolbarCommands> coordinator in self.coordinators) {
+    [coordinator setNewTabButtonIPHHighlighted:iphHighlighted];
   }
 }
 
