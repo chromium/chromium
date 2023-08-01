@@ -90,8 +90,8 @@ ScriptPromise InstallEvent::registerRouter(
 
   blink::ServiceWorkerRouterRules rules;
   if (v8_rules->IsRouterRule()) {
-    auto r = ConvertV8RouterRuleToBlink(v8_rules->GetAsRouterRule(),
-                                        exception_state);
+    auto r = ConvertV8RouterRuleToBlink(
+        v8_rules->GetAsRouterRule(), global_scope->BaseURL(), exception_state);
     if (!r) {
       return ParseErrorPromise(script_state);
     }
@@ -99,7 +99,8 @@ ScriptPromise InstallEvent::registerRouter(
   } else {
     CHECK(v8_rules->IsRouterRuleSequence());
     for (const blink::RouterRule* rule : v8_rules->GetAsRouterRuleSequence()) {
-      auto r = ConvertV8RouterRuleToBlink(rule, exception_state);
+      auto r = ConvertV8RouterRuleToBlink(rule, global_scope->BaseURL(),
+                                          exception_state);
       if (!r) {
         CHECK(exception_state.HadException());
         return ParseErrorPromise(script_state);

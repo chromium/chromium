@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -22,6 +23,7 @@ class RouterRule;
 // to tell errors.
 MODULES_EXPORT absl::optional<ServiceWorkerRouterRule>
 ConvertV8RouterRuleToBlink(const RouterRule* input,
+                           const KURL& url_pattern_base_url,
                            ExceptionState& exception_state);
 
 }  // namespace blink

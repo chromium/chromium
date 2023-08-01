@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_condition.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_source_enum.h"
 #include "third_party/blink/renderer/core/fetch/request_util.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -20,7 +23,12 @@ namespace {
 
 absl::optional<std::vector<liburlpattern::Part>> ToPartList(
     const String& pattern,
+    const String& field_name,
     ExceptionState& exception_state) {
+  // This means that the field should not exist.
+  if (pattern.empty()) {
+    return std::vector<liburlpattern::Part>();
+  }
   // TODO(crbug.com/1371756): unify the code with manifest_parser.cc
   WTF::StringUTF8Adaptor utf8(pattern);
   auto parse_result = liburlpattern::Parse(
@@ -46,26 +54,71 @@ absl::optional<std::vector<liburlpattern::Part>> ToPartList(
   return part_list;
 }
 
-absl::optional<ServiceWorkerRouterCondition> RouterUrlPatternConditionToBlink(
-    RouterCondition* v8_condition,
+// TODO(crbug.com/1371756): Make URLPattern has a method to construct the
+// SafeURLPattern and remove the conversion from here.
+// The method should take a exception_state to raise on regex usage.
+absl::optional<SafeUrlPattern> ConvertURLPatternInputToSafeUrlPattern(
+    const V8URLPatternInput* url_pattern_input,
+    const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
-  CHECK(v8_condition);
-  if (v8_condition->urlPattern().empty()) {
-    // No URLPattern configured.
-    exception_state.ThrowTypeError("URLPattern should not be empty");
-    return absl::nullopt;
+  URLPattern* url_pattern;
+  switch (url_pattern_input->GetContentType()) {
+    case blink::V8URLPatternInput::ContentType::kUSVString:
+      url_pattern = URLPattern::Create(url_pattern_input, url_pattern_base_url,
+                                       exception_state);
+      break;
+    case blink::V8URLPatternInput::ContentType::kURLPatternInit:
+      url_pattern = URLPattern::Create(url_pattern_input, exception_state);
+      break;
   }
-  // TODO(crbug.com/1371756): implement hostname and other fields support.
-  auto ret = ToPartList(v8_condition->urlPattern(), exception_state);
-  if (!ret.has_value()) {
+  if (!url_pattern) {
     CHECK(exception_state.HadException());
     return absl::nullopt;
   }
-  SafeUrlPattern url_pattern;
-  url_pattern.pathname = std::move(*ret);
-  ServiceWorkerRouterCondition condition;
-  condition.type = ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-  condition.url_pattern = std::move(url_pattern);
+
+  SafeUrlPattern safe_url_pattern;
+#define TO_PART(field)                                             \
+  do {                                                             \
+    auto part_list =                                               \
+        ToPartList(url_pattern->field(), #field, exception_state); \
+    if (!part_list.has_value()) {                                  \
+      CHECK(exception_state.HadException());                       \
+      return absl::nullopt;                                        \
+    }                                                              \
+    safe_url_pattern.field = std::move(*part_list);                \
+  } while (0)
+  TO_PART(protocol);
+  TO_PART(username);
+  TO_PART(password);
+  TO_PART(hostname);
+  TO_PART(port);
+  TO_PART(pathname);
+  TO_PART(search);
+  TO_PART(hash);
+#undef TO_PART
+  // TODO(crbug.com/1371756): support URLPatternOptions.
+  // Currently, URLPatternOptions are not included in URLPatternInit,
+  // and we do not pass the option to the browser side.
+  return safe_url_pattern;
+}
+
+absl::optional<ServiceWorkerRouterCondition> RouterUrlPatternConditionToBlink(
+    RouterCondition* v8_condition,
+    const KURL& url_pattern_base_url,
+    ExceptionState& exception_state) {
+  CHECK(v8_condition);
+
+  absl::optional<SafeUrlPattern> url_pattern =
+      ConvertURLPatternInputToSafeUrlPattern(
+          v8_condition->urlPattern(), url_pattern_base_url, exception_state);
+  if (!url_pattern) {
+    CHECK(exception_state.HadException());
+    return absl::nullopt;
+  }
+  blink::ServiceWorkerRouterCondition condition;
+  condition.type =
+      blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+  condition.url_pattern = std::move(*url_pattern);
   return condition;
 }
 
@@ -156,6 +209,7 @@ ServiceWorkerRouterSource RouterSourceEnumToBlink(
 
 absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
     const RouterRule* input,
+    const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
   if (!input) {
     exception_state.ThrowTypeError("Invalid Input");
@@ -170,8 +224,8 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   // Set up conditions.
   if (input->condition()->hasUrlPattern()) {
     absl::optional<ServiceWorkerRouterCondition> condition;
-    condition =
-        RouterUrlPatternConditionToBlink(input->condition(), exception_state);
+    condition = RouterUrlPatternConditionToBlink(
+        input->condition(), url_pattern_base_url, exception_state);
     if (!condition) {
       CHECK(exception_state.HadException());
       return absl::nullopt;

@@ -4,11 +4,14 @@ var requests = [];
 
 self.addEventListener('install', e => {
   e.registerRouter([
-    {condition: {urlPattern: '*.txt'}, source: 'network'}, {
-      condition: {urlPattern: '*/simple-test-for-condition-main-resource.html'},
+    {
+      condition: {urlPattern: '/**/*.txt'},
       source: 'network'
-    }
-  ]);
+    }, {
+      condition: {
+        urlPattern: '/**/simple-test-for-condition-main-resource.html'},
+      source: 'network'
+    }]);
   self.skipWaiting();
 });
 

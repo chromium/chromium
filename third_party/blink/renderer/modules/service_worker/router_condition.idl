@@ -10,7 +10,7 @@ enum RunningStatusEnum { "running", "not-running" };
 dictionary RouterCondition {
   // For the URLPattern condition.
   // a relative path pattern string usable for URLPattern.
-  USVString urlPattern;
+  URLPatternInput urlPattern;
 
   // For the Request condition.
   USVString requestMethod;
