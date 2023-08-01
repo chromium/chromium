@@ -1233,14 +1233,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.webState = nullptr;
 }
 
-#pragma mark - WebStateObserving
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  self.webState = newWebState;
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (!status.active_web_state_change()) {
+    return;
+  }
+
+  self.webState = status.new_active_web_state;
   if (self.webState && self.followAction) {
     FollowTabHelper* followTabHelper =
         FollowTabHelper::FromWebState(self.webState);
