@@ -128,7 +128,7 @@ export interface StorageAccessSiteException {
 export interface StorageAccessEmbeddingException {
   embeddingOrigin: string;
   embeddingDisplayName: string;
-  description: string;  // includes case for embargoed exception.
+  description?: string;  // includes case for embargoed exception.
   incognito: boolean;
 }
 

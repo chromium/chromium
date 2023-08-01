@@ -605,6 +605,20 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_EQ(expected_embedding_exception.embedding_display_name,
               *embedding_display_name);
 
+    absl::optional<bool> incognito =
+        embedding_exception.FindBool(site_settings::kIncognito);
+    ASSERT_TRUE(incognito.has_value());
+    EXPECT_EQ(expected_embedding_exception.incognito, *incognito);
+
+    const std::string* description =
+        embedding_exception.FindString(site_settings::kDescription);
+
+    if (expected_embedding_exception.lifetime_in_days == 0 &&
+        !expected_embedding_exception.embargoed) {
+      ASSERT_FALSE(description);
+      return;
+    }
+
     std::string expected_description =
         expected_embedding_exception.embargoed
             ? l10n_util::GetStringUTF8(
@@ -612,16 +626,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
             : l10n_util::GetPluralStringFUTF8(
                   IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL,
                   expected_embedding_exception.lifetime_in_days);
-
-    const std::string* description =
-        embedding_exception.FindString(site_settings::kDescription);
     ASSERT_TRUE(description);
     ASSERT_EQ(expected_description, *description);
-
-    absl::optional<bool> incognito =
-        embedding_exception.FindBool(site_settings::kIncognito);
-    ASSERT_TRUE(incognito.has_value());
-    EXPECT_EQ(expected_embedding_exception.incognito, *incognito);
   }
 
   void ValidateNoOrigin(size_t expected_total_calls) {

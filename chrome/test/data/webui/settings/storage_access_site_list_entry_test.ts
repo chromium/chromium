@@ -35,7 +35,7 @@ const exceptionStorageAccessOrigin: StorageAccessSiteException =
         createStorageAccessEmbeddingException(
             'https://foo.com', {description: 'embedding description'}),
         createStorageAccessEmbeddingException(
-            'https://foo2.com', {description: 'embedding 2 description'}),
+            'https://foo2.com', {description: ''}),
       ],
     });
 

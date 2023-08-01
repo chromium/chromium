@@ -642,20 +642,16 @@ base::Value::Dict GetFileSystemExceptionForPage(
 }
 
 std::u16string GetExpirationDescription(const base::Time& expiration) {
-  // There is no user facing pathway to creating exceptions that expect an
-  // expiration, without one, but we should handle that pathway gracefully
-  // anyway to support things like extensions & policy.
-  int days = 0;
-  if (!expiration.is_null()) {
-    const base::TimeDelta time_diff =
-        expiration.LocalMidnight() - base::Time::Now().LocalMidnight();
+  CHECK(!expiration.is_null());
 
-    // Only exceptions that haven't expired should reach this function.
-    // However, there is an edge case where an exception could expire between
-    // being fetched and this calculation. So let's always return a valid
-    // number, zero.
-    days = std::max(time_diff.InDays(), 0);
-  }
+  const base::TimeDelta time_diff =
+      expiration.LocalMidnight() - base::Time::Now().LocalMidnight();
+
+  // Only exceptions that haven't expired should reach this function.
+  // However, there is an edge case where an exception could expire between
+  // being fetched and this calculation. So let's always return a valid
+  // number, zero.
+  int days = std::max(time_diff.InDays(), 0);
 
   return l10n_util::GetPluralStringFUTF16(IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL,
                                           days);
@@ -705,6 +701,11 @@ std::u16string GetStorageAccessEmbeddingDescription(
     return l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED);
   }
+
+  if (embedding_sa_exception.expiration.is_null()) {
+    return std::u16string();
+  }
+
   return GetExpirationDescription(embedding_sa_exception.expiration);
 }
 
@@ -769,8 +770,11 @@ base::Value::Dict GetStorageAccessExceptionForPage(
         kEmbeddingDisplayName,
         GetStorageAccessDisplayNameForPattern(profile, secondary_pattern));
 
-    embedding_exception.Set(kDescription, GetStorageAccessEmbeddingDescription(
-                                              embedding_sa_exception));
+    std::u16string description =
+        GetStorageAccessEmbeddingDescription(embedding_sa_exception);
+    if (!description.empty()) {
+      embedding_exception.Set(kDescription, description);
+    }
     embedding_exception.Set(kIncognito, embedding_sa_exception.is_incognito);
     embedding_origins.Append(std::move(embedding_exception));
   }
