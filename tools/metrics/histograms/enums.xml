@@ -16002,6 +16002,14 @@ Called by update_protocol_commands_enum.py.-->
   <int value="37" label="MAGN_UNCALIBRATED_lid"/>
   <int value="38" label="MAGN_UNCALIBRATED_camera"/>
   <int value="39" label="MAGN_UNCALIBRATED_others"/>
+  <int value="40" label="GRAVITY_base"/>
+  <int value="41" label="GRAVITY_lid"/>
+  <int value="42" label="GRAVITY_camera"/>
+  <int value="43" label="GRAVITY_others"/>
+  <int value="44" label="PROXIMITY_base"/>
+  <int value="45" label="PROXIMITY_lid"/>
+  <int value="46" label="PROXIMITY_camera"/>
+  <int value="47" label="PROXIMITY_others"/>
 </enum>
 
 <enum name="ChromeOSJankinessTriggerStatus">
