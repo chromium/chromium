@@ -25,6 +25,7 @@ class FullscreenMediatorTest : public PlatformTest {
   }
   ~FullscreenMediatorTest() override {
     mediator_.Disconnect();
+    mediator_.RemoveObserver(&observer_);
     EXPECT_TRUE(observer_.is_shut_down());
   }
 

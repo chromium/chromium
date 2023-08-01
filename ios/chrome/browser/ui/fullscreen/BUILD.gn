@@ -9,6 +9,7 @@ source_set("fullscreen") {
     "fullscreen_controller.h",
     "fullscreen_controller.mm",
     "fullscreen_controller_observer.h",
+    "fullscreen_controller_observer.mm",
     "fullscreen_ui_updater.h",
     "scoped_fullscreen_disabler.h",
     "scoped_fullscreen_disabler.mm",
