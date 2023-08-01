@@ -4,7 +4,8 @@
 
 #include "services/accessibility/features/v8_manager.h"
 
-#include "base/memory/ref_counted_delete_on_sequence.h"
+#include <utility>
+
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,14 +33,15 @@ namespace ax {
 namespace {
 
 // The index into the global template's internal fields that
-// stores a pointer to this V8Manager. This allows any class with
-// a v8::Context to access this V8Manager.
+// stores a pointer to this V8Environment. This allows any class with
+// a v8::Context to access this V8Environment.
 static const int kV8ContextWrapperIndex = 0;
 
 }  // namespace
 
 // static
-scoped_refptr<V8Manager> V8Manager::Create() {
+base::SequenceBound<V8Environment> V8Environment::Create(
+    base::WeakPtr<V8Manager> manager) {
   // Create task runner for running V8. The Isolate should only ever be accessed
   // on this thread.
   auto v8_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -49,32 +51,29 @@ scoped_refptr<V8Manager> V8Manager::Create() {
   // Get a reference to the current SequencedTaskRunner for posting tasks back
   // to the constructor and current thread.
   auto main_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  scoped_refptr<V8Manager> result(new V8Manager(v8_runner, main_runner));
-  v8_runner->PostTask(
-      FROM_HERE, base::BindOnce(&V8Manager::ConstructIsolateOnThread, result));
+  base::SequenceBound<V8Environment> result(
+      std::move(v8_runner), std::move(main_runner), std::move(manager));
   return result;
 }
 
 // static
-V8Manager* V8Manager::GetFromContext(v8::Local<v8::Context> context) {
+V8Environment* V8Environment::GetFromContext(v8::Local<v8::Context> context) {
   v8::Local<v8::Object> global_proxy = context->Global();
   CHECK_LT(kV8ContextWrapperIndex, global_proxy->InternalFieldCount());
-  V8Manager* v8_manager = reinterpret_cast<V8Manager*>(
+  V8Environment* v8_env = reinterpret_cast<V8Environment*>(
       global_proxy->GetAlignedPointerFromInternalField(kV8ContextWrapperIndex));
-  CHECK(v8_manager);
-  return v8_manager;
+  CHECK(v8_env);
+  return v8_env;
 }
 
-V8Manager::V8Manager(scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
-                     scoped_refptr<base::SequencedTaskRunner> main_runner)
-    : base::RefCountedDeleteOnSequence<V8Manager>(v8_runner),
-      v8_runner_(v8_runner),
-      main_runner_(main_runner) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
+V8Environment::V8Environment(
+    scoped_refptr<base::SequencedTaskRunner> main_runner,
+    base::WeakPtr<V8Manager> manager)
+    : main_runner_(std::move(main_runner)), manager_(std::move(manager)) {
+  CreateIsolate();
 }
 
-V8Manager::~V8Manager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+V8Environment::~V8Environment() {
   if (!isolate_holder_)
     return;
 
@@ -85,95 +84,48 @@ V8Manager::~V8Manager() {
   isolate_holder_.reset();
 }
 
-void V8Manager::InstallAutomation(
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
-  v8_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&V8Manager::BindAutomationOnThread,
-                                weak_ptr_factory_.GetWeakPtr(), at_controller));
+void V8Environment::InstallAutomation(
+    mojo::PendingAssociatedReceiver<mojom::Automation> automation,
+    mojo::PendingRemote<mojom::AutomationClient> automation_client) {
+  automation_bindings_ = std::make_unique<AutomationInternalBindings>(
+      this, std::move(automation), std::move(automation_client));
 }
 
-void V8Manager::InstallTts(
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
-  v8_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&V8Manager::BindTtsOnThread,
-                                weak_ptr_factory_.GetWeakPtr(), at_controller));
+void V8Environment::ExecuteScript(const std::string& script,
+                                  base::OnceCallback<void()> on_complete) {
+  bool result = BindingsIsolateHolder::ExecuteScriptInContext(script);
+  DCHECK(result);
+  // FIXME: For callers, it might be nice to bounce back to the calling thread
+  // rather than exposing V8Environment's internal implementation thread.
+  std::move(on_complete).Run();
 }
 
-void V8Manager::AddV8Bindings() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
-  v8_runner_->PostTask(FROM_HERE,
-                       base::BindOnce(&V8Manager::AddV8BindingsOnThread,
-                                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void V8Manager::ExecuteScript(const std::string& script,
-                              base::OnceCallback<void()> on_complete) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
-  v8_runner_->PostTask(FROM_HERE,
-                       base::BindOnce(&V8Manager::ExecuteScriptOnThread,
-                                      weak_ptr_factory_.GetWeakPtr(), script,
-                                      std::move(on_complete)));
-}
-
-v8::Isolate* V8Manager::GetIsolate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+v8::Isolate* V8Environment::GetIsolate() const {
   return isolate_holder_ ? isolate_holder_->isolate() : nullptr;
 }
 
-v8::Local<v8::Context> V8Manager::GetContext() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+v8::Local<v8::Context> V8Environment::GetContext() const {
   return context_holder_->context();
 }
 
-void V8Manager::BindInterface(const std::string& interface_name,
-                              mojo::GenericPendingReceiver pending_receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b:262637071): Add mappings for bindings for other C++/JS mojom APIs.
-  // TODO(b:262637071): We may need to use associated remotes/receivers to avoid
-  // messages coming in an unpredicted order compared to the Extensions system.
-  for (auto& binder : interface_binders_) {
-    if (binder->MatchesInterface(interface_name)) {
-      binder->BindReceiver(std::move(pending_receiver));
-      return;
-    }
-  }
-  LOG(ERROR) << "Couldn't find Receiver for interface " << interface_name
-             << ". Ensure it's installed in the isolate with "
-             << "V8Manager::Install* and available for binding in "
-             << "V8Manager::BindInterface.";
+void V8Environment::BindInterface(
+    const std::string& interface_name,
+    mojo::GenericPendingReceiver pending_receiver) {
+  main_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&V8Manager::BindInterface, manager_,
+                                interface_name, std::move(pending_receiver)));
 }
 
-void V8Manager::SetTestMojoInterface(
-    std::unique_ptr<InterfaceBinder> test_interface) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
-  v8_runner_->PostTask(FROM_HERE,
-                       base::BindOnce(&V8Manager::SetTestMojoInterfaceOnThread,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      std::move(test_interface)));
-}
-
-void V8Manager::ConstructIsolateOnThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (isolate_holder_ && context_holder_)
-    return;
-
+void V8Environment::CreateIsolate() {
   std::unique_ptr<v8::Isolate::CreateParams> params =
       gin::IsolateHolder::getDefaultIsolateParams();
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      v8_runner_, gin::IsolateHolder::kSingleThread,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      gin::IsolateHolder::kSingleThread,
       gin::IsolateHolder::IsolateType::kUtility, std::move(params));
 }
 
-void V8Manager::AddV8BindingsOnThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void V8Environment::AddV8Bindings() {
   DCHECK(isolate_holder_) << "V8 has not been started, cannot bind.";
 
   v8::Isolate* isolate = isolate_holder_->isolate();
@@ -253,34 +205,66 @@ void V8Manager::AddV8BindingsOnThread() {
   // using ExecuteScript.
 }
 
-void V8Manager::BindAutomationOnThread(
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Construct the AutomationInternalBindings and its routes.
-  automation_bindings_ = std::make_unique<AutomationInternalBindings>(
-      weak_ptr_factory_.GetWeakPtr(), at_controller, main_runner_);
+V8Manager::V8Manager() {
+  // Note: this can't be in the initializer list because WeakPtrFactory fields
+  // must be declared after all other fields.
+  v8_env_ = V8Environment::Create(weak_factory_.GetWeakPtr());
 }
 
-void V8Manager::BindTtsOnThread(
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
+V8Manager::~V8Manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<InterfaceBinder> binder =
-      std::make_unique<TtsInterfaceBinder>(at_controller, main_runner_);
-  interface_binders_.emplace_back(std::move(binder));
 }
 
-void V8Manager::SetTestMojoInterfaceOnThread(
-    std::unique_ptr<InterfaceBinder> test_interface) {
+void V8Manager::ConfigureAutomation(
+    mojo::PendingAssociatedReceiver<mojom::Automation> automation,
+    mojo::PendingRemote<mojom::AutomationClient> automation_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  interface_binders_.emplace_back(std::move(test_interface));
+  v8_env_.AsyncCall(&V8Environment::InstallAutomation)
+      .WithArgs(std::move(automation), std::move(automation_client));
 }
 
-void V8Manager::ExecuteScriptOnThread(const std::string& script,
-                                      base::OnceCallback<void()> on_complete) {
+void V8Manager::ConfigureTts(
+    mojom::AccessibilityServiceClient* ax_service_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool result = BindingsIsolateHolder::ExecuteScriptInContext(script);
-  DCHECK(result);
-  std::move(on_complete).Run();
+  // TODO(b/262637071): load the TTS JS shim into V8 using v8_env_.AsyncCall.
+  interface_binders_.push_back(
+      std::make_unique<TtsInterfaceBinder>(ax_service_client));
+}
+
+void V8Manager::FinishContextSetUp() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8_env_.AsyncCall(&V8Environment::AddV8Bindings);
+}
+
+void V8Manager::AddInterfaceForTest(
+    std::unique_ptr<InterfaceBinder> interface_binder) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  interface_binders_.push_back(std::move(interface_binder));
+}
+
+void V8Manager::BindInterface(const std::string& interface_name,
+                              mojo::GenericPendingReceiver pending_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b:262637071): Add mappings for bindings for other C++/JS mojom APIs.
+  // TODO(b:262637071): We may need to use associated remotes/receivers to avoid
+  // messages coming in an unpredicted order compared to the Extensions system.
+  for (auto& binder : interface_binders_) {
+    if (binder->MatchesInterface(interface_name)) {
+      binder->BindReceiver(std::move(pending_receiver));
+      return;
+    }
+  }
+  LOG(ERROR) << "Couldn't find Receiver for interface " << interface_name
+             << ". Ensure it's installed in the isolate with "
+             << "V8Manager::AddInterface and available for binding in "
+             << "V8Manager::BindInterface.";
+}
+
+void V8Manager::RunScriptForTest(const std::string& script,
+                                 base::OnceClosure on_complete) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8_env_.AsyncCall(&V8Environment::ExecuteScript)
+      .WithArgs(script, std::move(on_complete));
 }
 
 }  // namespace ax

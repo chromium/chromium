@@ -107,9 +107,14 @@ class AutomationInternalBindingsTest : public testing::Test {
   void SetUp() override {
     service_client_ = std::make_unique<FakeServiceClient>(nullptr);
     test_isolate_holder_ = std::make_unique<TestIsolateHolder>();
+    mojo::PendingAssociatedReceiver<mojom::Automation> automation;
+    mojo::PendingRemote<mojom::AutomationClient> automation_client;
+    service_client_->BindAutomation(
+        automation.InitWithNewEndpointAndPassRemote(),
+        automation_client.InitWithNewPipeAndPassReceiver());
     automation_bindings_ = std::make_unique<AutomationInternalBindings>(
-        test_isolate_holder_->GetWeakPtr(), service_client_->GetWeakPtr(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        test_isolate_holder_.get(), std::move(automation),
+        std::move(automation_client));
     test_isolate_holder_->StartTestV8AndBindAutomation(
         automation_bindings_.get());
   }
@@ -131,9 +136,11 @@ class AutomationInternalBindingsTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  // Must outlive `automation_bindings_` which has a raw_ptr to
+  // `test_isolate_holder_`.
   std::unique_ptr<TestIsolateHolder> test_isolate_holder_;
-  std::unique_ptr<AutomationInternalBindings> automation_bindings_;
   std::unique_ptr<FakeServiceClient> service_client_;
+  std::unique_ptr<AutomationInternalBindings> automation_bindings_;
 };
 
 // A test to ensure that the testing framework can catch exceptions.

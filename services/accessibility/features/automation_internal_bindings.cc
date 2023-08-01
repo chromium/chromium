@@ -24,15 +24,16 @@
 namespace ax {
 
 AutomationInternalBindings::AutomationInternalBindings(
-    base::WeakPtr<BindingsIsolateHolder> isolate_holder,
-    base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-    scoped_refptr<base::SequencedTaskRunner> main_runner)
+    BindingsIsolateHolder* isolate_holder,
+    mojo::PendingAssociatedReceiver<mojom::Automation> automation,
+    mojo::PendingRemote<mojom::AutomationClient> automation_client)
     : isolate_holder_(isolate_holder),
       automation_v8_bindings_(std::make_unique<ui::AutomationV8Bindings>(
           /*AutomationTreeManagerOwner=*/this,
-          /*AutomationV8Router=*/this)) {
+          /*AutomationV8Router=*/this)),
+      automation_client_remote_(std::move(automation_client)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Bind(ax_service_client, main_runner);
+  receiver_.Bind(std::move(automation));
 }
 
 AutomationInternalBindings::~AutomationInternalBindings() = default;
@@ -187,26 +188,6 @@ void AutomationInternalBindings::PerformAction(
     const ui::AXActionData& action_data) {
   // TODO(crbug.com/1357889): Send to the OS AutomationClient.
   // automation_client_remote_->PerformAction(action_data);
-}
-
-void AutomationInternalBindings::Bind(
-    base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-    scoped_refptr<base::SequencedTaskRunner> main_runner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  main_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-             mojo::PendingReceiver<mojom::AutomationClient> receiver,
-             mojo::PendingAssociatedRemote<mojom::Automation> remote) {
-            if (ax_service_client) {
-              ax_service_client->BindAutomation(std::move(remote),
-                                                std::move(receiver));
-            }
-          },
-          ax_service_client,
-          automation_client_remote_.BindNewPipeAndPassReceiver(),
-          GetPendingRemote()));
 }
 
 void AutomationInternalBindings::DispatchAccessibilityEvents(

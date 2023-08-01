@@ -88,8 +88,8 @@ class AtpJSApiTest : public testing::Test {
               EXPECT_TRUE(success) << "Mojo JS was not successful";
               test_waiter_.Quit();
             }));
-    at_controller_->SetTestInterface(GetATTypeForTest(),
-                                     std::move(test_interface));
+    at_controller_->AddInterfaceForTest(GetATTypeForTest(),
+                                        std::move(test_interface));
 
     for (const std::string& js_file_path : GetJSFilePathsToLoad()) {
       base::RunLoop test_support_waiter;

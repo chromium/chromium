@@ -9,8 +9,6 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
@@ -36,8 +34,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
  public:
   AutomationTreeManagerOwner();
   ~AutomationTreeManagerOwner() override;
-
-  mojo::PendingAssociatedRemote<ax::mojom::Automation> GetPendingRemote();
 
   virtual AutomationV8Bindings* GetAutomationV8Bindings() const = 0;
   virtual void NotifyTreeEventListenersChanged() = 0;

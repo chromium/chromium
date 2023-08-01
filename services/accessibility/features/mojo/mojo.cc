@@ -116,8 +116,8 @@ void Mojo::BindInterface(gin::Arguments* arguments) {
   // order to bind this receiver.
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
   CHECK(!context.IsEmpty());
-  V8Manager::GetFromContext(context)->BindInterface(interface_name,
-                                                    std::move(receiver));
+  V8Environment::GetFromContext(context)->BindInterface(interface_name,
+                                                        std::move(receiver));
 }
 
 Mojo::Mojo(v8::Local<v8::Context> context) : RegisteredWrappable(context) {}

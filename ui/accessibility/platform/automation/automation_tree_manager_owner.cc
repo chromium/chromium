@@ -7,7 +7,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_tree.h"
 #include "base/i18n/string_search.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
@@ -26,13 +25,6 @@ namespace ui {
 AutomationTreeManagerOwner::AutomationTreeManagerOwner() : receiver_(this) {}
 
 AutomationTreeManagerOwner::~AutomationTreeManagerOwner() = default;
-
-mojo::PendingAssociatedRemote<ax::mojom::Automation>
-AutomationTreeManagerOwner::GetPendingRemote() {
-  mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote;
-  receiver_.Bind(pending_remote.InitWithNewEndpointAndPassReceiver());
-  return pending_remote;
-}
 
 void AutomationTreeManagerOwner::SendNodesRemovedEvent(
     AXTree* tree,

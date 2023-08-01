@@ -51,16 +51,17 @@ class V8ManagerTest : public testing::Test {
               EXPECT_TRUE(success) << "Mojo JS was not successful";
               waiter.Quit();
             }));
-    scoped_refptr<V8Manager> manager = V8Manager::Create();
-    manager->SetTestMojoInterface(std::move(test_interface));
-    manager->AddV8Bindings();
+    V8Manager manager;
+    manager.AddInterfaceForTest(std::move(test_interface));
+    manager.FinishContextSetUp();
 
     base::RunLoop script_waiter;
-    manager->ExecuteScript(GetMojoTestSupportJS(), script_waiter.QuitClosure());
+    manager.RunScriptForTest(GetMojoTestSupportJS(),
+                             script_waiter.QuitClosure());
     // Wait for the script to be executed.
     script_waiter.Run();
 
-    manager->ExecuteScript(js_script, base::DoNothing());
+    manager.RunScriptForTest(js_script, base::DoNothing());
     // Wait for the test mojom API testComplete method.
     waiter.Run();
   }
@@ -71,12 +72,12 @@ class V8ManagerTest : public testing::Test {
 
 // Test to execute Javascript that doesn't involve Mojo.
 TEST_F(V8ManagerTest, ExecutesSimpleScript) {
-  scoped_refptr<V8Manager> manager = V8Manager::Create();
-  manager->AddV8Bindings();
+  V8Manager manager;
+  manager.FinishContextSetUp();
   base::RunLoop script_waiter;
   // Test that this script compiles and runs. That indicates that
   // the atpconsole.log binding was added and that JS works in general.
-  manager->ExecuteScript(R"JS(
+  manager.RunScriptForTest(R"JS(
     const d = 22;
     var m = 1;
     let y = 1973;
@@ -84,19 +85,19 @@ TEST_F(V8ManagerTest, ExecutesSimpleScript) {
     // can be installed on the context.
     atpconsole.log('Green is the loneliest color');
   )JS",
-                         script_waiter.QuitClosure());
+                           script_waiter.QuitClosure());
   script_waiter.Run();
 }
 
 // Sanity check of TextEncoder/TextDecoder.
 TEST_F(V8ManagerTest, SanityCheckTextEncoder) {
-  scoped_refptr<V8Manager> manager = V8Manager::Create();
-  manager->AddV8Bindings();
+  V8Manager manager;
+  manager.FinishContextSetUp();
   base::RunLoop script_waiter;
   // Test that this script compiles and runs. That indicates there
   // is no issue creating and using TextEncoder/Decoder, but does
   // not verify that the values are as expected.
-  manager->ExecuteScript(R"JS(
+  manager.RunScriptForTest(R"JS(
     let encoder = new TextEncoder();
     let decoder = new TextDecoder();
     // With contents.
@@ -106,7 +107,7 @@ TEST_F(V8ManagerTest, SanityCheckTextEncoder) {
     encoded = encoder.encode('');
     response = decoder.decode(encoded);
   )JS",
-                         script_waiter.QuitClosure());
+                           script_waiter.QuitClosure());
   script_waiter.Run();
 }
 
@@ -140,12 +141,12 @@ TEST_F(V8ManagerTest, MAYBE_CheckMojoConstants) {
             EXPECT_TRUE(success) << "Mojo JS was not successful";
             waiter.Quit();
           }));
-  scoped_refptr<V8Manager> manager = V8Manager::Create();
-  manager->SetTestMojoInterface(std::move(test_interface));
-  manager->AddV8Bindings();
+  V8Manager manager;
+  manager.AddInterfaceForTest(std::move(test_interface));
+  manager.FinishContextSetUp();
 
   base::RunLoop script_waiter;
-  manager->ExecuteScript(GetMojoTestSupportJS(), script_waiter.QuitClosure());
+  manager.RunScriptForTest(GetMojoTestSupportJS(), script_waiter.QuitClosure());
   // Wait for the script to be executed.
   script_waiter.Run();
 
@@ -188,7 +189,7 @@ TEST_F(V8ManagerTest, MAYBE_CheckMojoConstants) {
       )JS",
                            test.name.c_str(), test.value);
     base::RunLoop test_waiter;
-    manager->ExecuteScript(script, test_waiter.QuitClosure());
+    manager.RunScriptForTest(script, test_waiter.QuitClosure());
     test_waiter.Run();
   }
 }

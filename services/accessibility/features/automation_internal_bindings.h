@@ -9,7 +9,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
@@ -37,14 +38,14 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
                                    public ui::AutomationV8Router {
  public:
   // AutomationInternalBindings will use the |ax_service_client| on the
-  // |main_runner| to bind itself to the main OS process. We assume that
+  // |main_runner| to bind itself to the main OS thread. We assume that
   // |isolate_holder| has a longer lifetime than this class.
   // Specifically, AutomationInternalBindings is owned by
   // V8Manager which implements BindingsIsolateHolder.
   explicit AutomationInternalBindings(
-      base::WeakPtr<BindingsIsolateHolder> isolate_holder,
-      base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-      scoped_refptr<base::SequencedTaskRunner> main_runner);
+      BindingsIsolateHolder* isolate_holder,
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation,
+      mojo::PendingRemote<mojom::AutomationClient> automation_client);
   ~AutomationInternalBindings() override;
   AutomationInternalBindings(const AutomationInternalBindings&) = delete;
   AutomationInternalBindings& operator=(const AutomationInternalBindings&) =
@@ -97,10 +98,6 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
  private:
   friend class AutomationInternalBindingsTest;
 
-  // Binds to Automation in the OS on the |main_runner|.
-  void Bind(base::WeakPtr<mojom::AccessibilityServiceClient> at_controller,
-            scoped_refptr<base::SequencedTaskRunner> main_runner);
-
   // TODO(crbug.com/1355633): Remove these and implement them in
   // ui::AutomationTreeManagerOwner:
   void DispatchAccessibilityEvents(
@@ -116,7 +113,8 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
   // Used during object template creation.
   raw_ptr<v8::Local<v8::ObjectTemplate>, ExperimentalAsh> template_;
 
-  base::WeakPtr<BindingsIsolateHolder> isolate_holder_;
+  // Owns `this`.
+  raw_ptr<BindingsIsolateHolder> isolate_holder_;
 
   std::unique_ptr<ui::AutomationV8Bindings> automation_v8_bindings_;
 

@@ -106,6 +106,9 @@ TEST_F(OSAccessibilityServiceTest,
   std::unique_ptr<OSAccessibilityService> service =
       std::make_unique<OSAccessibilityService>(std::move(receiver));
 
+  FakeServiceClient client(service.get());
+  client.BindAccessibilityServiceClientForTest();
+
   FakeAssistiveTechnologyController at_controller(service.get());
   at_controller.BindAssistiveTechnologyController(
       std::vector<mojom::AssistiveTechnologyType>(

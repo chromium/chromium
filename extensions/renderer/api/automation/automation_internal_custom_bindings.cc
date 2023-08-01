@@ -103,7 +103,7 @@ void AutomationInternalCustomBindings::StartCachingAccessibilityTrees() {
 
   if (!receiver_.is_bound()) {
     bindings_system_->GetIPCMessageSender()->SendBindAutomationIPC(
-        context(), GetPendingRemote());
+        context(), receiver_.BindNewEndpointAndPassRemote());
   }
 }
 
