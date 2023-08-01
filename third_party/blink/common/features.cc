@@ -732,6 +732,24 @@ BASE_FEATURE(kEventTimingReportAllEarlyEntriesOnPaintedPresentation,
              "EventTimingReportAllEarlyEntriesOnPaintedPresentation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables unload handler deprecation via Permissions-Policy.
+// https://crbug.com/1324111
+BASE_FEATURE(kDeprecateUnload,
+             "DeprecateUnload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, each user experiences the deprecation on a certain % of origins.
+// Which origins varies per user. This has no effect with DeprecateUnload.
+BASE_FEATURE(kDeprecateUnloadByUserAndOrigin,
+             "DeprecateUnloadByUserAndOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// This controls what % of origins have the deprecation for this user.
+const base::FeatureParam<int> kDeprecateUnloadPercent{
+    &kDeprecateUnloadByUserAndOrigin, "rollout_percent", 0};
+// This buckets users, with users in each bucket having a consistent experience
+// of the unload deprecation rollout.
+const base::FeatureParam<int> kDeprecateUnloadBucket{
+    &kDeprecateUnloadByUserAndOrigin, "rollout_bucket", 0};
+
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
 // minimum number of bits of encoded image data used to encode each rendered

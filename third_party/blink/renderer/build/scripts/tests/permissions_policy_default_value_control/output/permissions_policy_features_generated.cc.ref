@@ -12,6 +12,7 @@
 
 namespace blink {
 
+// Applies new defaults based on flags.
 void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList& mutable_feature_list) {
   if (base::FeatureList::IsEnabled(features::kTestFlag)) {
     mutable_feature_list.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
@@ -23,12 +24,37 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList
 
 }
 
+// The base list with no flags or special cases.
 PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
   static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
     PermissionsPolicyFeatureList map({        {
           mojom::PermissionsPolicyFeature::kAccelerometer,
           PermissionsPolicyFeatureDefault::EnableForAll
         },    });
+
+    return map;
+  }());
+  return *feature_list;
+}
+
+// Defaults with "unload" using EnabledForNone.
+PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadNone() {
+  static base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map = GetBasePermissionsPolicyFeatureList();
+    UpdatePermissionsPolicyFeatureListFlagDefaults(map);
+
+
+    return map;
+  }());
+  return *feature_list;
+}
+
+// Defaults with "unload" using EnabledForAll.
+PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadAll() {
+  static base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map = GetBasePermissionsPolicyFeatureList();
+    UpdatePermissionsPolicyFeatureListFlagDefaults(map);
+
 
     return map;
   }());

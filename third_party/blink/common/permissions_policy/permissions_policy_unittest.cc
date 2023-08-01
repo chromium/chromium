@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -3135,6 +3136,78 @@ TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
   EXPECT_FALSE(maybe_allow_list4.value().MatchesOpaqueSrc());
   EXPECT_THAT(maybe_allow_list4.value().AllowedOrigins(),
               testing::ContainerEq(origins4));
+}
+
+// Tests that "unload"'s default is controlled by the deprecation flag.
+TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAll) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures({},
+                                         {blink::features::kDeprecateUnload});
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    EXPECT_EQ(PermissionsPolicyFeatureDefault::EnableForAll,
+              GetPermissionsPolicyFeatureList(origin_a_)
+                  .find(mojom::PermissionsPolicyFeature::kUnload)
+                  ->second);
+  }
+}
+
+// Tests that "unload"'s default is controlled by the deprecation flag.
+TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForNone) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({blink::features::kDeprecateUnload},
+                                  /*disabled_features=*/{});
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    EXPECT_EQ(PermissionsPolicyFeatureDefault::EnableForNone,
+              GetPermissionsPolicyFeatureList(origin_a_)
+                  .find(mojom::PermissionsPolicyFeature::kUnload)
+                  ->second);
+  }
+}
+
+// Test that for a given URL and rollout-percent, that all buckets get the
+// correct fraction of EnabledForNone vs EnableForAll.
+TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
+  const url::Origin origin = url::Origin::Create(GURL("http://testing/"));
+  int total_count = 0;
+  for (int percent = 0; percent < 100; percent++) {
+    SCOPED_TRACE(base::StringPrintf("percent=%d", percent));
+    // Will count how many case result in EnableForNone.
+    int count = 0;
+    for (int bucket = 0; bucket < 100; bucket++) {
+      SCOPED_TRACE(base::StringPrintf("bucket=%d", bucket));
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitWithFeaturesAndParameters(
+          {{blink::features::kDeprecateUnload, {}},
+           {blink::features::kDeprecateUnloadByUserAndOrigin,
+            {{features::kDeprecateUnloadPercent.name,
+              base::StringPrintf("%d", percent)},
+             {features::kDeprecateUnloadBucket.name,
+              base::StringPrintf("%d", bucket)}}}},
+          /*disabled_features=*/{});
+      const PermissionsPolicyFeatureDefault unload_default =
+          GetPermissionsPolicyFeatureList(origin)
+              .find(mojom::PermissionsPolicyFeature::kUnload)
+              ->second;
+      if (unload_default == PermissionsPolicyFeatureDefault::EnableForNone) {
+        count++;
+      } else {
+        ASSERT_EQ(unload_default,
+                  PermissionsPolicyFeatureDefault::EnableForAll);
+      }
+    }
+    // Because the bucket is used as salt, the percentage of users who see
+    // EnableForNone for a given site is not exactly equal to `percent`. All we
+    // can do is make sure it is close.
+    // If we change the hashing this might need updating but it should not be
+    // different run-to-run.
+    ASSERT_NEAR(count, percent, 6);
+    total_count += count;
+  }
+  ASSERT_NEAR(total_count, 99 * 100 / 2, 71);
 }
 
 }  // namespace blink
