@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/desk_bar_controller.h"
-#include <algorithm>
 #include <memory>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desk_bar_view.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
@@ -35,6 +36,17 @@
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
+
+namespace {
+bool IsOnScreenKeyboardEvent(const ui::LocatedEvent& event) {
+  if (aura::Window* target = static_cast<aura::Window*>(event.target())) {
+    if (aura::Window* container = GetContainerForWindow(target)) {
+      return container->GetId() == kShellWindowId_VirtualKeyboardContainer;
+    }
+  }
+  return false;
+}
+}  // namespace
 
 DeskBarController::BarWidgetAndView::BarWidgetAndView(
     DeskBarViewBase* view,
@@ -74,13 +86,15 @@ void DeskBarController::OnDeskSwitchAnimationLaunching() {
 }
 
 void DeskBarController::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (!IsOnScreenKeyboardEvent(*event) &&
+      event->type() == ui::ET_MOUSE_PRESSED) {
     OnMaybePressOffBar(*event);
   }
 }
 
 void DeskBarController::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (!IsOnScreenKeyboardEvent(*event) &&
+      event->type() == ui::ET_TOUCH_PRESSED) {
     OnMaybePressOffBar(*event);
   }
 }
