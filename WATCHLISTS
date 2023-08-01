@@ -1849,6 +1849,11 @@
                   '|chrome/test/data/webui/settings/chromeos/'\
                   '|ui/webui/resources/cr_elements/chromeos/',
     },
+    'settings_os_settings_languages': {
+      'filepath': 'chrome/browser/resources/ash/settings/os_languages_page/'\
+                  '|chrome/browser/ui/webui/settings/ash/languages_'\
+                  '|chrome/test/data/webui/settings/chromeos/os_languages_page/'
+    },
     'share_sheet': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/share/'\
                   '|chrome/android/java/res/layout/share_sheet_'\
@@ -2996,6 +3001,8 @@
     'settings': ['michaelpg+watch-settings@chromium.org'],
     'settings_os_settings': ['croissant-eng+reviews@chromium.org',
                              'cros-settings+reviews@google.com'],
+    'settings_os_settings_languages':
+        ['mlcui+watch-os-settings-languages@google.com'],
     'share_sheet': ['chrome-sharing-eng+watch@google.com'],
     'sharing': ['knollr+watch-sharing@chromium.org',
                 'mvanouwerkerk+watch-sharing@chromium.org'],
