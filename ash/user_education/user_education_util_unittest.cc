@@ -72,11 +72,39 @@ TEST_F(UserEducationUtilTest, CreateExtendedProperties) {
 }
 
 // Verifies that `CreateExtendedProperties()` can be used to create extended
+// properties for a help bubble having set body icon, and that
+// `GetHelpBubbleBodyIcon()` can be used to retrieve help bubble body icon from
+// extended properties.
+TEST_F(UserEducationUtilTest, CreateExtendedPropertiesWithBodyIcon) {
+  EXPECT_EQ(
+      &GetHelpBubbleBodyIcon(CreateExtendedProperties(gfx::kNoneIcon))->get(),
+      &gfx::kNoneIcon);
+
+  // It is permissible to query help bubble body icon even when absent.
+  EXPECT_EQ(GetHelpBubbleBodyIcon(HelpBubbleParams::ExtendedProperties()),
+            absl::nullopt);
+}
+
+// Verifies that `CreateExtendedProperties()` can be used to create extended
 // properties for a help bubble having set ID, and that `GetHelpBubbleId()` can
 // be used to retrieve help bubble ID from extended properties.
 TEST_F(UserEducationUtilTest, ExtendedPropertiesWithId) {
   EXPECT_EQ(GetHelpBubbleId(CreateExtendedProperties(HelpBubbleId::kTest)),
             HelpBubbleId::kTest);
+}
+
+// Verifies that `CreateExtendedProperties()` can be used to create extended
+// properties for a help bubble having set modal type, and that
+// `GetHelpBubbleModalType()` can be used to retrieve help bubble modal type
+// from extended properties.
+TEST_F(UserEducationUtilTest, CreateExtendedPropertiesWithModalType) {
+  EXPECT_EQ(
+      GetHelpBubbleModalType(CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM)),
+      ui::MODAL_TYPE_SYSTEM);
+
+  // It is permissible to query help bubble modal type even when absent.
+  EXPECT_EQ(GetHelpBubbleModalType(HelpBubbleParams::ExtendedProperties()),
+            ui::MODAL_TYPE_NONE);
 }
 
 // Verifies that `CreateExtendedProperties()` can be used to create extended

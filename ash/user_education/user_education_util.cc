@@ -4,6 +4,7 @@
 
 #include "ash/user_education/user_education_util.h"
 
+#include <set>
 #include <vector>
 
 #include "ash/display/window_tree_host_manager.h"
@@ -12,11 +13,17 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_types.h"
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_education/common/help_bubble.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
@@ -24,6 +31,7 @@ namespace ash::user_education_util {
 namespace {
 
 // Keys used in `user_education::HelpBubbleParams::ExtendedProperties`.
+constexpr char kHelpBubbleBodyIconKey[] = "helpBubbleBodyIcon";
 constexpr char kHelpBubbleIdKey[] = "helpBubbleId";
 constexpr char kHelpBubbleModalTypeKey[] = "helpBubbleModalType";
 constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
@@ -33,6 +41,11 @@ constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
 AccountId GetActiveAccountId(const SessionControllerImpl* session_controller) {
   return session_controller ? session_controller->GetActiveAccountId()
                             : AccountId();
+}
+
+std::set<raw_ptr<const gfx::VectorIcon>>& GetHelpBubbleBodyIconRegistry() {
+  static base::NoDestructor<std::set<raw_ptr<const gfx::VectorIcon>>> registry;
+  return *registry;
 }
 
 const AccountId& GetPrimaryAccountId() {
@@ -58,6 +71,16 @@ session_manager::SessionState GetSessionState(
 }  // namespace
 
 // Utilities -------------------------------------------------------------------
+
+user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
+    const gfx::VectorIcon& body_icon) {
+  GetHelpBubbleBodyIconRegistry().insert(&body_icon);
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set(
+      kHelpBubbleBodyIconKey,
+      base::NumberToString(reinterpret_cast<intptr_t>(&body_icon)));
+  return extended_properties;
+}
 
 user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
     HelpBubbleId help_bubble_id) {
@@ -91,6 +114,25 @@ ui::CustomElementEventType GetHelpBubbleAnchorBoundsChangedEventType() {
   return user_education::kHelpBubbleAnchorBoundsChangedEvent;
 }
 
+absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+GetHelpBubbleBodyIcon(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties) {
+  if (const std::string* body_icon_str =
+          extended_properties.values().FindString(kHelpBubbleBodyIconKey)) {
+    int64_t body_icon_ptr;
+    if (base::StringToInt64(*body_icon_str, &body_icon_ptr)) {
+      const auto body_icon_intptr = base::checked_cast<intptr_t>(body_icon_ptr);
+      CHECK(base::Contains(GetHelpBubbleBodyIconRegistry(), body_icon_ptr,
+                           [](const raw_ptr<const gfx::VectorIcon>& icon) {
+                             return reinterpret_cast<intptr_t>(icon.get());
+                           }));
+      return *reinterpret_cast<const gfx::VectorIcon*>(body_icon_intptr);
+    }
+  }
+  return absl::nullopt;
+}
+
 HelpBubbleId GetHelpBubbleId(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
@@ -105,7 +147,7 @@ ui::ModalType GetHelpBubbleModalType(
           extended_properties.values().FindInt(kHelpBubbleModalTypeKey)) {
     return static_cast<ui::ModalType>(model_type.value());
   }
-  return ui::ModalType::MODAL_TYPE_NONE;
+  return ui::MODAL_TYPE_NONE;
 }
 
 absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(

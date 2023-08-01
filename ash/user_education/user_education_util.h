@@ -17,6 +17,10 @@
 
 class AccountId;
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace ui {
 class ElementIdentifier;
 }  // namespace ui
@@ -33,6 +37,11 @@ enum class TutorialId;
 struct UserSession;
 
 namespace user_education_util {
+
+// Returns extended properties for a help bubble having set `body_icon`.
+// NOTE: `body_icon` must have static storage duration.
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(const gfx::VectorIcon& body_icon);
 
 // Returns extended properties for a help bubble having set `help_bubble_id`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
@@ -73,6 +82,14 @@ ASH_EXPORT const AccountId& GetAccountId(const UserSession* user_session);
 //  `user_education::kHelpBubbleAnchorBoundsChangedEvent`.
 ASH_EXPORT ui::CustomElementEventType
 GetHelpBubbleAnchorBoundsChangedEventType();
+
+// Returns help bubble body icon from the specified `external_properties`. If
+// the specified `external_properties` does not contain a help bubble body icon,
+// an absent value is returned.
+ASH_EXPORT absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+GetHelpBubbleBodyIcon(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties);
 
 // Returns help bubble ID from the specified `extended_properties`.
 ASH_EXPORT HelpBubbleId GetHelpBubbleId(
