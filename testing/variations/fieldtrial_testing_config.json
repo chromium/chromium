@@ -6475,27 +6475,6 @@
             ]
         }
     ],
-    "GoogleLensDirectUploadIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "LensMobileWebDirectUpload_20230712_dev",
-                    "enable_features": [
-                        "LensMobileWebDirectUpload"
-                    ]
-                },
-                {
-                    "name": "LensMobileWebDirectUpload_20230712_beta",
-                    "enable_features": [
-                        "LensMobileWebDirectUpload"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleLensHybridIOS": [
         {
             "platforms": [
@@ -6503,11 +6482,12 @@
             ],
             "experiments": [
                 {
-                    "name": "AllLVFEntrypoints_20230314",
+                    "name": "Enabled",
                     "enable_features": [
                         "EnableLensInHomeScreenWidget",
                         "EnableLensInKeyboard",
                         "EnableLensInNTP",
+                        "LensMobileWebDirectUpload",
                         "kNewNTPOmniboxLayout"
                     ]
                 }
