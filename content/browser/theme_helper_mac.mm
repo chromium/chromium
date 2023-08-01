@@ -26,10 +26,6 @@
 #include "content/public/common/content_switches.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using content::RenderProcessHost;
 using content::RenderProcessHostImpl;
 using content::ThemeHelperMac;

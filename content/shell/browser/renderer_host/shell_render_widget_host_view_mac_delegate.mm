@@ -7,10 +7,6 @@
 #include "base/command_line.h"
 #include "content/shell/common/shell_switches.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ShellRenderWidgetHostViewMacDelegate {
   BOOL _drop_events;
 }

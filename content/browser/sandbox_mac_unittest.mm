@@ -41,10 +41,6 @@
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 namespace {
 

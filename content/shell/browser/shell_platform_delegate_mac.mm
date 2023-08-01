@@ -24,10 +24,6 @@
 #include "content/shell/browser/shell.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Receives notification that the window is closing so that it can start the
 // tear-down process.
 @interface ContentShellWindowDelegate : NSObject <NSWindowDelegate>

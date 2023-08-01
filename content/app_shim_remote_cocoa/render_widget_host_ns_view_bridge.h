@@ -19,10 +19,6 @@
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
 #include "ui/display/display_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace remote_cocoa {
 
 // Mojo bridge for a RenderWidgetHostViewMac's NSView. This class may be

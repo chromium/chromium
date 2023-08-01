@@ -10,10 +10,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Helper object that receives the notification that the dialog/sheet is
 // going away. Is responsible for cleaning itself up.
 @interface ShellJavaScriptDialogHelper : NSObject<NSAlertDelegate> {

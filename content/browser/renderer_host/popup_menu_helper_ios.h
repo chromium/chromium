@@ -13,10 +13,6 @@
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class WebMenuRunner;
 
 namespace content {

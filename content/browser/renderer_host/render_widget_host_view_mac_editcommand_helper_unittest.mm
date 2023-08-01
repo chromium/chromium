@@ -31,10 +31,6 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/screen.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using content::RenderWidgetHostViewMac;
 
 // Bare bones obj-c class for testing purposes.

@@ -25,10 +25,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The interface class used to override the implementation of some of
 // RenderWidgetHostViewCocoa methods for tests.
 @interface RenderWidgetHostViewCocoaSwizzler : NSObject

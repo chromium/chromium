@@ -19,10 +19,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using features::kMacWebContentsOcclusion;
 
 // Experiment features.

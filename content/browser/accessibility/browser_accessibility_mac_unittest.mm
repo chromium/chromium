@@ -22,10 +22,6 @@
 #include "ui/accessibility/ax_tree_update.h"
 #import "ui/base/test/cocoa_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 namespace {

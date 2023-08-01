@@ -18,10 +18,6 @@
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 namespace {

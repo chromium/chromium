@@ -10,10 +10,6 @@
 #include "base/no_destructor.h"
 #include "content/browser/cocoa/system_hotkey_map.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr auto* kSystemHotkeyPlistPath =

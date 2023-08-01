@@ -26,10 +26,6 @@
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {

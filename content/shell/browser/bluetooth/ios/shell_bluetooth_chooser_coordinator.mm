@@ -9,10 +9,6 @@
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h"
 #import "ui/gfx/native_widget_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ShellBluetoothChooserCoordinator
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                      title:(NSString*)title

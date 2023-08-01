@@ -17,10 +17,6 @@
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/common/shell_switches.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 void EnsureCorrectResolutionSettings() {

@@ -34,10 +34,6 @@
 #include "ui/display/display_list.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace remote_cocoa {
 namespace mojom {
 class Application;

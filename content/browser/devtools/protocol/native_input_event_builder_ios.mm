@@ -6,10 +6,6 @@
 
 #include "base/apple/owned_objc.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content::protocol {
 
 gfx::NativeEvent NativeInputEventBuilder::CreateEvent(

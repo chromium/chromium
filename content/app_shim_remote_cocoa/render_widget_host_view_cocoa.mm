@@ -47,10 +47,6 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using content::NativeWebKeyboardEvent;
 using content::RenderWidgetHostViewMacEditCommandHelper;
 using content::WebGestureEventBuilder;

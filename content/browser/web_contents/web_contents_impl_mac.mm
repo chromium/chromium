@@ -9,10 +9,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/size.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 void WebContentsImpl::Resize(const gfx::Rect& new_bounds) {

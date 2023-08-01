@@ -19,10 +19,6 @@
 #include "base/values.h"
 #include "content/public/browser/tts_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr int kNoLength = -1;

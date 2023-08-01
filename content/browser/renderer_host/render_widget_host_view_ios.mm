@@ -29,10 +29,6 @@
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Used for settng the requested renderer size when testing.
 constexpr int kDefaultWidthForTesting = 980;
 constexpr int kDefaultHeightForTesting = 735;

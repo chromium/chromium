@@ -11,10 +11,6 @@
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Unlike some event APIs, Apple does not provide a way to programmatically
 // build a zoom event. To work around this, we leverage ObjectiveC's flexible
 // typing and build up an object with the right interface to provide a zoom

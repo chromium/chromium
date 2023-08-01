@@ -11,10 +11,6 @@
 #import "base/task/single_thread_task_runner.h"
 #include "content/public/common/content_features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 namespace {
 

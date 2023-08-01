@@ -11,10 +11,6 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace remote_cocoa {
 
 WebContentsNSViewBridge::WebContentsNSViewBridge(

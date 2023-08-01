@@ -35,10 +35,6 @@
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "url/url_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation WebDragSource {
   // The host through which to communicate with the WebContents. Owns
   // this object. This pointer gets reset when the WebContents goes away with

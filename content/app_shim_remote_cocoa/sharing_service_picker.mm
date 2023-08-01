@@ -10,10 +10,6 @@
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SharingServicePicker
     : NSObject <NSSharingServiceDelegate, NSSharingServicePickerDelegate>
 // Displays the NSSharingServicePicker which is positioned center and overlaps

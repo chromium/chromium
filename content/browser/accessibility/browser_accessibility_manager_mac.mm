@@ -23,10 +23,6 @@
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Use same value as in Safari's WebKit.

@@ -16,10 +16,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The code here is unusually skeptical about the macOS APIs returning non-null
 // values. An earlier version was reverted due to crashing tests on bots running
 // older macOS versions. The DCHECKs are there to expedite debugging similar

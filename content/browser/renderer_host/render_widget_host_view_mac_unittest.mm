@@ -66,10 +66,6 @@
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/latency/latency_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using testing::_;
 
 // Helper class with methods used to mock -[NSEvent phase], used by

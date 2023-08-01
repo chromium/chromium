@@ -20,10 +20,6 @@
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TextInputFlagChangeWaiter : NSObject
 @end
 

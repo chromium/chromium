@@ -19,10 +19,6 @@
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/base_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 namespace {

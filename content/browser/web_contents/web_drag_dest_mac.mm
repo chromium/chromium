@@ -29,10 +29,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using blink::DragOperationsMask;
 using content::DropData;
 using content::OpenURLParams;

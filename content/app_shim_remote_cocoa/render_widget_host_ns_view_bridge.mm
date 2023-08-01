@@ -24,10 +24,6 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using blink::WebGestureEvent;
 
 namespace remote_cocoa {

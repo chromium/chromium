@@ -11,10 +11,6 @@
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content::protocol {
 
 // Mac requires a native event to emulate key events. This method gives

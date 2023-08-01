@@ -9,10 +9,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "ui/compositor/compositor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 FlingSchedulerMac::FlingSchedulerMac(RenderWidgetHostImpl* host)

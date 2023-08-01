@@ -7,10 +7,6 @@
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface RenderWidgetPopupWindow : NSWindow
 @end
 

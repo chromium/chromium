@@ -17,10 +17,6 @@
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/test/cocoa_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class WebDragDestTest : public content::RenderViewHostImplTestHarness {
  public:
   void SetUp() override {

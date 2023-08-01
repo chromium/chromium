@@ -16,10 +16,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using remote_cocoa::mojom::DraggingInfo;
 using remote_cocoa::mojom::DraggingInfoPtr;
 using remote_cocoa::mojom::SelectionDirection;

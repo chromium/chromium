@@ -14,10 +14,6 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/cocoa/tracking_area.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
 }  // namespace;

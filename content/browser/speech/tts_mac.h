@@ -11,10 +11,6 @@
 #include "base/no_destructor.h"
 #include "content/browser/speech/tts_platform_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class TtsPlatformImplMac;
 
 @interface ChromeTtsDelegate : NSObject <AVSpeechSynthesizerDelegate>

@@ -8,10 +8,6 @@
 #include "content/public/common/widget_type.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class NSWindow;
 @class RenderWidgetHostViewCocoa;
 

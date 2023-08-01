@@ -16,10 +16,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 namespace {

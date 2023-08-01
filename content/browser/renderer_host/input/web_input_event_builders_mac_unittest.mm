@@ -22,10 +22,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using blink::WebKeyboardEvent;
 using blink::WebInputEvent;
 using content::WebKeyboardEventBuilder;

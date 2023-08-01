@@ -4,10 +4,6 @@
 
 #import "content/browser/date_time_chooser/ios/date_time_chooser_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 // DateTimeChooserIOS implementation

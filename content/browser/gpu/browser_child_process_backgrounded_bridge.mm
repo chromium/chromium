@@ -13,10 +13,6 @@
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/public/browser/child_process_data.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 namespace {

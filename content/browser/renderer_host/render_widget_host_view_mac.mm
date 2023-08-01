@@ -78,10 +78,6 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using blink::WebInputEvent;
 using blink::WebMouseEvent;
 using blink::WebGestureEvent;

@@ -18,10 +18,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
                                                     absl::optional<gfx::Size>,
                                                     absl::optional<gfx::Rect>)>;

@@ -18,10 +18,6 @@
 #import "ui/gfx/native_widget_types.h"
 #import "url/origin.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 namespace {

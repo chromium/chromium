@@ -4,10 +4,6 @@
 
 #import "content/shell/app/ios/shell_application_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #include "base/command_line.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_runner.h"
