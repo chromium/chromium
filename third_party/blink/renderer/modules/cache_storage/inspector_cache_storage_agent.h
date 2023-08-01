@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/cache_storage.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -23,7 +25,9 @@ class InspectedFrames;
 class MODULES_EXPORT InspectorCacheStorageAgent final
     : public InspectorBaseAgent<protocol::CacheStorage::Metainfo> {
  public:
-  using CachesMap = HashMap<String, mojo::Remote<mojom::blink::CacheStorage>>;
+  using CachesMap = HeapHashMap<
+      String,
+      Member<DisallowNewWrapper<HeapMojoRemote<mojom::blink::CacheStorage>>>>;
 
   explicit InspectorCacheStorageAgent(InspectedFrames*);
 
@@ -68,8 +72,6 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
       String& cache_name,
       base::OnceCallback<void(protocol::Response)> on_failure_callback);
   Member<InspectedFrames> frames_;
-
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   CachesMap caches_;
 };
 

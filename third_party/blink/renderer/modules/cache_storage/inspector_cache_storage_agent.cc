@@ -551,6 +551,7 @@ InspectorCacheStorageAgent::~InspectorCacheStorageAgent() = default;
 
 void InspectorCacheStorageAgent::Trace(Visitor* visitor) const {
   visitor->Trace(frames_);
+  visitor->Trace(caches_);
   InspectorBaseAgent::Trace(visitor);
 }
 
@@ -595,17 +596,20 @@ InspectorCacheStorageAgent::GetCacheStorageRemote(
   // Handle the default bucket.
   auto it = caches_.find(storage_key);
 
-  if (it == caches_.end()) {
+  // Cached remotes can become unbound if their associated context is detached.
+  // Replace these detached remotes with a new remote when this happens.
+  if (it == caches_.end() || !it->value->Value().is_bound()) {
     ExecutionContext* context = frame->DomWindow();
-    mojo::Remote<mojom::blink::CacheStorage> cache_storage_remote;
+    HeapMojoRemote<mojom::blink::CacheStorage> cache_storage_remote(context);
     context->GetBrowserInterfaceBroker().GetInterface(
         cache_storage_remote.BindNewPipeAndPassReceiver(
             frames_->Root()->GetTaskRunner(TaskType::kFileReading)));
-    auto new_iter = caches_.Set(storage_key, std::move(cache_storage_remote));
-    return new_iter.stored_value->value.get();
+    auto new_iter = caches_.Set(
+        storage_key, WrapDisallowNew(std::move(cache_storage_remote)));
+    return new_iter.stored_value->value->Value().get();
   }
 
-  return it->value.get();
+  return it->value->Value().get();
 }
 
 base::expected<mojom::blink::CacheStorage*, protocol::Response>
