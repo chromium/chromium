@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import "ui/base/clipboard/clipboard_mac.h"
-#include "base/test/test_future.h"
 
 #import <AppKit/AppKit.h>
+#import <PDFKit/PDFKit.h>
 
 #include <vector>
 
@@ -24,16 +24,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
-
-@interface RedView : NSView
-@end
-@implementation RedView
-- (void)drawRect:(NSRect)dirtyRect {
-  [NSColor.redColor setFill];
-  NSRectFill(dirtyRect);
-  [super drawRect:dirtyRect];
-}
-@end
 
 namespace ui {
 
@@ -156,16 +146,15 @@ TEST_P(ClipboardMacTest, EmptyImage) {
 TEST_P(ClipboardMacTest, PDFImage) {
   int32_t width = 99;
   int32_t height = 101;
-  NSRect frame = NSMakeRect(0, 0, width, height);
-
-  // This seems like a round-about way of getting a NSPDFImageRep to shove into
-  // an NSPasteboard. However, I haven't found any other way of generating a
-  // "PDF" image that makes NSPasteboard happy.
-  NSView* v = [[RedView alloc] initWithFrame:frame];
-  NSData* data = [v dataWithPDFInsideRect:frame];
+  PDFPage* page = [[PDFPage alloc] init];
+  [page setBounds:NSMakeRect(0, 0, width, height)
+           forBox:kPDFDisplayBoxMediaBox];
+  PDFDocument* pdf_document = [[PDFDocument alloc] init];
+  [pdf_document insertPage:page atIndex:0];
+  NSData* pdf_data = [pdf_document dataRepresentation];
 
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() setData:data forType:NSPasteboardTypePDF];
+  [pasteboard->get() setData:pdf_data forType:NSPasteboardTypePDF];
 
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);

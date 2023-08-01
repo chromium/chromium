@@ -73,9 +73,14 @@ ImageRepCocoa* ImageRep::AsImageRepCocoa() {
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     NSImage* nsimage) {
   DCHECK(nsimage);
+
+  // This function is to get the 1x bytes, so explicitly specify an identity
+  // transform when extracting the pixels from this NSImage to get that 1x.
+  NSDictionary<NSImageHintKey, id>* hints =
+      @{NSImageHintCTM : [NSAffineTransform transform]};
   CGImageRef cg_image = [nsimage CGImageForProposedRect:nullptr
                                                 context:nil
-                                                  hints:nil];
+                                                  hints:hints];
   if (!cg_image) {
     // TODO(crbug.com/1271762): Look at DumpWithoutCrashing() reports to figure
     // out what's going on here.

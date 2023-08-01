@@ -258,6 +258,7 @@ source_set("clipboard_test") {
       "clipboard_util_mac_unittest.mm",
       "url_file_parser_unittest.cc",
     ]
+    frameworks = [ "PDFKit.framework" ]
   }
 
   if (is_win) {
