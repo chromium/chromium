@@ -503,6 +503,9 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
              optimization_guide::features::kRemoteOptimizationGuideFetching,
              {{"max_concurrent_page_navigation_fetches", "2"},
               {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
+              // This delay is set to 0 to avoid flaky timeouts in
+              // HintsFetcherSearchPagePrerenderingBrowserTest.
+              {"onload_delay_for_hints_fetching_ms", "0"},
               {"batch_update_hints_for_top_hosts", "true"}},
          }},
         {});
