@@ -24,10 +24,6 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gl/gl_switches.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::RunOnceClosure;
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;

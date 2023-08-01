@@ -16,10 +16,6 @@
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class SkBitmap;
 class VisionAPIInterface;
 

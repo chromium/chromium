@@ -21,10 +21,6 @@
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 #include "ui/gl/gl_switches.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::RunOnceClosure;
 
 namespace shape_detection {

@@ -12,10 +12,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/shape_detection/barcode_detection_impl_mac_vision.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace shape_detection {
 
 BarcodeDetectionProviderMac::BarcodeDetectionProviderMac() = default;

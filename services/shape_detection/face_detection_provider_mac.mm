@@ -12,10 +12,6 @@
 #include "services/shape_detection/face_detection_impl_mac.h"
 #include "services/shape_detection/face_detection_impl_mac_vision.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace shape_detection {
 
 FaceDetectionProviderMac::FaceDetectionProviderMac() = default;

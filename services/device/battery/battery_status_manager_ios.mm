@@ -12,10 +12,6 @@
 #include "base/functional/callback.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device {
 namespace {
 typedef BatteryStatusService::BatteryUpdateCallback BatteryCallback;

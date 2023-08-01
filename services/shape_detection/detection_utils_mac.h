@@ -15,10 +15,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace shape_detection {
 
 // Takes a ScopedSharedBufferHandle with dimensions and returns a new CIImage

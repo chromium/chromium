@@ -13,10 +13,6 @@
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device {
 
 namespace {

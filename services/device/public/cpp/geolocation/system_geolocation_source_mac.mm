@@ -12,10 +12,6 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface GeolocationManagerDelegate : NSObject <CLLocationManagerDelegate> {
   BOOL _permissionInitialized;
   BOOL _hasPermission;

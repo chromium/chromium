@@ -19,10 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace shape_detection {
 
 CIImage* CIImageFromSkBitmap(const SkBitmap& bitmap) {
