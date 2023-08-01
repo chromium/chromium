@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -55,9 +54,7 @@ const char kFakeAppId[] = "fake_app_id";
 // cannot run outside of Demo Mode.
 class DemoModeAppIntegrationTestBase : public ash::SystemWebAppIntegrationTest {
  public:
-  DemoModeAppIntegrationTestBase() {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kDemoModeSWA);
-  }
+  DemoModeAppIntegrationTestBase() = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -79,7 +76,6 @@ class DemoModeAppIntegrationTestBase : public ash::SystemWebAppIntegrationTest {
   }
 
   base::ScopedTempDir component_dir_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

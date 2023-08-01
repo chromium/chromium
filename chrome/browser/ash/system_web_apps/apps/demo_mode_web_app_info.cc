@@ -49,6 +49,5 @@ bool DemoModeSystemAppDelegate::ShouldCaptureNavigations() const {
 }
 
 bool DemoModeSystemAppDelegate::IsAppEnabled() const {
-  return chromeos::features::IsDemoModeSWAEnabled() &&
-         ash::DemoSession::IsDeviceInDemoMode();
+  return ash::DemoSession::IsDeviceInDemoMode();
 }

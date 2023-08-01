@@ -2018,11 +2018,9 @@ bool ExtensionService::OnExternalExtensionFileFound(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsDemoModeSWAEnabled()) {
-    if (extension_misc::IsDemoModeChromeApp(info.extension_id)) {
-      pending_extension_manager()->Remove(info.extension_id);
-      return true;
-    }
+  if (extension_misc::IsDemoModeChromeApp(info.extension_id)) {
+    pending_extension_manager()->Remove(info.extension_id);
+    return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
@@ -554,14 +553,10 @@ void DemoSetupController::LoadDemoComponents() {
   base::OnceClosure load_callback =
       base::BindOnce(&DemoSetupController::OnDemoComponentsLoaded,
                      weak_ptr_factory_.GetWeakPtr());
-  if (chromeos::features::IsDemoModeSWAEnabled()) {
-    base::RepeatingClosure barrier_closure =
-        base::BarrierClosure(2, std::move(load_callback));
-    demo_components_->LoadResourcesComponent(barrier_closure);
-    demo_components_->LoadAppComponent(barrier_closure);
-  } else {
-    demo_components_->LoadResourcesComponent(std::move(load_callback));
-  }
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(2, std::move(load_callback));
+  demo_components_->LoadResourcesComponent(barrier_closure);
+  demo_components_->LoadAppComponent(barrier_closure);
 }
 
 void DemoSetupController::OnDemoComponentsLoaded() {
@@ -583,16 +578,13 @@ void DemoSetupController::OnDemoComponentsLoaded() {
         DemoComponents::kDemoModeResourcesComponentName));
     return;
   }
-
-  if (chromeos::features::IsDemoModeSWAEnabled()) {
-    auto app_component_error = demo_components_->app_component_error().value_or(
-        component_updater::CrOSComponentManager::Error::NOT_FOUND);
-    if (app_component_error !=
-        component_updater::CrOSComponentManager::Error::NONE) {
-      SetupFailed(DemoSetupError::CreateFromComponentError(
-          app_component_error, DemoComponents::kDemoModeAppComponentName));
-      return;
-    }
+  auto app_component_error = demo_components_->app_component_error().value_or(
+      component_updater::CrOSComponentManager::Error::NOT_FOUND);
+  if (app_component_error !=
+      component_updater::CrOSComponentManager::Error::NONE) {
+    SetupFailed(DemoSetupError::CreateFromComponentError(
+        app_component_error, DemoComponents::kDemoModeAppComponentName));
+    return;
   }
 
   VLOG(1) << "Starting online enrollment";

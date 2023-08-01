@@ -54,7 +54,7 @@ bool IsDeviceInDemoMode() {
 
 bool DemoModeAppUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return chromeos::features::IsDemoModeSWAEnabled() && IsDeviceInDemoMode();
+  return IsDeviceInDemoMode();
 }
 
 scoped_refptr<base::RefCountedMemory> ReadFile(
