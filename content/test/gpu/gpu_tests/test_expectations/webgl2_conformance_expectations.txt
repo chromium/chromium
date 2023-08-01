@@ -512,7 +512,7 @@ crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/can
 crbug.com/870856 [ mac amd-0x679e angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 crbug.com/870856 [ mac amd-0x67ef angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 
-crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
+crbug.com/1230781 [ amd-0x679e angle-opengl mac ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
