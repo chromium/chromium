@@ -59,7 +59,7 @@ const size_t kMaxKeywords = 500;
 const size_t kMinKeywordLength = 3;
 
 void PrintHelp() {
-  std::cout << "make_top_domain_list_for_edit_distance <input-file>"
+  std::cout << "make_top_domain_list_variables <input-file>"
             << " <namespace-name> <output-file> [--v=1]" << std::endl;
 }
 
@@ -176,9 +176,6 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> sorted_skeletons(skeletons.begin(), skeletons.end());
   std::sort(sorted_skeletons.begin(), sorted_skeletons.end());
 
-  std::vector<std::string> sorted_keywords(keywords.begin(), keywords.end());
-  std::sort(sorted_keywords.begin(), sorted_keywords.end());
-
   std::ostringstream output_stream;
   output_stream
       << R"(#include "components/url_formatter/spoof_checks/top_domains/)"
@@ -196,21 +193,8 @@ const char* const kTopBucketEditDistanceSkeletons[] = {
   constexpr size_t kNumTopBucketEditDistanceSkeletons = )"
                 << sorted_skeletons.size() << R"(;
 
-const char* const kTopKeywords[] = {
+  } // namespace
 )";
-
-  for (const std::string& keyword : sorted_keywords) {
-    output_stream << ("\"" + keyword + "\"");
-    output_stream << ",\n";
-  }
-  output_stream << R"(};
-)";
-  output_stream <<
-      R"(
-constexpr size_t kNumTopKeywords = )"
-                << sorted_keywords.size() << R"(;
-}  // namespace )"
-                << namespace_str;
 
   std::string output = output_stream.str();
 
