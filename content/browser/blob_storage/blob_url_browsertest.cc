@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
 
   // Now try to URL spoof by embedding an authority to the inner URL using
   // `replaceState()` to perform a same-document navigation.
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       ExecJs(new_contents,
              "let host_port = self.origin.split('://')[1];\n"
              "let spoof_url = 'blob:http://spoof.com@' + host_port + '/abcd';\n"
@@ -170,11 +170,9 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
   EXPECT_EQ(origin.Serialize(), EvalJs(new_contents, "origin"));
   EXPECT_EQ("potato", EvalJs(new_contents, "document.body.innerText"));
 
-  // TODO(nick): Currently, window.location still reflects the spoof URL.
-  // This seems unfortunate -- can we fix it?
   std::string window_location =
       EvalJs(new_contents, "window.location.href;").ExtractString();
-  EXPECT_TRUE(base::MatchPattern(window_location, "*spoof*"));
+  EXPECT_FALSE(base::MatchPattern(window_location, "*spoof*"));
 }
 
 enum class PartitionedBlobUrlBrowserTestTestCase {

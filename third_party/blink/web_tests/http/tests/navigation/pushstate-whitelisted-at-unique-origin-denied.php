@@ -10,10 +10,13 @@ test(function () {
 }, 'testRunner.addOriginAccessAllowListEntry is required for this test');
 
 test(function () {
-    assert_throws_dom('SecurityError', function () {
+  try {
         history.pushState(null, null, orginURL + "/path");
-    });
-}, 'pushState at unique origin should fail with SecurityError (even with whitelisted origins)');
+        done();
+  } catch (e) {
+        assert_unreached("pushState /path should not fail.");
+  }
+}, 'pushState /path in unique origin should not fail with SecurityError');
 
 test(function () {
     try {

@@ -837,6 +837,15 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   bool send_loading_notifications = base::FeatureList::IsEnabled(
       kLoadNotificationsForSameDocumentNavigations);
 
+  // Spec "URL and history update steps", step 4 [1]:
+  // " If document's is initial about:blank is true, then set historyHandling to
+  // 'replace'."
+  // [1]: https://html.spec.whatwg.org/C/#url-and-history-update-steps
+  if (type == WebFrameLoadType::kStandard &&
+      GetFrameLoader().IsOnInitialEmptyDocument()) {
+    type = WebFrameLoadType::kReplaceCurrentItem;
+  }
+
   // Generate start and stop notifications only when loader is completed so that
   // we don't fire them for fragment redirection that happens in window.onload
   // handler. See https://bugs.webkit.org/show_bug.cgi?id=31838

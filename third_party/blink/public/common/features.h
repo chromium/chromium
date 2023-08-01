@@ -208,6 +208,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernation);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasCompressHibernatedImage);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasFreeMemoryWhenHidden);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanChangeToUrlForHistoryApiUpdate);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCheckOfflineCapability);
 enum class CheckOfflineCapabilityMode {
   kWarnOnly,

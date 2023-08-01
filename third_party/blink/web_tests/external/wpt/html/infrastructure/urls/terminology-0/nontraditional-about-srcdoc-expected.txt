@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS about:srcdoc with document.open() is treated like a normal about:srcdoc document
-PASS about:srcdoc navigated via a `javascript:` URL is treated like a normal about:srcdoc document
-FAIL about:srcdoc with URL changed by history.replaceState() is treated like a normal about:srcdoc document promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'replaceState' on 'History': A history state object with URL 'about:srcdoc#foo' cannot be created in a document with origin 'http://web-platform.test:8001' and URL 'about:srcdoc'."
-Harness: the test ran to completion.
-

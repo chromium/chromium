@@ -412,6 +412,12 @@ BASE_FEATURE(kCacheStorageCodeCacheHintHeader,
 const base::FeatureParam<std::string> kCacheStorageCodeCacheHintHeaderName{
     &kCacheStorageCodeCacheHintHeader, "name", "x-CacheStorageCodeCacheHint"};
 
+// Modifies the logic in `blink::CanChangeToUrlForHistoryApi()` to be more
+// spec-compliant.
+BASE_FEATURE(kCanChangeToUrlForHistoryApiUpdate,
+             "CanChangeToUrlForHistoryApiUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(
     kCanvas2DHibernation,
     "Canvas2DHibernation",
