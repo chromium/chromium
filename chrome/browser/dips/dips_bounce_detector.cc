@@ -580,9 +580,13 @@ bool HasCHIPS(const net::CookieList& cookie_list) {
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  // Record a RedirectHeuristic UKM event if applicable.
-  MaybeRecordRedirectHeuristic(render_frame_host->GetPageUkmSourceId(),
-                               details);
+  if (!render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    // Record a RedirectHeuristic UKM event if applicable. We cannot record it
+    // while prerendering due to our data collection policy.
+    MaybeRecordRedirectHeuristic(render_frame_host->GetPageUkmSourceId(),
+                                 details);
+  }
 
   // Discard all notifications that are:
   // - From other page types like FencedFrames and Prerendered.
