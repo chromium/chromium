@@ -363,6 +363,10 @@ void PaymentsClient::set_url_loader_factory_for_testing(
   url_loader_factory_ = std::move(url_loader_factory);
 }
 
+void PaymentsClient::set_access_token_for_testing(std::string access_token) {
+  access_token_ = access_token;
+}
+
 void PaymentsClient::IssueRequest(std::unique_ptr<PaymentsRequest> request,
                                   bool authenticate) {
   request_ = std::move(request);

@@ -316,6 +316,9 @@ class SaveCardInfobarEGTestHelper
     payments_client->set_url_loader_factory_for_testing(
         shared_url_loader_factory_);
 
+    // Set a fake access token to avoid fetch requests.
+    payments_client->set_access_token_for_testing("fake_access_token");
+
     // Observe actions in CreditCardSaveManager.
     CreditCardSaveManager* credit_card_save_manager =
         SaveCardInfobarEGTestHelper::GetCreditCardSaveManager();
