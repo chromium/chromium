@@ -9850,6 +9850,15 @@
                     "enable_features": [
                         "OmniboxOnDeviceTailModel"
                     ]
+                },
+                {
+                    "name": "Enabled_Auto_Unload",
+                    "params": {
+                        "UnloadExecutorOnIdle ": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxOnDeviceTailModel"
+                    ]
                 }
             ]
         }
