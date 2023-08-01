@@ -231,7 +231,14 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, NewTabsDoNotHavePopupState) {
+// TODO(crbug.com/1469394): Flaky on android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NewTabsDoNotHavePopupState DISABLED_NewTabsDoNotHavePopupState
+#else
+#define MAYBE_NewTabsDoNotHavePopupState NewTabsDoNotHavePopupState
+#endif
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       MAYBE_NewTabsDoNotHavePopupState) {
   WebContents* web_contents = GetActiveWebContents();
   GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
