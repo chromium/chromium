@@ -746,12 +746,23 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
       wgpu::TextureUsage usage,
       AllowUnclearedAccess allow_uncleared);
 
+  // For write usage, the update_rect is a hint to the backend about the portion
+  // of the image that will be drawn to. Callers shouldn't draw outside of this
+  // area, but aren't required to overwrite every pixel inside it.
+  // For non-write usage, the update_rect can be ignored.
+  std::unique_ptr<ScopedAccess> BeginScopedAccess(
+      wgpu::TextureUsage usage,
+      AllowUnclearedAccess allow_uncleared,
+      const gfx::Rect& update_rect);
+
  private:
   friend class WrappedDawnCompoundImageRepresentation;
 
   // This can return null in case of a Dawn validation error, for example if
   // usage is invalid.
   virtual wgpu::Texture BeginAccess(wgpu::TextureUsage usage) = 0;
+  virtual wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                                    const gfx::Rect& update_rect);
   virtual void EndAccess() = 0;
 };
 

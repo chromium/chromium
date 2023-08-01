@@ -119,7 +119,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
   CHECK(!dawn_scoped_access_);
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
       GetSupportedDawnTextureUsage(format(), is_yuv_plane_),
-      AllowUnclearedAccess::kYes);
+      AllowUnclearedAccess::kYes, update_rect);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};

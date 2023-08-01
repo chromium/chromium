@@ -765,12 +765,19 @@ std::unique_ptr<DawnImageRepresentation::ScopedAccess>
 DawnImageRepresentation::BeginScopedAccess(
     wgpu::TextureUsage usage,
     AllowUnclearedAccess allow_uncleared) {
+  return BeginScopedAccess(usage, allow_uncleared, gfx::Rect(size()));
+}
+
+std::unique_ptr<DawnImageRepresentation::ScopedAccess>
+DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
+                                           AllowUnclearedAccess allow_uncleared,
+                                           const gfx::Rect& update_rect) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
     LOG(ERROR) << "Attempt to access an uninitialized SharedImage";
     return nullptr;
   }
 
-  wgpu::Texture texture = BeginAccess(usage);
+  wgpu::Texture texture = BeginAccess(usage, update_rect);
   if (!texture) {
     LOG(ERROR) << "Error creating wgpu::Texture";
     return nullptr;
@@ -788,6 +795,15 @@ DawnImageRepresentation::BeginScopedAccess(
   return std::make_unique<ScopedAccess>(
       base::PassKey<DawnImageRepresentation>(), this, std::move(texture),
       access_mode);
+}
+
+wgpu::Texture DawnImageRepresentation::BeginAccess(
+    wgpu::TextureUsage usage,
+    const gfx::Rect& update_rect) {
+  // If the implementation doesn't support partial updates, we need to update
+  // the whole image.
+  DCHECK_EQ(update_rect, gfx::Rect(size()));
+  return this->BeginAccess(usage);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
