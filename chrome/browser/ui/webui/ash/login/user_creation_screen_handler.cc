@@ -59,6 +59,8 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_DESCRIPTION);
   builder->Add("userCreationEnrollLearnMore",
                IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE);
+  builder->Add("userCreationLearnMoreAria",
+               IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE_ARIA);
 
   // Enrollment Triage Strings
   builder->Add("userCreationEnrollTriageTitle",

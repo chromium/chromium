@@ -874,11 +874,14 @@
   <message name="IDS_OOBE_USER_CREATION_ENROLL_TRIAGE_TITLE" desc="Title of the screen which allows triage users to choose signin or enroll.">
     Enroll the device in your organization?
   </message>
-    <message name="IDS_OOBE_USER_CREATION_ENROLL_SUBTITLE" desc="Subtitle of the screen which allows triage users to choose signin or enroll.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_SUBTITLE" desc="Subtitle of the screen which allows triage users to choose signin or enroll.">
     Your organization may require enrollment so you can access apps, extensions, and more. This also allows your organization to manage things like security and device settings.
   </message>
-   <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE"  desc="Learn more link text in enroll triage step in user creation screen.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE"  desc="Learn more link text in enroll triage step in user creation screen.">
     Learn more
+  </message>
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE_ARIA"  desc="Aria Label for the more link text in enroll triage step in user creation screen will be announced by chromVox.">
+    More info about device management
   </message>
   <message name="IDS_OOBE_USER_CREATION_ENROLL_ADDITIONAL_DESCRIPTION_TITLE"  desc="The title of additional description in enroll triage step in user creation screen.">
     Not sure if you should enroll?

@@ -25,8 +25,10 @@ found in the LICENSE file.
     margin-bottom: 10px;
   }
 </style>
-<oobe-adaptive-dialog id="userCreationDialog" for-step="create"
-    role="presentation" aria-live="polite">
+<oobe-adaptive-dialog id="userCreationDialog"
+    for-step="create"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, titleKey_)]]">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">
     [[i18nDynamic(locale, titleKey_)]]
@@ -92,7 +94,7 @@ found in the LICENSE file.
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
-    <oobe-next-button id="nextButton" class="focus-on-show"
+    <oobe-next-button id="nextButton"
         on-click="onNextClicked_" disabled="[[!selectedUserType]]">
     </oobe-next-button>
   </div>
@@ -109,6 +111,7 @@ found in the LICENSE file.
     <div>
       [[i18nDynamic(locale, 'userCreationEnrollTriageSubtitle')]]
       <a id="learnMoreLink" class="oobe-local-link"
+          aria-label$="[[i18nDynamic(locale, 'userCreationLearnMoreAria')]]"
           on-click="onLearnMoreClicked_" is="action-link">
         [[i18nDynamic(locale, 'userCreationEnrollLearnMore')]]
       </a>
@@ -125,9 +128,8 @@ found in the LICENSE file.
   <div slot="content" class="layout vertical landscape-vertical-centered">
     <cr-radio-group id="enrollTriageMethod"
         selected="{{selectedEnrollTriageMethod}}">
-      <!--TODO(b/278855474): Add the new icon -->
       <cr-card-radio-button id="triageEnrollButton" name="enroll"
-          class="flex focus-on-show">
+          class="flex">
         <div class="card-container">
           <hd-iron-icon class="card-icon" icon1x="oobe-48:managed"
               icon2x="oobe-96:managed">
