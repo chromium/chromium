@@ -297,6 +297,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeLazyLoadingEnabled",
                      features::IsOobeLazyLoadingEnabled());
   // TODO (b/268463435) Cleanup OobeJelly
+  source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyModalEnabled",
                      features::IsOobeJellyModalEnabled());
