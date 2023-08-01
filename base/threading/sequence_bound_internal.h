@@ -121,10 +121,9 @@ class Storage {
     CrossThreadTraits::PostTask(
         task_runner, FROM_HERE,
         CrossThreadTraits::BindOnce(
-            &InternalDestruct, CrossThreadTraits::Unretained(ptr_),
-            CrossThreadTraits::Unretained(alloc_.get())));
-    ptr_ = nullptr;
-    alloc_ = nullptr;
+            &InternalDestruct,
+            CrossThreadTraits::Unretained(std::exchange(ptr_, nullptr)),
+            CrossThreadTraits::Unretained(std::exchange(alloc_, nullptr))));
   }
 
  private:
@@ -145,12 +144,12 @@ class Storage {
   }
 
   // Pointer to the managed `T`.
-  Ptr ptr_ = nullptr;
+  raw_ptr<T> ptr_ = nullptr;
 
   // Storage originally allocated by `AlignedAlloc()`. Maintained separately
   // from  `ptr_` since the original, unadjusted pointer needs to be passed to
   // `AlignedFree()`.
-  raw_ptr<void, AcrossTasksDanglingUntriaged> alloc_ = nullptr;
+  raw_ptr<void> alloc_ = nullptr;
 };
 
 template <typename T, typename CrossThreadTraits>
@@ -179,10 +178,9 @@ struct Storage<std::unique_ptr<T>, CrossThreadTraits> {
   void Destruct(SequencedTaskRunner& task_runner) {
     CrossThreadTraits::PostTask(
         task_runner, FROM_HERE,
-        CrossThreadTraits::BindOnce(&InternalDestruct,
-                                    CrossThreadTraits::Unretained(ptr_)));
-
-    ptr_ = nullptr;
+        CrossThreadTraits::BindOnce(
+            &InternalDestruct,
+            CrossThreadTraits::Unretained(std::exchange(ptr_, nullptr))));
   }
 
  private:
@@ -193,7 +191,7 @@ struct Storage<std::unique_ptr<T>, CrossThreadTraits> {
   static void InternalDestruct(T* ptr) { delete ptr; }
 
   // Pointer to the heap-allocated `T`.
-  Ptr ptr_ = nullptr;
+  raw_ptr<T> ptr_ = nullptr;
 };
 
 }  // namespace base::sequence_bound_internal
