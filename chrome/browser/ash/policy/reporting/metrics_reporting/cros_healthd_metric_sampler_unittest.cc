@@ -286,6 +286,16 @@ TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryNoPsrInfo) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest,
+       TestRuntimeCountersTelemetryErrorGettingPsrInfo) {
+  const absl::optional<MetricData> optional_result = CollectData(
+      std::make_unique<CrosHealthdPsrSamplerHandler>(),
+      CreateSystemResultWithError(), cros_healthd::ProbeCategoryEnum::kSystem,
+      CrosHealthdSamplerHandler::MetricType::kTelemetry);
+
+  EXPECT_FALSE(optional_result.has_value());
+}
+
+TEST_F(CrosHealthdMetricSamplerTest,
        TestRuntimeCountersTelemetryPsrUnsupported) {
   const absl::optional<MetricData> optional_result =
       CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),

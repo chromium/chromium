@@ -95,9 +95,12 @@ cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
 
 // -------- system ---------
 
-// Create a system info for runtime counters tests.
+// Create telemetry info for runtime counters tests.
 cros_healthd::TelemetryInfoPtr CreateSystemResult(
     cros_healthd::SystemInfoPtr system_info);
+
+// Create telemetry info with a system result that contains an error.
+cros_healthd::TelemetryInfoPtr CreateSystemResultWithError();
 
 // Create system info with the PSR field filled in.
 cros_healthd::SystemInfoPtr CreateSystemInfoWithPsr(

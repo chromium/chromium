@@ -179,6 +179,13 @@ cros_healthd::TelemetryInfoPtr CreateSystemResult(
   return telemetry_info;
 }
 
+cros_healthd::TelemetryInfoPtr CreateSystemResultWithError() {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->system_result =
+      cros_healthd::SystemResult::NewError(cros_healthd::ProbeError::New());
+  return telemetry_info;
+}
+
 cros_healthd::SystemInfoPtr CreateSystemInfoWithPsr(
     cros_healthd::PsrInfoPtr psr_info) {
   // Set up the required field with minimal information.
