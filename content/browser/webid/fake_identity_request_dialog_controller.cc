@@ -51,11 +51,14 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     // Browser automation will handle selecting an account/canceling.
     return;
   }
-  // Use the provided account, if any. Otherwise use the first one.
-  std::move(on_selected)
-      .Run(identity_provider_data[0].idp_metadata.config_url,
-           selected_account_ ? *selected_account_ : accounts[0].id,
-           /* is_sign_in= */ true);
+  // Use the provided account, if any. Otherwise do not run the callback right
+  // away.
+  if (selected_account_) {
+    std::move(on_selected)
+        .Run(identity_provider_data[0].idp_metadata.config_url,
+             *selected_account_,
+             /* is_sign_in= */ true);
+  }
 }
 
 std::string FakeIdentityRequestDialogController::GetTitle() const {
