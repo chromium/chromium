@@ -53,11 +53,6 @@ BASE_FEATURE(kIOSPasswordBottomSheet,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
-// Enables new regex for OTP fields.
-BASE_FEATURE(kNewRegexForOtpFields,
-             "NewRegexForOtpFields",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for changes regarding password issues in
 // `PasswordSpcificsMetadata`. Guards writing issues to metadata and preserving
 // the new notification field.

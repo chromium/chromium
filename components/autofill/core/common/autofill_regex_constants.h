@@ -638,10 +638,7 @@ inline constexpr char16_t kUrlSearchActionRe[] =
 /////////////////////////////////////////////////////////////////////////////
 inline constexpr char16_t kSocialSecurityRe[] =
     u"ssn|social.?security.?(num(ber)?|#)*";
-// TODO(crbug.com/1382805): Remove it once the new regex launched.
 inline constexpr char16_t kOneTimePwdRe[] =
-    u"one.?time|sms.?(code|token|password|pwd|pass)";
-inline constexpr char16_t kNewOneTimePwdRe[] =
     // "One time" is good signal that it is an OTP field.
     u"one.?time|"
     // The main tokens are good signals, but they are short, require word

@@ -33,7 +33,6 @@ BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheet);
 #endif  // IS_IOS
-BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
 BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
