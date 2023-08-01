@@ -63,6 +63,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
@@ -540,7 +541,7 @@ MaybeStartInteractionWithODFS(const storage::FileSystemURL& url,
   }
   if (parser.file_system()->GetFileSystemInfo().provider_id() !=
       ash::file_system_provider::ProviderId::CreateFromExtensionId(
-          file_tasks::GetODFSExtensionId(profile))) {
+          extension_misc::kODFSExtensionId)) {
     return nullptr;
   }
   return parser.file_system()->StartUserInteraction();

@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -961,7 +962,7 @@ DlpFilesControllerAsh::MapFilePathtoPolicyComponent(
     auto* service = ash::file_system_provider::Service::Get(profile);
     auto provider_id =
         ash::file_system_provider::ProviderId::CreateFromExtensionId(
-            file_manager::file_tasks::GetODFSExtensionId(profile));
+            extension_misc::kODFSExtensionId);
     auto one_drive_file_systems =
         service->GetProvidedFileSystemInfoList(provider_id);
     CHECK(one_drive_file_systems.size() == 1);

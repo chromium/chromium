@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
@@ -108,7 +109,7 @@ void OneDrivePageHandler::DisconnectFromOneDrive(
   CHECK(service);
   file_system_provider::ProviderId provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::GetODFSExtensionId(profile_));
+          extension_misc::kODFSExtensionId);
   std::vector<file_system_provider::ProvidedFileSystemInfo>
       odfs_file_system_infos =
           service->GetProvidedFileSystemInfoList(provider_id);
@@ -129,7 +130,7 @@ void OneDrivePageHandler::OpenOneDriveFolder(
   CHECK(service);
   file_system_provider::ProviderId provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::GetODFSExtensionId(profile_));
+          extension_misc::kODFSExtensionId);
   std::vector<file_system_provider::ProvidedFileSystemInfo>
       odfs_file_system_infos =
           service->GetProvidedFileSystemInfoList(provider_id);
@@ -149,7 +150,7 @@ void OneDrivePageHandler::OnProvidedFileSystemMount(
     base::File::Error error) {
   file_system_provider::ProviderId odfs_provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::GetODFSExtensionId(profile_));
+          extension_misc::kODFSExtensionId);
   // Only observe successful mount events for ODFS.
   if (file_system_info.provider_id() != odfs_provider_id ||
       error != base::File::FILE_OK) {
@@ -163,7 +164,7 @@ void OneDrivePageHandler::OnProvidedFileSystemUnmount(
     base::File::Error error) {
   file_system_provider::ProviderId odfs_provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::GetODFSExtensionId(profile_));
+          extension_misc::kODFSExtensionId);
   // Only observe successful unmount events for ODFS.
   if (file_system_info.provider_id() != odfs_provider_id ||
       error != base::File::FILE_OK) {

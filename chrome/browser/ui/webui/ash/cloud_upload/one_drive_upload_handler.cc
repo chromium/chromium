@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -113,8 +114,8 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   io_task_controller_->AddObserver(this);
 
   // Destination url.
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::GetODFSExtensionId(profile_));
+  ProviderId provider_id =
+      ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
   Service* service = Service::Get(profile_);
   std::vector<ProvidedFileSystemInfo> file_systems =
       service->GetProvidedFileSystemInfoList(provider_id);

@@ -135,10 +135,6 @@ extern const char kActionIdWebDriveOfficePowerPoint[];
 extern const char kActionIdOpenInOffice[];
 extern const char kActionIdOpenWeb[];
 
-// Checks which extension is installed and return the latest one installed or ""
-// if none is installed
-std::string GetODFSExtensionId(Profile* profile);
-
 // Task types as explained in the comment above. Search for <task-type>.
 enum TaskType {
   TASK_TYPE_UNKNOWN = 0,  // Used only for handling errors.

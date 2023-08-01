@@ -116,36 +116,6 @@ const char kActionIdWebDriveOfficePowerPoint[] =
 const char kActionIdOpenInOffice[] = "open-in-office";
 const char kActionIdOpenWeb[] = "OPEN_WEB";
 
-// Searches for the installed extension in order of preference.
-std::string GetODFSExtensionId(Profile* profile) {
-  const ash::file_system_provider::Service* const service =
-      ash::file_system_provider::Service::Get(profile);
-
-  for (const auto& [provider_id, provider] : service->GetProviders()) {
-    if (provider_id.GetType() !=
-        ash::file_system_provider::ProviderId::EXTENSION) {
-      continue;
-    }
-    const auto& extension_id = provider_id.GetExtensionId();
-
-    // App from official internal build.
-    if (extension_id == extension_misc::kODFSExtensionId) {
-      return extension_misc::kODFSExtensionId;
-    }
-
-    // App built manually from internal repo.
-    if (extension_id == "gcpjnalmmghdoadafjgomdlghfnllceo") {
-      return "gcpjnalmmghdoadafjgomdlghfnllceo";
-    }
-
-    // App built manually from internal git, used for the early dogfood.
-    if (extension_id == "ajdgmkbkgifbokednjgbmieaemeighkg") {
-      return "ajdgmkbkgifbokednjgbmieaemeighkg";
-    }
-  }
-  return {};
-}
-
 namespace {
 
 // The values "file" and "app" are confusing, but cannot be changed easily as
