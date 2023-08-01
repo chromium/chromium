@@ -13,7 +13,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/to_vector.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/connection_details.h"
 #include "chromeos/ash/services/secure_channel/fake_active_connection_manager.h"
 #include "chromeos/ash/services/secure_channel/fake_authenticated_channel.h"
@@ -94,10 +96,7 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
 std::vector<base::UnguessableToken> ClientListToIdList(
     const std::vector<std::unique_ptr<ClientConnectionParameters>>&
         client_list) {
-  std::vector<base::UnguessableToken> id_list;
-  base::ranges::transform(client_list, std::back_inserter(id_list),
-                          &ClientConnectionParameters::id);
-  return id_list;
+  return base::test::ToVector(client_list, &ClientConnectionParameters::id);
 }
 
 }  // namespace

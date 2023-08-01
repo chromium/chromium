@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -1072,23 +1073,19 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   std::vector<FledgeTestCase> test_cases = {test_case_1, test_case_2,
                                             test_case_3, test_case_4};
 
-  for (const auto& origins_to_expected : test_cases) {
-    std::vector<content::InterestGroupManager::InterestGroupDataKey> data_keys;
-    base::ranges::transform(
-        origins_to_expected.first, std::back_inserter(data_keys),
-        [](const auto& origin) {
+  for (const auto& [origins, expected] : test_cases) {
+    test_interest_group_manager()->SetInterestGroupDataKeys(
+        base::test::ToVector(origins, [](const auto& origin) {
           return content::InterestGroupManager::InterestGroupDataKey{
               url::Origin::Create(GURL("https://embedded.com")), origin};
-        });
-    test_interest_group_manager()->SetInterestGroupDataKeys(data_keys);
+        }));
 
     bool callback_called = false;
     auto callback = base::BindLambdaForTesting(
         [&](std::vector<std::string> items_for_display) {
-          ASSERT_EQ(items_for_display.size(),
-                    origins_to_expected.second.size());
+          ASSERT_EQ(items_for_display.size(), expected.size());
           for (size_t i = 0; i < items_for_display.size(); i++) {
-            EXPECT_EQ(origins_to_expected.second[i], items_for_display[i]);
+            EXPECT_EQ(expected[i], items_for_display[i]);
           }
           callback_called = true;
         });

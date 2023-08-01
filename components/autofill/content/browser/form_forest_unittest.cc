@@ -16,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/form_forest.h"
@@ -265,10 +266,7 @@ std::vector<std::vector<T>> Permutations(const std::vector<T>& xs) {
 template <typename T>
 std::vector<std::vector<T>> FlattenedPermutations(
     const std::vector<std::vector<T>>& xs) {
-  std::vector<std::vector<T>> result;
-  base::ranges::transform(Permutations(xs), std::back_inserter(result),
-                          &Flattened<std::string>);
-  return result;
+  return base::test::ToVector(Permutations(xs), &Flattened<std::string>);
 }
 
 class MockContentAutofillDriver : public ContentAutofillDriver {

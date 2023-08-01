@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -104,14 +105,10 @@ class SuggestionSelectionTest : public testing::Test {
   std::vector<Suggestion> CreateSuggestions(
       const std::vector<AutofillProfile*>& profiles,
       const ServerFieldType& field_type) {
-    std::vector<Suggestion> suggestions;
-    base::ranges::transform(
-        profiles, std::back_inserter(suggestions),
-        [field_type](const AutofillProfile* profile) {
+    return base::test::ToVector(
+        profiles, [field_type](const AutofillProfile* profile) {
           return Suggestion(profile->GetRawInfo(field_type));
         });
-
-    return suggestions;
   }
 
   const std::string app_locale_;
@@ -174,9 +171,8 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
   profiles_data.push_back(CreateProfileUniquePtr("Marie"));
 
   // Map all the pointers into an array that has the right type.
-  std::vector<AutofillProfile*> profiles_pointers;
-  base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
-                          &std::unique_ptr<AutofillProfile>::get);
+  std::vector<AutofillProfile*> profiles_pointers = base::test::ToVector(
+      profiles_data, &std::unique_ptr<AutofillProfile>::get);
 
   std::vector<AutofillProfile*> matched_profiles;
   auto suggestions = GetPrefixMatchedSuggestions(

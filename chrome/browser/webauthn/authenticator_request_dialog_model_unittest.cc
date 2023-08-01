@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -181,9 +182,7 @@ base::StringPiece TransportAvailabilityParamToString(
 
 template <typename T, base::StringPiece (*F)(T)>
 std::string SetToString(base::flat_set<T> s) {
-  std::vector<base::StringPiece> names;
-  base::ranges::transform(s, std::back_inserter(names), F);
-  return base::JoinString(names, ", ");
+  return base::JoinString(base::test::ToVector(s, F), ", ");
 }
 
 const device::PublicKeyCredentialUserEntity kUser1({1, 2, 3, 4},

@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/test/to_vector.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/secure_channel/background_eid_generator.h"
 #include "chromeos/ash/services/secure_channel/fake_background_eid_generator.h"
@@ -261,10 +262,8 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
   }
 
   std::vector<BluetoothRemoteGattService*> GetRawServiceList() {
-    std::vector<BluetoothRemoteGattService*> service_list_raw;
-    base::ranges::transform(services_, std::back_inserter(service_list_raw),
-                            &std::unique_ptr<BluetoothRemoteGattService>::get);
-    return service_list_raw;
+    return base::test::ToVector(
+        services_, &std::unique_ptr<BluetoothRemoteGattService>::get);
   }
 
   void CallGattServicesDiscovered() {

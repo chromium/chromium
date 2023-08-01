@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -741,17 +742,14 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate_BadData) {
 
   ASSERT_TRUE(GetSyncItem(kItemId));
 
-  syncer::SyncChangeList change_list;
-  syncer::SyncDataList update_list = CreateBadAppRemoteData(kItemId);
-
-  base::ranges::transform(
-      update_list, std::back_inserter(change_list), [](const auto& update) {
-        return syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-                                  update);
-      });
-
   // Validate items with bad data are processed without crashing.
-  app_list_syncable_service()->ProcessSyncChanges(FROM_HERE, change_list);
+  app_list_syncable_service()->ProcessSyncChanges(
+      FROM_HERE, base::test::ToVector(
+                     CreateBadAppRemoteData(kItemId), [](const auto& update) {
+                       return syncer::SyncChange(
+                           FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+                           update);
+                     }));
   content::RunAllTasksUntilIdle();
 
   ASSERT_TRUE(GetSyncItem(kItemId));

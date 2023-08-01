@@ -15,6 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/secure_channel/connection_role.h"
 #include "chromeos/ash/services/secure_channel/fake_ble_scanner.h"
@@ -46,8 +47,8 @@ class FakeBluetoothDevice : public device::MockBluetoothDevice {
                                     false /* paired */,
                                     false /* connected */) {
     // Convert |service_data| from a std::string to a std::vector<uint8_t>.
-    base::ranges::transform(
-        service_data, std::back_inserter(service_data_vector_),
+    service_data_vector_ = base::test::ToVector(
+        service_data,
         [](char character) { return static_cast<uint8_t>(character); });
   }
 

@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/to_vector.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -47,14 +48,10 @@ using SitePermissionsHelper = extensions::SitePermissionsHelper;
 // Returns the extension names from the given `menu_items`.
 std::vector<std::string> GetNamesFromMenuItems(
     std::vector<ExtensionMenuItemView*> menu_items) {
-  std::vector<std::string> names;
-  names.resize(menu_items.size());
-  base::ranges::transform(
-      menu_items, names.begin(), [](ExtensionMenuItemView* item) {
-        return base::UTF16ToUTF8(item->primary_action_button_for_testing()
-                                     ->label_text_for_testing());
-      });
-  return names;
+  return base::test::ToVector(menu_items, [](ExtensionMenuItemView* item) {
+    return base::UTF16ToUTF8(
+        item->primary_action_button_for_testing()->label_text_for_testing());
+  });
 }
 
 }  // namespace

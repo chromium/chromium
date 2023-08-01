@@ -20,6 +20,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
@@ -158,10 +159,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   base::Owned(new PasswordForm(*form))));
-    std::vector<PasswordForm*> raw_forms(local_forms.size());
-    base::ranges::transform(local_forms, raw_forms.begin(),
-                            &std::unique_ptr<PasswordForm>::get);
-    PromptUserToChooseCredentialsPtr(raw_forms, origin, base::DoNothing());
+    PromptUserToChooseCredentialsPtr(
+        base::test::ToVector(local_forms, &std::unique_ptr<PasswordForm>::get),
+        origin, base::DoNothing());
     return true;
   }
 

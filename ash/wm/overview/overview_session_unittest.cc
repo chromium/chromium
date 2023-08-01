@@ -87,6 +87,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
@@ -3408,9 +3409,8 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
                             static_cast<int>(AppType::ARC_APP));
   }
 
-  std::vector<aura::Window*> windows_to_throttle(window_count, nullptr);
-  base::ranges::transform(windows, windows_to_throttle.begin(),
-                          &std::unique_ptr<aura::Window>::get);
+  auto windows_to_throttle =
+      base::test::ToVector(windows, &std::unique_ptr<aura::Window>::get);
   EXPECT_CALL(observer,
               OnThrottlingStarted(
                   testing::UnorderedElementsAreArray(windows_to_throttle),
