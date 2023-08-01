@@ -46,6 +46,11 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1430723
   "graphics.FPS.lacros",
 
+  # https://crbug.com/1379756
+  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
+  "inputs.VirtualKeyboardGlideTyping.tablet_floating",
+  "inputs.VirtualKeyboardHandwriting.floating",
+
   # b/251833060
   "peripherals.LaunchAppFromGuestSession.diagnostics",
 
