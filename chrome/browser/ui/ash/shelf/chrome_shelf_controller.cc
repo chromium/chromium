@@ -11,6 +11,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -36,8 +37,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/apps/app_service/package_id.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -73,6 +78,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
+#include "chrome/browser/ui/ash/shelf/shelf_promise_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1035,6 +1041,22 @@ void ChromeShelfController::OnAppUninstalledPrepared(
   }
 }
 
+void ChromeShelfController::OnPromiseAppUpdate(
+    const apps::PromiseAppUpdate& update) {
+  int index = model_->ItemIndexByAppID(update.PackageId().ToString());
+  if (index == kInvalidIndex) {
+    return;
+  }
+  ash::ShelfItem item = model_->items()[index];
+  if (update.Name().has_value()) {
+    item.title = base::UTF8ToUTF16(update.Name().value());
+  }
+  if (update.Progress().has_value()) {
+    item.progress = update.Progress().value();
+  }
+  model_->Set(index, item);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // AppIconLoaderDelegate:
 
@@ -1393,6 +1415,10 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
   item.title = title;
   item.app_status = ShelfControllerHelper::GetAppStatus(
       latest_active_profile_, item_delegate->shelf_id().app_id);
+  if (ash::features::ArePromiseIconsEnabled()) {
+    item.progress = ShelfControllerHelper::GetPromiseAppProgress(
+        latest_active_profile_, item_delegate->shelf_id().app_id);
+  }
   model_->AddAt(index, item, std::move(item_delegate));
 
   ReportUpdateShelfIconList(model_);
@@ -1480,6 +1506,11 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
         new ShelfExtensionAppUpdater(this, profile,
                                      /*extensions_only=*/true));
     app_updaters_[profile].push_back(std::move(extension_app_updater));
+
+    if (ash::features::ArePromiseIconsEnabled()) {
+      app_updaters_[profile].emplace_back(
+          std::make_unique<ShelfPromiseAppUpdater>(this, profile));
+    }
   }
 
   if (!base::Contains(app_icon_loaders_, profile)) {
@@ -1488,6 +1519,9 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
             profile, extension_misc::EXTENSION_ICON_MEDIUM, this);
     app_icon_loaders_[profile].push_back(
         std::move(app_service_app_icon_loader));
+
+    // TODO(b/261907856): Create AppServicePromiseAppIconLoader and add it to
+    // app_icon_loaders_.
 
     // Some special extensions open new windows, and on Chrome OS, those windows
     // should show the extension icon in the shelf. Extensions are not present
@@ -1570,6 +1604,14 @@ void ChromeShelfController::ShelfItemAdded(int index) {
     if (app_status != item.app_status) {
       needs_update = true;
       item.app_status = app_status;
+    }
+
+    if (ash::features::ArePromiseIconsEnabled()) {
+      float progress = ShelfControllerHelper::GetPromiseAppProgress(
+          latest_active_profile_, id.app_id);
+      if (progress >= 0) {
+        item.progress = progress;
+      }
     }
 
     if (needs_update)

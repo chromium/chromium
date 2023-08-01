@@ -40,6 +40,10 @@ class Profile;
 class ShelfControllerHelper;
 class ShelfSpinnerController;
 
+namespace apps {
+class PromiseAppUpdate;
+}
+
 namespace ash {
 class ShelfModel;
 FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
@@ -275,6 +279,7 @@ class ChromeShelfController
   void OnAppUninstalledPrepared(content::BrowserContext* browser_context,
                                 const std::string& app_id,
                                 bool by_migration) override;
+  void OnPromiseAppUpdate(const apps::PromiseAppUpdate& update) override;
 
   // AppIconLoaderDelegate:
   void OnAppImageUpdated(const std::string& app_id,

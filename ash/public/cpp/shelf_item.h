@@ -42,6 +42,10 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // App status.
   AppStatus app_status = AppStatus::kReady;
 
+  // Applicable only for promise app items. Indicates the percentage progress of
+  // an app installation.
+  float progress = -1;
+
   // Whether the item is associated with a window in the currently active desk.
   // This value is valid only when |features::kPerDeskShelf| is enabled.
   // Otherwise it won't be updated and will always be true.

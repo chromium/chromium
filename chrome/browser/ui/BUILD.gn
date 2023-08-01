@@ -2624,6 +2624,8 @@ static_library("ui") {
       "ash/shelf/shelf_controller_helper.h",
       "ash/shelf/shelf_extension_app_updater.cc",
       "ash/shelf/shelf_extension_app_updater.h",
+      "ash/shelf/shelf_promise_app_updater.cc",
+      "ash/shelf/shelf_promise_app_updater.h",
       "ash/shelf/shelf_spinner_controller.cc",
       "ash/shelf/shelf_spinner_controller.h",
       "ash/shelf/shelf_spinner_item_controller.cc",
