@@ -200,7 +200,10 @@ Configurator::GetProtocolHandlerFactory() const {
 }
 
 absl::optional<bool> Configurator::IsMachineExternallyManaged() const {
-  return is_managed_device_;
+  const absl::optional<bool> is_managed_overridden =
+      external_constants_->IsMachineManaged();
+  return is_managed_overridden.has_value() ? is_managed_overridden
+                                           : is_managed_device_;
 }
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {

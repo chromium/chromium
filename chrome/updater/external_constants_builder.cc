@@ -167,6 +167,20 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearIdleCheckPeriod() {
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetMachineManaged(
+    const absl::optional<bool>& is_managed_device) {
+  if (is_managed_device.has_value()) {
+    overrides_.Set(kDevOverrideKeyManagedDevice, is_managed_device.value());
+  }
+
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearMachineManaged() {
+  overrides_.Remove(kDevOverrideKeyManagedDevice);
+  return *this;
+}
+
 bool ExternalConstantsBuilder::Overwrite() {
   const absl::optional<base::FilePath> override_path =
       GetOverrideFilePath(GetUpdaterScope());
@@ -214,6 +228,9 @@ bool ExternalConstantsBuilder::Modify() {
     SetOverinstallTimeout(verifier->OverinstallTimeout());
   if (!overrides_.contains(kDevOverrideKeyIdleCheckPeriodSeconds)) {
     SetIdleCheckPeriod(verifier->IdleCheckPeriod());
+  }
+  if (!overrides_.contains(kDevOverrideKeyManagedDevice)) {
+    SetMachineManaged(verifier->IsMachineManaged());
   }
 
   return Overwrite();

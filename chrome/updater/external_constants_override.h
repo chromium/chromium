@@ -57,6 +57,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   base::Value::Dict GroupPolicies() const override;
   base::TimeDelta OverinstallTimeout() const override;
   base::TimeDelta IdleCheckPeriod() const override;
+  absl::optional<bool> IsMachineManaged() const override;
 
  private:
   const base::Value::Dict override_values_;

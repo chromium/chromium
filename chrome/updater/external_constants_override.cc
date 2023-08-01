@@ -209,6 +209,19 @@ base::TimeDelta ExternalConstantsOverrider::IdleCheckPeriod() const {
   return base::Seconds(value->GetInt());
 }
 
+absl::optional<bool> ExternalConstantsOverrider::IsMachineManaged() const {
+  if (!override_values_.contains(kDevOverrideKeyManagedDevice)) {
+    return next_provider_->IsMachineManaged();
+  }
+  const base::Value* is_managed =
+      override_values_.Find(kDevOverrideKeyManagedDevice);
+  CHECK(is_managed->is_bool())
+      << "Unexpected type of override[" << kDevOverrideKeyManagedDevice
+      << "]: " << base::Value::GetTypeName(is_managed->type());
+
+  return absl::make_optional(is_managed->GetBool());
+}
+
 // static
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(

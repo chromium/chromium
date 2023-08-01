@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -62,6 +63,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
   // Overrides the idleness check period.
   virtual base::TimeDelta IdleCheckPeriod() const = 0;
+
+  // Overrides machine management state.
+  virtual absl::optional<bool> IsMachineManaged() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;

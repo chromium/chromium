@@ -103,6 +103,7 @@ const char kDevOverrideKeyCrxVerifierFormat[] = "crx_verifier_format";
 const char kDevOverrideKeyGroupPolicies[] = "group_policies";
 const char kDevOverrideKeyOverinstallTimeout[] = "overinstall_timeout";
 const char kDevOverrideKeyIdleCheckPeriodSeconds[] = "idle_check_period";
+const char kDevOverrideKeyManagedDevice[] = "managed_device";
 
 // Policy Management constants.
 const char kProxyModeDirect[] = "direct";

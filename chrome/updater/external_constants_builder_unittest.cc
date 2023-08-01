@@ -74,7 +74,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
       .SetServerKeepAliveTime(base::Seconds(2))
       .SetGroupPolicies(group_policies)
       .SetOverinstallTimeout(base::Seconds(3))
-      .SetIdleCheckPeriod(base::Seconds(4));
+      .SetIdleCheckPeriod(base::Seconds(4))
+      .SetMachineManaged(absl::make_optional(true));
   EXPECT_TRUE(builder.Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -94,6 +95,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
   EXPECT_EQ(verifier->OverinstallTimeout(), base::Seconds(3));
   EXPECT_EQ(verifier->IdleCheckPeriod(), base::Seconds(4));
+  EXPECT_TRUE(verifier->IsMachineManaged().has_value());
+  EXPECT_TRUE(verifier->IsMachineManaged().value());
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
@@ -140,6 +143,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearGroupPolicies()
                   .ClearOverinstallTimeout()
                   .ClearIdleCheckPeriod()
+                  .ClearMachineManaged()
                   .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -157,6 +161,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
   EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
+  EXPECT_FALSE(verifier->IsMachineManaged().has_value());
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
@@ -171,6 +176,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetUseCUP(true)
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(2))
+          .SetMachineManaged(absl::make_optional(true))
           .SetGroupPolicies(group_policies)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetCrashUploadURL("https://crash.example.com")
@@ -178,6 +184,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(937.6))
           .SetServerKeepAliveTime(base::Seconds(3))
+          .SetMachineManaged(absl::make_optional(false))
           .Overwrite());
 
   // Only the second set of values should be observed.
@@ -195,6 +202,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(937.6));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 1U);
+  EXPECT_TRUE(verifier->IsMachineManaged().has_value());
+  EXPECT_FALSE(verifier->IsMachineManaged().value());
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
@@ -213,6 +222,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
           .SetServerKeepAliveTime(base::Seconds(3))
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetGroupPolicies(group_policies)
+          .SetMachineManaged(absl::make_optional(true))
           .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -230,6 +240,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+  EXPECT_TRUE(verifier->IsMachineManaged().has_value());
+  EXPECT_TRUE(verifier->IsMachineManaged().value());
 
   base::Value::Dict group_policies2;
   group_policies2.Set("b", 2);
@@ -241,6 +253,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
                   .ClearCrashUploadURL()
                   .ClearDeviceManagementURL()
                   .SetGroupPolicies(group_policies2)
+                  .ClearMachineManaged()
                   .Overwrite());
 
   // We need a new overrider to verify because it only loads once.
@@ -261,6 +274,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
             base::Seconds(92.3));  // Updated; update should be seen.
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(4));
   EXPECT_EQ(verifier2->GroupPolicies().size(), 1U);
+  EXPECT_FALSE(verifier2->IsMachineManaged().has_value());
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestModify) {
@@ -281,6 +295,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
           .SetCrashUploadURL("https://crash.example.com")
           .SetDeviceManagementURL("https://dm.example.com")
           .SetGroupPolicies(group_policies)
+          .SetMachineManaged(absl::make_optional(false))
           .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -298,6 +313,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+  EXPECT_TRUE(verifier->IsMachineManaged().has_value());
+  EXPECT_FALSE(verifier->IsMachineManaged().value());
 
   // Now we use a new builder to modify just the group policies.
   ExternalConstantsBuilder builder2;
@@ -324,6 +341,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_EQ(verifier2->DeviceManagementURL(), GURL("https://dm.example.com"));
   EXPECT_EQ(verifier2->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(3));
+  EXPECT_TRUE(verifier2->IsMachineManaged().has_value());
+  EXPECT_FALSE(verifier2->IsMachineManaged().value());
 }
 
 }  // namespace updater
