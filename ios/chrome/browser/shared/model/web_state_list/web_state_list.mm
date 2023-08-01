@@ -484,6 +484,10 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   web::WebState* web_state_ptr = web_state.get();
   std::unique_ptr<web::WebState> replaced_web_state =
       web_state_wrappers_[index]->ReplaceWebState(std::move(web_state));
+  if (index == active_index_) {
+    // The active WebState was replaced.
+    OnActiveWebStateChanged();
+  }
 
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
                                                  web_state_ptr);
@@ -499,13 +503,10 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
     observer.WebStateListDidChange(this, replace_change, status);
   }
 
-  // The active WebState was replaced.
+  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
+  // are updated to handle the activation and the replacement in
+  // `WebStateListDidChange()`.
   if (index == active_index_) {
-    OnActiveWebStateChanged();
-
-    // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
-    // are updated to handle the activation and the replacement in
-    // `WebStateListDidChange()`.
     for (auto& observer : observers_) {
       observer.WebStateActivatedAt(this, replaced_web_state.get(),
                                    GetActiveWebState(), active_index_,
@@ -549,6 +550,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   WebStateListOrderController order_controller(*this);
   active_index_ =
       order_controller.DetermineNewActiveIndex(active_index_, {index});
+  if (is_active_web_state_detached) {
+    OnActiveWebStateChanged();
+  }
 
   ClearOpenersReferencing(index);
   std::unique_ptr<web::WebState> detached_web_state =
@@ -573,13 +577,10 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     observer.WebStateListDidChange(this, detach_change, status);
   }
 
-  // The active WebState was detached.
+  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
+  // are updated to handle the activation and the detachment in
+  // `WebStateListDidChange()`.
   if (is_active_web_state_detached) {
-    OnActiveWebStateChanged();
-
-    // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
-    // are updated to handle the activation and the detachment in
-    // `WebStateListDidChange()`.
     for (auto& observer : observers_) {
       observer.WebStateActivatedAt(this, web_state, GetActiveWebState(),
                                    active_index_,
