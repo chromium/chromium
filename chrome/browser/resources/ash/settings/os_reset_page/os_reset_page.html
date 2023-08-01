@@ -1,30 +1,5 @@
-<style include="settings-shared"></style>
-
-<div route-path="default">
-  <settings-card header-text="$i18n{resetPageTitle}">
-    <div class="settings-box two-line first">
-      <div class="start" id="title" aria-hidden="true">
-        $i18n{powerwashTitle}
-        <div class="secondary" id="secondaryText" aria-hidden="true">
-          $i18n{powerwashDescription}
-        </div>
-      </div>
-      <div class="separator"></div>
-      <cr-button id="powerwash"
-          on-click="onShowPowerwashDialog_"
-          aria-labelledby="title"
-          aria-describedby="secondaryText"
-          aria-roledescription="$i18n{powerwashButtonRoleDescription}"
-          deep-link-focus-id$="[[Setting.kPowerwash]]">
-        $i18n{powerwashButton}
-      </cr-button>
-    </div>
-  </settings-card>
-</div>
-
-<template is="dom-if" if="[[showPowerwashDialog_]]" restamp>
-  <os-settings-powerwash-dialog
-      installed-e-sim-profiles="[[installedESimProfiles_]]"
-      on-close="onPowerwashDialogClose_">
-  </os-settings-powerwash-dialog>
-</template>
+<os-settings-animated-pages id="pages" section="[[section_]]">
+  <div route-path="default">
+    <settings-reset-card></settings-reset-card>
+  </div>
+</os-settings-animated-pages>
