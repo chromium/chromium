@@ -9,7 +9,6 @@
 #include <map>
 #include <sstream>
 
-#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
@@ -269,6 +268,18 @@ ElementTracker::Contexts ElementTracker::GetAllContextsForTesting() const {
   Contexts result;
   for (const auto& [key, data] : element_data_) {
     result.insert(key.second);
+  }
+  return result;
+}
+
+ElementTracker::ElementList ElementTracker::GetAllElementsForTesting(
+    absl::optional<ElementContext> in_context) {
+  ElementList result;
+  for (const auto& [key, data] : element_data_) {
+    if (!in_context.has_value() || in_context.value() == key.second) {
+      std::copy(data.elements().begin(), data.elements().end(),
+                std::back_inserter(result));
+    }
   }
   return result;
 }

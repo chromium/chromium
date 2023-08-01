@@ -814,6 +814,89 @@ TEST(ElementTrackerTest, HideDuringShowCallbackMultipleListeners) {
   EXPECT_TRUE(called2);
 }
 
+TEST(ElementTrackerTest, GetAllContextsForTesting) {
+  test::TestElement e1(kElementIdentifier1, kElementContext1);
+  test::TestElement e2(kElementIdentifier1, kElementContext2);
+  test::TestElement e3(kElementIdentifier2, kElementContext2);
+
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllContextsForTesting(),
+              testing::IsEmpty());
+
+  e1.Show();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllContextsForTesting(),
+              testing::UnorderedElementsAre(kElementContext1));
+
+  e2.Show();
+  e3.Show();
+  EXPECT_THAT(
+      ElementTracker::GetElementTracker()->GetAllContextsForTesting(),
+      testing::UnorderedElementsAre(kElementContext1, kElementContext2));
+
+  e1.Hide();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllContextsForTesting(),
+              testing::UnorderedElementsAre(kElementContext2));
+}
+
+TEST(ElementTrackerTest, GetAllElementsForTestingInAnyContext) {
+  test::TestElement e1(kElementIdentifier1, kElementContext1);
+  test::TestElement e2(kElementIdentifier1, kElementContext2);
+  test::TestElement e3(kElementIdentifier2, kElementContext2);
+
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(),
+              testing::IsEmpty());
+
+  e1.Show();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(),
+              testing::UnorderedElementsAre(&e1));
+
+  e2.Show();
+  e3.Show();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(),
+              testing::UnorderedElementsAre(&e1, &e2, &e3));
+
+  e1.Hide();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(),
+              testing::UnorderedElementsAre(&e2, &e3));
+}
+
+TEST(ElementTrackerTest, GetAllElementsForTestingInSpecificContexts) {
+  test::TestElement e1(kElementIdentifier1, kElementContext1);
+  test::TestElement e2(kElementIdentifier1, kElementContext2);
+  test::TestElement e3(kElementIdentifier2, kElementContext2);
+
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext1),
+              testing::IsEmpty());
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext2),
+              testing::IsEmpty());
+
+  e1.Show();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext1),
+              testing::UnorderedElementsAre(&e1));
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext2),
+              testing::IsEmpty());
+
+  e2.Show();
+  e3.Show();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext1),
+              testing::UnorderedElementsAre(&e1));
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext2),
+              testing::UnorderedElementsAre(&e2, &e3));
+
+  e1.Hide();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext1),
+              testing::IsEmpty());
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetAllElementsForTesting(
+                  kElementContext2),
+              testing::UnorderedElementsAre(&e2, &e3));
+}
+
 TEST(SafeElementReferenceTest, ElementRemainsVisible) {
   test::TestElement e1(kElementIdentifier1, kElementContext1);
   e1.Show();

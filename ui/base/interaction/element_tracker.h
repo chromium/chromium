@@ -15,8 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
-#include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"
@@ -216,6 +215,15 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
 
   // Returns all known contexts.
   Contexts GetAllContextsForTesting() const;
+
+  // Returns a list of all elements. Should only be used in a meta-testing
+  // context, e.g. for testing the tracker itself, or for getting lists of
+  // candidate elements for fuzzing input.
+  //
+  // If `in_context` is specified, only elements in that context will be
+  // returned.
+  ElementList GetAllElementsForTesting(
+      absl::optional<ElementContext> in_context = absl::nullopt);
 
   // Adds a callback when any element is shown.
   Subscription AddAnyElementShownCallbackForTesting(Callback callback);
