@@ -1,5 +1,5 @@
 caption: Enable Low Battery Sound
-default: false
+default: null
 desc: |-
   Enable the low battery sound feature.
 
@@ -11,7 +11,7 @@ desc: |-
 
             If you set this policy, users cannot change or override it.
 
-            If this policy is left unset, this feature is disabled on the managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, but enabled under other circumstances.
+            If this policy is left unset, this feature is disabled for existing users, or enabled for new users initially on the managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, but users can enable or disable it at any time.
 device_only: true
 example_value: false
 features:
@@ -22,6 +22,8 @@ items:
   value: true
 - caption: Disable low battery sound
   value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - hongyulong@chromium.org
 - bicioglu@google.com
