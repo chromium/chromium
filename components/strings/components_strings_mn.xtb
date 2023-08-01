@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлийнхээ мэдээлэл, нууцлал болон аюулгүй байдлыг удирдахын тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
+<translation id="1793631236004319016">Хамгийн сүүлд <ph name="NUM_HOURS_MINUTES_SECONDS" />-н өмнө ашигласан</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, олон үйлдэл хийх боломжтой, үйлдэл хооронд шилжихийн тулд Таб дээр дарна уу</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Виртуал картын дэлгэрэнгүй</translation>
@@ -937,6 +938,7 @@
 <translation id="299990983510665749">Комби суудлын машин</translation>
 <translation id="3002501248619246229">Оролтын цаасны медиаг хянах</translation>
 <translation id="3005723025932146533">Хадгалагдсан хуулбарыг харуулах</translation>
+<translation id="300580149047131921">Саяхан ашигласан</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, боломжтой үйлдлүүдийг харахын тулд Tab, дараа нь сонгосон үйдлийг гүйцэтгэхийн тулд Enter дарна уу.</translation>
 <translation id="3013291976881901233">MIDI төхөөрөмж</translation>
 <translation id="3014553260345122294">Бизнес мэдээ</translation>
@@ -2661,6 +2663,7 @@
 <translation id="6671169470640320959">Автомашины санхүүжүүлэлт</translation>
 <translation id="6671697161687535275">Маягтын зөвлөмжийг Chromium-с устгах уу?</translation>
 <translation id="6677351035258626477">Түргэн хоол</translation>
+<translation id="6681790815630918386">Карт баталгаажуулалтын кодыг хадгалсан</translation>
 <translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6683717648675961851">Ажлын жагсаалт</translation>
 <translation id="6687230248707087982">Дугтуй (энгийн)</translation>
@@ -3468,6 +3471,7 @@
 <translation id="830498451218851433">Хагас нугалаа</translation>
 <translation id="8308653357438598313">Шууд видео дамжуулалт</translation>
 <translation id="8311895354659782580">Үл хөдлөх хөрөнгийн жагсаалтууд</translation>
+<translation id="8316555157357957253">Одоо ашиглаж байна</translation>
 <translation id="8317570861267063617">Илүү хурдан тооцоо хийх бол энэ картын Карт баталгаажуулалтын кодыг төхөөрөмждөө хадгална уу</translation>
 <translation id="8319269383395457801">Орон сууцны борлуулалтууд</translation>
 <translation id="831997045666694187">Үдэш</translation>

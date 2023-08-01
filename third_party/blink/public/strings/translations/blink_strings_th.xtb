@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" ถูกใช้งานในตำแหน่งที่ไม่ถูกต้องใน "<ph name="INVALIDDOMAIN" />"</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2226276347425096477">โปรดย่อข้อความนี้ให้เหลือไม่เกิน <ph name="MAX_CHARACTERS" /> อักขระ (ขณะนี้ข้อความของคุณมี <ph name="CURRENT_LENGTH" /> อักขระ)</translation>
-<translation id="2246498165605549352">ไฟล์ในตัวเครื่อง</translation>
 <translation id="2247351761944213033">สัปดาห์ที่ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">แทร็ก <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">ค่าสีแบบฐานสิบหก</translation>

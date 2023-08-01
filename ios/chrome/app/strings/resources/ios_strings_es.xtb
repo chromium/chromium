@@ -47,6 +47,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="122699739164161391">Cerrar todas las pestañas</translation>
 <translation id="1229222343402087523">Buscar ${searchPhrase} en Chrome</translation>
 <translation id="1242044645101871359">Vuelve a iniciar sesión</translation>
+<translation id="1248276223555153952">Gestionar las cuentas de este dispositivo...</translation>
 <translation id="1254117744268754948">Seleccionar carpeta</translation>
 <translation id="1254424942107648268">Buscar anterior</translation>
 <translation id="1258491128795710625">Novedades</translation>
@@ -109,6 +110,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1580783302095112590">Correo enviado</translation>
 <translation id="1582732959743469162">Esta acción detendrá el progreso de la descarga actual.</translation>
 <translation id="1594034544529347967">De</translation>
+<translation id="160275202205869636">Si se activa, usa y guarda los datos en tu cuenta de Google. Si se desactiva, los datos solo se guardan en este dispositivo.</translation>
 <translation id="1605405588277479165">Desactivada (no se recomienda)</translation>
 <translation id="1605658421715042784">Copiar imagen</translation>
 <translation id="1608337082864370066">Buscar la imagen copiada</translation>
@@ -290,6 +292,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2773292004659987824">Búsqueda en modo Incógnito</translation>
 <translation id="277771892408211951">Seleccionar idioma</translation>
 <translation id="2780046210906776326">No hay cuentas de correo</translation>
+<translation id="2780326741858434269">Cuentas de este dispositivo</translation>
 <translation id="2781325423985810933">DESHACER</translation>
 <translation id="2781331604911854368">Activado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3577555362230509265">Usa Chrome en otras aplicaciones.</translation>
 <translation id="3581564640715911333">Ofrecer la traducción de páginas que estén en otros idiomas</translation>
+<translation id="3587885837929752825">Tu organización limita lo que puedes guardar en tu cuenta de Google.</translation>
 <translation id="3588820906588687999">Abrir imagen en una pestaña nueva</translation>
 <translation id="3595252146048399851">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="3603009562372709545">Copiar URL de enlace</translation>
@@ -636,6 +640,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4904877109095351937">Marcar como leídas</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4916679969857390442">Lente</translation>
+<translation id="4918086044614829423">Aceptar</translation>
 <translation id="4922154083994158612">¿Más seguridad?</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4938338714234463591">Esto te permitirá usar tu voz con algunas funciones en sitios web.</translation>
@@ -693,6 +698,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Rellénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Rellénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
 <translation id="5283494734135414249">Toca el acceso directo que aparece debajo de la barra de direcciones.</translation>
+<translation id="5292723732574094123">Se ha cerrado la sesión. Vuelve a iniciar sesión para ver los marcadores, las contraseñas y más en tu cuenta.</translation>
 <translation id="5295239312320826323">¿Quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -736,6 +742,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5614553682702429503">¿Guardar la contraseña?</translation>
 <translation id="5626245204502895507">No se puede descargar el archivo en este momento.</translation>
 <translation id="5631164295104953411">Añadir método de pago</translation>
+<translation id="5649795523408334796">Detectar direcciones</translation>
 <translation id="5652623411397330904">Los productos que sigas aparecerán aquí.</translation>
 <translation id="5657859710142657190">Ir a la cuadrícula de pestañas</translation>
 <translation id="5659593005791499971">Correo</translation>
@@ -1297,6 +1304,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">No ralentiza de forma significativa tu navegador ni tu dispositivo.</translation>
+<translation id="8863431381414769983">Obtén indicaciones e información local de Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="8870413625673593573">Cerrado recientemente</translation>
 <translation id="8876882697946675716">Mantén tus dispositivos sincronizados</translation>

@@ -231,6 +231,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">A página quer instalar um manipulador de serviço.</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
+<translation id="1433225466058025572">Tente mover os arquivos de novo</translation>
 <translation id="1435940442311036198">Usar uma chave de acesso em outro dispositivo</translation>
 <translation id="1436185428532214179">Pode pedir para editar arquivos e pastas no dispositivo</translation>
 <translation id="1442386063175183758">Dobra janela à direita</translation>
@@ -564,6 +565,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2148613324460538318">Adicionar Cartão</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2149968176347646218">A conexão não é segura</translation>
+<translation id="2152495481414285304">Aplicativos</translation>
 <translation id="2153609454945889823">Instalar o Google Play Services para RA?</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
 <translation id="2154739667870063220">Reinicializar</translation>
@@ -683,6 +685,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2396249848217231973">&amp;Desfazer exclusão</translation>
 <translation id="2397836504670957718">Laptops e notebooks</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
+<translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido revogado. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2414886740292270097">Escuro</translation>
@@ -839,6 +842,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2759825833388495838">preencher sua senha no app <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Quadrinhos</translation>
 <translation id="2765217105034171413">Pequeno</translation>
+<translation id="2770159525358613612">Tente fazer o upload dos arquivos de novo</translation>
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="277499241957683684">Registro de dispositivo não encontrado</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
@@ -1229,6 +1233,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3632892046558972264">O compartilhamento de tela foi pausado</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chrome recomenda conferir as senhas salvas.</translation>
+<translation id="3642196846309122856">Tente fazer o download dos arquivos de novo</translation>
 <translation id="3642638418806704195">Aplicativo:</translation>
 <translation id="3646643500201740985">Medir a performance de um anúncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL precisa conter entre um e dois URLs.</translation>
@@ -1352,6 +1357,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3890664840433101773">Adicionar e-mail</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
+<translation id="390391808978419508">O tempo de abertura expirou</translation>
 <translation id="3905894480064208252">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="3906095212874392000">Fim do texto convertido</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1364,6 +1370,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="393316646445601645">Internet e telecomunicações</translation>
 <translation id="3939773374150895049">Usar WebAuthn em vez de CVC?</translation>
 <translation id="3941630233824954464">Ativar a reautenticação obrigatória</translation>
+<translation id="3942048175062210325">Tente abrir seus arquivos de novo</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3946209740501886391">Sempre perguntar neste site</translation>
 <translation id="3947595700203588284">Pode pedir para se conectar a dispositivos MIDI</translation>
@@ -1445,6 +1452,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4117700440116928470">O escopo da política não é suportado.</translation>
 <translation id="4121428309786185360">Expira em</translation>
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
+<translation id="412601465078863288">O tempo de upload expirou</translation>
 <translation id="4127317221386336246">Acessórios para roupas</translation>
 <translation id="4127575959421463246">Procurando as sinalizações do ChromeOS? Visitar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{mais 1}one{mais #}other{mais #}}</translation>
@@ -1661,6 +1669,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4540780316273593836">Ocorreu um erro</translation>
 <translation id="4541810033354695636">realidade aumentada</translation>
 <translation id="4542971377163063093">Bandeja 6</translation>
+<translation id="4546730006268514143">O tempo de transferência expirou</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Você está usando o bloqueio de tela para preencher senhas</translation>
 <translation id="4558551763791394412">Tente desativar suas extensões.</translation>
@@ -2094,6 +2103,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5470230812924696184">Engenharia civil</translation>
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
 <translation id="5471337644440862957">Comédias</translation>
+<translation id="547963486735802022">Tente transferir seus arquivos de novo</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar softwares perigosos no seu dispositivo que roubam ou excluem suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
 <translation id="5483838506518938965">Está tudo pronto</translation>
@@ -2783,6 +2793,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6961733224437895943">Seguro residencial</translation>
 <translation id="6961844873822989059">Pode pedir para usar as fontes instaladas no dispositivo</translation>
 <translation id="6961980518585973432">Datas comemorativas</translation>
+<translation id="6962858948849099922">O tempo de transferência expirou</translation>
 <translation id="6963520811470373926">Substituindo</translation>
 <translation id="6963574715554809750">Comércio varejista</translation>
 <translation id="6963693576491380224">Vagas de emprego no governo e no setor público</translation>
@@ -2860,6 +2871,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7111507312244504964">Inspeções e avaliações de propriedade</translation>
 <translation id="7112327784801341716">Suas informações atuais não são mostradas? Entre em contato com seu banco para atualizar esses dados.</translation>
 <translation id="7118618213916969306">Pesquisa o URL da área de transferência, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">O tempo de cópia expirou</translation>
 <translation id="7119414471315195487">Fechar outras guias ou programas</translation>
 <translation id="7124354851782353862">Insira o CVC</translation>
 <translation id="7129355289156517987">Ao fechar todas as guias anônimas do Chromium, suas atividades nelas vão ser apagadas deste dispositivo:
@@ -3112,6 +3124,7 @@ Mais detalhes:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Menos de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue atender a esta solicitação no momento.</translation>
+<translation id="7599089013883397081">O tempo de download expirou</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">A conexão com este site costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">O valor não corresponde ao período <ph name="VALUE" />.</translation>

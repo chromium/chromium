@@ -140,7 +140,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1110965959145884739">Kies welke talen je wilt installeren op dit apparaat. Taalbestanden worden gedeeld onder gebruikers om schijfruimte te besparen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Achtergrondtabblad gebruikt Bluetooth</translation>
 <translation id="1112998165730922436">Casten is onderbroken</translation>
-<translation id="1113807501859230251">Bruschetta verwijderen van je <ph name="DEVICE_TYPE" />? Hierdoor worden alle apps en gegevens in de virtuele machine verwijderd.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114427165525619358">Wachtwoorden op dit apparaat en in je Google-account</translation>
@@ -2079,7 +2078,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2673135533890720193">Je browsegeschiedenis lezen</translation>
 <translation id="2673873887296220733">1 bestand naar <ph name="CLOUD_PROVIDER" /> kopiëren om te openen?</translation>
 <translation id="2674764818721168631">Uit</translation>
-<translation id="2675570801872027281">Fout bij het verwijderen van Bruschetta. Probeer het opnieuw.</translation>
 <translation id="2676084251379299915">Deze extensie is uitgezet op basis van bedrijfsbeleid omdat de extensie niet meer beschikbaar is in de Chrome Web Store.</translation>
 <translation id="2678063897982469759">Opnieuw aanzetten</translation>
 <translation id="2678100101831051676">Kan niet casten.</translation>
@@ -6046,6 +6044,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="6050189528197190982">Grijstinten</translation>
 <translation id="6051354611314852653">Het systeem kan API-toegang voor dit apparaat niet verifiëren.</translation>
 <translation id="6051811090255711417">Je organisatie heeft dit bestand geblokkeerd omdat het niet voldoet aan een beveiligingsbeleid</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Typ de toegangscode om te beginnen met casten</translation>
 <translation id="6052976518993719690">SSL-certificeringsinstantie</translation>
 <translation id="6053401458108962351">&amp;Browsegegevens wissen</translation>

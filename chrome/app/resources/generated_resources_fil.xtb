@@ -142,7 +142,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1110965959145884739">Piliin kung aling mga wika ang ii-install sa device na ito. Ibinabahagi ang mga file ng wika sa mga user para makatipid ng disk space. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Gumagamit ng bluetooth ang tab sa background</translation>
 <translation id="1112998165730922436">Naka-pause ang pag-cast</translation>
-<translation id="1113807501859230251">Alisin ang Bruschetta sa iyong <ph name="DEVICE_TYPE" />? Ide-delete nito ang lahat ng app at data sa virtual machine!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamond</translation>
 <translation id="1114427165525619358">Mga password sa device na ito at sa iyong Google Account</translation>
@@ -2095,7 +2094,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2673135533890720193">Basahin ang iyong history ng pag-browse</translation>
 <translation id="2673873887296220733">Kopyahin ang 1 file sa <ph name="CLOUD_PROVIDER" /> para buksan?</translation>
 <translation id="2674764818721168631">Naka-off</translation>
-<translation id="2675570801872027281">Nagka-error sa pag-aalis ng Bruschetta. Subukan ulit.</translation>
 <translation id="2676084251379299915">Na-disable ng patakaran sa enterprise ang extension na ito dahil hindi na ito available sa Chrome Web Store.</translation>
 <translation id="2678063897982469759">Muling paganahin</translation>
 <translation id="2678100101831051676">Hindi ma-cast.</translation>
@@ -6068,6 +6066,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6050189528197190982">Grayscale</translation>
 <translation id="6051354611314852653">Oops! Nabigong pahintulutan ng system ang pag-access sa API para sa device na ito.</translation>
 <translation id="6051811090255711417">Na-block ng iyong organisasyon ang file na ito dahil hindi nito natutugunan ang patakaran sa seguridad</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">I-type ang access code para magsimulang mag-cast</translation>
 <translation id="6052976518993719690">SSL Certification Authority</translation>
 <translation id="6053401458108962351">&amp;I-clear ang data sa pag-browse...</translation>

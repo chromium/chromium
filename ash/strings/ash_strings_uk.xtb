@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">Заміна: "<ph name="FIRST_ITEM_TITLE" />" на "<ph name="SECOND_ITEM_TITLE" />"</translation>
 <translation id="1500926532737552529">Показати всі пропозиції</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
-<translation id="1516740043221086139">Режим "Не турбувати" ввімкнено.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Показати налаштування сповіщень. Сповіщення вимкнено для додатка}one{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}few{Показати налаштування сповіщень. Сповіщення вимкнено для # додатків}many{Показати налаштування сповіщень. Сповіщення вимкнено для # додатків}other{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}}</translation>
 <translation id="1523032696246003">Рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> до повного заряду</translation>
 <translation id="1525508553941733066">ЗАКРИТИ</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">Увімкнено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
-<translation id="163517899691012366">Коли ввімкнено режим "Не турбувати", сповіщення надходять без звуку</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1647986356840967552">Попередня сторінка</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">Зробити знімок екрана</translation>
 <translation id="334927402682780278">Вибрати текст від курсора до кінця рядка</translation>
 <translation id="3349345708646875009">Відкрити Диспетчер завдань</translation>
-<translation id="3354555338129305222">чому пристрій працює повільно</translation>
 <translation id="3364721542077212959">Інструменти стилуса</translation>
 <translation id="3365977133351922112">Телефон задалеко. Піднесіть його ближче.</translation>
 <translation id="3368922792935385530">Підключено</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox увімкнено</translation>
-<translation id="4665114317261903604">Увімкнути/вимкнути режим "Не турбувати". <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Додатки з вашого телефона</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: активація…</translation>
 <translation id="6274202259872570803">Скрінкаст</translation>
 <translation id="6276708887952587684">Переглянути джерело сторінки</translation>
-<translation id="6283712521836204486">Режим "Не турбувати" вимкнено.</translation>
 <translation id="6284232397434400372">Роздільну здатність змінено</translation>
 <translation id="6288235558961782912">Користувача <ph name="USER_EMAIL_ADDRESS" /> можна буде знову додати з дозволу батьків.</translation>
 <translation id="6291221004442998378">Не заряджається</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">Попередження. Експериментальна функція</translation>
 <translation id="7846634333498149051">Клавіатура</translation>
 <translation id="7848989271541991537">Переміщено на сторінку <ph name="PAGE_NUMBER" />, рядок <ph name="ROW_NUMBER" />, стовпець <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Не турбувати</translation>
 <translation id="7851039877802112575">Виділити спливаючі або діалогові вікна</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Щоб відкрити режим огляду, проведіть трьома пальцями вгору</translation>
@@ -1811,6 +1807,7 @@
 <translation id="8921624153894383499">Google Асистент не підтримує цю мову.</translation>
 <translation id="8924458948354692166">Щоб зробити знімок вікна, натисніть клавішу Enter</translation>
 <translation id="8926951137623668982">Полицю завжди сховано</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="8936501819958976551">деактивовано</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>

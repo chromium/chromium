@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1432187715652018471">சேவை ஹேண்ட்லரை இந்தப் பக்கம் நிறுவ விரும்புகிறது.</translation>
 <translation id="1432581352905426595">தேடல் இன்ஜின்களை நிர்வகி</translation>
+<translation id="1433225466058025572">ஃபைல்களை மீண்டும் நகர்த்த முயலவும்</translation>
 <translation id="1435940442311036198">வேறொரு சாதனத்தில் கடவுக்குறியீட்டைப் பயன்படுத்து</translation>
 <translation id="1436185428532214179">எனது சாதனத்தில் உள்ள ஃபைல்களிலும் ஃபோல்டர்களிலும் மாற்றம் செய்ய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="1442386063175183758">ரைட் கேட் ஃபோல்டு</translation>
@@ -564,6 +565,7 @@
 <translation id="2148613324460538318">கார்டைச் சேர்</translation>
 <translation id="2148716181193084225">இன்று</translation>
 <translation id="2149968176347646218">பாதுகாப்பற்ற இணைப்பு</translation>
+<translation id="2152495481414285304">ஆப்ஸ்</translation>
 <translation id="2153609454945889823">Google Play Services for ARரை நிறுவ வேண்டுமா?</translation>
 <translation id="2154484045852737596">கார்டைத் திருத்தவும்</translation>
 <translation id="2154739667870063220">மறுபடி தொடங்கு</translation>
@@ -683,6 +685,7 @@
 <translation id="2396249848217231973">&amp;நீக்குதலைச் செயல்தவிர்</translation>
 <translation id="2397836504670957718">லேப்டாப்கள் &amp; நோட்புக்குகள்</translation>
 <translation id="2400600116338235695">சீரியல் போர்ட்டுகளுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
+<translation id="2404884497378469141">ஃபைல்களை மீண்டும் நகலெடுக்க முயலவும்</translation>
 <translation id="2413155254802890957">பழைய முகவரி</translation>
 <translation id="2413528052993050574">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் திரும்பப்பெறப்பட்டிருக்கலாம். இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
 <translation id="2414886740292270097">அடர்</translation>
@@ -839,6 +842,7 @@
 <translation id="2759825833388495838">உங்கள் கடவுச்சொல்லை <ph name="APP_NAME" /> ஆப்ஸில் நிரப்புகிறது</translation>
 <translation id="2764001903315068341">காமிக்ஸ்</translation>
 <translation id="2765217105034171413">சிறிய</translation>
+<translation id="2770159525358613612">ஃபைல்களை மீண்டும் பதிவேற்ற முயலவும்</translation>
 <translation id="277133753123645258">ஷிப்பிங் முறை</translation>
 <translation id="277499241957683684">சாதனப் பதிவு இல்லை</translation>
 <translation id="2775884851269838147">முதலில் அச்சிடும் பக்கம்</translation>
@@ -1225,6 +1229,7 @@
 <translation id="3632892046558972264">ஸ்கிரீன் பகிர்வு இடைநிறுத்தப்பட்டது</translation>
 <translation id="3634530185120165534">தட்டு 5</translation>
 <translation id="3634567936866541746">ஏமாற்றக்கூடிய தளத்தில் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். உங்கள் கணக்குகளைப் பாதுகாக்க, நீங்கள் சேமித்துள்ள கடவுச்சொற்களைச் சரிபார்க்குமாறு Chrome பரிந்துரைக்கிறது.</translation>
+<translation id="3642196846309122856">ஃபைல்களை மீண்டும் பதிவிறக்க முயலவும்</translation>
 <translation id="3642638418806704195">ஆப்ஸ்:</translation>
 <translation id="3646643500201740985">விளம்பரம் எவ்வளவு சிறப்பாகச் செயல்படுகிறது என்பதை அளவிடுதல்</translation>
 <translation id="3647286794400715637">ஒவ்வொரு URLலுக்கும் அதன் வார்த்தைகள் பகுதியில் 1 முதல் 2 URLகள் வரை இருக்க வேண்டும்.</translation>
@@ -1348,6 +1353,7 @@
 <translation id="3890664840433101773">மின்னஞ்சலைச் சேர்</translation>
 <translation id="3897092660631435901">மெனு</translation>
 <translation id="3901925938762663762">கார்டு காலாவதியானது</translation>
+<translation id="390391808978419508">திறப்பதற்கான நேரம் முடிந்தது</translation>
 <translation id="3905894480064208252">{0,plural, =1{ஃபைலை மாற்றுவது தடுக்கப்பட்டது}other{<ph name="FILE_COUNT" /> ஃபைல்களை மாற்றுவது தடுக்கப்பட்டது}}</translation>
 <translation id="3906095212874392000">வார்த்தைகள் உருவாக்கம் முடிந்தது</translation>
 <translation id="3906954721959377182">டேப்லெட்</translation>
@@ -1360,6 +1366,7 @@
 <translation id="393316646445601645">இணையம் &amp; தொலைத்தொடர்பு</translation>
 <translation id="3939773374150895049">CVCக்கு பதிலாக WebAuthnனைப் பயன்படுத்தவா?</translation>
 <translation id="3941630233824954464">கட்டாய மறு அடையாளச் சரிபார்ப்பை இயக்கும்</translation>
+<translation id="3942048175062210325">ஃபைல்களை மீண்டும் திறக்க முயலவும்</translation>
 <translation id="3943857333388298514">ஒட்டு</translation>
 <translation id="3946209740501886391">இந்தத் தளத்தில் எப்போதும் கேள்</translation>
 <translation id="3947595700203588284">MIDI சாதனங்களுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
@@ -1441,6 +1448,7 @@
 <translation id="4117700440116928470">கொள்கையின் நோக்கம் ஆதரிக்கப்படவில்லை.</translation>
 <translation id="4121428309786185360">அன்று காலாவதியாகிறது</translation>
 <translation id="4123572138124678573">டிரிப்பில் பஞ்ச் பாட்டம்</translation>
+<translation id="412601465078863288">பதிவேற்றுவதற்கான நேரம் முடிந்தது</translation>
 <translation id="4127317221386336246">ஆடை அணிகலன்கள்</translation>
 <translation id="4127575959421463246">ChromeOS கொடிகளைத் தேடுகிறீர்களா? செல்க</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{மேலும் ஒன்று}other{மேலும் #}}</translation>
@@ -1657,6 +1665,7 @@
 <translation id="4540780316273593836">ஏதோ தவறாகிவிட்டது</translation>
 <translation id="4541810033354695636">ஆக்மென்ட்டட் ரியாலிட்டி</translation>
 <translation id="4542971377163063093">தட்டு 6</translation>
+<translation id="4546730006268514143">மாற்றுவதற்கான நேரம் முடிந்தது</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">கடவுச்சொற்களை நிரப்புவதற்காக உங்கள் திரைப்பூட்டைப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="4558551763791394412">நீட்டிப்புகளை முடக்கவும்.</translation>
@@ -2090,6 +2099,7 @@
 <translation id="5470230812924696184">கட்டடப் பொறியியல்</translation>
 <translation id="5470861586879999274">&amp;மீண்டும் திருத்து</translation>
 <translation id="5471337644440862957">நகைச்சுவைத் திரைப்படங்கள்</translation>
+<translation id="547963486735802022">ஃபைல்களை மீண்டும் மாற்ற முயலவும்</translation>
 <translation id="5481076368049295676">உங்கள் தகவலைத் திருடும் அல்லது நீக்கும் ஆபத்தான மென்பொருளை உங்கள் சாதனத்தில் இந்த உள்ளடக்கம் நிறுவ முயலலாம். <ph name="BEGIN_LINK" />பரவாயில்லை, காட்டு<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">சரியான முகவரியைச் சேர்க்கவும்</translation>
 <translation id="5483838506518938965">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்</translation>
@@ -2778,6 +2788,7 @@
 <translation id="6961733224437895943">வீட்டுக் காப்பீடு</translation>
 <translation id="6961844873822989059">சாதனத்தில் நிறுவப்பட்டுள்ள எழுத்து வடிவங்களைப் பயன்படுத்த அனுமதி கேட்க வேண்டும்</translation>
 <translation id="6961980518585973432">ஆண்டு நிறைவு விழாக்கள்</translation>
+<translation id="6962858948849099922">நகர்த்துவதற்கான நேரம் முடிந்தது</translation>
 <translation id="6963520811470373926">மாற்றியமைக்கிறது</translation>
 <translation id="6963574715554809750">சில்லறை வர்த்தகம்</translation>
 <translation id="6963693576491380224">அரசு &amp; பொதுத்துறைப் பணிகள்</translation>
@@ -2855,6 +2866,7 @@
 <translation id="7111507312244504964">சொத்து சார்ந்த ஆய்வுகள் &amp; மதிப்பீடுகள்</translation>
 <translation id="7112327784801341716">தற்போதைய தகவல்கள் காட்டப்படவில்லையா? அவற்றைப் புதுப்பிக்க பேங்க்கைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7118618213916969306"><ph name="SHORT_URL" /> எனும் கிளிப்-போர்டு URLலைத் தேடும்</translation>
+<translation id="7119371694555167493">நகலெடுப்பதற்கான நேரம் முடிந்தது</translation>
 <translation id="7119414471315195487">பிற தாவல்கள் அல்லது நிரல்களை மூடவும்</translation>
 <translation id="7124354851782353862">CVCயை டைப் செய்யுங்கள்</translation>
 <translation id="7129355289156517987">Chromium மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடும்போது அந்தப் பக்கங்களில் நீங்கள் மேற்கொண்ட செயல்பாடுகள் இந்தச் சாதனத்தில் இருந்து அழிக்கப்படும்:
@@ -3107,6 +3119,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> அளவை விடக் குறைவாக உள்ளது</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ஆல் தற்போது இந்தக் கோரிக்கையைக் கையாள முடியவில்லை.</translation>
+<translation id="7599089013883397081">பதிவிறக்குவதற்கான நேரம் முடிந்தது</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ஐ எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="7601297359530599375">வழக்கமாக இந்தத் தளத்துடன் பாதுகாப்பாக இணைக்கப்படுவீர்கள், ஆனால் இந்த முறை பாதுகாப்பான இணைப்பை Chromeமால் பயன்படுத்த முடியவில்லை. தீங்கிழைப்பவர் உங்கள் நடவடிக்கைகளைக் கண்காணிக்கலாம் அல்லது உங்கள் நெட்வொர்க் இணைப்பை மாற்ற முயலலாம். <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> என்ற மதிப்பு வரம்பை மீறியுள்ளது.</translation>

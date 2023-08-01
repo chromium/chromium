@@ -47,6 +47,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="122699739164161391">Fechar todas as guias</translation>
 <translation id="1229222343402087523">Pesquisar "${searchPhrase}" no Chrome</translation>
 <translation id="1242044645101871359">Fazer login novamente</translation>
+<translation id="1248276223555153952">Gerenciar contas neste dispositivo…</translation>
 <translation id="1254117744268754948">Escolher pasta</translation>
 <translation id="1254424942107648268">Localizar anterior</translation>
 <translation id="1258491128795710625">O que há de novo</translation>
@@ -109,6 +110,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1580783302095112590">Mensagem enviada.</translation>
 <translation id="1582732959743469162">Isso interromperá todo o progresso do download atual.</translation>
 <translation id="1594034544529347967">Início</translation>
+<translation id="160275202205869636">Quando ativado, use e salve dados na sua Conta do Google. Quando essa opção está desativada, os dados são salvos apenas neste dispositivo.</translation>
 <translation id="1605405588277479165">Desativado (não recomendado)</translation>
 <translation id="1605658421715042784">Copiar imagem</translation>
 <translation id="1608337082864370066">Pesquisar imagem copiada</translation>
@@ -290,6 +292,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2773292004659987824">Pesquisa anônima</translation>
 <translation id="277771892408211951">Selecionar idioma</translation>
 <translation id="2780046210906776326">Sem contas de e-mail</translation>
+<translation id="2780326741858434269">Contas neste dispositivo</translation>
 <translation id="2781325423985810933">DESFAZER</translation>
 <translation id="2781331604911854368">Ativado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
 <translation id="3577555362230509265">Use o Chrome em outros apps.</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
+<translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
 <translation id="3588820906588687999">Abrir imagem em "Nova guia"</translation>
 <translation id="3595252146048399851">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3603009562372709545">Copiar URL do link</translation>
@@ -636,6 +640,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4904877109095351937">Marcar como lidas</translation>
 <translation id="4908869848243824489">Discover do Google</translation>
 <translation id="4916679969857390442">Lupa</translation>
+<translation id="4918086044614829423">Aceitar</translation>
 <translation id="4922154083994158612">Mais segurança?</translation>
 <translation id="4930714375720679147">Ativar</translation>
 <translation id="4938338714234463591">Isso vai permitir que você use comandos de voz com determinados recursos em sites.</translation>
@@ -693,6 +698,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
 <translation id="5283494734135414249">Toque no atalho que aparece abaixo da barra de endereço.</translation>
+<translation id="5292723732574094123">Conta desconectada. Faça login novamente para acessar os favoritos, as senhas e outras informações da sua conta.</translation>
 <translation id="5295239312320826323">Remover conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Salvar</translation>
@@ -736,6 +742,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5626245204502895507">Não foi possível fazer download do arquivo neste momento.</translation>
 <translation id="5631164295104953411">Adicionar forma de pagamento.</translation>
+<translation id="5649795523408334796">Detectar endereços</translation>
 <translation id="5652623411397330904">Os produtos que você acompanha vão aparecer aqui.</translation>
 <translation id="5657859710142657190">Acessar a grade de guias</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -1297,6 +1304,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8843129975935593190">Sua organização limita o que pode ser sincronizado.</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">Não deixa o navegador ou dispositivo lento.</translation>
+<translation id="8863431381414769983">Receber rotas e informações locais no Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} guia}one{{count} guia}other{{count} guias}}</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8876882697946675716">Manter os dispositivos sincronizados</translation>

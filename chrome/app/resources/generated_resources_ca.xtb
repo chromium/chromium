@@ -140,7 +140,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1110965959145884739">Tria quins idiomes vols instal·lar en aquest dispositiu. Els fitxers d'idioma es comparteixen entre els usuaris per estalviar espai de disc. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Una pestanya de fons utilitza el Bluetooth</translation>
 <translation id="1112998165730922436">L'emissió s'ha posat en pausa</translation>
-<translation id="1113807501859230251">Vols suprimir Bruschetta del dispositiu <ph name="DEVICE_TYPE" />? Se suprimiran totes les aplicacions i les dades de la màquina virtual.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114427165525619358">Contrasenyes desades en aquest dispositiu i al Compte de Google</translation>
@@ -2079,7 +2078,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2673135533890720193">Llegir l'historial de navegació</translation>
 <translation id="2673873887296220733">Vols copiar 1 fitxer a <ph name="CLOUD_PROVIDER" /> per obrir-lo?</translation>
 <translation id="2674764818721168631">Desactivat</translation>
-<translation id="2675570801872027281">S'ha produït un error en suprimir Bruschetta. Torna-ho a provar.</translation>
 <translation id="2676084251379299915">La política d'empresa ha desactivat aquesta extensió perquè ja no està disponible a Chrome Web Store.</translation>
 <translation id="2678063897982469759">Torna a activar</translation>
 <translation id="2678100101831051676">No es pot emetre.</translation>
@@ -6049,6 +6047,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6050189528197190982">Escala de grisos</translation>
 <translation id="6051354611314852653">El sistema no ha pogut autoritzar l'accés a l'API per a aquest dispositiu.</translation>
 <translation id="6051811090255711417">La teva organització ha bloquejat aquest fitxer perquè no ha complert una política de seguretat</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Escriu el codi d'accés per iniciar l'emissió</translation>
 <translation id="6052976518993719690">Entitat emissora de certificats SSL</translation>
 <translation id="6053401458108962351">&amp;Esborra les dades de navegació...</translation>

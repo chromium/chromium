@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">選取要在此裝置上安裝的語言。為節省磁碟空間，語言檔案會由裝置的所有使用者共用。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">背景分頁正在使用藍牙</translation>
 <translation id="1112998165730922436">已暫停投放</translation>
-<translation id="1113807501859230251">要從 <ph name="DEVICE_TYPE" /> 中移除 Bruschetta 嗎？這麼做會刪除虛擬機器中的所有應用程式和資料！</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">菱形鍵</translation>
 <translation id="1114427165525619358">儲存在此裝置和 Google 帳戶中的密碼</translation>
@@ -2094,7 +2093,6 @@
 <translation id="2673135533890720193">讀取您的瀏覽記錄</translation>
 <translation id="2673873887296220733">要將 1 個檔案複製到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="2674764818721168631">關閉</translation>
-<translation id="2675570801872027281">移除 Bruschetta 時發生問題，請再試一次。</translation>
 <translation id="2676084251379299915">由於 Chrome 網上應用程式商店已無法取得此擴充程式，因此企業政策已將其停用。</translation>
 <translation id="2678063897982469759">重新啟用</translation>
 <translation id="2678100101831051676">無法投放。</translation>
@@ -6060,6 +6058,7 @@
 <translation id="6050189528197190982">灰階</translation>
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這部裝置。</translation>
 <translation id="6051811090255711417">由於此檔案不符合安全政策要求，因此已被您的機構封鎖</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">輸入存取碼以開始投放</translation>
 <translation id="6052976518993719690">SSL 憑證授權單位</translation>
 <translation id="6053401458108962351">清除瀏覽數據(&amp;C)…</translation>

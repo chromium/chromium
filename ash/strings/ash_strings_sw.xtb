@@ -126,7 +126,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> na <ph name="SECOND_ITEM_TITLE" /> zimebadilishana nafasi</translation>
 <translation id="1500926532737552529">Onyesha mapendekezo yote</translation>
 <translation id="1510238584712386396">Kizindua</translation>
-<translation id="1516740043221086139">Hali ya 'Usinisumbue' imewashwa</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Onyesha mipangilio ya arifa. Umezima arifa katika programu moja}other{Onyesha mipangilio ya arifa. Umezima arifa katika programu #}}</translation>
 <translation id="1523032696246003">Chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" /> | zimesalia <ph name="TIME" /> ijae</translation>
 <translation id="1525508553941733066">ONDOA</translation>
@@ -151,7 +150,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1611993646327628135">Kimewashwa</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
-<translation id="163517899691012366">Arifa huzimwa kipengele cha Usinisumbue kinapowashwa</translation>
 <translation id="1637505162081889933">Vifaa <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Inapakia</translation>
 <translation id="1647986356840967552">Ukurasa uliotangulia</translation>
@@ -526,7 +524,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="334252345105450327">Piga picha ya skrini</translation>
 <translation id="334927402682780278">Tafuta maandishi kuanzia kwenye kiteuzi hadi mwisho wa mstari</translation>
 <translation id="3349345708646875009">Fungua kidhibiti cha shughuli kwenye Chrome</translation>
-<translation id="3354555338129305222">kwa nini kifaa changu kinafanya kazi polepole</translation>
 <translation id="3364721542077212959">Zana za stylus</translation>
 <translation id="3365977133351922112">Simu yako iko mbali mno. Leta simu yako karibu.</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
@@ -845,7 +842,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox imewashwa</translation>
-<translation id="4665114317261903604">Washa/zima 'Usinisumbue'. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Programu zaidi</translation>
 <translation id="4667099493359681081">Inapakua <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Programu zilizo kwenye simu yako</translation>
@@ -1231,7 +1227,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Inaanza kutumia...</translation>
 <translation id="6274202259872570803">Kionyesha skrini</translation>
 <translation id="6276708887952587684">Tazama chanzo cha ukurasa</translation>
-<translation id="6283712521836204486">Kipengele cha usinisumbue kimezimwa.</translation>
 <translation id="6284232397434400372">Imebadilisha ubora</translation>
 <translation id="6288235558961782912">Unaweza kuweka tena <ph name="USER_EMAIL_ADDRESS" /> baadaye kupitia ruhusa ya mzazi.</translation>
 <translation id="6291221004442998378">Haichaji</translation>
@@ -1564,6 +1559,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7842569679327885685">Ilani: Kipengele cha majaribio</translation>
 <translation id="7846634333498149051">Kibodi</translation>
 <translation id="7848989271541991537">Imehamishiwa kwenye Ukurasa wa <ph name="PAGE_NUMBER" />, safu mlalo ya <ph name="ROW_NUMBER" />, safu wima ya <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Usinisumbue</translation>
 <translation id="7851039877802112575">Angazia kwenye vidirisha ibukizi au vidirisha</translation>
 <translation id="7851768487828137624">Kanari</translation>
 <translation id="7860671499921112077">Telezesha vidole vitatu juu ili ufungue Muhtasari</translation>
@@ -1812,6 +1808,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8921624153894383499">Programu ya Mratibu wa Google haina huduma ya lugha hii.</translation>
 <translation id="8924458948354692166">Bonyeza enter ili upige picha ya skrini ya dirisha</translation>
 <translation id="8926951137623668982">Rafu inafichwa kila wakati</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{Faili 1}other{Faili #}}</translation>
 <translation id="8936501819958976551">kimezimwa</translation>
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>
 <translation id="8940956008527784070">Betri inaisha (<ph name="PERCENTAGE" />%)</translation>

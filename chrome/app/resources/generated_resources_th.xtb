@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">เลือกภาษาที่จะติดตั้งในอุปกรณ์นี้ ไฟล์ภาษาจะแชร์กับผู้ใช้เพื่อประหยัดพื้นที่ในดิสก์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">แท็บพื้นหลังกำลังใช้บลูทูธ</translation>
 <translation id="1112998165730922436">หยุดแคสต์ชั่วคราว</translation>
-<translation id="1113807501859230251">นำ Bruschetta ออกจาก <ph name="DEVICE_TYPE" /> ใช่ไหม การดําเนินการนี้จะลบแอปและข้อมูลทั้งหมดในเครื่องเสมือน</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">เพชร</translation>
 <translation id="1114427165525619358">รหัสผ่านในอุปกรณ์นี้และในบัญชี Google</translation>
@@ -2079,7 +2078,6 @@
 <translation id="2673135533890720193">อ่านประวัติการเข้าชม</translation>
 <translation id="2673873887296220733">คัดลอก 1 ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" /> เพื่อเปิดใช่ไหม</translation>
 <translation id="2674764818721168631">ปิด</translation>
-<translation id="2675570801872027281">เกิดข้อผิดพลาดในการนำ Bruschetta ออก โปรดลองอีกครั้ง</translation>
 <translation id="2676084251379299915">ส่วนขยายนี้ปิดใช้โดยนโยบายระดับองค์กรเนื่องจากไม่มีให้ใช้งานใน Chrome เว็บสโตร์แล้ว</translation>
 <translation id="2678063897982469759">เปิดการใช้งานอีกครั้ง</translation>
 <translation id="2678100101831051676">แคสต์ไม่ได้</translation>
@@ -6048,6 +6046,7 @@
 <translation id="6050189528197190982">ระดับสีเทา</translation>
 <translation id="6051354611314852653">อ๊ะ!  ระบบล้มเหลวในการให้สิทธิ์การเข้าถึง API สำหรับอุปกรณ์นี้</translation>
 <translation id="6051811090255711417">องค์กรบล็อกไฟล์นี้เนื่องจากไม่เป็นไปตามนโยบายความปลอดภัย</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">พิมพ์รหัสการเข้าถึงเพื่อเริ่มแคสต์</translation>
 <translation id="6052976518993719690">ผู้ออกใบรับรอง SSL</translation>
 <translation id="6053401458108962351">&amp;ล้างข้อมูลการท่องเว็บ...</translation>

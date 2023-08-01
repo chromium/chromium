@@ -126,7 +126,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> elementuarekin trukatu da <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Erakutsi iradokizun guztiak</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
-<translation id="1516740043221086139">Aktibatuta dago ez molestatzeko modua.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Erakutsi jakinarazpen-ezarpenak. Aplikazio batean desaktibatuta daude jakinarazpenak.}other{Erakutsi jakinarazpen-ezarpenak. # aplikaziotan desaktibatuta daude jakinarazpenak.}}</translation>
 <translation id="1523032696246003">Bateria: % <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> guztiz kargatu arte</translation>
 <translation id="1525508553941733066">BAZTERTU</translation>
@@ -151,7 +150,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1611993646327628135">Aktibatuta</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
-<translation id="163517899691012366">Ez molestatzeko modua aktibatuta dagoenean, jakinarazpenak ezkutatzen dira</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> gailu</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1647986356840967552">Aurreko orria</translation>
@@ -526,7 +524,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="334252345105450327">Atera pantaila-argazki bat</translation>
 <translation id="334927402682780278">Hautatu kurtsoretik lerroaren amaiera arteko testua</translation>
 <translation id="3349345708646875009">Ireki ataza-kudeatzailea</translation>
-<translation id="3354555338129305222">zergatik da motela gailua</translation>
 <translation id="3364721542077212959">Arkatzaren tresnak</translation>
 <translation id="3365977133351922112">Telefonoa urrunegi dago. Gertura ezazu.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
@@ -846,7 +843,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Gaitu da ChromeVox</translation>
-<translation id="4665114317261903604">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Aplikazio gehiago</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> deskargatzen</translation>
 <translation id="468293128311738995">Telefonoko aplikazioak</translation>
@@ -1232,7 +1228,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6267036997247669271"><ph name="NAME" />: aktibatzen…</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Ikusi orriaren iturburua</translation>
-<translation id="6283712521836204486">Ez molestatzeko modua desaktibatuta dago.</translation>
 <translation id="6284232397434400372">Aldatu egin da bereizmena</translation>
 <translation id="6288235558961782912">Geroago gehi daiteke <ph name="USER_EMAIL_ADDRESS" /> guraso baten baimenarekin.</translation>
 <translation id="6291221004442998378">Ez da ari kargatzen</translation>
@@ -1563,6 +1558,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7842569679327885685">Abisua: eginbide esperimentala da hau</translation>
 <translation id="7846634333498149051">Teklatua</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" />. orriko <ph name="ROW_NUMBER" />. errenkadako <ph name="COLUMN_NUMBER" /> zutabera eraman da.</translation>
+<translation id="7850320739366109486">Ez molestatu</translation>
 <translation id="7851039877802112575">Fokuratu leiho gainerakorrak eta arruntak</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Pasatu hiru hatz gora ikuspegi orokorrean sartzeko</translation>

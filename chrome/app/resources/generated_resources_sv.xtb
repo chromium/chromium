@@ -142,7 +142,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1110965959145884739">Välj vilka språk du vill installera på den här enheten. Språkfiler delas mellan användare för att spara diskutrymme. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">En flik i bakgrunden använder Bluetooth</translation>
 <translation id="1112998165730922436">Casting har pausats</translation>
-<translation id="1113807501859230251">Vill du ta bort Bruschetta från <ph name="DEVICE_TYPE" />? Alla appar och all data på den virtuella datorn raderas!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114427165525619358">Lösenord på den här enheten och i Google-kontot</translation>
@@ -2094,7 +2093,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2673135533890720193">Läsa webbhistoriken</translation>
 <translation id="2673873887296220733">Vill du kopiera 1 fil till <ph name="CLOUD_PROVIDER" /> och öppna den?</translation>
 <translation id="2674764818721168631">Av</translation>
-<translation id="2675570801872027281">Det gick inte att ta bort Bruschetta. Försök igen.</translation>
 <translation id="2676084251379299915">Det här tillägget har inaktiverats av en företagspolicy eftersom det inte längre är tillgängligt i Chrome Web Store.</translation>
 <translation id="2678063897982469759">Aktivera igen</translation>
 <translation id="2678100101831051676">Det gick inte att casta.</translation>
@@ -6067,6 +6065,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6050189528197190982">Gråskala</translation>
 <translation id="6051354611314852653">Hoppsan! Det gick inte att auktorisera API-åtkomst för den här enheten.</translation>
 <translation id="6051811090255711417">Organisationen blockerade den här filen eftersom den inte uppfyller kraven i säkerhetspolicyn</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Skriv åtkomstkoden om du vill börja casta</translation>
 <translation id="6052976518993719690">SSL-certifikatauktoritet</translation>
 <translation id="6053401458108962351">&amp;Ta bort webbinformation...</translation>

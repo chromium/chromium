@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1432187715652018471">страница сака да инсталира ракувач на услуги.</translation>
 <translation id="1432581352905426595">Управувајте со пребарувачи</translation>
+<translation id="1433225466058025572">Обидете се да ги преместите датотеките повторно</translation>
 <translation id="1435940442311036198">Користете криптографски клуч на друг уред</translation>
 <translation id="1436185428532214179">Може да прашува за да изменува датотеки и папки на уредот</translation>
 <translation id="1442386063175183758">Десно превиткување како брошура</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">&amp;Врати бришење</translation>
 <translation id="2397836504670957718">Лаптопи и ноутбукови</translation>
 <translation id="2400600116338235695">Може да прашува за да се поврзе со сериски порти</translation>
+<translation id="2404884497378469141">Обидете се да ги копирате датотеките повторно</translation>
 <translation id="2413155254802890957">Старата</translation>
 <translation id="2413528052993050574">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е повлечен. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2414886740292270097">Темна</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838">пополнете ја лозинката на <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Стрипови</translation>
 <translation id="2765217105034171413">Мало</translation>
+<translation id="2770159525358613612">Обидете се да ги прикачите датотеките повторно</translation>
 <translation id="277133753123645258">Метод на испорака</translation>
 <translation id="277499241957683684">Недостасува снимка од уред</translation>
 <translation id="2775884851269838147">Прво испечати ја страницата</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">Споделувањето екран е паузирано</translation>
 <translation id="3634530185120165534">Фиока 5</translation>
 <translation id="3634567936866541746">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chrome ви препорачува да ги проверите зачуваните лозинки.</translation>
+<translation id="3642196846309122856">Обидете се да ги преземете датотеките повторно</translation>
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3646643500201740985">Мерење на изведбата на реклама</translation>
 <translation id="3647286794400715637">Секој запис во низата со URL-адреси мора да содржи помеѓу 1 и 2 URL-адреси.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">Додајте е-пошта</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3901925938762663762">Картичката е истечена</translation>
+<translation id="390391808978419508">Времето за отворање истече</translation>
 <translation id="3905894480064208252">{0,plural, =1{Датотеката е блокирана за префрлање}one{<ph name="FILE_COUNT" /> датотека се блокирани за префрлање}other{<ph name="FILE_COUNT" /> датотеки се блокирани за префрлање}}</translation>
 <translation id="3906095212874392000">Крај на конвертираниот текст</translation>
 <translation id="3906954721959377182">Таблет</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">Интернет и телекомуникации</translation>
 <translation id="3939773374150895049">Да се користи WebAuthn наместо CVC?</translation>
 <translation id="3941630233824954464">Овозможете задолжителна повторна автентикација</translation>
+<translation id="3942048175062210325">Обидете се да ги отворите датотеките повторно</translation>
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="3946209740501886391">Прашувај секогаш на овој сајт</translation>
 <translation id="3947595700203588284">Може да прашува за да се поврзува со MIDI-уреди</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">Обемот на политиката не е поддржан.</translation>
 <translation id="4121428309786185360">Истекува на</translation>
 <translation id="4123572138124678573">Три дупки долу</translation>
+<translation id="412601465078863288">Времето за прикачување истече</translation>
 <translation id="4127317221386336246">Додатоци на облека</translation>
 <translation id="4127575959421463246">Барате ознаки за ChromeOS? Оди</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 друга}one{# друга}other{# други}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">Нешто тргна наопаку</translation>
 <translation id="4541810033354695636">проширена реалност</translation>
 <translation id="4542971377163063093">Фиока 6</translation>
+<translation id="4546730006268514143">Времето за префрлање истече</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Го користите заклучувањето екран за пополнување лозинки</translation>
 <translation id="4558551763791394412">Обидете се со оневозможување на екстензиите.</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">Градежништво</translation>
 <translation id="5470861586879999274">&amp;Повтори уредување</translation>
 <translation id="5471337644440862957">Комедии</translation>
+<translation id="547963486735802022">Обидете се да ги префрлите датотеките повторно</translation>
 <translation id="5481076368049295676">Содржинава може да се обиде да инсталира опасен софтвер на вашиот уред што ги краде или брише вашите информации. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Додавање важечка адреса</translation>
 <translation id="5483838506518938965">Подготвени сте</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6961733224437895943">Осигурување на домот</translation>
 <translation id="6961844873822989059">Може да прашува за да ги користи фонтовите инсталирани на уредот</translation>
 <translation id="6961980518585973432">Годишнини</translation>
+<translation id="6962858948849099922">Времето за преместување истече</translation>
 <translation id="6963520811470373926">Заменување</translation>
 <translation id="6963574715554809750">Трговија на мало</translation>
 <translation id="6963693576491380224">Работни места во владиниот и јавниот сектор</translation>
@@ -2860,6 +2870,7 @@
 <translation id="7111507312244504964">Проверки и процени на имот</translation>
 <translation id="7112327784801341716">Ова не се вашите тековни податоци? Контактирајте со вашата банка за да ги ажурирате.</translation>
 <translation id="7118618213916969306">Пребарајте URL-адреса во привремената меморија, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Времето за копирање истече</translation>
 <translation id="7119414471315195487">Затворете ги другите картички или програми</translation>
 <translation id="7124354851782353862">Внесување на вашиот CVC</translation>
 <translation id="7129355289156517987">Кога ќе ги затворите сите картички „Инкогнито“ на Chromium, вашата активност во тие картички се брише од уредов:
@@ -3112,6 +3123,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Помалку од <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> моментално не може да го изврши барањето.</translation>
+<translation id="7599089013883397081">Времето за преземање истече</translation>
 <translation id="7600965453749440009">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Обично безбедно се поврзувате на сајтов, но овој пат Chrome не можеше да користи безбедна врска. Напаѓач можеби се обидува да прислушува или да ја измени вашата мрежна врска. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Вредноста е надвор од опсегот <ph name="VALUE" />.</translation>

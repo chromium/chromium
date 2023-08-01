@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />గా మార్చబడింది</translation>
 <translation id="1500926532737552529">అన్ని సూచనలను చూడండి</translation>
 <translation id="1510238584712386396">లాంచర్</translation>
-<translation id="1516740043221086139">'అంతరాయం కలిగించవద్దు' మోడ్ ఆన్‌లో ఉంది.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. యాప్ కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}other{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. # యాప్‌ల కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}}</translation>
 <translation id="1523032696246003">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />% | పూర్తిగా ఛార్జ్ అవ్వడానికి <ph name="TIME" /> సమయం మిగిలి ఉంది</translation>
 <translation id="1525508553941733066">తీసివేయండి</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">ఆన్</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
-<translation id="163517899691012366">'అంతరాయం కలిగించవద్దు' మోడ్ ఆన్‌లో ఉన్నప్పుడు నోటిఫికేషన్‌లు మ్యూట్ చేయబడతాయి</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> పరికరాలు</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
 <translation id="1647986356840967552">మునుపటి పేజీ</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="334927402682780278">కర్సర్ నుండి లైన్ చివరి వరకు ఉన్న టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="3349345708646875009">టాస్క్ మేనేజర్‌ను తెరవండి</translation>
-<translation id="3354555338129305222">నా పరికరం ఎందుకు నెమ్మదిగా ఉంది</translation>
 <translation id="3364721542077212959">స్టైలస్ సాధనాలు</translation>
 <translation id="3365977133351922112">మీ ఫోన్ చాలా దూరంగా ఉంది. మీ ఫోన్‌ను దగ్గరగా పట్టుకోండి.</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
@@ -846,7 +843,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ప్రారంభించబడింది</translation>
-<translation id="4665114317261903604">'అంతరాయం కలిగించవద్దు' ఎంపికను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">మరిన్ని యాప్‌లు</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="468293128311738995">మీ ఫోన్‌లోని యాప్‌లు</translation>
@@ -1232,7 +1228,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: సక్రియం చేస్తోంది...</translation>
 <translation id="6274202259872570803">స్క్రీన్‌కాస్ట్</translation>
 <translation id="6276708887952587684">పేజీ సోర్స్ కోడ్‌ను చూడండి</translation>
-<translation id="6283712521836204486">"అంతరాయం కలిగించవద్దు" ఆఫ్‌లో ఉంది.</translation>
 <translation id="6284232397434400372">రిజల్యూషన్ మార్చబడింది</translation>
 <translation id="6288235558961782912">మీ తల్లి/తండ్రి అనుమతితో <ph name="USER_EMAIL_ADDRESS" />ను తిరిగి యాడ్ చేయవచ్చు.</translation>
 <translation id="6291221004442998378">ఛార్జ్ కావడం లేదు</translation>
@@ -1564,6 +1559,7 @@
 <translation id="7842569679327885685">హెచ్చరిక: ప్రయోగాత్మక ఫీచర్</translation>
 <translation id="7846634333498149051">కీబోర్డ్</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" />వ పేజీలో <ph name="ROW_NUMBER" />వ అడ్డు వరుస, '<ph name="COLUMN_NUMBER" />' నిలువు వరుసకు తరలించబడింది.</translation>
+<translation id="7850320739366109486">అంతరాయం కలిగించవద్దు</translation>
 <translation id="7851039877802112575">ఫోకస్‌ను పాప్-అప్‌లు, డైలాగ్‌లకు మార్చండి</translation>
 <translation id="7851768487828137624">కెనరీ</translation>
 <translation id="7860671499921112077">ఓవర్‌వ్యూకు ఎంటర్ అవ్వడానికి మూడు వేళ్లతో పైకి స్వైప్ చేయండి</translation>

@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">આ ડિવાઇસ પર કઈ ભાષાઓ ઇન્સ્ટૉલ કરવી છે, તે પસંદ કરો. ડિસ્ક સ્પેસ સાચવવા માટે, વપરાશકર્તાઓમાં ભાષાની ફાઇલો શેર કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">બૅકગ્રાઉન્ડ ટૅબ બ્લૂટૂથનો ઉપયોગ કરી રહ્યું છે</translation>
 <translation id="1112998165730922436">કાસ્ટિંગ થોભાવ્યું</translation>
-<translation id="1113807501859230251">શું Bruschettaને તમારા <ph name="DEVICE_TYPE" />માંથી કાઢી નાખીએ? આ, વર્ચ્યુઅલ મશીનમાંથી તમામ ઍપ અને ડેટાને ડિલીટ કરશે!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">ડાયમંડ</translation>
 <translation id="1114427165525619358">આ ડિવાઇસ પર અને તમારા Google એકાઉન્ટમાં સ્ટોર કરેલા પાસવર્ડ</translation>
@@ -2077,7 +2076,6 @@
 <translation id="2673135533890720193">તમારો બ્રાઉઝિંગ ઇતિહાસ વાંચો</translation>
 <translation id="2673873887296220733">ખોલવા માટે <ph name="CLOUD_PROVIDER" /> પર 1 ફાઇલ કૉપિ કરીએ?</translation>
 <translation id="2674764818721168631">બંધ</translation>
-<translation id="2675570801872027281">Bruschetta કાઢી નાખવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="2676084251379299915">એન્ટરપ્રાઇઝ પૉલિસી અનુસાર આ એક્સ્ટેન્શન બંધ કરવામાં આવ્યું છે કારણ કે તે હવે Chrome વેબ સ્ટોર પર ઉપલબ્ધ નથી.</translation>
 <translation id="2678063897982469759">ફરી ચાલુ કરો</translation>
 <translation id="2678100101831051676">કાસ્ટ કરી શકતા નથી.</translation>
@@ -6051,6 +6049,7 @@ USB ડિવાઇસ</translation>
 <translation id="6050189528197190982">ગ્રેસ્કેલ</translation>
 <translation id="6051354611314852653">અરેરે!  આ ઉપકરણ માટે અધિકૃત API ઍક્સેસ કરવા આ સિસ્ટમ નિષ્ફળ થઈ છે.</translation>
 <translation id="6051811090255711417">આ ફાઇલ સુરક્ષા પૉલિસીનું પાલન કરતી ન હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">કાસ્ટ કરવાનું શરૂ કરવા માટે, ઍક્સેસ કોડ ટાઇપ કરો</translation>
 <translation id="6052976518993719690">SSL પ્રમાણન અધિકારી</translation>
 <translation id="6053401458108962351">&amp;બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>

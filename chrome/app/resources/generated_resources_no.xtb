@@ -142,7 +142,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1110965959145884739">Velg hvilke språk som skal installeres på denne enheten. Språkfiler deles blant brukere for å spare diskplass. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">En bakgrunnsfane bruker Bluetooth</translation>
 <translation id="1112998165730922436">Castingen er satt på pause</translation>
-<translation id="1113807501859230251">Vil du fjerne Bruschetta fra <ph name="DEVICE_TYPE" />? Dette medfører at alle apper og data på den virtuelle maskinen blir slettet.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114427165525619358">Passord på denne enheten og i Google-kontoen din</translation>
@@ -2089,7 +2088,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2673135533890720193">lese nettleserloggen din</translation>
 <translation id="2673873887296220733">Vil du kopiere 1 fil til <ph name="CLOUD_PROVIDER" /> for å åpne den?</translation>
 <translation id="2674764818721168631">Av</translation>
-<translation id="2675570801872027281">Feil ved fjerning av Bruschetta. Prøv igjen.</translation>
 <translation id="2676084251379299915">Denne utvidelsen er deaktivert via bedriftsregler fordi den ikke lenger er tilgjengelig på Chrome Nettmarked.</translation>
 <translation id="2678063897982469759">Aktiver på nytt</translation>
 <translation id="2678100101831051676">Kan ikke caste.</translation>
@@ -6058,6 +6056,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6050189528197190982">Gråtoner</translation>
 <translation id="6051354611314852653">Beklager. Systemet kunne ikke godkjenne API-tilgang for denne enheten.</translation>
 <translation id="6051811090255711417">Organisasjonen din har blokkert denne filen fordi den ikke oppfylte en sikkerhetsregel</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Skriv inn tilgangskoden for å begynne å caste</translation>
 <translation id="6052976518993719690">SSL-sertifiseringsinstans</translation>
 <translation id="6053401458108962351">&amp;Tøm logg</translation>

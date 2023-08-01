@@ -126,7 +126,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> u ndërrua me <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Shfaq të gjitha sugjerimet</translation>
 <translation id="1510238584712386396">Nisësi</translation>
-<translation id="1516740043221086139">Modaliteti "Mos shqetëso" është aktiv.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për një aplikacion}other{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për # aplikacione}}</translation>
 <translation id="1523032696246003">Bateria <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> deri në karikimin e plotë</translation>
 <translation id="1525508553941733066">ANULO</translation>
@@ -151,7 +150,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1611993646327628135">Aktive</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
-<translation id="163517899691012366">Njoftimet janë të vendosura në heshtje kur modaliteti "Mos shqetëso" është aktiv</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1647986356840967552">Faqja e mëparshme</translation>
@@ -526,7 +524,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="334252345105450327">Nxirr një pamje të ekranit</translation>
 <translation id="334927402682780278">Zgjidh tekstin nga kursori deri në fund të rreshtit</translation>
 <translation id="3349345708646875009">Hap menaxherin e detyrave</translation>
-<translation id="3354555338129305222">pse është e ngadaltë pajisja ime</translation>
 <translation id="3364721542077212959">Veglat e stilolapsit</translation>
 <translation id="3365977133351922112">Telefoni yt është shumë lart. Afroje telefonin.</translation>
 <translation id="3368922792935385530">Lidhur</translation>
@@ -845,7 +842,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox është aktivizuar</translation>
-<translation id="4665114317261903604">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Aplikacione të tjera</translation>
 <translation id="4667099493359681081">Po shkarkon <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikacionet nga telefoni yt</translation>
@@ -1231,7 +1227,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Po aktivizohet...</translation>
 <translation id="6274202259872570803">Transmetimi i ekranit</translation>
 <translation id="6276708887952587684">Shiko burimin e faqes</translation>
-<translation id="6283712521836204486">Modaliteti "Mos shqetëso" është joaktiv.</translation>
 <translation id="6284232397434400372">Rezolucioni u ndryshua</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> mund të rishtohet më vonë me lejen e prindit.</translation>
 <translation id="6291221004442998378">Nuk po karikohet</translation>
@@ -1563,6 +1558,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7842569679327885685">Paralajmërim: Funksion eksperimental</translation>
 <translation id="7846634333498149051">Tastiera</translation>
 <translation id="7848989271541991537">U zhvendos te faqja <ph name="PAGE_NUMBER" />, radha <ph name="ROW_NUMBER" />, kolona <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Mos shqetëso</translation>
 <translation id="7851039877802112575">Zhvendos fokusin te dritaret kërcyese dhe dialogët</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Rrëshqit shpejt lart me tre gishta për të hyrë te "Përmbledhja"</translation>
@@ -1811,6 +1807,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8921624153894383499">"Asistenti i Google" nuk e flet këtë gjuhë.</translation>
 <translation id="8924458948354692166">Shtyp "Enter" për të nxjerrë pamjen e ekranit për dritaren</translation>
 <translation id="8926951137623668982">Rafti gjithmonë i fshehur</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skedar}other{# skedarë}}</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>
 <translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>
 <translation id="8940956008527784070">Nivel i ulët baterie (<ph name="PERCENTAGE" />%)</translation>

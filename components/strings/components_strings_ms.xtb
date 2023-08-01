@@ -408,6 +408,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengurus maklumat, privasi dan keselamatan anda dalam Google Account anda</translation>
+<translation id="1793631236004319016">Terakhir digunakan <ph name="NUM_HOURS_MINUTES_SECONDS" /> yang lalu</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pelbagai tindakan tersedia, tekan Tab untuk pergi ke setiap tindakan</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Butiran kad maya</translation>
@@ -565,6 +566,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2148613324460538318">Tambahkan Kad</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2149968176347646218">Sambungan tidak selamat</translation>
+<translation id="2152495481414285304">Aplikasi</translation>
 <translation id="2153609454945889823">Pasang Google Play Services for AR?</translation>
 <translation id="2154484045852737596">Edit kad</translation>
 <translation id="2154739667870063220">But semula</translation>
@@ -937,6 +939,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="299990983510665749">Kereta hatchback</translation>
 <translation id="3002501248619246229">Semak media dulang input</translation>
 <translation id="3005723025932146533">Paparkan salinan disimpan</translation>
+<translation id="300580149047131921">Digunakan baru-baru ini</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menyemak imbas tindakan yang tersedia, kemudian tekan Enter untuk melaksanakan tindakan yang dipilih.</translation>
 <translation id="3013291976881901233">Peranti MIDI</translation>
 <translation id="3014553260345122294">Berita Perniagaan</translation>
@@ -2662,6 +2665,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6671169470640320959">Pembiayaan Auto</translation>
 <translation id="6671697161687535275">Alih keluar cadangan borang daripada Chromium?</translation>
 <translation id="6677351035258626477">Makanan Segera</translation>
+<translation id="6681790815630918386">CVC disimpan</translation>
 <translation id="6683022854667115063">Fon kepala</translation>
 <translation id="6683717648675961851">Senarai jawatan kosong</translation>
 <translation id="6687230248707087982">Sampul (Kosong)</translation>
@@ -3469,6 +3473,7 @@ Butiran tambahan:
 <translation id="830498451218851433">Lipat dua</translation>
 <translation id="8308653357438598313">Penstriman Video Langsung</translation>
 <translation id="8311895354659782580">Penyenaraian Hartanah</translation>
+<translation id="8316555157357957253">Menggunakan sekarang</translation>
 <translation id="8317570861267063617">Untuk semak keluar yang lebih pantas, simpan CVC untuk kad ini pada peranti anda</translation>
 <translation id="8319269383395457801">Jualan Kediaman</translation>
 <translation id="831997045666694187">Petang</translation>

@@ -408,6 +408,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε τις πληροφορίες σας, το απόρρητο και την ασφάλεια στον Λογαριασμό σας Google</translation>
+<translation id="1793631236004319016">Τελευταία χρήση πριν από <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Υπάρχουν πολλές διαθέσιμες ενέργειες. Πατήστε το πλήκτρο Tab για να μετακινηθείτε ανάμεσά τους.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Στοιχεία εικονικής κάρτας</translation>
@@ -565,6 +566,7 @@
 <translation id="2148613324460538318">Προσθήκη κάρτας</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2149968176347646218">Η σύνδεση δεν είναι ασφαλής.</translation>
+<translation id="2152495481414285304">Εφαρμογές</translation>
 <translation id="2153609454945889823">Εγκατάσταση των Υπηρεσιών Google Play για AR;</translation>
 <translation id="2154484045852737596">Επεξεργασία κάρτας</translation>
 <translation id="2154739667870063220">Επανεκκίνηση</translation>
@@ -937,6 +939,7 @@
 <translation id="299990983510665749">Αυτοκίνητα τύπου hatchback</translation>
 <translation id="3002501248619246229">Έλεγχος μέσων δίσκου εισαγωγής</translation>
 <translation id="3005723025932146533">Εμφάνιση αποθηκευμένου αντιγράφου</translation>
+<translation id="300580149047131921">Χρησιμοποιήθηκε πρόσφατα</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab για να περιηγηθείτε στις διαθέσιμες ενέργειες και έπειτα πατήστε Enter για να εκτελέσετε την επιλεγμένη ενέργεια.</translation>
 <translation id="3013291976881901233">Συσκευές MIDI</translation>
 <translation id="3014553260345122294">Επιχειρηματικές ειδήσεις</translation>
@@ -2662,6 +2665,7 @@
 <translation id="6671169470640320959">Χρηματοδότηση για την αγορά αυτοκινήτου</translation>
 <translation id="6671697161687535275">Να καταργηθεί η πρόταση φόρμας από το Chromium;</translation>
 <translation id="6677351035258626477">Φαστ φουντ</translation>
+<translation id="6681790815630918386">Το CVC αποθηκεύτηκε</translation>
 <translation id="6683022854667115063">Ακουστικά</translation>
 <translation id="6683717648675961851">Καταχωρίσεις θέσεων εργασίας</translation>
 <translation id="6687230248707087982">Φάκελος (Απλός)</translation>
@@ -3469,6 +3473,7 @@
 <translation id="830498451218851433">Δίπλωση στη μέση</translation>
 <translation id="8308653357438598313">Βίντεο ζωντανής ροής</translation>
 <translation id="8311895354659782580">Κτηματομεσιτικές καταχωρίσεις</translation>
+<translation id="8316555157357957253">Χρησιμοποιείται τώρα</translation>
 <translation id="8317570861267063617">Για πιο γρήγορη ολοκλήρωση αγοράς, αποθηκεύστε το CVC αυτής της κάρτας στη συσκευή σας</translation>
 <translation id="8319269383395457801">Πωλήσεις κατοικιών</translation>
 <translation id="831997045666694187">Βράδυ</translation>

@@ -142,7 +142,6 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1110965959145884739">Khetha ukuthi yiziphi izilimi ozozifaka kule divayisi. Amafayela olimi abiwa phakathi kwabasebenzisi ukulondoloza isikhala sediski. <ph name="BEGIN_LINK_LEARN_MORE" />Funda kabanzi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Ithebhu engemuva isebenzisa i-bluetooth</translation>
 <translation id="1112998165730922436">Ukusakaza kumisiwe</translation>
-<translation id="1113807501859230251">Susa i-Bruschetta ukusuka ku-<ph name="DEVICE_TYPE" /> yakho? Lokhu kuzosula wonke ama-app nedatha emshinini wokubuka!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Idayamondi</translation>
 <translation id="1114427165525619358">Amaphasiwedi akule divayisi naku-akhawunti yakho ye-Google</translation>
@@ -2095,7 +2094,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2673135533890720193">Funda umlando wakho wokuphequlula</translation>
 <translation id="2673873887296220733">Kopisha ifayela eli-1 ku-<ph name="CLOUD_PROVIDER" /> ukuze ulivule?</translation>
 <translation id="2674764818721168631">Valiwe</translation>
-<translation id="2675570801872027281">Iphutha ekususeni i-Bruschetta. Sicela uzame futhi.</translation>
 <translation id="2676084251379299915">Lesi sandiso sikhutshazwe inqubomgomo yebhizinisi ngoba asisatholakali Esitolo sewebhu se-Chrome.</translation>
 <translation id="2678063897982469759">Phinda unike amandla</translation>
 <translation id="2678100101831051676">Ayikwazi ukusakaza.</translation>
@@ -6070,6 +6068,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6050189528197190982">I-Grayscale</translation>
 <translation id="6051354611314852653">Eshu! Isistimu ihlulekile ukugunyaza ukufinyelela kwe-API kwale divayisi.</translation>
 <translation id="6051811090255711417">Inhlangano yakho ivimbele leli fayela ngoba ayihlangabezani nenqubomgomo yezokuphepha</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Thayipha ikhodi yokufinyelela ukuze uqale ukusakaza</translation>
 <translation id="6052976518993719690">Abasemagunyeni bokunika isitifiketi se-SSL</translation>
 <translation id="6053401458108962351">&amp;Sula idatha yokudlulisa amehlo...</translation>

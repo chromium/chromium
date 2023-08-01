@@ -126,7 +126,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1487931858675166540">Troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" /> realizada</translation>
 <translation id="1500926532737552529">Mostrar todas as sugestões</translation>
 <translation id="1510238584712386396">Iniciador</translation>
-<translation id="1516740043221086139">O "Não perturbe" está ativado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar configurações de notificação. As notificações estão desativadas para um app}one{Mostrar configurações de notificação. As notificações estão desativadas para # app}other{Mostrar configurações de notificação. As notificações estão desativadas para # apps}}</translation>
 <translation id="1523032696246003">Bateria em <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até a carga completa</translation>
 <translation id="1525508553941733066">DISPENSAR</translation>
@@ -151,7 +150,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
-<translation id="163517899691012366">As notificações são silenciadas quando o modo "Não perturbe" está ativado</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1647986356840967552">Página anterior</translation>
@@ -526,7 +524,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="334252345105450327">Fazer uma captura de tela</translation>
 <translation id="334927402682780278">Selecionar o texto do cursor até o fim da linha</translation>
 <translation id="3349345708646875009">Abrir o gerenciador de tarefas</translation>
-<translation id="3354555338129305222">por que meu dispositivo está lento</translation>
 <translation id="3364721542077212959">Ferramentas da stylus</translation>
 <translation id="3365977133351922112">Seu smartphone está muito longe. Aproxime os dispositivos.</translation>
 <translation id="3368922792935385530">Conectado</translation>
@@ -845,7 +842,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ativado</translation>
-<translation id="4665114317261903604">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Mais apps</translation>
 <translation id="4667099493359681081">Fazendo o download do arquivo <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apps do smartphone</translation>
@@ -1231,7 +1227,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ativando...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
-<translation id="6283712521836204486">O "Não perturbe" está desativado.</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do familiar responsável.</translation>
 <translation id="6291221004442998378">Não está carregando</translation>
@@ -1563,6 +1558,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7842569679327885685">Aviso: recurso experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7848989271541991537">Movido para página <ph name="PAGE_NUMBER" />, linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Não Perturbe</translation>
 <translation id="7851039877802112575">Mover o foco para pop-ups e caixas de diálogo</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Deslize com três dedos para cima para abrir a Visão geral</translation>
@@ -1811,6 +1807,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8921624153894383499">O Google Assistente não fala esse idioma.</translation>
 <translation id="8924458948354692166">Pressione "Enter" para fazer uma captura de tela da janela</translation>
 <translation id="8926951137623668982">Estante sempre oculta</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="8936501819958976551">desativado</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira da direita)</translation>
 <translation id="8940956008527784070">Nível de bateria baixo (<ph name="PERCENTAGE" />%)</translation>

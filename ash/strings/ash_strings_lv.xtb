@@ -126,7 +126,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ir samainīts ar <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Rādīt visus ieteikumus</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
-<translation id="1516740043221086139">Režīms “Netraucēt” ir ieslēgts.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rādīt paziņojumu iestatījumus. Paziņojumi lietotnei ir izslēgti}zero{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}one{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnei}other{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}}</translation>
 <translation id="1523032696246003">Akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> līdz pilnai uzlādei</translation>
 <translation id="1525508553941733066">NERĀDĪT</translation>
@@ -151,7 +150,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1611993646327628135">Ieslēgts</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
-<translation id="163517899691012366">Kad ir ieslēgts režīms “Netraucēt”, paziņojumi tiek paslēpti.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ierīces</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1647986356840967552">Iepriekšējā lapa</translation>
@@ -526,7 +524,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="334252345105450327">Iegūt ekrānuzņēmumu</translation>
 <translation id="334927402682780278">Atlasīt tekstu no kursora līdz rindas beigām</translation>
 <translation id="3349345708646875009">Atvērt uzdevumu pārvaldnieku</translation>
-<translation id="3354555338129305222">kāpēc ierīces darbība ir lēna</translation>
 <translation id="3364721542077212959">Skārienekrāna pildspalvas rīki</translation>
 <translation id="3365977133351922112">Jūsu tālrunis atrodas pārāk tālu. Pārvietojiet tālruni tuvāk.</translation>
 <translation id="3368922792935385530">pievienots</translation>
@@ -845,7 +842,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox iespējots</translation>
-<translation id="4665114317261903604">Pārslēgt režīmu “Netraucēt”. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Citas lietotnes</translation>
 <translation id="4667099493359681081">Notiek faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="468293128311738995">Lietotnes no jūsu tālruņa</translation>
@@ -1231,7 +1227,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: notiek aktivizēšana...</translation>
 <translation id="6274202259872570803">Ekrānraide</translation>
 <translation id="6276708887952587684">Skatīt lapas avotu</translation>
-<translation id="6283712521836204486">Režīms “Netraucēt” ir izslēgts.</translation>
 <translation id="6284232397434400372">Izšķirtspēja nomainīta</translation>
 <translation id="6288235558961782912">Kontu <ph name="USER_EMAIL_ADDRESS" /> var vēlāk atkārtoti pievienot ar vecāku atļauju.</translation>
 <translation id="6291221004442998378">Nenotiek uzlāde</translation>
@@ -1563,6 +1558,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7842569679327885685">Brīdinājums: šī ir eksperimentāla funkcija!</translation>
 <translation id="7846634333498149051">Tastatūra</translation>
 <translation id="7848989271541991537">Pārvietota uz <ph name="PAGE_NUMBER" />. lapu, <ph name="ROW_NUMBER" />. rindu, <ph name="COLUMN_NUMBER" />. sleju.</translation>
+<translation id="7850320739366109486">Netraucēt</translation>
 <translation id="7851039877802112575">Izcelt uznirstošos logus un dialoglodziņus</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Lai atvērtu pārskatu, ar trim pirkstiem velciet augšup</translation>
@@ -1811,6 +1807,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8921624153894383499">Google asistents nav pieejams šajā valodā.</translation>
 <translation id="8924458948354692166">Lai uzņemtu loga ekrānuzņēmumu, nospiediet taustiņu Enter</translation>
 <translation id="8926951137623668982">Plaukts vienmēr tiek paslēpts</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="8936501819958976551">deaktivizēta</translation>
 <translation id="8938800817013097409">USB-C ierīce (pieslēgvieta aizmugurē pa labi)</translation>
 <translation id="8940956008527784070">Akumulators gandrīz tukšs (<ph name="PERCENTAGE" />%)</translation>

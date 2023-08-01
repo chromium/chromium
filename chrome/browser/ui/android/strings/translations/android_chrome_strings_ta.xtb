@@ -358,6 +358,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{படிக்காத பக்கம்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />}other{படிக்காத பக்கங்கள்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}}</translation>
 <translation id="2961210776189273067">பெயரின் முன்னொட்டு</translation>
 <translation id="296370266220139811">டைப் செய்யும் நேரத்தைச் சேமியுங்கள்</translation>
+<translation id="297771753501244313">கடைசியாகத் திறந்ததன்படி வரிசைப்படுத்து</translation>
 <translation id="2979025552038692506">தேர்ந்தெடுத்த மறைநிலைத் தாவல்</translation>
 <translation id="2979639724566107830">புதிய சாளரத்தில் திற</translation>
 <translation id="2981364137500752533">5 சாளரங்கள் வரை மட்டுமே பயன்படுத்த முடியும்.</translation>

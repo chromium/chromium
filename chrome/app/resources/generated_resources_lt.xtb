@@ -142,7 +142,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1110965959145884739">Pasirinkite, kurias kalbas įdiegti šiame įrenginyje. Kalbų failai bendrinami naudotojų taupant vietą diske. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Fone veikiančiame skirtuke naudojamas „Bluetooth“</translation>
 <translation id="1112998165730922436">Perdavimas pristabdytas</translation>
-<translation id="1113807501859230251">Pašalinti „Bruschetta“ iš „<ph name="DEVICE_TYPE" />“? Bus ištrintos visos programos ir duomenys virtualiajame įrenginyje!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Deimantas</translation>
 <translation id="1114427165525619358">Slaptažodžiai šiame įrenginyje ir „Google“ paskyroje</translation>
@@ -2097,7 +2096,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2673135533890720193">Skaityti naršymo istoriją</translation>
 <translation id="2673873887296220733">Kopijuoti vieną failą į „<ph name="CLOUD_PROVIDER" />“, kad būtų atidarytas?</translation>
 <translation id="2674764818721168631">Išjungta</translation>
-<translation id="2675570801872027281">Klaida šalinant „Bruschetta“. Bandykite dar kartą.</translation>
 <translation id="2676084251379299915">Šis plėtinys išjungtas pagal įmonės politiką, nes jis nebepasiekiamas „Chrome“ internetinėje parduotuvėje.</translation>
 <translation id="2678063897982469759">Iš naujo įgalinti</translation>
 <translation id="2678100101831051676">Nepavyksta perduoti.</translation>
@@ -6071,6 +6069,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6050189528197190982">Pilkumo tonas</translation>
 <translation id="6051354611314852653">Oi, sistemai suteikiant prieigą prie šio įrenginio API įvyko klaida.</translation>
 <translation id="6051811090255711417">Jūsų organizacija užblokavo šį failą, nes jis neatitinka saugos politikos</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Įveskite prieigos kodą, kad pradėtumėte perdavimą</translation>
 <translation id="6052976518993719690">SSL sertifikavimo įstaiga</translation>
 <translation id="6053401458108962351">&amp;Išvalyti naršymo duomenis...</translation>

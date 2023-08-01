@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1432187715652018471">पेजला सेवा हँडलर इंस्टॉल करायचा आहे.</translation>
 <translation id="1432581352905426595">शोध इंजीन व्यवस्थापित करा</translation>
+<translation id="1433225466058025572">तुमच्या फाइल हलवण्याचा पुन्हा प्रयत्न करा</translation>
 <translation id="1435940442311036198">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
 <translation id="1436185428532214179">तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्याची विनंती करू शकते</translation>
 <translation id="1442386063175183758">राइट गेट फोल्ड</translation>
@@ -564,6 +565,7 @@
 <translation id="2148613324460538318">कार्ड जोडा</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नाही</translation>
+<translation id="2152495481414285304">ॲप्लिकेशन</translation>
 <translation id="2153609454945889823">Google Play Services for AR इंस्टॉल करायचे आहे का?</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
 <translation id="2154739667870063220">रीबूट करा</translation>
@@ -683,6 +685,7 @@
 <translation id="2396249848217231973">&amp;हटवा पूर्ववत करा</translation>
 <translation id="2397836504670957718">लॅपटॉप आणि नोटबुक</translation>
 <translation id="2400600116338235695">सिरीअल पोर्टशी कनेक्ट करण्याची विनंती करू शकते</translation>
+<translation id="2404884497378469141">तुमच्या फाइल कॉपी करण्याचा पुन्हा प्रयत्न करा</translation>
 <translation id="2413155254802890957">जुना</translation>
 <translation id="2413528052993050574">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट कदाचित रद्द केले असू शकते. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="2414886740292270097">गडद</translation>
@@ -839,6 +842,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मध्ये तुमचा पासवर्ड भरा</translation>
 <translation id="2764001903315068341">कॉमिक</translation>
 <translation id="2765217105034171413">लहान</translation>
+<translation id="2770159525358613612">तुमच्या फाइल अपलोड करण्याचा पुन्हा प्रयत्न करा</translation>
 <translation id="277133753123645258">शिपिंग पद्धत</translation>
 <translation id="277499241957683684">डिव्हाइस रेकॉर्ड गहाळ</translation>
 <translation id="2775884851269838147">प्रिंट केलेले पहिले पेज</translation>
@@ -1228,6 +1232,7 @@
 <translation id="3632892046558972264">स्क्रीन शेअर करणे थांबवले आहे</translation>
 <translation id="3634530185120165534">ट्रे ५</translation>
 <translation id="3634567936866541746">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुमची खाती सुरक्षित करण्यासाठी, Chrome तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करते.</translation>
+<translation id="3642196846309122856">तुमच्या फाइल पुन्हा डाउनलोड करण्याचा प्रयत्न करा</translation>
 <translation id="3642638418806704195">ॲप्लिकेशन:</translation>
 <translation id="3646643500201740985">जाहिरात किती चांगल्या पद्धतीने परफॉर्म करते हे मोजणे</translation>
 <translation id="3647286794400715637">प्रत्येक URLs स्ट्रिंग एंट्रीमध्ये एक ते दोन URLs असणे आवश्यक आहे.</translation>
@@ -1351,6 +1356,7 @@
 <translation id="3890664840433101773">ईमेल जोडा</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3901925938762663762">कार्ड कालबाह्य झाले आहे</translation>
+<translation id="390391808978419508">उघडणे टाइम आउट झाले</translation>
 <translation id="3905894480064208252">{0,plural, =1{फाइल ट्रान्सफर करण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल ट्रान्सफर करण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="3906095212874392000">रूपांतर केलेल्या मजकुराचा शेवट</translation>
 <translation id="3906954721959377182">टॅबलेट</translation>
@@ -1363,6 +1369,7 @@
 <translation id="393316646445601645">इंटरनेट आणि टेलिकॉम</translation>
 <translation id="3939773374150895049">CVC ऐवजी WebAuthn वापरायचे का?</translation>
 <translation id="3941630233824954464">अनिवार्य री-ऑथेंटिकेशन सुरू करा</translation>
+<translation id="3942048175062210325">तुमच्या फाइल पुन्हा उघडण्याचा प्रयत्न करून पहा</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3946209740501886391">नेहमी या साइटवर विचारा</translation>
 <translation id="3947595700203588284">MIDI डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
@@ -1444,6 +1451,7 @@
 <translation id="4117700440116928470">धोरण कक्षा याला सपोर्ट नाही.</translation>
 <translation id="4121428309786185360">रोजी कालबाह्य होत आहे</translation>
 <translation id="4123572138124678573">ट्रिपल पंच बॉटम</translation>
+<translation id="412601465078863288">अपलोड करणे टाइम आउट झाले</translation>
 <translation id="4127317221386336246">कपड्यांसाठीच्या अ‍ॅक्सेसरी</translation>
 <translation id="4127575959421463246">ChromeOS फ्लॅग शोधत आहात का? भेट द्या</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{अन्य 1}other{अन्य #}}</translation>
@@ -1660,6 +1668,7 @@
 <translation id="4540780316273593836">काहीतरी चूक झाली</translation>
 <translation id="4541810033354695636">ऑगमेंटेड रीअ‍ॅलिटी</translation>
 <translation id="4542971377163063093">ट्रे ६</translation>
+<translation id="4546730006268514143">ट्रान्सफर करणे टाइम आउट झाले</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">पासवर्ड भरण्यासाठी तुम्ही तुमचे स्क्रीन लॉक वापरत आहात</translation>
 <translation id="4558551763791394412">तुमचे विस्तार अक्षम करून पहा.</translation>
@@ -2093,6 +2102,7 @@
 <translation id="5470230812924696184">सिव्हिल इंजिनियरिंग</translation>
 <translation id="5470861586879999274">&amp;संपादित करा पुन्हा करा</translation>
 <translation id="5471337644440862957">विनोदी चित्रपट</translation>
+<translation id="547963486735802022">तुमच्या फाइल पुन्हा ट्रान्सफर करण्याचा प्रयत्न करा</translation>
 <translation id="5481076368049295676">हा आशय तुमच्या डिव्हाइसवर तुमची माहिती चोरू किंवा मिटवू शकणारे धोकादायक सॉफ्टवेअर इंस्टॉल करण्याचा कदाचित प्रयत्न करेल. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">वैध पत्ता जोडा</translation>
 <translation id="5483838506518938965">तुम्ही पूर्णपणे तयार आहात</translation>
@@ -2783,6 +2793,7 @@
 <translation id="6961733224437895943">घराचा विमा</translation>
 <translation id="6961844873822989059">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्याची विनंती करू शकते</translation>
 <translation id="6961980518585973432">अ‍ॅनिव्हर्सरी</translation>
+<translation id="6962858948849099922">हलवणे टाइम आउट झाले</translation>
 <translation id="6963520811470373926">अधिग्रहित करत आहे</translation>
 <translation id="6963574715554809750">रिटेल व्यापार</translation>
 <translation id="6963693576491380224">शासकीय आणि सार्वजनिक क्षेत्रातील नोकर्‍या</translation>
@@ -2860,6 +2871,7 @@
 <translation id="7111507312244504964">मालमत्ता निरीक्षणे आणि मूल्यांकने</translation>
 <translation id="7112327784801341716">तुमची सध्याची माहिती दिसत नाही का? ती अपडेट करण्यासाठी तुमच्या बँकशी संपर्क साधा.</translation>
 <translation id="7118618213916969306">क्लिपबोर्ड URL, <ph name="SHORT_URL" /> शोधा</translation>
+<translation id="7119371694555167493">कॉपी करणे टाइम आउट झाले</translation>
 <translation id="7119414471315195487">अन्य टॅब आणि प्रोग्राम बंद करा</translation>
 <translation id="7124354851782353862">तुमचा CVC एंटर करा</translation>
 <translation id="7129355289156517987">तुम्ही Chromium मधील सर्व गुप्त टॅब बंद करता, तेव्हा त्या टॅबमधील तुमची अ‍ॅक्टिव्हिटी ही या डिव्हाइसवरून साफ केली जाते:
@@ -3112,6 +3124,7 @@
 <translation id="7592749602347161287">A5 अतिरिक्त</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> पेक्षा कमी</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> सध्या ही विनंती हाताळण्यात अक्षम आहे.</translation>
+<translation id="7599089013883397081">डाउनलोड करणे टाइम आउट झाले</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
 <translation id="7601297359530599375">तुम्ही सामान्यपणे या साइटशी सुरक्षितपणे कनेक्ट करता, पण Chrome ला यावेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये सुधारणा करण्याचा प्रयत्न करत असू शकतो. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">मूल्य <ph name="VALUE" /> श्रेणीच्या बाहेर आहे.</translation>

@@ -126,7 +126,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1487931858675166540">Element <ph name="FIRST_ITEM_TITLE" /> je zamenjan z elementom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Pokaži vse predloge</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
-<translation id="1516740043221086139">Način »ne moti« je vklopljen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz nastavitev obvestil. Obvestila so izklopljena za eno aplikacijo.}one{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacijo.}two{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikaciji.}few{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacije.}other{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacij.}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" /> % baterije | <ph name="TIME" /> do napolnjenosti</translation>
 <translation id="1525508553941733066">OPUSTI</translation>
@@ -151,7 +150,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
-<translation id="163517899691012366">Obvestila so utišana, ko je vklopljen način Ne moti.</translation>
 <translation id="1637505162081889933">Št. naprav: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1647986356840967552">Prejšnja stran</translation>
@@ -526,7 +524,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="334252345105450327">Ustvari posnetek zaslona</translation>
 <translation id="334927402682780278">Izbira besedila od kazalca do konca vrstice</translation>
 <translation id="3349345708646875009">Odpiranje upravitelja opravil</translation>
-<translation id="3354555338129305222">zakaj je moja naprava počasna</translation>
 <translation id="3364721542077212959">Orodja pisala</translation>
 <translation id="3365977133351922112">Telefon je predaleč. Približajte ga.</translation>
 <translation id="3368922792935385530">Povezano</translation>
@@ -845,7 +842,6 @@ Priklopite napravo v vir napajanja.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Omogočen je ChromeVox</translation>
-<translation id="4665114317261903604">Preklop načina »ne moti«. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Več aplikacij</translation>
 <translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikacije iz telefona</translation>
@@ -1231,7 +1227,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiviranje ...</translation>
 <translation id="6274202259872570803">Snemanje zaslona</translation>
 <translation id="6276708887952587684">Prikaz vira strani</translation>
-<translation id="6283712521836204486">Način »ne moti« je izklopljen.</translation>
 <translation id="6284232397434400372">Ločljivost je bila spremenjena</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> lahko dodate pozneje z dovoljenjem starša.</translation>
 <translation id="6291221004442998378">Se ne polni</translation>
@@ -1563,6 +1558,7 @@ Nova namestitev</translation>
 <translation id="7842569679327885685">Opozorilo: poskusna funkcija</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>
 <translation id="7848989271541991537">Premaknjeno na <ph name="PAGE_NUMBER" />. stran, <ph name="ROW_NUMBER" />. vrstico, <ph name="COLUMN_NUMBER" />. stolpec.</translation>
+<translation id="7850320739366109486">Ne moti</translation>
 <translation id="7851039877802112575">Pomik na pojavna okna in pogovorna okna</translation>
 <translation id="7851768487828137624">Delovna različica</translation>
 <translation id="7860671499921112077">Če želite odpreti pregled, povlecite s tremi prsti navzgor.</translation>
@@ -1811,6 +1807,7 @@ Nova namestitev</translation>
 <translation id="8921624153894383499">Pomočnik Google ne podpira tega jezika.</translation>
 <translation id="8924458948354692166">Pritisnite Enter, če želite zajeti posnetek zaslona okna</translation>
 <translation id="8926951137623668982">Polica vedno skrita</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="8940956008527784070">Akumulator je skoraj prazen (<ph name="PERCENTAGE" /> %)</translation>

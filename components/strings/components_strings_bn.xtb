@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1432187715652018471">পৃষ্ঠাটি একটি পরিষেবা নিয়ন্ত্রক ইনস্টল করতে চায়।</translation>
 <translation id="1432581352905426595">সার্চ ইঞ্জিনগুলি পরিচালনা করুন</translation>
+<translation id="1433225466058025572">আপনার ফাইল আবার সরানোর চেষ্টা করে দেখুন</translation>
 <translation id="1435940442311036198">অন্য কোনও ডিভাইসে পাসকী ব্যবহার করুন</translation>
 <translation id="1436185428532214179">আপনার ডিভাইসের ফাইল ও ফোল্ডার এডিট করার অনুমতি চাইতে পারে</translation>
 <translation id="1442386063175183758">ডানদিকে গেট ফোল্ড</translation>
@@ -565,6 +566,7 @@
 <translation id="2148613324460538318">কার্ড যোগ করুন</translation>
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
+<translation id="2152495481414285304">অ্যাপ্লিকেশন</translation>
 <translation id="2153609454945889823">Google Play Services for AR ইনস্টল করবেন?</translation>
 <translation id="2154484045852737596">কার্ড সম্পাদনা করুন</translation>
 <translation id="2154739667870063220">রিবুট করুন</translation>
@@ -684,6 +686,7 @@
 <translation id="2396249848217231973">&amp;মুছে ফেলাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="2397836504670957718">ল্যাপটপ ও নোটবুক</translation>
 <translation id="2400600116338235695">সিরিয়াল পোর্টের সাথে কানেক্ট করতে অনুমতি চাইতে পারে</translation>
+<translation id="2404884497378469141">আপনার ফাইল আবার কপি করার চেষ্টা করে দেখুন</translation>
 <translation id="2413155254802890957">পুরনো</translation>
 <translation id="2413528052993050574">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট প্রত্যাহার করা হতে পারে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="2414886740292270097">অন্ধকার</translation>
@@ -840,6 +843,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" />-এ আপনার পাসওয়ার্ড পূরণ করুন</translation>
 <translation id="2764001903315068341">কমিক্স</translation>
 <translation id="2765217105034171413">ক্ষুদ্র</translation>
+<translation id="2770159525358613612">আপনার ফাইল আবার আপলোড করার চেষ্টা করে দেখুন</translation>
 <translation id="277133753123645258">শিপিংয়ের পদ্ধতি</translation>
 <translation id="277499241957683684">ডিভাইস রেকর্ড অনুপস্থিত</translation>
 <translation id="2775884851269838147">প্রথম প্রিন্ট করা পৃষ্ঠা</translation>
@@ -1230,6 +1234,7 @@
 <translation id="3632892046558972264">স্ক্রিন শেয়ার করার ফিচার পজ করা হয়েছে</translation>
 <translation id="3634530185120165534">ট্রে ৫</translation>
 <translation id="3634567936866541746">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্ট সুরক্ষিত করার জন্য, Chrome আপনার সেভ করা পাসওয়ার্ড চেক করে নিতে সাজেস্ট করছে।</translation>
+<translation id="3642196846309122856">আপনার ফাইল আবার ডাউনলোড করার চেষ্টা করে দেখুন</translation>
 <translation id="3642638418806704195">অ্যাপ্লিকেশন:</translation>
 <translation id="3646643500201740985">একটি বিজ্ঞাপন কতটা ভালো পারফর্ম করে তা পরিমাপ করা</translation>
 <translation id="3647286794400715637">প্রতিটি URL স্ট্রিং এন্ট্রিতে ১ থেকে ২টি URL থাকতে হবে।</translation>
@@ -1353,6 +1358,7 @@
 <translation id="3890664840433101773">ইমেল আইডি যোগ করুন</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3901925938762663762">কার্ডটির মেয়াদ শেষ হয়েছে</translation>
+<translation id="390391808978419508">খোলার সময় শেষ হয়ে গেছে</translation>
 <translation id="3905894480064208252">{0,plural, =1{ফাইল ট্রান্সফার করা যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল ট্রান্সফার করা যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল ট্রান্সফার করা যাবে না}}</translation>
 <translation id="3906095212874392000">কনভার্ট করা টেক্সট শেষ</translation>
 <translation id="3906954721959377182">ট্যাবলেট</translation>
@@ -1365,6 +1371,7 @@
 <translation id="393316646445601645">ইন্টারনেট ও টেলিকম</translation>
 <translation id="3939773374150895049">সিভিসি কোডের পরিবর্তে WebAuthn ব্যবহার করবেন?</translation>
 <translation id="3941630233824954464">আবার যাচাই করার বাধ্যতামূলক প্রসেস চালু করুন</translation>
+<translation id="3942048175062210325">আপনার ফাইল আবার খোলার চেষ্টা করে দেখুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3946209740501886391">এই সাইটে সর্বদা জিজ্ঞাসা করুন</translation>
 <translation id="3947595700203588284">MIDI ডিভাইসের সাথে কানেক্ট করতে অনুমতি চাইতে পারে</translation>
@@ -1446,6 +1453,7 @@
 <translation id="4117700440116928470">নীতির সুযোগটি সমর্থিত নয়৷</translation>
 <translation id="4121428309786185360">এই তারিখে মেয়াদউত্তীর্ণ হয়</translation>
 <translation id="4123572138124678573">নিচে ট্রিপল পাঞ্চ</translation>
+<translation id="412601465078863288">আপলোড করার সময় শেষ হয়ে গেছে</translation>
 <translation id="4127317221386336246">পোশাকের অ্যাক্সেসরিজ</translation>
 <translation id="4127575959421463246">ChromeOS ফ্ল্যাগ খুঁজছেন? দেখুন</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{আরও ১টি}one{অন্যান্য #টি}other{অন্যান্য #টি}}</translation>
@@ -1662,6 +1670,7 @@
 <translation id="4540780316273593836">কিছু সমস্যা হয়েছে</translation>
 <translation id="4541810033354695636">অগমেন্টেড রিয়েলিটি</translation>
 <translation id="4542971377163063093">ট্রে ৬</translation>
+<translation id="4546730006268514143">ট্রান্সফার করার সময় শেষ হয়ে গেছে</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">পাসওয়ার্ড পূরণ করার জন্য আপনি স্ক্রিন লক ব্যবহার করছেন</translation>
 <translation id="4558551763791394412">আপনার এক্সটেনশানগুলি অক্ষম করে দেখুন।</translation>
@@ -2095,6 +2104,7 @@
 <translation id="5470230812924696184">সিভিল ইঞ্জিনিয়ারিং</translation>
 <translation id="5470861586879999274">&amp;সম্পাদনাকে আবার করুন</translation>
 <translation id="5471337644440862957">কমেডি সিনেমা</translation>
+<translation id="547963486735802022">আপনার ফাইল আবার ট্রান্সফার করার চেষ্টা করে দেখুন</translation>
 <translation id="5481076368049295676">এই কন্টেন্ট আপনার ডিভাইসে এমন বিপজ্জনক সফ্টওয়্যার ইনস্টল করার চেষ্টা করতে পারে যা আপনার তথ্য চুরি করে বা মুছে দেয়। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">বৈধ ঠিকানা যোগ করুন</translation>
 <translation id="5483838506518938965">আপনার সমস্ত সেট আছে</translation>
@@ -2783,6 +2793,7 @@
 <translation id="6961733224437895943">বাড়ির ইন্স্যুরেন্স</translation>
 <translation id="6961844873822989059">আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করার অনুমতি চাইতে পারে</translation>
 <translation id="6961980518585973432">অ্যানিভার্সারি</translation>
+<translation id="6962858948849099922">সরানোর সময় শেষ হয়ে গেছে</translation>
 <translation id="6963520811470373926">পুরনো মানের জায়গাতে নতুন মান প্রয়োগ করা</translation>
 <translation id="6963574715554809750">রিটেল ব্যবসা</translation>
 <translation id="6963693576491380224">সরকারি ও পাবলিক সেক্টরের চাকরি</translation>
@@ -2860,6 +2871,7 @@
 <translation id="7111507312244504964">প্রপার্টি পরিদর্শন ও মূল্যায়ন</translation>
 <translation id="7112327784801341716">আপনার অ্যাকাউন্টের বর্তমান তথ্য দেখতে পাচ্ছেন না? এটি আপডেট করতে আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।</translation>
 <translation id="7118618213916969306">ক্লিপবোর্ড ইউআরএল <ph name="SHORT_URL" /> সার্চ করুন</translation>
+<translation id="7119371694555167493">কপি করার সময় শেষ হয়ে গেছে</translation>
 <translation id="7119414471315195487">অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করুন</translation>
 <translation id="7124354851782353862">আপনার CVC লিখুন</translation>
 <translation id="7129355289156517987">অআপনি সমস্ত Chromium ছদ্মবেশী ট্যাব বন্ধ করলে, এই ডিভাইস থেকে সেই ট্যাবে অ্যাক্টিভিটি মুছে যাবে:
@@ -3112,6 +3124,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> এর কম</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> বর্তমানে এই অনুরোধটি পরিচালনা করতে অক্ষম।</translation>
+<translation id="7599089013883397081">ডাউনলোড করার সময় শেষ হয়ে গেছে</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কখনও অনুবাদ করবেন না</translation>
 <translation id="7601297359530599375">সাধারণত আপনি সুরক্ষিতভাবে এই সাইটে কানেক্ট করেন, তবে Chrome এখন কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারবে না। কোনও আক্রমণকারী হয়ত আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে চাইছে বা সেটি পরিবর্তন করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">সীমার বাইরে মান <ph name="VALUE" />৷</translation>

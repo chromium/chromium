@@ -140,7 +140,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1110965959145884739">Scegli quali lingue installare sul tuo dispositivo. I file della lingua vengono condivisi tra gli utenti per risparmiare spazio su disco. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Una scheda in secondo piano sta usando il Bluetooth</translation>
 <translation id="1112998165730922436">Trasmissione in pausa</translation>
-<translation id="1113807501859230251">Vuoi rimuovere Bruschetta da <ph name="DEVICE_TYPE" />? Verranno eliminati tutti i dati e le app nella macchina virtuale.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamante</translation>
 <translation id="1114427165525619358">Password memorizzate su questo dispositivo e nel tuo Account Google</translation>
@@ -2079,7 +2078,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2673135533890720193">Leggere la cronologia di navigazione</translation>
 <translation id="2673873887296220733">Vuoi copiare 1 file in <ph name="CLOUD_PROVIDER" /> per aprirlo?</translation>
 <translation id="2674764818721168631">Off</translation>
-<translation id="2675570801872027281">Errore durante la rimozione di Bruschetta. Riprova.</translation>
 <translation id="2676084251379299915">Questa estensione è stata disattivata dai criteri aziendali perché non è più disponibile nel Chrome Web Store.</translation>
 <translation id="2678063897982469759">Riattiva</translation>
 <translation id="2678100101831051676">Impossibile trasmettere.</translation>
@@ -6048,6 +6046,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6050189528197190982">Scala di grigi</translation>
 <translation id="6051354611314852653">Spiacenti, il sistema non è riuscito ad autorizzare l'accesso API per questo dispositivo.</translation>
 <translation id="6051811090255711417">La tua organizzazione ha bloccato questo file perché non soddisfava un criterio di sicurezza</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Digita il codice di accesso per iniziare a trasmettere</translation>
 <translation id="6052976518993719690">Autorità di certificazione SSL</translation>
 <translation id="6053401458108962351">&amp;Cancella dati di navigazione...</translation>

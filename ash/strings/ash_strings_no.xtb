@@ -126,7 +126,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har byttet plass med <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vis alle forslag</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
-<translation id="1516740043221086139">Ikke forstyrr er på.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis innstillinger for varsler. Varsler er slått av for en app}other{Vis innstillinger for varsler. Varsler er slått av for # apper}}</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til batteriet er fullt</translation>
 <translation id="1525508553941733066">AVVIS</translation>
@@ -151,7 +150,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
-<translation id="163517899691012366">Varsler ignoreres når Ikke forstyrr er på</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1647986356840967552">Forrige side</translation>
@@ -526,7 +524,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="334252345105450327">Ta en skjermdump</translation>
 <translation id="334927402682780278">Merk tekst fra markøren til slutten av linjen</translation>
 <translation id="3349345708646875009">Åpne oppgavebehandling.</translation>
-<translation id="3354555338129305222">hvorfor er enheten min treg?</translation>
 <translation id="3364721542077212959">Pekepennverktøy</translation>
 <translation id="3365977133351922112">Telefonen er for langt unna. Bring telefonen nærmere.</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
@@ -845,7 +842,6 @@ Koble enheten til strøm.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox er slått på</translation>
-<translation id="4665114317261903604">Slå av/på Ikke forstyrr. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Flere apper</translation>
 <translation id="4667099493359681081">Laster ned <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apper fra telefonen din</translation>
@@ -1231,7 +1227,6 @@ Koble enheten til strøm.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveres …</translation>
 <translation id="6274202259872570803">Skjermopptak</translation>
 <translation id="6276708887952587684">Se sidekilden</translation>
-<translation id="6283712521836204486">Ikke forstyrr er av.</translation>
 <translation id="6284232397434400372">Oppløsningen er endret</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan legges til på nytt senere med tillatelse fra en forelder.</translation>
 <translation id="6291221004442998378">Lader ikke</translation>
@@ -1563,6 +1558,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7842569679327885685">Advarsel: Funksjon på forsøksstadiet</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7848989271541991537">Flyttet til side <ph name="PAGE_NUMBER" />, rad <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Ikke forstyrr</translation>
 <translation id="7851039877802112575">Flytt fokus til forgrunnsvinduer og dialogbokser</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Sveip opp med tre fingre for å åpne Oversikt</translation>

@@ -126,7 +126,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> cambiouse con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostrar todas as suxestións</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
-<translation id="1516740043221086139">Está activado o modo Non molestar.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar a configuración de notificacións. Están desactivadas para unha aplicación}other{Mostrar a configuración de notificacións. Están desactivadas para # aplicacións}}</translation>
 <translation id="1523032696246003">Batería: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> para completar a carga</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
@@ -151,7 +150,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
-<translation id="163517899691012366">Cando está activado o modo Non molestar, as notificacións están silenciadas</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1647986356840967552">Páxina anterior</translation>
@@ -526,7 +524,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="334252345105450327">Fai unha captura de pantalla</translation>
 <translation id="334927402682780278">Selecciona o texto desde cursor ata o final da liña</translation>
 <translation id="3349345708646875009">Abre o xestor de tarefas</translation>
-<translation id="3354555338129305222">por que o meu dispositivo vai tan lento</translation>
 <translation id="3364721542077212959">Ferramentas de lapis óptico</translation>
 <translation id="3365977133351922112">O teu teléfono está demasiado lonxe. Achégao.</translation>
 <translation id="3368922792935385530">Conectada</translation>
@@ -846,7 +843,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Activouse ChromeVox</translation>
-<translation id="4665114317261903604">Activar/desactivar o modo Non molestar. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Máis aplicacións</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplicacións do teu teléfono</translation>
@@ -1232,7 +1228,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activando...</translation>
 <translation id="6274202259872570803">Gravación da pantalla</translation>
 <translation id="6276708887952587684">Consulta a fonte da páxina</translation>
-<translation id="6283712521836204486">Está desactivado o modo Non molestar.</translation>
 <translation id="6284232397434400372">Cambiouse a resolución</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode engadirse de novo máis adiante co permiso da súa nai ou do seu pai.</translation>
 <translation id="6291221004442998378">Non está cargando</translation>
@@ -1564,6 +1559,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7848989271541991537">Moveuse á páxina <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Non molestar</translation>
 <translation id="7851039877802112575">Mover enfoque ás ventás emerxentes e cadros de diálogo</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Para acceder ao modo Visión xeral, pasa tres dedos cara arriba</translation>
@@ -1820,7 +1816,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8951539504029375108">Só son compatibles co teu Chromebook os dispositivos Thunderbolt homologados</translation>
 <translation id="8973885907461690937">Enfocar icona do menú</translation>
 <translation id="8980862970816311842">Move a icona dunha aplicación dentro ou fóra dun cartafol na grade de aplicacións</translation>
-<translation id="8982906748181120328">Visibilidade</translation>
+<translation id="8982906748181120328">Visibilidade de Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Usando: <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Activouse o modo de inversión da cor. Preme Control + Buscar + H de novo para desactivalo.</translation>
@@ -1869,7 +1865,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, xestionada polo teu administrador</translation>
 <translation id="9207682216934703221">Desta forma, <ph name="APP_NAME" />, <ph name="APP2_NAME" />, todas as aplicacións e os sitios web con permiso de localización e ChromeOS poderán utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
 <translation id="9210037371811586452">Saíndo do modo de escritorio unificado</translation>
-<translation id="9211490828691860325">Todos os ordenadores</translation>
+<translation id="9211490828691860325">Todos os escritorios</translation>
 <translation id="9211681782751733685">Tempo restante para que se cargue a batería por completo: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Definir fondo de pantalla</translation>
 <translation id="9219103736887031265">Imaxes</translation>

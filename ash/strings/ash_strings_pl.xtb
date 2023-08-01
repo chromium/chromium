@@ -126,7 +126,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1487931858675166540">Element <ph name="FIRST_ITEM_TITLE" /> został zastąpiony elementem <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Pokaż wszystkie sugestie</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
-<translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do pełnego naładowania</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
@@ -151,7 +150,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1611993646327628135">Włączono</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
-<translation id="163517899691012366">Po włączeniu trybu Nie przeszkadzać powiadomienia są wyciszone</translation>
 <translation id="1637505162081889933">Urządzenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1647986356840967552">Poprzednia strona</translation>
@@ -526,7 +524,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="334252345105450327">Zrób zrzut ekranu</translation>
 <translation id="334927402682780278">Zaznacz tekst od kursora do końca wiersza</translation>
 <translation id="3349345708646875009">Otwórz menedżera zadań</translation>
-<translation id="3354555338129305222">dlaczego moje urządzenie działa wolno?</translation>
 <translation id="3364721542077212959">Narzędzia rysika</translation>
 <translation id="3365977133351922112">Twój telefon jest za daleko. Przysuń go bliżej.</translation>
 <translation id="3368922792935385530">Połączone</translation>
@@ -845,7 +842,6 @@ Podłącz urządzenie do zasilania.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Włączono ChromeVox</translation>
-<translation id="4665114317261903604">Włącz lub wyłącz tryb Nie przeszkadzać. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Więcej aplikacji</translation>
 <translation id="4667099493359681081">Pobieram <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikacje z telefonu</translation>
@@ -1231,7 +1227,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktywuję...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Wyświetl źródło strony</translation>
-<translation id="6283712521836204486">Tryb Nie przeszkadzać jest wyłączony.</translation>
 <translation id="6284232397434400372">Rozdzielczość została zmieniona</translation>
 <translation id="6288235558961782912">Adres <ph name="USER_EMAIL_ADDRESS" /> będzie można dodać ponownie później po uzyskaniu zgody rodzica.</translation>
 <translation id="6291221004442998378">Nie ładuje się</translation>
@@ -1562,6 +1557,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7842569679327885685">Ostrzeżenie: funkcja eksperymentalna</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
 <translation id="7848989271541991537">Przeniesiono do strony <ph name="PAGE_NUMBER" />, wiersza <ph name="ROW_NUMBER" />, kolumny <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Nie przeszkadzać</translation>
 <translation id="7851039877802112575">Przenieś zaznaczenie na wyskakujące okienka i okna dialogowe</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Przesuń 3 palcami w górę, aby otworzyć Przegląd</translation>
@@ -1810,6 +1806,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8921624153894383499">Asystent Google nie mówi w tym języku.</translation>
 <translation id="8924458948354692166">Aby zrobić zrzut ekranu okna, naciśnij Enter</translation>
 <translation id="8926951137623668982">Półka zawsze ukryta</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="8936501819958976551">dezaktywowana</translation>
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>
 <translation id="8940956008527784070">Niski stan baterii (<ph name="PERCENTAGE" />%)</translation>

@@ -126,7 +126,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> Ditukar dengan <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Tunjukkan semua cadangan</translation>
 <translation id="1510238584712386396">Pelancar</translation>
-<translation id="1516740043221086139">Jangan ganggu dihidupkan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk satu apl}other{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk # apl}}</translation>
 <translation id="1523032696246003">Bateri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sehingga penuh</translation>
 <translation id="1525508553941733066">KETEPIKAN</translation>
@@ -151,7 +150,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1611993646327628135">Hidup</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Akses Suis boleh dilumpuhkan dalam Tetapan &gt; Kebolehaksesan.</translation>
-<translation id="163517899691012366">Pemberitahuan diredam apabila Jangan ganggu dihidupkan</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> peranti</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1647986356840967552">Halaman sebelumnya</translation>
@@ -526,7 +524,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="334252345105450327">Ambil tangkapan skrin</translation>
 <translation id="334927402682780278">Pilih teks daripada kursor di penghujung baris</translation>
 <translation id="3349345708646875009">Buka pengurus tugas</translation>
-<translation id="3354555338129305222">sebab peranti saya perlahan</translation>
 <translation id="3364721542077212959">Alatan stilus</translation>
 <translation id="3365977133351922112">Telefon anda terlalu jauh. Dekatkan telefon anda.</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
@@ -846,7 +843,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox didayakan</translation>
-<translation id="4665114317261903604">Togol Jangan ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Lagi apl</translation>
 <translation id="4667099493359681081">Memuat turun <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apl daripada telefon anda</translation>
@@ -1232,7 +1228,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
 <translation id="6274202259872570803">Rakaman skrin</translation>
 <translation id="6276708887952587684">Lihat sumber halaman</translation>
-<translation id="6283712521836204486">Jangan ganggu dimatikan.</translation>
 <translation id="6284232397434400372">Peleraian ditukar</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> boleh ditambahkan semula kemudian dengan kebenaran ibu bapa.</translation>
 <translation id="6291221004442998378">Tidak mengecas</translation>
@@ -1564,6 +1559,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7842569679327885685">Amaran: Ciri percubaan</translation>
 <translation id="7846634333498149051">Papan kekunci</translation>
 <translation id="7848989271541991537">Dialihkan kepada Halaman <ph name="PAGE_NUMBER" />, baris <ph name="ROW_NUMBER" />, lajur <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Jangan Ganggu</translation>
 <translation id="7851039877802112575">Alihkan fokus kepada tetingkap timbul dan dialog</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Leret ke atas dengan tiga jari untuk memasuki Ikhtisar</translation>

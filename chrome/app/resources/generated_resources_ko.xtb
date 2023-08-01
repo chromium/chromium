@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">이 기기에 설치할 언어를 선택하세요. 디스크 공간 절약을 위해 언어 파일은 사용자 간에 공유됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">배경 탭에서 블루투스를 사용 중입니다.</translation>
 <translation id="1112998165730922436">전송 일시중지됨</translation>
-<translation id="1113807501859230251"><ph name="DEVICE_TYPE" />에서 Bruschetta를 삭제하시겠습니까? 이렇게 하면 가상 머신의 모든 앱과 데이터가 삭제됩니다.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" />(USB)</translation>
 <translation id="1114202307280046356">다이아몬드</translation>
 <translation id="1114427165525619358">이 기기와 Google 계정에 저장되어 있는 비밀번호</translation>
@@ -2096,7 +2095,6 @@
 <translation id="2673135533890720193">인터넷 사용 기록 확인</translation>
 <translation id="2673873887296220733">파일 1개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="2674764818721168631">사용 안함</translation>
-<translation id="2675570801872027281">Bruschetta를 삭제하는 중에 오류가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="2676084251379299915">이 확장 프로그램은 Chrome 웹 스토어에서 더 이상 제공되지 않으므로 기업 정책에 의해 사용 중지되었습니다.</translation>
 <translation id="2678063897982469759">다시 사용</translation>
 <translation id="2678100101831051676">전송할 수 없습니다</translation>
@@ -6067,6 +6065,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6050189528197190982">회색조</translation>
 <translation id="6051354611314852653">시스템에서 이 기기에 대한 API 액세스를 승인하지 못했습니다.</translation>
 <translation id="6051811090255711417">파일이 보안 정책을 따르지 않기 때문에 조직에서 파일을 차단했습니다</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">전송을 시작하려면 액세스 코드 입력</translation>
 <translation id="6052976518993719690">SSL 인증 기관</translation>
 <translation id="6053401458108962351">인터넷 사용 기록 삭제(&amp;C)...</translation>

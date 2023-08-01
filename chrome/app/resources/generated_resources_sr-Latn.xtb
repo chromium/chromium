@@ -140,7 +140,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1110965959145884739">Odaberite koje jezike ćete instalirati na ovom uređaju. Korisnici mogu da dele fajlove za jezike da bi uštedeli prostor na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Kartica u pozadini koristi Bluetooth</translation>
 <translation id="1112998165730922436">Prebacivanje je pauzirano</translation>
-<translation id="1113807501859230251">Želite da uklonite Bruschetta-u sa uređaja <ph name="DEVICE_TYPE" />? Time ćete izbrisati sve aplikacije i podatke na virtuelnoj mašini.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Dijamant</translation>
 <translation id="1114427165525619358">Lozinke na ovom uređaju i na vašem Google nalogu</translation>
@@ -2078,7 +2077,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2673135533890720193">Čitanje vaše istorije pregledanja</translation>
 <translation id="2673873887296220733">Želite da kopirate 1 fajl u <ph name="CLOUD_PROVIDER" /> da biste ga otvorili?</translation>
 <translation id="2674764818721168631">Isključeno</translation>
-<translation id="2675570801872027281">Greška pri uklanjanju Bruschetta-e. Probajte ponovo.</translation>
 <translation id="2676084251379299915">Ovaj dodatak je onemogućen smernicama za preduzeća zato što više nije dostupan u Chrome veb-prodavnici.</translation>
 <translation id="2678063897982469759">Ponovo omogući</translation>
 <translation id="2678100101831051676">Prebacivanje nije uspelo.</translation>
@@ -6050,6 +6048,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6050189528197190982">Sivi tonovi</translation>
 <translation id="6051354611314852653">Ups! Sistem nije uspeo da odobri pristup API-ju za ovaj uređaj.</translation>
 <translation id="6051811090255711417">Organizacija je blokirala ovaj fajl jer nije bio u skladu sa bezbednosnim smernicama</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Unesite pristupni kôd da biste započeli prebacivanje</translation>
 <translation id="6052976518993719690">Autoritet za izdavanje SSL sertifikata</translation>
 <translation id="6053401458108962351">&amp;Obriši podatke pregledanja...</translation>

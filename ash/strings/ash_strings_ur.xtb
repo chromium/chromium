@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> کے ساتھ سویپ کردہ<ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">تمام تجاویز دکھائیں</translation>
 <translation id="1510238584712386396">لانچر</translation>
-<translation id="1516740043221086139">'ڈسٹرب نہ کریں' آن ہے۔</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{اطلاع کی ترتیبات دکھائیں۔ اطلاعات ایک ایپ کے لیے آف ہیں}other{اطلاع کی ترتیبات دکھائیں۔ اطلاعات # ایپس کے لیے آف ہیں}}</translation>
 <translation id="1523032696246003">بیٹری %<ph name="BATTERY_PERCENTAGE" /> | مکمل ہونے میں <ph name="TIME" /> باقی</translation>
 <translation id="1525508553941733066">برخاست کریں</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">آن</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
-<translation id="163517899691012366">ڈسٹرب نہ کریں کے آن ہونے پر اطلاعات خاموش ہو جاتی ہیں</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> آلات</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1647986356840967552">گزشتہ صفحہ</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
 <translation id="334927402682780278">کرسر سے لائن کے آخر تک ٹیکسٹ منتخب کریں</translation>
 <translation id="3349345708646875009">ٹاسک مینیجر کھولیں</translation>
-<translation id="3354555338129305222">میرا آلہ سست کیوں ہے</translation>
 <translation id="3364721542077212959">اسٹائلس ٹولز</translation>
 <translation id="3365977133351922112">آپ کا فون بہت دور ہے۔ اپنے فون کو قریب لائیں۔</translation>
 <translation id="3368922792935385530">منسلک</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox فعال ہے</translation>
-<translation id="4665114317261903604">ڈسٹرب نہ کریں کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="468293128311738995">آپ کے فون سے ایپس</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: فعال کیا جا رہا ہے…</translation>
 <translation id="6274202259872570803">اسکرین کاسٹ</translation>
 <translation id="6276708887952587684">صفحہ کا ماخذ دیکھیں</translation>
-<translation id="6283712521836204486">ڈسٹرب نہ کریں آف ہے۔</translation>
 <translation id="6284232397434400372">ریزولیوشن تبدیل ہو گئی</translation>
 <translation id="6288235558961782912">والد/والدہ کی اجازت سے <ph name="USER_EMAIL_ADDRESS" /> بعد میں دوبارہ شامل کیا جا سکتا ہے۔</translation>
 <translation id="6291221004442998378">چارج نہیں ہو رہا ہے</translation>
@@ -1562,6 +1557,7 @@
 <translation id="7842569679327885685">انتباہ: تجرباتی خصوصیت</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7848989271541991537">صفحہ <ph name="PAGE_NUMBER" />، قطار <ph name="ROW_NUMBER" />، کالم <ph name="COLUMN_NUMBER" /> میں منتقل کر دیا گیا۔</translation>
+<translation id="7850320739366109486">ڈسٹرب نہ کریں</translation>
 <translation id="7851039877802112575">فوکس کو پوپ اپس اور ڈائیلاگز پر منتقل کریں</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">مجموعی جائزے میں داخل ہونے کے لیے تین انگلیوں سے اوپر سوائپ کریں</translation>

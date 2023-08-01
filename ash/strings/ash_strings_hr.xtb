@@ -126,7 +126,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1487931858675166540">Stavka <ph name="FIRST_ITEM_TITLE" /> zamijenjena je stavkom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Prikaži sve prijedloge</translation>
 <translation id="1510238584712386396">Pokretač</translation>
-<translation id="1516740043221086139">Način Ne uznemiravaj je uključen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz postavki obavijesti. Obavijesti su isključene za jednu aplikaciju}one{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikaciju}few{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacije}other{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacija}}</translation>
 <translation id="1523032696246003">Baterija <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do napunjenosti</translation>
 <translation id="1525508553941733066">ODBACI</translation>
@@ -151,7 +150,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1632985212731562677">Prekidač za pristup možete onemogućiti tako da otvorite Postavke &gt; Pristupačnost.</translation>
-<translation id="163517899691012366">Obavijesti su isključene kada je uključen način Ne uznemiravaj</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaj/a</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1647986356840967552">Prethodna stranica</translation>
@@ -526,7 +524,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="334252345105450327">Izradi snimku zaslona</translation>
 <translation id="334927402682780278">Odabir teksta od pokazivača do kraja retka</translation>
 <translation id="3349345708646875009">Otvaranje upravitelja zadataka</translation>
-<translation id="3354555338129305222">zašto je moj uređaj spor</translation>
 <translation id="3364721542077212959">Alati pisaljke</translation>
 <translation id="3365977133351922112">Telefon je predaleko. Približite telefon.</translation>
 <translation id="3368922792935385530">Spojeno</translation>
@@ -844,7 +841,6 @@ Priključite uređaj na napajanje.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox omogućen</translation>
-<translation id="4665114317261903604">Prebacivanje načina Ne uznemiravaj. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Više aplikacija</translation>
 <translation id="4667099493359681081">Preuzima se <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikacije s telefona</translation>
@@ -1230,7 +1226,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiviranje...</translation>
 <translation id="6274202259872570803">Zaslonska prezentacija</translation>
 <translation id="6276708887952587684">Prikaz izvora stranice</translation>
-<translation id="6283712521836204486">Način Ne uznemiravaj je isključen.</translation>
 <translation id="6284232397434400372">Razlučivost je promijenjena</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> može se kasnije ponovno dodati uz dopuštenje roditelja.</translation>
 <translation id="6291221004442998378">Ne puni se</translation>
@@ -1562,6 +1557,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7842569679327885685">Upozorenje: eksperimentalna značajka</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>
 <translation id="7848989271541991537">Premješteno na <ph name="PAGE_NUMBER" />. stranicu, redak <ph name="ROW_NUMBER" />, stupac <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Ne ometaj</translation>
 <translation id="7851039877802112575">Premještanje fokusa na skočne prozore i dijaloge</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Prijeđite s tri prsta prema gore da biste otvorili Pregled</translation>
@@ -1810,6 +1806,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8921624153894383499">Google asistent ne govori taj jezik.</translation>
 <translation id="8924458948354692166">Pritisnite Enter za snimanje prozora</translation>
 <translation id="8926951137623668982">Polica je uvijek skrivena</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">USB-C uređaj (desni priključak sa stražnje strane)</translation>
 <translation id="8940956008527784070">Baterija je skoro prazna (<ph name="PERCENTAGE" />%)</translation>

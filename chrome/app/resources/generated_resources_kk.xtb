@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">Осы құрылғыға орнатылатын тілдерді таңдаңыз. Диск жадын үнемдеу үшін тілдік файлдар пайдаланушыларға қолжетімді болады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Фондық қойынды Bluetooth функциясын қолдануда</translation>
 <translation id="1112998165730922436">Трансляциялау кідіртілді</translation>
-<translation id="1113807501859230251"><ph name="DEVICE_TYPE" /> құрылғысынан Bruschetta-ны өшіру керек пе? Бұл виртуалдық машинадағы барлық қолданба мен деректерді жояды!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamond</translation>
 <translation id="1114427165525619358">Осы құрылғыдағы және Google аккаунтындағы құпия сөздер</translation>
@@ -2076,7 +2075,6 @@
 <translation id="2673135533890720193">Шолу журналыңызды оқу</translation>
 <translation id="2673873887296220733">Ашу үшін 1 файлды <ph name="CLOUD_PROVIDER" /> қызметіне көшіру керек пе?</translation>
 <translation id="2674764818721168631">Өшірулі</translation>
-<translation id="2675570801872027281">Bruschetta-ны өшіру кезінде қате шықты. Қайталап көріңіз.</translation>
 <translation id="2676084251379299915">Бұл кеңейтім корпоративтік саясатпен өшірілген, себебі ол енді Chrome Web Store дүкенінде қолжетімсіз.</translation>
 <translation id="2678063897982469759">Қайта қосу</translation>
 <translation id="2678100101831051676">Трансляциялау мүмкін емес.</translation>
@@ -6045,6 +6043,7 @@
 <translation id="6050189528197190982">Сұр шкаласы</translation>
 <translation id="6051354611314852653">Жүйенің API осы құрылғыға кіру құқығын авторизациялауы сәтсіз аяқталды.</translation>
 <translation id="6051811090255711417">Бұл файл қауіпсіздік саясатына сай келмегендіктен, ұйымыңыз оны бөгеді.</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Трансляцияны бастау үшін рұқсат кодын теріңіз.</translation>
 <translation id="6052976518993719690">SSL сертификат беру органы</translation>
 <translation id="6053401458108962351">&amp;Шолу деректерін өшіру…</translation>

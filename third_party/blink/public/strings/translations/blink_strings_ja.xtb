@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">「<ph name="INVALIDDOMAIN" />」内の「<ph name="DOT" />」の位置が間違っています。</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="2226276347425096477">このテキストを半角 <ph name="MAX_CHARACTERS" /> 文字以下にしてください（現時点で半角 <ph name="CURRENT_LENGTH" /> 文字です）。</translation>
-<translation id="2246498165605549352">ローカル ファイル</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>
 <translation id="2277199496770840904">トラック <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">16 進数色コード</translation>

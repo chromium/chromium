@@ -126,7 +126,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> byla prohozená s položkou <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Zobrazit všechny návrhy</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
-<translation id="1516740043221086139">Režim Nerušit je zapnutý.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}many{Zobrazit nastavení oznámení. U # aplikace jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
 <translation id="1523032696246003">Baterie: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> do úplného nabití</translation>
 <translation id="1525508553941733066">ZAVŘÍT</translation>
@@ -151,7 +150,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1611993646327628135">Zap</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
-<translation id="163517899691012366">Když je zapnutý režim Nerušit, jsou vypnuta oznámení</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> zařízení</translation>
 <translation id="1639239467298939599">Načítání</translation>
 <translation id="1647986356840967552">Předchozí stránka</translation>
@@ -526,7 +524,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="334252345105450327">Pořídit snímek obrazovky</translation>
 <translation id="334927402682780278">Vybrat text od kurzoru po konec řádku</translation>
 <translation id="3349345708646875009">Otevřít správce úloh</translation>
-<translation id="3354555338129305222">proč je moje zařízení pomalé</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
 <translation id="3365977133351922112">Telefon je moc daleko. Dejte ho blíž.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
@@ -845,7 +842,6 @@ Připojte zařízení k napájení.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Funkce ChromeVox je zapnutá</translation>
-<translation id="4665114317261903604">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Další aplikace</translation>
 <translation id="4667099493359681081">Stahování souboru <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikace z telefonu</translation>
@@ -1231,7 +1227,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Probíhá aktivace...</translation>
 <translation id="6274202259872570803">Záznam obrazovky</translation>
 <translation id="6276708887952587684">Zobrazit zdrojový kód stránky</translation>
-<translation id="6283712521836204486">Režim Nerušit je vypnutý.</translation>
 <translation id="6284232397434400372">Rozlišení se změnilo</translation>
 <translation id="6288235558961782912">Adresu <ph name="USER_EMAIL_ADDRESS" /> můžete s povolením rodiče přidat později</translation>
 <translation id="6291221004442998378">Nenabíjí se</translation>
@@ -1563,6 +1558,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7842569679327885685">Upozornění: Experimentální funkce</translation>
 <translation id="7846634333498149051">Klávesnice</translation>
 <translation id="7848989271541991537">Přesunuto na stránku <ph name="PAGE_NUMBER" />, řádek <ph name="ROW_NUMBER" />, sloupec <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Nerušit</translation>
 <translation id="7851039877802112575">Přesunout zaměření na vyskakovací a dialogová okna</translation>
 <translation id="7851768487828137624">Kanárek</translation>
 <translation id="7860671499921112077">Přehled otevřete přejetím třemi prsty nahoru</translation>
@@ -1810,6 +1806,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8921624153894383499">Tímto jazykem Asistent Google nehovoří.</translation>
 <translation id="8924458948354692166">Stisknutím klávesy Enter zachytíte snímek okna</translation>
 <translation id="8926951137623668982">Polička je vždy skrytá</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="8936501819958976551">deaktivovala</translation>
 <translation id="8938800817013097409">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="8940956008527784070">Slabá baterie (<ph name="PERCENTAGE" /> %)</translation>

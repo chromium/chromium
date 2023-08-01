@@ -126,7 +126,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1487931858675166540">„<ph name="FIRST_ITEM_TITLE" />“ sukeistas su „<ph name="SECOND_ITEM_TITLE" />“</translation>
 <translation id="1500926532737552529">Rodyti visus pasiūlymus</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
-<translation id="1516740043221086139">Netrukdymo režimas įjungtas.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rodyti pranešimų nustatymus. Programos pranešimai išjungti}one{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}few{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}many{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}other{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}}</translation>
 <translation id="1523032696246003">Akumuliatoriaus įkrovimo lygis: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> iki visiško įkrovimo</translation>
 <translation id="1525508553941733066">ATSISAKYTI</translation>
@@ -151,7 +150,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1611993646327628135">Įjungta</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
-<translation id="163517899691012366">Pranešimai nutildomi, kai įjungtas netrukdymo režimas</translation>
 <translation id="1637505162081889933">Įrenginių: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1647986356840967552">Ankstesnis puslapis</translation>
@@ -526,7 +524,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="334252345105450327">Sukurk ekrano kopiją</translation>
 <translation id="334927402682780278">Pasirinkti tekstą nuo žymeklio iki eilutės pabaigos</translation>
 <translation id="3349345708646875009">Atidaryti užduočių tvarkytuvę</translation>
-<translation id="3354555338129305222">kodėl mano įrenginys lėtas</translation>
 <translation id="3364721542077212959">Rašiklio įrankiai</translation>
 <translation id="3365977133351922112">Jūsų telefonas yra per toli. Atneškite jį arčiau.</translation>
 <translation id="3368922792935385530">Prijungta</translation>
@@ -845,7 +842,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">„ChromeVox“ įgalinta</translation>
-<translation id="4665114317261903604">Perjungti netrukdymo režimą. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Daugiau programų</translation>
 <translation id="4667099493359681081">Atsisiunčiamas failas <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Programos iš telefono</translation>
@@ -1231,7 +1227,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: aktyvinama...</translation>
 <translation id="6274202259872570803">Ekrano vaizdo įrašas</translation>
 <translation id="6276708887952587684">Peržiūrėti puslapio šaltinį</translation>
-<translation id="6283712521836204486">Netrukdymo režimas išjungtas.</translation>
 <translation id="6284232397434400372">Skyra pakeista</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> galima pridėti iš naujo vėliau, gavus tėvų leidimą.</translation>
 <translation id="6291221004442998378">Nekraunama</translation>
@@ -1563,6 +1558,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7842569679327885685">Įspėjimas: eksperimentinė funkcija</translation>
 <translation id="7846634333498149051">Klaviatūra</translation>
 <translation id="7848989271541991537">Perkelta į <ph name="PAGE_NUMBER" /> puslapį, <ph name="ROW_NUMBER" /> eilutę, <ph name="COLUMN_NUMBER" /> stulpelį.</translation>
+<translation id="7850320739366109486">Netrukdyti</translation>
 <translation id="7851039877802112575">Paryškinti iššokančiuosius ir dialogo langus</translation>
 <translation id="7851768487828137624">Kanarų</translation>
 <translation id="7860671499921112077">Perbraukite aukštyn trimis pirštais, kad apsilankytumėte „Apžvalgos“ skiltyje</translation>

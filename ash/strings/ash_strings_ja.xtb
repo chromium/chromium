@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> と <ph name="SECOND_ITEM_TITLE" /> が置き換わりました</translation>
 <translation id="1500926532737552529">提案をすべて表示</translation>
 <translation id="1510238584712386396">ランチャー</translation>
-<translation id="1516740043221086139">サイレント モードはオンです。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{通知設定を表示します。1 件のアプリで通知がオフになっています}other{通知設定を表示します。# 件のアプリで通知がオフになっています}}</translation>
 <translation id="1523032696246003">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 充電完了まで <ph name="TIME" /></translation>
 <translation id="1525508553941733066">閉じる</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">オン</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
-<translation id="163517899691012366">サイレント モードがオンになっている場合、通知はミュートされます</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1647986356840967552">前のページ</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
 <translation id="334927402682780278">カーソル位置から行末までのテキストを選択する</translation>
 <translation id="3349345708646875009">タスク マネージャーを開きます</translation>
-<translation id="3354555338129305222">デバイスの動作が遅い理由</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
 <translation id="3365977133351922112">スマートフォンが遠すぎます。近づけてください。</translation>
 <translation id="3368922792935385530">接続済み</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox を有効にしました</translation>
-<translation id="4665114317261903604">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">表示するアプリを増やす</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> をダウンロードしています</translation>
 <translation id="468293128311738995">スマートフォンのアプリ</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: 有効にしています...</translation>
 <translation id="6274202259872570803">スクリーンキャスト</translation>
 <translation id="6276708887952587684">ページのソースを表示する</translation>
-<translation id="6283712521836204486">サイレント モードはオフです。</translation>
 <translation id="6284232397434400372">解像度が変更されました</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> は、保護者の許可があれば後から追加できます。</translation>
 <translation id="6291221004442998378">充電していません</translation>
@@ -1564,6 +1559,7 @@
 <translation id="7842569679327885685">警告: 試験運用版の機能</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" /> ページの行 <ph name="ROW_NUMBER" />、列 <ph name="COLUMN_NUMBER" /> に移動しました。</translation>
+<translation id="7850320739366109486">通知を一時的にミュート</translation>
 <translation id="7851039877802112575">ポップアップとダイアログにフォーカスを移動する</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">概要モードに切り替えるには、3 本の指で上にスワイプします</translation>

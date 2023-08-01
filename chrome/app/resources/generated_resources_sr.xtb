@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">Одаберите које језике ћете инсталирати на овом уређају. Корисници могу да деле фајлове за језике да би уштедели простор на диску. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Картица у позадини користи Bluetooth</translation>
 <translation id="1112998165730922436">Пребацивање је паузирано</translation>
-<translation id="1113807501859230251">Желите да уклоните Bruschetta-у са уређаја <ph name="DEVICE_TYPE" />? Тиме ћете избрисати све апликације и податке на виртуелној машини.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Дијамант</translation>
 <translation id="1114427165525619358">Лозинке на овом уређају и на вашем Google налогу</translation>
@@ -2078,7 +2077,6 @@
 <translation id="2673135533890720193">Читање ваше историје прегледања</translation>
 <translation id="2673873887296220733">Желите да копирате 1 фајл у <ph name="CLOUD_PROVIDER" /> да бисте га отворили?</translation>
 <translation id="2674764818721168631">Искључено</translation>
-<translation id="2675570801872027281">Грешка при уклањању Bruschetta-е. Пробајте поново.</translation>
 <translation id="2676084251379299915">Овај додатак је онемогућен смерницама за предузећа зато што више није доступан у Chrome веб-продавници.</translation>
 <translation id="2678063897982469759">Поново омогући</translation>
 <translation id="2678100101831051676">Пребацивање није успело.</translation>
@@ -6050,6 +6048,7 @@
 <translation id="6050189528197190982">Сиви тонови</translation>
 <translation id="6051354611314852653">Упс! Систем није успео да одобри приступ API-ју за овај уређај.</translation>
 <translation id="6051811090255711417">Организација је блокирала овај фајл јер није био у складу са безбедносним смерницама</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Унесите приступни кôд да бисте започели пребацивање</translation>
 <translation id="6052976518993719690">Ауторитет за издавање SSL сертификата</translation>
 <translation id="6053401458108962351">&amp;Обриши податке прегледања...</translation>

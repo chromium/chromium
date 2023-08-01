@@ -444,9 +444,11 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3609785682760573515">Menyegerakkan...</translation>
 <translation id="3631443864840848029">Pastikan anda menyimpan kata laluan semasa anda untuk laman ini.</translation>
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
+<translation id="3646736009628185125">Ahli keluarga anda tidak boleh menerima kata laluan sekarang. Minta mereka mengemaskinikan Chrome dan menyegerakkan kata laluan mereka. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Profil Konfigurasi Tersedia</translation>
 <translation id="3670030362669914947">Nombor</translation>
 <translation id="368329460027487650">Dilog keluar. Membuka pilihan untuk log masuk.</translation>
+<translation id="3688815115226493214">Cadangan Tab</translation>
 <translation id="3700134753671613714">Log masuk untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
 <translation id="3709582977625132201">Tandakan Sebagai Belum Dibaca</translation>
 <translation id="371230970611282515">Meramalkan dan memberi anda amaran tentang acara berbahaya sebelum acara itu berlaku.</translation>
@@ -518,6 +520,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="418156467088430727">Lihat Versi Luar Talian di Tab Baharu</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4187450337729239226">Tampal dan Cari</translation>
+<translation id="4216918546378735658">Batal</translation>
 <translation id="4223967053752765281">Organisasi anda telah mematikan log masuk. Anda masih boleh melihat penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada peranti ini. Jika perubahan dibuat, perubahan itu tidak akan disegerakkan ke akaun anda.</translation>
 <translation id="4232900911558558076">Teroka Menu Baharu</translation>
 <translation id="4233831822770018312">Edit Kebenaran</translation>
@@ -640,6 +643,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4904877109095351937">Tandakan Dibaca</translation>
 <translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4916679969857390442">Lensa</translation>
+<translation id="4918086044614829423">Terima</translation>
 <translation id="4922154083994158612">Lagi Keselamatan?</translation>
 <translation id="4930714375720679147">Hidupkan</translation>
 <translation id="4938338714234463591">Tindakan ini akan membolehkan anda menggunakan suara anda dengan ciri tertentu pada laman web.</translation>
@@ -795,6 +799,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="5869029295770560994">OK, Faham</translation>
 <translation id="5871497086027727873">1 item dialihkan</translation>
 <translation id="5896576662943111387">Dibina untuk iOS</translation>
+<translation id="5897749768294722429">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan tab dan sejarah anda.</translation>
 <translation id="5897956970858271241">Lawati Pautan Disalin</translation>
 <translation id="5899314093904173337">Untuk berkongsi dengan orang yang berdekatan, benarkan mereka mengimbas kod QR ini dengan kamera atau apl pengimbas QR mereka</translation>
 <translation id="5911030830365207728">Google Terjemah</translation>
@@ -860,6 +865,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="6223816392543092032">Dapatkan penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada semua peranti anda.</translation>
 <translation id="6224759905509595045">Sahkan Identiti Anda…</translation>
 <translation id="6229318421047648685">Minta Laman Desktop</translation>
+<translation id="6229719094394196779">Jimatkan Masa, Kurangkan Menaip</translation>
 <translation id="6231782223312638214">Dicadangkan</translation>
 <translation id="6232329973559504466">Carian Inkognito</translation>
 <translation id="6236952928980352967">Pulihkan Amaran</translation>
@@ -874,6 +880,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="629730747756840877">Akaun</translation>
 <translation id="6321526113093607004">Tambahkan pada Penanda Halaman</translation>
 <translation id="6324669097367352121">Tetapan log masuk</translation>
+<translation id="6328337032497818759">Sesuaikan Menu</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> Kata Laluan yang Digunakan Semula</translation>
 <translation id="6337234675334993532">Penyulitan</translation>
 <translation id="633809752005859102">Ada sesuatu yang tidak kena. Kami akan membetulkannya.</translation>
@@ -887,6 +894,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="6348855835728304880">Akses kata laluan Chrome anda dan pelbagai lagi merentas apl lain pada peranti ini.</translation>
 <translation id="63519665078626091">Untuk menggunakan Pemeriksa Web, sambungkan kepada Safari pada komputer anda menggunakan kabel dan akses iPad anda daripada menu Pembangun. Anda boleh mendayakan menu pembangun pada bahagian Lanjutan tetapan Safari pada komputer anda.</translation>
 <translation id="6355820205320395730">Kata laluan yang lemah mudah diteka. Pastikan anda sedang membuat kata laluan yang kukuh. <ph name="BEGIN_LINK" />Lihat lebih banyak petua keselamatan.<ph name="END_LINK" /></translation>
+<translation id="6361681885917591592">Selesai</translation>
 <translation id="6361848730467328243">Ikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Tiada Tab Inkognito</translation>
 <translation id="6363526231572697780">Tiada Nama Pengguna</translation>
@@ -974,6 +982,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="672735642903863329">Dapatkan penanda halaman, kata laluan dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="6730682669179532099">Tidak Dapat Mengeskport Kata Laluan</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6746338529702829275">Semak data akaun anda</translation>
 <translation id="6748108480210050150">Daripada</translation>
 <translation id="6753469262000681876">Mod Kunci Semua</translation>
 <translation id="6760509555861141183">Kembali ke Tab Baru-baru Ini</translation>
@@ -1025,6 +1034,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7062545763355031412">Terima dan tukar akaun</translation>
+<translation id="7069695992271320873">Alih keluar daripada Peranti Ini</translation>
 <translation id="7080806333218412752">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan. Turut menghantar sedikit contoh halaman, muat turun, aktiviti sambungan dan maklumat sistem untuk membantu penemuan ancaman baharu. Memautkan data ini pada Akaun Google anda secara sementara apabila anda log masuk, untuk melindungi anda merentas apl Google.</translation>
 <translation id="7082853213442715471">Apabila dihidupkan, teknologi web tertentu disekat dan boleh menyebabkan sesetengah laman web dimuatkan dengan lebih perlahan atau tidak beroperasi dengan betul.</translation>
 <translation id="7095110968493193530">Kepada Google Password Manager untuk <ph name="EMAIL" /></translation>
@@ -1053,6 +1063,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7291368939935408496">Menyediakan Kata Laluan…</translation>
 <translation id="730958329302570991">Tambah kata laluan pada Google Password Manager dengan mudah pada bila-bila masa.</translation>
 <translation id="7313347584264171202">Anda dapat menemukan tab Inkognito anda di sini</translation>
+<translation id="7331371412779932885">Memberi anda cadangan tab berdasarkan aktiviti penyemakan imbas anda pada peranti anda yang lain menggunakan Google Account anda. Peranti anda hendaklah dilog masuk dan disegerakkan menggunakan Google Account yang sama.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> peratus dimuat turun</translation>
 <translation id="7340958967809483333">Pilihan untuk Discover</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
@@ -1121,6 +1132,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7749790401023484470">Anda tidak memilih apa-apa teks.</translation>
 <translation id="7756478488453921771">Menu → Tetapan → Kaedah Pembayaran</translation>
 <translation id="7760127703945531263">Kunci Inkognito</translation>
+<translation id="7762768971412105260">Data dalam akaun anda</translation>
 <translation id="7765158879357617694">Alih</translation>
 <translation id="7772032839648071052">Sahkan frasa laluan</translation>
 <translation id="777572173400717978">{count,plural, =1{Ditanda halaman}other{Ditanda halaman}}</translation>
@@ -1374,6 +1386,7 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="952704832371081537">Batal</translation>
 <translation id="953008885340860025">Chrome sudah Dilog Keluar</translation>
 <translation id="959066944189734975">Anda mengikuti <ph name="CHANNEL_NAME" /></translation>
+<translation id="96615566463761848">Paparkan Cadangan Tab daripada Peranti Lain</translation>
 <translation id="97300214378190234">Gunakan Chrome pada bila-bila masa anda mengetik pautan pada apl lain.</translation>
 <translation id="973493300226275298">Jejaki harga produk merentas kedai dalam talian. Anda akan menerima makluman jika harga produk tersebut turun.</translation>
 <translation id="981498610235328462">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan.</translation>

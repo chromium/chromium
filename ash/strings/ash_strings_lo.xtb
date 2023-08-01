@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">ສະຫຼັບ <ph name="FIRST_ITEM_TITLE" /> ກັບ <ph name="SECOND_ITEM_TITLE" /> ແລ້ວ</translation>
 <translation id="1500926532737552529">ສະແດງການແນະນຳທັງໝົດ</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
-<translation id="1516740043221086139">ໂໝດຫ້າມລົບກວນເປີດຢູ່.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບໜຶ່ງແອັບ}other{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບ # ແອັບ}}</translation>
 <translation id="1523032696246003">ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />% | ອີກ <ph name="TIME" /> ຈະເຕັມ</translation>
 <translation id="1525508553941733066">ປິດໄວ້</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">ເປີດ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
-<translation id="163517899691012366">ປິດສຽງການແຈ້ງເຕືອນເມື່ອຄຸນສົມບັດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ອຸປະກອນ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1647986356840967552">ໜ້າກ່ອນໜ້າ</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="334927402682780278">ເລືອກຂໍ້ຄວາມຈາກເຄີເຊີໄປຈົນຮອດທ້າຍແຖວ</translation>
 <translation id="3349345708646875009">ເປີດຕົວຈັດການໜ້າວຽກ</translation>
-<translation id="3354555338129305222">ເປັນຫຍັງອຸປະກອນຂອງຂ້ອຍຈຶ່ງເຮັດວຽກຊ້າ</translation>
 <translation id="3364721542077212959">ເຄື່ອງມືປາຍປາກກາ</translation>
 <translation id="3365977133351922112">ໂທລະສັບຂອງທ່ານຢູ່ໄກເກີນໄປ. ກະລຸນານຳໂທລະສັບມາໃກ້ກັນ.</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ເປີດນຳໃຊ້ ChromeVox ແລ້ວ</translation>
-<translation id="4665114317261903604">ປິດເປີດຫ້າມລົບກວນ. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">ແອັບເພີ່ມເຕີມ</translation>
 <translation id="4667099493359681081">ກຳລັງດາວໂຫຼດ <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">ແອັບຈາກໂທລະສັບຂອງທ່ານ</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">ເບິ່ງແຫຼ່ງທີ່ມາຂອງຫນ້າ</translation>
-<translation id="6283712521836204486">ໂໝດຫ້າມລົບກວນປິດຢູ່.</translation>
 <translation id="6284232397434400372">ປ່ຽນຄວາມລະອຽດແລ້ວ</translation>
 <translation id="6288235558961782912">ສາມາດເພີ່ມ <ph name="USER_EMAIL_ADDRESS" /> ຄືນໃໝ່ໃນພາຍຫຼັງໄດ້ໂດຍມີການອະນຸຍາດຂອງພໍ່ແມ່.</translation>
 <translation id="6291221004442998378">ບໍ່ໄດ້ສາກໄຟ</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">ຄຳເຕືອນ: ຄຸນສົມບັດທົດລອງ</translation>
 <translation id="7846634333498149051">ແປ້ນພິມ</translation>
 <translation id="7848989271541991537">ຍ້າຍໜ້າ <ph name="PAGE_NUMBER" />, ແຖວ <ph name="ROW_NUMBER" />, ຖັນ <ph name="COLUMN_NUMBER" /> ແລ້ວ.</translation>
+<translation id="7850320739366109486">ຢ່າລົບ​ກວນ</translation>
 <translation id="7851039877802112575">ຍ້າຍໂຟກັສໄປຫາປັອບອັບ ແລະ ກ່ອງໂຕ້ຕອບ</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">ໃຊ້ສາມນິ້ວມືປັດຂຶ້ນເພື່ອເຂົ້າຫາພາບຮວມ</translation>

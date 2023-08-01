@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'에서 '<ph name="DOT" />'의 위치가 잘못되었습니다.</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2226276347425096477">이 텍스트를 <ph name="MAX_CHARACTERS" />자 이하로 줄이세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
-<translation id="2246498165605549352">로컬 파일</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />번 트랙</translation>
 <translation id="2393030564806080191">16진수 색상 값</translation>

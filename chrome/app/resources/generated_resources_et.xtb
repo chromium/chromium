@@ -142,7 +142,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1110965959145884739">Valige, millised keeled sellesse seadmesse installida. Keelefaile jagatakse kasutajate vahel, et kettaruumi säästa. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Taustal töötav rakendus kasutab Bluetoothi</translation>
 <translation id="1112998165730922436">Ülekandmine on peatatud</translation>
-<translation id="1113807501859230251">Kas soovite Bruschetta seadmest <ph name="DEVICE_TYPE" /> eemaldada? See kustutab virtuaalmasinas kõik rakendused ja andmed!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Teemant</translation>
 <translation id="1114427165525619358">Selles seadmes ja teie Google'i kontol olevad paroolid</translation>
@@ -2085,7 +2084,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2673135533890720193">Sirvimisajaloo lugemine</translation>
 <translation id="2673873887296220733">Kas kopeerida avamiseks üks fail teenusesse <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="2674764818721168631">Väljas</translation>
-<translation id="2675570801872027281">Bruschetta eemaldamisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="2676084251379299915">See laiendus on ettevõtte eeskirjadega keelatud, kuna see pole Chrome'i veebipoes enam saadaval.</translation>
 <translation id="2678063897982469759">Luba uuesti</translation>
 <translation id="2678100101831051676">Ei saa üle kanda.</translation>
@@ -6057,6 +6055,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6050189528197190982">Hallskaala</translation>
 <translation id="6051354611314852653">Vabandust! Süsteemil ei õnnestunud saada sellele seadmele API juurdepääsu.</translation>
 <translation id="6051811090255711417">Teie organisatsioon blokeeris selle faili, sest see ei vastanud turvareeglile</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Ülekandmise alustamiseks sisestage pääsukood</translation>
 <translation id="6052976518993719690">SSL-i sertimiskeskus</translation>
 <translation id="6053401458108962351">Kustuta &amp;sirvimise andmed...</translation>

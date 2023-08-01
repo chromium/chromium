@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> हा <ph name="SECOND_ITEM_TITLE" /> सोबत स्वॅप केला</translation>
 <translation id="1500926532737552529">सर्व सूचना दाखवा</translation>
 <translation id="1510238584712386396">लाँचर</translation>
-<translation id="1516740043221086139">व्यत्यय आणू नका सुरू आहे.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचना सेटिंग्ज दाखवा. ॲपसाठी सूचना बंद आहेत}other{सूचना सेटिंग्ज दाखवा. # ॲप्ससाठी सूचना बंद आहेत}}</translation>
 <translation id="1523032696246003">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | पूर्ण होण्यासाठी <ph name="TIME" /></translation>
 <translation id="1525508553941733066">डिसमिस करा</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">सुरू करा</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
-<translation id="163517899691012366">व्यत्यय आणू नका सुरू असते, तेव्हा सूचना म्यूट केल्या जातात</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिव्हाइस</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1647986356840967552">मागील पेज</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">स्क्रीनशॉट घ्या</translation>
 <translation id="334927402682780278">कर्सरपासून ओळीच्या शेवटपर्यंत मजकूर निवडा</translation>
 <translation id="3349345708646875009">टास्क मॅनेजर उघडा</translation>
-<translation id="3354555338129305222">माझ्या डिव्हाइसचा वेग कमी का आहे</translation>
 <translation id="3364721542077212959">स्टायलस टूल</translation>
 <translation id="3365977133351922112">तुमचा फोन खूप दूर आहे. तुमचा फोन जवळ आणा.</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox सुरू केले</translation>
-<translation id="4665114317261903604">व्यत्यय आणू नका टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">आणखी अ‍ॅप्‍स</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड करत आहे</translation>
 <translation id="468293128311738995">तुमच्या फोनवरील अ‍ॅप्स</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय करत आहे...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">पेज स्रोत पहा</translation>
-<translation id="6283712521836204486">व्यत्यय आणू नका बंद आहे.</translation>
 <translation id="6284232397434400372">रीझोल्युशन बदलले</translation>
 <translation id="6288235558961782912">पालकाच्या परवानगीने <ph name="USER_EMAIL_ADDRESS" /> नंतर पुन्हा जोडता येईल.</translation>
 <translation id="6291221004442998378">चार्ज होत नाही</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">चेतावणी: प्रयोगात्मक वैशिष्ट्य</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7848989271541991537">पेज <ph name="PAGE_NUMBER" />, पंक्ती <ph name="ROW_NUMBER" />, स्तंभ <ph name="COLUMN_NUMBER" /> वर हलवले.</translation>
+<translation id="7850320739366109486">व्यत्यय आणू नका</translation>
 <translation id="7851039877802112575">पॉपअप आणि डायलॉगवर फोकस हलवा</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">अवलोकन मध्ये एंटर करण्यासाठी तीन बोटांनी वर स्‍वाइप करा</translation>
@@ -1811,6 +1807,7 @@
 <translation id="8921624153894383499">Google Assistant ही भाषा बोलत नाही.</translation>
 <translation id="8924458948354692166">विंडोचा स्क्रीनशॉट कॅप्चर करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="8926951137623668982">शेल्फ नेहमी लपवलेले आहे</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{१ फाइल}other{# फाइल}}</translation>
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
 <translation id="8940956008527784070">बॅटरी कमी झाली (<ph name="PERCENTAGE" />%)</translation>

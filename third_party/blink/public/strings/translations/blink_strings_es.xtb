@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">El signo "<ph name="DOT" />" está colocado en una posición incorrecta en la dirección "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2226276347425096477">Reduce la longitud de este texto a <ph name="MAX_CHARACTERS" /> caracteres o menos (actualmente, el texto tiene <ph name="CURRENT_LENGTH" /> caracteres)</translation>
-<translation id="2246498165605549352">Archivo local</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Valor hexadecimal del color</translation>

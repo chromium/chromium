@@ -126,7 +126,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1487931858675166540">Ipinagpalit ang <ph name="FIRST_ITEM_TITLE" /> sa <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Ipakita ang lahat ng suhestyon</translation>
 <translation id="1510238584712386396">Launcher</translation>
-<translation id="1516740043221086139">Naka-on ang Huwag istorbohin.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa isang app}one{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa # app}other{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa # na app}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ng baterya | <ph name="TIME" /> bago mapuno</translation>
 <translation id="1525508553941733066">I-DISMISS</translation>
@@ -151,7 +150,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1611993646327628135">Naka-on</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
-<translation id="163517899691012366">Naka-mute ang mga notification kapag naka-on ang Huwag istorbohin</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1647986356840967552">Nakaraang page</translation>
@@ -526,7 +524,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="334252345105450327">Kumuha ng screenshot</translation>
 <translation id="334927402682780278">I-highlight ang text mula sa cursor hanggang sa dulo ng linya</translation>
 <translation id="3349345708646875009">Buksan ang task manager</translation>
-<translation id="3354555338129305222">bakit mabagal ang aking device</translation>
 <translation id="3364721542077212959">Mga stylus tool</translation>
 <translation id="3365977133351922112">Masyadong malayo ang iyong telepono. Ilapit ito.</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
@@ -845,7 +842,6 @@ Isaksak ang iyong device.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Na-enable ang ChromeVox</translation>
-<translation id="4665114317261903604">I-toggle ang Huwag istorbohin. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Higit pang app</translation>
 <translation id="4667099493359681081">Dina-download ang <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Mga app mula sa iyong telepono</translation>
@@ -1231,7 +1227,6 @@ Isaksak ang iyong device.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ina-activate...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Tingnan ang source ng page</translation>
-<translation id="6283712521836204486">Naka-off ang Huwag istorbohin.</translation>
 <translation id="6284232397434400372">Binago ang resolution</translation>
 <translation id="6288235558961782912">Puwedeng idagdag ulit ang <ph name="USER_EMAIL_ADDRESS" /> kung may pahintulot ng magulang.</translation>
 <translation id="6291221004442998378">Hindi nagcha-charge</translation>
@@ -1563,6 +1558,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7842569679327885685">Babala: Pang-eskperimentong feature</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7848989271541991537">Inilipat sa Page <ph name="PAGE_NUMBER" />, row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Huwag Istorbohin</translation>
 <translation id="7851039877802112575">Ilipat ang focus sa mga pop-up at dialog</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Mag-swipe pataas gamit ang tatlong daliri para makapasok sa Overview</translation>

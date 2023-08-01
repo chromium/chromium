@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">このデバイスにインストールする言語を選択してください。ディスク領域を節約するため、言語ファイルはユーザー間で共有されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">バックグラウンドのタブで Bluetooth が使用されています</translation>
 <translation id="1112998165730922436">キャストを一時停止しました</translation>
-<translation id="1113807501859230251"><ph name="DEVICE_TYPE" /> から Bruschetta を削除しますか？仮想マシン内のすべてのアプリとデータが削除されます。</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" />（USB）</translation>
 <translation id="1114202307280046356">ひし形</translation>
 <translation id="1114427165525619358">このデバイスと Google アカウントに保存されているパスワード</translation>
@@ -2073,7 +2072,6 @@
 <translation id="2673135533890720193">閲覧履歴の読み取り</translation>
 <translation id="2673873887296220733">1 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーして開きますか？</translation>
 <translation id="2674764818721168631">オフ</translation>
-<translation id="2675570801872027281">Bruschetta の削除中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2676084251379299915">この拡張機能は Chrome ウェブストアで利用できなくなったため、エンタープライズ ポリシーにより無効になっています。</translation>
 <translation id="2678063897982469759">再度有効にする</translation>
 <translation id="2678100101831051676">キャストできません。</translation>
@@ -6041,6 +6039,7 @@
 <translation id="6050189528197190982">グレースケール</translation>
 <translation id="6051354611314852653">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="6051811090255711417">このファイルはセキュリティ ポリシーを満たしていないため、組織でブロックされました</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">キャストを開始するにはアクセスコードを入力してください</translation>
 <translation id="6052976518993719690">SSL 認証局</translation>
 <translation id="6053401458108962351">閲覧履歴を消去(&amp;C)...</translation>

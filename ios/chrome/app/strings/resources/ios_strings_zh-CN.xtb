@@ -45,6 +45,7 @@
 <translation id="122699739164161391">关闭所有标签页</translation>
 <translation id="1229222343402087523">在 Chrome 中搜索 ${searchPhrase}</translation>
 <translation id="1242044645101871359">重新登录</translation>
+<translation id="1248276223555153952">管理此设备上的账号…</translation>
 <translation id="1254117744268754948">选择文件夹</translation>
 <translation id="1254424942107648268">查找上一个</translation>
 <translation id="1258491128795710625">新变化</translation>
@@ -107,6 +108,7 @@
 <translation id="1580783302095112590">邮件已发送。</translation>
 <translation id="1582732959743469162">这会全面停止您正在执行的下载任务。</translation>
 <translation id="1594034544529347967">开始日期</translation>
+<translation id="160275202205869636">当此设置处于开启状态时，系统会将数据保存在您的 Google 账号中并使用这些数据。当此设置处于关闭状态时，数据只会保存在此设备上。</translation>
 <translation id="1605405588277479165">关闭 - 不推荐</translation>
 <translation id="1605658421715042784">复制图片</translation>
 <translation id="1608337082864370066">搜索复制的图片</translation>
@@ -288,6 +290,7 @@
 <translation id="2773292004659987824">无痕搜索</translation>
 <translation id="277771892408211951">选择语言</translation>
 <translation id="2780046210906776326">没有电子邮件帐号</translation>
+<translation id="2780326741858434269">此设备上的账号</translation>
 <translation id="2781325423985810933">撤消</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -430,6 +433,7 @@
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
 <translation id="3577555362230509265">在其他应用中使用 Chrome。</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
+<translation id="3587885837929752825">贵组织限制了您可在 Google 账号中保存的内容。</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
 <translation id="3595252146048399851">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="3603009562372709545">复制链接网址</translation>
@@ -634,6 +638,7 @@
 <translation id="4904877109095351937">标记为已读</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4916679969857390442">镜头</translation>
+<translation id="4918086044614829423">接受</translation>
 <translation id="4922154083994158612">想提升安全性？</translation>
 <translation id="4930714375720679147">开启</translation>
 <translation id="4938338714234463591">这样，您就可以通过语音在网站上使用某些功能。</translation>
@@ -691,6 +696,7 @@
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
 <translation id="5283494734135414249">点按地址栏下方显示的相应快捷方式。</translation>
+<translation id="5292723732574094123">已退出账号。重新登录即可查看账号中的书签、密码等信息。</translation>
 <translation id="5295239312320826323">移除帐号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -734,6 +740,7 @@
 <translation id="5614553682702429503">要保存密码吗？</translation>
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
+<translation id="5649795523408334796">检测地址</translation>
 <translation id="5652623411397330904">您跟踪的商品会在此处显示。</translation>
 <translation id="5657859710142657190">进入标签页网格</translation>
 <translation id="5659593005791499971">电子邮件</translation>
@@ -1289,6 +1296,7 @@
 <translation id="8843129975935593190">贵单位限制了您可同步的内容。</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8855242995793521265">不会致使浏览器或设备的运行速度明显变慢。</translation>
+<translation id="8863431381414769983">通过 Google 地图获取路线和本地信息</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
 <translation id="8870413625673593573">最近关闭的标签页</translation>
 <translation id="8876882697946675716">让您的各部设备保持同步</translation>

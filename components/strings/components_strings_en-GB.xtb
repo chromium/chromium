@@ -231,6 +231,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1430915738399379752">Print</translation>
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
+<translation id="1433225466058025572">Try moving your files again</translation>
 <translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">Can ask to edit files and folders on your device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
@@ -564,6 +565,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2148613324460538318">Add Card</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="2149968176347646218">Connection is not secure</translation>
+<translation id="2152495481414285304">Applications</translation>
 <translation id="2153609454945889823">Install Google Play Services for AR?</translation>
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2154739667870063220">Reboot</translation>
@@ -683,6 +685,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2396249848217231973">&amp;Undo delete</translation>
 <translation id="2397836504670957718">Laptops and notebooks</translation>
 <translation id="2400600116338235695">Can ask to connect to serial ports</translation>
+<translation id="2404884497378469141">Try copying your files again</translation>
 <translation id="2413155254802890957">Old</translation>
 <translation id="2413528052993050574">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might be revoked. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2414886740292270097">Dark</translation>
@@ -839,6 +842,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2759825833388495838">fill in your password on <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Comics</translation>
 <translation id="2765217105034171413">Small</translation>
+<translation id="2770159525358613612">Try uploading your files again</translation>
 <translation id="277133753123645258">Delivery method</translation>
 <translation id="277499241957683684">Missing device record</translation>
 <translation id="2775884851269838147">First print page</translation>
@@ -1229,6 +1233,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3632892046558972264">Screen share paused</translation>
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3634567936866541746">You just entered your password on a deceptive site. To secure your accounts, Chrome recommends checking your saved passwords.</translation>
+<translation id="3642196846309122856">Try downloading your files again</translation>
 <translation id="3642638418806704195">Application:</translation>
 <translation id="3646643500201740985">Measuring how well an ad performs</translation>
 <translation id="3647286794400715637">Each URL string entry must contain between 1 and 2 URLs.</translation>
@@ -1352,6 +1357,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3890664840433101773">Add email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">The card is expired</translation>
+<translation id="390391808978419508">Opening timed out</translation>
 <translation id="3905894480064208252">{0,plural, =1{File blocked from transferring}other{<ph name="FILE_COUNT" /> files blocked from transferring}}</translation>
 <translation id="3906095212874392000">End of converted text</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1364,6 +1370,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="393316646445601645">Internet and telecom</translation>
 <translation id="3939773374150895049">Use WebAuthn instead of CVC?</translation>
 <translation id="3941630233824954464">Enable mandatory re-authentication</translation>
+<translation id="3942048175062210325">Try opening your files again</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3946209740501886391">Always ask on this site</translation>
 <translation id="3947595700203588284">Can ask to connect to MIDI devices</translation>
@@ -1445,6 +1452,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4117700440116928470">Policy scope is not supported.</translation>
 <translation id="4121428309786185360">Expires On</translation>
 <translation id="4123572138124678573">Triple punch bottom</translation>
+<translation id="412601465078863288">Uploading timed out</translation>
 <translation id="4127317221386336246">Clothing Accessories</translation>
 <translation id="4127575959421463246">Looking for the Chrome OS flags? Visit</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 other}other{# others}}</translation>
@@ -1661,6 +1669,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4540780316273593836">Something went wrong</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Tray 6</translation>
+<translation id="4546730006268514143">Transferring timed out</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">You're using your screen lock for filling in passwords</translation>
 <translation id="4558551763791394412">Try disabling your extensions.</translation>
@@ -2094,6 +2103,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5470230812924696184">Civil engineering</translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="5471337644440862957">Comedy movies</translation>
+<translation id="547963486735802022">Try transferring your files again</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Add valid address</translation>
 <translation id="5483838506518938965">You're all set</translation>
@@ -2783,6 +2793,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6961733224437895943">Home insurance</translation>
 <translation id="6961844873822989059">Can ask to use fonts installed on your device</translation>
 <translation id="6961980518585973432">Anniversaries</translation>
+<translation id="6962858948849099922">Moving timed out</translation>
 <translation id="6963520811470373926">Superseding</translation>
 <translation id="6963574715554809750">Retail trade</translation>
 <translation id="6963693576491380224">Government and Public Sector Jobs</translation>
@@ -2860,6 +2871,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7111507312244504964">Property Inspections and Appraisals</translation>
 <translation id="7112327784801341716">Not seeing your current info? Contact your bank to update it.</translation>
 <translation id="7118618213916969306">Search for clipboard URL, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Copying timed out</translation>
 <translation id="7119414471315195487">Close other tabs or programmes</translation>
 <translation id="7124354851782353862">Enter your CVC</translation>
 <translation id="7129355289156517987">When you close all Chromium Incognito tabs, your activity in those tabs is cleared from this device:
@@ -3112,6 +3124,7 @@ Additional details:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Less than <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> is currently unable to handle this request.</translation>
+<translation id="7599089013883397081">Downloading timed out</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>

@@ -407,6 +407,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಾಹಿತಿ, ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷತೆಯನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="1793631236004319016">ಕೊನೆಯದಾಗಿ <ph name="NUM_HOURS_MINUTES_SECONDS" /> ಹಿಂದೆ ಬಳಸಲಾಗಿದೆ</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಅನೇಕ ಕ್ರಿಯೆಗಳು ಲಭ್ಯವಿವೆ. ಅವುಗಳನ್ನು ಒಂದೊಂದಾಗಿ ನೋಡಲು ಟ್ಯಾಬ್ ಒತ್ತಿ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ವಿವರಗಳು</translation>
@@ -564,6 +565,7 @@
 <translation id="2148613324460538318">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2149968176347646218">ಕನೆಕ್ಷನ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
+<translation id="2152495481414285304">ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="2153609454945889823">Google Play Services for AR ಗಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2154484045852737596">ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2154739667870063220">ರೀಬೂಟ್‌ ಮಾಡಿ</translation>
@@ -937,6 +939,7 @@
 <translation id="299990983510665749">ಹ್ಯಾಚ್‌ಬ್ಯಾಕ್‌ಗಳು</translation>
 <translation id="3002501248619246229">ಇನ್‌ಪುಟ್ ಟ್ರೇ ಮೀಡಿಯಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3005723025932146533">ಉಳಿಸಲಾದ ನಕಲನ್ನು ತೋರಿಸು</translation>
+<translation id="300580149047131921">ಇತ್ತೀಚೆಗೆ ಬಳಸಿರುವುದು</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಲಭ್ಯವಿರುವ ಕ್ರಿಯೆಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಲು ಟ್ಯಾಬ್ ಕೀ ಒತ್ತಿರಿ, ನಂತರ ಆಯ್ಕೆಮಾಡಿದ ಕ್ರಿಯೆಯನ್ನು ಕಾರ್ಯಗತಗೊಳಿಸಲು Enter ಕೀ ಒತ್ತಿರಿ.</translation>
 <translation id="3013291976881901233">MIDI ಸಾಧನಗಳು</translation>
 <translation id="3014553260345122294">ವ್ಯಾಪಾರ ಸುದ್ದಿ</translation>
@@ -2657,6 +2660,7 @@
 <translation id="6671169470640320959">ಆಟೋಮೋಟಿವ್ ಹಣಕಾಸು</translation>
 <translation id="6671697161687535275">Chromium ನಿಂದ ಫಾರ್ಮ್ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="6677351035258626477">ಫಾಸ್ಟ್ ಫುಡ್</translation>
+<translation id="6681790815630918386">CVC ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6683022854667115063">ಹೆಡ್‌ಫೋನ್‌ಗಳು</translation>
 <translation id="6683717648675961851">ಉದ್ಯೋಗ ಲಿಸ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6687230248707087982">ಎನ್ವಲಪ್ (ಖಾಲಿ)</translation>
@@ -3464,6 +3468,7 @@
 <translation id="830498451218851433">ಅರ್ಧ ಮಡಿಸಿ</translation>
 <translation id="8308653357438598313">ಲೈವ್ ವೀಡಿಯೊ ಸ್ಟ್ರೀಮಿಂಗ್</translation>
 <translation id="8311895354659782580">ರಿಯಲ್ ಎಸ್ಟೇಟ್ ಪಟ್ಟಿಗಳು</translation>
+<translation id="8316555157357957253">ಈಗ ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8317570861267063617">ವೇಗವಾದ ಚೆಕ್‌ಔಟ್‌ಗಾಗಿ, ಈ ಕಾರ್ಡ್‌ಗಾಗಿ CVC ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8319269383395457801">ವಸತಿ ಮಾರಾಟ</translation>
 <translation id="831997045666694187">ಸಂಜೆ</translation>

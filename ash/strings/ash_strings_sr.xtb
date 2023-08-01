@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">Ставка <ph name="FIRST_ITEM_TITLE" /> је замењена ставком <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Прикажи све предлоге</translation>
 <translation id="1510238584712386396">Покретач</translation>
-<translation id="1516740043221086139">Режим Не узнемиравај је укључен.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Прегледајте подешавања обавештења. Обавештења су искључена за једну апликацију}one{Прегледајте подешавања обавештења. Обавештења су искључена за # апликацију}few{Прегледајте подешавања обавештења. Обавештења су искључена за # апликације}other{Прегледајте подешавања обавештења. Обавештења су искључена за # апликација}}</translation>
 <translation id="1523032696246003">Батерија <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> до краја пуњења</translation>
 <translation id="1525508553941733066">ОДБАЦИ</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">Укључено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Приступ помоћу прекидача може да се онемогући у одељку Подешавања &gt; Приступачност.</translation>
-<translation id="163517899691012366">Обавештења се игноришу када је укључено Не узнемиравај</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уређаја</translation>
 <translation id="1639239467298939599">Учитава се</translation>
 <translation id="1647986356840967552">Претходна страница</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">Направи снимак екрана</translation>
 <translation id="334927402682780278">Изабери текст од курсора до краја реда</translation>
 <translation id="3349345708646875009">Отвори менаџер задатака</translation>
-<translation id="3354555338129305222">зашто је мој уређај спор</translation>
 <translation id="3364721542077212959">Алатке за писаљку</translation>
 <translation id="3365977133351922112">Телефон је превише далеко. Приближите га.</translation>
 <translation id="3368922792935385530">Повезан</translation>
@@ -846,7 +843,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox је омогућен</translation>
-<translation id="4665114317261903604">Укључите/искључите режим Не узнемиравај. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Још апликација</translation>
 <translation id="4667099493359681081">Преузима се фајл <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Апликације са телефона</translation>
@@ -1232,7 +1228,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: Активирање...</translation>
 <translation id="6274202259872570803">Видео снимак екрана</translation>
 <translation id="6276708887952587684">Прегледајте извор странице</translation>
-<translation id="6283712521836204486">Режим Не узнемиравај је искључен.</translation>
 <translation id="6284232397434400372">Резолуција је промењена</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> може поново да се дода касније уз дозволу родитеља.</translation>
 <translation id="6291221004442998378">Не пуни се</translation>
@@ -1564,6 +1559,7 @@
 <translation id="7842569679327885685">Упозорење: Експериментална функција</translation>
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7848989271541991537">Премештено је на <ph name="PAGE_NUMBER" />. страницу, <ph name="ROW_NUMBER" />. ред, <ph name="COLUMN_NUMBER" />. колона.</translation>
+<translation id="7850320739366109486">Не узнемиравај</translation>
 <translation id="7851039877802112575">Премести фокус на искачуће прозоре и дијалоге</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Превуците нагоре помоћу три прста да бисте ушли у Преглед</translation>

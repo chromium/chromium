@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">Изберете кои езици да бъдат инсталирани на това устройство. Езиковите файлове се споделят между потребителите с цел пестене на място на диска. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Раздел на заден план използва Bluetooth</translation>
 <translation id="1112998165730922436">Предаването е на пауза</translation>
-<translation id="1113807501859230251">Да се премахне ли Bruschetta от <ph name="DEVICE_TYPE" />? Всички приложения и данни във виртуалната машина ще бъдат изтрити.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MODEL" /> от <ph name="PRINTER_MANUFACTURER" /> (USB)</translation>
 <translation id="1114202307280046356">Ромб</translation>
 <translation id="1114427165525619358">Пароли на това устройство и в профила ви в Google</translation>
@@ -2090,7 +2089,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2673135533890720193">Да чете историята на сърфирането ви</translation>
 <translation id="2673873887296220733">Искате ли да копирате 1 файл в <ph name="CLOUD_PROVIDER" />, за да бъде отворен?</translation>
 <translation id="2674764818721168631">Изключено</translation>
-<translation id="2675570801872027281">При премахването на Bruschetta възникна грешка. Моля, опитайте отново.</translation>
 <translation id="2676084251379299915">Това разширение е деактивирано чрез корпоративно правило, защото вече не е налице в уеб магазина на Chrome.</translation>
 <translation id="2678063897982469759">Повторно активиране</translation>
 <translation id="2678100101831051676">Предаването не е възможно.</translation>
@@ -6065,6 +6063,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6050189528197190982">Сива скала</translation>
 <translation id="6051354611314852653">Ами сега!  Системата не успя да удостовери достъпа на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="6051811090255711417">Организацията ви блокира този файл поради правило за сигурност</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Въведете кода за достъп, за да започнете да предавате</translation>
 <translation id="6052976518993719690">SSL сертифициращ орган</translation>
 <translation id="6053401458108962351">Из&amp;чистване на данните за сърфирането...</translation>

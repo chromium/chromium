@@ -126,7 +126,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1487931858675166540">Se intercambió <ph name="FIRST_ITEM_TITLE" /> con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostrar todas las sugerencias</translation>
 <translation id="1510238584712386396">Selector</translation>
-<translation id="1516740043221086139">No interrumpir está activado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar la configuración de las notificaciones: Están desactivadas para una app}other{Mostrar la configuración de las notificaciones: Están desactivadas para # apps}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% de batería | <ph name="TIME" /> para completar</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
@@ -151,7 +150,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1632985212731562677">Accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
-<translation id="163517899691012366">Se silencian las notificaciones cuando está activada la función No interrumpir.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1647986356840967552">Página anterior</translation>
@@ -526,7 +524,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="334252345105450327">Toma una captura de pantalla</translation>
 <translation id="334927402682780278">Seleccionar texto desde el cursor hasta el final del renglón</translation>
 <translation id="3349345708646875009">Abrir el Administrador de tareas</translation>
-<translation id="3354555338129305222">por qué mi dispositivo está lento</translation>
 <translation id="3364721542077212959">Herramientas de la pluma stylus</translation>
 <translation id="3365977133351922112">Tu teléfono está demasiado lejos. Acércalo.</translation>
 <translation id="3368922792935385530">Conectado</translation>
@@ -846,7 +843,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Se habilitó ChromeVox</translation>
-<translation id="4665114317261903604">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Más apps</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apps de tu teléfono</translation>
@@ -1232,7 +1228,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activando...</translation>
 <translation id="6274202259872570803">Presentación en pantalla</translation>
 <translation id="6276708887952587684">Ver el código fuente de la página</translation>
-<translation id="6283712521836204486">La función No interrumpir está desactivada.</translation>
 <translation id="6284232397434400372">Se cambió la resolución</translation>
 <translation id="6288235558961782912">Puedes volver a agregar a <ph name="USER_EMAIL_ADDRESS" /> más tarde con el permiso de tu madre o padre.</translation>
 <translation id="6291221004442998378">No se está cargando</translation>
@@ -1564,6 +1559,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7848989271541991537">Se movió a la página <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">No interrumpir</translation>
 <translation id="7851039877802112575">Mover el foco a ventanas emergentes y diálogos</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Para ingresar a la Vista general, desliza tres dedos hacia arriba.</translation>
@@ -1812,6 +1808,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8921624153894383499">El Asistente de Google no habla este idioma</translation>
 <translation id="8924458948354692166">Presiona intro para tomar una captura de pantalla de la ventana</translation>
 <translation id="8926951137623668982">Biblioteca siempre oculta</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (puerto derecho en la parte posterior)</translation>
 <translation id="8940956008527784070">Batería baja (<ph name="PERCENTAGE" />%)</translation>

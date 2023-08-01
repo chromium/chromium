@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">“<ph name="FIRST_ITEM_TITLE" />”与“<ph name="SECOND_ITEM_TITLE" />”交换了位置</translation>
 <translation id="1500926532737552529">显示所有建议</translation>
 <translation id="1510238584712386396">启动器</translation>
-<translation id="1516740043221086139">“勿扰”模式已开启。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
 <translation id="1523032696246003">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="1525508553941733066">关闭</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">开启</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
-<translation id="163517899691012366">当“勿扰”模式处于开启状态时，系统会忽略通知</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1647986356840967552">上一页</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">截屏</translation>
 <translation id="334927402682780278">选中从光标处到行尾的文字</translation>
 <translation id="3349345708646875009">打开任务管理器</translation>
-<translation id="3354555338129305222">为什么我的设备运行缓慢</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
 <translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
 <translation id="3368922792935385530">已连接</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">已启用 ChromeVox</translation>
-<translation id="4665114317261903604">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">更多应用</translation>
 <translation id="4667099493359681081">正在下载 <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">您手机中的应用</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在激活…</translation>
 <translation id="6274202259872570803">抓屏</translation>
 <translation id="6276708887952587684">查看网页源代码</translation>
-<translation id="6283712521836204486">“勿扰”模式已关闭。</translation>
 <translation id="6284232397434400372">分辨率已更改</translation>
 <translation id="6288235558961782912">日后在获得家长允许的情况下可以重新添加 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">未在充电</translation>
@@ -1560,6 +1555,7 @@
 <translation id="7842569679327885685">警告：实验性功能</translation>
 <translation id="7846634333498149051">键盘</translation>
 <translation id="7848989271541991537">已移至第 <ph name="PAGE_NUMBER" /> 页中第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
+<translation id="7850320739366109486">请勿打扰</translation>
 <translation id="7851039877802112575">将焦点移至弹出式窗口和对话框</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">若要进入“概览”模式，请用三根手指向上滑动</translation>
@@ -1808,6 +1804,7 @@
 <translation id="8921624153894383499">Google 助理不支持此语言。</translation>
 <translation id="8924458948354692166">按 Enter 键即可截取窗口</translation>
 <translation id="8926951137623668982">任务栏始终处于隐藏状态</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>

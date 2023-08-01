@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">منتخب کریں کہ کون سی زبانیں اس آلہ پر انسٹال کی جائیں۔ ڈسک اسپیس محفوظ کرنے کے لیے زبان کی فائلیں صارفین کے درمیان اشتراک کی جاتی ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">پس منظر ٹیب بلوٹوتھ استعمال کر رہا ہے</translation>
 <translation id="1112998165730922436">کاسٹ کرنا موقوف ہے</translation>
-<translation id="1113807501859230251">‏اپنے <ph name="DEVICE_TYPE" /> سے Bruschetta کو ہٹائیں؟ اس سے ورچوئل مشین میں موجود سبھی ایپس اور ڈیٹا حذف ہو جائیں گے!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">ہیرا</translation>
 <translation id="1114427165525619358">‏اس آلے پر اور آپ کے Google اکاؤنٹ میں پاس ورڈز</translation>
@@ -2081,7 +2080,6 @@
 <translation id="2673135533890720193">اپنی براؤزنگ سرگزشت پڑھیں</translation>
 <translation id="2673873887296220733">کھولنے کے لیے 1 فائل کو <ph name="CLOUD_PROVIDER" /> میں کاپی کریں؟</translation>
 <translation id="2674764818721168631">آف</translation>
-<translation id="2675570801872027281">‏Bruschetta کو ہٹانے میں خرابی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="2676084251379299915">‏اس ایکسٹینشن کو انٹرپرائز پالیسی نے غیر فعال کر دیا ہے کیونکہ یہ Chrome ویب اسٹور پر اب مزید دستیاب نہیں ہے۔</translation>
 <translation id="2678063897982469759">دوبارہ فعال کریں</translation>
 <translation id="2678100101831051676">کاسٹ کرنے سے قاصر۔</translation>
@@ -6052,6 +6050,7 @@
 <translation id="6050189528197190982">گرے اسکیل</translation>
 <translation id="6051354611314852653">‏افوہ!  سسٹم اس آلہ کیلئے API رسائی کی اجازت دینے میں ناکام ہوگیا۔</translation>
 <translation id="6051811090255711417">آپ کی تنظیم نے اس فائل کو مسدود کر دیا کیونکہ یہ سیکیورٹی پالیسی پر پورا نہیں اترتی۔</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">کاسٹ کرنا شروع کرنے کے لیے رسائی کا کوڈ ٹائپ کریں</translation>
 <translation id="6052976518993719690">‏SSL سرٹیفکیشن اتھارٹی</translation>
 <translation id="6053401458108962351">براؤزنگ ڈیٹا &amp;صاف کریں…</translation>

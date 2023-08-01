@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">สลับ <ph name="FIRST_ITEM_TITLE" /> กับ <ph name="SECOND_ITEM_TITLE" /> แล้ว</translation>
 <translation id="1500926532737552529">แสดงคำแนะนำทั้งหมด</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
-<translation id="1516740043221086139">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ 1 แอป}other{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ # แอป}}</translation>
 <translation id="1523032696246003">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />% | อีก <ph name="TIME" /> จะเต็ม</translation>
 <translation id="1525508553941733066">ปิด</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">เปิด</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
-<translation id="163517899691012366">ปิดเสียงการแจ้งเตือนเมื่อฟีเจอร์ห้ามรบกวนเปิดอยู่</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1647986356840967552">หน้าที่แล้ว</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">จับภาพหน้าจอ</translation>
 <translation id="334927402682780278">เลือกข้อความจากเคอร์เซอร์ไปจนถึงท้ายบรรทัด</translation>
 <translation id="3349345708646875009">เปิดตัวจัดการงาน</translation>
-<translation id="3354555338129305222">ทําไมอุปกรณ์ทำงานช้า</translation>
 <translation id="3364721542077212959">เครื่องมือสไตลัส</translation>
 <translation id="3365977133351922112">โทรศัพท์อยู่ไกลเกินไป โปรดนำโทรศัพท์เข้ามาใกล้มากขึ้น</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
@@ -841,7 +838,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">เปิดใช้ ChromeVox แล้ว</translation>
-<translation id="4665114317261903604">เปิด/ปิด "ห้ามรบกวน" <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667099493359681081">กำลังดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">แอปจากโทรศัพท์ของคุณ</translation>
@@ -1227,7 +1223,6 @@
 <translation id="6267036997247669271"><ph name="NAME" /> กำลังเปิดใช้งาน...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">ดูซอร์สโค้ดของหน้าเว็บ</translation>
-<translation id="6283712521836204486">โหมดห้ามรบกวนปิดอยู่</translation>
 <translation id="6284232397434400372">เปลี่ยนความละเอียดแล้ว</translation>
 <translation id="6288235558961782912">คุณจะเพิ่ม <ph name="USER_EMAIL_ADDRESS" /> ได้อีกครั้งในภายหลังโดยต้องได้รับอนุญาตจากผู้ปกครอง</translation>
 <translation id="6291221004442998378">ไม่ได้เสียบชาร์จ</translation>
@@ -1559,6 +1554,7 @@
 <translation id="7842569679327885685">คำเตือน: ฟีเจอร์ทดลอง</translation>
 <translation id="7846634333498149051">แป้นพิมพ์</translation>
 <translation id="7848989271541991537">ย้ายไปที่หน้า <ph name="PAGE_NUMBER" /> แถว <ph name="ROW_NUMBER" /> คอลัมน์<ph name="COLUMN_NUMBER" /></translation>
+<translation id="7850320739366109486">ห้ามรบกวน</translation>
 <translation id="7851039877802112575">ย้ายโฟกัสไปที่ป๊อปอัปและกล่องโต้ตอบ</translation>
 <translation id="7851768487828137624">สีเหลืองอ่อน</translation>
 <translation id="7860671499921112077">ใช้ 3 นิ้วเลื่อนขึ้นเพื่อเข้าสู่ "ภาพรวม"</translation>

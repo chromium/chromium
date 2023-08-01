@@ -140,7 +140,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1110965959145884739">Choisissez les langues à installer sur cet appareil. Les fichiers de langue sont partagés entre les utilisateurs pour économiser de l'espace disque. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">L'onglet d'arrière-plan utilise le Bluetooth</translation>
 <translation id="1112998165730922436">La diffusion est suspendue</translation>
-<translation id="1113807501859230251">Retirer Bruschetta de votre <ph name="DEVICE_TYPE" />? Toutes les applications et les données de la machine virtuelle seront ainsi supprimées!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114427165525619358">Les mots de passe stockés sur cet appareil et dans votre compte Google</translation>
@@ -2081,7 +2080,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2673135533890720193">Consulter votre historique de navigation</translation>
 <translation id="2673873887296220733">Copier 1 fichier vers <ph name="CLOUD_PROVIDER" /> pour l'ouvrir?</translation>
 <translation id="2674764818721168631">Désactivé</translation>
-<translation id="2675570801872027281">Erreur lors de la suppression de Bruschetta. Veuillez réessayer.</translation>
 <translation id="2676084251379299915">Cette extension a été désactivée par la politique de l'entreprise, car elle n'est plus offerte sur la boutique en ligne Chrome Web Store</translation>
 <translation id="2678063897982469759">Réactiver</translation>
 <translation id="2678100101831051676">Diffusion impossible.</translation>
@@ -6052,6 +6050,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6050189528197190982">Échelle de gris</translation>
 <translation id="6051354611314852653">Oups… Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="6051811090255711417">Votre organisation a bloqué ce fichier parce qu'il n'est pas conforme à une politique de sécurité</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Tapez le code d'accès pour commencer à diffuser</translation>
 <translation id="6052976518993719690">Autorité de certification SSL</translation>
 <translation id="6053401458108962351">&amp;Effacer les données de navigation…</translation>

@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> மற்றும் <ph name="FIRST_ITEM_TITLE" /> ஒன்றுக்கொன்று மாற்றப்பட்டன</translation>
 <translation id="1500926532737552529">அனைத்துப் பரிந்துரைகளையும் காட்டும்</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
-<translation id="1516740043221086139">'தொந்தரவு செய்ய வேண்டாம்' ஆன் செய்யப்பட்டுள்ளது.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். ஒரு ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}other{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். # ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}}</translation>
 <translation id="1523032696246003">பேட்டரி <ph name="BATTERY_PERCENTAGE" />% | முழுமையாகச் சார்ஜ் ஆக <ph name="TIME" /> ஆகும்</translation>
 <translation id="1525508553941733066">நிராகரி</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">இயக்கு</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1632985212731562677">அமைப்புகள் &gt; அணுகலம்சங்கள் என்பதற்குச் சென்று சுவிட்ச் அணுகலை முடக்கலாம்.</translation>
-<translation id="163517899691012366">தொந்தரவு செய்ய வேண்டாம் அம்சம் இயக்கப்பட்டிருக்கும்போது அறிவிப்புகள் ஒலியடக்கப்படும்</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> சாதனங்கள்</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
 <translation id="1647986356840967552">முந்தைய பக்கம்</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">ஸ்கிரீன்ஷாட் எடுங்கள்</translation>
 <translation id="334927402682780278">கர்சரிலிருந்து வரியின் இறுதிவரை தேர்ந்தெடுக்கும்</translation>
 <translation id="3349345708646875009">செயல் நிர்வாகியைத் திற</translation>
-<translation id="3354555338129305222">எனது சாதனம் ஏன் மெதுவாகச் செயல்படுகிறது?</translation>
 <translation id="3364721542077212959">ஸ்டைலஸ் கருவிகள்</translation>
 <translation id="3365977133351922112">உங்கள் மொபைல் தூரமாக உள்ளது. அதை அருகில் கொண்டுவரவும்.</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox இயக்கப்பட்டது</translation>
-<translation id="4665114317261903604">'தொந்தரவு செய்ய வேண்டாம்' அம்சத்தை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">மேலும் ஆப்ஸ்</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குகிறது</translation>
 <translation id="468293128311738995">உங்கள் மொபைலில் உள்ள ஆப்ஸ்</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: செயல்படுத்துகிறது...</translation>
 <translation id="6274202259872570803">ஸ்க்ரீன்காஸ்ட்</translation>
 <translation id="6276708887952587684">பக்கத்தின் மூலத்தைக் காட்டும்</translation>
-<translation id="6283712521836204486">'தொந்தரவு செய்ய வேண்டாம்' ஆஃப் செய்யப்பட்டுள்ளது.</translation>
 <translation id="6284232397434400372">தெளிவு மாற்றப்பட்டது</translation>
 <translation id="6288235558961782912">பெற்றோரின் அனுமதியுடன் <ph name="USER_EMAIL_ADDRESS" /> பயனரைப் பின்னர் மறுபடியும் சேர்க்கலாம்.</translation>
 <translation id="6291221004442998378">சார்ஜ் ஏறவில்லை</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">எச்சரிக்கை: பரிசோதனை அம்சம்</translation>
 <translation id="7846634333498149051">கீபோர்டு</translation>
 <translation id="7848989271541991537">பக்கம் <ph name="PAGE_NUMBER" />, வரிசை <ph name="ROW_NUMBER" />, நெடுவரிசை <ph name="COLUMN_NUMBER" />க்கு நகர்த்தப்பட்டது.</translation>
+<translation id="7850320739366109486">தொந்தரவு செய்யாதே</translation>
 <translation id="7851039877802112575">பாப்-அப்களுக்கும் உரையாடல்களுக்கும் செல்</translation>
 <translation id="7851768487828137624">கேனரி</translation>
 <translation id="7860671499921112077">மேலோட்டப் பயன்முறைக்குச் செல்ல, மேல்நோக்கி மூன்று விரல்களால் ஸ்வைப் செய்யவும்</translation>
@@ -1811,6 +1807,7 @@
 <translation id="8921624153894383499">Google அசிஸ்டண்ட், இந்த மொழியை ஆதரிக்கவில்லை.</translation>
 <translation id="8924458948354692166">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="8926951137623668982">ஷெல்ஃப் எப்போதும் மறைக்கப்படும்</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ஃபைல்}other{# ஃபைல்கள்}}</translation>
 <translation id="8936501819958976551">முடக்கப்பட்டது</translation>
 <translation id="8938800817013097409">USB-C சாதனம் (பின்பக்கம் உள்ள வலது போர்ட்)</translation>
 <translation id="8940956008527784070">பேட்டரி குறைவு (<ph name="PERCENTAGE" />%)</translation>

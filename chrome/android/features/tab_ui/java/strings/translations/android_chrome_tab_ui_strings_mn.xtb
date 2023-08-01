@@ -62,10 +62,12 @@
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
 <translation id="6333260925957816943">Энэ дэлгүүрийн талаарх мэдээлэл</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлэглэхээ болих}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлэглэхээ болих}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой. Таны Нууцлалтай таб боломжгүй байх болно.}other{Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой. Таны Нууцлалтай # таб боломжгүй байх болно.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
 <translation id="6549021453810473782">Дэлгүүрийн мэдээллийг үзэх</translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
+<translation id="661742612106409204">Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой.</translation>
 <translation id="6840760312327750441">Табуудыг бүлэглэхийн тулд таб дээр хүрээд, удаан дарна уу. Тэгээд уг табыг нөгөө рүү нь чирж зөөнө үү.</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Табыг хуваалцах}other{Табуудыг хуваалцах}}</translation>

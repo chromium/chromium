@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> <ph name="SECOND_ITEM_TITLE" /> менен алмаштырылды</translation>
 <translation id="1500926532737552529">Бардык сунуштарды көрсөтүү</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
-<translation id="1516740043221086139">"Тынчымды алба" режими күйүк.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Билдирмелердин параметрлерин көрсөтүү. Колдонмонун билдирмелери өчүк}other{Билдирмелердин параметрлерин көрсөтүү. # колдонмонун билдирмелери өчүк}}</translation>
 <translation id="1523032696246003">Батареянын кубаты: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> кийин толот</translation>
 <translation id="1525508553941733066">ЭТИБАРГА АЛБОО</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">Күйүк</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Switch Access функциясын Параметрлер &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
-<translation id="163517899691012366">"Тынчымды алба" режими күйүп турганда билдирмелердин үнү басылат</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1647986356840967552">Мурунку бет</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">Скриншот тартып алуу</translation>
 <translation id="334927402682780278">Текстти курсордон баштап саптын аягына чейин тандоо</translation>
 <translation id="3349345708646875009">Маселелерди башкаргычты ачуу</translation>
-<translation id="3354555338129305222">эмне үчүн түзмөгүм жай иштеп жатат</translation>
 <translation id="3364721542077212959">Стилус куралдары</translation>
 <translation id="3365977133351922112">Телефонуңуз өтө алыс жерде. Аны жакыныраак алып келиңиз.</translation>
 <translation id="3368922792935385530">Туташты</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox иштетилди</translation>
-<translation id="4665114317261903604">"Тынчымды алба" режимин күйгүзүү/өчүрүү. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Дагы башка колдонмолор</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктөлүп алынууда</translation>
 <translation id="468293128311738995">Телефонуңуздагы колдонмолор</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: Жандырылууда…</translation>
 <translation id="6274202259872570803">Скринкаст</translation>
 <translation id="6276708887952587684">Барактын булагын көрсөтүү</translation>
-<translation id="6283712521836204486">"Тынчымды алба" режими өчүк.</translation>
 <translation id="6284232397434400372">Дааналыгы өзгөртүлдү</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> ата-эненин уруксаты менен кайра кошууга болот.</translation>
 <translation id="6291221004442998378">Кубатталган жок</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">Эскертүү: Сынамык функция</translation>
 <translation id="7846634333498149051">Баскычтоп</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" />-бетке, <ph name="ROW_NUMBER" />-сапка, <ph name="COLUMN_NUMBER" />-тилкеге жылдырылды.</translation>
+<translation id="7850320739366109486">Тынчымды алба</translation>
 <translation id="7851039877802112575">Калкып чыкма терезелерге жана диалогдорго өтүү</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Жалпы маалыматка кирүү үчүн үч манжаңыз менен өйдө сүрүп коюңуз</translation>
@@ -1811,6 +1807,7 @@
 <translation id="8921624153894383499">Google Жардамчы бул тилде иштебейт.</translation>
 <translation id="8924458948354692166">Терезенин скриншотун тартып алуу үчүн "Enter" баскычын басыңыз</translation>
 <translation id="8926951137623668982">Текче ар дайым жашырылат</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өчүрүлдү</translation>
 <translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>
 <translation id="8940956008527784070">Батарея аз (<ph name="PERCENTAGE" />%)</translation>

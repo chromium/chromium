@@ -126,7 +126,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> va <ph name="SECOND_ITEM_TITLE" /> almashtirildi</translation>
 <translation id="1500926532737552529">Barcha takliflar</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
-<translation id="1516740043221086139">Bezovta qilinmasin rejimi yoniq.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirishnoma sozlamalarini ochish. Ilova uchun bildirishnomalar yoqilmagan}other{Bildirishnoma sozlamalarini ochish. # ta ilova uchun bildirishnomalar yoqilmagan}}</translation>
 <translation id="1523032696246003">Batareya: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> da toʻladi</translation>
 <translation id="1525508553941733066">YOPISH</translation>
@@ -151,7 +150,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1611993646327628135">Yoniq</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Qulayliklar orqali faolsizlantirish mumkin.</translation>
-<translation id="163517899691012366">Bezovta qilinmasin rejimi yoniqligida bildirishnomalar ovozsiz chiqariladi</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ta qurilma</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1647986356840967552">Avvalgi sahifa</translation>
@@ -526,7 +524,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="334252345105450327">Skrinshot olish</translation>
 <translation id="334927402682780278">Kursordan qator oxirigacha matnni belgilash</translation>
 <translation id="3349345708646875009">Vazifalar boshqaruvini ochish</translation>
-<translation id="3354555338129305222">nega qurilmam sekin ishlayapti</translation>
 <translation id="3364721542077212959">Stilus vositalari</translation>
 <translation id="3365977133351922112">Telefon sizdan uzoqda. Telefonni yaqinlashtiring.</translation>
 <translation id="3368922792935385530">Ulangan</translation>
@@ -845,7 +842,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox yoqildi</translation>
-<translation id="4665114317261903604">“Bezovta qilinmasin” tugmasi. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Boshqa ilovalar</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> yuklab olinmoqda</translation>
 <translation id="468293128311738995">Telefondagi ilovalar</translation>
@@ -1231,7 +1227,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: faollashtirilmoqda...</translation>
 <translation id="6274202259872570803">Skrinkast</translation>
 <translation id="6276708887952587684">Sahifa kodini ko‘rish</translation>
-<translation id="6283712521836204486">Bezovta qilinmasin rejimi oʻchiq.</translation>
 <translation id="6284232397434400372">Piksellar sig‘imi o‘zgardi</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> hisobini keyinroq ota-ona ruxsati bilan qayta kiritish mumkin.</translation>
 <translation id="6291221004442998378">Quvvat olmayapti</translation>
@@ -1563,6 +1558,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7842569679327885685">Diqqat: Tajribaviy funksiya</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" />-sahifa, <ph name="ROW_NUMBER" />-qator, <ph name="COLUMN_NUMBER" />-ustunga olindi.</translation>
+<translation id="7850320739366109486">Bezovta qilinmasin</translation>
 <translation id="7851039877802112575">Qalqib chiqqan va muloqot oynalarini fokuslash</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Umumiy nazarni ochish uchun 3 ta barmoq bilan pastga suring</translation>
@@ -1811,6 +1807,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8921624153894383499">Google Assistent hozircha bu tilda gapirmaydi.</translation>
 <translation id="8924458948354692166">Oynani rasmga olish uchun Enter tugmasini bosing</translation>
 <translation id="8926951137623668982">Javon doim berk</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ta fayl}other{# ta fayl}}</translation>
 <translation id="8936501819958976551">faolsizlantirildi</translation>
 <translation id="8938800817013097409">USB-C qurilma (orqa tomondagi o‘ng port)</translation>
 <translation id="8940956008527784070">Batareya zaryadi kam (<ph name="PERCENTAGE" />%)</translation>

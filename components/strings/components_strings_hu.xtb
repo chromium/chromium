@@ -231,6 +231,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1432187715652018471">Ez az oldal szolgáltatáskezelőt kíván telepíteni.</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
+<translation id="1433225466058025572">Próbálja meg ismét áthelyezni a fájlokat</translation>
 <translation id="1435940442311036198">Azonosítókulcs használata másik eszközön</translation>
 <translation id="1436185428532214179">Engedélyt kérhet arra, hogy szerkeszthesse az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="1442386063175183758">Jobb oldalon kihajtható</translation>
@@ -564,6 +565,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2148613324460538318">Kártya hozzáadása</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2149968176347646218">A kapcsolat nem biztonságos</translation>
+<translation id="2152495481414285304">Alkalmazások</translation>
 <translation id="2153609454945889823">Telepíti a Google Play Services for AR szolgáltatást?</translation>
 <translation id="2154484045852737596">Kártya szerkesztése</translation>
 <translation id="2154739667870063220">Újraindítás</translation>
@@ -683,6 +685,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2396249848217231973">&amp;Törlés visszavonása</translation>
 <translation id="2397836504670957718">Laptopok és notebookok</translation>
 <translation id="2400600116338235695">Engedélyt kérhet a soros portokhoz való csatlakozásra</translation>
+<translation id="2404884497378469141">Próbálja meg újra másolni a fájlokat</translation>
 <translation id="2413155254802890957">Régi</translation>
 <translation id="2413528052993050574">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványát visszavonhatták. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="2414886740292270097">Sötét</translation>
@@ -839,6 +842,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2759825833388495838">kitölteni a jelszót itt: <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Képregények</translation>
 <translation id="2765217105034171413">Kicsi</translation>
+<translation id="2770159525358613612">Próbálja meg ismét feltölteni a fájlokat</translation>
 <translation id="277133753123645258">Szállítási mód</translation>
 <translation id="277499241957683684">Hiányzó eszközrekord</translation>
 <translation id="2775884851269838147">Első nyomtatási oldal</translation>
@@ -1227,6 +1231,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3632892046558972264">Képernyőmegosztás szüneteltetve</translation>
 <translation id="3634530185120165534">5. tálca</translation>
 <translation id="3634567936866541746">Megtévesztő webhelyen adta meg jelszavát. Fiókjai védelmében a Chrome azt javasolja, hogy ellenőrizze mentett jelszavait.</translation>
+<translation id="3642196846309122856">Próbálja meg ismét letölteni a fájlokat</translation>
 <translation id="3642638418806704195">Alkalmazás:</translation>
 <translation id="3646643500201740985">Hirdetések teljesítményének mérése</translation>
 <translation id="3647286794400715637">Minden egyes URL-karakterláncnak 1 vagy 2 URL-címet kell tartalmaznia.</translation>
@@ -1350,6 +1355,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3890664840433101773">E-mail-cím hozzáadása</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">A kártya lejárt</translation>
+<translation id="390391808978419508">Időtúllépés történt a megnyitás során</translation>
 <translation id="3905894480064208252">{0,plural, =1{A fájl átvitele le van tiltva}other{<ph name="FILE_COUNT" /> fájl átvitele le van tiltva}}</translation>
 <translation id="3906095212874392000">Konvertált szöveg vége</translation>
 <translation id="3906954721959377182">Táblagép</translation>
@@ -1362,6 +1368,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="393316646445601645">Internet és telekommunikáció</translation>
 <translation id="3939773374150895049">A WebAuthn szolgáltatást szeretné használni a CVC helyett?</translation>
 <translation id="3941630233824954464">Kötelező újbóli hitelesítés engedélyezése</translation>
+<translation id="3942048175062210325">Próbálja meg újra megnyitni a fájlokat</translation>
 <translation id="3943857333388298514">Beillesztés</translation>
 <translation id="3946209740501886391">Mindig kérdezze meg ezen a webhelyen</translation>
 <translation id="3947595700203588284">Engedélyt kérhet a MIDI-eszközökhöz való csatlakozásra</translation>
@@ -1443,6 +1450,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4117700440116928470">Az irányelv hatásköre nem támogatott.</translation>
 <translation id="4121428309786185360">Lejár:</translation>
 <translation id="4123572138124678573">Három lyuk alul</translation>
+<translation id="412601465078863288">Időtúllépés történt a feltöltés során</translation>
 <translation id="4127317221386336246">Ruházati kiegészítők</translation>
 <translation id="4127575959421463246">A ChromeOS-jelzőket keresi? Keresse fel a következő oldalt:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 egyéb}other{# egyéb}}</translation>
@@ -1659,6 +1667,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4540780316273593836">Hiba történt</translation>
 <translation id="4541810033354695636">kiterjesztett valóság</translation>
 <translation id="4542971377163063093">6. tálca</translation>
+<translation id="4546730006268514143">Időtúllépés történt az átvitel során</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Képernyőzárat használ jelszavak kitöltéséhez</translation>
 <translation id="4558551763791394412">Próbálkozzon a bővítmények letiltásával.</translation>
@@ -2092,6 +2101,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5470230812924696184">Építőmérnöki tanácsadás</translation>
 <translation id="5470861586879999274">&amp;Szerkesztés újra</translation>
 <translation id="5471337644440862957">Vígjátékok</translation>
+<translation id="547963486735802022">Próbálja meg újból átvinni a fájlokat</translation>
 <translation id="5481076368049295676">Lehet, hogy ez a tartalom megpróbál olyan veszélyes szoftvert telepíteni az eszközre, amely ellophatja vagy törölheti az Ön adatait. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">Érvényes címet adjon meg</translation>
 <translation id="5483838506518938965">Elkészült</translation>
@@ -2781,6 +2791,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6961733224437895943">Otthonbiztosítás</translation>
 <translation id="6961844873822989059">Engedélyt kérhet arra, hogy használja az eszközre telepített betűtípusokat</translation>
 <translation id="6961980518585973432">Évfordulók</translation>
+<translation id="6962858948849099922">Időtúllépés történt az áthelyezés során</translation>
 <translation id="6963520811470373926">Felülírás</translation>
 <translation id="6963574715554809750">Kiskereskedelem</translation>
 <translation id="6963693576491380224">Kormányzati és köztisztviselői állások</translation>
@@ -2858,6 +2869,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7111507312244504964">Ingatlanvizsgálat és -felmérés</translation>
 <translation id="7112327784801341716">Nem látja aktuális adatait? A frissítés érdekében forduljon bankjához.</translation>
 <translation id="7118618213916969306">Vágólapon lévő URL, <ph name="SHORT_URL" /> keresése</translation>
+<translation id="7119371694555167493">Időtúllépés történt a másolás során</translation>
 <translation id="7119414471315195487">Zárja be a többi lapot vagy programot</translation>
 <translation id="7124354851782353862">Adja meg a CVC-számot</translation>
 <translation id="7129355289156517987">Amikor bezárja a Chromium összes inkognitó lapját, az érintett lapokon végzett tevékenységei, így a következők is törlődnek erről az eszközről:
@@ -3110,6 +3122,7 @@ További részletek:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Kevesebb, mint <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">A(z) <ph name="HOST_NAME" /> jelenleg nem tudja kezelni ezt a kérést.</translation>
+<translation id="7599089013883397081">Időtúllépés történt a letöltés során</translation>
 <translation id="7600965453749440009">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>
 <translation id="7601297359530599375">Ön általában biztonságosan csatlakozik ehhez a webhelyhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7610193165460212391">Az érték kívül esik a következő tartományon: <ph name="VALUE" />.</translation>

@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">Вы поменяли местами объекты "<ph name="FIRST_ITEM_TITLE" />" и "<ph name="SECOND_ITEM_TITLE" />"</translation>
 <translation id="1500926532737552529">Показать все рекомендации</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
-<translation id="1516740043221086139">Режим "Не беспокоить" включен</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Показать настройки уведомлений. Уведомления отключены для одного приложения.}one{Показать настройки уведомлений. Уведомления отключены для # приложения.}few{Показать настройки уведомлений. Уведомления отключены для # приложений.}many{Показать настройки уведомлений. Уведомления отключены для # приложений.}other{Показать настройки уведомлений. Уведомления отключены для # приложения.}}</translation>
 <translation id="1523032696246003">Батарея: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полного заряда</translation>
 <translation id="1525508553941733066">ЗАКРЫТЬ</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
-<translation id="163517899691012366">Вы не будете получать уведомления.</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1647986356840967552">Предыдущая страница</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">Сделай скриншот</translation>
 <translation id="334927402682780278">Выделить текст от курсора до конца строки</translation>
 <translation id="3349345708646875009">Открыть диспетчер задач</translation>
-<translation id="3354555338129305222">почему мое устройство работает медленно</translation>
 <translation id="3364721542077212959">Инструменты стилуса</translation>
 <translation id="3365977133351922112">Телефон слишком далеко. Поднесите его ближе.</translation>
 <translation id="3368922792935385530">Подключено</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Функция ChromeVox включена</translation>
-<translation id="4665114317261903604">Включить или отключить режим "Не беспокоить". <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Больше приложений</translation>
 <translation id="4667099493359681081">Скачивание файла <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Приложения на вашем телефоне</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: выполняется активация...</translation>
 <translation id="6274202259872570803">Скринкаст</translation>
 <translation id="6276708887952587684">Посмотреть исходный код страницы</translation>
-<translation id="6283712521836204486">Режим "Не беспокоить" отключен</translation>
 <translation id="6284232397434400372">Разрешение изменено</translation>
 <translation id="6288235558961782912">Аккаунт <ph name="USER_EMAIL_ADDRESS" /> можно будет добавить снова с разрешения одного из родителей.</translation>
 <translation id="6291221004442998378">Не заряжается</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">Внимание! Экспериментальная функция</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7848989271541991537">Приложение перенесено на страницу <ph name="PAGE_NUMBER" />, строка <ph name="ROW_NUMBER" />, столбец <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Не беспокоить</translation>
 <translation id="7851039877802112575">Перейти к всплывающим и диалоговым окнам</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Чтобы перейти в режим обзора, проведите тремя пальцами вверх.</translation>
@@ -1811,6 +1807,7 @@
 <translation id="8921624153894383499">Google Ассистент не говорит на этом языке</translation>
 <translation id="8924458948354692166">Нажмите Ввод, чтобы сделать скриншот окна</translation>
 <translation id="8926951137623668982">Временное хранилище будет всегда скрыто</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="8936501819958976551">отключила</translation>
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>
 <translation id="8940956008527784070">Низкий заряд батареи (<ph name="PERCENTAGE" />%)</translation>

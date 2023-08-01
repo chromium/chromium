@@ -126,7 +126,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> vahetati üksuse <ph name="SECOND_ITEM_TITLE" /> vastu</translation>
 <translation id="1500926532737552529">Kuva kõik soovitused</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
-<translation id="1516740043221086139">Režiim Mitte segada on sees.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Kuvab märguandeseaded. Märguanded on rakenduse jaoks välja lülitatud}other{Kuvab märguandeseaded. Märguanded on # rakenduse jaoks välja lülitatud}}</translation>
 <translation id="1523032696246003">Aku laetuse tase: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> kuni aku saab täis</translation>
 <translation id="1525508553941733066">LOOBU</translation>
@@ -151,7 +150,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1611993646327628135">Sees</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
-<translation id="163517899691012366">Kui funktsioon Mitte segada on sisse lülitatud, on märguanded vaigistatud</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> seadet</translation>
 <translation id="1639239467298939599">Laadimine</translation>
 <translation id="1647986356840967552">Eelmine leht</translation>
@@ -526,7 +524,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="334252345105450327">Jäädvusta ekraanipilt</translation>
 <translation id="334927402682780278">Teksti valimine kursorist rea lõpuni</translation>
 <translation id="3349345708646875009">Ava tegumihaldur</translation>
-<translation id="3354555338129305222">miks on seade aeglane</translation>
 <translation id="3364721542077212959">Elektronpliiatsi tööriistad</translation>
 <translation id="3365977133351922112">Teie telefon on liiga kaugel. Tooge telefon lähemale.</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
@@ -846,7 +843,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox on lubatud</translation>
-<translation id="4665114317261903604">Lülitab režiimi Mitte segada sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Rohkem rakendusi</translation>
 <translation id="4667099493359681081">Faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="468293128311738995">Rakendused teie telefonist</translation>
@@ -1232,7 +1228,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveerimine ...</translation>
 <translation id="6274202259872570803">Ekraaniülekanne</translation>
 <translation id="6276708887952587684">Lehe allika kuvamine</translation>
-<translation id="6283712521836204486">Režiim Mitte segada on väljas.</translation>
 <translation id="6284232397434400372">Eraldusvõimet muudeti</translation>
 <translation id="6288235558961782912">Aadressi <ph name="USER_EMAIL_ADDRESS" /> saab hiljem vanema loaga uuesti lisada.</translation>
 <translation id="6291221004442998378">Ei lae</translation>
@@ -1564,6 +1559,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7842569679327885685">Hoiatus: katseline funktsioon</translation>
 <translation id="7846634333498149051">Klaviatuur</translation>
 <translation id="7848989271541991537">Teisaldatud lehele <ph name="PAGE_NUMBER" />, reale <ph name="ROW_NUMBER" />, veergu <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Mitte segada</translation>
 <translation id="7851039877802112575">Hüpik- ja dialoogiakende esile tõstmine</translation>
 <translation id="7851768487828137624">Kanaarilind</translation>
 <translation id="7860671499921112077">Ülevaate avamiseks pühkige kolme sõrmega üles</translation>

@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> અને <ph name="SECOND_ITEM_TITLE" />ની ફેરબદલ કરવામાં આવી</translation>
 <translation id="1500926532737552529">બધા સૂચનો બતાવો</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
-<translation id="1516740043221086139">ખલેલ પાડશો નહીં ચાલુ છે.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{નોટિફિકેશનની સેટિંગ બતાવો. ઍપ માટે નોટિફિકેશન બંધ છે}one{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}other{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}}</translation>
 <translation id="1523032696246003">બૅટરી <ph name="BATTERY_PERCENTAGE" />% | પૂર્ણ ચાર્જ થવા માટે <ph name="TIME" /> બાકી</translation>
 <translation id="1525508553941733066">છોડી દો</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">ચાલુ</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
-<translation id="163517899691012366">ખલેલ પાડશો નહીં સુવિધા ચાલુ હોય ત્યારે નોટિફિકેશન મ્યૂટ કરેલા હોય છે</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ડિવાઇસ</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1647986356840967552">પાછલું પેજ</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
 <translation id="334927402682780278">કર્સરથી લાઇનના છેડા સુધીની ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="3349345708646875009">'કાર્યના મેનેજર' સુવિધા ખોલો</translation>
-<translation id="3354555338129305222">મારું ડિવાઇસ શા માટે ધીમું છે</translation>
 <translation id="3364721542077212959">સ્ટાઇલસનાં સાધનો</translation>
 <translation id="3365977133351922112">તમારો ફોન ઘણો દૂર છે. તમારો ફોન થોડો નજીક લાવો.</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox સક્ષમ કર્યું</translation>
-<translation id="4665114317261903604">'ખલેલ પાડશો નહીં'ને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">વધુ ઍપ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="468293128311738995">તમારા ફોન પરની ઍપ</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: સક્રિય કરી રહ્યું છે...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">પેજનો સૉર્સ જુઓ</translation>
-<translation id="6283712521836204486">ખલેલ પાડશો નહીં બંધ છે.</translation>
 <translation id="6284232397434400372">રિઝોલ્યુશન બદલાયું</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" />ને પછીથી માતાપિતાની પરવાનગી સાથે ઉમેરી શકાય છે.</translation>
 <translation id="6291221004442998378">ચાર્જ થઈ રહ્યું નથી</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">ચેતવણી: પ્રાયોગિક સુવિધા</translation>
 <translation id="7846634333498149051">કીબોર્ડ</translation>
 <translation id="7848989271541991537">પેજ <ph name="PAGE_NUMBER" />, પંક્તિ <ph name="ROW_NUMBER" />, કૉલમ <ph name="COLUMN_NUMBER" /> પર ખસેડી.</translation>
+<translation id="7850320739366109486">ખલેલ પાડશો નહીં</translation>
 <translation id="7851039877802112575">ફોકસને પૉપ-અપ અને સંવાદો પર ખસેડો</translation>
 <translation id="7851768487828137624">કૅનેરી</translation>
 <translation id="7860671499921112077">ઓવરવ્યૂમાં દાખલ થવા માટે, ત્રણ આંગળી વડે ઉપરની તરફ સ્વાઇપ કરો</translation>

@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> ಜೊತೆಗೆ <ph name="FIRST_ITEM_TITLE" /> ಅನ್ನು ಸ್ವ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1500926532737552529">ಎಲ್ಲಾ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
-<translation id="1516740043221086139">'ಅಡಚಣೆ ಮಾಡಬೇಡಿ' ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. ಒಂದು ಆ್ಯಪ್‌ಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}one{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಆ್ಯಪ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}other{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಆ್ಯಪ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="1523032696246003">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="BATTERY_PERCENTAGE" />% | ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್‌ ಪೂರ್ಣಗೊಳ್ಳುವುದಕ್ಕೆ ಬೇಕಾದ ಸಮಯ <ph name="TIME" /></translation>
 <translation id="1525508553941733066">ವಜಾಗೊಳಿಸಿ</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">ಆನ್ ಮಾಡಿ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1632985212731562677">ಆ್ಯಕ್ಸೆಸ್ ಬದಲಾಯಿಸಿ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿಯಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
-<translation id="163517899691012366">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಆನ್ ಆಗಿರುವಾಗ ಅಧಿಸೂಚನೆಗಳನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ಸಾಧನಗಳು</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1647986356840967552">ಹಿಂದಿನ ಪುಟ</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="334927402682780278">ಕರ್ಸರ್‌ನಿಂದ ಸಾಲಿನ ಅಂತ್ಯಕ್ಕೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3349345708646875009">ಕಾರ್ಯ ನಿವಾಹಕವನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="3354555338129305222">ನನ್ನ ಸಾಧನ ಏಕೆ ನಿಧಾನವಾಗಿದೆ</translation>
 <translation id="3364721542077212959">ಸ್ಟೈಲಸ್ ಟೂಲ್‌ಗಳು</translation>
 <translation id="3365977133351922112">ನಿಮ್ಮ ಫೋನ್ ತುಂಬಾ ದೂರದಲ್ಲಿದೆ. ನಿಮ್ಮ ಫೋನ್ ಹತ್ತಿರಕ್ಕೆ ತನ್ನಿ.</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="4665114317261903604">'ಅಡಚಣೆ ಮಾಡಬೇಡಿ' ಸ್ಥಿತಿಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">ಇನ್ನಷ್ಟು ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="468293128311738995">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿನ ಆ್ಯಪ್‌ಗಳು</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6274202259872570803">ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್</translation>
 <translation id="6276708887952587684">ಪುಟದ ಮೂಲವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
-<translation id="6283712521836204486">"ಅಡಚಣೆ ಮಾಡಬೇಡಿ" ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="6284232397434400372">ರೆಸಲ್ಯೂಷನ್ ಬದಲಾಗಿದೆ</translation>
 <translation id="6288235558961782912">ಪೋಷಕರ ಅನುಮತಿಯ ಮೇರೆಗೆ <ph name="USER_EMAIL_ADDRESS" /> ಅನ್ನು ನಂತರ ಪುನಃ ಸೇರಿಸಬಹುದಾಗಿದೆ.</translation>
 <translation id="6291221004442998378">ಚಾರ್ಜ್‌ ಆಗುತ್ತಿಲ್ಲ</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">ಎಚ್ಚರಿಕೆ: ಪ್ರಾಯೋಗಿಕ ಫೀಚರ್</translation>
 <translation id="7846634333498149051">ಕೀಬೋರ್ಡ್</translation>
 <translation id="7848989271541991537">ಪುಟ <ph name="PAGE_NUMBER" />, ಸಾಲು <ph name="ROW_NUMBER" />, ಕಾಲಮ್ <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">ಅಡಚಣೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="7851039877802112575">ಫೋಕಸ್ ಅನ್ನು ಪಾಪ್‌ಅಪ್‌ಗಳಿಗೆ ಮತ್ತು ಡೈಲಾಗ್‌ಗಳಿಗೆ ಸರಿಸಿ</translation>
 <translation id="7851768487828137624">ಕ್ಯಾನರಿ</translation>
 <translation id="7860671499921112077">ಸಮಗ್ರ ನೋಟವನ್ನು ಪ್ರವೇಶಿಸಲು ಮೂರು ಬೆರಳುಗಳಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>

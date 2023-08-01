@@ -126,7 +126,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> blev udskiftet med <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vis alle forslag</translation>
 <translation id="1510238584712386396">Appliste</translation>
-<translation id="1516740043221086139">Forstyr ikke er aktiveret.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis indstillinger for notifikationer. Notifikationer er slået fra for en app}one{Vis indstillinger for notifikationer. Notifikationer er slået fra for # app}other{Vis indstillinger for notifikationer. Notifikationer er slået fra for # apps}}</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> indtil fuldt opladet</translation>
 <translation id="1525508553941733066">AFVIS</translation>
@@ -151,7 +150,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1611993646327628135">Til</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
-<translation id="163517899691012366">Notifikationer ignoreres, når Forstyr ikke er slået til</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheder</translation>
 <translation id="1639239467298939599">Indlæser</translation>
 <translation id="1647986356840967552">Forrige side</translation>
@@ -526,7 +524,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="334252345105450327">Tag et screenshot</translation>
 <translation id="334927402682780278">Markér tekst fra markør til slutningen af linjen</translation>
 <translation id="3349345708646875009">Åbn Jobliste</translation>
-<translation id="3354555338129305222">hvorfor er min enhed langsom</translation>
 <translation id="3364721542077212959">Styluspenværktøjer</translation>
 <translation id="3365977133351922112">Din telefon er for langt væk. Prøv at flytte telefonen tættere på.</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
@@ -845,7 +842,6 @@ Slut din enhed til en strømkilde.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox er aktiveret</translation>
-<translation id="4665114317261903604">Slå Forstyr ikke til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Flere apps</translation>
 <translation id="4667099493359681081">Downloader <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apps fra din telefon</translation>
@@ -1231,7 +1227,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiverer...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Se sidekilden</translation>
-<translation id="6283712521836204486">Forstyr ikke er deaktiveret</translation>
 <translation id="6284232397434400372">Opløsningen blev ændret</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan tilføjes igen senere, hvis en forælder giver tilladelse til det.</translation>
 <translation id="6291221004442998378">Oplader ikke</translation>
@@ -1563,6 +1558,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7842569679327885685">Advarsel! Eksperimentel funktion</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7848989271541991537">Flyttet til side <ph name="PAGE_NUMBER" />, række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Vil ikke forstyrres</translation>
 <translation id="7851039877802112575">Flyt fokus til pop op-vinduer og dialogbokse</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Stryg opad med tre fingre for at åbne oversigten</translation>

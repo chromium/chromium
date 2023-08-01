@@ -126,7 +126,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a fost înlocuit cu <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vezi toate sugestiile</translation>
 <translation id="1510238584712386396">Lansator</translation>
-<translation id="1516740043221086139">Funcția Nu deranja este activată.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afișează setările pentru notificări. Notificările sunt dezactivate pentru o aplicație}few{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # aplicații}other{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # de aplicații}}</translation>
 <translation id="1523032696246003">Baterie <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> până la încărcare completă</translation>
 <translation id="1525508553941733066">ÎNCHIDE</translation>
@@ -151,7 +150,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
-<translation id="163517899691012366">Notificările sunt dezactivate când se activează funcția Nu deranja</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispozitive</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1647986356840967552">Pagina anterioară</translation>
@@ -526,7 +524,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="334252345105450327">Fă o captură de ecran</translation>
 <translation id="334927402682780278">Selectează textul începând de la cursor până la capătul rândului</translation>
 <translation id="3349345708646875009">Deschide managerul de activități</translation>
-<translation id="3354555338129305222">de ce este lent dispozitivul</translation>
 <translation id="3364721542077212959">Instrumente pentru creion</translation>
 <translation id="3365977133351922112">Telefonul este prea departe. Adu-l mai aproape.</translation>
 <translation id="3368922792935385530">Conectat</translation>
@@ -845,7 +842,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox este activat</translation>
-<translation id="4665114317261903604">Comută Nu deranja. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Mai multe aplicații</translation>
 <translation id="4667099493359681081">Se descarcă <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplicații de pe telefon</translation>
@@ -1231,7 +1227,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: se activează...</translation>
 <translation id="6274202259872570803">Înregistrare de pe ecran</translation>
 <translation id="6276708887952587684">Afișează sursa paginii</translation>
-<translation id="6283712521836204486">Funcția Nu deranja este dezactivată.</translation>
 <translation id="6284232397434400372">Rezoluția a fost schimbată</translation>
 <translation id="6288235558961782912">Utilizatorul <ph name="USER_EMAIL_ADDRESS" /> poate fi adăugat din nou mai târziu, cu permisiunea părintelui.</translation>
 <translation id="6291221004442998378">Nu se încarcă</translation>
@@ -1563,6 +1558,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7842569679327885685">Avertisment: funcție experimentală</translation>
 <translation id="7846634333498149051">Tastatură</translation>
 <translation id="7848989271541991537">S-a mutat în pagina <ph name="PAGE_NUMBER" />, rândul <ph name="ROW_NUMBER" />, coloana <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Nu deranja</translation>
 <translation id="7851039877802112575">Mută focalizarea pe ferestrele pop-up și pe dialoguri</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Glisează cu trei degete în sus pentru a intra în modul Prezentare generală</translation>

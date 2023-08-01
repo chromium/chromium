@@ -231,6 +231,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Gestionar buscadores</translation>
+<translation id="1433225466058025572">Prueba a mover tus archivos de nuevo</translation>
 <translation id="1435940442311036198">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
@@ -564,6 +565,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2148613324460538318">Añadir tarjeta</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2149968176347646218">La conexión no es segura</translation>
+<translation id="2152495481414285304">Aplicaciones</translation>
 <translation id="2153609454945889823">¿Instalar Servicios de Google Play para RA?</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2154739667870063220">Reiniciar</translation>
@@ -683,6 +685,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2396249848217231973">&amp;Deshacer eliminación</translation>
 <translation id="2397836504670957718">Ordenadores portátiles</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos serie</translation>
+<translation id="2404884497378469141">Prueba a copiar tus archivos de nuevo</translation>
 <translation id="2413155254802890957">Antigua</translation>
 <translation id="2413528052993050574">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" /> y se podría rechazar su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="2414886740292270097">Oscuro</translation>
@@ -839,6 +842,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2759825833388495838">rellenar tu contraseña en <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Cómics</translation>
 <translation id="2765217105034171413">Pequeño</translation>
+<translation id="2770159525358613612">Prueba a subir tus archivos de nuevo</translation>
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Falta un registro de dispositivo.</translation>
 <translation id="2775884851269838147">Primera página de impresión</translation>
@@ -1229,6 +1233,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3632892046558972264">Pantalla compartida en pausa</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Acabas de escribir tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chrome recomienda que compruebes las contraseñas que tengas guardadas.</translation>
+<translation id="3642196846309122856">Prueba a descargar tus archivos de nuevo</translation>
 <translation id="3642638418806704195">Aplicación:</translation>
 <translation id="3646643500201740985">Medir el rendimiento de un anuncio</translation>
 <translation id="3647286794400715637">Cada entrada de la cadena de URLs debe contener entre 1 y 2 URLs.</translation>
@@ -1352,6 +1357,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3890664840433101773">Añadir correo electrónico</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">La tarjeta ha caducado</translation>
+<translation id="390391808978419508">Tiempo de espera de apertura agotado</translation>
 <translation id="3905894480064208252">{0,plural, =1{No se ha podido transferir el archivo}other{No se han podido transferir <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="3906095212874392000">Fin del texto convertido</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1364,6 +1370,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="393316646445601645">Internet y telecomunicaciones</translation>
 <translation id="3939773374150895049">¿Usar WebAuthn en lugar de CVC?</translation>
 <translation id="3941630233824954464">Habilitar reautenticación obligatoria</translation>
+<translation id="3942048175062210325">Prueba a abrir tus archivos de nuevo</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3946209740501886391">Preguntar siempre en este sitio web</translation>
 <translation id="3947595700203588284">Puede solicitar permiso para conectarse a dispositivos MIDI</translation>
@@ -1445,6 +1452,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4117700440116928470">No se admite el ámbito de la política.</translation>
 <translation id="4121428309786185360">Vencimiento el</translation>
 <translation id="4123572138124678573">Perforado triple en la parte inferior</translation>
+<translation id="412601465078863288">Tiempo de espera de subida agotado</translation>
 <translation id="4127317221386336246">Accesorios de vestir</translation>
 <translation id="4127575959421463246">¿Buscas las marcas de ChromeOS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Uno más}other{# más}}</translation>
@@ -1661,6 +1669,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4540780316273593836">Se ha producido un error</translation>
 <translation id="4541810033354695636">realidad aumentada</translation>
 <translation id="4542971377163063093">Bandeja 6</translation>
+<translation id="4546730006268514143">Tiempo de espera de transferencia agotado</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estás usando el bloqueo de pantalla para rellenar contraseñas</translation>
 <translation id="4558551763791394412">Inhabilita las extensiones.</translation>
@@ -2094,6 +2103,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5470230812924696184">Ingeniería civil</translation>
 <translation id="5470861586879999274">&amp;Rehacer edición</translation>
 <translation id="5471337644440862957">Comedias</translation>
+<translation id="547963486735802022">Prueba a transferir tus archivos de nuevo</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o elimine tu información en el dispositivo. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Añadir dirección válida</translation>
 <translation id="5483838506518938965">Ya has terminado</translation>
@@ -2783,6 +2793,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6961733224437895943">Seguro de hogar</translation>
 <translation id="6961844873822989059">Puede solicitar permiso para usar las fuentes instaladas en tu dispositivo</translation>
 <translation id="6961980518585973432">Aniversarios</translation>
+<translation id="6962858948849099922">Tiempo de espera para mover agotado</translation>
 <translation id="6963520811470373926">sustituyendo</translation>
 <translation id="6963574715554809750">Comercio minorista</translation>
 <translation id="6963693576491380224">Trabajos del sector público</translation>
@@ -2860,6 +2871,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7111507312244504964">Inspecciones y tasaciones de la propiedad</translation>
 <translation id="7112327784801341716">¿No aparece tu información actual? Ponte en contacto con tu banco para actualizarla.</translation>
 <translation id="7118618213916969306">Buscar la URL <ph name="SHORT_URL" /> del portapapeles</translation>
+<translation id="7119371694555167493">Tiempo de espera de copia agotado</translation>
 <translation id="7119414471315195487">Cierra otros programas o pestañas</translation>
 <translation id="7124354851782353862">Introduce el CVC</translation>
 <translation id="7129355289156517987">Cuando cierras todas las pestañas de incógnito de Chromium, se borra de este dispositivo la siguiente información sobre tu actividad en esas pestañas:
@@ -3112,6 +3124,7 @@ Más información:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Menos de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">La página <ph name="HOST_NAME" /> no puede procesar esta solicitud ahora.</translation>
+<translation id="7599089013883397081">Tiempo de espera de descarga agotado</translation>
 <translation id="7600965453749440009">No traducir nunca del <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Sueles conectarte a este sitio de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">El valor <ph name="VALUE" /> se encuentra fuera del intervalo.</translation>

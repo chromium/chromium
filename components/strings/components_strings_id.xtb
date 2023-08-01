@@ -231,6 +231,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1432187715652018471">Halaman ingin menginstal pengendali layanan.</translation>
 <translation id="1432581352905426595">Kelola mesin telusur</translation>
+<translation id="1433225466058025572">Coba pindahkan file lagi</translation>
 <translation id="1435940442311036198">Gunakan kunci sandi di perangkat lain</translation>
 <translation id="1436185428532214179">Dapat meminta untuk mengedit file dan folder di perangkat Anda</translation>
 <translation id="1442386063175183758">Lipatan format gate di kanan</translation>
@@ -564,6 +565,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2148613324460538318">Tambahkan Kartu</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2149968176347646218">Koneksi tidak aman</translation>
+<translation id="2152495481414285304">Aplikasi</translation>
 <translation id="2153609454945889823">Instal Layanan Google Play untuk AR?</translation>
 <translation id="2154484045852737596">Edit kartu</translation>
 <translation id="2154739667870063220">Mulai ulang</translation>
@@ -683,6 +685,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2396249848217231973">&amp;Urungkan penghapusan</translation>
 <translation id="2397836504670957718">Laptop &amp; notebook</translation>
 <translation id="2400600116338235695">Dapat meminta untuk terhubung ke port serial</translation>
+<translation id="2404884497378469141">Coba salin file lagi</translation>
 <translation id="2413155254802890957">Lama</translation>
 <translation id="2413528052993050574">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya mungkin dicabut. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="2414886740292270097">Gelap</translation>
@@ -839,6 +842,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2759825833388495838">mengisi sandi Anda di <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komik</translation>
 <translation id="2765217105034171413">Kecil</translation>
+<translation id="2770159525358613612">Coba upload file lagi</translation>
 <translation id="277133753123645258">Metode pengiriman</translation>
 <translation id="277499241957683684">Catatan perangkat hilang</translation>
 <translation id="2775884851269838147">Halaman cetak pertama</translation>
@@ -1228,6 +1232,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3632892046558972264">Berbagi layar dijeda</translation>
 <translation id="3634530185120165534">Baki 5</translation>
 <translation id="3634567936866541746">Anda baru saja memasukkan sandi ke situs penipuan. Untuk mengamankan akun Anda, Chrome merekomendasikan pemeriksaan sandi tersimpan Anda.</translation>
+<translation id="3642196846309122856">Coba download file lagi</translation>
 <translation id="3642638418806704195">Aplikasi:</translation>
 <translation id="3646643500201740985">Mengukur seberapa baik performa iklan</translation>
 <translation id="3647286794400715637">Setiap entri string URL harus berisi antara 1 hingga 2 URL.</translation>
@@ -1351,6 +1356,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3890664840433101773">Tambahkan email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Kartu telah habis masa berlakunya</translation>
+<translation id="390391808978419508">Waktu pembukaan habis</translation>
 <translation id="3905894480064208252">{0,plural, =1{File diblokir agar tidak dapat ditransfer}other{<ph name="FILE_COUNT" /> file diblokir agar tidak dapat ditransfer}}</translation>
 <translation id="3906095212874392000">Akhir teks yang dikonversi</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1363,6 +1369,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="393316646445601645">Internet &amp; telekomunikasi</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
 <translation id="3941630233824954464">Aktifkan autentikasi ulang wajib</translation>
+<translation id="3942048175062210325">Coba buka file lagi</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3946209740501886391">Selalu tanyakan pada situs ini</translation>
 <translation id="3947595700203588284">Dapat meminta untuk terhubung ke perangkat MIDI</translation>
@@ -1444,6 +1451,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4117700440116928470">Lingkup kebijakan tidak didukung.</translation>
 <translation id="4121428309786185360">Kedaluwarsa pada</translation>
 <translation id="4123572138124678573">Tiga lubang di bawah</translation>
+<translation id="412601465078863288">Waktu upload habis</translation>
 <translation id="4127317221386336246">Aksesori Pakaian</translation>
 <translation id="4127575959421463246">Mencari tanda ChromeOS? Buka</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
@@ -1660,6 +1668,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4540780316273593836">Terjadi Error</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Baki 6</translation>
+<translation id="4546730006268514143">Waktu transfer habis</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Anda menggunakan kunci layar untuk mengisi sandi</translation>
 <translation id="4558551763791394412">Coba nonaktifkan ekstensi.</translation>
@@ -2093,6 +2102,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5470230812924696184">Teknik sipil</translation>
 <translation id="5470861586879999274">&amp;Ulangi pengeditan</translation>
 <translation id="5471337644440862957">Film komedi</translation>
+<translation id="547963486735802022">Coba transfer file lagi</translation>
 <translation id="5481076368049295676">Konten ini mungkin mencoba menginstal software berbahaya yang mencuri atau menghapus informasi Anda di perangkat. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Tambahkan alamat yang valid</translation>
 <translation id="5483838506518938965">Anda sudah siap</translation>
@@ -2782,6 +2792,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6961733224437895943">Asuransi rumah</translation>
 <translation id="6961844873822989059">Dapat meminta untuk menggunakan font yang diinstal di perangkat Anda</translation>
 <translation id="6961980518585973432">Hari jadi</translation>
+<translation id="6962858948849099922">Waktu pemindahan habis</translation>
 <translation id="6963520811470373926">Menggantikan</translation>
 <translation id="6963574715554809750">Perdagangan retail</translation>
 <translation id="6963693576491380224">Pekerjaan Pemerintah &amp; Sektor Publik</translation>
@@ -2859,6 +2870,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7111507312244504964">Inspeksi &amp; Penilaian Properti</translation>
 <translation id="7112327784801341716">Info Anda yang ditampilkan bukan yang terbaru? Hubungi bank untuk memperbaruinya.</translation>
 <translation id="7118618213916969306">Telusuri URL papan klip, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Waktu penyalinan habis</translation>
 <translation id="7119414471315195487">Tutup tab atau program lain</translation>
 <translation id="7124354851782353862">Masukkan CVC Anda</translation>
 <translation id="7129355289156517987">Jika Anda menutup semua tab Samaran Chromium, aktivitas Anda di tab tersebut akan dihapus dari perangkat ini:
@@ -3109,6 +3121,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Kurang dari <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> saat ini tidak dapat menangani permintaan ini.</translation>
+<translation id="7599089013883397081">Waktu download habis</translation>
 <translation id="7600965453749440009">Jangan pernah terjemahkan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Anda biasanya terhubung ke situs ini dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman kali ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Nilai di luar jangkauan <ph name="VALUE" />.</translation>

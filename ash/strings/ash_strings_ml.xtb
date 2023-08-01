@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />-മായി സ്വാപ്പ് ചെയ്‌തു</translation>
 <translation id="1500926532737552529">എല്ലാ നിർദ്ദേശങ്ങളും കാണിക്കുക</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
-<translation id="1516740043221086139">ശല്യപ്പെടുത്തരുത് മോഡ് ഓണാണ്.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. ഒരു ആപ്പിന് അറിയിപ്പുകൾ ഓഫാണ്}other{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. # ആപ്പുകൾക്ക് അറിയിപ്പുകൾ ഓഫാണ്}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി | ഫുൾ ആവാൻ <ph name="TIME" /> എടുക്കും</translation>
 <translation id="1525508553941733066">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">ഓണാണ്</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'സ്വിച്ച് ആക്‌സസ്' പ്രവർത്തനരഹിതമാക്കാം.</translation>
-<translation id="163517899691012366">'ശല്യപ്പെടുത്തരുത്' ഓണായിരിക്കുമ്പോൾ അറിയിപ്പുകൾ മ്യൂട്ട് ചെയ്യുന്നു</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങൾ</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1647986356840967552">മുമ്പത്തെ പേജ്</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">സ്‌ക്രീൻഷോട്ട് എടുക്കൂ</translation>
 <translation id="334927402682780278">കഴ്‌സർ മുതൽ വരിയുടെ അവസാനം വരെയുള്ള ടെക്‌സ്‌റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3349345708646875009">ടാസ്‌ക് മാനേജർ തുറക്കുക</translation>
-<translation id="3354555338129305222">എന്തുകൊണ്ടാണ് എന്റെ ഉപകരണം മന്ദഗതിയിലുള്ളത്</translation>
 <translation id="3364721542077212959">സ്റ്റൈലസ് ടൂളുകൾ</translation>
 <translation id="3365977133351922112">നിങ്ങളുടെ ഫോൺ വളരെ അകലെയാണ്. ഫോൺ അടുത്തേക്ക് കൊണ്ടുവരിക.</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox പ്രവർത്തനക്ഷമമാക്കി</translation>
-<translation id="4665114317261903604">ശല്യപ്പെടുത്തരുത് മോഡ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">കൂടുതൽ ആപ്പുകൾ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="468293128311738995">ഫോണിലെ ആപ്പുകൾ</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: സജീവമാക്കുന്നു...</translation>
 <translation id="6274202259872570803">സ്ക്രീൻകാസ്റ്റ്</translation>
 <translation id="6276708887952587684">പേജ് ഉറവിടം കാണുക</translation>
-<translation id="6283712521836204486">ശല്യപ്പെടുത്തരുത് മോഡ് ഓഫാണ്.</translation>
 <translation id="6284232397434400372">റെസല്യൂഷൻ മാറ്റി</translation>
 <translation id="6288235558961782912">രക്ഷിതാവിന്റെ അനുമതിയോടെ <ph name="USER_EMAIL_ADDRESS" /> എന്നത് പിന്നീട് വീണ്ടും ചേർക്കാനാവും.</translation>
 <translation id="6291221004442998378">ചാർജ് ചെയ്യുന്നില്ല</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">മുന്നറിയിപ്പ്: പരീക്ഷണാത്മക ഫീച്ചർ</translation>
 <translation id="7846634333498149051">കീബോർഡ്</translation>
 <translation id="7848989271541991537">പേജ് <ph name="PAGE_NUMBER" />, വരി <ph name="ROW_NUMBER" />, കോളം <ph name="COLUMN_NUMBER" /> എന്നതിലേക്ക് നീക്കി.</translation>
+<translation id="7850320739366109486">ശല്യം ചെയ്യരുത്</translation>
 <translation id="7851039877802112575">പോപ്പ് അപ്പുകളിലേക്കും ഡയലോഗുകളിലേക്കും ഫോക്കസ് നീക്കുക</translation>
 <translation id="7851768487828137624">കാനറി</translation>
 <translation id="7860671499921112077">അവലോകനത്തിലേക്ക് കടക്കാൻ മൂന്നു വിരലുകൾ ഉപയോഗിച്ച് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>

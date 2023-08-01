@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">הפריט <ph name="SECOND_ITEM_TITLE" /> החליף את <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">הצגת כל ההצעות</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
-<translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}one{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
 <translation id="1523032696246003">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לטעינה מלאה: <ph name="TIME" /></translation>
 <translation id="1525508553941733066">סגירה</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">פועל</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
-<translation id="163517899691012366">ההתראות מושתקות כשהמצב 'נא לא להפריע' מופעל</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> מכשירים</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1647986356840967552">לדף הקודם</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">יצירת צילום מסך</translation>
 <translation id="334927402682780278">בחירת הטקסט מהסמן עד סוף השורה</translation>
 <translation id="3349345708646875009">פתיחת מנהל המשימות</translation>
-<translation id="3354555338129305222">למה המכשיר איטי</translation>
 <translation id="3364721542077212959">כלי סטיילוס</translation>
 <translation id="3365977133351922112">הטלפון שלך רחוק מדי. צריך לקרב אותו.</translation>
 <translation id="3368922792935385530">מחובר</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox הופעל</translation>
-<translation id="4665114317261903604">החלפת מצב 'נא לא להפריע'. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">עוד אפליקציות</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> בהורדה</translation>
 <translation id="468293128311738995">אפליקציות מהטלפון שלך</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: בהפעלה...</translation>
 <translation id="6274202259872570803">הקלטת מסך</translation>
 <translation id="6276708887952587684">הצגת מקור הדף</translation>
-<translation id="6283712521836204486">מצב 'נא לא להפריע' מושבת.</translation>
 <translation id="6284232397434400372">הרזולוציה השתנתה</translation>
 <translation id="6288235558961782912">ניתן יהיה להוסיף את <ph name="USER_EMAIL_ADDRESS" /> מחדש מאוחר יותר לאחר שיתקבל אישור של הורה.</translation>
 <translation id="6291221004442998378">לא בטעינה</translation>
@@ -1565,6 +1560,7 @@
 <translation id="7842569679327885685">אזהרה: תכונה ניסיונית</translation>
 <translation id="7846634333498149051">מקלדת</translation>
 <translation id="7848989271541991537">עברה לדף <ph name="PAGE_NUMBER" />, שורה <ph name="ROW_NUMBER" />, עמודה <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">נא לא להפריע</translation>
 <translation id="7851039877802112575">הזזת המיקוד לתיבות דו-שיח ולחלונות קופצים</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">כדי להיכנס אל 'מסכים אחרונים', יש להחליק למעלה בעזרת שלוש אצבעות</translation>

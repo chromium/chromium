@@ -358,6 +358,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ongeleesde bladsy}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ongeleesde bladsye}}</translation>
 <translation id="2961210776189273067">Titel</translation>
 <translation id="296370266220139811">Bespaar tyd en tik minder</translation>
+<translation id="297771753501244313">Sorteer: laas oopgemaak</translation>
 <translation id="2979025552038692506">Gekose incognito-oortjie</translation>
 <translation id="2979639724566107830">Maak in nuwe venster oop</translation>
 <translation id="2981364137500752533">Jy kan tot 5 vensters hê.</translation>
@@ -1055,6 +1056,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="663674369910034433">Raadpleeg <ph name="BEGIN_LINK1" />Sinkronisering<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
 <translation id="6637100877383020115">Chrome stuur gebruik- en omvaldata na Google toe om te help om die program beter te maak. <ph name="BEGIN_UMA_LINK" />Bestuur<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokkeer altyd</translation>
+<translation id="664050863900079109">Lees hardop</translation>
 <translation id="6641780377503683465">Verwyder <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6645629752388991326">Beheer watter toestelle kan aanmeld deur hierdie toestel as 'n sekuriteitsleutel te gebruik.</translation>
@@ -1154,6 +1156,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7138678301420049075">Ander</translation>
 <translation id="7146622961999026732">Dit lyk of hierdie werwe en apps vir jou belangrik is:</translation>
 <translation id="7149893636342594995">Afgelope 24 uur</translation>
+<translation id="7152808996372201178">Lees gesteunde bladsye hardop. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="7155317020660659215">Verander jou instellings sodat Chrome jou kamera kan gebruik as jy 'n QR-kode wil skandeer</translation>
 <translation id="7168323970702333693">Aangemeld as <ph name="USER_NAME" />. Maak instellings oop.</translation>
 <translation id="7173114856073700355">Maak Instellings oop</translation>

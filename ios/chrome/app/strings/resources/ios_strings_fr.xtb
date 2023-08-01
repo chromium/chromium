@@ -47,6 +47,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="122699739164161391">Fermer tous les onglets</translation>
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
 <translation id="1242044645101871359">Se reconnecter</translation>
+<translation id="1248276223555153952">Gérer les comptes sur cet appareil…</translation>
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
 <translation id="1254424942107648268">Rechercher la précédente</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
@@ -109,6 +110,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1580783302095112590">E-mail envoyé.</translation>
 <translation id="1582732959743469162">Cette action arrêtera le téléchargement en cours.</translation>
 <translation id="1594034544529347967">Début</translation>
+<translation id="160275202205869636">Activez l'option pour utiliser et sauvegarder les données dans votre compte Google. Désactivez-la pour n'enregistrer les données que sur l'appareil.</translation>
 <translation id="1605405588277479165">Désactivée – Non recommandé</translation>
 <translation id="1605658421715042784">Copier l'image</translation>
 <translation id="1608337082864370066">Rechercher l'image copiée</translation>
@@ -290,6 +292,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2773292004659987824">Recherche en mode navigation privée</translation>
 <translation id="277771892408211951">Sélectionner la langue</translation>
 <translation id="2780046210906776326">Aucun compte messag.</translation>
+<translation id="2780326741858434269">Comptes sur cet appareil</translation>
 <translation id="2781325423985810933">ANNULER</translation>
 <translation id="2781331604911854368">Activé</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3575234738189584619">Rechercher avec Lens</translation>
 <translation id="3577555362230509265">Utilisez Chrome dans d'autres applis.</translation>
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
+<translation id="3587885837929752825">Votre organisation limite les éléments pouvant être enregistrés dans votre compte Google.</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="3595252146048399851">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3603009562372709545">Copier l'URL du lien</translation>
@@ -636,6 +640,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4904877109095351937">Marquer comme lues</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4916679969857390442">Loupe</translation>
+<translation id="4918086044614829423">Accepter</translation>
 <translation id="4922154083994158612">Renforcer la sécurité ?</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4938338714234463591">Vous pourrez ainsi utiliser votre voix avec certaines fonctionnalités sur les sites Web.</translation>
@@ -693,6 +698,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5271265092610673171">{count,plural, =1{Renseignez le champ obligatoire avant d'enregistrer.}one{Renseignez le champ obligatoire avant d'enregistrer.}other{Renseignez les champs obligatoires avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5283494734135414249">Appuyez sur le raccourci qui s'affiche sous la barre d'adresse.</translation>
+<translation id="5292723732574094123">Déconnecté. Reconnectez-vous pour voir les favoris, les mots de passe et plus encore dans votre compte.</translation>
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" /> ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
@@ -736,6 +742,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
+<translation id="5649795523408334796">Détecter les adresses</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
 <translation id="5657859710142657190">Accéder à la grille d'onglets</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -1298,6 +1305,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8843129975935593190">Votre entreprise limite les éléments que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Masqué</translation>
 <translation id="8855242995793521265">Ne ralentit pas sensiblement votre navigateur ni votre appareil.</translation>
+<translation id="8863431381414769983">Obtenez un itinéraire et des informations locales depuis Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="8870413625673593573">Récemment fermés</translation>
 <translation id="8876882697946675716">Synchroniser vos appareils</translation>

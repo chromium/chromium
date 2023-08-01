@@ -126,7 +126,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> und <ph name="SECOND_ITEM_TITLE" /> haben die Plätze getauscht</translation>
 <translation id="1500926532737552529">Alle Vorschläge anzeigen</translation>
 <translation id="1510238584712386396">Launcher</translation>
-<translation id="1516740043221086139">„Bitte nicht stören“ ist aktiviert.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind für eine App deaktiviert.}other{Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind für # Apps deaktiviert.}}</translation>
 <translation id="1523032696246003">Akku <ph name="BATTERY_PERCENTAGE" /> % | Vollständig geladen in <ph name="TIME" /></translation>
 <translation id="1525508553941733066">SCHLIEẞEN</translation>
@@ -151,7 +150,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1611993646327628135">An</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
-<translation id="163517899691012366">Benachrichtigungen sind stummgeschaltet, wenn „Bitte nicht stören“ aktiviert ist</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> Geräte</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1647986356840967552">Vorherige Seite</translation>
@@ -526,7 +524,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="334252345105450327">Screenshot erstellen</translation>
 <translation id="334927402682780278">Text von Cursor bis Zeilenende auswählen</translation>
 <translation id="3349345708646875009">Task-Manager öffnen</translation>
-<translation id="3354555338129305222">Warum ist mein Gerät langsam</translation>
 <translation id="3364721542077212959">Eingabestift-Tools</translation>
 <translation id="3365977133351922112">Dein Smartphone ist zu weit weg. Hole es näher heran.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
@@ -844,7 +841,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox aktiviert</translation>
-<translation id="4665114317261903604">„Bitte nicht stören“ an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4667099493359681081">„<ph name="FILENAME" />“ wird heruntergeladen</translation>
 <translation id="468293128311738995">Apps von deinem Smartphone</translation>
@@ -1230,7 +1226,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Wird aktiviert...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Seiten-Quelltext anzeigen</translation>
-<translation id="6283712521836204486">„Bitte nicht stören“ ist deaktiviert.</translation>
 <translation id="6284232397434400372">Auflösung geändert</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kann später mit der Zustimmung eines Elternteils wieder hinzugefügt werden.</translation>
 <translation id="6291221004442998378">Wird nicht geladen</translation>
@@ -1562,6 +1557,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7842569679327885685">Achtung: Experimentelle Funktion</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7848989271541991537">Auf Seite <ph name="PAGE_NUMBER" />, Zeile <ph name="ROW_NUMBER" />, Spalte <ph name="COLUMN_NUMBER" /> verschoben.</translation>
+<translation id="7850320739366109486">Bitte nicht stören</translation>
 <translation id="7851039877802112575">Fokus auf Pop-up-Fenster und Dialogfelder verschieben</translation>
 <translation id="7851768487828137624">Kanarienvogel</translation>
 <translation id="7860671499921112077">Wische mit drei Fingern nach oben, um die Übersicht aufzurufen</translation>

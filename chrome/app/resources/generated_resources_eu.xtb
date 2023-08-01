@@ -140,7 +140,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1110965959145884739">Aukeratu gailuan instalatu nahi dituzun hizkuntza-paketeak. Erabiltzaileek hizkuntza-fitxategiak partekatzen dituzte, diskoko tokia aurrezteko. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Atzeko planoko fitxa bat Bluetootha erabiltzen ari da</translation>
 <translation id="1112998165730922436">Igortzea pausatu da</translation>
-<translation id="1113807501859230251"><ph name="DEVICE_TYPE" /> gailutik Bruschetta kendu nahi duzu? Makina birtualeko aplikazio eta datu guztiak ezabatuko dira!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamantea</translation>
 <translation id="1114427165525619358">Gailu honetan eta Google-ko kontuan gordetako pasahitzak</translation>
@@ -2079,7 +2078,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2673135533890720193">Irakurri arakatze-historia</translation>
 <translation id="2673873887296220733">1 fitxategi <ph name="CLOUD_PROVIDER" />-ra kopiatu nahi duzu ireki ahal izateko?</translation>
 <translation id="2674764818721168631">Desaktibatuta</translation>
-<translation id="2675570801872027281">Errore bat gertatu da Bruschetta kentzean. Saiatu berriro.</translation>
 <translation id="2676084251379299915">Enpresaren gidalerroak direla eta, luzapena desgaitu egin da, jadanik ez dagoelako Chrome Web Store-n.</translation>
 <translation id="2678063897982469759">Gaitu berriro</translation>
 <translation id="2678100101831051676">Ezin da igorri.</translation>
@@ -6048,6 +6046,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6050189528197190982">Gris-eskala</translation>
 <translation id="6051354611314852653">Sistemak ezin izan dio gailu honi APIa atzitzeko baimenik eman.</translation>
 <translation id="6051811090255711417">Zure erakundeak fitxategia blokeatu du segurtasun-gidalerro bat betetzen ez duelako</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Igortzen hasteko, idatzi sarbide-kodea</translation>
 <translation id="6052976518993719690">SSL ziurtagiri-emailea</translation>
 <translation id="6053401458108962351">&amp;Garbitu arakatze-datuak…</translation>

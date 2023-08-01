@@ -126,7 +126,6 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />-কে <ph name="SECOND_ITEM_TITLE" /> দিয়ে পাল্টানো হয়েছে</translation>
 <translation id="1500926532737552529">সমস্ত পরামর্শ দেখুন</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
-<translation id="1516740043221086139">'বিরক্ত করবে না' মোড চালু আছে।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{বিজ্ঞপ্তির সেটিংস দেখান। একটি অ্যাপের জন্য বিজ্ঞপ্তির নোটিফিকেশন বন্ধ আছে}one{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}other{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}}</translation>
 <translation id="1523032696246003">ব্যাটারি <ph name="BATTERY_PERCENTAGE" />% | সম্পূর্ণ চার্জ হতে <ph name="TIME" /> বাকি আছে</translation>
 <translation id="1525508553941733066">খারিজ করুন</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
-<translation id="163517899691012366">'বিরক্ত করবে না' মোড চালু থাকলে বিজ্ঞপ্তিগুলি মিউট করা হয়</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1647986356840967552">আগের পৃষ্ঠা</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">একটি স্ক্রিনশট নিন</translation>
 <translation id="334927402682780278">কার্সার থেকে লাইনের শেষে টেক্সট বেছে নিন</translation>
 <translation id="3349345708646875009">টাস্ক ম্যানেজার খুলুন</translation>
-<translation id="3354555338129305222">আমার ডিভাইস কেন ধীরে কাজ করছে</translation>
 <translation id="3364721542077212959">স্টাইলাস টুল</translation>
 <translation id="3365977133351922112">আপনার ফোনটি অনেক দূরে আছে। আপনার ফোনটি কাছে আনুন।</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
@@ -845,7 +842,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox সক্ষম করা আছে</translation>
-<translation id="4665114317261903604">'বিরক্ত করবে না' মোড টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">আরও অ্যাপ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="468293128311738995">আপনার ফোন থেকে অ্যাপ</translation>
@@ -1231,7 +1227,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: সক্রিয় করা হচ্ছে...</translation>
 <translation id="6274202259872570803">স্ক্রিনকাস্ট</translation>
 <translation id="6276708887952587684">পৃষ্ঠার সূত্র দেখুন</translation>
-<translation id="6283712521836204486">'বিরক্ত করবে না' মোড বন্ধ আছে</translation>
 <translation id="6284232397434400372">রেজোলিউশন পরিবর্তন করা হয়েছে</translation>
 <translation id="6288235558961782912">পরে অভিভাবকের অনুমতি সহ <ph name="USER_EMAIL_ADDRESS" /> আবার যোগ করা যেতে পারে।</translation>
 <translation id="6291221004442998378">চার্জ হচ্ছে না</translation>
@@ -1563,6 +1558,7 @@
 <translation id="7842569679327885685">সতর্কতা: পরীক্ষামূলক বৈশিষ্ট্য</translation>
 <translation id="7846634333498149051">কীবোর্ড</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠার <ph name="ROW_NUMBER" /> নম্বর সারির <ph name="COLUMN_NUMBER" /> নম্বর কলামে সরানো হয়েছে।</translation>
+<translation id="7850320739366109486">বিরক্ত করবে না</translation>
 <translation id="7851039877802112575">পপ-আপ এবং ডায়ালগে ফোকাস সরান</translation>
 <translation id="7851768487828137624">ক্যানারি</translation>
 <translation id="7860671499921112077">'এক নজরে' মোডে প্রবেশ করতে, তিনটি আঙুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
@@ -1811,6 +1807,7 @@
 <translation id="8921624153894383499">Google অ্যাসিস্ট্যান্ট এই ভাষায় কথা বলে না।</translation>
 <translation id="8924458948354692166">উইন্ডো স্ক্রিনশট ক্যাপচার করার জন্য Enter প্রেস করুন</translation>
 <translation id="8926951137623668982">শেল্ফ সবসময় লুকানো থাকবে</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{১টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="8936501819958976551">বন্ধ আছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>
 <translation id="8940956008527784070">(<ph name="PERCENTAGE" />%) কম ব্যাটারি</translation>

@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">चुनें कि इस डिवाइस पर कौनसी भाषाएं इंस्टॉल करनी है. डिस्क में बचा स्टोरेज सेव करने के लिए, भाषा फ़ाइलों को उपयोगकर्ताओं में शेयर किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">बैकग्राउंड टैब ब्लूटूथ का इस्तेमाल कर रहा है</translation>
 <translation id="1112998165730922436">कास्ट करने की प्रोसेस रोकी गई</translation>
-<translation id="1113807501859230251">क्या आपको <ph name="DEVICE_TYPE" /> से Bruschetta को हटाना है? ऐसा करने से, वर्चुअल मशीन में मौजूद डेटा और सभी ऐप्लिकेशन मिट जाएंगे!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">डायमंड</translation>
 <translation id="1114427165525619358">इस डिवाइस और आपके Google खाते में सेव किए गए पासवर्ड</translation>
@@ -2095,7 +2094,6 @@
 <translation id="2673135533890720193">अपना ब्राउज़िंग इतिहास पढ़ें</translation>
 <translation id="2673873887296220733">क्या एक फ़ाइल को खोलने के लिए, उसे <ph name="CLOUD_PROVIDER" /> पर कॉपी करना है?</translation>
 <translation id="2674764818721168631">बंद है</translation>
-<translation id="2675570801872027281">Bruschetta को हटाने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="2676084251379299915">एंटरप्राइज़ नीति के तहत इस एक्सटेंशन को बंद कर दिया गया है, क्योंकि यह अब Chrome Web Store पर उपलब्ध नहीं है.</translation>
 <translation id="2678063897982469759">फिर से चालू करें</translation>
 <translation id="2678100101831051676">कास्ट नहीं हो पा रहा है.</translation>
@@ -6067,6 +6065,7 @@
 <translation id="6050189528197190982">ग्रेस्‍केल</translation>
 <translation id="6051354611314852653">ओह!  सिस्टम इस डिवाइस के लिए API (एपीआई) एक्सेस की मंज़ूरी नहीं दे सका.</translation>
 <translation id="6051811090255711417">आपके संगठन ने इस फ़ाइल को ब्लॉक कर दिया है, क्योंकि यह सुरक्षा नीति की शर्तें पूरी नहीं करती</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">कास्ट करना शुरू करने के लिए, ऐक्सेस कोड टाइप करें</translation>
 <translation id="6052976518993719690">SSL सत्यापन प्रधिकरण</translation>
 <translation id="6053401458108962351">ब्राउज़िंग डेटा &amp;साफ़ करें...</translation>

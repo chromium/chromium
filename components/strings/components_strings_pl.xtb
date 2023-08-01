@@ -231,6 +231,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1432187715652018471">Strona chce zainstalować moduł do obsługiwania usługi.</translation>
 <translation id="1432581352905426595">Zarządzaj wyszukiwarkami</translation>
+<translation id="1433225466058025572">Spróbuj przenieść pliki ponownie</translation>
 <translation id="1435940442311036198">Użyj klucza na innym urządzeniu</translation>
 <translation id="1436185428532214179">Może prosić o zgodę na edytowanie plików i folderów na urządzeniu</translation>
 <translation id="1442386063175183758">Składanie od dołu do środka</translation>
@@ -564,6 +565,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2148613324460538318">Dodaj kartę</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2149968176347646218">Połączenie nie jest bezpieczne</translation>
+<translation id="2152495481414285304">Aplikacje</translation>
 <translation id="2153609454945889823">Zainstalować Usługi Google Play dla AR?</translation>
 <translation id="2154484045852737596">Edytowanie karty</translation>
 <translation id="2154739667870063220">Zrestartuj</translation>
@@ -683,6 +685,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2396249848217231973">&amp;Cofnij usunięcie</translation>
 <translation id="2397836504670957718">Laptopy i notebooki</translation>
 <translation id="2400600116338235695">Może prosić o zgodę na połączenie z portami szeregowymi</translation>
+<translation id="2404884497378469141">Spróbuj ponownie skopiować pliki</translation>
 <translation id="2413155254802890957">Stary</translation>
 <translation id="2413528052993050574">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa mógł zostać odwołany. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="2414886740292270097">Ciemny</translation>
@@ -839,6 +842,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2759825833388495838">wypełnić hasło na <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komiksy</translation>
 <translation id="2765217105034171413">Mały</translation>
+<translation id="2770159525358613612">Spróbuj ponownie przesłać pliki</translation>
 <translation id="277133753123645258">Metoda wysyłki</translation>
 <translation id="277499241957683684">Brak rekordu urządzenia</translation>
 <translation id="2775884851269838147">Pierwsza strona wydruku</translation>
@@ -1229,6 +1233,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3632892046558972264">Wstrzymano udostępnianie ekranu</translation>
 <translation id="3634530185120165534">Taca 5</translation>
 <translation id="3634567936866541746">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Dla bezpieczeństwa Twoich kont Chrome zaleca sprawdzenie zapisanych haseł.</translation>
+<translation id="3642196846309122856">Spróbuj ponownie pobrać pliki</translation>
 <translation id="3642638418806704195">Aplikacja:</translation>
 <translation id="3646643500201740985">Pomiar skuteczności reklamy</translation>
 <translation id="3647286794400715637">Każda pozycja z adresami URL musi zawierać od 1 do 2 takich adresów.</translation>
@@ -1352,6 +1357,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3890664840433101773">Dodaj adres e-mail</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Karta straciła ważność</translation>
+<translation id="390391808978419508">Upłynął limit czasu otwierania</translation>
 <translation id="3905894480064208252">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="3906095212874392000">Koniec przekonwertowanego tekstu</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1364,6 +1370,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="393316646445601645">Internet i telekomunikacja</translation>
 <translation id="3939773374150895049">Używać WebAuthn zamiast kodu CVC?</translation>
 <translation id="3941630233824954464">Włącz obowiązkowe ponowne uwierzytelnianie</translation>
+<translation id="3942048175062210325">Spróbuj ponownie otworzyć pliki</translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="3946209740501886391">Zawsze pytaj na tej stronie</translation>
 <translation id="3947595700203588284">Może prosić o zgodę na połączenie z urządzeniami MIDI</translation>
@@ -1445,6 +1452,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4117700440116928470">Ten zakres zasad nie jest obsługiwany.</translation>
 <translation id="4121428309786185360">Wygasa dnia</translation>
 <translation id="4123572138124678573">Trzy otwory z dołu</translation>
+<translation id="412601465078863288">Przekroczono limit czasu przesyłania</translation>
 <translation id="4127317221386336246">Galanteria</translation>
 <translation id="4127575959421463246">Szukasz flag Chrome OS? Wejdź na</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 inny wpis}few{# inne wpisy}many{# innych wpisów}other{# innego wpisu}}</translation>
@@ -1661,6 +1669,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4540780316273593836">Coś poszło nie tak</translation>
 <translation id="4541810033354695636">rzeczywistość rozszerzona</translation>
 <translation id="4542971377163063093">Taca 8</translation>
+<translation id="4546730006268514143">Przekroczono limit czasu przesyłania</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Używasz blokady ekranu do wypełniania haseł</translation>
 <translation id="4558551763791394412">Spróbuj wyłączyć rozszerzenia.</translation>
@@ -2094,6 +2103,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5470230812924696184">Inżynieria lądowa i wodna</translation>
 <translation id="5470861586879999274">&amp;Ponów edycję</translation>
 <translation id="5471337644440862957">Komedie</translation>
+<translation id="547963486735802022">Spróbuj przesłać pliki ponownie</translation>
 <translation id="5481076368049295676">Te treści mogą próbować instalować na Twoim urządzeniu niebezpieczne oprogramowanie, które wykrada lub usuwa dane. <ph name="BEGIN_LINK" />Wyświetl mimo to<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Dodaj poprawny adres</translation>
 <translation id="5483838506518938965">Wszystko gotowe</translation>
@@ -2783,6 +2793,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6961733224437895943">Ubezpieczenie mieszkania</translation>
 <translation id="6961844873822989059">Może pytać, czy zezwalasz na używanie czcionek zainstalowanych na urządzeniu</translation>
 <translation id="6961980518585973432">Rocznice</translation>
+<translation id="6962858948849099922">Przekroczono limit czasu przenoszenia</translation>
 <translation id="6963520811470373926">zastępuje</translation>
 <translation id="6963574715554809750">Handel detaliczny</translation>
 <translation id="6963693576491380224">Praca w sektorze rządowym i publicznym</translation>
@@ -2860,6 +2871,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7111507312244504964">Wyceny i inspekcje nieruchomości</translation>
 <translation id="7112327784801341716">Nie widzisz aktualnych danych? Skontaktuj się z bankiem, aby je zaktualizować.</translation>
 <translation id="7118618213916969306">Wyszukaj URL ze schowka, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Przekroczono limit czasu kopiowania</translation>
 <translation id="7119414471315195487">Zamknij inne karty lub programy</translation>
 <translation id="7124354851782353862">Wpisz kod CVC</translation>
 <translation id="7129355289156517987">Gdy w Chromium zamkniesz wszystkie karty incognito, z urządzenia zostanie usunięta Twoja aktywność powiązana z nimi, w tym:
@@ -3112,6 +3124,7 @@ Dodatkowe informacje:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Mniej niż <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Serwer <ph name="HOST_NAME" /> nie może teraz obsłużyć tego żądania.</translation>
+<translation id="7599089013883397081">Przekroczono limit czasu pobierania</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Zazwyczaj łączysz się z tą witryną w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>

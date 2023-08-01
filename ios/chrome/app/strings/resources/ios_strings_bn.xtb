@@ -47,6 +47,7 @@
 <translation id="122699739164161391">সব ট্যাব বন্ধ করুন</translation>
 <translation id="1229222343402087523">Chrome-এ ${searchPhrase} সার্চ করুন</translation>
 <translation id="1242044645101871359">আবার সাইন-ইন করুন</translation>
+<translation id="1248276223555153952">এই ডিভাইসে থাকা অ্যাকাউন্ট ম্যানেজ করুন...</translation>
 <translation id="1254117744268754948">ফোল্ডার বেছে নিন</translation>
 <translation id="1254424942107648268">পূর্ববর্তী খুঁজুন</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">মেল পাঠানো হয়েছে৷</translation>
 <translation id="1582732959743469162">এর ফলে আপনি এখন যা ডাউনলোড করছেন সেগুলি সব বন্ধ হয়ে যাবে।</translation>
 <translation id="1594034544529347967">শুরু হবে</translation>
+<translation id="160275202205869636">এটি চালু হলে, আপনার Google অ্যাকাউন্টে ডেটা ব্যবহার করে সেভ করুন। বন্ধ থাকলে, শুধুমাত্র এই ডিভাইসে ডেটা সেভ হয়।</translation>
 <translation id="1605405588277479165">বন্ধ আছে - সাজেস্ট করা হয়নি</translation>
 <translation id="1605658421715042784">ছবি কপি করুন</translation>
 <translation id="1608337082864370066">কপি করা ছবি সার্চ করুন</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">ছদ্মবেশী সার্চ</translation>
 <translation id="277771892408211951">ভাষা বেছে নিন</translation>
 <translation id="2780046210906776326">কোনো ইমেল অ্যাকাউন্ট নেই</translation>
+<translation id="2780326741858434269">এই ডিভাইসে থাকা অ্যাকাউন্ট</translation>
 <translation id="2781325423985810933">আগের অবস্থায় ফিরুন</translation>
 <translation id="2781331604911854368">চালু করা আছে</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3577555362230509265">অন্যান্য অ্যাপের জন্য Chrome ব্যবহার করুন।</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
+<translation id="3587885837929752825">আপনার প্রতিষ্ঠান এটি ম্যানেজ করে যে আপনার কাছে Google অ্যাকাউন্টে কোন ধরনের ডেটা সেভ করার অনুমতি আছে।</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="3595252146048399851"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কোন ধরনের ডেটা সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারবেন। আপনার ইতিহাসের উপরে ভিত্তি করে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="3603009562372709545">লিঙ্ক ইউআরএল কপি করুন</translation>
@@ -636,6 +640,7 @@
 <translation id="4904877109095351937">পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
 <translation id="4916679969857390442">লেন্স</translation>
+<translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4922154083994158612">আরও নিরাপত্তা?</translation>
 <translation id="4930714375720679147">চালু করুন</translation>
 <translation id="4938338714234463591">এটি আপনাকে ওয়েবসাইটে নির্দিষ্ট ফিচারের সাথে নিজের আওয়াজ ব্যবহার করার অনুমতি দেয়।</translation>
@@ -693,6 +698,7 @@
 <translation id="5271265092610673171">{count,plural, =1{ফাঁকা রাখা যাবে না এমন ফিল্ড খালি আছে। সেভ করার আগে এটি পূরণ করুন।}one{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}other{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}}</translation>
 <translation id="5271549068863921519">পাসওয়ার্ড সেভ করুন</translation>
 <translation id="5283494734135414249">অ্যাড্রেস বারের নিচে যে শর্টকার্ট দেখা যায় তার উপরে ট্যাপ করুন।</translation>
+<translation id="5292723732574094123">সাইন-আউট হয়ে গেছেন। আপনার অ্যাকাউন্টে বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু দেখতে আবার সাইন-ইন করুন।</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> অ্যাকাউন্ট সরাবেন?</translation>
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
@@ -737,6 +743,7 @@
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="5626245204502895507">ফাইলটি এই সময়ে ডাউনলোড করা যাবে না৷</translation>
 <translation id="5631164295104953411">পেমেন্টের পদ্ধতি যোগ করুন</translation>
+<translation id="5649795523408334796">ঠিকানা শনাক্ত করুন</translation>
 <translation id="5652623411397330904">আপনার ট্র্যাক করা প্রোডাক্ট এখানে দেখা যাবে।</translation>
 <translation id="5657859710142657190">ট্যাব গ্রিডে যান</translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
@@ -1298,6 +1305,7 @@
 <translation id="8843129975935593190">আপনি কী সিঙ্ক করতে পারবেন সেটি আপনার প্রতিষ্ঠান সীমিত করে।</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8855242995793521265">উল্লেখযোগ্যভাবে আপনার ব্রাউজার বা ডিভাইসের পারফর্ম্যান্স ধীর গতির করে দেয় না।</translation>
+<translation id="8863431381414769983">Google Maps থেকে স্থানীয় তথ্য এবং দিকনির্দেশ পান</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count}টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
 <translation id="8870413625673593573">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="8876882697946675716">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>

@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1432187715652018471">此页面想安装一款服务处理程序。</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
+<translation id="1433225466058025572">尝试重新移动文件</translation>
 <translation id="1435940442311036198">使用另一部设备上的通行密钥</translation>
 <translation id="1436185428532214179">可以询问能否修改您设备上的文件和文件夹</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
@@ -564,6 +565,7 @@
 <translation id="2148613324460538318">添加支付卡</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149968176347646218">连接不安全</translation>
+<translation id="2152495481414285304">应用</translation>
 <translation id="2153609454945889823">安装“面向 AR 的 Google Play 服务”？</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2154739667870063220">重新启动</translation>
@@ -683,6 +685,7 @@
 <translation id="2396249848217231973">撤消删除(&amp;U)</translation>
 <translation id="2397836504670957718">笔记本电脑</translation>
 <translation id="2400600116338235695">可以询问能否连接到串行端口</translation>
+<translation id="2404884497378469141">尝试重新复制文件</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
@@ -839,6 +842,7 @@
 <translation id="2759825833388495838">在<ph name="APP_NAME" />上填充您的密码</translation>
 <translation id="2764001903315068341">漫画</translation>
 <translation id="2765217105034171413">小</translation>
+<translation id="2770159525358613612">尝试重新上传文件</translation>
 <translation id="277133753123645258">送货方式</translation>
 <translation id="277499241957683684">缺少设备记录</translation>
 <translation id="2775884851269838147">最先打印的页面</translation>
@@ -1225,6 +1229,7 @@
 <translation id="3632892046558972264">屏幕共享已暂停</translation>
 <translation id="3634530185120165534">纸匣 5</translation>
 <translation id="3634567936866541746">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chrome 建议检查您已保存的密码。</translation>
+<translation id="3642196846309122856">尝试重新下载文件</translation>
 <translation id="3642638418806704195">应用：</translation>
 <translation id="3646643500201740985">衡量广告效果</translation>
 <translation id="3647286794400715637">每个网址字符串条目都必须包含 1-2 个网址。</translation>
@@ -1348,6 +1353,7 @@
 <translation id="3890664840433101773">添加电子邮件地址</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3901925938762663762">此信用卡已过期</translation>
+<translation id="390391808978419508">打开超时</translation>
 <translation id="3905894480064208252">{0,plural, =1{此文件已被禁止传输}other{<ph name="FILE_COUNT" /> 个文件已被禁止传输}}</translation>
 <translation id="3906095212874392000">转换成的文字的末尾</translation>
 <translation id="3906954721959377182">平板电脑</translation>
@@ -1360,6 +1366,7 @@
 <translation id="393316646445601645">互联网与电信</translation>
 <translation id="3939773374150895049">要改用 WebAuthn 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="3941630233824954464">启用强制性身份重新验证</translation>
+<translation id="3942048175062210325">尝试重新打开文件</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3946209740501886391">在该网站上一律询问</translation>
 <translation id="3947595700203588284">可以询问能否连接到 MIDI 设备</translation>
@@ -1441,6 +1448,7 @@
 <translation id="4117700440116928470">政策范围不受支持。</translation>
 <translation id="4121428309786185360">截止日期</translation>
 <translation id="4123572138124678573">三孔（底部）</translation>
+<translation id="412601465078863288">上传超时</translation>
 <translation id="4127317221386336246">服装配饰</translation>
 <translation id="4127575959421463246">正在寻找 Chrome 操作系统 flag？请访问</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
@@ -1657,6 +1665,7 @@
 <translation id="4540780316273593836">出了点问题</translation>
 <translation id="4541810033354695636">增强现实</translation>
 <translation id="4542971377163063093">纸匣 6</translation>
+<translation id="4546730006268514143">传输超时</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">您正在使用屏幕锁定功能填充密码</translation>
 <translation id="4558551763791394412">尝试停用扩展程序。</translation>
@@ -2090,6 +2099,7 @@
 <translation id="5470230812924696184">土木工程</translation>
 <translation id="5470861586879999274">恢复修改(&amp;R)</translation>
 <translation id="5471337644440862957">喜剧片</translation>
+<translation id="547963486735802022">尝试重新传输文件</translation>
 <translation id="5481076368049295676">此内容可能会试图在您的设备上安装危险的软件来窃取或删除您的信息。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">添加有效地址</translation>
 <translation id="5483838506518938965">一切都已就绪</translation>
@@ -2778,6 +2788,7 @@
 <translation id="6961733224437895943">住宅保险</translation>
 <translation id="6961844873822989059">可以询问能否使用您设备上安装的字体</translation>
 <translation id="6961980518585973432">周年庆祝</translation>
+<translation id="6962858948849099922">移动超时</translation>
 <translation id="6963520811470373926">正在取代</translation>
 <translation id="6963574715554809750">零售</translation>
 <translation id="6963693576491380224">政府和公共部门职位</translation>
@@ -2855,6 +2866,7 @@
 <translation id="7111507312244504964">不动产检测与评估</translation>
 <translation id="7112327784801341716">看到的不是您的最新信息？请让银行更新您的信息。</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">复制超时</translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
 <translation id="7124354851782353862">请输入您的 CVC</translation>
 <translation id="7129355289156517987">当您关闭 Chromium 中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
@@ -3107,6 +3119,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">少于 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前无法处理此请求。</translation>
+<translation id="7599089013883397081">下载超时</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">您通常可以安全地连接到此网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>

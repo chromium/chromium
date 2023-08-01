@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">يمكنك اختيار اللغات المطلوب تثبيتها على هذا الجهاز. وتتم مشاركة ملفات اللغات مع المستخدمين لتوفير مساحة القرص. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">هناك علامة تبويب خلفية تستخدم البلوتوث</translation>
 <translation id="1112998165730922436">البث متوقِّف مؤقتًا</translation>
-<translation id="1113807501859230251">‏هل تريد إزالة الجهاز الافتراضي Bruschetta من <ph name="DEVICE_TYPE" />؟ سيؤدي هذا الإجراء إلى حذف جميع التطبيقات والبيانات في الجهاز الافتراضي.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">معيّن</translation>
 <translation id="1114427165525619358">‏كلمات المرور المخزّنة على هذا الجهاز وفي حسابك على Google</translation>
@@ -2084,7 +2083,6 @@
 <translation id="2673135533890720193">قراءة سجل التصفح التابع لك</translation>
 <translation id="2673873887296220733">هل تريد نسخ ملف واحد إلى <ph name="CLOUD_PROVIDER" /> وفتحه؟</translation>
 <translation id="2674764818721168631">غير مفعَّل</translation>
-<translation id="2675570801872027281">‏حدث خطأ أثناء إزالة الجهاز الافتراضي Bruschetta. يُرجى إعادة المحاولة.</translation>
 <translation id="2676084251379299915">‏تم إيقاف هذه الإضافة بموجب سياسة المؤسسة لأنّها لم تعُد متوفّرة على "سوق Chrome الإلكتروني".</translation>
 <translation id="2678063897982469759">إعادة تفعيل</translation>
 <translation id="2678100101831051676">تعذَّر البث</translation>
@@ -6054,6 +6052,7 @@
 <translation id="6050189528197190982">تدرج الرمادي</translation>
 <translation id="6051354611314852653">عفوًا! تعذّر النظام في السماح بالدخول إلى واجهة برمجة التطبيقات على هذا الجهاز.</translation>
 <translation id="6051811090255711417">حظرت مؤسستك هذا الملف لأنّه لا يمتثل لإحدى سياسات الأمان.</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">كتابة رمز الدخول لبدء البث</translation>
 <translation id="6052976518993719690">‏صلاحية شهادة SSL (طبقة المقابس الآمنة)</translation>
 <translation id="6053401458108962351">&amp;محو بيانات التصفح...</translation>

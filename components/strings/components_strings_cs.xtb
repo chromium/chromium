@@ -231,6 +231,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1432187715652018471">stránka chce instalovat obslužný nástroj služby.</translation>
 <translation id="1432581352905426595">Spravovat vyhledávače</translation>
+<translation id="1433225466058025572">Zkuste soubory přesunout znovu</translation>
 <translation id="1435940442311036198">Použití přístupového klíče na jiném zařízení</translation>
 <translation id="1436185428532214179">Může žádat o úpravu souborů a složek v zařízení</translation>
 <translation id="1442386063175183758">Pravé otevírací přeložení</translation>
@@ -564,6 +565,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2148613324460538318">Přidat kartu</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2149968176347646218">Připojení není zabezpečené</translation>
+<translation id="2152495481414285304">Aplikace</translation>
 <translation id="2153609454945889823">Nainstalovat Služby Google Play pro RR?</translation>
 <translation id="2154484045852737596">Úprava karty</translation>
 <translation id="2154739667870063220">Restartovat</translation>
@@ -683,6 +685,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2396249848217231973">&amp;Vrátit smazání zpět</translation>
 <translation id="2397836504670957718">Notebooky a přenosné počítače</translation>
 <translation id="2400600116338235695">Může žádat o připojení k sériovým portům</translation>
+<translation id="2404884497378469141">Zkuste soubory zkopírovat znovu</translation>
 <translation id="2413155254802890957">Stará</translation>
 <translation id="2413528052993050574">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě zrušen. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2414886740292270097">Tmavé</translation>
@@ -839,6 +842,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2759825833388495838">vyplnit vašeho heslo v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komiksy</translation>
 <translation id="2765217105034171413">Malé</translation>
+<translation id="2770159525358613612">Zkuste soubory nahrát znovu</translation>
 <translation id="277133753123645258">Způsob dopravy</translation>
 <translation id="277499241957683684">Chybějící záznam zařízení</translation>
 <translation id="2775884851269838147">První tisková stránka</translation>
@@ -1225,6 +1229,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3632892046558972264">Sdílení obrazovky je pozastaveno</translation>
 <translation id="3634530185120165534">Přihrádka 5</translation>
 <translation id="3634567936866541746">Právě jste své heslo zadali na klamavém webu. Pokud chcete zabezpečit své účty, Chrome vám doporučuje zkontrolovat uložená hesla.</translation>
+<translation id="3642196846309122856">Zkuste soubory stáhnout znovu</translation>
 <translation id="3642638418806704195">Aplikace:</translation>
 <translation id="3646643500201740985">Měření výkonu reklam</translation>
 <translation id="3647286794400715637">Každý zadaný řetězec adres URL musí obsahovat 1 až 2 adresy URL.</translation>
@@ -1348,6 +1353,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3890664840433101773">Přidat e-mail</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3901925938762663762">Karta vypršela</translation>
+<translation id="390391808978419508">Časový limit otevření vypršel</translation>
 <translation id="3905894480064208252">{0,plural, =1{Přenos souboru je blokován}few{Přenos <ph name="FILE_COUNT" /> souborů je blokován}many{Přenos <ph name="FILE_COUNT" /> souboru je blokován}other{Přenos <ph name="FILE_COUNT" /> souborů je blokován}}</translation>
 <translation id="3906095212874392000">Konec převedeného textu</translation>
 <translation id="3906954721959377182">Tablet</translation>
@@ -1360,6 +1366,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="393316646445601645">Internet a telekomunikace</translation>
 <translation id="3939773374150895049">Použít WebAuthn namísto CVC?</translation>
 <translation id="3941630233824954464">Povolit povinné opětovné ověření</translation>
+<translation id="3942048175062210325">Zkuste soubory otevřít znovu</translation>
 <translation id="3943857333388298514">Vložit</translation>
 <translation id="3946209740501886391">Na tomto webu se vždy zeptat</translation>
 <translation id="3947595700203588284">Může žádat o připojení k zařízením MIDI</translation>
@@ -1441,6 +1448,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4117700440116928470">Rozsah zásady není podporován.</translation>
 <translation id="4121428309786185360">Konec platnosti</translation>
 <translation id="4123572138124678573">Tři otvory dole</translation>
+<translation id="412601465078863288">Časový limit nahrávání vypršel</translation>
 <translation id="4127317221386336246">Oděvní doplňky</translation>
 <translation id="4127575959421463246">Hledáte příznaky Chrome OS? Navštívit</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 další}few{# další}many{# další}other{# dalších}}</translation>
@@ -1657,6 +1665,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4540780316273593836">Něco se pokazilo</translation>
 <translation id="4541810033354695636">rozšířená realita</translation>
 <translation id="4542971377163063093">Přihrádka 6</translation>
+<translation id="4546730006268514143">Časový limit přenosu vypršel</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">K vyplňování hesel používáte zámek obrazovky</translation>
 <translation id="4558551763791394412">Zkuste zakázat rozšíření.</translation>
@@ -2090,6 +2099,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5470230812924696184">Stavební inženýrství</translation>
 <translation id="5470861586879999274">&amp;Opakovat úpravy</translation>
 <translation id="5471337644440862957">Komedie</translation>
+<translation id="547963486735802022">Zkuste soubory přenést znovu</translation>
 <translation id="5481076368049295676">Tento obsah by vám do zařízení mohl zkusit nainstalovat nebezpečný software, který odcizuje nebo maže informace. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Přidejte platnou adresu</translation>
 <translation id="5483838506518938965">Hotovo</translation>
@@ -2778,6 +2788,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6961733224437895943">Pojištění domácností</translation>
 <translation id="6961844873822989059">Může žádat o použití písem nainstalovaných v zařízení</translation>
 <translation id="6961980518585973432">Výročí</translation>
+<translation id="6962858948849099922">Časový limit přesunutí vypršel</translation>
 <translation id="6963520811470373926">Nahrazování</translation>
 <translation id="6963574715554809750">Maloobchod</translation>
 <translation id="6963693576491380224">Zaměstnání ve státním a veřejném sektoru</translation>
@@ -2855,6 +2866,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7111507312244504964">Kontroly a oceňování nemovitostí</translation>
 <translation id="7112327784801341716">Pokud údaje nejsou aktuální, požádejte banku o aktualizaci.</translation>
 <translation id="7118618213916969306">Vyhledat adresu URL ve schránce, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">Časový limit kopírování vypršel</translation>
 <translation id="7119414471315195487">Zavřete ostatní karty nebo programy</translation>
 <translation id="7124354851782353862">Zadejte kód CVC</translation>
 <translation id="7129355289156517987">Když zavřete všechny anonymní karty prohlížeče Chromium, vaše aktivita na těchto kartách bude ze zařízení vymazána:
@@ -3106,6 +3118,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Méně než <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Web <ph name="HOST_NAME" /> momentálně tento požadavek nemůže zpracovat.</translation>
+<translation id="7599089013883397081">Časový limit stahování vypršel</translation>
 <translation id="7600965453749440009">Jazyk <ph name="LANGUAGE" /> nikdy nepřekládat</translation>
 <translation id="7601297359530599375">K tomuto webu se obvykle připojujete zabezpečeně, ale tentokrát Chrome zabezpečené připojení použít nemohl. Je možné, že se nějaký útočník pokouší sledovat nebo upravovat vaše připojení k síti. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Hodnota <ph name="VALUE" /> je mimo rozsah.</translation>

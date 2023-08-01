@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">「<ph name="FIRST_ITEM_TITLE" />」已替換為「<ph name="SECOND_ITEM_TITLE" />」</translation>
 <translation id="1500926532737552529">顯示所有建議</translation>
 <translation id="1510238584712386396">啟動器</translation>
-<translation id="1516740043221086139">零打擾模式已開啟。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉一個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
 <translation id="1523032696246003">電池電量：<ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />後充飽</translation>
 <translation id="1525508553941733066">關閉</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
-<translation id="163517899691012366">「零打擾」模式開啟時，系統會忽略通知</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1647986356840967552">上一頁</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">擷取螢幕畫面</translation>
 <translation id="334927402682780278">選取從游標到該行結尾之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
-<translation id="3354555338129305222">為什麼裝置運作緩慢</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
 <translation id="3365977133351922112">你的手機距離太遠，請拿近一點。</translation>
 <translation id="3368922792935385530">已連線</translation>
@@ -842,7 +839,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox 已啟用</translation>
-<translation id="4665114317261903604">切換零打擾模式。<ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667099493359681081">正在下載 <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">你手機上的應用程式</translation>
@@ -1228,7 +1224,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用...</translation>
 <translation id="6274202259872570803">螢幕側錄</translation>
 <translation id="6276708887952587684">查看網頁原始碼</translation>
-<translation id="6283712521836204486">零打擾模式已關閉。</translation>
 <translation id="6284232397434400372">解析度已變更</translation>
 <translation id="6288235558961782912">取得家長同意後即可再次新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
@@ -1559,6 +1554,7 @@
 <translation id="7842569679327885685">警告：實驗功能</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7848989271541991537">已移至第 <ph name="PAGE_NUMBER" /> 頁，第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
+<translation id="7850320739366109486">請勿打擾</translation>
 <translation id="7851039877802112575">將焦點移至彈出式視窗和對話方塊</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">以三指向上滑動即可進入「總覽」</translation>
@@ -1806,6 +1802,7 @@
 <translation id="8921624153894383499">Google 助理不支援這個語言。</translation>
 <translation id="8924458948354692166">按下 Enter 鍵以擷取視窗螢幕截圖</translation>
 <translation id="8926951137623668982">一律隱藏檔案櫃</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 裝置 (背面右側連接埠)</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>

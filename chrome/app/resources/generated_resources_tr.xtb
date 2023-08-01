@@ -140,7 +140,6 @@
 <translation id="1110965959145884739">Bu cihaza yüklenecek dilleri seçin. Disk alanından tasarruf etmek için dil dosyaları kullanıcılar arasında paylaşılır. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Arka plan sekmesi Bluetooth bağlantısını kullanıyor</translation>
 <translation id="1112998165730922436">Yayın duraklatıldı</translation>
-<translation id="1113807501859230251">Bruschetta, <ph name="DEVICE_TYPE" /> cihazınızdan kaldırılsın mı? Bu işlem, sanal makinedeki tüm uygulamaları ve verileri silecek.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Karo</translation>
 <translation id="1114427165525619358">Bu cihazdaki ve Google Hesabınızdaki şifreler</translation>
@@ -2077,7 +2076,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2673135533890720193">Göz atma geçmişinizi okuma</translation>
 <translation id="2673873887296220733">1 dosya, <ph name="CLOUD_PROVIDER" /> hedefine kopyalanıp açılsın mı?</translation>
 <translation id="2674764818721168631">Kapalı</translation>
-<translation id="2675570801872027281">Bruschetta kaldırılırken hata oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="2676084251379299915">Bu uzantı artık Chrome Web Mağazası'nda olmadığı için kurumsal politika tarafından devre dışı bırakıldı.</translation>
 <translation id="2678063897982469759">Tekrar etkinleştir</translation>
 <translation id="2678100101831051676">Yayınlayamıyor.</translation>
@@ -6050,6 +6048,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6050189528197190982">Gri Tonlama</translation>
 <translation id="6051354611314852653">Hata!  Sistem bu cihaz için API erişimini yetkilendiremedi.</translation>
 <translation id="6051811090255711417">Bir güvenlik politikasına uymaması nedeniyle bu dosya kuruluşunuz tarafından engellendi</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Yayınlamaya başlamak için erişim kodunu girin</translation>
 <translation id="6052976518993719690">SSL Sertifika Yetkilisi</translation>
 <translation id="6053401458108962351">&amp;Tarama verilerini temizle...</translation>

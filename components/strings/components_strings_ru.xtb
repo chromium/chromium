@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1432187715652018471">Страница пытается установить обработчик службы</translation>
 <translation id="1432581352905426595">Управление поисковыми системами</translation>
+<translation id="1433225466058025572">Попробуйте перенести файлы ещё раз.</translation>
 <translation id="1435940442311036198">Использовать ключ доступа на другом устройстве</translation>
 <translation id="1436185428532214179">Разрешено отправлять запрос на редактирование файлов или папок на устройстве</translation>
 <translation id="1442386063175183758">Фальцовка правой четверти</translation>
@@ -564,6 +565,7 @@
 <translation id="2148613324460538318">Добавить карту</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2149968176347646218">Подключение не защищено</translation>
+<translation id="2152495481414285304">Приложения</translation>
 <translation id="2153609454945889823">Установить Сервисы Google Play для AR?</translation>
 <translation id="2154484045852737596">Изменение данных карты</translation>
 <translation id="2154739667870063220">Перезагрузить</translation>
@@ -683,6 +685,7 @@
 <translation id="2396249848217231973">&amp;Отменить удаление</translation>
 <translation id="2397836504670957718">Ноутбуки и портативные компьютеры</translation>
 <translation id="2400600116338235695">Разрешено отправлять запрос на подключение к последовательным портам</translation>
+<translation id="2404884497378469141">Попробуйте скопировать файлы ещё раз.</translation>
 <translation id="2413155254802890957">Старый</translation>
 <translation id="2413528052993050574">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть отозван. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="2414886740292270097">Темная</translation>
@@ -839,6 +842,7 @@
 <translation id="2759825833388495838">ввести ваш пароль на сайте <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Комиксы</translation>
 <translation id="2765217105034171413">Мелкий</translation>
+<translation id="2770159525358613612">Попробуйте загрузить файлы ещё раз.</translation>
 <translation id="277133753123645258">Способ доставки</translation>
 <translation id="277499241957683684">Устройство не зарегистрировано</translation>
 <translation id="2775884851269838147">Первая страница печати</translation>
@@ -1228,6 +1232,7 @@
 <translation id="3632892046558972264">Демонстрация экрана приостановлена</translation>
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chrome.</translation>
+<translation id="3642196846309122856">Попробуйте скачать файлы ещё раз.</translation>
 <translation id="3642638418806704195">Приложение:</translation>
 <translation id="3646643500201740985">Оценка эффективности рекламы</translation>
 <translation id="3647286794400715637">Каждая запись должна содержать 1–2 URL.</translation>
@@ -1351,6 +1356,7 @@
 <translation id="3890664840433101773">Добавление адреса электронной почты</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Срок действия карты истек</translation>
+<translation id="390391808978419508">Превышено время ожидания</translation>
 <translation id="3905894480064208252">{0,plural, =1{Файл нельзя перенести}one{<ph name="FILE_COUNT" /> файл нельзя перенести}few{<ph name="FILE_COUNT" /> файла нельзя перенести}many{<ph name="FILE_COUNT" /> файлов нельзя перенести}other{<ph name="FILE_COUNT" /> файла нельзя перенести}}</translation>
 <translation id="3906095212874392000">Конец полученного текста</translation>
 <translation id="3906954721959377182">Планшет</translation>
@@ -1363,6 +1369,7 @@
 <translation id="393316646445601645">Интернет и телекоммуникации</translation>
 <translation id="3939773374150895049">Использовать WebAuthn вместо CVC-кода?</translation>
 <translation id="3941630233824954464">Включить обязательную повторную аутентификацию</translation>
+<translation id="3942048175062210325">Попробуйте открыть файлы ещё раз.</translation>
 <translation id="3943857333388298514">Вставить</translation>
 <translation id="3946209740501886391">Всегда спрашивать на этом сайте</translation>
 <translation id="3947595700203588284">Разрешено отправлять запрос на подключение к MIDI-устройствам</translation>
@@ -1444,6 +1451,7 @@
 <translation id="4117700440116928470">Область действия правил не поддерживается.</translation>
 <translation id="4121428309786185360">Срок действия</translation>
 <translation id="4123572138124678573">Три отверстия снизу</translation>
+<translation id="412601465078863288">Превышено время ожидания</translation>
 <translation id="4127317221386336246">Аксессуары</translation>
 <translation id="4127575959421463246">Ищете экспериментальные параметры Chrome OS? Перейти</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{ещё 1 вариант}one{ещё # вариант}few{ещё # варианта}many{ещё # вариантов}other{ещё # варианта}}</translation>
@@ -1660,6 +1668,7 @@
 <translation id="4540780316273593836">Ошибка</translation>
 <translation id="4541810033354695636">Дополненная реальность</translation>
 <translation id="4542971377163063093">Лоток 6</translation>
+<translation id="4546730006268514143">Превышено время ожидания</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Вы используете блокировку экрана для ввода паролей</translation>
 <translation id="4558551763791394412">Отключите расширения.</translation>
@@ -2093,6 +2102,7 @@
 <translation id="5470230812924696184">Гражданское проектирование</translation>
 <translation id="5470861586879999274">&amp;Повторить изменения</translation>
 <translation id="5471337644440862957">Комедии</translation>
+<translation id="547963486735802022">Попробуйте перенести файлы ещё раз.</translation>
 <translation id="5481076368049295676">Посещение этой страницы может привести к установке вредоносной программы, которая похищает или удаляет данные. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Введите действительный адрес</translation>
 <translation id="5483838506518938965">Готово!</translation>
@@ -2782,6 +2792,7 @@
 <translation id="6961733224437895943">Страхование домов</translation>
 <translation id="6961844873822989059">Разрешено отправлять запрос на использование шрифтов, установленных на устройстве</translation>
 <translation id="6961980518585973432">Юбилеи и годовщины</translation>
+<translation id="6962858948849099922">Превышено время ожидания</translation>
 <translation id="6963520811470373926">Замена</translation>
 <translation id="6963574715554809750">Розничная торговля</translation>
 <translation id="6963693576491380224">Вакансии в бюджетной сфере</translation>
@@ -2859,6 +2870,7 @@
 <translation id="7111507312244504964">Инспекция и оценка имущества</translation>
 <translation id="7112327784801341716">Если вы видите устаревшие данные, обратитесь в свой банк.</translation>
 <translation id="7118618213916969306">Поиск по адресу <ph name="SHORT_URL" /> из буфера обмена</translation>
+<translation id="7119371694555167493">Превышено время ожидания</translation>
 <translation id="7119414471315195487">Закройте другие вкладки и программы.</translation>
 <translation id="7124354851782353862">Введите CVC-код</translation>
 <translation id="7129355289156517987">Когда вы закроете все вкладки инкогнито в Chromium, с этого устройства будет удалена связанная с ними информация:
@@ -3111,6 +3123,7 @@
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Менее <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Сайт <ph name="HOST_NAME" /> пока не может обработать этот запрос.</translation>
+<translation id="7599089013883397081">Превышено время ожидания</translation>
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Обычно подключение к этому сайту защищено, но в этот раз Chrome не удалось установить безопасное соединение. Злоумышленник может попытаться перехватить или изменить ваше сетевое подключение. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Значение <ph name="VALUE" /> лежит за пределами разрешенного диапазона.</translation>

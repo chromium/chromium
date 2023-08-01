@@ -138,7 +138,6 @@
 <translation id="1110965959145884739">तपाईं यो डिभाइसमा जुन जुन भाषा इन्स्टल गर्न चाहनुहुन्छ ती भाषा चयन गर्नुहोस्। डिस्कमा ठाउँ बचत गर्न प्रयोगकर्ताहरूसँग भाषा विशेषका फाइलहरू सेयर गरिन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">पृष्ठभूमि ट्याबले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="1112998165730922436">कास्ट गर्ने कार्य पज गरिएको छ</translation>
-<translation id="1113807501859230251">आफ्नो <ph name="DEVICE_TYPE" /> बाट Bruschetta अनइन्स्टल गर्ने हो? तपाईंले यसो गर्नुभयो भने भर्चुअल मेसिनमा भएका सबै एप र डेटा मेटाइने छन्।</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">हीरा</translation>
 <translation id="1114427165525619358">यो डिभाइसमा र तपाईंको Google खातामा सुरक्षित गरिएका पासवर्डहरू</translation>
@@ -2076,7 +2075,6 @@
 <translation id="2673135533890720193">तपाईंको ब्राउजिङ इतिहास पढ्नुहोस्</translation>
 <translation id="2673873887296220733">एउटा फाइल खोल्नुअघि उक्त फाइल कपी गरेर <ph name="CLOUD_PROVIDER" /> मा पेस्ट गर्ने हो?</translation>
 <translation id="2674764818721168631">निष्क्रिय छ</translation>
-<translation id="2675570801872027281">Bruschetta अनइन्स्टल गर्ने क्रममा कुनै त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2676084251379299915">यो एक्सटेन्सन Chrome Web Store मा उपलब्ध नभएकाले यसलाई इन्टरप्राइजको नीतिअनुसार अफ गरिएको छ।</translation>
 <translation id="2678063897982469759">पुन: सक्षम गर्नुहोस्</translation>
 <translation id="2678100101831051676">कास्ट गर्न सकिएन।</translation>
@@ -6047,6 +6045,7 @@
 <translation id="6050189528197190982">ग्रेस्केल</translation>
 <translation id="6051354611314852653">ओहो! प्रणालीले यस यन्त्रको लागि API पहुँच अधिकार गर्न असफल भयो।</translation>
 <translation id="6051811090255711417">यो फाइल सुरक्षासम्बन्धी नीति अनुरूप नभएकाले तपाईंको सङ्गठनले यो फाइल ब्लक गरेको छ</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">तपाईं कास्ट गर्न थाल्न चाहनुहुन्छ भने एक्सेस कोड टाइप गर्नुहोस्</translation>
 <translation id="6052976518993719690">SSL प्रमाणीकरण अधिकारी</translation>
 <translation id="6053401458108962351">&amp;ब्राउजिङ लगत खालि गर्नुहोस्...</translation>

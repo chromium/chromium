@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">ఈ పరికరంలో ఏ భాషలను ఇన్‌స్టాల్ చేయాలో ఎంచుకోండి. డిస్క్ స్పేస్‌ను సేవ్ చేయడానికి భాషకు సంబంధించిన ఫైళ్లు యూజర్‌లతో షేర్ చేయబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">బ్యాక్‌గ్రౌండ్‌ ట్యాబ్ బ్లూటూత్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="1112998165730922436">ప్రసారం చేయడం పాజ్ చేయబడింది</translation>
-<translation id="1113807501859230251">మీ <ph name="DEVICE_TYPE" /> నుండి Bruschettaను తీసివేయాలా? ఇది వర్చువల్ మెషిన్‌లోని అన్ని యాప్‌లు, డేటాను తొలగిస్తుంది!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">చతుర్భుజం</translation>
 <translation id="1114427165525619358">ఈ పరికరం, మీ Google ఖాతాలోని పాస్‌వర్డ్‌‌లు</translation>
@@ -2092,7 +2091,6 @@
 <translation id="2673135533890720193">మీ బ్రౌజింగ్ హిస్టరీని చదవడానికి అనుమతి</translation>
 <translation id="2673873887296220733">తెరవడానికి 1 ఫైల్‌ను <ph name="CLOUD_PROVIDER" />కి కాపీ చేయాలా?</translation>
 <translation id="2674764818721168631">ఆఫ్ చేయబడి ఉంది</translation>
-<translation id="2675570801872027281">Bruschettaను తీసివేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2676084251379299915">ఈ ఎక్స్‌టెన్షన్ Chrome వెబ్ స్టోర్‌లో ఇకపై అందుబాటులో ఉండదు, కనుక దీనిని ఎంటర్‌ప్రైజ్ పాలసీ డిజేబుల్ చేసింది.</translation>
 <translation id="2678063897982469759">మ‌ళ్లీ-ప్రారంభించండి</translation>
 <translation id="2678100101831051676">ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
@@ -6065,6 +6063,7 @@
 <translation id="6050189528197190982">బూడిద రంగు ప్రమాణం</translation>
 <translation id="6051354611314852653">అయ్యో!  ఈ పరికరం కోసం API యాక్సెస్‌ను ప్రామాణీకరించడంలో సిస్టమ్ విఫలమైంది.</translation>
 <translation id="6051811090255711417">ఈ ఫైల్ సెక్యూరిటీ పాలసీని పాటించనందున మీ సంస్థ దీనిని బ్లాక్ చేసింది</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">ప్రసారం చేయడాన్ని ప్రారంభించడానికి యాక్సెస్ కోడ్‌ను టైప్ చేయండి</translation>
 <translation id="6052976518993719690">SSL ధృవీకరణ అధికారం</translation>
 <translation id="6053401458108962351">&amp;బ్రౌజింగ్‌ డేటాను క్లియర్ చేయండి...</translation>

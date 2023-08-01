@@ -358,6 +358,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
 <translation id="2961210776189273067">Title</translation>
 <translation id="296370266220139811">Save time and type less</translation>
+<translation id="297771753501244313">Sort by last opened</translation>
 <translation id="2979025552038692506">Selected Incognito Tab</translation>
 <translation id="2979639724566107830">Open in new window</translation>
 <translation id="2981364137500752533">You can have up to 5 windows.</translation>

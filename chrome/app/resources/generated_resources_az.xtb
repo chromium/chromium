@@ -138,7 +138,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1110965959145884739">Bu cihazda hansı dilləri quraşdıracağınızı seçin. Diskdə yer saxlamaq üçün dil faylları istifadəçilər arasında paylaşılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Arxa fon tabı bluetooth istifadə edir</translation>
 <translation id="1112998165730922436">Yayıma pauza verildi</translation>
-<translation id="1113807501859230251">Bruschetta <ph name="DEVICE_TYPE" /> cihazından silinsin? Virtual mexanizmdəki tətbiqlər və data silinəcək!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Almaz</translation>
 <translation id="1114427165525619358">Bu cihazda və Google Hesabınızdakı parollar</translation>
@@ -2078,7 +2077,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2673135533890720193">Brauzer tarixçənizi oxuyun</translation>
 <translation id="2673873887296220733">Açmaq üçün 1 fayl <ph name="CLOUD_PROVIDER" /> provayderinə kopyalansın?</translation>
 <translation id="2674764818721168631">Deaktiv</translation>
-<translation id="2675570801872027281">Bruschetta-nı silərkən xəta oldu. Yenidən cəhd edin.</translation>
 <translation id="2676084251379299915">Bu artırma Chrome Veb Dükanında əlçatan olmadığı üçün müəssisə siyasətinə əsasən deaktiv edilib.</translation>
 <translation id="2678063897982469759">Yenidən aktivləşdirin</translation>
 <translation id="2678100101831051676">Yayımlamaq alınmadı.</translation>
@@ -6046,6 +6044,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6050189528197190982">Boz çalar</translation>
 <translation id="6051354611314852653">Vay! Sistem bu cihaza olan API girişini doğrulaya bilmədi.</translation>
 <translation id="6051811090255711417">Təşkilatınız təhlükəsizlik siyasətinə cavab vermədiyinə görə bu faylı bloklayıb</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Yayımlamağa başlamaq üçün giriş kodunu yazın</translation>
 <translation id="6052976518993719690">SSL Sertifikatlaşdırma Təşkilatı</translation>
 <translation id="6053401458108962351">Baxış datasını silin...</translation>

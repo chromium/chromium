@@ -126,7 +126,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> è stato scambiato con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostra tutti i suggerimenti</translation>
 <translation id="1510238584712386396">Avvio app</translation>
-<translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
 <translation id="1523032696246003">Batteria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> alla ricarica completa</translation>
 <translation id="1525508553941733066">IGNORA</translation>
@@ -151,7 +150,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
-<translation id="163517899691012366">Le notifiche sono disattivate quando è attiva la funzionalità Non disturbare</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivi</translation>
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1647986356840967552">Pagina precedente</translation>
@@ -526,7 +524,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="334252345105450327">Fai uno screenshot</translation>
 <translation id="334927402682780278">Seleziona il testo dal cursore alla fine della riga</translation>
 <translation id="3349345708646875009">Apri Task Manager</translation>
-<translation id="3354555338129305222">perché il mio dispositivo è lento</translation>
 <translation id="3364721542077212959">Strumenti per stilo</translation>
 <translation id="3365977133351922112">Il telefono è troppo lontano. Avvicinalo.</translation>
 <translation id="3368922792935385530">Connesso</translation>
@@ -842,7 +839,6 @@ Collega il dispositivo all'alimentazione.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox attivato</translation>
-<translation id="4665114317261903604">Attiva/disattiva Non disturbare. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Altre app</translation>
 <translation id="4667099493359681081">Download di <ph name="FILENAME" /> in corso…</translation>
 <translation id="468293128311738995">App dal telefono</translation>
@@ -1228,7 +1224,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: attivazione in corso...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Visualizza il codice sorgente della pagina</translation>
-<translation id="6283712521836204486">La modalità Non disturbare è disattivata.</translation>
 <translation id="6284232397434400372">Risoluzione modificata</translation>
 <translation id="6288235558961782912">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> potrà essere aggiunto di nuovo in un secondo momento con l'autorizzazione di un genitore.</translation>
 <translation id="6291221004442998378">Non in carica</translation>
@@ -1560,6 +1555,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7842569679327885685">Avviso: funzione sperimentale</translation>
 <translation id="7846634333498149051">Tastiera</translation>
 <translation id="7848989271541991537">Spostata alla Pagina <ph name="PAGE_NUMBER" />, riga <ph name="ROW_NUMBER" />, colonna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Non disturbare</translation>
 <translation id="7851039877802112575">Sposta lo stato attivo su finestre di dialogo e popup</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Scorri con tre dita verso l'alto per attivare la modalità Panoramica</translation>

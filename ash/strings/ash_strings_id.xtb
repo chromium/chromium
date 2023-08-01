@@ -126,7 +126,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ditukar dengan <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Tampilkan semua saran</translation>
 <translation id="1510238584712386396">Peluncur</translation>
-<translation id="1516740043221086139">Mode Jangan Ganggu aktif.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk satu aplikasi}other{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk # aplikasi}}</translation>
 <translation id="1523032696246003">Baterai <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sampai penuh</translation>
 <translation id="1525508553941733066">TUTUP</translation>
@@ -151,7 +150,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1611993646327628135">Aktif</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
-<translation id="163517899691012366">Notifikasi dibisukan saat Jangan ganggu aktif</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> perangkat</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1647986356840967552">Halaman sebelumnya</translation>
@@ -526,7 +524,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="334252345105450327">Ambil screenshot</translation>
 <translation id="334927402682780278">Pilih teks dari kursor ke akhir baris</translation>
 <translation id="3349345708646875009">Buka pengelola tugas</translation>
-<translation id="3354555338129305222">mengapa perangkat saya lambat</translation>
 <translation id="3364721542077212959">Alat stilus</translation>
 <translation id="3365977133351922112">Ponsel terlalu jauh. Dekatkan ponsel Anda.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
@@ -845,7 +842,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox diaktifkan</translation>
-<translation id="4665114317261903604">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Aplikasi lainnya</translation>
 <translation id="4667099493359681081">Mendownload <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikasi dari ponsel Anda</translation>
@@ -1231,7 +1227,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Lihat sumber halaman</translation>
-<translation id="6283712521836204486">Mode Jangan Ganggu nonaktif.</translation>
 <translation id="6284232397434400372">Resolusi diubah</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> dapat ditambahkan ulang nanti dengan izin orang tua.</translation>
 <translation id="6291221004442998378">Tidak mengisi daya</translation>
@@ -1563,6 +1558,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7842569679327885685">Peringatan: Fitur eksperimental</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7848989271541991537">Dipindahkan ke Halaman <ph name="PAGE_NUMBER" />, baris <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7850320739366109486">Jangan Ganggu</translation>
 <translation id="7851039877802112575">Pindahkan fokus ke pop-up dan dialog</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Geser ke atas dengan tiga jari untuk masuk ke Ringkasan</translation>
@@ -1811,6 +1807,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8921624153894383499">Asisten Google tidak berbicara dalam bahasa ini.</translation>
 <translation id="8924458948354692166">Tekan Enter untuk mengambil screenshot jendela</translation>
 <translation id="8926951137623668982">Rak selalu disembunyikan</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>
 <translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="8940956008527784070">Baterai lemah (<ph name="PERCENTAGE" />%)</translation>

@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">এইটো ডিভাইচত কোনটো ভাষা ইনষ্টল কৰিব লাগে সেয়া বাছনি কৰক। ডিস্কৰ ঠাই ৰাহি কৰিবলৈ ভাষাৰ ফাইলসমূহ ব্যৱহাৰকাৰীৰ মাজত শ্বেয়াৰ কৰা হয়। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">নেপথ্যৰ টেবটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
 <translation id="1112998165730922436">কাষ্ট কৰাটো পজ কৰা হৈছে</translation>
-<translation id="1113807501859230251">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পৰা Bruschetta আঁতৰাবনে? ইয়াৰ ফলত ভাৰ্ছুৱেল মেচিনত আটাইবোৰ এপ্‌ আৰু ডেটা মচি পেলাব!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (ইউএছবি)</translation>
 <translation id="1114202307280046356">ডায়ম’ণ্ড</translation>
 <translation id="1114427165525619358">এই ডিভাইচটোত আৰু আপোনাৰ Google একাউণ্টত থকা পাছৱৰ্ডসমূহ</translation>
@@ -2092,7 +2091,6 @@
 <translation id="2673135533890720193">আপোনাৰ ব্ৰাউজিংৰ ইতিহাস পঢ়ক</translation>
 <translation id="2673873887296220733">১ টা ফাইল খুলিবলৈ <ph name="CLOUD_PROVIDER" />লৈ স্থানান্তৰ কৰিবনে?</translation>
 <translation id="2674764818721168631">অফ আছে</translation>
-<translation id="2675570801872027281">Bruschetta আঁতৰাওঁতে আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2676084251379299915">এইটো এক্সটেনশ্বন এণ্টাৰপ্ৰাইজ নীতিৰ দ্বাৰা অক্ষম কৰা হৈছে কাৰণ এইটো এতিয়া আৰু Chrome Web Storeত উপলব্ধ নহয়।</translation>
 <translation id="2678063897982469759">পুনঃসক্ষম কৰক</translation>
 <translation id="2678100101831051676">কাষ্ট কৰিব পৰা নগ’ল।</translation>
@@ -6064,6 +6062,7 @@
 <translation id="6050189528197190982">গ্ৰে’স্কে’ল</translation>
 <translation id="6051354611314852653">আমি দুঃখিত!  ছিষ্টেমটোৱে এই ডিভাইচটোৰ বাবে API এক্সেছৰ অনুমোদন দিব নোৱাৰিলে।</translation>
 <translation id="6051811090255711417">এই ফাইলটোৱে এটা সুৰক্ষাৰ নীতি পালন নকৰে বাবে আপোনাৰ প্ৰতিষ্ঠানে ইয়াক অৱৰোধ কৰিছে</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">কাষ্ট কৰা আৰম্ভ কৰিবলৈ এক্সেছ ক’ডটো টাইপ কৰক</translation>
 <translation id="6052976518993719690">SSL প্ৰমাণপত্ৰ প্ৰদানকাৰী কৰ্তৃপক্ষ</translation>
 <translation id="6053401458108962351">&amp;ব্ৰাউজিং ডেটা মচক...</translation>

@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">زبان‌هایی را که می‌خواهید در این دستگاه نصب شود انتخاب کنید. به‌منظور صرفه‌جویی در فضای دیسک، فایل‌های زبان میان کاربران به‌اشتراک گذاشته می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">برگه پس‌زمینه درحال استفاده از بلوتوث است</translation>
 <translation id="1112998165730922436">پخش محتوا موقتاً متوقف شد</translation>
-<translation id="1113807501859230251">‏Bruschetta از <ph name="DEVICE_TYPE" /> برداشته شود؟ با این کار، همه برنامه‌ها و داده‌های موجود در ماشین مجازی حذف می‌شود!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">الماسی</translation>
 <translation id="1114427165525619358">‏گذرواژه‌های ذخیره‌شده در این دستگاه و در «حساب Google» شما</translation>
@@ -2091,7 +2090,6 @@
 <translation id="2673135533890720193">خواندن سابقه مرور شما</translation>
 <translation id="2673873887296220733">یک فایل برای باز شدن در <ph name="CLOUD_PROVIDER" /> کپی شود؟</translation>
 <translation id="2674764818721168631">خاموش</translation>
-<translation id="2675570801872027281">‏خطایی هنگام برداشتن Bruschetta روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="2676084251379299915">‏این افزونه توسط خط‌مشی سازمان غیرفعال شده است چون دیگر در «نت‌بازار Chrome» دردسترس نیست.</translation>
 <translation id="2678063897982469759">فعال کردن مجدد</translation>
 <translation id="2678100101831051676">پخش محتوا امکان‌پذیر نیست.</translation>
@@ -6064,6 +6062,7 @@
 <translation id="6050189528197190982">سیاه‌وسفید</translation>
 <translation id="6051354611314852653">‏متأسفیم! سیستم نتوانست دسترسی API را برای این دستگاه راستی‌آزمایی کند.</translation>
 <translation id="6051811090255711417">سازمان شما این فایل را به‌دلیل عدم رعایت خط‌مشی امنیتی مسدود کرد</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">برای شروع پخش محتوا، کد دسترسی را تایپ کنید</translation>
 <translation id="6052976518993719690">‏اعتبار گواهی SSL</translation>
 <translation id="6053401458108962351">&amp;حذف داده‌های مرور...</translation>

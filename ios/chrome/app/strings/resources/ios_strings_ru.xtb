@@ -47,6 +47,7 @@
 <translation id="122699739164161391">Закрыть все вкладки</translation>
 <translation id="1229222343402087523">Искать "${searchPhrase}" в Chrome</translation>
 <translation id="1242044645101871359">Повторите вход</translation>
+<translation id="1248276223555153952">Управление аккаунтами на устройстве</translation>
 <translation id="1254117744268754948">Выбор папки</translation>
 <translation id="1254424942107648268">Найти предыдущую</translation>
 <translation id="1258491128795710625">Что нового</translation>
@@ -109,6 +110,7 @@
 <translation id="1580783302095112590">Сообщение отправлено.</translation>
 <translation id="1582732959743469162">Скачивание файлов будет приостановлено.</translation>
 <translation id="1594034544529347967">Начало</translation>
+<translation id="160275202205869636">Когда параметр включен, данные можно использовать и сохранять в аккаунте Google. В противном случае данные хранятся только на этом устройстве.</translation>
 <translation id="1605405588277479165">Отключено (не рекомендуется)</translation>
 <translation id="1605658421715042784">Копировать изображение</translation>
 <translation id="1608337082864370066">Поиск по скопированному изображению</translation>
@@ -290,6 +292,7 @@
 <translation id="2773292004659987824">Поиск в режиме инкогнито</translation>
 <translation id="277771892408211951">Выберите язык</translation>
 <translation id="2780046210906776326">Создайте аккаунт</translation>
+<translation id="2780326741858434269">Аккаунты на этом устройстве</translation>
 <translation id="2781325423985810933">ОТМЕНИТЬ</translation>
 <translation id="2781331604911854368">ВКЛ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -432,6 +435,7 @@
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
 <translation id="3577555362230509265">Используйте Chrome в других приложениях.</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
+<translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
 <translation id="3595252146048399851">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
 <translation id="3603009562372709545">Копировать URL</translation>
@@ -636,6 +640,7 @@
 <translation id="4904877109095351937">Отметить как прочитанное</translation>
 <translation id="4908869848243824489">Рекомендации от Google</translation>
 <translation id="4916679969857390442">Лупа</translation>
+<translation id="4918086044614829423">Принять</translation>
 <translation id="4922154083994158612">Хотите усилить защиту аккаунта?</translation>
 <translation id="4930714375720679147">Включить</translation>
 <translation id="4938338714234463591">Так вы сможете использовать голосовые команды для определенных функций на сайтах.</translation>
@@ -693,6 +698,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Пропущено обязательное поле. Заполните его.}one{Пропущены обязательные поля. Заполните их.}few{Пропущены обязательные поля. Заполните их.}many{Пропущены обязательные поля. Заполните их.}other{Пропущены обязательные поля. Заполните их.}}</translation>
 <translation id="5271549068863921519">Сохранить пароль</translation>
 <translation id="5283494734135414249">Нажмите на ярлык под адресной строкой.</translation>
+<translation id="5292723732574094123">Выполнен выход. Войдите, чтобы получить доступ к закладкам, паролям и другим данным, сохраненным в аккаунте.</translation>
 <translation id="5295239312320826323">Удалить аккаунт <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -736,6 +742,7 @@
 <translation id="5614553682702429503">Сохранить пароль?</translation>
 <translation id="5626245204502895507">Не удалось скачать файлы.</translation>
 <translation id="5631164295104953411">Добавить способ оплаты</translation>
+<translation id="5649795523408334796">Определять адреса</translation>
 <translation id="5652623411397330904">Здесь появятся продукты, которые вы отслеживаете.</translation>
 <translation id="5657859710142657190">Перейти на страницу вкладок</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
@@ -1297,6 +1304,7 @@
 <translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8855242995793521265">Не приводит к заметному замедлению работы браузера или устройства.</translation>
+<translation id="8863431381414769983">Прокладывайте маршруты и получайте полезную информацию в Google Картах</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Недавно закрытые</translation>
 <translation id="8876882697946675716">Синхронизируйте устройства</translation>

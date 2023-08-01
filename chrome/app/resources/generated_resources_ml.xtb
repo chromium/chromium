@@ -142,7 +142,6 @@
 <translation id="1110965959145884739">ഈ ഉപകരണത്തിൽ ഇൻസ്റ്റാൾ ചെയ്യേണ്ട ഭാഷകൾ തിരഞ്ഞെടുക്കുക. ഡിസ്‌ക് സ്പെയ്‌സ് ലാഭിക്കാൻ, ഭാഷാ ഫയലുകൾ ഉപയോക്താക്കൾക്കിടയിൽ പങ്കിടും. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">പശ്ചാത്തല ടാബ് bluetooth ഉപയോഗിക്കുന്നു</translation>
 <translation id="1112998165730922436">കാസ്റ്റ് ചെയ്യുന്നത് താൽക്കാലികമായി നിർത്തി</translation>
-<translation id="1113807501859230251">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിന്ന് Bruschetta നീക്കം ചെയ്യണോ? ഇത് വെർച്വൽ മെഷീനിലെ എല്ലാ ആപ്പുകളും ഡാറ്റയും ഇല്ലാതാക്കും!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">ഡയമണ്ട്</translation>
 <translation id="1114427165525619358">ഈ ഉപകരണത്തിലും നിങ്ങളുടെ Google അക്കൗണ്ടിലുമുള്ള പാസ്‌വേഡുകൾ</translation>
@@ -2078,7 +2077,6 @@
 <translation id="2673135533890720193">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം വായിക്കുക</translation>
 <translation id="2673873887296220733">തുറക്കാൻ ഒരു ഫയൽ <ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് പകർത്തണോ?</translation>
 <translation id="2674764818721168631">ഓഫാണ്</translation>
-<translation id="2675570801872027281">Bruschetta നീക്കം ചെയ്യുന്നതിൽ പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2676084251379299915">ഈ വിപുലീകരണം ഇനി Chrome വെബ് സ്റ്റോറിൽ ലഭ്യമല്ല, അതിനാൽ എന്റർപ്രൈസ് നയം വഴി അത് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="2678063897982469759">വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="2678100101831051676">കാസ്‌റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
@@ -6050,6 +6048,7 @@
 <translation id="6050189528197190982">ഗ്രേസ്‌കെയിൽ</translation>
 <translation id="6051354611314852653">ക്ഷമിക്കണം! ഈ ഉപകരണത്തിന്റെ API ആക്‌സസ് അംഗീകൃതമാക്കുന്നതിൽ സിസ്റ്റം പരാജയപ്പെട്ടു.</translation>
 <translation id="6051811090255711417">സുരക്ഷാ നയം പാലിക്കാത്തതിനാൽ, നിങ്ങളുടെ സ്ഥാപനം ഈ ഫയൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">കാസ്റ്റ് ചെയ്ത് തുടങ്ങാൻ ആക്‌സസ് കോഡ് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="6052976518993719690">SSL സര്‍‌ട്ടിഫിക്കേഷന്‍‌ അതോറിറ്റി</translation>
 <translation id="6053401458108962351">&amp;ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>

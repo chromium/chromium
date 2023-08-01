@@ -140,7 +140,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1110965959145884739">Wähle aus, welche Sprachen auf diesem Gerät installiert werden sollen. Sprachendateien werden von Nutzern gemeinsam verwendet, um Speicherplatz zu sparen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Tab im Hintergrund verwendet Bluetooth</translation>
 <translation id="1112998165730922436">Streamen pausiert</translation>
-<translation id="1113807501859230251">Bruschetta von deinem Gerät (<ph name="DEVICE_TYPE" />) entfernen? Dadurch werden alle Apps und Daten der virtuellen Maschine gelöscht.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Raute</translation>
 <translation id="1114427165525619358">Passwörter auf diesem Gerät und in deinem Google-Konto</translation>
@@ -2075,7 +2074,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2673135533890720193">Browserverlauf lesen</translation>
 <translation id="2673873887296220733">1 Datei zu <ph name="CLOUD_PROVIDER" /> kopieren, um sie zu öffnen?</translation>
 <translation id="2674764818721168631">Aus</translation>
-<translation id="2675570801872027281">Fehler beim Entfernen von Bruschetta. Bitte versuch es noch einmal.</translation>
 <translation id="2676084251379299915">Diese Erweiterung wurde durch eine Unternehmensrichtlinie deaktiviert, weil sie im Chrome Web Store nicht mehr verfügbar ist.</translation>
 <translation id="2678063897982469759">Wieder aktivieren</translation>
 <translation id="2678100101831051676">Streamen nicht möglich.</translation>
@@ -6029,6 +6027,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6050189528197190982">Graustufen</translation>
 <translation id="6051354611314852653">Hoppla! Das System konnte das Gerät nicht für den API-Zugriff autorisieren.</translation>
 <translation id="6051811090255711417">Deine Organisation hat diese Datei blockiert, weil sie gegen eine Sicherheitsrichtlinie verstößt</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Zum Starten des Streams Zugriffscode eingeben</translation>
 <translation id="6052976518993719690">SSL-Zertifizierungsstelle</translation>
 <translation id="6053401458108962351">&amp;Browserdaten löschen...</translation>

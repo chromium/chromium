@@ -142,7 +142,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1110965959145884739">Dewis pa ieithoedd i'w gosod ar y ddyfais hon. Rhennir ffeiliau iaith ymhlith defnyddwyr i gadw lle ar y disg. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Mae tab cefndir yn defnyddio Bluetooth</translation>
 <translation id="1112998165730922436">Mae castio wedi'i seibio</translation>
-<translation id="1113807501859230251">Tynnu Bruschetta o'ch <ph name="DEVICE_TYPE" />? Bydd hyn yn dileu'r holl apiau a data o'r peiriant rhithiwr!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diemwnt</translation>
 <translation id="1114427165525619358">Cyfrineiriau ar y ddyfais hon ac yn eich Cyfrif Google</translation>
@@ -2097,7 +2096,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2673135533890720193">Darllen eich hanes pori</translation>
 <translation id="2673873887296220733">Copïo 1 ffeil i <ph name="CLOUD_PROVIDER" /> i'w hagor?</translation>
 <translation id="2674764818721168631">Diffodd</translation>
-<translation id="2675570801872027281">Bu gwall wrth dynnu Bruschetta. Rhowch gynnig arall arni.</translation>
 <translation id="2676084251379299915">Mae'r estyniad hwn wedi'i analluogi gan bolisi Enterprise gan nad yw ar gael bellach ar Chrome Web Store.</translation>
 <translation id="2678063897982469759">Ail-alluogi</translation>
 <translation id="2678100101831051676">Methu â chastio.</translation>
@@ -6070,6 +6068,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6050189528197190982">Graddlwyd</translation>
 <translation id="6051354611314852653">Wps!  Gwnaeth y system fethu ag awdurdodi mynediad API ar gyfer y ddyfais hon.</translation>
 <translation id="6051811090255711417">Gwnaeth eich sefydliad rwystro'r ffeil hon oherwydd nad oedd yn bodloni polisi diogelwch</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Teipiwch y cod mynediad i ddechrau castio</translation>
 <translation id="6052976518993719690">Awdurdod Ardystio SSL</translation>
 <translation id="6053401458108962351">&amp;Clirio data pori...</translation>

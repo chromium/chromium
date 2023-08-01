@@ -126,7 +126,6 @@
 <translation id="1487931858675166540">«<ph name="FIRST_ITEM_TITLE" />» և «<ph name="SECOND_ITEM_TITLE" />» տարրերը տեղերով փոխվեցին</translation>
 <translation id="1500926532737552529">Ցույց տալ բոլոր առաջարկները</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
-<translation id="1516740043221086139">«Չանհանգստացնել» ռեժիմն ակտիվ է։</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են մեկ հավելվածի համար:}one{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}other{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}}</translation>
 <translation id="1523032696246003">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />% | Լրիվ լիցքավորմանը մնացել է <ph name="TIME" /></translation>
 <translation id="1525508553941733066">ՓԱԿԵԼ</translation>
@@ -151,7 +150,6 @@
 <translation id="1611993646327628135">Միացված է</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1632985212731562677">Switch Access-ն անջատելու համար անցեք Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
-<translation id="163517899691012366">Ծանուցումների ձայնն անջատված է «Չանհանգստացնել» ռեժիմում</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> սարք</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1647986356840967552">Նախորդ էջը</translation>
@@ -526,7 +524,6 @@
 <translation id="334252345105450327">Սքրինշոթ անել</translation>
 <translation id="334927402682780278">Ընտրել տեքստը՝ նշորդից մինչև տողի վերջ</translation>
 <translation id="3349345708646875009">Բացել խնդիրների կառավարիչը</translation>
-<translation id="3354555338129305222">ինչու է իմ սարքը դանդաղ</translation>
 <translation id="3364721542077212959">Ստիլուսի գործիքներ</translation>
 <translation id="3365977133351922112">Հեռախոսը շատ հեռու է։ Մոտեցրեք այն։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
@@ -844,7 +841,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox-ը միացված է</translation>
-<translation id="4665114317261903604">Միացնել/անջատել «Չանհանգստացնել» ռեժիմը։ <ph name="STATE_TEXT" /></translation>
 <translation id="4666911709726371538">Այլ հավելվածներ</translation>
 <translation id="4667099493359681081">Ներբեռնում՝ <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Հավելվածներ ձեր հեռախոսից</translation>
@@ -1230,7 +1226,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />` ակտիվացում…</translation>
 <translation id="6274202259872570803">Սքրինքաստ</translation>
 <translation id="6276708887952587684">Դիտել էջի կոդը</translation>
-<translation id="6283712521836204486">«Չանհանգստացնել» ռեժիմն անջատված է։</translation>
 <translation id="6284232397434400372">Լուծաչափը փոխվել է</translation>
 <translation id="6288235558961782912">Ծնողների թույլտվությամբ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջը հնարավոր կլինի նորից ավելացնել ավելի ուշ:</translation>
 <translation id="6291221004442998378">Չի լիցքավորվում</translation>
@@ -1561,6 +1556,7 @@
 <translation id="7842569679327885685">Ուշադրություն. սա փորձնական գործառույթ է</translation>
 <translation id="7846634333498149051">Ստեղնաշար</translation>
 <translation id="7848989271541991537">Հավելվածը տեղափոխվել է էջ <ph name="PAGE_NUMBER" />, շարք <ph name="ROW_NUMBER" />, սյունակ <ph name="COLUMN_NUMBER" />։</translation>
+<translation id="7850320739366109486">Չանհանգստացնել</translation>
 <translation id="7851039877802112575">Անցնել ելնող և երկխոսության պատուհաններին</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Համատեսքը բացելու համար երեք մատով սահեցրեք վեր</translation>
@@ -1809,6 +1805,7 @@
 <translation id="8921624153894383499">Google օգնականն այս լեզվով չի խոսում:</translation>
 <translation id="8924458948354692166">Սեղմեք Enter՝ պատուհանի բովանդակության սքրինշոթ անելու համար</translation>
 <translation id="8926951137623668982">Դարակը միշտ թաքցված է</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="8936501819958976551">անջատվեց</translation>
 <translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>
 <translation id="8940956008527784070">Մարտկոցի լիցքն սպառվում է (<ph name="PERCENTAGE" />%)</translation>

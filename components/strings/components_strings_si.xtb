@@ -231,6 +231,7 @@
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1432187715652018471">පිටුවට සේවා හසුරුවන්නෙක් ස්ථාපනය කිරීමට අවශ්‍යයි.</translation>
 <translation id="1432581352905426595">සෙවීම් යාන්ත්‍රණ කළමණාකරණය කරන්න</translation>
+<translation id="1433225466058025572">ඔබේ ගොනු නැවත ගෙන යාමට උත්සාහ කරන්න</translation>
 <translation id="1435940442311036198">වෙනස් උපාංගයක මුරයතුරක් භාවිතා කරන්න</translation>
 <translation id="1436185428532214179">ඔබගේ උපාංගයෙහි ගොනු සහ ෆෝල්ඩර සංස්කරණය කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="1442386063175183758">දකුණු දොරටු නැමීම</translation>
@@ -683,6 +684,7 @@
 <translation id="2396249848217231973">මැකීම &amp;පසුගමනය කරන්න</translation>
 <translation id="2397836504670957718">ලැප්ටොප් සහ නෝට්බුක් පරිගණක</translation>
 <translation id="2400600116338235695">අනුක්‍රමික තොටවල් වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
+<translation id="2404884497378469141">ඔබේ ගොනු නැවත පිටපත් කිරීමට උත්සාහ කරන්න</translation>
 <translation id="2413155254802890957">පැරණි</translation>
 <translation id="2413528052993050574">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය අහෝසි කර තිබිය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="2414886740292270097">අඳුරු</translation>
@@ -839,6 +841,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> මත ඔබේ මුරපදය පුරවන්න</translation>
 <translation id="2764001903315068341">විකට</translation>
 <translation id="2765217105034171413">කුඩා</translation>
+<translation id="2770159525358613612">ඔබේ ගොනු නැවත උඩුගත කිරීමට උත්සාහ කරන්න</translation>
 <translation id="277133753123645258">නැව්ගත කිරීමේ ක්‍රමය</translation>
 <translation id="277499241957683684">අහිමි උපාංග වාර්ථාව</translation>
 <translation id="2775884851269838147">පළමු මුද්‍රණ පිටුව</translation>
@@ -1229,6 +1232,7 @@
 <translation id="3632892046558972264">තිරය බෙදා ගැනීම විරාම කර ඇත</translation>
 <translation id="3634530185120165534">බඳුන 5</translation>
 <translation id="3634567936866541746">ඔබ මේ දැන් වංචනික අඩවියකට ඔබගේ මුරපදය ඇතුළු කළේය. ඔබගේ ගිණුම් ආරක්ෂා කිරීමට, Chrome ඔබගේ සුරැකි මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
+<translation id="3642196846309122856">ඔබේ ගොනු නැවත බාගැනීමට උත්සාහ කරන්න</translation>
 <translation id="3642638418806704195">යෙදුම:</translation>
 <translation id="3646643500201740985">දැන්වීමක් කෙතරම් හොඳින් ක්‍රියාත්මක වේ ද යන්න මැන බැලීම</translation>
 <translation id="3647286794400715637">සෑම url තන්තු ප්‍රවේශයකම URL 1ක් 2ක් අඩංගු විය යුතුය.</translation>
@@ -1352,6 +1356,7 @@
 <translation id="3890664840433101773">ඊ-තැපෑල එක් කරන්න</translation>
 <translation id="3897092660631435901">මෙනුව</translation>
 <translation id="3901925938762663762">මෙම කාඩ්පත කල් ඉකුත් වී ඇත</translation>
+<translation id="390391808978419508">විවෘත කිරීමේ කාලය නිමා විය</translation>
 <translation id="3905894480064208252">{0,plural, =1{ගොනුව මාරු කිරීම අවහිර කර ඇත}one{ගොනු <ph name="FILE_COUNT" />ක් මාරු කිරීම අවහිර කර ඇත}other{ගොනු <ph name="FILE_COUNT" />ක් මාරු කිරීම අවහිර කර ඇත}}</translation>
 <translation id="3906095212874392000">පරිවර්තනය කළ පෙළ අවසානය</translation>
 <translation id="3906954721959377182">ටැබ්ලට්</translation>
@@ -1364,6 +1369,7 @@
 <translation id="393316646445601645">අන්තර්ජාලය සහ විදුලි සන්නිවේදන</translation>
 <translation id="3939773374150895049">CVC වෙනුවට WebAuthn භාවිත කරන්නද?</translation>
 <translation id="3941630233824954464">අනිවාර්ය යළි සත්‍යාපනය සබල කරන්න</translation>
+<translation id="3942048175062210325">ඔබේ ගොනු නැවත විවෘත කිරීමට උත්සාහ කරන්න</translation>
 <translation id="3943857333388298514">අලවන්න</translation>
 <translation id="3946209740501886391">මෙම අඩවියේදී සැමවිටම විමසන්න</translation>
 <translation id="3947595700203588284">අඩවි MIDI උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
@@ -1445,6 +1451,7 @@
 <translation id="4117700440116928470">ප්‍රතිපත්ති විෂයපථය උපකාර නොකරයි.</translation>
 <translation id="4121428309786185360">මෙදින කල්ඉකුත් වේ</translation>
 <translation id="4123572138124678573">පහළට තුන්වරක් අනින්න</translation>
+<translation id="412601465078863288">උඩුගත කිරීමේ කාලය නිමා විය</translation>
 <translation id="4127317221386336246">ඇඳුම් ආයිත්තම්</translation>
 <translation id="4127575959421463246">ChromeOS සලකුණු කිරීම් සඳහා සොයන්නේද? පිවිසෙන්න</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{වෙනත් 1}one{වෙනත් #}other{වෙනත් #}}</translation>
@@ -1661,6 +1668,7 @@
 <translation id="4540780316273593836">යම් දෙයක් වැරදිණි</translation>
 <translation id="4541810033354695636">ආවර්ධිත යථාර්තය</translation>
 <translation id="4542971377163063093">බඳුන 6</translation>
+<translation id="4546730006268514143">මාරු කිරීමේ කාලය නිමා විය</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">ඔබ මුරපද පිරවීම සඳහා ඔබේ තිර අගුල භාවිතා කරයි</translation>
 <translation id="4558551763791394412">ඔබගේ දිගු අබල කිරීම උත්සාහ කරන්න.</translation>
@@ -2094,6 +2102,7 @@
 <translation id="5470230812924696184">සිවිල් ඉංජිනේරු</translation>
 <translation id="5470861586879999274">සංස්කරණය &amp;යළි කරන්න</translation>
 <translation id="5471337644440862957">විකට චිත්‍රපට</translation>
+<translation id="547963486735802022">ඔබේ ගොනු නැවත මාරු කිරීමට උත්සාහ කරන්න</translation>
 <translation id="5481076368049295676">මෙම අන්තර්ගතය ඔබේ උපාංගය මත ඔබේ තොරතුරු සොරකම් කරන හෝ මකන අනතුරුදායක මෘදුකාංග ස්ථාපනය කිරීමට උත්සාහ කළ හැකිය. <ph name="BEGIN_LINK" />කෙසේ වෙතත් පෙන්වන්න<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">වලංගු ලිපිනයක් එක් කරන්න</translation>
 <translation id="5483838506518938965">ඔබ සියල්ල සකසා ඇත</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6961733224437895943">නිවාස රක්ෂණය</translation>
 <translation id="6961844873822989059">ඔබගේ උපාංගයේ ස්ථාපනය කර ඇති ෆොන්ට භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="6961980518585973432">සංවත්සර</translation>
+<translation id="6962858948849099922">ගෙන යාමේ කාලය නිමා විය</translation>
 <translation id="6963520811470373926">ඉක්මවීම</translation>
 <translation id="6963574715554809750">සිල්ලර වෙළඳාම</translation>
 <translation id="6963693576491380224">රාජ්‍ය සහ පොදු අංශයේ රැකියා</translation>
@@ -2860,6 +2870,7 @@
 <translation id="7111507312244504964">දේපළ නිරීක්ෂණය සහ තක්සේරුව</translation>
 <translation id="7112327784801341716">ඔබ දකින්නේ ඔබේ වත්මන් තතු නොවේ ද? එය යාවත්කාලීන කිරීමට ඔබේ බැංකුව සම්බන්ධ කර ගන්න.</translation>
 <translation id="7118618213916969306">පසුරු පුවරු URL එක සොයන්න, <ph name="SHORT_URL" /></translation>
+<translation id="7119371694555167493">පිටපත් කිරීමේ කාලය නිමා විය</translation>
 <translation id="7119414471315195487">අනෙකුත් පටිති හෝ වැඩසටහන් වසන්න</translation>
 <translation id="7124354851782353862">ඔබේ CVC ඇතුළු කරන්න</translation>
 <translation id="7129355289156517987">ඔබ Chromium අප්‍රසිද්ධ ටැබ සියල්ල වැසූ විට, එම ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් හිස් වේ:
@@ -3112,6 +3123,7 @@
 <translation id="7592749602347161287">A5 අමතර</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />ට වඩා අඩු</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> හට දැනට මෙම ඉල්ලීම හැසිරවීමට නොහැකිය.</translation>
+<translation id="7599089013883397081">බාගැනීමේ කාලය නිමා විය</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
 <translation id="7601297359530599375">ඔබ සාමාන්‍යයෙන් මෙම වෙබ් අඩවියට ආරක්ෂිතව සම්බන්ධ වන නමුත්, Chrome හට මෙවර ආරක්ෂිත සම්බන්ධතාවක් භාවිත කළ නොහැකි විය. ප්‍රහාරකයෙකු ඔබේ ජාල සම්බන්ධතාවට සවන් දීමට හෝ වෙනස් කිරීමට උත්සාහ කරයි. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">අගය <ph name="VALUE" /> පරාසයෙන් බැහැරව ඇත.</translation>
