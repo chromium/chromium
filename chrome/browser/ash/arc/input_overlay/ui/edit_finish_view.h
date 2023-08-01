@@ -84,7 +84,7 @@ class EditFinishView : public views::View {
   raw_ptr<ChildButton> save_button_ = nullptr;
   raw_ptr<ChildButton> cancel_button_ = nullptr;
 
-  // DisplayOverlayController owns |this| class, no need to deallocate.
+  // DisplayOverlayController owns `this` class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
 };
 

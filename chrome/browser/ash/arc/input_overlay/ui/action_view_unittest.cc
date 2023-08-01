@@ -257,7 +257,7 @@ TEST_F(ActionViewTest, TestDragMoveActionTap) {
 
   // The label position has different label offset positions depending on the
   // current position.
-  // Mouse drag to the right edge. T represents the |tap_action_view_| position.
+  // Mouse drag to the right edge. T represents the `tap_action_view_` position.
   // From
   //  |----------------|
   //  |                |
@@ -435,7 +435,7 @@ TEST_F(ActionViewTest, TestArrowKeyMove) {
 
 TEST_F(ActionViewTest, TestActionViewReorder) {
   SetDisplayMode(DisplayMode::kEdit);
-  // Move |move_action_view_| to the right. |tap_action_view_| is sorted in
+  // Move `move_action_view_` to the right. `tap_action_view_` is sorted in
   // front.
   TouchPressAtActionView(move_action_view_);
   TouchMoveAtActionViewBy(move_action_view_, gfx::Vector2d(20, 0));
@@ -444,8 +444,8 @@ TEST_F(ActionViewTest, TestActionViewReorder) {
   SetDisplayMode(DisplayMode::kEdit);
   EXPECT_EQ(0u, *GetIndexOf(tap_action_view_));
   EXPECT_EQ(1u, *GetIndexOf(move_action_view_));
-  // Move |tap_action_view_| to the right of |move_action_view_|.
-  // |move_action_view_| is sorted in front.
+  // Move `tap_action_view_` to the right of `move_action_view_`.
+  // `move_action_view_` is sorted in front.
   TouchPressAtActionView(tap_action_view_);
   TouchMoveAtActionViewBy(tap_action_view_, gfx::Vector2d(30, 0));
   TouchReleaseAtActionView(tap_action_view_);
@@ -453,8 +453,8 @@ TEST_F(ActionViewTest, TestActionViewReorder) {
   SetDisplayMode(DisplayMode::kEdit);
   EXPECT_EQ(1u, *GetIndexOf(tap_action_view_));
   EXPECT_EQ(0u, *GetIndexOf(move_action_view_));
-  // Move |tap_action_view_| to the top of |move_action_view_|.
-  // |tap_action_view_| is sorted in front.
+  // Move `tap_action_view_` to the top of `move_action_view_`.
+  // `tap_action_view_` is sorted in front.
   PressLeftMouseAtActionView(tap_action_view_);
   MouseDragActionViewBy(tap_action_view_, gfx::Vector2d(0, -10));
   ReleaseLeftMouse(tap_action_view_);
@@ -462,8 +462,8 @@ TEST_F(ActionViewTest, TestActionViewReorder) {
   SetDisplayMode(DisplayMode::kEdit);
   EXPECT_EQ(0u, *GetIndexOf(tap_action_view_));
   EXPECT_EQ(1u, *GetIndexOf(move_action_view_));
-  // Move |move_action_view_| to the left side of the window.
-  // |move_action_view_| is sorted in front.
+  // Move `move_action_view_` to the left side of the window.
+  // `move_action_view_` is sorted in front.
   TouchPressAtActionView(move_action_view_);
   TouchMoveAtActionViewBy(move_action_view_, gfx::Vector2d(-30, 0));
   TouchReleaseAtActionView(move_action_view_);

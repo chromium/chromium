@@ -155,7 +155,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     ChangeInputBinding(action_, action_label, std::move(input_element));
   }
 
-  // TODO(cuicuiruan): Remove this for post MVP for editing |ActionMove|.
+  // TODO(cuicuiruan): Remove this for post MVP for editing `ActionMove`.
   void SetDisplayMode(const DisplayMode mode,
                       ActionLabel* editing_label = nullptr) override {
     ActionView::SetDisplayMode(mode, editing_label);
@@ -185,7 +185,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
       return;
     }
 
-    // Calculate minimum size of the |ActionMoveKeyView|.
+    // Calculate minimum size of the `ActionMoveKeyView`.
     int left = INT_MAX, right = 0, top = INT_MAX, bottom = 0;
     for (const auto* label : labels_) {
       left = std::min(left, label->bounds().x());
@@ -304,7 +304,7 @@ bool ActionMove::ParseJsonFromMouse(const base::Value::Dict& value) {
       return false;
     }
 
-    // Verify |top_left| is located on the top-left of the |bottom_right|. Use a
+    // Verify `top_left` is located on the top-left of the `bottom_right`. Use a
     // random positive window content bounds to test it.
     auto temp_rect = gfx::RectF(10, 10, 100, 100);
     auto top_left_point = top_left->CalculatePosition(temp_rect);

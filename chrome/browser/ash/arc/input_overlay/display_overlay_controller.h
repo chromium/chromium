@@ -44,7 +44,7 @@ class TouchInjectorObserver;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog. It also handles the visibility of the
-// |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
+// `ActionEditMenu` and `MessageView` by listening to the `LocatedEvent`.
 class DisplayOverlayController : public ui::EventHandler,
                                  public aura::WindowObserver {
  public:
@@ -59,7 +59,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // Turn on/off the `flag` for current registered window.
   void TurnFlag(ash::ArcGameControlsFlag flag, bool turn_on);
 
-  // Get the bounds of |menu_entry_| in screen coordinates.
+  // Get the bounds of `menu_entry_` in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
   void AddEditMessage(const base::StringPiece& message,
@@ -80,7 +80,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnCustomizeRestore();
   const std::string& GetPackageName() const;
   // Once the menu state is loaded from protobuf data, it should be applied on
-  // the view. For example, |InputMappingView| may not be visible if it is
+  // the view. For example, `InputMappingView` may not be visible if it is
   // hidden or input overlay is disabled.
   void OnApplyMenuState();
   // Get window state type.
@@ -149,10 +149,10 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class MenuEntryViewTest;
   friend class OverlayViewTestBase;
 
-  // Display overlay is added for starting |display_mode|.
+  // Display overlay is added for starting `display_mode`.
   void AddOverlay(DisplayMode display_mode);
   void RemoveOverlayIfAny();
-  // If |on_overlay| is true, set event target on overlay layer. Otherwise, set
+  // If `on_overlay` is true, set event target on overlay layer. Otherwise, set
   // event target on the layer underneath the overlay layer.
   void SetEventTarget(views::Widget* overlay_widget, bool on_overlay);
 
@@ -177,9 +177,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddEditFinishView(views::Widget* overlay_widget);
   void RemoveEditFinishView();
 
-  // Add |EducationalView|.
+  // Add `EducationalView`.
   void AddEducationalView();
-  // Remove |EducationalView| and its references.
+  // Remove `EducationalView` and its references.
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
@@ -198,7 +198,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
 
-  // Close |MessageView| if |LocatedEvent| happens outside
+  // Close `MessageView` if `LocatedEvent` happens outside
   // of their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 

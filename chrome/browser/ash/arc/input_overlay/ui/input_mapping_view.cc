@@ -18,8 +18,8 @@ namespace {
 // UI specs.
 constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
 
-// Return true if |v1| is on top than |v2|, or |v1| is on the left side of |v2|
-// when |v1| has the same y position as |v2|.
+// Return true if `v1` is on top than `v2`, or `v1` is on the left side of `v2`
+// when `v1` has the same y position as `v2`.
 bool CompareActionViewPosition(const ActionView* v1, const ActionView* v2) {
   auto center1 = v1->GetTouchCenterInWindow();
   auto center2 = v2->GetTouchCenterInWindow();

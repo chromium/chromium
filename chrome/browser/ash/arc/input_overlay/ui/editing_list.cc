@@ -162,7 +162,7 @@ void EditingList::AddControlListContent() {
   // | ---------------------- |
   // | ......                 |
   // --------------------------
-  // TODO(b/270969479): Wrap |scroll_content| in a scroll view.
+  // TODO(b/270969479): Wrap `scroll_content` in a scroll view.
   DCHECK(controller_);
   DCHECK(scroll_content_);
   for (const auto& action : controller_->touch_injector()->actions()) {

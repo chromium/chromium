@@ -171,7 +171,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
     banner_ = AddChildView(std::move(banner));
   }
   {
-    // |Game controls [Alpha]| title tag.
+    // `Game controls [Alpha]` title tag.
     auto container_view = std::make_unique<views::View>();
     container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -243,7 +243,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
     description_label->SetSize(gfx::Size());
   }
   {
-    // Edit/add |Got it| button to exit UI.
+    // Edit/add `Got it` button to exit UI.
     accept_button_ = AddChildView(std::make_unique<ash::PillButton>(
         base::BindRepeating(&EducationalView::OnAcceptedPressed,
                             base::Unretained(this)),

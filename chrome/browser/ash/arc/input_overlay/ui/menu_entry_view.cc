@@ -164,7 +164,7 @@ void MenuEntryView::Init() {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
-  // Set up focus ring for |menu_entry_|.
+  // Set up focus ring for `menu_entry_`.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kMenuEntryCornerRadius);
   ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),

@@ -88,7 +88,7 @@ class TouchInjector : public ui::EventRewriter {
   // Unregister the EventRewriter.
   void UnRegisterEventRewriter();
   // Change bindings. This could be from user editing from display overlay
-  // (|mode| = DisplayMode::kEdit) or from customized protobuf data (|mode| =
+  // (`mode` = DisplayMode::kEdit) or from customized protobuf data (`mode` =
   // DisplayMode::kView).
   void OnInputBindingChange(Action* target_action,
                             std::unique_ptr<InputElement> input_element);
@@ -114,7 +114,7 @@ class TouchInjector : public ui::EventRewriter {
     return menu_entry_location_;
   }
 
-  // Update |content_bounds_f_| and touch positions for each |actions_| for
+  // Update `content_bounds_f_` and touch positions for each `actions_` for
   // different reasons.
   void UpdatePositionsForRegister();
   void UpdateForOverlayBoundsChanged(const gfx::RectF& new_bounds);
@@ -122,7 +122,7 @@ class TouchInjector : public ui::EventRewriter {
   // Returns the smallest unused ID (> kMaxDefaultActionID) for adding a new
   // action.
   int GetNextNewActionID();
-  // Add a new action of type |action_type| from UI without input binding and
+  // Add a new action of type `action_type` from UI without input binding and
   // with default position binding at the center.
   void AddNewAction(ActionType action_type);
   void RemoveAction(Action* action);
@@ -199,7 +199,7 @@ class TouchInjector : public ui::EventRewriter {
 
   class KeyCommand;
 
-  // Clean up active touch events before entering into other mode from |kView|
+  // Clean up active touch events before entering into other mode from `kView`
   // mode.
   void CleanupTouchEvents();
   // If the window is destroying or focusing out, releasing the active touch
@@ -217,7 +217,7 @@ class TouchInjector : public ui::EventRewriter {
   void ParseMouseLock(const base::Value::Dict& dict);
 
   void FlipMouseLockFlag();
-  // Check if the event located on menu entry. |press_required| tells whether or
+  // Check if the event located on menu entry. `press_required` tells whether or
   // not a mouse press or touch press is required.
   bool LocatedEventOnMenuEntry(const ui::Event& event,
                                const gfx::RectF& content_bounds,
@@ -241,14 +241,14 @@ class TouchInjector : public ui::EventRewriter {
   // Convert the customized data to AppDataProto.
   std::unique_ptr<AppDataProto> ConvertToProto();
 
-  // Add the menu state to |proto|.
+  // Add the menu state to `proto`.
   void AddMenuStateToProto(AppDataProto& proto);
-  // Load menu state from |proto|. The default state is on for the toggles.
+  // Load menu state from `proto`. The default state is on for the toggles.
   void LoadMenuStateFromProto(AppDataProto& proto);
 
-  // Add the menu entry view position to |proto|, if it has been customized.
+  // Add the menu entry view position to `proto`, if it has been customized.
   void AddMenuEntryToProtoIfCustomized(AppDataProto& proto) const;
-  // Load menu entry position from |proto|, if it exists.
+  // Load menu entry position from `proto`, if it exists.
   void LoadMenuEntryFromProto(AppDataProto& proto);
 
   void AddSystemVersionToProto(AppDataProto& proto);
@@ -279,9 +279,9 @@ class TouchInjector : public ui::EventRewriter {
   int GetRewrittenTouchInfoSizeForTesting();
   DisplayOverlayController* GetControllerForTesting();
 
-  // TouchInjector is created when targeted |window_| is created and is
-  // registered only when |window_| is focused. And TouchInjector doesn't own
-  // |window_| and it is destroyed when |window_| is destroyed.
+  // TouchInjector is created when targeted `window_` is created and is
+  // registered only when `window_` is focused. And TouchInjector doesn't own
+  // `window_` and it is destroyed when `window_` is destroyed.
   raw_ptr<aura::Window, AcrossTasksDanglingUntriaged> window_;
   std::string package_name_;
   gfx::RectF content_bounds_f_;

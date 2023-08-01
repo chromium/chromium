@@ -72,7 +72,7 @@ void EditLabels::UpdateNameTagTitle() {
 void EditLabels::SetNameTagState(bool is_error,
                                  const std::u16string& error_tooltip) {
   // If an individual label doesn't need to show error, but other sibling label
-  // still has label unassigned, |name_tag_| still needs to show error.
+  // still has label unassigned, `name_tag_` still needs to show error.
   if (!is_error && missing_assign_) {
     name_tag_->SetState(
         /*is_error=*/true,

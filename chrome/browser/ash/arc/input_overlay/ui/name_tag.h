@@ -35,8 +35,8 @@ class NameTag : public views::View {
   void SetTitle(const std::u16string& title);
   void SetSubtitle(const std::u16string& sub_title);
 
-  // Set state depending on |is_error|. If |is_error| true, |error_tooltip| is
-  // tooltip text for |error_icon_|.
+  // Set state depending on `is_error`. If `is_error` true, `error_tooltip` is
+  // tooltip text for `error_icon_`.
   void SetState(bool is_error, const std::u16string& error_tooltip);
 
   views::ImageView* error_icon() const { return error_icon_; }

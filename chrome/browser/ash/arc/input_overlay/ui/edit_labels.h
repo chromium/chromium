@@ -60,7 +60,7 @@ class EditLabels : public views::View {
   void InitForActionTapKeyboard();
   void InitForActionMoveKeyboard();
 
-  // Called when |labels_| is initiated or changes the content.
+  // Called when `labels_` is initiated or changes the content.
   void UpdateNameTag();
   // Called when the editing list is first loaded to assign name labels to
   // name tags, if available.
@@ -68,12 +68,12 @@ class EditLabels : public views::View {
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
-  // Displays the content in |labels_|.
+  // Displays the content in `labels_`.
   raw_ptr<NameTag, DanglingUntriaged> name_tag_ = nullptr;
 
   std::vector<EditLabel*> labels_;
 
-  // It is true that at least one of |labels_| is unassigned.
+  // It is true that at least one of `labels_` is unassigned.
   bool missing_assign_ = false;
 
   // Allows for title modification if true.

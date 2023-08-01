@@ -45,11 +45,11 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
     const base::StringPiece key_name);
 
-// Return true if the |input_element| is bound.
+// Return true if the `input_element` is bound.
 bool IsInputBound(const InputElement& input_element);
-// Return true if the |input_element| is bound to keyboard key.
+// Return true if the `input_element` is bound to keyboard key.
 bool IsKeyboardBound(const InputElement& input_element);
-// Return true if the |input_element| is bound to mouse.
+// Return true if the `input_element` is bound to mouse.
 bool IsMouseBound(const InputElement& input_element);
 
 // This is the base touch action which converts other events to touch
@@ -83,7 +83,7 @@ class Action {
   virtual std::unique_ptr<ActionView> CreateView(
       DisplayOverlayController* display_overlay_controller) = 0;
   // This is called if other actions take the input binding from this action.
-  // |input_element| should overlap the current displayed binding. If it is
+  // `input_element` should overlap the current displayed binding. If it is
   // partially overlapped, then we only unbind the overlapped input.
   virtual void UnbindInput(const InputElement& input_element) = 0;
   virtual ActionType GetType() const = 0;
@@ -91,9 +91,9 @@ class Action {
   // This is called for editing the actions before change is saved. Or for
   // loading the customized data to override the default input mapping.
   void PrepareToBindInput(std::unique_ptr<InputElement> input_element);
-  // Save |pending_input_| as |current_input_|.
+  // Save `pending_input_` as `current_input_`.
   void BindPending();
-  // Cancel |pending_input_| and |pending_position_|.
+  // Cancel `pending_input_` and `pending_position_`.
   void CancelPendingBind();
   void ResetPendingBind();
 
@@ -103,15 +103,15 @@ class Action {
   void RestoreToDefault();
   // Return currently displayed input binding.
   const InputElement& GetCurrentDisplayedInput();
-  // Check if there is any overlap between |input_element| and current
+  // Check if there is any overlap between `input_element` and current
   // displayed binding.
   bool IsOverlapped(const InputElement& input_element);
-  // Make sure |original_positions_| is not empty before calling this.
+  // Make sure `original_positions_` is not empty before calling this.
   const Position& GetCurrentDisplayedPosition();
 
   // Return the proto object if the action is customized.
   virtual std::unique_ptr<ActionProto> ConvertToProtoIfCustomized() const;
-  // Update |touch_down_positions_| after reposition, rotation change or window
+  // Update `touch_down_positions_` after reposition, rotation change or window
   // bounds change.
   void UpdateTouchDownPositions();
 
@@ -166,11 +166,11 @@ class Action {
   absl::optional<std::u16string> name_label() { return name_label_; }
 
  protected:
-  // |touch_injector| must be non-NULL and own this Action.
+  // `touch_injector` must be non-NULL and own this Action.
   explicit Action(TouchInjector* touch_injector);
 
-  // Create a touch pressed/moved/released event with |time_stamp| and save it
-  // in |touch_events|.
+  // Create a touch pressed/moved/released event with `time_stamp` and save it
+  // in `touch_events`.
   bool CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
                                std::list<ui::TouchEvent>& touch_events);
   void CreateTouchMovedEvent(const base::TimeTicks& time_stamp,
@@ -205,8 +205,8 @@ class Action {
   // Position take turns for each key press if there are more than
   // one positions. This is for original default positions.
   std::vector<Position> original_positions_;
-  // The first element of |current_positions_| is different from
-  // |original_positions_| if the position is customized.
+  // The first element of `current_positions_` is different from
+  // `original_positions_` if the position is customized.
   std::vector<Position> current_positions_;
   // Only support the reposition of the first touch position if there are more
   // than one touch position.
@@ -214,7 +214,7 @@ class Action {
   std::unique_ptr<Position> pending_position_;
   // Root locations of touch point.
   std::vector<gfx::PointF> touch_down_positions_;
-  // If |require_mouse_locked_| == true, the action takes effect when the mouse
+  // If `require_mouse_locked_` == true, the action takes effect when the mouse
   // is locked. Once the mouse is unlocked, the active actions which need mouse
   // lock will be released.
   bool require_mouse_locked_ = false;
@@ -239,8 +239,8 @@ class Action {
 
   void OnTouchReleased();
   void OnTouchCancelled();
-  // Create a touch event of |type| with |time_stamp| and save it
-  // in |touch_events|.
+  // Create a touch event of `type` with `time_stamp` and save it
+  // in `touch_events`.
   void CreateTouchEvent(ui::EventType type,
                         const base::TimeTicks& time_stamp,
                         std::list<ui::TouchEvent>& touch_events);

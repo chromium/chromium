@@ -53,17 +53,17 @@ class ActionView : public views::View {
   void OnContentBoundsSizeChanged();
 
   // TODO(cuicuiruan): Remove virtual for post MVP once edit menu is ready for
-  // |ActionMove|.
-  // If |editing_label| == nullptr, set display mode for all the |ActionLabel|
-  // child views, otherwise, only set the display mode for |editing_label|.
+  // `ActionMove`.
+  // If `editing_label` == nullptr, set display mode for all the `ActionLabel`
+  // child views, otherwise, only set the display mode for `editing_label`.
   virtual void SetDisplayMode(const DisplayMode mode,
                               ActionLabel* editing_label = nullptr);
 
   // Set position from its center position.
   void SetPositionFromCenterPosition(const gfx::PointF& center_position);
-  // Show error message for action. If |ax_annouce| is true, ChromeVox
-  // annouces the |message| directly. Otherwise, |message| is added as the
-  // description of |editing_label|.
+  // Show error message for action. If `ax_annouce` is true, ChromeVox
+  // announces the `message` directly. Otherwise, `message` is added as the
+  // description of `editing_label`.
   void ShowErrorMsg(const base::StringPiece& message,
                     ActionLabel* editing_label,
                     bool ax_annouce);
@@ -72,9 +72,9 @@ class ActionView : public views::View {
                    ActionLabel* editing_label);
   void ShowFocusInfoMsg(const base::StringPiece& message, views::View* view);
   void RemoveMessage();
-  // Change binding for |action| binding to |input_element| and set
-  // |kEditedSuccess| on |action_label| if |action_label| is not nullptr.
-  // Otherwise, set |kEditedSuccess| to all |ActionLabel|.
+  // Change binding for `action` binding to `input_element` and set
+  // `kEditedSuccess` on `action_label` if `action_label` is not nullptr.
+  // Otherwise, set `kEditedSuccess` to all `ActionLabel`.
   void ChangeInputBinding(Action* action,
                           ActionLabel* action_label,
                           std::unique_ptr<InputElement> input_element);
@@ -145,7 +145,7 @@ class ActionView : public views::View {
   absl::optional<gfx::Point> touch_point_center_;
 
   // Touch point only shows up in the edit mode for users to align the position.
-  // This view owns the touch point as one of its children and |touch_point_|
+  // This view owns the touch point as one of its children and `touch_point_`
   // is for quick access.
   raw_ptr<TouchPoint, DanglingUntriaged> touch_point_ = nullptr;
   DisplayMode display_mode_ = DisplayMode::kView;

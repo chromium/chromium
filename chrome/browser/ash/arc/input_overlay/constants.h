@@ -52,7 +52,7 @@ enum class DisplayMode {
   // shows input mapping in edit mode.
   kEdit,
   // Display overlay can receive events. This is the mode before entering into
-  // |kMenu|.
+  // `kMenu`.
   // TODO(b/253646354): This will be removed when removing the Beta flag.
   kPreMenu,
   // Display overlay can receive events but action labels can't be focused.
@@ -60,7 +60,7 @@ enum class DisplayMode {
   // TODO(b/253646354): This will be removed when removing the Beta flag.
   kMenu,
 
-  // Below are related to edit for |ActionView|.
+  // Below are related to edit for `ActionView`.
   // Edit mode when action is assigned a pending input binding.
   // TODO(b/253646354): This will be removed when removing the Beta flag.
   kEditedSuccess,
@@ -88,11 +88,11 @@ enum class BindingOption {
 
 // Message types for UI displaying different types of messages.
 enum class MessageType {
-  // |kInfo| is the type for info message.
+  // `kInfo` is the type for info message.
   kInfo,
-  // |kError| is the type for error message.
+  // `kError` is the type for error message.
   kError,
-  // |kInfoLabelFocus| is the type for info message when the |ActionLabel| is
+  // `kInfoLabelFocus` is the type for info message when the `ActionLabel` is
   // focused.
   kInfoLabelFocus,
 };

@@ -57,7 +57,7 @@ std::vector<Position> ParseLocation(const base::Value::List& position) {
   return positions;
 }
 
-// Add a default position in the |positions|.
+// Add a default position in the `positions`.
 void InitPositions(std::vector<Position>& positions) {
   positions.emplace_back(PositionType::kDefault);
   positions.back().set_anchor_to_target(gfx::Vector2dF(0.5, 0.5));
@@ -335,7 +335,7 @@ void Action::CancelPendingBind() {
     canceled = true;
   }
 
-  // For unit test, |action_view_| could be nullptr.
+  // For unit test, `action_view_` could be nullptr.
   if (!action_view_ || !canceled) {
     return;
   }
@@ -379,13 +379,13 @@ void Action::RestoreToDefault() {
     restored = true;
   }
 
-  // For unit test, |action_view_| could be nullptr.
+  // For unit test, `action_view_` could be nullptr.
   if (!action_view_ || !restored) {
     return;
   }
 
   action_view_->SetViewContent(BindingOption::kPending);
-  // Set to |DisplayMode::kRestore| to clear the focus even the current
+  // Set to `DisplayMode::kRestore` to clear the focus even the current
   // binding is same as original binding.
   action_view_->SetDisplayMode(DisplayMode::kRestore);
 }
@@ -405,8 +405,8 @@ bool Action::IsOverlapped(const InputElement& input_element) {
 }
 
 const Position& Action::GetCurrentDisplayedPosition() {
-  // TODO(b/229912890): When mouse overlay is involved, |original_positions_|
-  // may be empty. Add the situation for empty |original_positions_| when
+  // TODO(b/229912890): When mouse overlay is involved, `original_positions_`
+  // may be empty. Add the situation for empty `original_positions_` when
   // supporting mouse.
   DCHECK(!original_positions_.empty());
 

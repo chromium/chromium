@@ -30,9 +30,9 @@ enum MouseAction {
 
 // Action types according to the touch events.
 enum ActionType {
-  // |TAP| involves touch down and up.
+  // `TAP` involves touch down and up.
   TAP = 0;
-  // |MOVE| involves touch down, move and up.
+  // `MOVE` involves touch down, move and up.
   MOVE = 1;
 }
 
@@ -59,7 +59,7 @@ message ActionProto {
   // Input Element. Customized input binding for this action.
   optional InputElementProto input_element = 2;
   // Customized Positions for this action. Now it only saves one position. Use
-  // keyword |repeated| for future expansion.
+  // keyword `repeated` for future expansion.
   repeated PositionProto positions = 3;
   // Action type for this action.
   optional ActionType action_type = 4;

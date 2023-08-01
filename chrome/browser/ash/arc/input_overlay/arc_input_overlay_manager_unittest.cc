@@ -292,7 +292,7 @@ TEST_P(VersionArcInputOverlayManagerTest,
       root_windows[1]->GetBoundsInScreen());
 
   // Test when launching input overlay window on the secondary display, there
-  // should be |key_event_source_rewriter_| registered on the primary root
+  // should be `key_event_source_rewriter_` registered on the primary root
   // window.
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   task_environment()->RunUntilIdle();
@@ -333,7 +333,7 @@ TEST_P(VersionArcInputOverlayManagerTest,
   arc_window.reset();
 
   // Test when launching input overlay window on the primary display, there
-  // shouldn't be |key_event_source_rewriter_|.
+  // shouldn't be `key_event_source_rewriter_`.
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   arc_window = CreateArcWindowSyncAndWait(
       task_environment(), ash::Shell::GetPrimaryRootWindow(),
@@ -343,13 +343,13 @@ TEST_P(VersionArcInputOverlayManagerTest,
   arc_window->GetNativeWindow()->SetBoundsInScreen(gfx::Rect(10, 10, 100, 100),
                                                    display1);
   EXPECT_TRUE(GetKeyEventSourceRewriter());
-  // When losing focus, |key_event_source_rewriter_| should be destroyed too.
+  // When losing focus, `key_event_source_rewriter_` should be destroyed too.
   focus_client->FocusWindow(nullptr);
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   arc_window.reset();
 
   // Test when this is non input overlay window launched on the secondry
-  // display, there shouldn't be |key_event_source_rewriter_|.
+  // display, there shouldn't be `key_event_source_rewriter_`.
   auto arc_window_no_data = CreateArcWindowSyncAndWait(
       task_environment(), ash::Shell::GetPrimaryRootWindow(),
       gfx::Rect(10, 10, 100, 100), kRandomPackageName);

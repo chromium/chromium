@@ -11,11 +11,11 @@
 
 namespace arc::input_overlay {
 
-// Get text of |code| displayed on input mappings.
+// Get text of `code` displayed on input mappings.
 std::u16string GetDisplayText(const ui::DomCode code);
 
-// Get the accessible name for displayed |text| showing on input mappings.
-// Sometimes, |text| is a symbol.
+// Get the accessible name for displayed `text` showing on input mappings.
+// Sometimes, `text` is a symbol.
 std::u16string GetDisplayTextAccessibleName(const std::u16string& text);
 
 }  // namespace arc::input_overlay

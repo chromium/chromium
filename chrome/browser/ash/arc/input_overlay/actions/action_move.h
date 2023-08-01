@@ -109,8 +109,8 @@ class ActionMove : public Action {
   // Return the bounds in the root window.
   absl::optional<gfx::RectF> CalculateApplyArea(
       const gfx::RectF& content_bound);
-  // Transform mouse location from app window to the |target_area_| if
-  // |target_area_| exists. Input values are in root window's coordinate system.
+  // Transform mouse location from app window to the `target_area_` if
+  // `target_area_` exists. Input values are in root window's coordinate system.
   // Return the point pixel to the host window's.
   gfx::PointF TransformLocationInPixels(const gfx::RectF& content_bounds,
                                         const gfx::PointF& point);

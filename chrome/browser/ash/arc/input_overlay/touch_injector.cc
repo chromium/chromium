@@ -120,8 +120,8 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   return actions;
 }
 
-// Return an Action which is not |target_action| and has input overlapped with
-// |input_element| in |actions|.
+// Return an Action which is not `target_action` and has input overlapped with
+// `input_element` in `actions`.
 Action* FindActionWithOverlapInputElement(
     std::vector<std::unique_ptr<Action>>& actions,
     Action* target_action,
@@ -190,7 +190,7 @@ int FindNewCustomActionID(const std::vector<int>& id_list) {
   return start + kMaxDefaultActionID + 1;
 }
 
-// Create Action by |action_type| without any input bindings.
+// Create Action by `action_type` without any input bindings.
 std::unique_ptr<Action> CreateRawAction(ActionType type,
                                         TouchInjector* injector) {
   std::unique_ptr<Action> action;
@@ -330,8 +330,8 @@ void TouchInjector::OnInputBindingChange(
   auto* overlapped_action = FindActionWithOverlapInputElement(
       actions_, target_action, *input_element);
 
-  // Partially unbind or completely unbind the |overlapped_action| if it
-  // conflicts with |input_element|.
+  // Partially unbind or completely unbind the `overlapped_action` if it
+  // conflicts with `input_element`.
   if (overlapped_action) {
     overlapped_action->UnbindInput(*input_element);
   }
@@ -405,7 +405,7 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
 
 void TouchInjector::OnInputMenuViewRemoved() {
   OnSaveProtoFile();
-  // Record UMA stats upon |InputMenuView| close because it needs to ignore the
+  // Record UMA stats upon `InputMenuView` close because it needs to ignore the
   // unfinalized menu state change.
   if (touch_injector_enable_ != touch_injector_enable_uma_) {
     touch_injector_enable_uma_ = touch_injector_enable_;
@@ -613,7 +613,7 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
 
   auto event_location = gfx::Point(event.AsLocatedEvent()->root_location());
   window_->GetHost()->ConvertPixelsToDIP(&event_location);
-  // Convert |event_location| from root window location to screen location.
+  // Convert `event_location` from root window location to screen location.
   auto origin = window_->GetRootWindow()->GetBoundsInScreen().origin();
   event_location.Offset(origin.x(), origin.y());
 
@@ -652,12 +652,12 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     }
   } else {
     // This is for Tab key as Accessibility requirement.
-    // - For key event, Tab key is used to enter into the |kPreMenu| mode. And
-    // any keys, except Space and Enter keys, are used to exit the |kPreMenu|
-    // and enter into the |kView| mode, and continue events in |kView| mode.
-    // - For any located events in |kPreMenu| mode, if it doesn't happen on the
-    // menu entry button, then it enters into the |kView| mode and continues
-    // events in |kView| mode.
+    // - For key event, Tab key is used to enter into the `kPreMenu` mode. And
+    // any keys, except Space and Enter keys, are used to exit the `kPreMenu`
+    // and enter into the `kView` mode, and continue events in `kView` mode.
+    // - For any located events in `kPreMenu` mode, if it doesn't happen on the
+    // menu entry button, then it enters into the `kView` mode and continues
+    // events in `kView` mode.
     if (display_mode_ == DisplayMode::kView && event.IsKeyEvent() &&
         views::FocusManager::IsTabTraversalKeyEvent(*(event.AsKeyEvent()))) {
       if (event.AsKeyEvent()->type() == ui::ET_KEY_PRESSED) {
@@ -689,12 +689,12 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
                                   /*press_required=*/false));
     }
 
-    // |display_overlay_controller_| is null for unittest.
+    // `display_overlay_controller_` is null for unittest.
     if (display_overlay_controller_ &&
         LocatedEventOnMenuEntry(event, content_bounds_f_,
                                 /*press_required=*/true)) {
       // Release all active touches when the display mode is changed from
-      // |kView| to |kMenu|.
+      // `kView` to `kMenu`.
       CleanupTouchEvents();
       display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kMenu);
       return SendEvent(continuation, &event);
@@ -727,7 +727,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     // same ID is not rewritten due to missing original touch-press. But
     // thinking of real world user cases, it's unlikely to trigger any issues
     // with sending original event. The logic is already complicated in
-    // |RewriteEvent()| so here it uses a workaround. The menu entry will be
+    // `RewriteEvent()` so here it uses a workaround. The menu entry will be
     // removed and simplify the logic in future version, then it will be
     // fundamentally improved.
     return SendEvent(continuation, &event);
@@ -789,8 +789,8 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
 
   if (it == rewritten_touch_infos_.end()) {
     // When touching on the window to regain the focus, the first
-    // |ui::ET_TOUCH_PRESSED| will not be received and then it may send
-    // |ui::ET_TOUCH_MOVED| event to the window. So no need to add DCHECK here.
+    // `ui::ET_TOUCH_PRESSED` will not be received and then it may send
+    // `ui::ET_TOUCH_MOVED` event to the window. So no need to add DCHECK here.
     if (touch_event->type() != ui::ET_TOUCH_PRESSED) {
       return nullptr;
     }

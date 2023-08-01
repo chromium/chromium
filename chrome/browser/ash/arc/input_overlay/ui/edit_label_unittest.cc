@@ -118,7 +118,7 @@ class EditLabelTest : public OverlayViewTestBase {
   }
 
  private:
-  // Checks if the name tag attached to |edit_labels| is in error state.
+  // Checks if the name tag attached to `edit_labels` is in error state.
   bool IsNameTagInErrorState(EditLabels* edit_labels) {
     DCHECK(edit_labels);
     NameTag* name_tag = edit_labels->name_tag_;

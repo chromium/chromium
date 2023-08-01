@@ -65,7 +65,7 @@ bool IsGhostWindowLoading(aura::Window* window) {
     return true;
   }
   // TODO(b/258308970): This is a workaround.
-  // |GetProperty(app_restore::kRealArcTaskWindow)| doesn't give an expected
+  // `GetProperty(app_restore::kRealArcTaskWindow)` doesn't give an expected
   // value. So check if the window is still loading as a ghost window by
   // checking if there is an overlay.
   auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
@@ -156,10 +156,10 @@ void ArcInputOverlayManager::EnsureFactoryBuilt() {
 }
 
 void ArcInputOverlayManager::OnWindowInitialized(aura::Window* new_window) {
-  // |aura::client::kAppType| property is set in
-  // |AppServiceAppWindowShelfController::OnWindowInitialized()|.
-  // |AppServiceAppWindowShelfController::OnWindowInitialized()| is called
-  // before |ArcInputOverlayManager::OnWindowInitialized()|, so we can filter
+  // `aura::client::kAppType` property is set in
+  // `AppServiceAppWindowShelfController::OnWindowInitialized()`.
+  // `AppServiceAppWindowShelfController::OnWindowInitialized()` is called
+  // before `ArcInputOverlayManager::OnWindowInitialized()`, so we can filter
   // non-ARC apps here.
   if (!new_window || !ash::IsArcWindow(new_window) ||
       new_window != new_window->GetToplevelWindow() ||
@@ -176,7 +176,7 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
   // There are two cases when launching an app.
   // 1) Launch from Launcher: Receive {ash::kArcPackageNameKey, package_name}.
   // 2) Restore the app: Receive {ash::kArcPackageNameKey, package_name} and
-  // {app_restore::kRealArcTaskWindow, true}. When |ash::kArcPackageNameKey| is
+  // {app_restore::kRealArcTaskWindow, true}. When `ash::kArcPackageNameKey` is
   // changed, the ghost window overlay is not destroyed. The ghost window
   // overlay is destroyed right before property
   // {app_restore::kRealArcTaskWindow} is set.
@@ -234,7 +234,7 @@ void ArcInputOverlayManager::OnWindowRemovingFromRootWindow(
 
 void ArcInputOverlayManager::OnWindowParentChanged(aura::Window* window,
                                                    aura::Window* parent) {
-  // Ignore if |parent| is a container.
+  // Ignore if `parent` is a container.
   if (!parent || parent != parent->GetToplevelWindow()) {
     return;
   }
@@ -398,8 +398,8 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
     std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
 
-  // Save |touch_injector->package_name()| first because
-  // |std::move(touch_injector)| is also called in the task runner.
+  // Save `touch_injector->package_name()` first because
+  // `std::move(touch_injector)` is also called in the task runner.
   std::string package_name = touch_injector->package_name();
 
   if (touch_injector->actions().empty()) {
@@ -632,7 +632,7 @@ void ArcInputOverlayManager::OnLoadingFinished(
     std::unique_ptr<TouchInjector> touch_injector) {
   auto* window = touch_injector->window();
   DCHECK(window);
-  // Check if |window| is destroyed or destroying when calling this function.
+  // Check if `window` is destroyed or destroying when calling this function.
   if (!loading_data_windows_.contains(window) || window->is_destroying()) {
     ResetForPendingTouchInjector(std::move(touch_injector));
     return;

@@ -48,7 +48,7 @@ class ArcInputOverlayManager : public KeyedService,
                                public display::DisplayObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
-  // or nullptr if the browser |context| is not allowed to use ARC.
+  // or nullptr if the browser `context` is not allowed to use ARC.
   static ArcInputOverlayManager* GetForBrowserContext(
       content::BrowserContext* context);
   ArcInputOverlayManager(content::BrowserContext* browser_context,
@@ -95,7 +95,7 @@ class ArcInputOverlayManager : public KeyedService,
 
   class InputMethodObserver;
 
-  // Remove |window| from observation list.
+  // Remove `window` from observation list.
   void RemoveWindowObservation(aura::Window* window);
   void UnregisterAndRemoveObservation(aura::Window* window);
   // Read default data.
@@ -123,16 +123,16 @@ class ArcInputOverlayManager : public KeyedService,
   void RegisterWindow(aura::Window* window);
   void UnRegisterWindow(aura::Window* window);
   void RegisterFocusedWindow();
-  // Add display overlay controller related to |touch_injector|. Virtual for
+  // Add display overlay controller related to `touch_injector`. Virtual for
   // test.
   virtual void AddDisplayOverlayController(TouchInjector* touch_injector);
   void RemoveDisplayOverlayController();
-  // Reset for removing pending |touch_injector| because of no GIO data or
+  // Reset for removing pending `touch_injector` because of no GIO data or
   // window destroying.
   void ResetForPendingTouchInjector(
       std::unique_ptr<TouchInjector> touch_injector);
   // Called when data loading finished from files or mojom calls for
-  // |touch_injector|.
+  // `touch_injector`.
   void OnLoadingFinished(std::unique_ptr<TouchInjector> touch_injector);
 
   // Returns the game window if `window` is game dashboard main menu window.

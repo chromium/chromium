@@ -12,7 +12,7 @@ namespace arc::input_overlay {
 
 namespace {
 
-// Update |position| according to |key| if |key| is arrow key.
+// Update `position` according to `key` if `key` is arrow key.
 bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
   switch (key) {
     case ui::VKEY_LEFT:
@@ -32,8 +32,8 @@ bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
   }
 }
 
-// Clamp position |position| inside of the |parent_size| with padding of
-// |parent_padding|
+// Clamp position `position` inside of the `parent_size` with padding of
+// `parent_padding`
 void ClampPosition(gfx::Point& position,
                    const gfx::Size& ui_size,
                    const gfx::Size& parent_size,
@@ -41,7 +41,7 @@ void ClampPosition(gfx::Point& position,
   int lo = parent_padding;
   int hi = parent_size.width() - ui_size.width() - parent_padding;
   if (lo >= hi) {
-    // Ignore |parent_padding| if there is not enough space.
+    // Ignore `parent_padding` if there is not enough space.
     lo = 0;
     hi += parent_padding;
   }
@@ -50,7 +50,7 @@ void ClampPosition(gfx::Point& position,
   lo = parent_padding;
   hi = parent_size.height() - ui_size.height() - parent_padding;
   if (lo >= hi) {
-    // Ignore |parent_padding| if there is not enough space.
+    // Ignore `parent_padding` if there is not enough space.
     lo = 0;
     hi += parent_padding;
   }

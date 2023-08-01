@@ -26,7 +26,7 @@ class ArcTestWindow {
 
   aura::Window* GetWindow();
   void SetMinimized();
-  // Set bounds in |display|. |bounds| is the local bounds in the display.
+  // Set bounds in `display`. `bounds` is the local bounds in the display.
   void SetBounds(display::Display& display, gfx::Rect bounds);
 
  private:

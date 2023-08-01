@@ -154,7 +154,7 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
   if (shell_surface_base && shell_surface_base->HasOverlay()) {
-    // Call |RemoveInputMenuView| explicitly to make sure UMA stats is updated.
+    // Call `RemoveInputMenuView` explicitly to make sure UMA stats is updated.
     RemoveInputMenuView();
 
     shell_surface_base->RemoveOverlay();
@@ -225,7 +225,7 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
     return;
   }
   DCHECK(overlay_widget);
-  // Create and position entry point for |InputMenuView|.
+  // Create and position entry point for `InputMenuView`.
   menu_entry_ = MenuEntryView::Show(
       base::BindRepeating(&DisplayOverlayController::OnMenuEntryPressed,
                           base::Unretained(this)),

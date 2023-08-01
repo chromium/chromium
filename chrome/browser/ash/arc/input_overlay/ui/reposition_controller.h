@@ -67,7 +67,7 @@ class RepositionController {
   base::RepeatingClosure key_pressed_callback_;
   base::RepeatingClosure key_released_callback_;
 
-  // If |host_view| is in the dragging state.
+  // If `host_view` is in the dragging state.
   bool is_dragging_ = false;
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;
