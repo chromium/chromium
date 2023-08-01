@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -48,6 +49,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -150,6 +152,29 @@ public class FullscreenManagerTest {
             + "      return true;"
             + "    };"
             + "  </script>"
+            + "</body>"
+            + "</html>");
+
+    private static final String FULLSCREEN_WITH_SELECTION_POPUP = UrlUtils.encodeHtmlDataUri(
+            "<html onmousedown=\"rfsSelectAll()\" onclick=\"selectAllChildren()\">"
+            + "<script>"
+            + "    function rfsSelectAll() {"
+            + "        document.documentElement.requestFullscreen();"
+            + "        document.execCommand(\"selectAll\");"
+            + "    }"
+            + "    function selectAllChildren() {"
+            + "        document.getSelection().selectAllChildren(paragraph1);"
+            + "    }"
+            + "</script>"
+            + "<body>"
+            + "    <img style=\"margin-top: 9999px;\"></img>"
+            + "    <p id=\"paragraph1\">"
+            + "        <!-- Trigger Translate Menu -->"
+            + "        A[="
+            + "        ?:TLv"
+            + "        S9y"
+            + "        <!-- Trigger Translate Menu -->"
+            + "    </p>"
             + "</body>"
             + "</html>");
 
@@ -603,6 +628,59 @@ public class FullscreenManagerTest {
         TouchCommon.singleClickView(view);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(mActivityTestRule, 0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Fullscreen"})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void testFullscreenExitWithSelectionPopPresent() throws InterruptedException {
+        mActivityTestRule.startMainActivityWithURL(FULLSCREEN_WITH_SELECTION_POPUP);
+        // Click to trigger java scripts callback
+        TestTouchUtils.singleClick(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity().getResources().getDisplayMetrics().widthPixels
+                        * 0.5f,
+                mActivityTestRule.getActivity().getResources().getDisplayMetrics().heightPixels
+                        * 0.5f);
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Sometimes text bubble is shown and consumes the back press event.
+            BackPressManager backPressManager =
+                    mActivityTestRule.getActivity().getBackPressManagerForTesting();
+            if (backPressManager.has(BackPressHandler.Type.TEXT_BUBBLE)) {
+                backPressManager.removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
+            }
+        });
+
+        final SelectionPopupController controller =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return SelectionPopupController.fromWebContents(tab.getWebContents());
+                });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        FullscreenTestUtils.waitForFullscreenFlag(tab, true, mActivityTestRule.getActivity());
+        FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
+        Assert.assertTrue(controller.isSelectActionBarShowing());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
+        });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        FullscreenTestUtils.waitForFullscreenFlag(tab, false, mActivityTestRule.getActivity());
+        FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
+        Assert.assertTrue(controller.isSelectActionBarShowing());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Fullscreen"})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactor()
+            throws InterruptedException {
+        testFullscreenExitWithSelectionPopPresent();
     }
 
     private void waitForEditableNodeToLoseFocus(final Tab tab) {
