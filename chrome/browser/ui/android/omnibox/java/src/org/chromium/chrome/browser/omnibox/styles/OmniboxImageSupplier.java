@@ -16,9 +16,18 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Image fetching mechanism for Omnibox and Suggestions.
@@ -26,9 +35,11 @@ import org.chromium.url.GURL;
 public class OmniboxImageSupplier {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
+    private final Map<GURL, List<Callback<Bitmap>>> mPendingImageRequests;
     private int mDesiredFaviconWidthPx;
     private @NonNull RoundedIconGenerator mIconGenerator;
     private @Nullable LargeIconBridge mIconBridge;
+    private @Nullable ImageFetcher mImageFetcher;
 
     /**
      * Constructor.
@@ -46,6 +57,7 @@ public class OmniboxImageSupplier {
                 context.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
         mIconGenerator = new RoundedIconGenerator(fallbackIconSize, fallbackIconSize,
                 fallbackIconSize / 2, fallbackIconColor, fallbackIconTextSize);
+        mPendingImageRequests = new HashMap<>();
     }
 
     /**
@@ -56,6 +68,13 @@ public class OmniboxImageSupplier {
             mIconBridge.destroy();
             mIconBridge = null;
         }
+
+        if (mImageFetcher != null) {
+            mImageFetcher.destroy();
+            mImageFetcher = null;
+        }
+
+        mPendingImageRequests.clear();
     }
 
     /**
@@ -70,6 +89,14 @@ public class OmniboxImageSupplier {
 
         mIconBridge = new LargeIconBridge(profile);
         resetCache();
+
+        if (mImageFetcher != null) {
+            mImageFetcher.destroy();
+        }
+
+        mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY,
+                profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool(),
+                MAX_IMAGE_CACHE_SIZE);
     }
 
     /**
@@ -96,10 +123,8 @@ public class OmniboxImageSupplier {
 
     /**
      * Asynchronously generate favicon for a given url and deliver the result via supplied callback.
-     * All fetches are done asynchronously, but the caller should expect a synchronous call in some
-     * cases, eg if an icon cannot be retrieved because a corresponding provider is not available.
      *
-     * @param url The url to retrieve a favicon for.
+     * @param url The url to generate a favicon for.
      * @param callback The callback that will be invoked with the result.
      */
     public void generateFavicon(@NonNull GURL url, @NonNull Callback<Bitmap> callback) {
@@ -113,16 +138,62 @@ public class OmniboxImageSupplier {
      * Clear all cached entries.
      */
     public void resetCache() {
-        if (mIconBridge != null) {
-            mIconBridge.createCache(MAX_IMAGE_CACHE_SIZE);
+        if (mIconBridge != null) mIconBridge.createCache(MAX_IMAGE_CACHE_SIZE);
+        if (mImageFetcher != null) mImageFetcher.clear();
+        mPendingImageRequests.clear();
+    }
+
+    /**
+     * Asynchronously retrieve image for supplied GURL.
+     * Calls to this method result with callback being invoked if and only if the fetch was executed
+     * and was successful.
+     *
+     * @param url The url to retrieve a favicon for.
+     * @param callback The callback that will be invoked with the result.
+     */
+    public void fetchImage(GURL url, @NonNull Callback<Bitmap> callback) {
+        if (mImageFetcher == null || !url.isValid() || url.isEmpty()) {
+            return;
         }
+
+        // Do not make duplicate answer image requests for the same URL (to avoid generating
+        // duplicate bitmaps for the same image).
+        if (mPendingImageRequests.containsKey(url)) {
+            mPendingImageRequests.get(url).add(callback);
+            return;
+        }
+
+        var callbacks = new ArrayList<Callback<Bitmap>>();
+        callbacks.add(callback);
+        mPendingImageRequests.put(url, callbacks);
+
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(url, ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME);
+
+        mImageFetcher.fetchImage(params, bitmap -> {
+            final var pendingCallbacks = mPendingImageRequests.remove(url);
+            // Callbacks may be erased when Omnibox interaction is over.
+            if (bitmap == null || pendingCallbacks == null) return;
+
+            for (int i = 0; i < pendingCallbacks.size(); i++) {
+                pendingCallbacks.get(i).onResult(bitmap);
+            }
+        });
     }
 
     /**
      * Overrides RoundedIconGenerator for testing.
-     * @param generator RoundedIconGenerator to use.
+     * @param generator RoundedIconGenerator to use
      */
     void setRoundedIconGeneratorForTesting(@NonNull RoundedIconGenerator generator) {
         mIconGenerator = generator;
+    }
+
+    /**
+     * Overrides ImageFetcher instance for testing.
+     * @param generator ImageFetcher instance to use
+     */
+    void setImageFetcherForTesting(@Nullable ImageFetcher fetcher) {
+        mImageFetcher = fetcher;
     }
 }

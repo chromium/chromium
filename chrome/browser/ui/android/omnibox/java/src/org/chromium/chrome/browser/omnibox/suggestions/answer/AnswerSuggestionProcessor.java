@@ -5,32 +5,26 @@
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.LocaleUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.chromium.url.GURL;
 
 /**
  * A class that handles model and view creation for the most commonly used omnibox suggestion.
@@ -38,9 +32,8 @@ import java.util.Map;
 public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private static final String COLOR_REVERSAL_COUNTRY_LIST = "ja-JP,ko-KR,zh-CN,zh-TW";
 
-    private final Map<String, List<PropertyModel>> mPendingAnswerRequestUrls;
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
-    private final Supplier<ImageFetcher> mImageFetcherSupplier;
+    private final @Nullable OmniboxImageSupplier mImageSupplier;
     private boolean mOmniBoxAnswerColorReversal;
 
     /**
@@ -49,11 +42,10 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public AnswerSuggestionProcessor(Context context, SuggestionHost suggestionHost,
             UrlBarEditingTextStateProvider editingTextProvider,
-            Supplier<ImageFetcher> imageFetcherSupplier) {
+            OmniboxImageSupplier imageSupplier) {
         super(context, suggestionHost, null);
-        mPendingAnswerRequestUrls = new HashMap<>();
         mUrlBarEditingTextProvider = editingTextProvider;
-        mImageFetcherSupplier = imageFetcherSupplier;
+        mImageSupplier = imageSupplier;
     }
 
     /**
@@ -90,46 +82,16 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         setStateForSuggestion(model, suggestion, position);
     }
 
-    private void maybeFetchAnswerIcon(PropertyModel model, AutocompleteMatch suggestion) {
-        ThreadUtils.assertOnUiThread();
-
+    private void fetchAnswerImage(GURL imageUrl, PropertyModel model) {
         // Ensure an image fetcher is available prior to requesting images.
-        ImageFetcher imageFetcher = mImageFetcherSupplier.get();
-        if (imageFetcher == null) return;
-
-        // Note: we also handle calculations here, which do not have answer defined.
-        if (!suggestion.hasAnswer()) return;
-        final String url = suggestion.getAnswer().getSecondLine().getImage();
-        if (url == null) return;
-
-        // Do not make duplicate answer image requests for the same URL (to avoid generating
-        // duplicate bitmaps for the same image).
-        if (mPendingAnswerRequestUrls.containsKey(url)) {
-            mPendingAnswerRequestUrls.get(url).add(model);
-            return;
-        }
-
-        List<PropertyModel> models = new ArrayList<>();
-        models.add(model);
-        mPendingAnswerRequestUrls.put(url, models);
-        ImageFetcher.Params params =
-                ImageFetcher.Params.create(url, ImageFetcher.ANSWER_SUGGESTIONS_UMA_CLIENT_NAME);
-        imageFetcher.fetchImage(
-                params, (Bitmap bitmap) -> {
-                    ThreadUtils.assertOnUiThread();
-                    // Remove models for the URL ahead of all the checks to ensure we
-                    // do not keep them around waiting in case image fetch failed.
-                    List<PropertyModel> currentModels = mPendingAnswerRequestUrls.remove(url);
-                    if (currentModels == null || bitmap == null) return;
-
-                    for (int i = 0; i < currentModels.size(); i++) {
-                        PropertyModel currentModel = currentModels.get(i);
-                        setSuggestionDrawableState(currentModel,
-                                SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
-                                        .setLarge(true)
-                                        .build());
-                    }
-                });
+        if (mImageSupplier == null) return;
+        mImageSupplier.fetchImage(imageUrl, bitmap -> {
+            setSuggestionDrawableState(model,
+                    SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
+                            .setUseRoundedCorners(true)
+                            .setLarge(true)
+                            .build());
+        });
     }
 
     /**
@@ -163,7 +125,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                         .build());
 
         setTabSwitchOrRefineAction(model, suggestion, position);
-        maybeFetchAnswerIcon(model, suggestion);
+        if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
+            fetchAnswerImage(new GURL(suggestion.getAnswer().getSecondLine().getImage()), model);
+        }
     }
 
     /**
@@ -222,6 +186,8 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else if (suggestion.getType() == OmniboxSuggestionType.CALCULATOR) {
             return R.drawable.ic_equals_sign_round;
+        } else {
+            assert false : "Requested Answer icon for non-answer suggestion";
         }
         return R.drawable.ic_google_round;
     }

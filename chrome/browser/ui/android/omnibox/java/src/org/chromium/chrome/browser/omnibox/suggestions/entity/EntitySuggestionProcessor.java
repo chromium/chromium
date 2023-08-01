@@ -5,45 +5,35 @@
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /** A class that handles model and view creation for the Entity suggestions. */
 public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
-    private final Map<GURL, List<PropertyModel>> mPendingImageRequests;
-    private final Supplier<ImageFetcher> mImageFetcherSupplier;
+    private final OmniboxImageSupplier mImageSupplier;
 
     /**
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
+     * @param imageSupplier Supplier used to retrieve suggestion images.
      */
-    public EntitySuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            Supplier<ImageFetcher> imageFetcherSupplier) {
+    public EntitySuggestionProcessor(
+            Context context, SuggestionHost suggestionHost, OmniboxImageSupplier imageSupplier) {
         super(context, suggestionHost, null);
-        mPendingImageRequests = new HashMap<>();
-        mImageFetcherSupplier = imageFetcherSupplier;
+        mImageSupplier = imageSupplier;
     }
 
     @Override
@@ -61,46 +51,14 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
         return new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
     }
 
-    private void fetchEntityImage(AutocompleteMatch suggestion, PropertyModel model) {
-        ThreadUtils.assertOnUiThread();
-        final GURL url = suggestion.getImageUrl();
-        if (url.isEmpty()) return;
-
-        // Ensure an image fetcher is available prior to requesting images.
-        ImageFetcher imageFetcher = mImageFetcherSupplier.get();
-        if (imageFetcher == null) return;
-
-        // Do not make duplicate answer image requests for the same URL (to avoid generating
-        // duplicate bitmaps for the same image).
-        if (mPendingImageRequests.containsKey(url)) {
-            mPendingImageRequests.get(url).add(model);
-            return;
-        }
-
-        List<PropertyModel> models = new ArrayList<>();
-        models.add(model);
-        mPendingImageRequests.put(url, models);
-
-        ImageFetcher.Params params = ImageFetcher.Params.create(
-                url.getSpec(), ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME);
-        imageFetcher.fetchImage(
-                params, (Bitmap bitmap) -> {
-                    ThreadUtils.assertOnUiThread();
-
-                    final List<PropertyModel> pendingModels = mPendingImageRequests.remove(url);
-                    if (pendingModels == null || bitmap == null) {
-                        return;
-                    }
-
-                    for (int i = 0; i < pendingModels.size(); i++) {
-                        PropertyModel pendingModel = pendingModels.get(i);
-                        setSuggestionDrawableState(pendingModel,
-                                SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
-                                        .setUseRoundedCorners(true)
-                                        .setLarge(true)
-                                        .build());
-                    }
-                });
+    private void fetchEntityImage(GURL imageUrl, PropertyModel model) {
+        mImageSupplier.fetchImage(imageUrl, bitmap -> {
+            setSuggestionDrawableState(model,
+                    SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
+                            .setUseRoundedCorners(true)
+                            .setLarge(true)
+                            .build());
+        });
     }
 
     @VisibleForTesting
@@ -133,9 +91,9 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
                         .setAllowTint(true)
                         .build());
 
-        if (!OmniboxFeatures.isLowMemoryDevice()) {
+        if (mImageSupplier != null) {
             applyImageDominantColor(suggestion.getImageDominantColor(), model);
-            fetchEntityImage(suggestion, model);
+            fetchEntityImage(suggestion.getImageUrl(), model);
         }
 
         model.set(EntitySuggestionViewProperties.SUBJECT_TEXT, suggestion.getDisplayText());

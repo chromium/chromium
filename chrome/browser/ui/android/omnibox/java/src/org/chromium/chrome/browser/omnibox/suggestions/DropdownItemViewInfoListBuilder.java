@@ -33,10 +33,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
-import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,7 +53,6 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable DividerLineProcessor mDividerLineProcessor;
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Nullable ImageFetcher mImageFetcher;
     private @Nullable OmniboxImageSupplier mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
     @Px
@@ -85,7 +80,6 @@ class DropdownItemViewInfoListBuilder {
             UrlBarEditingTextStateProvider textProvider) {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
-        final Supplier<ImageFetcher> imageFetcherSupplier = () -> mImageFetcher;
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
@@ -103,13 +97,12 @@ class DropdownItemViewInfoListBuilder {
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
                 context, host, delegate, mImageSupplier, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
-                new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
+                new AnswerSuggestionProcessor(context, host, textProvider, mImageSupplier));
         registerSuggestionProcessor(
                 new ClipboardSuggestionProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new HistoryClustersProcessor(mOpenHistoryClustersDelegate,
                 context, host, textProvider, mImageSupplier, mBookmarkState));
-        registerSuggestionProcessor(
-                new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
+        registerSuggestionProcessor(new EntitySuggestionProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
         registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
@@ -117,11 +110,6 @@ class DropdownItemViewInfoListBuilder {
     }
 
     void destroy() {
-        if (mImageFetcher != null) {
-            mImageFetcher.destroy();
-            mImageFetcher = null;
-        }
-
         if (mImageSupplier != null) {
             mImageSupplier.destroy();
             mImageSupplier = null;
@@ -163,19 +151,8 @@ class DropdownItemViewInfoListBuilder {
      * @param profile Current user profile.
      */
     void setProfile(Profile profile) {
-        if (mImageFetcher != null) {
-            mImageFetcher.destroy();
-            mImageFetcher = null;
-        }
-
         if (mImageSupplier != null) {
             mImageSupplier.setProfile(profile);
-        }
-
-        if (!OmniboxFeatures.isLowMemoryDevice()) {
-            mImageFetcher = ImageFetcherFactory.createImageFetcher(
-                    ImageFetcherConfig.IN_MEMORY_ONLY, profile.getProfileKey(),
-                    GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
         }
     }
 
@@ -215,10 +192,7 @@ class DropdownItemViewInfoListBuilder {
      * @param hasFocus Indicates whether URL bar is now focused.
      */
     void onUrlFocusChange(boolean hasFocus) {
-        if (!hasFocus) {
-            if (mImageFetcher != null) mImageFetcher.clear();
-            if (mImageSupplier != null) mImageSupplier.resetCache();
-        }
+        if (!hasFocus && mImageSupplier != null) mImageSupplier.resetCache();
 
         mHeaderProcessor.onUrlFocusChange(hasFocus);
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
