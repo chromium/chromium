@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
+#import "ios/chrome/browser/store_kit/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -270,6 +271,7 @@ enum class ToolbarKind {
     RepostFormTabHelperDelegate,
     SigninPresenter,
     SnapshotGeneratorDelegate,
+    StoreKitCoordinatorDelegate,
     ToolbarAccessoryCoordinatorDelegate,
     URLLoadingDelegate,
     WebContentCommands,
@@ -675,10 +677,18 @@ enum class ToolbarKind {
   self.recentTabsCoordinator = nil;
 }
 
+// Stops the password suggestion bottom sheet coordinator.
 - (void)stopPasswordSuggestionBottomSheetCoordinator {
   [self.passwordSuggestionBottomSheetCoordinator stop];
   self.passwordSuggestionBottomSheetCoordinator.delegate = nil;
   self.passwordSuggestionBottomSheetCoordinator = nil;
+}
+
+// Stop the store kit coordinator.
+- (void)stopStoreKitCoordinator {
+  [self.storeKitCoordinator stop];
+  self.storeKitCoordinator.delegate = nil;
+  self.storeKitCoordinator = nil;
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
@@ -1294,8 +1304,7 @@ enum class ToolbarKind {
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
 
-  [self.storeKitCoordinator stop];
-  self.storeKitCoordinator = nil;
+  [self stopStoreKitCoordinator];
 
   [self.textZoomCoordinator stop];
   self.textZoomCoordinator = nil;
@@ -2390,6 +2399,7 @@ enum class ToolbarKind {
   self.storeKitCoordinator = [[StoreKitCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  self.storeKitCoordinator.delegate = self;
   self.storeKitCoordinator.iTunesProductParameters = productParameters;
   [self.storeKitCoordinator start];
 }
@@ -2991,6 +3001,13 @@ enum class ToolbarKind {
     (RecentTabsCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.recentTabsCoordinator);
   [self stopRecentTabsCoordinator];
+}
+
+#pragma mark - StoreKitCoordinatorDelegate
+
+- (void)storeKitCoordinatorWantsToStop:(StoreKitCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.storeKitCoordinator);
+  [self stopStoreKitCoordinator];
 }
 
 @end

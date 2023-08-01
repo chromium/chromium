@@ -9,8 +9,12 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol StoreKitCoordinatorDelegate;
+
 // Coordinates presentation of SKStoreProductViewController.
 @interface StoreKitCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<StoreKitCoordinatorDelegate> delegate;
 
 // iTunes store item product parameters dictionary. At least
 // SKStoreProductParameterITunesItemIdentifier key needs to be specified, all

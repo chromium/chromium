@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
+#import "ios/chrome/browser/store_kit/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
 #import "ios/chrome/browser/ui/download/download_manager_mediator.h"
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
@@ -54,9 +55,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface DownloadManagerCoordinator () <
-    ContainedPresenterDelegate,
-    DownloadManagerViewControllerDelegate> {
+@interface DownloadManagerCoordinator () <ContainedPresenterDelegate,
+                                          DownloadManagerViewControllerDelegate,
+                                          StoreKitCoordinatorDelegate> {
   // View controller for presenting Download Manager UI.
   DownloadManagerViewController* _viewController;
   // View controller for presenting "Open In.." dialog.
@@ -115,8 +116,7 @@
   if (self.browser)
     (self.browser->GetWebStateList())->RemoveObserver(&_unopenedDownloads);
 
-  [_storeKitCoordinator stop];
-  _storeKitCoordinator = nil;
+  [self stopStoreKitCoordinator];
 
   [[InstallationNotifier sharedInstance] unregisterForNotifications:self];
   _stopped = YES;
@@ -300,6 +300,12 @@
 
 #pragma mark - Private
 
+- (void)stopStoreKitCoordinator {
+  [_storeKitCoordinator stop];
+  _storeKitCoordinator.delegate = nil;
+  _storeKitCoordinator = nil;
+}
+
 // Cancels the download task and stops the coordinator.
 - (void)cancelDownload {
   // `stop` nulls-our _downloadTask and `Cancel` destroys the task. Call `stop`
@@ -335,6 +341,7 @@
     _storeKitCoordinator = [[StoreKitCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:self.browser];
+    _storeKitCoordinator.delegate = self;
     _storeKitCoordinator.iTunesProductParameters = @{
       SKStoreProductParameterITunesItemIdentifier :
           kGoogleDriveITunesItemIdentifier
@@ -355,6 +362,13 @@
   [_openInController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+}
+
+#pragma mark - StoreKitCoordinatorDelegate
+
+- (void)storeKitCoordinatorWantsToStop:(StoreKitCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _storeKitCoordinator);
+  [self stopStoreKitCoordinator];
 }
 
 @end

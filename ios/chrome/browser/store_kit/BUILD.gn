@@ -6,6 +6,7 @@ source_set("store_kit") {
   sources = [
     "store_kit_coordinator.h",
     "store_kit_coordinator.mm",
+    "store_kit_coordinator_delegate.h",
   ]
   deps = [
     "//base",

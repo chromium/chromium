@@ -9,6 +9,7 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/store_kit/store_kit_coordinator_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -67,7 +68,7 @@
 
 - (void)productViewControllerDidFinish:
     (SKStoreProductViewController*)viewController {
-  [self stop];
+  [self.delegate storeKitCoordinatorWantsToStop:self];
 }
 
 @end
