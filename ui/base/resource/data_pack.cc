@@ -48,15 +48,15 @@ static const size_t kHeaderLengthV5 =
 // more optimal resource renumbering to improve startup speed. See
 // tools/gritsettings/README.md for more info.
 void MaybePrintResourceId(uint16_t resource_id) {
-  // This code is run in other binaries than Chrome which do not initialize the
-  // CommandLine object. Early return in those cases.
-  if (!base::CommandLine::InitializedForCurrentProcess())
-    return;
-
-  // Note: This switch isn't in ui/base/ui_base_switches.h because ui/base
-  // depends on ui/base/resource and thus it would cause a circular dependency.
-  static bool print_resource_ids =
-      base::CommandLine::ForCurrentProcess()->HasSwitch("print-resource-ids");
+  static const bool print_resource_ids = [] {
+    // This code is run in other binaries than Chrome which do not initialize
+    // the CommandLine object. Note: This switch isn't in
+    // ui/base/ui_base_switches.h because ui/base depends on ui/base/resource
+    // and thus it would cause a circular dependency.
+    return base::CommandLine::InitializedForCurrentProcess() &&
+           base::CommandLine::ForCurrentProcess()->HasSwitch(
+               "print-resource-ids");
+  }();
   if (!print_resource_ids)
     return;
 
