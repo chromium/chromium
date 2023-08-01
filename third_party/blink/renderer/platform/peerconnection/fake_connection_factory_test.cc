@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "third_party/webrtc/rtc_base/net_helpers.h"
+#include "third_party/webrtc/rtc_base/net_test_helpers.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 
 namespace {

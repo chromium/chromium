@@ -110,6 +110,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:logging",
   "//third_party/webrtc/rtc_base:mdns_responder_interface",
   "//third_party/webrtc/rtc_base:net_helpers",
+  "//third_party/webrtc/rtc_base:net_test_helpers",
   "//third_party/webrtc/rtc_base:network",
   "//third_party/webrtc/rtc_base:refcount",
   "//third_party/webrtc/rtc_base:rtc_certificate_generator",
