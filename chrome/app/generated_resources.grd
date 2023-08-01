@@ -3825,6 +3825,7 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the cookie controls bubble when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
         {COUNT, plural,
+              =0 {Chrome will start blocking cookies again tomorrow}
               =1 {1 day until Chrome starts blocking cookies again}
               other {# days until Chrome starts blocking cookies again}}
       </message>

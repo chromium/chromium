@@ -102,8 +102,7 @@ void CookieControlsBubbleViewController::OnFaviconFetched(
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
     base::Time expiration) {
-  bool is_permanent_exception =
-      expiration == base::Time() || GetDaysToExpiration(expiration) == 0;
+  bool is_permanent_exception = expiration == base::Time();
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
   bubble_view_->GetContentView()->UpdateContentLabels(

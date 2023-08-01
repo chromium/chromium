@@ -570,6 +570,7 @@
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed." translateable="false">
         {DAYS, plural,
+          =0 {Chrome will start blocking cookies again tomorrow}
           =1 {1 day until Chrome starts blocking cookies again}
           other {# days until Chrome starts blocking cookies again}}
       </message>

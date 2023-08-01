@@ -817,6 +817,7 @@
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" translateable="false" desc="">
     {COUNT, plural,
+              =0 {Chrome will start blocking cookies again tomorrow}
               =1 {1 day until Chrome starts blocking cookies again}
               other {# days until Chrome starts blocking cookies again}}
   </message>
