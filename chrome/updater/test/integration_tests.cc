@@ -908,6 +908,8 @@ TEST_F(IntegrationTest, GetAppStates) {
   const base::Version v1("0.1");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
 
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
   base::Value::Dict expected_app_state;
   expected_app_state.Set("app_id", kAppId);
   expected_app_state.Set("version", v1.GetString());
