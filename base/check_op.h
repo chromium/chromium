@@ -71,7 +71,7 @@ BASE_EXPORT char* StreamValToStr(const void* v,
 
 template <typename T>
 inline typename std::enable_if<
-    base::internal::SupportsOstreamOperator<const T&>::value &&
+    base::internal::SupportsOstreamOperator<const T&> &&
         !std::is_function<typename std::remove_pointer<T>::type>::value,
     char*>::type
 CheckOpValueStr(const T& v) {
@@ -97,8 +97,8 @@ CheckOpValueStr(const T& v) {
 // Overload for types that have no operator<< but do have .ToString() defined.
 template <typename T>
 inline typename std::enable_if<
-    !base::internal::SupportsOstreamOperator<const T&>::value &&
-        base::internal::SupportsToString<const T&>::value,
+    !base::internal::SupportsOstreamOperator<const T&> &&
+        base::internal::SupportsToString<const T&>,
     char*>::type
 CheckOpValueStr(const T& v) {
   // .ToString() may not return a std::string, e.g. blink::WTF::String.
@@ -122,7 +122,7 @@ CheckOpValueStr(const T& v) {
 // (i.e. scoped enums where no operator<< overload was declared).
 template <typename T>
 inline typename std::enable_if<
-    !base::internal::SupportsOstreamOperator<const T&>::value &&
+    !base::internal::SupportsOstreamOperator<const T&> &&
         std::is_enum<T>::value,
     char*>::type
 CheckOpValueStr(const T& v) {

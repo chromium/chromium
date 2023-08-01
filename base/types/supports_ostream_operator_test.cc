@@ -26,43 +26,40 @@ std::ostream& operator<<(std::ostream& os, const StructWithOperator& v) {
 }
 
 // A few standard types that definitely support printing.
-static_assert(internal::SupportsOstreamOperator<int>::value,
+static_assert(internal::SupportsOstreamOperator<int>,
               "ints should be printable");
-static_assert(internal::SupportsOstreamOperator<const char*>::value,
+static_assert(internal::SupportsOstreamOperator<const char*>,
               "C strings should be printable");
-static_assert(internal::SupportsOstreamOperator<std::string>::value,
+static_assert(internal::SupportsOstreamOperator<std::string>,
               "std::string should be printable");
 
 // Various kinds of enums operator<< support.
-static_assert(internal::SupportsOstreamOperator<SimpleEnum>::value,
+static_assert(internal::SupportsOstreamOperator<SimpleEnum>,
               "simple enum should be printable by value");
-static_assert(internal::SupportsOstreamOperator<const SimpleEnum&>::value,
+static_assert(internal::SupportsOstreamOperator<const SimpleEnum&>,
               "simple enum should be printable by const ref");
-static_assert(internal::SupportsOstreamOperator<EnumWithExplicitType>::value,
+static_assert(internal::SupportsOstreamOperator<EnumWithExplicitType>,
               "enum with explicit type should be printable by value");
-static_assert(
-    internal::SupportsOstreamOperator<const EnumWithExplicitType&>::value,
-    "enum with explicit type should be printable by const ref");
-static_assert(!internal::SupportsOstreamOperator<ScopedEnum>::value,
+static_assert(internal::SupportsOstreamOperator<const EnumWithExplicitType&>,
+              "enum with explicit type should be printable by const ref");
+static_assert(!internal::SupportsOstreamOperator<ScopedEnum>,
               "scoped enum should not be printable by value");
-static_assert(!internal::SupportsOstreamOperator<const ScopedEnum&>::value,
+static_assert(!internal::SupportsOstreamOperator<const ScopedEnum&>,
               "simple enum should not be printable by const ref");
-static_assert(internal::SupportsOstreamOperator<ScopedEnumWithOperator>::value,
+static_assert(internal::SupportsOstreamOperator<ScopedEnumWithOperator>,
               "scoped enum with operator<< should be printable by value");
-static_assert(
-    internal::SupportsOstreamOperator<const ScopedEnumWithOperator&>::value,
-    "scoped enum with operator<< should be printable by const ref");
+static_assert(internal::SupportsOstreamOperator<const ScopedEnumWithOperator&>,
+              "scoped enum with operator<< should be printable by const ref");
 
 // operator<< support on structs.
-static_assert(!internal::SupportsOstreamOperator<SimpleStruct>::value,
+static_assert(!internal::SupportsOstreamOperator<SimpleStruct>,
               "simple struct should not be printable by value");
-static_assert(!internal::SupportsOstreamOperator<const SimpleStruct&>::value,
+static_assert(!internal::SupportsOstreamOperator<const SimpleStruct&>,
               "simple struct should not be printable by const ref");
-static_assert(internal::SupportsOstreamOperator<StructWithOperator>::value,
+static_assert(internal::SupportsOstreamOperator<StructWithOperator>,
               "struct with operator<< should be printable by value");
-static_assert(
-    internal::SupportsOstreamOperator<const StructWithOperator&>::value,
-    "struct with operator<< should be printable by const ref");
+static_assert(internal::SupportsOstreamOperator<const StructWithOperator&>,
+              "struct with operator<< should be printable by const ref");
 
 }  // namespace
 }  // namespace base

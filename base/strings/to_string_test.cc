@@ -20,14 +20,22 @@ class HasToString {
 };
 
 // .ToString() support on structs.
-static_assert(!internal::SupportsToString<NotStringifiable>::value,
+static_assert(!internal::SupportsToString<NotStringifiable>,
               "value without ToString() shouldn't be marked SupportsToString");
-static_assert(!internal::SupportsToString<const NotStringifiable&>::value,
+static_assert(!internal::SupportsToString<NotStringifiable&>,
+              "& without ToString() shouldn't be marked SupportsToString");
+static_assert(!internal::SupportsToString<const NotStringifiable&>,
               "const& without ToString() shouldn't be marked SupportsToString");
-static_assert(internal::SupportsToString<HasToString>::value,
+static_assert(!internal::SupportsToString<NotStringifiable&&>,
+              "&& without ToString() shouldn't be marked SupportsToString");
+static_assert(internal::SupportsToString<HasToString>,
               "value with ToString() should be marked SupportsToString");
-static_assert(internal::SupportsToString<const HasToString&>::value,
+static_assert(internal::SupportsToString<HasToString&>,
+              "& with ToString() should be marked SupportsToString");
+static_assert(internal::SupportsToString<const HasToString&>,
               "const& with ToString() should be marked SupportsToString");
+static_assert(internal::SupportsToString<HasToString&&>,
+              "&& with ToString() should be marked SupportsToString");
 
 TEST(ToStringTest, Streamable) {
   // Types with built-in <<.
