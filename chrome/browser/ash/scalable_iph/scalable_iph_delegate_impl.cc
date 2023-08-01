@@ -8,12 +8,15 @@
 
 #include "apps/launcher.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/scalable_iph/wallpaper_ash_notification_view.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "base/notreached.h"
@@ -40,6 +43,7 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -62,7 +66,7 @@ using ::chromeos::network_config::mojom::kNoLimit;
 using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
-using Observer = ::scalable_iph::ScalableIphDelegate::Observer;
+using DelegateObserver = ::scalable_iph::ScalableIphDelegate::Observer;
 using Action = ::scalable_iph::ScalableIphDelegate::Action;
 using NotificationParams =
     ::scalable_iph::ScalableIphDelegate::NotificationParams;
@@ -236,6 +240,16 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile)
 
   QueryOnlineNetworkState();
 
+  shell_observer_.Observe(Shell::Get());
+
+  auto* session_controller = Shell::Get()->session_controller();
+  CHECK(session_controller);
+  session_observer_.Observe(session_controller);
+
+  auto* power_manager_client = chromeos::PowerManagerClient::Get();
+  CHECK(power_manager_client);
+  power_manager_client_observer_.Observe(power_manager_client);
+
   MessageViewFactory::SetCustomNotificationViewFactory(
       kWallpaperNotificationType,
       base::BindRepeating(&WallpaperAshNotificationView::CreateWithPreview));
@@ -327,11 +341,11 @@ void ScalableIphDelegateImpl::ShowNotification(
   AddOrReplaceNotification(std::move(notification));
 }
 
-void ScalableIphDelegateImpl::AddObserver(Observer* observer) {
+void ScalableIphDelegateImpl::AddObserver(DelegateObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void ScalableIphDelegateImpl::RemoveObserver(Observer* observer) {
+void ScalableIphDelegateImpl::RemoveObserver(DelegateObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -432,6 +446,27 @@ void ScalableIphDelegateImpl::OnActiveNetworksChanged(
   SetHasOnlineNetwork(HasOnlineNetwork(networks));
 }
 
+void ScalableIphDelegateImpl::OnShellDestroying() {
+  power_manager_client_observer_.Reset();
+  session_observer_.Reset();
+  shell_observer_.Reset();
+}
+
+void ScalableIphDelegateImpl::OnLockStateChanged(bool locked) {
+  if (locked) {
+    return;
+  }
+  NotifyUnlockedOrSuspendDone();
+}
+
+void ScalableIphDelegateImpl::SuspendDone(base::TimeDelta sleep_duration) {
+  // Do not record event when the lock screen is enabled.
+  if (ash::LockScreen::HasInstance()) {
+    return;
+  }
+  NotifyUnlockedOrSuspendDone();
+}
+
 void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {
   if (has_online_network_ == has_online_network) {
     return;
@@ -439,7 +474,7 @@ void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {
 
   has_online_network_ = has_online_network;
 
-  for (Observer& observer : observers_) {
+  for (DelegateObserver& observer : observers_) {
     observer.OnConnectionChanged(has_online_network_);
   }
 }
@@ -454,6 +489,12 @@ void ScalableIphDelegateImpl::QueryOnlineNetworkState() {
 void ScalableIphDelegateImpl::OnNetworkStateList(
     std::vector<NetworkStatePropertiesPtr> networks) {
   SetHasOnlineNetwork(HasOnlineNetwork(networks));
+}
+
+void ScalableIphDelegateImpl::NotifyUnlockedOrSuspendDone() {
+  for (DelegateObserver& observer : observers_) {
+    observer.OnUnlockedOrSuspendDone();
+  }
 }
 
 void ScalableIphDelegateImpl::OnNudgeButtonClicked(const std::string& bubble_id,

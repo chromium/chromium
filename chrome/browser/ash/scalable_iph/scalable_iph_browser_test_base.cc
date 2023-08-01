@@ -227,10 +227,11 @@ const base::Feature& ScalableIphBrowserTestBase::TestIphFeature() const {
   return kScalableIphTest;
 }
 
-void ScalableIphBrowserTestBase::TriggerConditionsCheckWithAFakeEvent() {
+void ScalableIphBrowserTestBase::TriggerConditionsCheckWithAFakeEvent(
+    scalable_iph::ScalableIph::Event event) {
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+  scalable_iph->RecordEvent(event);
 }
 
 void ScalableIphBrowserTestBase::ShutdownScalableIph() {

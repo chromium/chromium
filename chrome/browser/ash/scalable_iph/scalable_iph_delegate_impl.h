@@ -7,9 +7,15 @@
 
 #include <memory>
 
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -20,7 +26,10 @@ namespace ash {
 
 class ScalableIphDelegateImpl
     : public scalable_iph::ScalableIphDelegate,
-      public chromeos::network_config::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver,
+      public ShellObserver,
+      public SessionObserver,
+      public chromeos::PowerManagerClient::Observer {
  public:
   explicit ScalableIphDelegateImpl(Profile* profile);
   ~ScalableIphDelegateImpl() override;
@@ -46,12 +55,22 @@ class ScalableIphDelegateImpl
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks) override;
 
+  // ShellObserver:
+  void OnShellDestroying() override;
+
+  // SessionObserver:
+  void OnLockStateChanged(bool locked) override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+
  private:
   void SetHasOnlineNetwork(bool has_online_network);
   void QueryOnlineNetworkState();
   void OnNetworkStateList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
+  void NotifyUnlockedOrSuspendDone();
   void OnNudgeButtonClicked(const std::string& bubble_id,
                             scalable_iph::ScalableIphDelegate::Action action);
   void OnNudgeDismissed(const std::string& bubble_id);
@@ -68,6 +87,12 @@ class ScalableIphDelegateImpl
       receiver_cros_network_config_observer_{this};
 
   base::ObserverList<scalable_iph::ScalableIphDelegate::Observer> observers_;
+  base::ScopedObservation<Shell, ShellObserver> shell_observer_{this};
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      session_observer_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observer_{this};
 
   base::WeakPtrFactory<ScalableIphDelegateImpl> weak_ptr_factory_{this};
 };

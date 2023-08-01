@@ -25,7 +25,9 @@ class ScalableIphDelegate {
    public:
     virtual void OnConnectionChanged(bool online) {}
 
-    // TODO(b/283863495): Add device unlock event.
+    // Called when device is unlocked. If lock screen is not set up, it will be
+    // called when the system resumes from suspension.
+    virtual void OnUnlockedOrSuspendDone() {}
   };
 
   // Have a virtual destructor as we can put `ScalableIphDelegate` in
