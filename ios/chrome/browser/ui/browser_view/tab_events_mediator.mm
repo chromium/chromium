@@ -137,10 +137,7 @@
                        status:(const WebStateListStatus&)status {
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach: {
       // When an NTP web state is closed, check if the coordinator should be
@@ -189,55 +186,60 @@
       break;
     }
   }
+
+  if (status.active_web_state_change()) {
+    [self didChangeActiveWebState:status.new_active_web_state
+                oldActiveWebState:status.old_active_web_state
+                       isInserted:change.type() ==
+                                  WebStateListChange::Type::kInsert];
+  }
 }
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
+#pragma mark - WebStateListObserving helpers (Private)
+
+- (void)didChangeActiveWebState:(web::WebState*)newActiveWebState
+              oldActiveWebState:(web::WebState*)oldActiveWebState
+                     isInserted:(bool)isInserted {
   // If the user is leaving an NTP web state, trigger a visibility change.
-  if (oldWebState && _ntpCoordinator.started) {
+  if (oldActiveWebState && _ntpCoordinator.started) {
     NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(oldWebState);
+        NewTabPageTabHelper::FromWebState(oldActiveWebState);
     if (NTPHelper->IsActive()) {
       [_ntpCoordinator didNavigateAwayFromNTP];
     }
   }
 
-  if (oldWebState) {
+  if (oldActiveWebState) {
     [self.consumer prepareForNewTabAnimation];
   }
-  if (newWebState) {
+  if (newActiveWebState) {
     // Activating without inserting an NTP requires starting it in two
     // scenarios: 1) After doing a batch tab restore (i.e. undo tab removals,
     // initial startup). 2) After re-activating the Browser and a non-active
     // WebState is showing the NTP. BrowserCoordinator's -setActive: only starts
     // the NTP if it is the active view.
-    [self startNTPIfNeededForActiveWebState:newWebState];
+    [self startNTPIfNeededForActiveWebState:newActiveWebState];
 
     // If the user is entering an NTP web state, trigger a visibility change.
     NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(newWebState);
+        NewTabPageTabHelper::FromWebState(newActiveWebState);
     if (NTPHelper->IsActive()) {
-      [_ntpCoordinator didNavigateToNTPInWebState:newWebState];
+      [_ntpCoordinator didNavigateToNTPInWebState:newActiveWebState];
     }
 
-    if (reason == ActiveWebStateChangeReason::Inserted) {
+    if (isInserted) {
       // This starts the new tab animation. It is important for the
       // NTPCoordinator to know about the new web state
       // (via the call to `-didNavigateToNTPInWebState:` above) before this is
       // called.
-      if (!webStateList->IsBatchInProgress()) {
-        [self didInsertActiveWebState:newWebState];
+      if (!_webStateList->IsBatchInProgress()) {
+        [self didInsertActiveWebState:newActiveWebState];
       }
     }
 
     [self.consumer webStateSelected];
   }
 }
-
-#pragma mark - WebStateListObserving helpers (Private)
 
 - (void)startNTPIfNeededForActiveWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
