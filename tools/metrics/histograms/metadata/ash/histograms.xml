@@ -5171,11 +5171,28 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid"
     enum="BooleanValid" expires_after="2023-12-24">
+  <obsolete>
+    Deprecated July 2023. See the new metrics
+    Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2.
+  </obsolete>
+<!-- TODO(b/293605781): Remove once there are data for Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2 on stable channel. -->
+
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
     Emitted when the keyboard backlight is updated to a new wallpaper extracted
     color. Non transparent colors are considered valid.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2"
+    enum="BooleanValid" expires_after="2024-07-26">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when the wallpaper extracted color is available and the keyboard
+    backlight selection is updated to be wallpaper color. Only non transparent
+    colors are considered valid.
   </summary>
 </histogram>
 

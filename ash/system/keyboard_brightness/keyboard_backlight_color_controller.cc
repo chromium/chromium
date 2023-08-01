@@ -45,6 +45,9 @@ PrefService* GetUserPrefService(const AccountId& account_id) {
 
 // Determines whether to use the |kDefaultColor| instead of |color|.
 bool ShouldUseDefaultColor(SkColor color) {
+  if (color == kInvalidWallpaperColor) {
+    return true;
+  }
   color_utils::HSL hsl;
   color_utils::SkColorToHSL(color, &hsl);
   // Determines if the color is nearly black or white.
@@ -313,27 +316,11 @@ void KeyboardBacklightColorController::DisplayBacklightColor(
   DVLOG(3) << __func__ << " backlight_color=" << backlight_color;
   switch (backlight_color) {
     case personalization_app::mojom::BacklightColor::kWallpaper: {
-      const auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-      DCHECK(wallpaper_controller);
-      SkColor color = kDefaultColor;
-      bool missing_wallpaper_color =
-          !wallpaper_controller->calculated_colors().has_value();
-      if (!missing_wallpaper_color) {
-        color = ConvertBacklightColorToSkColor(backlight_color);
-      }
-      bool invalid_color =
-          color == kInvalidWallpaperColor || missing_wallpaper_color;
-      base::UmaHistogramBoolean(
-          "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid",
-          !invalid_color);
-      // Default to |kDefaultColor| if |color| is invalid or
-      // |ShouldUseDefaultColor| is true.
-      if (invalid_color || ShouldUseDefaultColor(color)) {
-        color = kDefaultColor;
-      }
+      SkColor wallpaper_color = GetCurrentWallpaperColor();
       rgb_keyboard_manager->SetStaticBackgroundColor(
-          SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
-      displayed_color_for_testing_ = color;
+          SkColorGetR(wallpaper_color), SkColorGetG(wallpaper_color),
+          SkColorGetB(wallpaper_color));
+      displayed_color_for_testing_ = wallpaper_color;
       break;
     }
     case personalization_app::mojom::BacklightColor::kWhite:
@@ -364,18 +351,10 @@ void KeyboardBacklightColorController::DisplayBacklightZoneColor(
            << " backlight_color=" << backlight_color;
   switch (backlight_color) {
     case personalization_app::mojom::BacklightColor::kWallpaper: {
-      SkColor color = ConvertBacklightColorToSkColor(backlight_color);
-      bool valid_color = color != kInvalidWallpaperColor;
-      base::UmaHistogramBoolean(
-          "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid",
-          valid_color);
-      // Default to |kDefaultColor| if |color| is invalid or
-      // |ShouldUseDefaultColor| is true.
-      if (!valid_color || ShouldUseDefaultColor(color)) {
-        color = kDefaultColor;
-      }
-      rgb_keyboard_manager->SetZoneColor(
-          zone, SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
+      SkColor wallpaper_color = GetCurrentWallpaperColor();
+      rgb_keyboard_manager->SetZoneColor(zone, SkColorGetR(wallpaper_color),
+                                         SkColorGetG(wallpaper_color),
+                                         SkColorGetB(wallpaper_color));
       break;
     }
     case personalization_app::mojom::BacklightColor::kWhite:
@@ -448,6 +427,26 @@ void KeyboardBacklightColorController::KeyboardBrightnessPercentReceived(
     chromeos::PowerManagerClient::Get()->SetKeyboardBrightness(
         std::move(request));
   }
+}
+
+SkColor KeyboardBacklightColorController::GetCurrentWallpaperColor() {
+  const auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
+  DCHECK(wallpaper_controller);
+  SkColor color = kDefaultColor;
+  bool missing_wallpaper_color =
+      !wallpaper_controller->calculated_colors().has_value();
+  if (!missing_wallpaper_color) {
+    color = ConvertBacklightColorToSkColor(
+        personalization_app::mojom::BacklightColor::kWallpaper);
+    bool invalid_color = color == kInvalidWallpaperColor;
+    base::UmaHistogramBoolean(
+        "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2",
+        !invalid_color);
+  }
+  if (ShouldUseDefaultColor(color)) {
+    color = kDefaultColor;
+  }
+  return color;
 }
 
 }  // namespace ash

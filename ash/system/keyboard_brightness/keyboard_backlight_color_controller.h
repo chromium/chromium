@@ -144,6 +144,9 @@ class ASH_EXPORT KeyboardBacklightColorController
   // Callbacks:
   void KeyboardBrightnessPercentReceived(absl::optional<double> percentage);
 
+  // Returns the current wallpaper extracted color.
+  SkColor GetCurrentWallpaperColor();
+
   SkColor displayed_color_for_testing_ = SK_ColorTRANSPARENT;
 
   base::ScopedObservation<SessionControllerImpl, SessionObserver>

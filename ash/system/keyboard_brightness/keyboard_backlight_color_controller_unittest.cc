@@ -147,14 +147,12 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   controller_->OnRgbKeyboardSupportedChanged(true);
   // Verify the user starts with wallpaper-extracted color.
   SimulateUserLogin(account_id_1);
+  // Expect the default choice to be wallpaper color.
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
             controller_->GetBacklightColor(account_id_1));
-  // Expect the Wallpaper color to be set to the default as wallpaper color is
-  // not valid in this state.
-  // Backlight should be set twice. Once on login screen and then again once
-  // signed in.
+  // Expect no histogram entries because the wallpaper color is not available.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 2);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2", false, 0);
   EXPECT_EQ(kDefaultColor, displayed_color());
 
   controller_->SetBacklightColor(
@@ -184,7 +182,7 @@ TEST_F(KeyboardBacklightColorControllerTest,
   // in OnRgbKeyboardSupportedChanged() and again in that same method because
   // we're logged in.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", true, 2);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2", true, 2);
   EXPECT_EQ(kDefaultColor, displayed_color());
 }
 
@@ -245,7 +243,7 @@ TEST_F(KeyboardBacklightColorControllerTest,
   observer.WaitForWallpaperColorsChanged();
 
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", true, 1);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2", true, 1);
   EXPECT_EQ(kDefaultColor, displayed_color());
 }
 
