@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
 
 #include "ash/constants/ash_features.h"
@@ -66,9 +68,10 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
         network_state_test_helper_.network_state_handler(),
         network_profile_handler_.get(), network_config_handler_.get(),
         /*network_device_handler=*/nullptr,
-        /*prohibited_tecnologies_handler=*/nullptr);
+        /*prohibited_technologies_handler=*/nullptr);
 
-    esim_policy_login_metrics_logger_.reset(new ESimPolicyLoginMetricsLogger());
+    esim_policy_login_metrics_logger_ =
+        std::make_unique<ESimPolicyLoginMetricsLogger>();
     esim_policy_login_metrics_logger_->Init(
         network_state_test_helper_.network_state_handler(),
         managed_config_handler_.get());
@@ -104,8 +107,7 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
   }
 
   void SetGlobalPolicy(bool allow_only_policy_cellular) {
-    base::Value::Dict global_config;
-    global_config.Set(
+    auto global_config = base::Value::Dict().Set(
         ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
         allow_only_policy_cellular);
     managed_config_handler_->SetPolicy(

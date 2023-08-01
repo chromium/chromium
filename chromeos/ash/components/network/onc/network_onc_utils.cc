@@ -182,11 +182,12 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
       (onc_scheme == ::onc::proxy::kSocks) ? net::ProxyServer::SCHEME_SOCKS4
                                            : net::ProxyServer::SCHEME_HTTP;
   // Only prefix the host with a non-default scheme.
-  if (server.scheme() != default_scheme)
+  if (server.scheme() != default_scheme) {
     host = SchemeToString(server.scheme()) + "://" + host;
-  base::Value::Dict url_dict;
-  url_dict.Set(::onc::proxy::kHost, host);
-  url_dict.Set(::onc::proxy::kPort, server.host_port_pair().port());
+  }
+  auto url_dict = base::Value::Dict()
+                      .Set(::onc::proxy::kHost, host)
+                      .Set(::onc::proxy::kPort, server.host_port_pair().port());
   dict.Set(onc_scheme, std::move(url_dict));
 }
 

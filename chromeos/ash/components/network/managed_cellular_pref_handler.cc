@@ -141,13 +141,14 @@ void ManagedCellularPrefHandler::AddESimMetadata(
     return;
   }
 
-  base::Value::Dict esim_metadata;
-  esim_metadata.Set(::onc::network_config::kName, name);
-  esim_metadata.Set(
-      activation_code.type() == policy_util::SmdxActivationCode::Type::SMDP
-          ? ::onc::cellular::kSMDPAddress
-          : ::onc::cellular::kSMDSAddress,
-      activation_code.value());
+  auto esim_metadata =
+      base::Value::Dict()
+          .Set(::onc::network_config::kName, name)
+          .Set(activation_code.type() ==
+                       policy_util::SmdxActivationCode::Type::SMDP
+                   ? ::onc::cellular::kSMDPAddress
+                   : ::onc::cellular::kSMDSAddress,
+               activation_code.value());
 
   const base::Value::Dict* existing_esim_metadata = GetESimMetadata(iccid);
   if (existing_esim_metadata && *existing_esim_metadata == esim_metadata) {
@@ -252,11 +253,10 @@ void ManagedCellularPrefHandler::MigrateExistingPrefs() {
       continue;
     }
 
-    base::Value::Dict esim_metadata;
-    esim_metadata.Set(::onc::cellular::kSMDPAddress, smdp_activation_code);
     ScopedDictPrefUpdate update(device_prefs_,
                                 prefs::kManagedCellularESimMetadata);
-    update->Set(iccid, std::move(esim_metadata));
+    update->Set(iccid, base::Value::Dict().Set(::onc::cellular::kSMDPAddress,
+                                               smdp_activation_code));
 
     NET_LOG(EVENT) << "Successfully migrated ICCID and SM-DP+ pair";
   }

@@ -57,23 +57,23 @@ class GeolocationHandlerTest : public testing::Test {
   // This should remain in sync with the format of shill (chromeos) dict entries
   // Shill provides us Cell ID and LAC in hex, but all other fields in decimal.
   void AddAccessPoint(int idx) {
-    base::Value::Dict properties;
     std::string mac_address =
         base::StringPrintf("%02X:%02X:%02X:%02X:%02X:%02X",
                            idx, 0, 0, 0, 0, 0);
     std::string channel = base::NumberToString(idx);
     std::string strength = base::NumberToString(idx * 10);
-    properties.Set(shill::kGeoMacAddressProperty, mac_address);
-    properties.Set(shill::kGeoChannelProperty, channel);
-    properties.Set(shill::kGeoSignalStrengthProperty, strength);
-    manager_test_->AddGeoNetwork(shill::kGeoWifiAccessPointsProperty,
-                                 std::move(properties));
+
+    manager_test_->AddGeoNetwork(
+        shill::kGeoWifiAccessPointsProperty,
+        base::Value::Dict()
+            .Set(shill::kGeoMacAddressProperty, mac_address)
+            .Set(shill::kGeoChannelProperty, channel)
+            .Set(shill::kGeoSignalStrengthProperty, strength));
     base::RunLoop().RunUntilIdle();
   }
 
   // This should remain in sync with the format of shill (chromeos) dict entries
   void AddCellTower(int idx) {
-    base::Value::Dict properties;
     // Multiplications, additions, and string concatenations
     // are intended solely to differentiate the various fields
     // in a predictable way, while preserving 3 digits for MCC and MNC.
@@ -82,13 +82,13 @@ class GeolocationHandlerTest : public testing::Test {
     std::string mcc = base::NumberToString(idx * 100);
     std::string mnc = base::NumberToString(idx * 100 + 1);
 
-    properties.Set(shill::kGeoCellIdProperty, ci);
-    properties.Set(shill::kGeoLocationAreaCodeProperty, lac);
-    properties.Set(shill::kGeoMobileCountryCodeProperty, mcc);
-    properties.Set(shill::kGeoMobileNetworkCodeProperty, mnc);
-
-    manager_test_->AddGeoNetwork(shill::kGeoCellTowersProperty,
-                                 std::move(properties));
+    manager_test_->AddGeoNetwork(
+        shill::kGeoCellTowersProperty,
+        base::Value::Dict()
+            .Set(shill::kGeoCellIdProperty, ci)
+            .Set(shill::kGeoLocationAreaCodeProperty, lac)
+            .Set(shill::kGeoMobileCountryCodeProperty, mcc)
+            .Set(shill::kGeoMobileNetworkCodeProperty, mnc));
     base::RunLoop().RunUntilIdle();
   }
 

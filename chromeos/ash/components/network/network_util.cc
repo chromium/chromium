@@ -224,14 +224,17 @@ base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
         NetworkHandler::Get()->network_state_handler()->GetDeviceState(
             network->device_path());
     if (device) {
-      base::Value::Dict device_dict;
-      // We need to set Device.Cellular.ProviderRequiresRoaming so that
-      // Cellular.RoamingState can be set correctly for badging network icons.
-      device_dict.Set(shill::kProviderRequiresRoamingProperty,
-                      device->provider_requires_roaming());
-      // Scanning is also used in the UI when displaying a list of networks.
-      device_dict.Set(shill::kScanningProperty, device->scanning());
-      shill_dictionary.Set(shill::kDeviceProperty, std::move(device_dict));
+      shill_dictionary.Set(
+          shill::kDeviceProperty,
+          base::Value::Dict()
+              // We need to set Device.Cellular.ProviderRequiresRoaming so that
+              // Cellular.RoamingState can be set correctly for badging network
+              // icons.
+              .Set(shill::kProviderRequiresRoamingProperty,
+                   device->provider_requires_roaming())
+              // Scanning is also used in the UI when displaying a list of
+              // networks.
+              .Set(shill::kScanningProperty, device->scanning()));
     }
   }
 

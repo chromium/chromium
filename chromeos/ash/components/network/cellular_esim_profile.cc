@@ -96,16 +96,15 @@ CellularESimProfile& CellularESimProfile::operator=(
 CellularESimProfile::~CellularESimProfile() = default;
 
 base::Value::Dict CellularESimProfile::ToDictionaryValue() const {
-  base::Value::Dict dictionary;
-  dictionary.Set(kKeyState, static_cast<int>(state_));
-  dictionary.Set(kKeyPath, path_.value());
-  dictionary.Set(kKeyEid, eid_);
-  dictionary.Set(kKeyIccid, iccid_);
-  dictionary.Set(kKeyName, name_);
-  dictionary.Set(kKeyNickname, nickname_);
-  dictionary.Set(kKeyServiceProvider, service_provider_);
-  dictionary.Set(kKeyActivationCode, activation_code_);
-  return dictionary;
+  return base::Value::Dict()
+      .Set(kKeyState, static_cast<int>(state_))
+      .Set(kKeyPath, path_.value())
+      .Set(kKeyEid, eid_)
+      .Set(kKeyIccid, iccid_)
+      .Set(kKeyName, name_)
+      .Set(kKeyNickname, nickname_)
+      .Set(kKeyServiceProvider, service_provider_)
+      .Set(kKeyActivationCode, activation_code_);
 }
 
 bool CellularESimProfile::operator==(const CellularESimProfile& other) const {

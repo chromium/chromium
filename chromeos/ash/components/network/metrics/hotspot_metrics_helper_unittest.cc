@@ -102,8 +102,8 @@ class HotspotMetricsHelperTest : public testing::Test {
   }
 
   void SetHotspotStateInShill(const std::string& hotspot_state) {
-    base::Value::Dict status_dict;
-    status_dict.Set(shill::kTetheringStatusStateProperty, hotspot_state);
+    auto status_dict = base::Value::Dict().Set(
+        shill::kTetheringStatusStateProperty, hotspot_state);
     network_state_test_helper_.manager_test()->SetManagerProperty(
         shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
     base::RunLoop().RunUntilIdle();
@@ -234,13 +234,13 @@ TEST_F(HotspotMetricsHelperTest, HotspotUsageDurationHistogram) {
   base::RunLoop().RunUntilIdle();
   task_environment_.FastForwardBy(kHotspotUsageTime);
 
-  base::Value::Dict status_dict;
-  status_dict.Set(shill::kTetheringStatusStateProperty,
-                  shill::kTetheringStateIdle);
-  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
-                  shill::kTetheringIdleReasonError);
+  auto status_dict =
+      base::Value::Dict()
+          .Set(shill::kTetheringStatusStateProperty, shill::kTetheringStateIdle)
+          .Set(shill::kTetheringStatusIdleReasonProperty,
+               shill::kTetheringIdleReasonError);
   network_state_test_helper_.manager_test()->SetManagerProperty(
-      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+      shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectTimeBucketCount(
       HotspotMetricsHelper::kHotspotUsageDuration, kHotspotUsageTime, 2);
@@ -256,11 +256,11 @@ TEST_F(HotspotMetricsHelperTest, HotspotMaxClientCountHistogram) {
                   shill::kTetheringStateActive);
   // Update tethering status with one active client.
   base::Value::List active_clients_list;
-  base::Value::Dict client;
-  client.Set(shill::kTetheringStatusClientIPv4Property, "IPV4:001");
-  client.Set(shill::kTetheringStatusClientHostnameProperty, "hostname1");
-  client.Set(shill::kTetheringStatusClientMACProperty, "persist");
-  active_clients_list.Append(std::move(client));
+  active_clients_list.Append(
+      base::Value::Dict()
+          .Set(shill::kTetheringStatusClientIPv4Property, "IPV4:001")
+          .Set(shill::kTetheringStatusClientHostnameProperty, "hostname1")
+          .Set(shill::kTetheringStatusClientMACProperty, "persist"));
   status_dict.Set(shill::kTetheringStatusClientsProperty,
                   active_clients_list.Clone());
   network_state_test_helper_.manager_test()->SetManagerProperty(
@@ -282,10 +282,10 @@ TEST_F(HotspotMetricsHelperTest, HotspotMaxClientCountHistogram) {
   base::RunLoop().RunUntilIdle();
 
   // Add one more connected client.
-  base::Value::Dict client2;
-  client2.Set(shill::kTetheringStatusClientIPv4Property, "IPV4:002");
-  client2.Set(shill::kTetheringStatusClientHostnameProperty, "hostname2");
-  active_clients_list.Append(std::move(client2));
+  active_clients_list.Append(
+      base::Value::Dict()
+          .Set(shill::kTetheringStatusClientIPv4Property, "IPV4:002")
+          .Set(shill::kTetheringStatusClientHostnameProperty, "hostname2"));
   status_dict.Set(shill::kTetheringStatusClientsProperty,
                   std::move(active_clients_list));
   network_state_test_helper_.manager_test()->SetManagerProperty(
@@ -371,11 +371,11 @@ TEST_F(HotspotMetricsHelperTest, HotspotDisableReasonHistogram) {
   SetHotspotStateInShill(shill::kTetheringStateActive);
   // Verifies that the disabel reason is logged if hotspot is torn down by
   // internal error.
-  base::Value::Dict status_dict;
-  status_dict.Set(shill::kTetheringStatusStateProperty,
-                  shill::kTetheringStateIdle);
-  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
-                  shill::kTetheringIdleReasonError);
+  auto status_dict =
+      base::Value::Dict()
+          .Set(shill::kTetheringStatusStateProperty, shill::kTetheringStateIdle)
+          .Set(shill::kTetheringStatusIdleReasonProperty,
+               shill::kTetheringIdleReasonError);
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
   base::RunLoop().RunUntilIdle();

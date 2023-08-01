@@ -215,8 +215,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
     }
 
     total_count++;
-    base::Value::Dict dict;
-    dict.Set(shill::kWifiHiddenSsid, false);
+    auto dict = base::Value::Dict().Set(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
         network->path(), std::move(dict), base::DoNothing(),
         base::BindOnce(&NetworkMetadataStore::OnDisableHiddenError,

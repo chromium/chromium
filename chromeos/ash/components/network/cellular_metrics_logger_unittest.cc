@@ -206,8 +206,8 @@ class CellularMetricsLoggerTest : public testing::Test {
   }
 
   void SetCellularSimLock(const std::string lock_type) {
-    base::Value::Dict sim_lock_status;
-    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_type);
+    auto sim_lock_status =
+        base::Value::Dict().Set(shill::kSIMLockTypeProperty, lock_type);
     network_config_helper_->network_state_helper()
         .device_test()
         ->SetDeviceProperty(
@@ -334,8 +334,8 @@ TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles_DBusMigrationEnabled) {
       std::string("eid"), std::string("iccid"), std::u16string(u"name"),
       std::u16string(u"nickname"), std::u16string(u"service_provider"),
       std::string("activation_code"));
-  base::Value::List esim_profiles;
-  esim_profiles.Append(esim_profile.ToDictionaryValue());
+  auto esim_profiles =
+      base::Value::List().Append(esim_profile.ToDictionaryValue());
 
   TestingPrefServiceSimple device_prefs;
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(

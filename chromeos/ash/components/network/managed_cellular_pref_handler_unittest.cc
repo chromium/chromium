@@ -360,8 +360,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
   Init();
 
   // The value that we will set the existing/pre-migration prefs to.
-  base::Value::Dict existing_prefs;
-  existing_prefs.Set(kIccid0, kActivationCode0);
+  auto existing_prefs = base::Value::Dict().Set(kIccid0, kActivationCode0);
   device_prefs()->Set(prefs::kManagedCellularIccidSmdpPair,
                       base::Value(existing_prefs.Clone()));
 
@@ -386,9 +385,8 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
   Init();
 
   auto generate_esim_metadata = [](const std::string& smdp_activation_code) {
-    base::Value::Dict esim_metadata;
-    esim_metadata.Set(::onc::cellular::kSMDPAddress, smdp_activation_code);
-    return esim_metadata;
+    return base::Value::Dict().Set(::onc::cellular::kSMDPAddress,
+                                   smdp_activation_code);
   };
 
   // The value that we will set the existing/pre-migration prefs to.

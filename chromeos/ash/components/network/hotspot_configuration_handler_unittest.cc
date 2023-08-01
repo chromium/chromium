@@ -147,8 +147,8 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
   }
 
   void SetHotspotStateInShill(const std::string& state) {
-    base::Value::Dict status_dict;
-    status_dict.Set(shill::kTetheringStatusStateProperty, state);
+    auto status_dict =
+        base::Value::Dict().Set(shill::kTetheringStatusStateProperty, state);
     network_state_test_helper_.manager_test()->SetManagerProperty(
         shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
     base::RunLoop().RunUntilIdle();
@@ -195,14 +195,15 @@ TEST_F(HotspotConfigurationHandlerTest, UpdateHotspotConfigWhenProfileLoaded) {
   const char kLoadedSSID[] = "loaded_SSID";
   const char kLoadedPassphrase[] = "loaded_passphrase";
 
-  base::Value::Dict config;
-  config.Set(shill::kTetheringConfSSIDProperty,
-             base::HexEncode(kInitialSSID, std::strlen(kInitialSSID)));
-  config.Set(shill::kTetheringConfPassphraseProperty, kInitialPassphrase);
-  config.Set(shill::kTetheringConfAutoDisableProperty, true);
-  config.Set(shill::kTetheringConfBandProperty, shill::kBandAll);
-  config.Set(shill::kTetheringConfMARProperty, false);
-  config.Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
+  auto config =
+      base::Value::Dict()
+          .Set(shill::kTetheringConfSSIDProperty,
+               base::HexEncode(kInitialSSID, std::strlen(kInitialSSID)))
+          .Set(shill::kTetheringConfPassphraseProperty, kInitialPassphrase)
+          .Set(shill::kTetheringConfAutoDisableProperty, true)
+          .Set(shill::kTetheringConfBandProperty, shill::kBandAll)
+          .Set(shill::kTetheringConfMARProperty, false)
+          .Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringConfigProperty, base::Value(config.Clone()));
   base::RunLoop().RunUntilIdle();
@@ -267,15 +268,17 @@ TEST_F(HotspotConfigurationHandlerTest, SetAndGetHotspotConfig) {
 
 TEST_F(HotspotConfigurationHandlerTest, SetHotspotConfigWhenHotspotIsActive) {
   SetupObserver();
-  base::Value::Dict config;
-  config.Set(
-      shill::kTetheringConfSSIDProperty,
-      base::HexEncode(kHotspotConfigSSID, std::strlen(kHotspotConfigSSID)));
-  config.Set(shill::kTetheringConfPassphraseProperty, kHotspotConfigPassphrase);
-  config.Set(shill::kTetheringConfAutoDisableProperty, true);
-  config.Set(shill::kTetheringConfBandProperty, shill::kBandAll);
-  config.Set(shill::kTetheringConfMARProperty, false);
-  config.Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
+  auto config =
+      base::Value::Dict()
+          .Set(shill::kTetheringConfSSIDProperty,
+               base::HexEncode(kHotspotConfigSSID,
+                               std::strlen(kHotspotConfigSSID)))
+          .Set(shill::kTetheringConfPassphraseProperty,
+               kHotspotConfigPassphrase)
+          .Set(shill::kTetheringConfAutoDisableProperty, true)
+          .Set(shill::kTetheringConfBandProperty, shill::kBandAll)
+          .Set(shill::kTetheringConfMARProperty, false)
+          .Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringConfigProperty, base::Value(config.Clone()));
   base::RunLoop().RunUntilIdle();

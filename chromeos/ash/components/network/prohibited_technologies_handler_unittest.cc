@@ -74,18 +74,11 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
   }
 
   void PreparePolicies() {
-    {
-      base::Value::List val;
-      val.Append("WiFi");
-      global_config_disable_wifi.Set("DisableNetworkTypes", std::move(val));
-    }
-    {
-      base::Value::List val;
-      val.Append("WiFi");
-      val.Append("Cellular");
-      global_config_disable_wifi_and_cell.Set("DisableNetworkTypes",
-                                              std::move(val));
-    }
+    global_config_disable_wifi.Set("DisableNetworkTypes",
+                                   base::Value::List().Append("WiFi"));
+    global_config_disable_wifi_and_cell.Set(
+        "DisableNetworkTypes",
+        base::Value::List().Append("WiFi").Append("Cellular"));
   }
 
   void TearDown() override {

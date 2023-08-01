@@ -99,12 +99,11 @@ class StubCellularNetworksProviderTest : public testing::Test {
   }
 
   void SetPSimSlotInfo(const std::string& iccid) {
-    base::Value::List sim_slot_infos;
-    base::Value::Dict slot_info_item;
-    slot_info_item.Set(shill::kSIMSlotInfoEID, std::string());
-    slot_info_item.Set(shill::kSIMSlotInfoICCID, iccid);
-    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
-    sim_slot_infos.Append(std::move(slot_info_item));
+    auto sim_slot_infos = base::Value::List().Append(
+        base::Value::Dict()
+            .Set(shill::kSIMSlotInfoEID, std::string())
+            .Set(shill::kSIMSlotInfoICCID, iccid)
+            .Set(shill::kSIMSlotInfoPrimary, true));
 
     helper_.device_test()->SetDeviceProperty(
         kDefaultCellularDevicePath, shill::kSIMSlotInfoProperty,
