@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -1047,13 +1048,14 @@ ScriptPromise ImageBitmap::CreateAsync(
   ScriptPromise promise = resolver->Promise();
 
   worker_pool::PostTask(
-      FROM_HERE, CrossThreadBindOnce(
-                     &RasterizeImageOnBackgroundThread, std::move(paint_record),
-                     draw_dst_rect, std::move(task_runner),
-                     CrossThreadBindOnce(&ResolvePromiseOnOriginalThread,
-                                         WrapCrossThreadPersistent(resolver),
-                                         !image->WouldTaintOrigin(),
-                                         std::move(passed_parsed_options))));
+      FROM_HERE,
+      CrossThreadBindOnce(
+          &RasterizeImageOnBackgroundThread, std::move(paint_record),
+          draw_dst_rect, std::move(task_runner),
+          CrossThreadBindOnce(&ResolvePromiseOnOriginalThread,
+                              MakeUnwrappingCrossThreadHandle(resolver),
+                              !image->WouldTaintOrigin(),
+                              std::move(passed_parsed_options))));
   return promise;
 }
 
