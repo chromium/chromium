@@ -82,6 +82,86 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.MessageReceived.DesiredMessageType"
+    enum="QuickStartMessageType" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The message type that should be received from the remote device. Recorded
+    when the response is received or a timeout occurs waiting for it.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.MessageReceived.{MessageType}.ErrorCode"
+    enum="QuickStartMessageReceivedErrorCode" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The type of error that occured when receiving a message. Recorded when the
+    response is received or a timeout occurs waiting.
+  </summary>
+  <token key="MessageType">
+    <variant name="Assertion"/>
+    <variant name="BootstrapConfigurations"/>
+    <variant name="GetInfo"/>
+    <variant name="Handshake"/>
+    <variant name="NotifySourceOfUpdate"/>
+    <variant name="WifiCredentials"/>
+  </token>
+</histogram>
+
+<histogram name="QuickStart.MessageReceived.{MessageType}.ListenDuration"
+    units="ms" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The listen duration waiting for a response from the remote device. Recorded
+    when succesfully receiving a response or when a timeout occurs waiting for a
+    response.
+  </summary>
+  <token key="MessageType">
+    <variant name="Assertion"/>
+    <variant name="BootstrapConfigurations"/>
+    <variant name="GetInfo"/>
+    <variant name="Handshake"/>
+    <variant name="NotifySourceOfUpdate"/>
+    <variant name="WifiCredentials"/>
+  </token>
+</histogram>
+
+<histogram name="QuickStart.MessageReceived.{MessageType}.Succeeded"
+    enum="BooleanSuccess" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether the target device received message from the remote device. Recorded
+    when a response is received or when a timeout occurs waiting for a response.
+  </summary>
+  <token key="MessageType">
+    <variant name="Assertion"/>
+    <variant name="BootstrapConfigurations"/>
+    <variant name="GetInfo"/>
+    <variant name="Handshake"/>
+    <variant name="NotifySourceOfUpdate"/>
+    <variant name="WifiCredentials"/>
+  </token>
+</histogram>
+
+<histogram name="QuickStart.MessageSent.MessageType"
+    enum="QuickStartMessageType" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The message type sent to the remote device. Recorded before writing stream
+    of bytes.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.WifiTransferResult" enum="BooleanSuccess"
     expires_after="2023-12-01">
   <owner>bhartmire@google.com</owner>

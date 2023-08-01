@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "quick_start_metrics.h"
+
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 
 namespace ash::quick_start::quick_start_metrics {
@@ -25,6 +28,39 @@ constexpr const char kFastPairAdvertisementEndedErrorCodeHistogramName[] =
 constexpr const char
     kFastPairAdvertisementStartedAdvertisingMethodHistogramName[] =
         "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod";
+constexpr const char kMessageReceivedWifiCredentials[] =
+    "QuickStart.MessageReceived.WifiCredentials";
+constexpr const char kMessageReceivedBootstrapConfigurations[] =
+    "QuickStart.MessageReceived.BootstrapConfigurations";
+constexpr const char kMessageReceivedHandshake[] =
+    "QuickStart.MessageReceived.Handshake";
+constexpr const char kMessageReceivedNotifySourceOfUpdate[] =
+    "QuickStart.MessageReceived.NotifySourceOfUpdate";
+constexpr const char kMessageReceivedGetInfo[] =
+    "QuickStart.MessageReceived.GetInfo";
+constexpr const char kMessageReceivedAssertion[] =
+    "QuickStart.MessageReceived.Assertion";
+constexpr const char kMessageReceivedDesiredMessageTypeName[] =
+    "QuickStart.MessageReceived.DesiredMessageType";
+constexpr const char kMessageSentMessageTypeName[] =
+    "QuickStart.MessageSent.MessageType";
+
+std::string MapMessageTypeToMetric(MessageType message_type) {
+  switch (message_type) {
+    case MessageType::kWifiCredentials:
+      return kMessageReceivedWifiCredentials;
+    case MessageType::kBootstrapConfigurations:
+      return kMessageReceivedBootstrapConfigurations;
+    case MessageType::kHandshake:
+      return kMessageReceivedHandshake;
+    case MessageType::kNotifySourceOfUpdate:
+      return kMessageReceivedNotifySourceOfUpdate;
+    case MessageType::kGetInfo:
+      return kMessageReceivedGetInfo;
+    case MessageType::kAssertion:
+      return kMessageReceivedAssertion;
+  }
+}
 
 }  // namespace
 
@@ -93,17 +129,27 @@ void RecordHandshakeResult(int32_t session_id,
   // TODO(279614284): Add FIDO assertion metrics.
 }
 
-void RecordMessageSent(int32_t session_id, MessageType message_type) {
-  // TODO(279614351): Add message sending metrics.
+void RecordMessageSent(MessageType message_type) {
+  base::UmaHistogramEnumeration(kMessageSentMessageTypeName, message_type);
 }
 
 void RecordMessageReceived(
-    int32_t session_id,
     MessageType desired_message_type,
     bool succeeded,
-    int listen_duration,
+    base::TimeDelta listen_duration,
     absl::optional<MessageReceivedErrorCode> error_code) {
-  // TODO(279614351): Add message sending metrics.
+  std::string metric_name = MapMessageTypeToMetric(desired_message_type);
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(metric_name + ".ErrorCode",
+                                  error_code.value());
+  }
+  base::UmaHistogramBoolean(metric_name + ".Succeeded", succeeded);
+  base::UmaHistogramTimes(metric_name + ".ListenDuration", listen_duration);
+  base::UmaHistogramEnumeration(kMessageReceivedDesiredMessageTypeName,
+                                desired_message_type);
 }
 
 void RecordAttestationCertificateRequested(int32_t session_id) {
@@ -144,6 +190,23 @@ void RecordGaiaTransferResult(
 
 void RecordEntryPoint(EntryPoint entry_point) {
   // TODO(280306867): Add metric for entry point.
+}
+
+MessageType MapResponseToMessageType(QuickStartResponseType response_type) {
+  switch (response_type) {
+    case QuickStartResponseType::kWifiCredentials:
+      return MessageType::kWifiCredentials;
+    case QuickStartResponseType::kBootstrapConfigurations:
+      return MessageType::kBootstrapConfigurations;
+    case QuickStartResponseType::kHandshake:
+      return MessageType::kHandshake;
+    case QuickStartResponseType::kNotifySourceOfUpdate:
+      return MessageType::kNotifySourceOfUpdate;
+    case QuickStartResponseType::kGetInfo:
+      return MessageType::kGetInfo;
+    case QuickStartResponseType::kAssertion:
+      return MessageType::kAssertion;
+  }
 }
 
 }  // namespace ash::quick_start::quick_start_metrics

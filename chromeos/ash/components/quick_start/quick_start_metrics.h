@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_METRICS_H_
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/quick_start/quick_start_response_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start::quick_start_metrics {
@@ -65,17 +66,29 @@ enum class HandshakeErrorCode {
   kFailedToReadResponse,
 };
 
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other). Entries should be never modified
+// or deleted. Only additions possible.
 enum class MessageType {
-  kWifiCredentials,
-  kBootstrapConfigurations,
-  kAttestationRequest,
-  kFido,
+  kWifiCredentials = 0,
+  kBootstrapConfigurations = 1,
+  kHandshake = 2,
+  kNotifySourceOfUpdate = 3,
+  kGetInfo = 4,
+  kAssertion = 5,
+  kMaxValue = kAssertion,
 };
 
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other). Entries should be never modified
+// or deleted. Only additions possible.
 enum class MessageReceivedErrorCode {
-  kTimeOut,
-  kDeserializationFailure,
-  kUnknownError,
+  kTimeOut = 0,
+  kDeserializationFailure = 1,
+  kUnknownError = 2,
+  kMaxValue = kUnknownError,
 };
 
 enum class AttestationCertificateRequestErrorCode {
@@ -154,12 +167,11 @@ void RecordHandshakeResult(int32_t session_id,
                            int duration,
                            absl::optional<HandshakeErrorCode> error_code);
 
-void RecordMessageSent(int32_t session_id, MessageType message_type);
+void RecordMessageSent(MessageType message_type);
 
-void RecordMessageReceived(int32_t session_id,
-                           MessageType desired_message_type,
+void RecordMessageReceived(MessageType desired_message_type,
                            bool succeeded,
-                           int listen_duration,
+                           base::TimeDelta listen_duration,
                            absl::optional<MessageReceivedErrorCode> error_code);
 
 void RecordAttestationCertificateRequested(int32_t session_id);
@@ -182,6 +194,10 @@ void RecordGaiaTransferResult(
     absl::optional<GaiaTransferResultFailureReason> failure_reason);
 
 void RecordEntryPoint(EntryPoint entry_point);
+
+// Helper function that returns the MessageType equivalent of
+// QuickStartResponseType.
+MessageType MapResponseToMessageType(QuickStartResponseType response_type);
 
 }  // namespace ash::quick_start::quick_start_metrics
 

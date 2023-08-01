@@ -90665,6 +90665,21 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Invalid advertisement error code"/>
 </enum>
 
+<enum name="QuickStartMessageReceivedErrorCode">
+  <int value="0" label="Timed out"/>
+  <int value="1" label="Deserialization failure"/>
+  <int value="2" label="Unknown error"/>
+</enum>
+
+<enum name="QuickStartMessageType">
+  <int value="0" label="Wifi Credentials"/>
+  <int value="1" label="Bootstrap Configurations"/>
+  <int value="2" label="Handshake"/>
+  <int value="3" label="Notify source of update"/>
+  <int value="4" label="Get Info"/>
+  <int value="5" label="Fido Assertion"/>
+</enum>
+
 <enum name="QuickStartWifiTransferResultFailureReason">
   <int value="0" label="Connection dropped while attempting transfer"/>
   <int value="1" label="Empty response bytes"/>
