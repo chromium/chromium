@@ -641,6 +641,10 @@ void DisplayOverlayController::RemoveTouchInjectorObserver(
 }
 
 void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
+  if (!IsBeta()) {
+    return;
+  }
+
   if (button_options_widget_) {
     auto* menu = static_cast<ButtonOptionsMenu*>(
         button_options_widget_->GetContentsView());
