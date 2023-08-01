@@ -622,16 +622,15 @@ suite('ClearBrowsingDataForSupervisedUsers', function() {
   let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let element: SettingsClearBrowsingDataDialogElement;
 
-  setup(async function() {
+  setup(function() {
     testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
-    loadTimeData.overrideValues({isChildAccount: true});
-    document.body.appendChild(element);
-    await testBrowserProxy.whenCalled('initialize');
-    assertTrue(element.$.clearBrowsingDataDialog.open);
+    loadTimeData.overrideValues({
+      isChildAccount: true,
+    });
   });
 
   teardown(function() {
@@ -639,6 +638,10 @@ suite('ClearBrowsingDataForSupervisedUsers', function() {
   });
 
   test('history rows are shown for supervised users', async function() {
+    document.body.appendChild(element);
+    await testBrowserProxy.whenCalled('initialize');
+
+    assertTrue(element.$.clearBrowsingDataDialog.open);
     assertFalse(element.shadowRoot!
                     .querySelector<SettingsCheckboxElement>(
                         '#browsingCheckbox')!.hidden);
@@ -653,11 +656,14 @@ suite('ClearBrowsingDataForSupervisedUsers', function() {
   // <if expr="is_win or is_macosx or is_linux">
   test(
       'Additional information shown for supervised users when clearing cookies',
-      function() {
+      async function() {
         loadTimeData.overrideValues({
-          isChildAccount: true,
-          shouldClearingCookiesKeepsSupervisedUsersSignedIn: true,
+          clearingCookiesKeepsSupervisedUsersSignedIn: true,
         });
+        document.body.appendChild(element);
+        await testBrowserProxy.whenCalled('initialize');
+
+        assertTrue(element.$.clearBrowsingDataDialog.open);
 
         // Supervised users will see additional text informing them they will
         // not be signed out when cookies are cleared and
@@ -665,6 +671,7 @@ suite('ClearBrowsingDataForSupervisedUsers', function() {
         const checkbox =
             element.shadowRoot!.querySelector<SettingsCheckboxElement>(
                 '#cookiesCheckboxBasic')!;
+
         assertEquals(
             element.i18n('clearCookiesSummarySignedInSupervisedProfile')
                 .toString(),

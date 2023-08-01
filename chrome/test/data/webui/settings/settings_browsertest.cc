@@ -476,9 +476,8 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
 }
 #endif
 
-// TODO(crbug.com/1468253): Test is failing consistently on all platforms.
 IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
-                       DISABLED_ClearBrowsingDataForSupervisedUsers) {
+                       ClearBrowsingDataForSupervisedUsers) {
   RunTest("settings/clear_browsing_data_test.js",
           "runMochaSuite('ClearBrowsingDataForSupervisedUsers')");
 }
