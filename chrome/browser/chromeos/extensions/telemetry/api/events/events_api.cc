@@ -159,8 +159,8 @@ void OsEventsStartCapturingEventsFunction::RunIfAllowed() {
     case EventManager::kSuccess:
       Respond(NoArguments());
       break;
-    case EventManager::kPwaClosed:
-      Respond(Error("Companion PWA UI is not open."));
+    case EventManager::kAppUiClosed:
+      Respond(Error("Companion app UI is not open."));
       break;
   }
 }

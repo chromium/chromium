@@ -166,7 +166,7 @@ EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
   // This is a noop in case the pwa is closed or there is already an existing
   // observation.
   if (!is_related_pwa_open) {
-    return kPwaClosed;
+    return kAppUiClosed;
   }
   if (event_router_.IsExtensionObservingForCategory(extension_id, category)) {
     // Early return in case the category is already observed by the extension.

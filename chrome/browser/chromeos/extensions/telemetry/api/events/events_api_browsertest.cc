@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         await chrome.test.assertPromiseRejects(
             chrome.os.events.startCapturingEvents("audio_jack"),
-            'Error: Companion PWA UI is not open.'
+            'Error: Companion app UI is not open.'
         );
         chrome.test.succeed();
       }
