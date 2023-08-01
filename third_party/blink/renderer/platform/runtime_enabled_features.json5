@@ -3118,6 +3118,10 @@
     },
     // Implements documentElement.scrollTop/Left and bodyElement.scrollTop/Left
     // as per the spec, matching other Web engines.
+    //
+    // This flag can't be removed until the Android min SDK version is 28
+    // (i.e., 'P') or later.  See AWSettings.setScrollTopLeftInteropEnabled
+    // and its caller.
     {
       name: "ScrollTopLeftInterop",
       status: "stable",
