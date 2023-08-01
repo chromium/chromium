@@ -9,7 +9,7 @@ import logging
 import mimetypes
 import os
 import re
-from typing import Callable, Dict, List, NamedTuple, Optional
+from typing import Callable, Dict, List, NamedTuple, Optional, Union
 from xml.dom import minidom
 
 from cca import build
@@ -31,7 +31,7 @@ def _stub_chrome_url(request_path: str, s: str) -> str:
 
 class _Route(NamedTuple):
     # The url pattern for the route. Can be a regex.
-    pattern: str | re.Pattern
+    pattern: Union[str, re.Pattern]
     # Handler of the route, takes path as argument and returns response in
     # bytes.
     handler: Callable[[str], bytes]
