@@ -146,7 +146,9 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
   // Cancel any pending callbacks by invalidating any weak pointers.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (shopping_service_->IsShoppingListEligible()) {
+  if (shopping_service_->IsPriceInsightsEligible()) {
+    UpdatePriceInsightsIconView();
+  } else if (shopping_service_->IsShoppingListEligible()) {
     UpdatePriceTrackingIconView();
   }
 
@@ -368,17 +370,23 @@ void ShoppingListUiTabHelper::SetPriceTrackingState(
   }
 }
 
-void ShoppingListUiTabHelper::ShowShoppingInsightsSidePanel() {
+void ShoppingListUiTabHelper::OnPriceInsightsIconClicked() {
   auto* side_panel_ui = GetSidePanelUI();
   auto* registry = SidePanelRegistry::Get(web_contents());
   DCHECK(side_panel_ui && registry->GetEntryForKey(SidePanelEntry::Key(
                               SidePanelEntry::Id::kShoppingInsights)));
 
-  side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
-  if (price_insights_info_.has_value()) {
-    base::UmaHistogramBoolean(
-        "Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs",
-        price_insights_info_->has_multiple_catalogs);
+  if (side_panel_ui->IsSidePanelShowing() &&
+      side_panel_ui->GetCurrentEntryId() ==
+          SidePanelEntry::Id::kShoppingInsights) {
+    side_panel_ui->Close();
+  } else {
+    side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
+    if (price_insights_info_.has_value()) {
+      base::UmaHistogramBoolean(
+          "Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs",
+          price_insights_info_->has_multiple_catalogs);
+    }
   }
 }
 

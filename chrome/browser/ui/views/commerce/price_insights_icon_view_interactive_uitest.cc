@@ -147,10 +147,13 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       EnsureNotPresent(kSidePanelElementId),
       // Click on the action chip to open the side panel
       PressButton(kPriceInsightsChipElementId),
-      WaitForShow(kSidePanelElementId), FlushEvents());
+      WaitForShow(kSidePanelElementId), FlushEvents(),
+      // Click on the action chip again to close the side panel
+      PressButton(kPriceInsightsChipElementId),
+      WaitForHide(kSidePanelElementId), FlushEvents());
 
   histogram_tester.ExpectTotalCount(
-      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 1);
+      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 2);
 }
 
 class PriceInsightsIconViewEngagementTest

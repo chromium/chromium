@@ -90,7 +90,7 @@ class ShoppingListUiTabHelper
   virtual void SetPriceTrackingState(bool enable,
                                      bool is_new_bookmark,
                                      base::OnceCallback<void(bool)> callback);
-  void ShowShoppingInsightsSidePanel();
+  void OnPriceInsightsIconClicked();
 
   // Return the PriceInsightsInfo for the last fetched product URL. A reference
   // to this object should not be kept directly, if one is needed, a copy should
