@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarning
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentManager;
 
@@ -199,7 +200,7 @@ class PasswordMigrationWarningMediator
                 PasswordMigrationWarningUserActions.COUNT);
     }
 
-    private String getAccountDisplayName(Profile profile) {
+    private @Nullable String getAccountDisplayName(Profile profile) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         CoreAccountInfo coreAccountInfo =
@@ -207,8 +208,12 @@ class PasswordMigrationWarningMediator
         if (coreAccountInfo == null) {
             return null;
         }
+        @Nullable
         AccountInfo account =
                 identityManager.findExtendedAccountInfoByEmailAddress(coreAccountInfo.getEmail());
+        if (account == null) {
+            return null;
+        }
         boolean canHaveEmailAddressDisplayed =
                 account.getAccountCapabilities().canHaveEmailAddressDisplayed() != Tribool.FALSE;
         return canHaveEmailAddressDisplayed ? account.getEmail() : account.getFullName();
