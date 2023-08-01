@@ -149,16 +149,18 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
     add_types |= AddTabTypes::ADD_PINNED;
   }
 
-  const absl::optional<tab_groups::TabGroupId> surrounding_group =
-      tab_strip_model->GetSurroundingTabGroup(tab_index);
+  if (tab_strip_model->group_model()) {
+    const absl::optional<tab_groups::TabGroupId> surrounding_group =
+        tab_strip_model->GetSurroundingTabGroup(tab_index);
 
-  // If inserting at |tab_index| would put the tab within a different
-  // group, adjust the index to put it outside.
-  if (surrounding_group && surrounding_group != group) {
-    tab_index = tab_strip_model->group_model()
-                    ->GetTabGroup(*surrounding_group)
-                    ->ListTabs()
-                    .end();
+    // If inserting at |tab_index| would put the tab within a different
+    // group, adjust the index to put it outside.
+    if (surrounding_group && surrounding_group != group) {
+      tab_index = tab_strip_model->group_model()
+                      ->GetTabGroup(*surrounding_group)
+                      ->ListTabs()
+                      .end();
+    }
   }
 
   WebContents* raw_web_contents = web_contents.get();

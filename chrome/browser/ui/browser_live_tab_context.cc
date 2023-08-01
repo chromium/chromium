@@ -190,8 +190,8 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
           : nullptr;
 
   TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
-  const bool first_tab_in_group =
-      group.has_value() ? !group_model->ContainsTabGroup(group.value()) : false;
+  const bool first_tab_in_group = group_model && group.has_value() &&
+                                  !group_model->ContainsTabGroup(group.value());
 
   bool restored_from_closed_tab_cache = false;
   WebContents* web_contents = nullptr;
