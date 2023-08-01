@@ -6549,4 +6549,77 @@ TEST_F(ViewObserverTest, ChildViewLayerNotificationTest) {
   EXPECT_EQ(1, parent_view->layer_change_count());
 }
 
+namespace {
+
+// This view always resizes the associated layer when bounds change.
+class LayerResizingView : public View {
+ public:
+  explicit LayerResizingView(ui::Layer* layer) : layer_(layer) {}
+
+ private:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    // Drop the coordinate since the layer should always be aligned.
+    gfx::Rect layer_rect = gfx::Rect(size());
+    layer_->SetBounds(layer_rect);
+  }
+
+  raw_ptr<ui::Layer> layer_;
+};
+
+}  // namespace
+
+// Confirms that the size of a View and the size of a region-attached layer stay
+// in sync.
+TEST(ViewTestUnfixtured, ViewLayerSizeStayInSync) {
+  // Make a layer with implicit animations.
+  std::unique_ptr<ui::Layer> region_layer = std::make_unique<ui::Layer>();
+  region_layer->SetAnimator(ui::LayerAnimator::CreateImplicitAnimator());
+
+  // Make a view, attach the layer to a region. The view keeps the bounds of the
+  // layer in sync. See implementation of LayerResizingView::OnBoundsChanged().
+  std::unique_ptr<View> view_owned =
+      std::make_unique<LayerResizingView>(region_layer.get());
+  view_owned->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  view_owned->AddLayerToRegion(region_layer.get(), views::LayerRegion::kBelow);
+  raw_ptr<View> view = view_owned.get();
+
+  // Make a parent view. All it does is keep the child view the same size.
+  std::unique_ptr<View> parent_view = std::make_unique<View>();
+  parent_view->AddChildView(std::move(view_owned));
+  parent_view->SetUseDefaultFillLayout(true);
+
+  // Initial conditions: everything has 0 width.
+  EXPECT_EQ(0, view->width());
+  EXPECT_EQ(0, region_layer->bounds().width());
+  EXPECT_EQ(0, region_layer->GetTargetBounds().width());
+
+  // Setting bounds on the parent view will propagate the size to the child
+  // view. The child view then propagates the size to its layer. Note that the
+  // layer's bounds are not immediately updated as the animation has not yet
+  // started. Instead, the layer's target bounds is updated.
+  gfx::Rect bounds = gfx::Rect(0, 0, 60, 80);
+  parent_view->SetBoundsRect(bounds);
+  EXPECT_EQ(60, view->width());
+  EXPECT_EQ(0, region_layer->bounds().width());
+  EXPECT_EQ(60, region_layer->GetTargetBounds().width());
+
+  // Now we move the parent view without changing the size. This does not
+  // propagate a size change to the child view. However, it does cause the layer
+  // to reset its target bounds to its current bounds.
+  gfx::Rect new_bounds = bounds;
+  new_bounds.set_x(10);
+  parent_view->SetBoundsRect(new_bounds);
+  EXPECT_EQ(60, view->width());
+  EXPECT_EQ(0, region_layer->bounds().width());
+
+  // This is the expected behavior: target bounds does not change.
+  // EXPECT_EQ(60, region_layer->GetTargetBounds().width());
+
+  // This is the broken behavior: target bounds is set to the current value of
+  // bounds.
+  EXPECT_EQ(0, region_layer->GetTargetBounds().width());
+
+  view = nullptr;
+}
+
 }  // namespace views
