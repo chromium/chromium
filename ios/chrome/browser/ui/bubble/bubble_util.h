@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 
+// TODO(crbug.com/1469122): Rename parameters.
 namespace bubble_util {
 
 // The default fixed distance from the leading edge of the bubble to the anchor

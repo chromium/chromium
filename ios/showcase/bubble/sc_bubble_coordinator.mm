@@ -41,9 +41,13 @@
 
   // Mock UI element for the bubble to be anchored on. Set the x-coordinate of
   // the origin to be two-thirds of the container's width.
+  CGFloat topBarHeight =
+      self.baseViewController.view.window.windowScene.statusBarManager
+          .statusBarFrame.size.height +
+      self.baseViewController.navigationBar.frame.size.height;
   UIView* elementView = [[UIView alloc]
       initWithFrame:CGRectMake(containerView.frame.size.width * 2.0f / 3.0f,
-                               20.0f, 20.0f, 20.0f)];
+                               topBarHeight + 10, 20.0f, 20.0f)];
   elementView.backgroundColor = [UIColor grayColor];
   [containerView addSubview:elementView];
   CGPoint anchorPoint = bubble_util::AnchorPoint(elementView.frame, direction);
