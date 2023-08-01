@@ -313,6 +313,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8MemoryReducerSingleGC,
                          "--memory-reducer-single-gc",
                          "--no-memory-reducer-single-gc");
+  SetV8FlagsIfOverridden(features::kV8MidtierRegallocFallback,
+                         "--turbo-use-mid-tier-regalloc-for-huge-functions",
+                         "--no-turbo-use-mid-tier-regalloc-for-huge-functions");
 
   if (base::FeatureList::IsEnabled(features::kV8ConcurrentSparkplug)) {
     if (int max_threads = features::kV8ConcurrentSparkplugMaxThreads.Get()) {
