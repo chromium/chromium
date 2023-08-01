@@ -1211,10 +1211,11 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // Data pack encodes strings as either UTF8 or UTF16.
   std::u16string msg;
   if (encoding == ResourceHandle::UTF16) {
-    msg = std::u16string(reinterpret_cast<const char16_t*>(data.data()),
-                         data.length() / 2);
+    msg.assign(reinterpret_cast<const char16_t*>(data.data()),
+               data.length() / 2);
   } else if (encoding == ResourceHandle::UTF8) {
-    msg = base::UTF8ToUTF16(data);
+    // Best-effort conversion.
+    base::UTF8ToUTF16(data.data(), data.size(), &msg);
   }
   return MaybeMangleLocalizedString(msg);
 }
