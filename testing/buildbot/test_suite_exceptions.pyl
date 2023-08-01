@@ -71,7 +71,9 @@
       'android-12l-x64-dbg-tests': {
         'args': [
           # https://crbug.com/1289764
-          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
+          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*:'
+          # https://crbug.com/1468262
+          'All/PaymentHandlerEnforceFullDelegationTest.WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject/1',
         ],
         'swarming': {
           'shards': 4,
