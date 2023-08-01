@@ -39,6 +39,12 @@
 
 namespace ash {
 
+// Toolbar padding copied from `GameDashboardContext`.
+static const int kToolbarEdgePadding = 10;
+static constexpr gfx::Rect kAppBounds = gfx::Rect(50, 50, 800, 400);
+
+enum class Movement { kTouch, kMouse };
+
 class GameDashboardContextTest : public GameDashboardTestBase {
  public:
   GameDashboardContextTest() = default;
@@ -64,17 +70,18 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   void CreateGameWindow(bool is_arc_window) {
     ASSERT_FALSE(game_window_);
     ASSERT_FALSE(test_api_);
-    game_window_ =
-        CreateAppWindow((is_arc_window ? TestGameDashboardDelegate::kGameAppId
-                                       : extension_misc::kGeForceNowAppId),
-                        (is_arc_window ? AppType::ARC_APP : AppType::NON_APP),
-                        gfx::Rect(0, 0, 400, 200));
+    game_window_ = CreateAppWindow(
+        (is_arc_window ? TestGameDashboardDelegate::kGameAppId
+                       : extension_misc::kGeForceNowAppId),
+        (is_arc_window ? AppType::ARC_APP : AppType::NON_APP), kAppBounds);
     auto* context = GameDashboardController::Get()->GetGameDashboardContext(
         game_window_.get());
     ASSERT_TRUE(context);
     test_api_ = std::make_unique<GameDashboardContextTestApi>(
         context, GetEventGenerator());
     ASSERT_TRUE(test_api_);
+    frame_header_ = chromeos::FrameHeader::Get(
+        views::Widget::GetWidgetForNativeWindow(game_window_.get()));
   }
 
   // Opens the main menu and toolbar, and checks Game Controls UI states. At the
@@ -141,9 +148,85 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     test_api_->CloseTheMainMenu();
   }
 
+  void VerifyToolbarMovement(Movement move_type) {
+    test_api_->OpenTheMainMenu();
+    test_api_->OpenTheToolbar();
+    gfx::Rect window_bounds = game_window_->GetBoundsInScreen();
+    gfx::Point window_center_point = window_bounds.CenterPoint();
+    int x_offset = window_bounds.width() / 4;
+    int y_offset = window_bounds.height() / 4;
+
+    // Verify that be default the snap position should be `kTopRight` and
+    // toolbar is placed in the top right quadrant.
+    EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+              GameDashboardContext::ToolbarSnapLocation::kTopRight);
+
+    // Move toolbar but not outside of the top right quadrant. Tests that even
+    // though the snap position does not change, the toolbar is snapped back to
+    // its previous position.
+    DragToolbarToPoint(move_type, {window_center_point.x() + x_offset,
+                                   window_center_point.y() - y_offset});
+    EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+              GameDashboardContext::ToolbarSnapLocation::kTopRight);
+
+    // Move toolbar to bottom right quadrant and verify snap location is
+    // updated.
+    DragToolbarToPoint(move_type, {window_center_point.x() + x_offset,
+                                   window_center_point.y() + y_offset});
+    EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+              GameDashboardContext::ToolbarSnapLocation::kBottomRight);
+
+    // Move toolbar to bottom left quadrant and verify snap location is updated.
+    DragToolbarToPoint(move_type, {window_center_point.x() - x_offset,
+                                   window_center_point.y() + y_offset});
+    EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+              GameDashboardContext::ToolbarSnapLocation::kBottomLeft);
+
+    // Move toolbar to top left quadrant and verify snap location is updated.
+    DragToolbarToPoint(move_type, {window_center_point.x() - x_offset,
+                                   window_center_point.y() - y_offset});
+    EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+              GameDashboardContext::ToolbarSnapLocation::kTopLeft);
+  }
+
  protected:
   std::unique_ptr<aura::Window> game_window_;
+  raw_ptr<chromeos::FrameHeader, ExperimentalAsh> frame_header_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
+
+  void DragToolbarToPoint(Movement move_type,
+                          const gfx::Point& new_location,
+                          bool drop = true) {
+    DCHECK(test_api_->GetToolbarWidget())
+        << "Cannot drag toolbar because it's not available on screen.";
+    gfx::Rect toolbar_bounds =
+        test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+    ui::test::EventGenerator* event_generator = GetEventGenerator();
+    // TODO (b/290696780): Update entry point to use center of toolbar once
+    // mouse supports dragging on buttons.
+    event_generator->set_current_screen_location(
+        gfx::Point(toolbar_bounds.x() + 1, toolbar_bounds.y() + 1));
+
+    switch (move_type) {
+      case Movement::kMouse:
+        event_generator->PressLeftButton();
+        event_generator->MoveMouseTo(new_location);
+        if (drop) {
+          event_generator->ReleaseLeftButton();
+        }
+        break;
+      case Movement::kTouch:
+        event_generator->PressTouch();
+        // Move the touch by an enough amount in X to make sure it generates a
+        // series of gesture scroll events instead of a fling event.
+        event_generator->MoveTouchBy(50, 0);
+        event_generator->MoveTouch(new_location);
+        if (drop) {
+          event_generator->ReleaseTouch();
+        }
+        break;
+    }
+  }
 };
 
 // Verifies Game Controls tile state.
@@ -326,11 +409,9 @@ class GameTypeGameDashboardContextTest
 // Verifies the initial location of the main menu button widget relative to the
 // game window.
 TEST_P(GameTypeGameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
-  auto* frame_header = chromeos::FrameHeader::Get(
-      views::Widget::GetWidgetForNativeWindow(game_window_.get()));
   const gfx::Point expected_button_center_point(
       game_window_->GetBoundsInScreen().top_center().x(),
-      frame_header->GetHeaderHeight() / 2);
+      kAppBounds.y() + frame_header_->GetHeaderHeight() / 2);
   EXPECT_EQ(expected_button_center_point, test_api_->GetMainMenuButtonWidget()
                                               ->GetWindowBoundsInScreen()
                                               .CenterPoint());
@@ -500,12 +581,8 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
   ASSERT_TRUE(toolbar_tile);
   EXPECT_FALSE(toolbar_tile->IsToggled());
 
+  // Open the toolbar and verify available feature buttons.
   test_api_->OpenTheToolbar();
-
-  // Verify that the toolbar widget is now available.
-  EXPECT_TRUE(test_api_->GetToolbarWidget());
-
-  // Verify available feature buttons.
   EXPECT_TRUE(test_api_->GetToolbarGamepadButton());
   EXPECT_TRUE(test_api_->GetToolbarRecordGameButton());
   EXPECT_TRUE(test_api_->GetToolbarScreenshotButton());
@@ -621,6 +698,169 @@ TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
   for (auto* widget : widgets) {
     EXPECT_EQ(kExpectedUserColor, *widget->GetColorProviderKey().user_color);
   }
+}
+
+// Verifies the toolbar won't follow the mouse cursor outside of the game window
+// bounds.
+TEST_P(GameTypeGameDashboardContextTest, MoveToolbarOutOfBounds) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  ASSERT_TRUE(test_api_->GetToolbarWidget());
+  ASSERT_EQ(test_api_->GetToolbarSnapLocation(),
+            GameDashboardContext::ToolbarSnapLocation::kTopRight);
+
+  gfx::Rect window_bounds = game_window_->GetBoundsInScreen();
+  int screen_point_x = kScreenBounds.x();
+  int screen_point_right = screen_point_x + kScreenBounds.width();
+  int screen_point_y = kScreenBounds.y();
+  int screen_point_bottom = screen_point_y + kScreenBounds.height();
+
+  // Verify the screen bounds are larger than the game bounds.
+  ASSERT_LT(screen_point_x, kAppBounds.x());
+  ASSERT_LT(screen_point_y, kAppBounds.y());
+  ASSERT_GT(screen_point_right, kAppBounds.x() + kAppBounds.width());
+  ASSERT_GT(screen_point_bottom, kAppBounds.y() + kAppBounds.height());
+
+  // Drag toolbar, moving the mouse past the game window to the top right corner
+  // of the screen bounds, and verify the toolbar doesn't go past the game
+  // window.
+  DragToolbarToPoint(Movement::kMouse, {screen_point_right, screen_point_y},
+                     false);
+  auto toolbar_bounds =
+      test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(toolbar_bounds.right(), window_bounds.right());
+  EXPECT_EQ(toolbar_bounds.y(), window_bounds.y());
+
+  // Drag toolbar, moving the mouse past the game window to the top left corner
+  // of the screen bounds.
+  DragToolbarToPoint(Movement::kMouse, {screen_point_x, screen_point_y}, false);
+  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(toolbar_bounds.x(), window_bounds.x());
+  EXPECT_EQ(toolbar_bounds.y(), window_bounds.y());
+
+  // Drag toolbar, moving the mouse past the game window to the bottom left
+  // corner of the screen bounds.
+  DragToolbarToPoint(Movement::kMouse, {screen_point_x, screen_point_bottom},
+                     false);
+  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(toolbar_bounds.x(), window_bounds.x());
+  EXPECT_EQ(toolbar_bounds.bottom(), window_bounds.bottom());
+
+  // Drag toolbar, moving the mouse past the game window to the bottom right
+  // corner of the screen bounds.
+  DragToolbarToPoint(Movement::kMouse,
+                     {screen_point_right, screen_point_bottom}, false);
+  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(toolbar_bounds.right(), window_bounds.right());
+  EXPECT_EQ(toolbar_bounds.bottom(), window_bounds.bottom());
+
+  GetEventGenerator()->ReleaseLeftButton();
+}
+
+// Verifies the toolbar can be moved around via the mouse.
+TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaMouse) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+  VerifyToolbarMovement(Movement::kMouse);
+}
+
+// Verifies the toolbar can be moved around via touch.
+TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaTouch) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+  VerifyToolbarMovement(Movement::kTouch);
+}
+
+// Verifies the toolbar's physical placement on screen in each quadrant.
+TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  gfx::Rect window_bounds = game_window_->GetBoundsInScreen();
+  gfx::Point window_center_point = window_bounds.CenterPoint();
+  int x_offset = window_bounds.width() / 4;
+  int y_offset = window_bounds.height() / 4;
+
+  // Verify initial placement in top right quadrant.
+  auto toolbar_bounds =
+      test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  gfx::Size toolbar_size =
+      test_api_->GetToolbarWidget()->GetContentsView()->GetPreferredSize();
+  const int frame_header_height = frame_header_->GetHeaderHeight();
+  EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+            GameDashboardContext::ToolbarSnapLocation::kTopRight);
+  EXPECT_EQ(toolbar_bounds.x(),
+            kAppBounds.right() - kToolbarEdgePadding - toolbar_size.width());
+  EXPECT_EQ(toolbar_bounds.y(),
+            kAppBounds.y() + kToolbarEdgePadding + frame_header_height);
+
+  // Move toolbar to top left quadrant and verify toolbar placement.
+  DragToolbarToPoint(Movement::kMouse, {window_center_point.x() - x_offset,
+                                        window_center_point.y() - y_offset});
+  EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+            GameDashboardContext::ToolbarSnapLocation::kTopLeft);
+  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(toolbar_bounds.x(), kAppBounds.x() + kToolbarEdgePadding);
+  EXPECT_EQ(toolbar_bounds.y(),
+            kAppBounds.y() + kToolbarEdgePadding + frame_header_height);
+
+  // Move toolbar to bottom right quadrant and verify toolbar placement.
+  DragToolbarToPoint(Movement::kMouse, {window_center_point.x() + x_offset,
+                                        window_center_point.y() + y_offset});
+  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(toolbar_bounds.x(),
+            kAppBounds.right() - kToolbarEdgePadding - toolbar_size.width());
+  EXPECT_EQ(toolbar_bounds.y(),
+            kAppBounds.bottom() - kToolbarEdgePadding - toolbar_size.height());
+
+  // Move toolbar to bottom left quadrant and verify toolbar placement.
+  DragToolbarToPoint(Movement::kMouse, {window_center_point.x() - x_offset,
+                                        window_center_point.y() + y_offset});
+  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(toolbar_bounds.x(), kAppBounds.x() + kToolbarEdgePadding);
+  EXPECT_EQ(toolbar_bounds.y(),
+            kAppBounds.bottom() - kToolbarEdgePadding - toolbar_size.height());
+}
+
+// Verifies the toolbar's snap location is preserved even after the visibility
+// is hidden via the main menu view.
+TEST_P(GameTypeGameDashboardContextTest, MoveAndHideToolbarWidget) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+
+  // Move toolbar to bottom left quadrant and verify snap location is updated.
+  gfx::Rect window_bounds = game_window_->GetBoundsInScreen();
+  gfx::Point window_center_point = window_bounds.CenterPoint();
+  DragToolbarToPoint(Movement::kMouse,
+                     {window_center_point.x() - (window_bounds.width() / 4),
+                      window_center_point.y() + (window_bounds.height() / 4)});
+  EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+            GameDashboardContext::ToolbarSnapLocation::kBottomLeft);
+
+  // Hide then show the toolbar and verify the toolbar was placed back into the
+  // bottom left quadrant.
+  test_api_->CloseTheToolbar();
+  test_api_->OpenTheToolbar();
+  EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+            GameDashboardContext::ToolbarSnapLocation::kBottomLeft);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

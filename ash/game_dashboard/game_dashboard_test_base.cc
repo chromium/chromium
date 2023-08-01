@@ -27,6 +27,9 @@ void GameDashboardTestBase::SetUp() {
        features::kFeatureManagementGameDashboardRecordGame},
       {});
   AshTestBase::SetUp();
+  UpdateDisplay(base::StringPrintf("%d+%d-%dx%d", kScreenBounds.x(),
+                                   kScreenBounds.y(), kScreenBounds.width(),
+                                   kScreenBounds.height()));
   EXPECT_TRUE(features::IsGameDashboardEnabled());
 }
 

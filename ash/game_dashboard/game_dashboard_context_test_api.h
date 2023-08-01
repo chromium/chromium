@@ -5,6 +5,7 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_TEST_API_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_TEST_API_H_
 
+#include "ash/game_dashboard/game_dashboard_context.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ui::test {
@@ -21,7 +22,6 @@ class Widget;
 namespace ash {
 
 class FeatureTile;
-class GameDashboardContext;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
 class GameDashboardWidget;
@@ -75,6 +75,9 @@ class GameDashboardContextTestApi {
   IconButton* GetToolbarGameControlsButton();
   IconButton* GetToolbarRecordGameButton();
   IconButton* GetToolbarScreenshotButton();
+
+  // Returns the quadrant that the toolbar is currently placed in.
+  GameDashboardContext::ToolbarSnapLocation GetToolbarSnapLocation() const;
 
   // Opens the toolbar.
   // Before opening the toolbar, verifies the main menu is open and the toolbar

@@ -166,6 +166,11 @@ IconButton* GameDashboardContextTestApi::GetToolbarScreenshotButton() {
           GameDashboardToolbarView::ToolbarViewId::kScreenshotButton)));
 }
 
+GameDashboardContext::ToolbarSnapLocation
+GameDashboardContextTestApi::GetToolbarSnapLocation() const {
+  return context_->toolbar_snap_location_;
+}
+
 void GameDashboardContextTestApi::OpenTheToolbar() {
   ASSERT_TRUE(GetMainMenuWidget())
       << "The main menu widget must be opened first before opening the toolbar";

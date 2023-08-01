@@ -28,6 +28,12 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   GameDashboardToolbarView& operator=(const GameDashboardToolbarView) = delete;
   ~GameDashboardToolbarView() override;
 
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
  private:
   friend class GameDashboardContextTestApi;
 
@@ -61,6 +67,12 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
                                const void* key,
                                intptr_t old) override;
 
+  // Handles repositioning the toolbar view within the game window.
+  void RepositionToolbar(const gfx::PointF& toolbar_location);
+
+  // Handles completion of the toolbar movement.
+  void EndDraggingToolbar(const gfx::PointF& toolbar_location);
+
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.
   raw_ptr<IconButton, ExperimentalAsh> gamepad_button_ = nullptr;
@@ -76,6 +88,9 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   bool is_expanded_ = true;
 
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
+
+  // If the toolbar view is in the dragging state.
+  bool is_dragging_ = false;
 };
 
 }  // namespace ash

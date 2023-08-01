@@ -24,6 +24,14 @@ class GameDashboardToolbarView;
 // its instance is managed by the `GameDashboardController`.
 class GameDashboardContext {
  public:
+  // Indicator for the 4 quadrants that the toolbar is able to be placed.
+  enum class ToolbarSnapLocation {
+    kTopLeft,
+    kTopRight,
+    kBottomLeft,
+    kBottomRight
+  };
+
   explicit GameDashboardContext(aura::Window* game_window);
   GameDashboardContext(const GameDashboardContext&) = delete;
   GameDashboardContext& operator=(const GameDashboardContext&) = delete;
@@ -34,6 +42,10 @@ class GameDashboardContext {
   GameDashboardWidget* main_menu_button_widget() {
     return main_menu_button_widget_.get();
   }
+
+  // Reassigns the new `toolbar_snap_location_` and performs an animation as the
+  // toolbar moves to its new location.
+  void SetToolbarSnapLocation(ToolbarSnapLocation new_location);
 
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
@@ -58,9 +70,6 @@ class GameDashboardContext {
  private:
   friend class GameDashboardContextTestApi;
 
-  // Indicator for the 4 quadrants that the toolbar is able to be placed.
-  enum ToolbarSnapLocation { kTopLeft, kTopRight, kBottomLeft, kBottomRight };
-
   // Creates a main menu button widget and adds it as a sibling of the game
   // window.
   void CreateAndAddMainMenuButtonWidget();
@@ -76,6 +85,10 @@ class GameDashboardContext {
   // Determines the toolbar's physical location on screen based on the
   // `toolbar_snap_location_` value.
   const gfx::Rect CalculateToolbarWidgetBounds();
+
+  // Updates the toolbar widget's bounds and location utilizing an animation as
+  // it transfers from the previous location.
+  void AnimateToolbarWidgetBoundsChange(const gfx::Rect& target_screen_bounds);
 
   const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 

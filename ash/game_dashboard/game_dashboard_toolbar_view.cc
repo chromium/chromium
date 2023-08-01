@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
@@ -15,10 +16,13 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "base/check.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 
 namespace ash {
@@ -37,11 +41,26 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
                                              int view_id,
                                              const std::u16string& text,
                                              bool is_togglable) {
+  // TODO(b/290696780): Update logic so the toolbar can drag from icon buttons.
   auto button = std::make_unique<IconButton>(
       std::move(callback), IconButton::Type::kSmallFloating, icon, text,
       /*is_togglable=*/is_togglable, /*has_border=*/true);
   button->SetID(view_id);
   return button;
+}
+
+GameDashboardContext::ToolbarSnapLocation CalculateToolbarSnapLocation(
+    const gfx::PointF& toolbar_screen_location,
+    const gfx::Rect& game_window_screen_bounds) {
+  const auto game_window_center = game_window_screen_bounds.CenterPoint();
+  if (toolbar_screen_location.x() < game_window_center.x()) {
+    return toolbar_screen_location.y() < game_window_center.y()
+               ? GameDashboardContext::ToolbarSnapLocation::kTopLeft
+               : GameDashboardContext::ToolbarSnapLocation::kBottomLeft;
+  }
+  return toolbar_screen_location.y() < game_window_center.y()
+             ? GameDashboardContext::ToolbarSnapLocation::kTopRight
+             : GameDashboardContext::ToolbarSnapLocation::kBottomRight;
 }
 
 }  // namespace
@@ -64,6 +83,53 @@ GameDashboardToolbarView::GameDashboardToolbarView(
 
 GameDashboardToolbarView::~GameDashboardToolbarView() {
   context_->game_window()->RemoveObserver(this);
+}
+
+bool GameDashboardToolbarView::OnMousePressed(const ui::MouseEvent& event) {
+  is_dragging_ = true;
+  return true;
+}
+
+bool GameDashboardToolbarView::OnMouseDragged(const ui::MouseEvent& event) {
+  DCHECK(is_dragging_)
+      << "Received OnMouseDragged event but the toolbar isn't dragging";
+  RepositionToolbar(capture_mode_util::GetEventScreenLocation(event));
+  return true;
+}
+
+void GameDashboardToolbarView::OnMouseReleased(const ui::MouseEvent& event) {
+  EndDraggingToolbar(capture_mode_util::GetEventScreenLocation(event));
+}
+
+void GameDashboardToolbarView::OnGestureEvent(ui::GestureEvent* event) {
+  const gfx::PointF toolbar_location =
+      capture_mode_util::GetEventScreenLocation(*event);
+
+  switch (event->type()) {
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      is_dragging_ = true;
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      DCHECK(is_dragging_) << "Received ET_GESTURE_SCROLL_UPDATE event but the "
+                              "toolbar isn't dragging.";
+      RepositionToolbar(toolbar_location);
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+      DCHECK(is_dragging_) << "Received ET_GESTURE_SCROLL_END event but the "
+                              "toolbar isn't dragging.";
+      is_dragging_ = false;
+      EndDraggingToolbar(toolbar_location);
+      break;
+    case ui::ET_GESTURE_END:
+      is_dragging_ = false;
+      EndDraggingToolbar(toolbar_location);
+      break;
+    default:
+      break;
+  }
+
+  event->StopPropagation();
+  event->SetHandled();
 }
 
 void GameDashboardToolbarView::OnGamepadButtonPressed() {
@@ -180,6 +246,26 @@ void GameDashboardToolbarView::OnWindowPropertyChanged(aura::Window* window,
     game_controls_button_->SetToggled(game_dashboard_utils::IsFlagSet(
         new_flags, ArcGameControlsFlag::kEnabled));
   }
+}
+
+void GameDashboardToolbarView::RepositionToolbar(
+    const gfx::PointF& event_location) {
+  // TODO(b/290696655): Update toolbar to move based on initial click location
+  // rather than the top left corner.
+  // Verify toolbar isn't outside game window bounds.
+  gfx::Rect target_bounds =
+      gfx::Rect(gfx::ToRoundedPoint(event_location), GetPreferredSize());
+  capture_mode_util::AdjustBoundsWithinConfinedBounds(
+      context_->game_window()->GetBoundsInScreen(), target_bounds);
+  GetWidget()->SetBounds(target_bounds);
+}
+
+void GameDashboardToolbarView::EndDraggingToolbar(
+    const gfx::PointF& event_location) {
+  is_dragging_ = false;
+  RepositionToolbar(event_location);
+  context_->SetToolbarSnapLocation(CalculateToolbarSnapLocation(
+      event_location, context_->game_window()->GetBoundsInScreen()));
 }
 
 BEGIN_METADATA(GameDashboardToolbarView, views::BoxLayoutView)

@@ -13,7 +13,10 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -28,6 +31,10 @@ static const int kMainMenuButtonVerticalPaddingDp = 3;
 
 // Toolbar padding from the border of the game window.
 static const int kToolbarEdgePadding = 10;
+
+// The animation duration for the bounds change operation on the toolbar widget.
+static constexpr base::TimeDelta kToolbarBoundsChangeAnimationDuration =
+    base::Milliseconds(150);
 
 std::unique_ptr<GameDashboardWidget> CreateTransientChildWidget(
     aura::Window* game_window,
@@ -65,6 +72,12 @@ GameDashboardContext::~GameDashboardContext() {
   if (main_menu_widget_) {
     main_menu_widget_->CloseNow();
   }
+}
+
+void GameDashboardContext::SetToolbarSnapLocation(
+    ToolbarSnapLocation new_location) {
+  toolbar_snap_location_ = new_location;
+  AnimateToolbarWidgetBoundsChange(CalculateToolbarWidgetBounds());
 }
 
 void GameDashboardContext::OnWindowBoundsChanged() {
@@ -199,6 +212,28 @@ const gfx::Rect GameDashboardContext::CalculateToolbarWidgetBounds() {
   }
 
   return gfx::Rect(origin, preferred_size);
+}
+
+void GameDashboardContext::AnimateToolbarWidgetBoundsChange(
+    const gfx::Rect& target_screen_bounds) {
+  DCHECK(toolbar_widget_);
+  auto* toolbar_window = toolbar_widget_->GetNativeWindow();
+  const auto current_bounds = toolbar_window->GetBoundsInScreen();
+  if (target_screen_bounds == current_bounds) {
+    return;
+  }
+
+  toolbar_widget_->SetBounds(target_screen_bounds);
+  const auto transform = gfx::Transform::MakeTranslation(
+      current_bounds.CenterPoint() - target_screen_bounds.CenterPoint());
+  ui::Layer* layer = toolbar_window->layer();
+  layer->SetTransform(transform);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kToolbarBoundsChangeAnimationDuration)
+      .SetTransform(layer, gfx::Transform(), gfx::Tween::ACCEL_0_80_DECEL_80);
 }
 
 }  // namespace ash
