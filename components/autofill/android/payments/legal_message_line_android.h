@@ -5,16 +5,25 @@
 #ifndef COMPONENTS_AUTOFILL_ANDROID_PAYMENTS_LEGAL_MESSAGE_LINE_ANDROID_H_
 #define COMPONENTS_AUTOFILL_ANDROID_PAYMENTS_LEGAL_MESSAGE_LINE_ANDROID_H_
 
+#include <vector>
+
+#include <jni.h>
+
 #include "base/android/scoped_java_ref.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "jni.h"
 
 namespace autofill {
+
+class LegalMessageLine;
 
 class LegalMessageLineAndroid {
  public:
   static base::android::ScopedJavaLocalRef<jobject> ConvertToJavaObject(
       const LegalMessageLine& legal_message_line);
+
+  static base::android::ScopedJavaLocalRef<jobject> ConvertToJavaLinkedList(
+      const std::vector<LegalMessageLine>& legal_message_lines);
+
+  LegalMessageLineAndroid() = delete;
 };
 
 }  // namespace autofill

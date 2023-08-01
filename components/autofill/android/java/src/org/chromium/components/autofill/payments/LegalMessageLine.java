@@ -73,4 +73,18 @@ public class LegalMessageLine {
     /*package*/ void addLink(Link link) {
         links.add(link);
     }
+
+    @CalledByNative
+    /*package*/ static LinkedList<LegalMessageLine> addToList_createListIfNull(
+            LinkedList<LegalMessageLine> list, String text) {
+        if (list == null) list = new LinkedList<>();
+        list.add(new LegalMessageLine(text));
+        return list;
+    }
+
+    @CalledByNative
+    /*package*/ static void addLinkToLastInList(
+            LinkedList<LegalMessageLine> list, int start, int end, String url) {
+        list.getLast().addLink(new Link(start, end, url));
+    }
 }
