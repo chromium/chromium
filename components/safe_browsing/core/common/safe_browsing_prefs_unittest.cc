@@ -77,7 +77,14 @@ TEST_F(SafeBrowsingPrefsTest,
   RegisterProfilePrefs(prefs.registry());
   EXPECT_EQ(
       prefs.GetValue(prefs::kTailoredSecuritySyncFlowLastUserInteractionState),
-      TailoredSecurityUserInteractionState::UNSET);
+      TailoredSecurityRetryState::UNSET);
+}
+
+TEST_F(SafeBrowsingPrefsTest, TailoredSecuritySyncFlowRetryStateIsInitialized) {
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(prefs.GetValue(prefs::kTailoredSecuritySyncFlowRetryState),
+            TailoredSecurityRetryState::UNSET);
 }
 
 TEST_F(SafeBrowsingPrefsTest,

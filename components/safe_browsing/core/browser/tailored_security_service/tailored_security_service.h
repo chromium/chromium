@@ -164,14 +164,14 @@ class TailoredSecurityService : public KeyedService {
  private:
   FRIEND_TEST_ALL_PREFIXES(
       TailoredSecurityServiceTest,
-      RetryEnabledTimestampUpdateCallbackSetsOutcomeToUnknown);
+      RetryEnabledTimestampUpdateCallbackSetsStateToUnknown);
   FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
                            RetryEnabledTimestampUpdateCallbackRecordsStartTime);
   FRIEND_TEST_ALL_PREFIXES(
       TailoredSecurityServiceTest,
       RetryDisabledTimestampUpdateCallbackDoesNotRecordStartTime);
   FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
-                           RetryDisabledOutcomeRemainsUnset);
+                           RetryDisabledStateRemainsUnset);
   friend class TailoredSecurityTabHelperTest;
 
   // Stores pointer to IdentityManager instance. It must outlive the

@@ -124,6 +124,8 @@ const char kTailoredSecuritySyncFlowLastRunTime[] =
     "safebrowsing.aesb_sync_flow_start_timestamp";
 const char kTailoredSecuritySyncFlowLastUserInteractionState[] =
     "safebrowsing.aesb_sync_flow_last_user_interaction_state";
+const char kTailoredSecuritySyncFlowRetryState[] =
+    "safebrowsing.aesb_sync_flow_retry_state";
 const char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
     "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
 const char kEnhancedProtectionEnabledViaTailoredSecurity[] =
@@ -288,9 +290,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   registry->RegisterTimePref(prefs::kTailoredSecuritySyncFlowLastRunTime,
                              base::Time());
+  // TODO(crbug.com/1469133): remove sync flow last user interaction pref.
   registry->RegisterIntegerPref(
       prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
-      TailoredSecurityUserInteractionState::UNSET);
+      TailoredSecurityRetryState::UNSET);
+  registry->RegisterIntegerPref(prefs::kTailoredSecuritySyncFlowRetryState,
+                                TailoredSecurityRetryState::UNSET);
   registry->RegisterTimePref(
       prefs::kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp,
       base::Time());

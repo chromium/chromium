@@ -144,9 +144,14 @@ extern const char kAccountTailoredSecurityUpdateTimestamp[];
 // Timestamp indicating the last time the tailored security sync flow ran.
 extern const char kTailoredSecuritySyncFlowLastRunTime[];
 
-// Integer that maps to TailoredSecurityUserInteractionState. Indicates the last
-// known state of the tailored security sync flow.
+// Integer that maps to TailoredSecurityUserInteractionState. Indicates the
+// last known state of the tailored security sync flow.
+// TODO(crbug.com/1469133): remove this preference value.
 extern const char kTailoredSecuritySyncFlowLastUserInteractionState[];
+
+// Integer that maps to TailoredSecurityRetryState. Indicates the last
+// known state of the tailored security sync flow retry mechanism.
+extern const char kTailoredSecuritySyncFlowRetryState[];
 
 // Timestamp indicating when the last user interaction state was observed as
 // having the value of `UNSET`. It is possible that this value will never be
@@ -213,11 +218,9 @@ enum ExtendedReportingLevel {
   SBER_LEVEL_SCOUT = 2,
 };
 
-// Enumerates the states of displaying and interacting with the Tailored
-// Security dialog. This includes states before the user can interact with the
-// dialog so that it is possible to determine whether the flow needs to be
-// retried.
-enum TailoredSecurityUserInteractionState {
+// Enumerates the states used for determining whether the Tailored Security flow
+// needs to be retried.
+enum TailoredSecurityRetryState {
   // Initialization value meaning that the tailored security feature has not
   // touched this value.
   UNSET = 0,
@@ -227,27 +230,12 @@ enum TailoredSecurityUserInteractionState {
   // because the tailored security flow may or may not be running when this
   // state is observed.
   UNKNOWN = 1,
-  // The user clicked on the OK button.
-  USER_CLICKED_OK = 2,
-  // The user clicked settings.
-  USER_CLICKED_SETTINGS = 3,
-  // The user dismissed the message.
-  USER_DISMISSED = 4,
-  // Message dismissed itself through timeout.
-  MESSAGE_TIMEOUT = 5,
-  // The notification was not shown because enhanced protection was already
-  // enabled.
-  ALREADY_ENABLED = 6,
-  // The notification was not shown because enhanced protection is controlled by
-  // policy.
-  CONTROLLED_BY_POLICY = 7,
-  // The notification was not shown because the user was not signed in and
-  // syncing.
-  NOT_CONSENTED = 8,
-  // The notification was not shown because no browser instance was available.
-  NO_BROWSER = 9,
-  // The notification was shown.
-  SHOWN = 10,
+  // Retry is needed. This could be because the notification flow failed.
+  RETRY_NEEDED = 2,
+  // No retry is needed. This could be because either the notification was shown
+  // to the user or the flow found a state that a notification is not shown for,
+  // for example: if the account is controlled by a policy.
+  NO_RETRY_NEEDED = 3
 };
 
 // Enumerates all the places where the Safe Browsing Extended Reporting
