@@ -87,6 +87,7 @@
 #define HAVE_SSE4_1 0
 #define HAVE_SSE4_2 0
 #define HAVE_SSSE3 0
+#define HAVE_SVE 0
 #define HAVE_UNISTD_H 0
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0

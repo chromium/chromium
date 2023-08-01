@@ -75,6 +75,7 @@
 %define HAVE_SSE4_1 1
 %define HAVE_SSE4_2 1
 %define HAVE_SSSE3 1
+%define HAVE_SVE 0
 %define HAVE_UNISTD_H 1
 %define HAVE_VSX 0
 %define HAVE_WXWIDGETS 0
