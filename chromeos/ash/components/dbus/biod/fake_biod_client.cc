@@ -30,14 +30,6 @@
 
 namespace ash {
 
-struct FakeBiodClient::FakeRecord {
-  std::string user_id;
-  std::string label;
-  // A fake fingerprint is a vector which consists of all the strings which
-  // were "pressed" during the enroll session.
-  std::vector<std::string> fake_fingerprint;
-};
-
 namespace {
 
 // Path of an enroll session. There should only be one enroll session at a
@@ -54,19 +46,18 @@ const char kAuthSessionObjectPath[] = "/AuthSession";
 
 FakeBiodClient* g_instance = nullptr;
 
-std::unique_ptr<FakeBiodClient::FakeRecord> ParseFakeRecordDict(
+FakeBiodClient::FakeRecord ParseFakeRecordDict(
     const base::Value::Dict& fake_record_dict) {
-  std::unique_ptr<FakeBiodClient::FakeRecord> res =
-      std::make_unique<FakeBiodClient::FakeRecord>();
+  FakeBiodClient::FakeRecord res;
   for (const auto [key, value] : fake_record_dict) {
     if (key == "fingerprints") {
       for (const auto& fp_entry : value.GetList()) {
-        res->fake_fingerprint.push_back(fp_entry.GetString());
+        res.fake_fingerprint.push_back(fp_entry.GetString());
       }
     } else if (key == "user_id") {
-      res->user_id = value.GetString();
+      res.user_id = value.GetString();
     } else if (key == "label") {
-      res->label = value.GetString();
+      res.label = value.GetString();
     } else {
       NOTREACHED();
     }
@@ -78,16 +69,15 @@ base::Value::Dict FakeRecordsToValue(const FakeBiodClient::RecordMap& records) {
   base::Value::Dict res;
   for (const auto& entry : records) {
     const std::string& entry_key = entry.first.value();
-    FakeBiodClient::FakeRecord* entry_fake_record = entry.second.get();
-    CHECK(entry_fake_record != nullptr);
+    const FakeBiodClient::FakeRecord& entry_fake_record = entry.second;
     base::Value::List fake_images;
-    for (const std::string& fake_image : entry_fake_record->fake_fingerprint) {
+    for (const std::string& fake_image : entry_fake_record.fake_fingerprint) {
       fake_images.Append(fake_image);
     }
     base::Value::Dict cur_record;
     cur_record.Set("fingerprints", std::move(fake_images));
-    cur_record.Set("user_id", entry_fake_record->user_id);
-    cur_record.Set("label", entry_fake_record->label);
+    cur_record.Set("user_id", entry_fake_record.user_id);
+    cur_record.Set("label", entry_fake_record.label);
     res.Set(entry_key, std::move(cur_record));
   }
   return res;
@@ -120,6 +110,16 @@ int GetNextRecordId(const FakeBiodClient::RecordMap& records) {
 }
 
 }  // namespace
+
+FakeBiodClient::FakeRecord::FakeRecord() = default;
+FakeBiodClient::FakeRecord::FakeRecord(const FakeRecord&) = default;
+FakeBiodClient::FakeRecord::~FakeRecord() = default;
+
+void FakeBiodClient::FakeRecord::Clear() {
+  user_id.clear();
+  label.clear();
+  fake_fingerprint.clear();
+}
 
 FakeBiodClient::FakeBiodClient() {
   CHECK(!g_instance);
@@ -159,16 +159,15 @@ void FakeBiodClient::SendEnrollScanDone(const std::string& fingerprint,
   if (current_session_ != FingerprintSession::ENROLL)
     return;
 
-  CHECK(current_record_);
   // The fake fingerprint gets appended to the current fake fingerprints.
-  current_record_->fake_fingerprint.push_back(fingerprint);
+  current_record_.fake_fingerprint.push_back(fingerprint);
 
   // If the enroll is complete, save the record and exit enroll mode.
   if (is_complete) {
     records_[current_record_path_] = std::move(current_record_);
     SaveRecords();
     current_record_path_ = dbus::ObjectPath();
-    current_record_.reset();
+    current_record_.Clear();
     current_session_ = FingerprintSession::NONE;
   }
 
@@ -191,9 +190,9 @@ void FakeBiodClient::SendAuthScanDone(const std::string& fingerprint,
     // then each record's fake fingerprint, but neither of these should ever
     // have more than five entries.
     for (const auto& entry : records_) {
-      const std::unique_ptr<FakeRecord>& record = entry.second;
-      if (base::Contains(record->fake_fingerprint, fingerprint)) {
-        const std::string& user_id = record->user_id;
+      const FakeRecord& record = entry.second;
+      if (base::Contains(record.fake_fingerprint, fingerprint)) {
+        const std::string& user_id = record.user_id;
         matches[user_id].push_back(entry.first);
       }
     }
@@ -213,7 +212,7 @@ void FakeBiodClient::SendSessionFailed() {
 
 void FakeBiodClient::Reset() {
   records_.clear();
-  current_record_.reset();
+  current_record_.Clear();
   current_record_path_ = dbus::ObjectPath();
   current_session_ = FingerprintSession::NONE;
 }
@@ -239,9 +238,8 @@ void FakeBiodClient::StartEnrollSession(const std::string& user_id,
   // Create the enrollment with |user_id|, |label| and a empty fake fingerprint.
   current_record_path_ = dbus::ObjectPath(
       kRecordObjectPathPrefix + std::to_string(next_record_unique_id_++));
-  current_record_ = std::make_unique<FakeRecord>();
-  current_record_->user_id = user_id;
-  current_record_->label = label;
+  current_record_.user_id = user_id;
+  current_record_.label = label;
   current_session_ = FingerprintSession::ENROLL;
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -258,8 +256,9 @@ void FakeBiodClient::GetRecordsForUser(const std::string& user_id,
                                        UserRecordsCallback callback) {
   std::vector<dbus::ObjectPath> records_object_paths;
   for (const auto& record : records_) {
-    if (record.second->user_id == user_id)
+    if (record.second.user_id == user_id) {
       records_object_paths.push_back(record.first);
+    }
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -297,7 +296,7 @@ void FakeBiodClient::CancelEnrollSession(
   current_enroll_percentage_ = 0;
 
   // Clean up the in progress enrollment.
-  current_record_.reset();
+  current_record_.Clear();
   current_record_path_ = dbus::ObjectPath();
   current_session_ = FingerprintSession::NONE;
 
@@ -315,7 +314,7 @@ void FakeBiodClient::SetRecordLabel(const dbus::ObjectPath& record_path,
                                     const std::string& label,
                                     chromeos::VoidDBusMethodCallback callback) {
   if (records_.find(record_path) != records_.end())
-    records_[record_path]->label = label;
+    records_[record_path].label = label;
   SaveRecords();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
@@ -334,7 +333,7 @@ void FakeBiodClient::RequestRecordLabel(const dbus::ObjectPath& record_path,
                                         LabelCallback callback) {
   std::string record_label;
   if (records_.find(record_path) != records_.end())
-    record_label = records_[record_path]->label;
+    record_label = records_[record_path].label;
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), record_label));
