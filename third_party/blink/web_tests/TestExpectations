@@ -1565,6 +1565,9 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failur
 crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Failure ]
 crbug.com/891944 external/wpt/css/css-scrollbars/scrollbar-width-paint-004.html [ Failure ]
 crbug.com/891944 external/wpt/css/css-scrollbars/scrollbar-width-paint-005.html [ Failure ]
+crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-color-007.html [ Failure ]
+crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-color-008.html [ Failure ]
+crbug.com/891944 external/wpt/css/css-scrollbars/scrollbar-color-009.html [ Failure ]
 
 # Failures from CSS3 Text (text-justify and text-indent: hanging/each-line) not being implemented.
 crbug.com/248894 external/wpt/css/css-pseudo/first-letter-allowed-properties.html [ Failure ]
@@ -2749,9 +2752,6 @@ crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-rtl-002
 crbug.com/626703 [ Mac13 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/content-with-clip.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-color-007.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-color-008.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-scrollbars/scrollbar-color-009.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Timeout ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-conic-gradient.html [ Failure ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-linear-gradient.html [ Failure ]
