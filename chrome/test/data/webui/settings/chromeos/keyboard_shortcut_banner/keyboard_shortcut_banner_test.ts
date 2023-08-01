@@ -27,7 +27,7 @@ suite('<keyboard-shortcut-banner>', () => {
    * element.
    */
   function setupBannerAndDocument(title: string, body: string[]): void {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     banner = document.createElement('keyboard-shortcut-banner');
     banner.setAttribute('header', title);

@@ -23,7 +23,7 @@ suite('OSSettingsUiHats', function() {
     browserProxy = new TestOsSettingsHatsBrowserProxy();
     OsSettingsHatsBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     await CrSettingsPrefs.initialized;

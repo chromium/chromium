@@ -85,7 +85,7 @@ export class SettingsOneDriveSubpageElement extends
     return connectionState === OneDriveConnectionState.LOADING;
   }
 
-  private signedInAsLabel_(connectionState: string) {
+  private signedInAsLabel_(connectionState: string): TrustedHTML {
     switch (connectionState) {
       case OneDriveConnectionState.CONNECTED:
         assert(this.userEmailAddress_);
@@ -93,9 +93,9 @@ export class SettingsOneDriveSubpageElement extends
             'oneDriveSignedInAs',
             {tags: ['strong'], substitutions: [this.userEmailAddress_]});
       case OneDriveConnectionState.DISCONNECTED:
-        return this.i18n('oneDriveDisconnected');
+        return this.i18nAdvanced('oneDriveDisconnected');
       default:
-        return '';
+        return window.trustedTypes!.emptyHTML;
     }
   }
 

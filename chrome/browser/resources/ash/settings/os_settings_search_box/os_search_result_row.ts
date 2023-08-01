@@ -15,6 +15,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
@@ -513,10 +514,10 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   /**
    * @return The result string with <span> tags around keywords.
    */
-  private getResultInnerHtml_(): string {
+  private getResultInnerHtml_(): TrustedHTML {
     if (!(this.searchResult as SettingsSearchResult)
              .wasGeneratedFromTextMatch) {
-      return this.resultText_;
+      return sanitizeInnerHtml(this.resultText_);
     }
 
     if (this.resultText_.match(/\s/) ||
@@ -528,13 +529,13 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       // the uppercase (as they commonly will in languages like English
       // and Russian), tokenize the result text by blankspaces, and bold based
       // off of matching substrings in the tokens.
-      return this.getTokenizeMatchedBoldTagged_();
+      return sanitizeInnerHtml(this.getTokenizeMatchedBoldTagged_());
     }
 
     // If the result text does not contain blankspaces or characters that
     // have upper/lower case differentiation (as they commonly do in languages
     // like Chinese and Japanese), bold exact characters that match.
-    return this.getMatchingIndividualCharsBolded_();
+    return sanitizeInnerHtml(this.getMatchingIndividualCharsBolded_());
   }
 
   /**

@@ -14,6 +14,7 @@
 
 import '../settings_shared.css.js';
 
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -35,7 +36,7 @@ export class SettingsMultideviceWifiSyncDisabledLinkElement extends
     return getTemplate();
   }
 
-  private getAriaLabelledContent_(): string {
+  private getAriaLabelledContent_(): TrustedHTML {
     const tempEl = document.createElement('div');
     tempEl.innerHTML = this.i18nAdvanced(
         'multideviceEnableWifiSyncV1ItemSummary', {attrs: ['id']});
@@ -62,7 +63,10 @@ export class SettingsMultideviceWifiSyncDisabledLinkElement extends
         'aria-label', this.i18n('multideviceWifiSyncLearnMoreLabel'));
     chromeSyncLink.href = '#';
 
-    return tempEl.innerHTML;
+    return sanitizeInnerHtml(tempEl.innerHTML, {
+      tags: ['span', 'a'],
+      attrs: ['id', 'aria-label', 'aria-hidden', 'target', 'href'],
+    });
   }
 
   override connectedCallback(): void {

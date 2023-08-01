@@ -430,6 +430,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://office-fallback/",
     "chrome://os-feedback",
     "chrome-untrusted://os-feedback",
+    "chrome://os-settings",
     "chrome://parent-access",
     "chrome://password-change",
     "chrome://personalization",

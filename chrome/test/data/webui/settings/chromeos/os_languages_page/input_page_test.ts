@@ -32,7 +32,7 @@ suite('<os-settings-input-page>', () => {
   });
 
   setup(async () => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const prefElement: SettingsPrefsElement =
         document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());

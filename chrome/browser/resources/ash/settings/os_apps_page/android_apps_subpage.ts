@@ -59,13 +59,11 @@ class SettingsAndroidAppsSubpageElement extends
       },
 
       dialogBody_: {
-        type: String,
-        value(this: SettingsAndroidAppsSubpageElement): string {
-          return this
-              .i18nAdvanced(
-                  'androidAppsDisableDialogMessage',
-                  {substitutions: [], tags: ['br']})
-              .toString();
+        type: TrustedHTML,
+        value(this: SettingsAndroidAppsSubpageElement): TrustedHTML {
+          return this.i18nAdvanced(
+              'androidAppsDisableDialogMessage',
+              {substitutions: [], tags: ['br']});
         },
       },
 

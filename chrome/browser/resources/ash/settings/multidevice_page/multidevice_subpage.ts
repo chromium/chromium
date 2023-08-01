@@ -139,15 +139,15 @@ export class SettingsMultideviceSubpageElement extends
     this.$.forgetDeviceDialog.close();
   }
 
-  private getStatusInnerHtml_(): TrustedHTML|string {
+  private getStatusInnerHtml_(): TrustedHTML {
     if ([
           MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
           MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
         ].includes(this.pageContentData.mode)) {
       return this.i18nAdvanced('multideviceVerificationText');
     }
-    return this.isSuiteOn() ? this.i18n('multideviceEnabled') :
-                              this.i18n('multideviceDisabled');
+    return this.isSuiteOn() ? this.i18nAdvanced('multideviceEnabled') :
+                              this.i18nAdvanced('multideviceDisabled');
   }
 
   private doesAndroidMessagesRequireSetUp_(): boolean {

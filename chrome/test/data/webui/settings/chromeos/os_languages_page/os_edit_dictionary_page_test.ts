@@ -66,7 +66,7 @@ suite('<os-settings-edit-dictionary-page>', () => {
   });
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakePrefs()) as
         unknown as typeof chrome.settingsPrivate;

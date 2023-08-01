@@ -17,7 +17,7 @@ suite('OSSettingsUi', function() {
   let mainPageContainer: MainPageContainerElement|null;
 
   suiteSetup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     flush();

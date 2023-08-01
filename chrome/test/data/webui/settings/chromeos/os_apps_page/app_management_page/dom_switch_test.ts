@@ -6,6 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementDomSwitchElement} from 'chrome://os-settings/lazy_load.js';
 import {DomBind} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-bind.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('<app-management-dom-switch>', () => {
@@ -18,19 +19,18 @@ suite('<app-management-dom-switch>', () => {
   let domBind: DomBindElement;
 
   setup(() => {
-    const template = `
-        <dom-bind>
-          <template>
-            <app-management-dom-switch id="switch">
-              <template>
-                <div id='child1' route-id='1'>[[property.x]]</div>
-                <div id='child2' route-id='2'>[[property.y]]</div>
-              </template>
-            </app-management-dom-switch>
-          </template>
-        </dom-bind>`;
-
-    document.body.innerHTML = template;
+    document.body.appendChild(html`
+      <dom-bind>
+        <template>
+          <app-management-dom-switch id="switch">
+            <template>
+              <div id='child1' route-id='1'>[[property.x]]</div>
+              <div id='child2' route-id='2'>[[property.y]]</div>
+            </template>
+          </app-management-dom-switch>
+        </template>
+      </dom-bind>
+    `.content);
 
     const element =
         document.querySelector<AppManagementDomSwitchElement>('#switch');

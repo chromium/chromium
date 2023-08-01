@@ -41,7 +41,8 @@ suite('languages page', () => {
   });
 
   setup(async () => {
-    document.body.innerHTML = '';
+    assert(window.trustedTypes);
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
 
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate =
@@ -656,7 +657,8 @@ suite('languages page', () => {
 
 suite('change device language button', () => {
   setup(() => {
-    document.body.innerHTML = '';
+    assert(window.trustedTypes);
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
   });
 
   test('is hidden for guest users', () => {

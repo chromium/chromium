@@ -49,7 +49,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     deviceBrowserProxy.hasPointingStick = false;
     DevicePageBrowserProxyImpl.setInstanceForTesting(deviceBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD);
   });
 
