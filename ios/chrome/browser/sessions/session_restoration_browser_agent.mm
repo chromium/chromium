@@ -322,20 +322,6 @@ void SessionRestorationBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void SessionRestorationBrowserAgent::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  if (new_web_state && new_web_state->IsLoading())
-    return;
-
-  // Persist the session state if the new web state is not loading (or if
-  // the last tab was closed).
-  SaveSession(/*immediately=*/false);
-}
-
 void SessionRestorationBrowserAgent::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
@@ -354,13 +340,11 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
     const WebStateListStatus& status) {
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateActivatedAt() to here. Note that here is reachable only when
-      // `reason` == ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach: {
       if (!web_state_list_->empty()) {
-        return;
+        break;
       }
 
       // Persist the session state after CloseAllWebStates. SaveSession will
@@ -373,7 +357,7 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
       const WebStateListChangeMove& move_change =
           change.As<WebStateListChangeMove>();
       if (move_change.moved_web_state()->IsLoading()) {
-        return;
+        break;
       }
 
       // Persist the session state if the new web state is not loading.
@@ -384,7 +368,7 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
       if (replace_change.inserted_web_state()->IsLoading()) {
-        return;
+        break;
       }
 
       // Persist the session state if the new web state is not loading.
@@ -396,13 +380,24 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
           change.As<WebStateListChangeInsert>();
       if (status.active_web_state_change() ||
           insert_change.inserted_web_state()->IsLoading()) {
-        return;
+        break;
       }
 
       // Persist the session state if the new web state is not loading.
       SaveSession(/*immediately=*/false);
       break;
     }
+  }
+
+  if (status.active_web_state_change()) {
+    if (status.new_active_web_state &&
+        status.new_active_web_state->IsLoading()) {
+      return;
+    }
+
+    // Persist the session state if the new web state is not loading (or if
+    // the last tab was closed).
+    SaveSession(/*immediately=*/false);
   }
 }
 

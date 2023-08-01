@@ -102,11 +102,6 @@ class SessionRestorationBrowserAgent
   void BrowserDestroyed(Browser* browser) override;
 
   // WebStateListObserver methods.
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) override;
   void WebStateListWillChange(WebStateList* web_state_list,
                               const WebStateListChangeDetach& detach_change,
                               const WebStateListStatus& status) override;
