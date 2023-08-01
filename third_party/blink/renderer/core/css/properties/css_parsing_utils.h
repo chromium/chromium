@@ -432,6 +432,7 @@ CSSValue* ConsumeFontPalette(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumePaletteMixFunction(CSSParserTokenRange&,
                                     const CSSParserContext&);
 CSSValueList* ConsumeFontFamily(CSSParserTokenRange&);
+CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenRange& range);
 CSSValue* ConsumeGenericFamily(CSSParserTokenRange&);
 CSSValue* ConsumeFamilyName(CSSParserTokenRange&);
 String ConcatenateFamilyName(CSSParserTokenRange&);

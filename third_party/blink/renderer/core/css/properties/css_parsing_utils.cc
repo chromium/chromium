@@ -5190,6 +5190,25 @@ CSSValueList* ConsumeFontFamily(CSSParserTokenRange& range) {
   return list;
 }
 
+CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenRange& range) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  do {
+    CSSValue* parsed_value = ConsumeGenericFamily(range);
+    // Consume only if all families in the list are regular family names and
+    // none of them are generic ones.
+    if (parsed_value) {
+      return nullptr;
+    }
+    parsed_value = ConsumeFamilyName(range);
+    if (parsed_value) {
+      list->Append(*parsed_value);
+    } else {
+      return nullptr;
+    }
+  } while (ConsumeCommaIncludingWhitespace(range));
+  return list;
+}
+
 CSSValue* ConsumeGenericFamily(CSSParserTokenRange& range) {
   return ConsumeIdentRange(range, CSSValueID::kSerif, CSSValueID::kMath);
 }

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
+#include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
@@ -114,6 +115,7 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -173,6 +175,27 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
     }
   }
   return flags;
+}
+
+const Vector<AtomicString> ConvertFontFamilyToVector(const CSSValue* value) {
+  const CSSValueList* family_list = DynamicTo<CSSValueList>(value);
+  if (!family_list) {
+    return Vector<AtomicString>();
+  }
+  wtf_size_t length = family_list->length();
+  if (!length) {
+    return Vector<AtomicString>();
+  }
+  Vector<AtomicString> families(length);
+  for (wtf_size_t i = 0; i < length; i++) {
+    const CSSFontFamilyValue* family_value =
+        DynamicTo<CSSFontFamilyValue>(family_list->Item(i));
+    if (!family_value) {
+      return Vector<AtomicString>();
+    }
+    families[i] = family_value->Value();
+  }
+  return families;
 }
 
 }  // namespace
@@ -2901,10 +2924,10 @@ void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
       font_palette_values_rules = rule_set.FontPaletteValuesRules();
   for (auto& rule : font_palette_values_rules) {
     // TODO(https://crbug.com/1170794): Handle cascade layer reordering here.
-    font_palette_values_rule_map_.Set(
-        std::make_pair(rule->GetName(),
-                       String(rule->GetFontFamilyAsString()).FoldCase()),
-        rule);
+    for (auto& family : ConvertFontFamilyToVector(rule->GetFontFamily())) {
+      font_palette_values_rule_map_.Set(
+          std::make_pair(rule->GetName(), String(family).FoldCase()), rule);
+    }
   }
 }
 

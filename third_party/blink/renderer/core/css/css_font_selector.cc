@@ -57,8 +57,7 @@ scoped_refptr<FontPalette> RetrieveFontPaletteFromStyleEngine(
   if (font_palette_values) {
     scoped_refptr<FontPalette> new_request_palette =
         FontPalette::Create(requested_palette_values);
-    new_request_palette->SetMatchFamilyName(
-        font_palette_values->GetFontFamilyAsString());
+    new_request_palette->SetMatchFamilyName(family_name);
     new_request_palette->SetBasePalette(
         font_palette_values->GetBasePaletteIndex());
     Vector<FontPalette::FontPaletteOverride> override_colors =

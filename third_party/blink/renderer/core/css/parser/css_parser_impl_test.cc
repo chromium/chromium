@@ -869,12 +869,50 @@ TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
       DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
-  ASSERT_EQ("testFamily",
-            DynamicTo<CSSFontFamilyValue>(parsed->GetFontFamily())->Value());
+  ASSERT_EQ("testFamily", parsed->GetFontFamily()->CssText());
   ASSERT_EQ(
       0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
   ASSERT_TRUE(parsed->GetOverrideColors()->IsValueList());
   ASSERT_EQ(2u, DynamicTo<CSSValueList>(parsed->GetOverrideColors())->length());
+}
+
+TEST(CSSParserImplTest, FontPaletteValuesMultipleFamiliesParsing) {
+  using css_test_helpers::ParseRule;
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  String rule = R"CSS(@font-palette-values --myTestPalette {
+    font-family: testFamily1, testFamily2;
+    base-palette: 0;
+  })CSS";
+  auto* parsed =
+      DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
+  ASSERT_TRUE(parsed);
+  ASSERT_EQ("--myTestPalette", parsed->GetName());
+  ASSERT_EQ("testFamily1, testFamily2", parsed->GetFontFamily()->CssText());
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
+}
+
+// Font-family descriptor inside @font-palette-values should not contain generic
+// families, compare:
+// https://drafts.csswg.org/css-fonts/#descdef-font-palette-values-font-family.
+TEST(CSSParserImplTest, FontPaletteValuesGenericFamiliesNotParsing) {
+  using css_test_helpers::ParseRule;
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  String rule = R"CSS(@font-palette-values --myTestPalette {
+    font-family: testFamily1, testFamily2, serif;
+    base-palette: 0;
+  })CSS";
+  auto* parsed =
+      DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
+  ASSERT_TRUE(parsed);
+  ASSERT_EQ("--myTestPalette", parsed->GetName());
+  ASSERT_FALSE(parsed->GetFontFamily());
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
 }
 
 TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {

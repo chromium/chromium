@@ -18,10 +18,7 @@ namespace {
 
 CSSValue* ConsumeFontFamily(CSSParserTokenRange& range,
                             const CSSParserContext& context) {
-  if (CSSValue* string = css_parsing_utils::ConsumeFamilyName(range)) {
-    return string;
-  }
-  return nullptr;
+  return css_parsing_utils::ConsumeNonGenericFamilyNameList(range);
 }
 
 CSSValue* ConsumeBasePalette(CSSParserTokenRange& range,

@@ -34,14 +34,6 @@ StyleRuleFontPaletteValues::StyleRuleFontPaletteValues(
 
 StyleRuleFontPaletteValues::~StyleRuleFontPaletteValues() = default;
 
-AtomicString StyleRuleFontPaletteValues::GetFontFamilyAsString() const {
-  if (!font_family_ || !font_family_->IsFontFamilyValue()) {
-    return g_empty_atom;
-  }
-
-  return To<CSSFontFamilyValue>(*font_family_).Value();
-}
-
 FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
     const {
   constexpr FontPalette::BasePaletteValue kNoBasePaletteValue = {
