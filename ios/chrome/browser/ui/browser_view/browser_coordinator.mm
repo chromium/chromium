@@ -786,6 +786,25 @@ enum class ToolbarKind {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForBrowserState(browserState);
   }
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      _tabStripCoordinator =
+          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
+    } else {
+      _legacyTabStripCoordinator =
+          [[TabStripLegacyCoordinator alloc] initWithBrowser:self.browser];
+      _legacyTabStripCoordinator.animationWaitDuration =
+          kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
+    }
+  }
+
+  id<TabStripCommands> tabStripCommandsHandler = nil;
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    // The -startDispatching for TabStripCommands will be called at a later
+    // point for tablet only, so cannot use `HandlerForProtocol`.
+    tabStripCommandsHandler = static_cast<id<TabStripCommands>>(_dispatcher);
+  }
   _bubblePresenter = [[BubblePresenter alloc]
       initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
                       hostContentSettingsMap:settingsMap
@@ -793,6 +812,7 @@ enum class ToolbarKind {
                                   sceneState:SceneStateBrowserAgent::
                                                  FromBrowser(self.browser)
                                                      ->GetSceneState()
+                     tabStripCommandsHandler:tabStripCommandsHandler
                                      tracker:engagementTracker
                                 webStateList:self.browser->GetWebStateList()];
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
@@ -817,6 +837,11 @@ enum class ToolbarKind {
       _toolbarCoordinator.primaryToolbarSnapshotProvider;
   _sideSwipeMediator.secondaryToolbarSnapshotProvider =
       _toolbarCoordinator.secondaryToolbarSnapshotProvider;
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      !base::FeatureList::IsEnabled(kModernTabStrip)) {
+    [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];
+  }
 
   _bookmarksCoordinator =
       [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
@@ -845,20 +870,6 @@ enum class ToolbarKind {
   // It is done intentionally, since this does not affecting the coordinator's
   // behavior but helps command handler setup below.
   [self.popupMenuCoordinator start];
-
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
-      _tabStripCoordinator =
-          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
-    } else {
-      _legacyTabStripCoordinator =
-          [[TabStripLegacyCoordinator alloc] initWithBrowser:self.browser];
-      _legacyTabStripCoordinator.animationWaitDuration =
-          kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
-
-      [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];
-    }
-  }
 
   _NTPCoordinator = [[NewTabPageCoordinator alloc]
        initWithBrowser:self.browser

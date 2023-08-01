@@ -52,6 +52,7 @@ source_set("commands") {
     "show_signin_command.h",
     "show_signin_command.mm",
     "snackbar_commands.h",
+    "tab_strip_commands.h",
     "text_zoom_commands.h",
     "thumb_strip_commands.h",
     "toolbar_commands.h",

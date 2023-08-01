@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
@@ -102,6 +104,8 @@ const CGFloat kBubblePresentationDelay = 1;
 
   segmentation_platform::DeviceSwitcherResultDispatcher*
       _deviceSwitcherResultDispatcher;
+
+  id<TabStripCommands> _tabStripCommandsHandler;
 }
 
 #pragma mark - Public
@@ -114,6 +118,8 @@ const CGFloat kBubblePresentationDelay = 1;
                            loadingNotifier:(UrlLoadingNotifierBrowserAgent*)
                                                urlLoadingNotifier
                                 sceneState:(SceneState*)sceneState
+                   tabStripCommandsHandler:
+                       (id<TabStripCommands>)tabStripCommandsHandler
                                    tracker:(feature_engagement::Tracker*)
                                                engagementTracker
                               webStateList:(WebStateList*)webStateList {
@@ -121,10 +127,12 @@ const CGFloat kBubblePresentationDelay = 1;
   if (self) {
     DCHECK(webStateList);
     DCHECK(urlLoadingNotifier);
+
     _webStateList = webStateList;
     _engagementTracker = engagementTracker;
     _settingsMap = settingsMap;
     _deviceSwitcherResultDispatcher = deviceSwitcherResultDispatcher;
+    _tabStripCommandsHandler = tabStripCommandsHandler;
     self.started = YES;
 
     _loadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
@@ -571,10 +579,15 @@ const CGFloat kBubblePresentationDelay = 1;
 
   __weak id<ToolbarCommands> weakToolbarCommandsHandler =
       _toolbarCommandsHandler;
+  __weak id<TabStripCommands> weakTabStripCommandsHandler =
+      _tabStripCommandsHandler;
+
   ProceduralBlock presentAction = ^{
+    [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:YES];
     [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:YES];
   };
   ProceduralBlock dismissAction = ^{
+    [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:NO];
     [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:NO];
   };
 

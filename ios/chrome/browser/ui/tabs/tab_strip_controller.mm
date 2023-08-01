@@ -127,9 +127,13 @@ const CGFloat kAutoscrollDecrementWidth = 10.0;
 
 // The size of the new tab button.
 const CGFloat kNewTabButtonWidth = 44;
+const CGFloat kNewTabButtonSpotlightViewCornerRadius = 7;
 
-// Default image insets for the new tab button.
+// Default image insets for the new tab button. The negative value for leading
+// inset is shifting the image view to the left from the center.
 const CGFloat kNewTabButtonLeadingImageInset = -10.0;
+// The negative value for bottom inset is shifting the image view to the bottom
+// from the center.
 const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
 // Identifier of the action that displays the UIMenu.
@@ -202,6 +206,9 @@ const CGFloat kSymbolSize = 18;
   TabStripContainerView* _view;
   TabStripView* _tabStripView;
   UIButton* _buttonNewTab;
+  // The spotlight view contained in the new tab button, serving for the
+  // highlighted effect.
+  UIView* _buttonNewTabSpotlightView;
 
   TabStripStyle _style;
 
@@ -544,6 +551,24 @@ const CGFloat kSymbolSize = 18;
       [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
     }
 
+    _buttonNewTabSpotlightView = [[UIView alloc] init];
+    _buttonNewTabSpotlightView.hidden = YES;
+    _buttonNewTabSpotlightView.userInteractionEnabled = NO;
+    _buttonNewTabSpotlightView.layer.cornerRadius =
+        kNewTabButtonSpotlightViewCornerRadius;
+    // Position the spotlight view so that the image view is in its center.
+    // Cannot use the button's `backgroundColor` because the image view is not
+    // centered in the button by kNewTabButtonLeadingImageInset and
+    // kNewTabButtonBottomImageInset.
+    [_buttonNewTabSpotlightView
+        setFrame:CGRectMake(0, -kNewTabButtonBottomImageInset,
+                            kNewTabButtonWidth + kNewTabButtonLeadingImageInset,
+                            kTabStripHeight + kNewTabButtonBottomImageInset)];
+    // Make sure that the spotlightView is below the image to avoid changing the
+    // color of the image.
+    [_buttonNewTab insertSubview:_buttonNewTabSpotlightView
+                    belowSubview:_buttonNewTab.imageView];
+
     SetA11yLabelAndUiAutomationName(
         _buttonNewTab,
         _isIncognito ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
@@ -635,6 +660,23 @@ const CGFloat kSymbolSize = 18;
   [self.view addGestureRecognizer:panGestureRecognizer];
 
   self.panGestureRecognizer = panGestureRecognizer;
+}
+
+#pragma mark - TabStripCommands
+
+- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
+  if (IsUIButtonConfigurationEnabled()) {
+    _buttonNewTab.tintColor = IPHHighlighted
+                                  ? [UIColor colorNamed:kSolidWhiteColor]
+                                  : [UIColor colorNamed:kGrey500Color];
+  } else {
+    _buttonNewTab.imageView.tintColor =
+        IPHHighlighted ? [UIColor colorNamed:kSolidWhiteColor]
+                       : [UIColor colorNamed:kGrey500Color];
+  }
+  _buttonNewTabSpotlightView.backgroundColor =
+      IPHHighlighted ? [UIColor colorNamed:kBlueColor] : nil;
+  _buttonNewTabSpotlightView.hidden = !IPHHighlighted;
 }
 
 #pragma mark - Private
