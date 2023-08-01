@@ -1281,4 +1281,40 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
+class BlockedPendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest
+    : public PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest {
+ public:
+  BlockedPendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest() = default;
+
+  std::string public_key() const override {
+    return "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm6NnMxmC5iaSFAILkuIkGXl"
+           "lW1Tie3AW+7Ty3R3sbQ7EVNG3HtFIG7jbJIvSko+lrTa1U1VveOXZw1u3y1T49ihR2X"
+           "FU0w6+3OAXzjuUimKUviGao6EN4KfCegtKyDQnMw0zATBisqBxrPLzGBXxP/AhxH2OG"
+           "gyyioVOzoCF+rnBY7ed+Wh+mPI7s9lrECeisUHHM5xbHXXgr8bnvt3U27jnsctwJWKH"
+           "fcbd3rpMJwBfOmPfuQ0MZvySVkTr/WYeemkwR8/4mek9/UIGMB8X+mXdU9OV/qhylqy"
+           "6FzRw/FdV+RcmzAwEgNmhgXP7TwtFBsUdtTIe2Kio26ciK7PSKwIDAQAB";
+  }
+
+  std::string matches_origin() const override {
+    return "https://hpcs-appschr.hpcloud.hp.com/*";
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BlockedPendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
+    RunBluetoothPowerRoutineWithFeatureFlagFromBlockedExtensionFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function runBluetoothPowerRoutineNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.runBluetoothPowerRoutine();
+        }, [],
+          'chrome.os.diagnostics.runBluetoothPowerRoutine is not a function'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 }  // namespace chromeos
