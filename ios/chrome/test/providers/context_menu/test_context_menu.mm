@@ -15,7 +15,8 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
-    UIViewController* presenting_view_controller) {
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler) {
   return nil;
 }
 
@@ -30,7 +31,8 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state) {
 BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
                                 NSTextCheckingResult* match,
                                 NSString* text,
-                                UIViewController* presenting_view_controller) {
+                                UIViewController* presenting_view_controller,
+                                id<MiniMapCommands> mini_map_handler) {
   return NO;
 }
 
@@ -38,7 +40,8 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
     web::WebState* web_state,
     NSTextCheckingResult* match,
     NSString* text,
-    UIViewController* presenting_view_controller) {
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler) {
   return nil;
 }
 

@@ -60,8 +60,13 @@ AnnotationsTabHelper::~AnnotationsTabHelper() {
 }
 
 void AnnotationsTabHelper::SetBaseViewController(
-    UIViewController* baseViewController) {
-  base_view_controller_ = baseViewController;
+    UIViewController* base_view_controller) {
+  base_view_controller_ = base_view_controller;
+}
+
+void AnnotationsTabHelper::SetMiniMapCommands(
+    id<MiniMapCommands> mini_map_handler) {
+  mini_map_handler_ = mini_map_handler;
 }
 
 #pragma mark - WebStateObserver methods.
@@ -123,13 +128,14 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
     manager->RemoveHighlight();
   }
 
-  if (!ios::provider::HandleIntentTypesForOneTap(web_state, match,
-                                                 base::SysUTF8ToNSString(text),
-                                                 base_view_controller_)) {
+  NSString* ns_text = base::SysUTF8ToNSString(text);
+  if (!ios::provider::HandleIntentTypesForOneTap(web_state, match, ns_text,
+                                                 base_view_controller_,
+                                                 mini_map_handler_)) {
     NSArray<CRWContextMenuItem*>* items =
-        ios::provider::GetContextMenuElementsToAdd(
-            web_state, match, base::SysUTF8ToNSString(text),
-            base_view_controller_);
+        ios::provider::GetContextMenuElementsToAdd(web_state, match, ns_text,
+                                                   base_view_controller_,
+                                                   mini_map_handler_);
     if (items.count) {
       [web_state_->GetWebViewProxy() showMenuWithItems:items rect:rect];
     }
