@@ -689,11 +689,11 @@ String ExternalRepresentation(LocalFrame* frame,
     return String();
   auto* layout_box = To<LayoutBox>(layout_object);
 
-  PrintContext print_context(frame, /*use_printing_layout=*/true);
+  PrintContext print_context(frame);
   bool is_text_printing_mode = !!(behavior & kLayoutAsTextPrintingMode);
   if (is_text_printing_mode) {
     gfx::SizeF page_size(layout_box->ClientWidth(), layout_box->ClientHeight());
-    print_context.BeginPrintMode(page_size);
+    print_context.BeginPrintMode(WebPrintParams(page_size));
 
     // The lifecycle needs to be run again after changing printing mode,
     // to account for any style updates due to media query change.

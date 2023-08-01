@@ -1249,20 +1249,26 @@ scoped_refptr<InspectorTaskRunner> LocalFrame::GetInspectorTaskRunner() {
   return inspector_task_runner_;
 }
 
+void LocalFrame::StartPrinting(
+    const WebPrintPageDescription& default_page_description,
+    float maximum_shrink_ratio) {
+  DCHECK(!saved_scroll_offsets_);
+  LayoutView* layout_view = GetDocument()->GetLayoutView();
+  layout_view->SetDefaultPageDescription(default_page_description);
+  SetPrinting(true, maximum_shrink_ratio);
+}
+
 void LocalFrame::StartPrinting(const gfx::SizeF& page_size,
                                float maximum_shrink_ratio) {
-  DCHECK(!saved_scroll_offsets_);
-  SetPrinting(true, page_size, maximum_shrink_ratio);
+  StartPrinting(WebPrintPageDescription(page_size), maximum_shrink_ratio);
 }
 
 void LocalFrame::EndPrinting() {
   RestoreScrollOffsets();
-  SetPrinting(false, gfx::SizeF(), 0);
+  SetPrinting(false, 0);
 }
 
-void LocalFrame::SetPrinting(bool printing,
-                             const gfx::SizeF& page_size,
-                             float maximum_shrink_ratio) {
+void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {
   // In setting printing, we should not validate resources already cached for
   // the document.  See https://bugs.webkit.org/show_bug.cgi?id=43704
   ResourceCacheValidationSuppressor validation_suppressor(
@@ -1276,7 +1282,7 @@ void LocalFrame::SetPrinting(bool printing,
     text_autosizer->UpdatePageInfo();
 
   if (ShouldUsePrintingLayout()) {
-    View()->ForceLayoutForPagination(page_size, maximum_shrink_ratio);
+    View()->ForceLayoutForPagination(maximum_shrink_ratio);
   } else {
     if (LayoutView* layout_view = View()->GetLayoutView()) {
       layout_view->SetIntrinsicLogicalWidthsDirty();
@@ -1393,30 +1399,6 @@ void LocalFrame::RestoreScrollOffsets() {
         entry.value, mojom::blink::ScrollType::kProgrammatic);
   }
   saved_scroll_offsets_ = nullptr;
-}
-
-gfx::SizeF LocalFrame::ResizePageRectsKeepingRatio(
-    const gfx::SizeF& aspect_ratio,
-    const gfx::SizeF& expected_size) const {
-  auto* layout_object = ContentLayoutObject();
-  if (!layout_object)
-    return gfx::SizeF();
-
-  bool is_horizontal = layout_object->StyleRef().IsHorizontalWritingMode();
-  float numerator =
-      is_horizontal ? aspect_ratio.height() : aspect_ratio.width();
-  float denominator =
-      is_horizontal ? aspect_ratio.width() : aspect_ratio.height();
-  DCHECK_GT(fabs(denominator), std::numeric_limits<float>::epsilon());
-  float ratio = numerator / denominator;
-
-  float inline_size =
-      floorf(is_horizontal ? expected_size.width() : expected_size.height());
-  float block_size = floorf(inline_size * ratio);
-  if (!is_horizontal) {
-    return gfx::SizeF(block_size, inline_size);
-  }
-  return gfx::SizeF(inline_size, block_size);
 }
 
 void LocalFrame::SetPageZoomFactor(float factor) {

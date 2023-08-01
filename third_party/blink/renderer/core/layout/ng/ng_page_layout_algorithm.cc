@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_page_layout_algorithm.h"
 
 #include <algorithm>
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -21,7 +22,11 @@ NGPageLayoutAlgorithm::NGPageLayoutAlgorithm(
 
 const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
-  LogicalSize page_size = ChildAvailableSize();
+  // TODO(crbug.com/835358): Add support for mixed page sizes. For now, use the
+  // page description for the first page, like we've always done.
+  LogicalSize page_size =
+      Node().GetDocument().GetLayoutView()->PageAreaSize().ConvertToLogical(
+          ConstraintSpace().GetWritingMode());
   DCHECK(page_size.inline_size != kIndefiniteSize);
   DCHECK(page_size.block_size != kIndefiniteSize);
 

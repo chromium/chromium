@@ -25,6 +25,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_cache.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -111,7 +112,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   // Based on LocalFrameView::LayoutSize, but:
   // - checks for null LocalFrameView
-  // - Replaces logical height with PageLogicalHeight() if using printing layout
+  // - Accounts for printing layout
   // - scrollbar exclusion is compatible with root layer scrolling
   gfx::Size GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
 
@@ -191,18 +192,38 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return fragmentation_context_;
   }
 
-  LayoutUnit PageLogicalHeight() const {
+  void SetDefaultPageDescription(const WebPrintPageDescription& description) {
     NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? page_size_.height : page_size_.width;
+    default_page_description_ = description;
   }
-  void SetPageSize(PhysicalSize size) {
+  const WebPrintPageDescription& DefaultPageDescription() const {
     NOT_DESTROYED();
-    page_size_ = size;
+    return default_page_description_;
   }
-  PhysicalSize PageSize() const {
+
+  void SetInitialContainingBlockSizeForPagination(PhysicalSize size) {
     NOT_DESTROYED();
-    return page_size_;
+    initial_containing_block_size_for_pagination_ = size;
   }
+  PhysicalSize InitialContainingBlockSizeForPagination() const {
+    NOT_DESTROYED();
+    return initial_containing_block_size_for_pagination_;
+  }
+
+  void SetPageScaleFactor(float factor) {
+    NOT_DESTROYED();
+    page_scale_factor_ = factor;
+  }
+  float PageScaleFactor() const {
+    NOT_DESTROYED();
+    return page_scale_factor_;
+  }
+
+  // Get the page area size (fragmentainer size) when printing.
+  //
+  // TODO(crbug.com/835358): Add parameters for page index and name, to support
+  // mixed page sizes.
+  PhysicalSize PageAreaSize() const;
 
   // TODO(1229581): Make non-virtual.
   virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const = 0;
@@ -358,10 +379,15 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   }
 
  protected:
-  // The page size.
-  // This is only used during printing to split the content into pages.
-  // Outside of printing, this is 0x0.
-  PhysicalSize page_size_;
+  // Default page description (size and margins):
+  WebPrintPageDescription default_page_description_;
+
+  // The page area (content area) size of the first page, when printing.
+  PhysicalSize initial_containing_block_size_for_pagination_;
+
+  // Used to avoid/reduce inline axis overflow, by scaling up the page size for
+  // layout.
+  float page_scale_factor_ = 1.0;
 
   Member<ViewFragmentationContext> fragmentation_context_;
 

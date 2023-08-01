@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -673,6 +674,29 @@ void LayoutView::CalculateScrollbarModes(
 #undef RETURN_SCROLLBAR_MODE
 }
 
+PhysicalSize LayoutView::PageAreaSize() const {
+  NOT_DESTROYED();
+  WebPrintPageDescription description = default_page_description_;
+  // TODO(crbug.com/835358): Support mixed page sizes, instead of always using
+  // the first page.
+  GetDocument().GetPageDescription(/* page_index */ 0, &description);
+
+  gfx::SizeF page_size(
+      std::max(.0f, description.size.width() -
+                        (description.margin_left + description.margin_right)),
+      std::max(.0f, description.size.height() -
+                        (description.margin_top + description.margin_bottom)));
+
+  page_size.Scale(page_scale_factor_);
+
+  // Round down to the nearest integer. Although layout itself could have
+  // handled subpixels just fine, the paint code cannot without bleeding across
+  // page boundaries. Furthermore, the printing code (outside Blink) also rounds
+  // down, which means that anything larger than that would end up getting
+  // clipped.
+  return PhysicalSize(gfx::ToFlooredSize(page_size));
+}
+
 PhysicalRect LayoutView::DocumentRect() const {
   NOT_DESTROYED();
   return FlipForWritingMode(LayoutOverflowRect());
@@ -681,8 +705,9 @@ PhysicalRect LayoutView::DocumentRect() const {
 gfx::Size LayoutView::GetLayoutSize(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout())
-    return ToFlooredSize(page_size_);
+  if (ShouldUsePrintingLayout()) {
+    return ToFlooredSize(initial_containing_block_size_for_pagination_);
+  }
 
   if (!frame_view_)
     return gfx::Size();
@@ -711,8 +736,10 @@ int LayoutView::ViewLogicalHeight(
 
 LayoutUnit LayoutView::ViewLogicalHeightForPercentages() const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout())
-    return PageLogicalHeight();
+  if (ShouldUsePrintingLayout()) {
+    PhysicalSize size = initial_containing_block_size_for_pagination_;
+    return IsHorizontalWritingMode() ? size.height : size.width;
+  }
   return LayoutUnit(ViewLogicalHeight());
 }
 

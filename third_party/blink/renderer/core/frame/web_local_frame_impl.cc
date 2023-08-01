@@ -275,6 +275,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_family_names.h"
@@ -333,37 +334,11 @@ class DummyFrameOwner final : public GarbageCollected<DummyFrameOwner>,
 // made virtual so that they can be overridden by ChromePluginPrintContext.
 class ChromePrintContext : public PrintContext {
  public:
-  ChromePrintContext(LocalFrame* frame, bool use_printing_layout)
-      : PrintContext(frame, use_printing_layout), printed_page_width_(0) {}
+  explicit ChromePrintContext(LocalFrame* frame) : PrintContext(frame) {}
   ChromePrintContext(const ChromePrintContext&) = delete;
   ChromePrintContext& operator=(const ChromePrintContext&) = delete;
 
   ~ChromePrintContext() override = default;
-
-  void BeginPrintMode(gfx::SizeF page_size) override {
-    DCHECK(!printed_page_width_);
-
-    // Although layout itself can handle subpixels, we'll round down to the
-    // nearest integer. There are a couple of reasons for this. First of all,
-    // PrintContext sets page rectangles in integers, and if the input size is
-    // larger than that (by a fraction of a pixel), excess pages may be
-    // created. Furthermore, the printing code will also round down the sizes
-    // for the output canvas, so anything larger than that will end up getting
-    // clipped.
-    //
-    // TODO(mstensho): Refactor page rectangle calculation, and update the
-    // comment above.
-    page_size.set_width(floorf(page_size.width()));
-    page_size.set_height(floorf(page_size.height()));
-
-    printed_page_width_ = page_size.width();
-    PrintContext::BeginPrintMode(page_size);
-  }
-
-  virtual float GetPageShrink(uint32_t page_number) const {
-    gfx::Rect page_rect = page_rects_[page_number];
-    return printed_page_width_ / page_rect.width();
-  }
 
   void SpoolSinglePage(cc::PaintCanvas* canvas, int page_number) {
     DispatchEventsForPrintingOnAllFrames();
@@ -417,15 +392,15 @@ class ChromePrintContext : public PrintContext {
 
     WebVector<uint32_t> all_pages;
     if (!pages) {
-      all_pages.reserve(page_rects_.size());
-      all_pages.resize(page_rects_.size());
+      all_pages.reserve(PageCount());
+      all_pages.resize(PageCount());
       std::iota(all_pages.begin(), all_pages.end(), 0);
       pages = &all_pages;
     }
 
     int current_height = 0;
     for (uint32_t page_index : *pages) {
-      if (page_index >= page_rects_.size()) {
+      if (page_index >= PageCount()) {
         break;
       }
 
@@ -473,13 +448,18 @@ class ChromePrintContext : public PrintContext {
 
  protected:
   virtual void SpoolPage(GraphicsContext& context, int page_number) {
-    gfx::Rect page_rect = page_rects_[page_number];
+    gfx::Rect page_rect = PageRect(page_number);
     AffineTransform transform;
 
-    // Layout may have scaled down content in order to fit more unbreakable
-    // content in the inline direction.
-    float scale = GetPageShrink(page_number);
-    transform.Scale(scale, scale);
+    auto* frame_view = GetFrame()->View();
+    DCHECK(frame_view);
+    const LayoutView* layout_view = frame_view->GetLayoutView();
+
+    // Layout may have used a larger viewport size in order to fit more
+    // unbreakable content in the inline direction. Now we need to scale it down
+    // to fit on the actual pages.
+    float inverse_scale = 1.f / layout_view->PageScaleFactor();
+    transform.Scale(inverse_scale, inverse_scale);
 
     transform.Translate(static_cast<float>(-page_rect.x()),
                         static_cast<float>(-page_rect.y()));
@@ -487,10 +467,8 @@ class ChromePrintContext : public PrintContext {
     context.ConcatCTM(transform);
     context.ClipRect(gfx::RectToSkRect(page_rect));
 
-    auto* frame_view = GetFrame()->View();
-    DCHECK(frame_view);
     auto property_tree_state =
-        frame_view->GetLayoutView()->FirstFragment().LocalBorderBoxProperties();
+        layout_view->FirstFragment().LocalBorderBoxProperties();
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
     frame_view->PaintOutsideOfLifecycle(
@@ -523,9 +501,6 @@ class ChromePrintContext : public PrintContext {
     for (auto& doc : documents)
       doc->DispatchEventsForPrinting();
   }
-
-  // Set when printing.
-  float printed_page_width_;
 };
 
 // Simple class to override some of PrintContext behavior. This is used when
@@ -533,12 +508,8 @@ class ChromePrintContext : public PrintContext {
 // want to delegate all printing related calls to the plugin.
 class ChromePluginPrintContext final : public ChromePrintContext {
  public:
-  ChromePluginPrintContext(LocalFrame* frame,
-                           WebPluginContainerImpl* plugin,
-                           const WebPrintParams& print_params)
-      : ChromePrintContext(frame, print_params.use_printing_layout),
-        plugin_(plugin),
-        print_params_(print_params) {}
+  ChromePluginPrintContext(LocalFrame* frame, WebPluginContainerImpl* plugin)
+      : ChromePrintContext(frame), plugin_(plugin) {}
 
   ~ChromePluginPrintContext() override = default;
 
@@ -547,10 +518,10 @@ class ChromePluginPrintContext final : public ChromePrintContext {
     ChromePrintContext::Trace(visitor);
   }
 
-  void BeginPrintMode(gfx::SizeF page_size) override {
-    gfx::Rect rect(gfx::ToFlooredSize(page_size));
-    print_params_.print_content_area_in_css_pixels = gfx::RectF(page_size);
-    page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
+  const gfx::Rect& PageRect(wtf_size_t) const = delete;
+
+  void BeginPrintMode(const WebPrintParams& print_params) override {
+    page_count_ = plugin_->PrintBegin(print_params);
   }
 
   void EndPrintMode() override {
@@ -567,11 +538,6 @@ class ChromePluginPrintContext final : public ChromePrintContext {
       GetFrame()->GetDocument()->SetPrinting(Document::kNotPrinting);
   }
 
-  float GetPageShrink(uint32_t page_number) const override {
-    // We don't shrink the page (maybe we should ask the widget ??)
-    return 1.0;
-  }
-
  protected:
   void SpoolPage(GraphicsContext& context, int page_number) override {
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
@@ -582,13 +548,13 @@ class ChromePluginPrintContext final : public ChromePrintContext {
  private:
   // Set when printing.
   Member<WebPluginContainerImpl> plugin_;
-  WebPrintParams print_params_;
 };
 
 class PaintPreviewContext : public PrintContext {
  public:
-  explicit PaintPreviewContext(LocalFrame* frame)
-      : PrintContext(frame, false) {}
+  explicit PaintPreviewContext(LocalFrame* frame) : PrintContext(frame) {
+    use_printing_layout_ = false;
+  }
   PaintPreviewContext(const PaintPreviewContext&) = delete;
   PaintPreviewContext& operator=(const PaintPreviewContext&) = delete;
   ~PaintPreviewContext() override = default;
@@ -1914,14 +1880,12 @@ uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
       GetPluginToPrintHelper(constrain_to_node);
   if (plugin_container && plugin_container->SupportsPaginatedPrint()) {
     print_context_ = MakeGarbageCollected<ChromePluginPrintContext>(
-        GetFrame(), plugin_container, print_params);
+        GetFrame(), plugin_container);
   } else {
-    print_context_ = MakeGarbageCollected<ChromePrintContext>(
-        GetFrame(), print_params.use_printing_layout);
+    print_context_ = MakeGarbageCollected<ChromePrintContext>(GetFrame());
   }
 
-  gfx::SizeF size(print_params.print_content_area_in_css_pixels.size());
-  print_context_->BeginPrintMode(size);
+  print_context_->BeginPrintMode(print_params);
 
   return print_context_->PageCount();
 }

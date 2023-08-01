@@ -376,10 +376,11 @@ class CORE_EXPORT LocalFrame final
   // See layers_as_json.h for accepted flags.
   String GetLayerTreeAsTextForTesting(unsigned flags = 0) const;
 
-  // Begin printing with the given page size information.
-  // The frame content will fit to the page size with specified shrink ratio.
-  // If this frame doesn't need to fit into a page size, default values are
-  // used.
+  // Begin printing.
+  // If too large (in the inline direction), the frame content will fit to the
+  // page size with the specified maximum shrink ratio.
+  void StartPrinting(const WebPrintPageDescription&,
+                     float maximum_shrink_ratio = 0);
   void StartPrinting(const gfx::SizeF& page_size = gfx::SizeF(),
                      float maximum_shrink_ratio = 0);
 
@@ -397,15 +398,6 @@ class CORE_EXPORT LocalFrame final
   // scroll offsets).
   void EnsureSaveScrollOffset(Node&);
   void RestoreScrollOffsets();
-
-  // Return `expected_size` adjusted to the specified `aspect_ratio`. The
-  // logical width (inline-size) of `expected_size` will be kept unmodified [*],
-  // whereas the logical height (block-size) will be adjusted if needed, to
-  // honor the aspect ratio. The values returned are rounded down to the nearest
-  // integer.
-  // [*] Except that it's rounded down to the nearest integer.
-  gfx::SizeF ResizePageRectsKeepingRatio(const gfx::SizeF& aspect_ratio,
-                                         const gfx::SizeF& expected_size) const;
 
   bool InViewSourceMode() const;
   void SetInViewSourceMode(bool = true);
@@ -936,11 +928,9 @@ class CORE_EXPORT LocalFrame final
 
   // Internal implementation for starting or ending printing.
   // |printing| is true when printing starts, false when printing ends.
-  // |page_size| and |maximum_shrink_ratio| are only meaningful when we should
-  // use printing layout for this frame.
-  void SetPrinting(bool printing,
-                   const gfx::SizeF& page_size,
-                   float maximum_shrink_ratio);
+  // |maximum_shrink_ratio| is only meaningful when we should use printing
+  // layout for this frame.
+  void SetPrinting(bool printing, float maximum_shrink_ratio);
 
   // FrameScheduler::Delegate overrides:
   ukm::UkmRecorder* GetUkmRecorder() override;

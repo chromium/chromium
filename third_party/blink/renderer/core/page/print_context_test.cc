@@ -112,8 +112,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
   void SetUp() override {
     RenderingTest::SetUp();
     print_context_ =
-        MakeGarbageCollected<PrintContext>(GetDocument().GetFrame(),
-                                           /*use_printing_layout=*/true);
+        MakeGarbageCollected<PrintContext>(GetDocument().GetFrame());
     base::FieldTrialParams auto_flush_params;
     auto_flush_params["max_pinned_image_kb"] = "1";
     print_feature_list_.InitAndEnableFeatureWithParameters(
@@ -138,7 +137,8 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().SetPrinting(Document::kBeforePrinting);
     Event* event = MakeGarbageCollected<BeforePrintEvent>();
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
-    GetPrintContext().BeginPrintMode(gfx::SizeF(kPageWidth, kPageHeight));
+    GetPrintContext().BeginPrintMode(
+        WebPrintParams(gfx::SizeF(kPageWidth, kPageHeight)));
     GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kTest);
 

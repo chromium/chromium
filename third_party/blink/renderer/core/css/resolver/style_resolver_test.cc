@@ -1879,8 +1879,8 @@ TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
 }
 
-// TODO(crbug.com/1095765): We should have a WPT for this test case, but
-// currently Blink web test runner can't test @page rules in WPT.
+// TODO(crbug.com/1095765): We should have a WPT for this test case, and the
+// Blink web test runner can now test @page rules in WPT.
 TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
@@ -1891,12 +1891,10 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
     </style>
   )HTML");
 
-  constexpr gfx::SizeF initial_page_size(800, 600);
-
-  GetDocument().GetFrame()->StartPrinting(initial_page_size);
+  GetDocument().GetFrame()->StartPrinting();
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
 
-  WebPrintPageDescription description;
+  WebPrintPageDescription description(gfx::SizeF(800, 600));
   GetDocument().GetPageDescription(0, &description);
 
   // The layered declaraion should win the cascading.

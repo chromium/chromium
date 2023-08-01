@@ -3256,15 +3256,24 @@ void LocalFrameView::DisableAutoSizeMode() {
   auto_size_info_.Clear();
 }
 
-void LocalFrameView::ForceLayoutForPagination(const gfx::SizeF& page_size,
-                                              float maximum_shrink_factor) {
+void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   LayoutView* layout_view = GetLayoutView();
   if (!layout_view) {
     return;
   }
 
-  layout_view->SetPageSize(
-      {LayoutUnit(page_size.width()), LayoutUnit(page_size.height())});
+  layout_view->SetPageScaleFactor(1.0);
+
+  // Set up the initial containing block size for pagination. This is defined as
+  // the page area size of the *first* page [1].
+  //
+  // TODO(crbug.com/835358): Handle situations where the first page is named.
+  //
+  // [1] https://www.w3.org/TR/css-page-3/#page-model
+  PhysicalSize initial_containing_block_size = layout_view->PageAreaSize();
+  layout_view->SetInitialContainingBlockSizeForPagination(
+      initial_containing_block_size);
+
   layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kPrintingChanged);
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
@@ -3274,25 +3283,33 @@ void LocalFrameView::ForceLayoutForPagination(const gfx::SizeF& page_size,
   // clip extra content.
   // FIXME: We are assuming a shrink-to-fit printing implementation. A cropping
   // implementation should not do this!
-  bool horizontal_writing_mode =
-      layout_view->StyleRef().IsHorizontalWritingMode();
-  PhysicalRect document_rect(layout_view->DocumentRect());
-  LayoutUnit doc_logical_width =
-      horizontal_writing_mode ? document_rect.Width() : document_rect.Height();
-  float page_logical_width =
-      horizontal_writing_mode ? page_size.width() : page_size.height();
-  if (doc_logical_width > page_logical_width) {
-    // ResizePageRectsKeepingRatio would truncate the expected page size, while
-    // we want it rounded -- so make sure it's rounded here.
-    gfx::SizeF expected_page_size(
-        std::min<float>(document_rect.Width().Round(),
-                        page_size.width() * maximum_shrink_factor),
-        std::min<float>(document_rect.Height().Round(),
-                        page_size.height() * maximum_shrink_factor));
-    gfx::SizeF max_page_size = frame_->ResizePageRectsKeepingRatio(
-        /* aspect_ratio */ page_size, expected_page_size);
-    layout_view->SetPageSize({LayoutUnit(max_page_size.width()),
-                              LayoutUnit(max_page_size.height())});
+  float overall_scale_factor = 1.0;
+  for (const NGLink& link : layout_view->GetPhysicalFragment(0)->Children()) {
+    const auto& page = To<NGPhysicalBoxFragment>(*link);
+    // Check the inline axis overflow on each individual page, to find the
+    // largest relative overflow.
+    float page_scale_factor;
+    if (layout_view->StyleRef().IsHorizontalWritingMode()) {
+      page_scale_factor =
+          page.LayoutOverflow().Width().ToFloat() / page.Size().width.ToFloat();
+    } else {
+      page_scale_factor = page.LayoutOverflow().Height().ToFloat() /
+                          page.Size().height.ToFloat();
+    }
+    overall_scale_factor = std::max(overall_scale_factor, page_scale_factor);
+    if (overall_scale_factor >= maximum_shrink_factor) {
+      overall_scale_factor = maximum_shrink_factor;
+      break;
+    }
+  }
+
+  if (overall_scale_factor > 1.0) {
+    // Re-layout and apply the same scale factor to all pages.
+    //
+    // Note that we deliberately don't set a new initial containing block size
+    // here. But should we? EdgeHTML does it. Gecko doesn't. WebKit is buggy
+    // (uses the initial block based on the browser frame size).
+    layout_view->SetPageScaleFactor(overall_scale_factor);
     layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kPrintingChanged);
     frame_->GetDocument()->UpdateStyleAndLayout(

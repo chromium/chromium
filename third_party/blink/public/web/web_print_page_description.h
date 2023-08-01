@@ -10,14 +10,24 @@
 
 namespace blink {
 
-// Description of a specific page when printing. All sizes are in pixels.
+// Description of a specific page when printing. All sizes are in CSS pixels.
 struct WebPrintPageDescription {
+  WebPrintPageDescription() = default;
+  explicit WebPrintPageDescription(gfx::SizeF size) : size(size) {}
+
+  // Page box size. Subtract margins to get the page *area* size.
+  // https://www.w3.org/TR/css-page-3/#page-model
   gfx::SizeF size;
+
   float margin_top = 0;
   float margin_right = 0;
   float margin_bottom = 0;
   float margin_left = 0;
   PageOrientation orientation = PageOrientation::kUpright;
+
+  // This will be set when the margins provided should be preserved, and not be
+  // overridden by @page margin declarations.
+  bool ignore_css_margins = false;
 };
 
 }  // namespace blink

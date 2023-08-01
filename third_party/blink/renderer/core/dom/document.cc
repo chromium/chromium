@@ -2755,6 +2755,7 @@ bool Document::IsPageBoxVisible(uint32_t page_index) {
 void Document::GetPageDescription(uint32_t page_index,
                                   WebPrintPageDescription* description) {
   scoped_refptr<const ComputedStyle> style = StyleForPage(page_index);
+  const WebPrintPageDescription input_description = *description;
 
   switch (style->GetPageSizeType()) {
     case PageSizeType::kAuto:
@@ -2774,20 +2775,41 @@ void Document::GetPageDescription(uint32_t page_index,
       NOTREACHED();
   }
 
-  // The percentage is calculated with respect to the width even for margin top
-  // and bottom.
-  // http://www.w3.org/TR/CSS2/box.html#margin-properties
-  float width = description->size.width();
-  if (!style->MarginTop().IsAuto())
-    description->margin_top = IntValueForLength(style->MarginTop(), width);
-  if (!style->MarginRight().IsAuto())
-    description->margin_right = IntValueForLength(style->MarginRight(), width);
-  if (!style->MarginBottom().IsAuto()) {
-    description->margin_bottom =
-        IntValueForLength(style->MarginBottom(), width);
+  if (!description->ignore_css_margins) {
+    // The percentage is calculated with respect to the width even for margin
+    // top and bottom.
+    // http://www.w3.org/TR/CSS2/box.html#margin-properties
+    float width = description->size.width();
+    if (!style->MarginTop().IsAuto()) {
+      description->margin_top = IntValueForLength(style->MarginTop(), width);
+    }
+    if (!style->MarginRight().IsAuto()) {
+      description->margin_right =
+          IntValueForLength(style->MarginRight(), width);
+    }
+    if (!style->MarginBottom().IsAuto()) {
+      description->margin_bottom =
+          IntValueForLength(style->MarginBottom(), width);
+    }
+    if (!style->MarginLeft().IsAuto()) {
+      description->margin_left = IntValueForLength(style->MarginLeft(), width);
+    }
   }
-  if (!style->MarginLeft().IsAuto())
-    description->margin_left = IntValueForLength(style->MarginLeft(), width);
+
+  float page_area_width =
+      description->size.width() -
+      (description->margin_left + description->margin_right);
+  float page_area_height =
+      description->size.height() -
+      (description->margin_top + description->margin_bottom);
+
+  if (page_area_width < 1 || page_area_height < 1) {
+    // The resulting page area size would become zero (or very close to
+    // it). Ignore CSS, and use the default values provided as input. There are
+    // tests that currently expect this behavior. But see
+    // https://github.com/w3c/csswg-drafts/issues/8335
+    *description = input_description;
+  }
 
   description->orientation = style->GetPageOrientation();
 }

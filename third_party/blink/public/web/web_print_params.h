@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PARAMS_H_
 
 #include "printing/mojom/print.mojom-shared.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -48,6 +49,11 @@ struct WebPrintParams {
 
   // Specifies the selected printer default paper size in pixels.
   gfx::SizeF paper_size_in_css_pixels;
+
+  // The page size and margins as provided by the system / user. This will be
+  // used as a base when handling @page rules, to fill in the blanks (rules may
+  // provide or omit declarations for the page size and/or any margin side).
+  WebPrintPageDescription default_page_description;
 
   // Specifies user selected DPI for printing.
   int printer_dpi = 72;
@@ -78,6 +84,7 @@ struct WebPrintParams {
       : print_content_area_in_css_pixels(paper_size),
         printable_area_in_css_pixels(paper_size),
         paper_size_in_css_pixels(paper_size),
+        default_page_description(paper_size),
         print_scaling_option(printing::mojom::PrintScalingOption::kSourceSize),
         use_printing_layout(use_printing_layout) {}
 };

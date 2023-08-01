@@ -43,11 +43,7 @@ bool LayoutNGView::IsFragmentationContextRoot() const {
 
 void LayoutNGView::UpdateLayout() {
   NOT_DESTROYED();
-  if (!GetDocument().Printing()) {
-    page_size_ = PhysicalSize();
-  }
-
-  if (PageLogicalHeight() && ShouldUsePrintingLayout()) {
+  if (ShouldUsePrintingLayout()) {
     intrinsic_logical_widths_ = LogicalWidth();
     if (!fragmentation_context_) {
       fragmentation_context_ =

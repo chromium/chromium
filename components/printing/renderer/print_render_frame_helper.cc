@@ -197,10 +197,9 @@ mojom::PageOrientation FromBlinkPageOrientation(
   }
 }
 
-mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
-                                        uint32_t page_index,
-                                        const mojom::PrintParams& page_params) {
-  mojom::PrintParamsPtr page_css_params = page_params.Clone();
+blink::WebPrintPageDescription GetDefaultPageDescription(
+    const mojom::PrintParams& page_params,
+    bool ignore_css_margins) {
   int dpi = GetDPI(page_params);
 
   blink::WebPrintPageDescription description;
@@ -219,7 +218,17 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
       dpi, kPixelsPerInch);
   description.margin_left =
       ConvertUnitFloat(page_params.margin_left, dpi, kPixelsPerInch);
+  description.ignore_css_margins = ignore_css_margins;
 
+  return description;
+}
+
+mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
+                                        uint32_t page_index,
+                                        const mojom::PrintParams& page_params,
+                                        bool ignore_css_margins) {
+  blink::WebPrintPageDescription description =
+      GetDefaultPageDescription(page_params, ignore_css_margins);
   if (frame)
     frame->GetPageDescription(page_index, &description);
 
@@ -227,17 +236,14 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
                             description.margin_right;
   float new_content_height = description.size.height() -
                              description.margin_top - description.margin_bottom;
+  DCHECK_GT(new_content_width, 0.0f);
+  DCHECK_GT(new_content_height, 0.0f);
 
-  // Invalid page size and/or margins. We just use the default setting.
-  if (new_content_width < 1 || new_content_height < 1) {
-    CHECK(frame);
-    page_css_params = GetCssPrintParams(nullptr, page_index, page_params);
-    return page_css_params;
-  }
-
+  mojom::PrintParamsPtr page_css_params = page_params.Clone();
   page_css_params->page_orientation =
       FromBlinkPageOrientation(description.orientation);
 
+  int dpi = GetDPI(page_params);
   page_css_params->page_size = gfx::SizeF(
       ConvertUnitFloat(description.size.width(), kPixelsPerInch, dpi),
       ConvertUnitFloat(description.size.height(), kPixelsPerInch, dpi));
@@ -380,7 +386,8 @@ void EnsureOrientationMatches(const mojom::PrintParams& css_params,
 
 blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
     const mojom::PrintParams& print_params,
-    bool source_is_pdf) {
+    bool source_is_pdf,
+    bool ignore_css_margins) {
   blink::WebPrintParams webkit_print_params;
   int dpi = GetDPI(print_params);
   webkit_print_params.printer_dpi = dpi;
@@ -425,6 +432,9 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
 
   // The following settings is for N-up mode.
   webkit_print_params.pages_per_sheet = print_params.pages_per_sheet;
+
+  webkit_print_params.default_page_description =
+      GetDefaultPageDescription(print_params, ignore_css_margins);
 
   return webkit_print_params;
 }
@@ -595,7 +605,7 @@ mojom::PrintParamsPtr CalculatePrintParamsForCss(
     bool fit_to_page,
     double* scale_factor) {
   mojom::PrintParamsPtr css_params =
-      GetCssPrintParams(frame, page_index, page_params);
+      GetCssPrintParams(frame, page_index, page_params, ignore_css_margins);
 
   mojom::PrintParamsPtr params = page_params.Clone();
   EnsureOrientationMatches(*css_params, params.get());
@@ -1167,8 +1177,8 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
     bool is_pdf,
     bool ignore_css_margins,
     bool fit_to_page) {
-  web_print_params_ =
-      ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf);
+  web_print_params_ = ComputeWebKitPrintParamsInDesiredDpi(
+      *print_params, is_pdf, ignore_css_margins);
   frame->PrintBegin(web_print_params_, node_to_print_);
   double scale_factor = GetScaleFactor(print_params->scale_factor, is_pdf);
   print_params = CalculatePrintParamsForCss(frame, /*page_index=*/0,
@@ -1177,8 +1187,8 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
   if (selection)
     *selection = frame->SelectionAsMarkup().Utf8();
   frame->PrintEnd();
-  web_print_params_ =
-      ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf);
+  web_print_params_ = ComputeWebKitPrintParamsInDesiredDpi(
+      *print_params, is_pdf, ignore_css_margins);
 }
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {
@@ -1744,8 +1754,8 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   blink::WebNode node = delegate_->GetPdfElement(frame);
   bool is_pdf = IsPrintingPdfFrame(frame, node);
-  blink::WebPrintParams web_print_params =
-      ComputeWebKitPrintParamsInDesiredDpi(*print_pages_params.params, is_pdf);
+  blink::WebPrintParams web_print_params = ComputeWebKitPrintParamsInDesiredDpi(
+      *print_pages_params.params, is_pdf, ignore_css_margins_);
   uint32_t page_count = frame->PrintBegin(web_print_params, node);
   if (page_count == 0) {
     frame->PrintEnd();

@@ -5494,8 +5494,7 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
 
   gfx::Size page_size(300, 360);
 
-  WebPrintParams print_params;
-  print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(page_size));
+  WebPrintParams print_params((gfx::SizeF(page_size)));
 
   gfx::Size expected_size = page_size;
 
@@ -5540,8 +5539,7 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
 
   gfx::SizeF page_size(300, 360);
 
-  WebPrintParams print_params;
-  print_params.print_content_area_in_css_pixels.set_size(page_size);
+  WebPrintParams print_params(page_size);
 
   frame->PrintBegin(print_params, WebNode());
   frame->PrintEnd();
@@ -5578,8 +5576,7 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   gfx::Size page_size(600, 720);
   int expected_width = page_size.width();
 
-  WebPrintParams print_params;
-  print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(page_size));
+  WebPrintParams print_params((gfx::SizeF(page_size)));
 
   frame->PrintBegin(print_params, WebNode());
 
@@ -5597,8 +5594,7 @@ TEST_F(WebViewTest, ResizeWithFixedPosCrash) {
                                      base_url);
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   gfx::Size page_size(300, 360);
-  WebPrintParams print_params;
-  print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(page_size));
+  WebPrintParams print_params((gfx::SizeF(page_size)));
   frame->PrintBegin(print_params, WebNode());
   web_view->MainFrameWidget()->Resize(page_size);
   frame->PrintEnd();
