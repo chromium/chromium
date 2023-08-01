@@ -13845,15 +13845,16 @@
             ]
         }
     ],
-    "StructuredMetricsService": [
+    "StructuredMetrics": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "StructuredMetricsService_20230801",
                     "enable_features": [
+                        "EnableStructuredMetrics",
                         "EnableStructuredMetricsService"
                     ]
                 }
