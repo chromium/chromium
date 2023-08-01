@@ -1953,7 +1953,6 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
     params.message_id = IDS_ASH_OVERVIEW_NO_RECENT_ITEMS;
     params.parent =
         root_window_->GetChildById(desks_util::GetActiveDeskContainerId());
-    params.hide_in_mini_view = true;
     if (overview_session_ &&
         overview_session_->ShouldEnterWithoutAnimations()) {
       params.disable_default_visibility_animation = true;

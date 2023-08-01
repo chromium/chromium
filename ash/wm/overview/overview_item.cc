@@ -572,7 +572,6 @@ void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
     params.preferred_height = kSplitviewLabelPreferredHeightDp;
     params.message_id = IDS_ASH_SPLIT_VIEW_CANNOT_SNAP;
     params.parent = GetWindow()->parent();
-    params.hide_in_mini_view = true;
     cannot_snap_widget_ = std::make_unique<RoundedLabelWidget>();
     cannot_snap_widget_->Init(std::move(params));
     GetWindow()->parent()->StackChildAbove(
