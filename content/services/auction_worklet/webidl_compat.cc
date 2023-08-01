@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
 #include "v8/include/v8-exception.h"
@@ -34,6 +36,32 @@ std::string IdlConvert::Status::ConvertToErrorString(
     case Type::kException:
       return AuctionV8Helper::FormatExceptionMessage(
           isolate->GetCurrentContext(), absl::get<Exception>(value_).message);
+  }
+}
+
+void IdlConvert::Status::PropagateErrorsToV8(AuctionV8Helper* v8_helper) {
+  switch (type()) {
+    case Type::kSuccess:
+      break;
+    case Type::kTimeout:
+      // We don't want to set an exception in case of timeout since it would
+      // override the timeout.
+      break;
+    case Type::kErrorMessage: {
+      std::string message = absl::get<std::string>(value_);
+      // Remove any trailing period since v8 will add one.
+      if (base::EndsWith(message, ".")) {
+        message.pop_back();
+      }
+      v8_helper->isolate()->ThrowException(v8::Exception::TypeError(
+          v8_helper->CreateUtf8String(message).ToLocalChecked()));
+      break;
+    }
+    case Type::kException: {
+      v8_helper->isolate()->ThrowException(
+          absl::get<Exception>(value_).exception);
+      break;
+    }
   }
 }
 
@@ -119,11 +147,8 @@ IdlConvert::Status IdlConvert::Convert(
                                  "String");
   }
 
-  if (!gin::Converter<std::string>::FromV8(isolate, v8_string, &out)) {
-    return Status::MakeErrorMessage(
-        base::StrCat({error_prefix, "Converting ", base::StrCat(error_subject),
-                      " to a String did not produce a useful result."}));
-  }
+  bool gin_ok = gin::Converter<std::string>::FromV8(isolate, v8_string, &out);
+  DCHECK(gin_ok);  // Should never fail on a v8::String
   return Status::MakeSuccess();
 }
 
@@ -218,10 +243,9 @@ bool DictConverter::FailureIsTimeout() const {
   return status_.type() == IdlConvert::Status::Type::kTimeout;
 }
 
-void DictConverter::PropagateErrorsFrom(DictConverter& other_converter) {
+void DictConverter::SetStatus(IdlConvert::Status status) {
   DCHECK(!is_failed());
-  DCHECK(other_converter.is_failed());
-  status_ = std::move(other_converter.status_);
+  status_ = std::move(status);
 }
 
 v8::Local<v8::Value> DictConverter::GetMember(std::string_view field) {

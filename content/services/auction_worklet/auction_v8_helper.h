@@ -147,8 +147,8 @@ class CONTENT_EXPORT AuctionV8Helper
    public:
     virtual ~TimeLimit();
 
-    // Resumes the timer if it's not already running. Returns true if it
-    // actually changed something.
+    // Resumes the timer if it's not already running. Returns true if the timer
+    // was resumed, false if it was already running.
     //
     // You do not need to call this directly if you're using `RunScript` or
     // `CallFunction`.
@@ -158,33 +158,33 @@ class CONTENT_EXPORT AuctionV8Helper
     // call it directly if you're using `RunScript` or `CallFunction`.
     virtual void Pause() = 0;
 
+    AuctionV8Helper* v8_helper() { return v8_helper_; }
+
    protected:
-    TimeLimit() = default;
+    explicit TimeLimit(AuctionV8Helper* v8_helper) : v8_helper_(v8_helper) {}
+
+   private:
+    const raw_ptr<AuctionV8Helper> v8_helper_;
   };
 
-  // Helper that calls Resume()/Pause() if given a non-nullptr TimeLimit.
+  // Helper that calls Resume()/Pause() if given a non-nullptr TimeLimit,
+  // and lets v8 know that termination handling is expected.
+  //
   // v8::TryCatch::HasTerminated() can help detect the timeouts.
   //
-  // This is safe to use recursively --- only the outer one will have an effect.
+  // This is safe to use recursively.
   class CONTENT_EXPORT TimeLimitScope {
    public:
-    explicit TimeLimitScope(TimeLimit* script_timeout)
-        : script_timeout_(script_timeout) {
-      if (script_timeout) {
-        resumed_ = script_timeout->Resume();
-      }
-    }
-
-    ~TimeLimitScope() {
-      if (resumed_) {
-        script_timeout_->Pause();
-      }
-    }
+    explicit TimeLimitScope(TimeLimit* script_timeout);
+    ~TimeLimitScope();
 
     bool has_time_limit() const { return script_timeout_; }
 
    private:
     raw_ptr<TimeLimit> script_timeout_;
+
+    absl::optional<v8::Isolate::SafeForTerminationScope>
+        safe_for_termination_scope_;
     bool resumed_ = false;
   };
 
@@ -312,6 +312,9 @@ class CONTENT_EXPORT AuctionV8Helper
   // default timeout.
   std::unique_ptr<TimeLimit> CreateTimeLimit(
       absl::optional<base::TimeDelta> script_timeout);
+
+  // Returns the currently active time limit, if any.
+  TimeLimit* GetTimeLimit();
 
   // Binds a script and runs it in the passed in context, returning true if it
   // succeeded.

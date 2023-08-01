@@ -324,7 +324,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     params->ads.value().emplace_back(GURL("https://example.com/ad1"),
                                      absl::nullopt);
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
@@ -361,7 +361,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
                                      absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
@@ -402,7 +402,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         GURL("https://example.com/portion2"), absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/true, params.get(),
         /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
@@ -443,7 +443,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         GURL("https://example.com/portion5"), absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/true, params.get(),
         /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
@@ -497,7 +497,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         GURL("https://example.com/portion8"), absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
@@ -539,7 +539,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
                                      absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/matches_ad1,
@@ -572,7 +572,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
                                      absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/matches_ad1,
@@ -607,7 +607,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
                                      absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         blink::AdCurrency::From("USD"),
         /*is_ad_excluded=*/matches_ad1,
@@ -644,7 +644,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
                                      absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         blink::AdCurrency::From("CAD"),
         /*is_ad_excluded=*/matches_ad1,
@@ -679,7 +679,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
                                      absl::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(), time_limit_.get(),
+        base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
         blink::AdCurrency::From("CAD"),
         /*is_ad_excluded=*/matches_ad1,

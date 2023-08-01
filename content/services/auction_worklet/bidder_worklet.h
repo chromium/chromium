@@ -481,7 +481,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     std::unique_ptr<ContextRecycler>
     CreateContextRecyclerAndRunTopLevelForGenerateBid(
         uint64_t trace_id,
-        AuctionV8Helper::TimeLimit* total_timeout,
+        AuctionV8Helper::TimeLimit& total_timeout,
         bool should_deep_freeze,
         std::vector<std::string>& errors_out);
 

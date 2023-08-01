@@ -16,6 +16,9 @@
 #include "gin/converter.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function.h"
 
 using testing::ElementsAre;
 
@@ -46,9 +49,10 @@ class WebIDLCompatTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  // Calls the `make` method in the given script to produce a value.
-  v8::Local<v8::Value> MakeValueFromScript(v8::Local<v8::Context> context,
-                                           const std::string& script_source) {
+  // Compiles and runs script, returning error vector.
+  std::vector<std::string> RunScript(v8::Local<v8::Context> context,
+                                     const std::string& script_source,
+                                     bool expect_success) {
     absl::optional<std::string> error;
     v8::MaybeLocal<v8::UnboundScript> maybe_script =
         v8_helper_->Compile(script_source, GURL("https://example.org"),
@@ -57,8 +61,17 @@ class WebIDLCompatTest : public testing::Test {
     v8::Local<v8::UnboundScript> script = maybe_script.ToLocalChecked();
 
     std::vector<std::string> errors;
-    EXPECT_TRUE(v8_helper_->RunScript(context, script, /*debug_id=*/nullptr,
-                                      time_limit_.get(), errors));
+    EXPECT_EQ(expect_success,
+              v8_helper_->RunScript(context, script, /*debug_id=*/nullptr,
+                                    time_limit_.get(), errors));
+    return errors;
+  }
+
+  // Calls the "make" method in the given script to produce a value.
+  v8::Local<v8::Value> MakeValueFromScript(v8::Local<v8::Context> context,
+                                           const std::string& script_source) {
+    std::vector<std::string> errors =
+        RunScript(context, script_source, /*expect_success=*/true);
     EXPECT_THAT(errors, ElementsAre());
 
     v8::MaybeLocal<v8::Value> maybe_result = v8_helper_->CallFunction(
@@ -72,8 +85,8 @@ class WebIDLCompatTest : public testing::Test {
     return result;
   }
 
-  // Calls the `make` method in the given script to produce the value passed
-  // to DictConverter.
+  // Calls the "make" method in the given script, and passes it to a freshly
+  // created DictConverter.
   std::unique_ptr<DictConverter> MakeFromScript(
       v8::Local<v8::Context> context,
       const std::string& script_source) {
@@ -112,12 +125,35 @@ class WebIDLCompatTest : public testing::Test {
     }
   }
 
+  // Creates a JS entry point "binding" that dispatches to `binding_callback_`.
+  void SetBinding(v8::Local<v8::Context> context) {
+    v8::Local<v8::External> v8_this =
+        v8::External::New(v8_helper_->isolate(), this);
+    v8::Local<v8::Function> v8_function =
+        v8::Function::New(context, &WebIDLCompatTest::DispatchBinding, v8_this)
+            .ToLocalChecked();
+    context->Global()
+        ->Set(context, v8_helper_->CreateStringFromLiteral("binding"),
+              v8_function)
+        .Check();
+  }
+
  protected:
+  static void DispatchBinding(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    WebIDLCompatTest* self = static_cast<WebIDLCompatTest*>(
+        v8::External::Cast(*args.Data())->Value());
+    if (!self->binding_callback_.is_null()) {
+      self->binding_callback_.Run(args);
+    }
+  }
+
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
   std::unique_ptr<AuctionV8Helper::TimeLimit> time_limit_;
   std::unique_ptr<AuctionV8Helper::TimeLimitScope> time_limit_scope_;
   std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
+  base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>
+      binding_callback_;
 };
 
 TEST_F(WebIDLCompatTest, StandaloneDouble) {
@@ -375,6 +411,84 @@ TEST_F(WebIDLCompatTest, StandaloneAny) {
                                  {"v1", "scalar"}, in_value, out);
   EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
   EXPECT_EQ(out, in_value);
+}
+
+TEST_F(WebIDLCompatTest, PropagateErrorsToV8Success) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  v8::TryCatch try_catch(v8_helper_->isolate());
+  IdlConvert::Status::MakeSuccess().PropagateErrorsToV8(v8_helper_.get());
+  EXPECT_FALSE(try_catch.HasCaught());
+  EXPECT_FALSE(try_catch.HasTerminated());
+}
+
+TEST_F(WebIDLCompatTest, PropagateErrorsToV8Timeout) {
+  // Testing timeouts is tricky --- PropagateErrorsToV8 doesn't synthesize the
+  // timeout, it merely preserves it, so we need to actually trigger a timeout
+  // to test it, and further we need to be in a nested context for it to be
+  // noticeable.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  SetBinding(context);
+  binding_callback_ = base::BindLambdaForTesting(
+      [&](const v8::FunctionCallbackInfo<v8::Value>& args) {
+        std::string out_unchecked;
+        AuctionV8Helper::TimeLimitScope time_limit_scope(
+            v8_helper_->GetTimeLimit());
+        auto status = IdlConvert::Convert(
+            v8_helper_->isolate(), "ctx:", {"arg 0"}, args[0], out_unchecked);
+        EXPECT_EQ(status.type(), IdlConvert::Status::Type::kTimeout);
+        status.PropagateErrorsToV8(v8_helper_.get());
+      });
+
+  const char kScript[] = R"(
+    try {
+      binding({
+          toString: () => { while(true) {} }
+        }
+      );
+    } catch(e) {}
+  )";
+
+  std::vector<std::string> errors =
+      RunScript(context, kScript, /*expect_success=*/false);
+  EXPECT_THAT(
+      errors,
+      ElementsAre("https://example.org/ top-level execution timed out."));
+}
+
+TEST_F(WebIDLCompatTest, PropagateErrorsToV8ErrorMessage) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  v8::TryCatch try_catch(v8_helper_->isolate());
+  IdlConvert::Status::MakeErrorMessage("Bad bug.")
+      .PropagateErrorsToV8(v8_helper_.get());
+  EXPECT_TRUE(try_catch.HasCaught());
+  EXPECT_FALSE(try_catch.HasTerminated());
+  EXPECT_EQ(
+      "undefined:0 Uncaught TypeError: Bad bug.",
+      AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
+}
+
+TEST_F(WebIDLCompatTest, PropagateErrorsToV8Exception) {
+  v8::Isolate* isolate = v8_helper_->isolate();
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+  v8::TryCatch try_catch(isolate);
+
+  v8::Local<v8::Value> exception = v8::Exception::SyntaxError(
+      v8_helper_->CreateUtf8String("typo").ToLocalChecked());
+  v8::Local<v8::Message> message =
+      v8::Exception::CreateMessage(isolate, exception);
+  auto status = IdlConvert::Status::MakeException(exception, message);
+  status.PropagateErrorsToV8(v8_helper_.get());
+  EXPECT_TRUE(try_catch.HasCaught());
+  EXPECT_FALSE(try_catch.HasTerminated());
+  EXPECT_EQ(
+      "undefined:0 Uncaught SyntaxError: typo.",
+      AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
+  EXPECT_EQ("undefined:0 Uncaught SyntaxError: typo.",
+            status.ConvertToErrorString(isolate));
 }
 
 // WebIDL treats undefined as empty dictionary.
@@ -971,7 +1085,7 @@ TEST_F(WebIDLCompatTest, SeqItemErrorPropagation) {
           out.push_back(entry);
           return true;
         } else {
-          converter->PropagateErrorsFrom(inner);
+          converter->SetStatus(inner.TakeStatus());
           return false;
         }
       })));
@@ -1014,7 +1128,7 @@ TEST_F(WebIDLCompatTest, SeqItemTimeoutPropagation) {
           out.push_back(entry);
           return true;
         } else {
-          converter->PropagateErrorsFrom(inner);
+          converter->SetStatus(inner.TakeStatus());
           return false;
         }
       })));

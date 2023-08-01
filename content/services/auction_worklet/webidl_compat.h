@@ -102,8 +102,10 @@ class CONTENT_EXPORT IdlConvert {
     // the status is not a success.
     std::string ConvertToErrorString(v8::Isolate* isolate) const;
 
-    // TODO(morlovich): Add a raise exception if needed helper, similar to how
-    // SetBidBindings propagates it.
+    // Propagates any error to v8, raising exceptions if needed. This is
+    // intended to be called from method bindings to propagate the failures in
+    // type-checking their arguments up to the caller.
+    void PropagateErrorsToV8(AuctionV8Helper* v8_helper);
 
     const Exception& GetException() const {
       DCHECK_EQ(type(), Type::kException);
@@ -253,14 +255,26 @@ class CONTENT_EXPORT DictConverter {
   // `item_callback` is expected to typecheck its input and return true/false as
   // appropriate.
   //
-  // The conversion routine can use PropagateErrorsFrom() to forward errors to
-  // `this` from a different converter.
+  // The conversion routine can use SetStatus() to forward errors to `this` from
+  // a different converter.
   bool GetOptionalSequence(
       std::string_view field,
       base::OnceClosure exists_callback,
       base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
 
   std::string ErrorMessage() const;
+
+  // Returns conversion status, resetting any latched errors.
+  IdlConvert::Status TakeStatus() { return std::move(status_); }
+
+  // Overrides status information with `status`.
+  // `this` should not be in a failed state. The intent is to forward conversion
+  // success/failure from recursive conversions.
+  void SetStatus(IdlConvert::Status status);
+
+  bool is_failed() const {
+    return status_.type() != IdlConvert::Status::Type::kSuccess;
+  }
 
   // This is non-empty only when an exception specifically got thrown by
   // something invoked during conversion; not for any errors synthesized here.
@@ -269,11 +283,6 @@ class CONTENT_EXPORT DictConverter {
   // Returns true if conversion failed because execution timeout has been
   // reached.
   bool FailureIsTimeout() const;
-
-  // Moves over error information from `other_converter`; requires the
-  // converter to be in failed state and `this` not to be. `other_converter`'s
-  // error status will be cleared.
-  void PropagateErrorsFrom(DictConverter& other_converter);
 
  private:
   // This can mark failure.
@@ -288,10 +297,6 @@ class CONTENT_EXPORT DictConverter {
   void MarkFailedWithTimeout(std::string_view fail_message);
   void MarkFailedWithException(const v8::TryCatch& catcher);
   void MarkFailedIter(std::string_view field, const v8::TryCatch& catcher);
-
-  bool is_failed() const {
-    return status_.type() != IdlConvert::Status::Type::kSuccess;
-  }
 
   raw_ptr<AuctionV8Helper> v8_helper_;
   std::string error_prefix_;

@@ -1089,7 +1089,7 @@ BidderWorklet::V8State::GenerateSingleBid(
   // No recycled context, make a fresh one.
   if (!context_recycler) {
     fresh_context_recycler = CreateContextRecyclerAndRunTopLevelForGenerateBid(
-        trace_id, total_timeout.get(), should_deep_freeze, errors_out);
+        trace_id, *total_timeout, should_deep_freeze, errors_out);
 
     if (!fresh_context_recycler) {
       return absl::make_optional(SingleGenerateBidResult(
@@ -1151,8 +1151,7 @@ BidderWorklet::V8State::GenerateSingleBid(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
   context_recycler->set_bid_bindings()->ReInitialize(
-      start, total_timeout.get(),
-      browser_signal_top_level_seller_origin != nullptr,
+      start, browser_signal_top_level_seller_origin != nullptr,
       &bidder_worklet_non_shared_params, expected_buyer_currency,
       should_exclude_ad_due_to_kanon, should_exclude_component_ad_due_to_kanon);
 
@@ -1309,12 +1308,13 @@ BidderWorklet::V8State::GenerateSingleBid(
                           base::TimeTicks::Now() - start);
 
   if (got_return_value) {
-    v8::MaybeLocal<v8::Value> ignore_exception;  // only need the message.
-    bool ignore_timeout;  // handle timeout the same way as everything else.
-    context_recycler->set_bid_bindings()->SetBid(
-        generate_bid_result,
-        base::StrCat({script_source_url_.spec(), " generateBid() "}),
-        ignore_exception, errors_out, ignore_timeout);
+    IdlConvert::Status status =
+        context_recycler->set_bid_bindings()->SetBidImpl(
+            generate_bid_result,
+            base::StrCat({script_source_url_.spec(), " generateBid() "}));
+    if (!status.is_success()) {
+      errors_out.push_back(status.ConvertToErrorString(isolate));
+    }
   }
 
   if (!context_recycler->set_bid_bindings()->has_bid()) {
@@ -1360,7 +1360,7 @@ BidderWorklet::V8State::GenerateSingleBid(
 std::unique_ptr<ContextRecycler>
 BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
     uint64_t trace_id,
-    AuctionV8Helper::TimeLimit* total_timeout,
+    AuctionV8Helper::TimeLimit& total_timeout,
     bool should_deep_freeze,
     std::vector<std::string>& errors_out) {
   base::TimeTicks start = base::TimeTicks::Now();
@@ -1376,7 +1376,7 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "biddingScript", trace_id);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            total_timeout, errors_out);
+                            &total_timeout, errors_out);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "biddingScript", trace_id);
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.BidScriptTime",
                           base::TimeTicks::Now() - start);
