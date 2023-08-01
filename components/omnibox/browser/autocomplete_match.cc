@@ -257,6 +257,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
     : provider(match.provider),
       relevance(match.relevance),
       typed_count(match.typed_count),
+      fuzzy_match_penalty(match.fuzzy_match_penalty),
       deletable(match.deletable),
       fill_into_edit(match.fill_into_edit),
       additional_text(match.additional_text),
@@ -316,6 +317,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   provider = std::move(match.provider);
   relevance = std::move(match.relevance);
   typed_count = std::move(match.typed_count);
+  fuzzy_match_penalty = std::move(match.fuzzy_match_penalty);
   deletable = std::move(match.deletable);
   fill_into_edit = std::move(match.fill_into_edit);
   additional_text = std::move(match.additional_text);
@@ -384,6 +386,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   provider = match.provider;
   relevance = match.relevance;
   typed_count = match.typed_count;
+  fuzzy_match_penalty = match.fuzzy_match_penalty;
   deletable = match.deletable;
   fill_into_edit = match.fill_into_edit;
   additional_text = match.additional_text;
