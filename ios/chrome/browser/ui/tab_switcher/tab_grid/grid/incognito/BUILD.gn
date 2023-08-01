@@ -10,6 +10,23 @@ source_set("incognito") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "incognito_grid_mediator_unittest.mm" ]
+
+  deps = [
+    ":incognito",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:test_fixture",
+    "//ios/chrome/browser/ui/tab_switcher/test:fakes",
   ]
 }

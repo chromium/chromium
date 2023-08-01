@@ -1,75 +1,20 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 
-#import <Foundation/Foundation.h>
-#import <memory>
-
-#import "base/mac/foundation_util.h"
-#import "base/run_loop.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
-#import "base/test/metrics/user_action_tester.h"
-#import "base/test/scoped_feature_list.h"
-#import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
-#import "components/sessions/core/live_tab.h"
-#import "components/sessions/core/session_id.h"
-#import "components/sessions/core/tab_restore_service.h"
-#import "components/sessions/core/tab_restore_service_helper.h"
-#import "components/signin/public/base/signin_metrics.h"
-#import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
-#import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/test_session_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/web_client.h"
-#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 // To get access to web::features::kEnableSessionSerializationOptimizations.
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
@@ -79,12 +24,7 @@
 #error "This file requires ARC support."
 #endif
 
-using base::test::ios::WaitUntilConditionOrTimeout;
-
-namespace sessions {
-class TabRestoreServiceObserver;
-class LiveTabContext;
-}  // namespace sessions
+using BaseGridMediatorTest = GridMediatorTestClass;
 
 namespace {
 
@@ -93,189 +33,7 @@ const char kPriceTrackingWithOptimizationGuideParam[] =
 const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
 const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
 
-// Timeout for waiting for the TabCollectionConsumer updates.
-constexpr base::TimeDelta kWaitForTabCollectionConsumerUpdateTimeout =
-    base::Seconds(1);
-
-std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
-    web::BrowserState* browser_state) {
-  return std::make_unique<FakeTabRestoreService>();
-}
 }  // namespace
-
-// Fake WebStateList delegate that attaches the required tab helper.
-class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
- public:
-  TabHelperFakeWebStateListDelegate() {}
-  ~TabHelperFakeWebStateListDelegate() override {}
-
-  // WebStateListDelegate implementation.
-  void WillAddWebState(web::WebState* web_state) override {
-    // Create NTPTabHelper to ensure VisibleURL is set to kChromeUINewTabURL.
-    id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
-    NewTabPageTabHelper::CreateForWebState(web_state);
-    NewTabPageTabHelper::FromWebState(web_state)->SetDelegate(delegate);
-    PagePlaceholderTabHelper::CreateForWebState(web_state);
-    SnapshotTabHelper::CreateForWebState(web_state);
-    if (web::UseNativeSessionRestorationCache()) {
-      WebSessionStateTabHelper::CreateForWebState(web_state);
-    }
-  }
-};
-
-class BaseGridMediatorTest : public PlatformTest {
- public:
-  BaseGridMediatorTest() {}
-  ~BaseGridMediatorTest() override {}
-
-  void SetUp() override {
-    PlatformTest::SetUp();
-    InitializeFeatureFlags();
-
-    TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
-                              base::BindRepeating(BuildFakeTabRestoreService));
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
-    builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
-                              ios::HistoryServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    // Price Drops are only available to signed in MSBB users.
-    browser_state_->GetPrefs()->SetBoolean(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-    id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
-    FakeSystemIdentityManager* system_identity_manager =
-        FakeSystemIdentityManager::FromSystemIdentityManager(
-            GetApplicationContext()->GetSystemIdentityManager());
-    system_identity_manager->AddIdentity(identity);
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
-    auth_service_->SignIn(identity,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-
-    tab_restore_service_ =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            browser_state_.get());
-    NSMutableSet<NSString*>* identifiers = [[NSMutableSet alloc] init];
-    browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
-        std::make_unique<TabHelperFakeWebStateListDelegate>());
-    WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
-    ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
-    SnapshotBrowserAgent::CreateForBrowser(browser_.get());
-    SnapshotBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID([[NSUUID UUID] UUIDString]);
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
-    browser_list_->AddBrowser(browser_.get());
-
-    // Insert some web states.
-    std::vector<std::string> urls{"https://foo/bar", "https://car/tar",
-                                  "https://hello/world"};
-    for (int i = 0; i < 3; i++) {
-      auto web_state = CreateFakeWebStateWithURL(GURL(urls[i]));
-      NSString* identifier = web_state.get()->GetStableIdentifier();
-      // Tab IDs should be unique.
-      ASSERT_FALSE([identifiers containsObject:identifier]);
-      [identifiers addObject:identifier];
-      browser_->GetWebStateList()->InsertWebState(
-          i, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
-          WebStateOpener());
-    }
-    original_identifiers_ = [identifiers copy];
-    browser_->GetWebStateList()->ActivateWebStateAt(1);
-    original_selected_identifier_ =
-        browser_->GetWebStateList()->GetWebStateAt(1)->GetStableIdentifier();
-    consumer_ = [[FakeTabCollectionConsumer alloc] init];
-    mediator_ = [[BaseGridMediator alloc] initWithConsumer:consumer_];
-    mediator_.browser = browser_.get();
-    mediator_.tabRestoreService = tab_restore_service_;
-  }
-
-  // Creates a FakeWebState with a navigation history containing exactly only
-  // the given `url`.
-  std::unique_ptr<web::FakeWebState> CreateFakeWebStateWithURL(
-      const GURL& url) {
-    auto web_state = std::make_unique<web::FakeWebState>();
-    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-    navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
-    navigation_manager->SetLastCommittedItem(
-        navigation_manager->GetItemAtIndex(0));
-    web_state->SetNavigationManager(std::move(navigation_manager));
-    web_state->SetWebFramesManager(
-        std::make_unique<web::FakeWebFramesManager>());
-    web_state->SetBrowserState(browser_state_.get());
-    web_state->SetNavigationItemCount(1);
-    web_state->SetCurrentURL(url);
-    SnapshotTabHelper::CreateForWebState(web_state.get());
-    return web_state;
-  }
-
-  void TearDown() override {
-    // Forces the BaseGridMediator to removes its Observer from WebStateList
-    // before the Browser is destroyed.
-    mediator_.browser = nullptr;
-    mediator_ = nil;
-    PlatformTest::TearDown();
-  }
-
-  // Prepare the mock method to restore the tabs.
-  void PrepareForRestoration() {
-    TestSessionService* test_session_service =
-        [[TestSessionService alloc] init];
-    SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), test_session_service, false);
-    SessionRestorationBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID([[NSUUID UUID] UUIDString]);
-  }
-
-  void SetFakePriceDrop(web::WebState* web_state) {
-    auto price_drop =
-        std::make_unique<ShoppingPersistedDataTabHelper::PriceDrop>();
-    price_drop->current_price = @"$5";
-    price_drop->previous_price = @"$10";
-    price_drop->url = web_state->GetLastCommittedURL();
-    price_drop->timestamp = base::Time::Now();
-    ShoppingPersistedDataTabHelper::FromWebState(web_state)
-        ->SetPriceDropForTesting(std::move(price_drop));
-  }
-
-  bool WaitForConsumerUpdates(size_t expected_count) {
-    return WaitUntilConditionOrTimeout(
-        kWaitForTabCollectionConsumerUpdateTimeout, ^{
-          base::RunLoop().RunUntilIdle();
-          return expected_count == consumer_.items.count;
-        });
-  }
-
- protected:
-  virtual void InitializeFeatureFlags() {
-    scoped_feature_list_.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-  }
-
-  web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
-  sessions::TabRestoreService* tab_restore_service_;
-  id tab_model_;
-  FakeTabCollectionConsumer* consumer_;
-  BaseGridMediator* mediator_;
-  NSSet<NSString*>* original_identifiers_;
-  NSString* original_selected_identifier_;
-  std::unique_ptr<Browser> browser_;
-  BrowserList* browser_list_;
-  base::UserActionTester user_action_tester_;
-  AuthenticationService* auth_service_ = nullptr;
-};
 
 // Variation on BaseGridMediatorTest which enable PriceDropIndicatorsFlag.
 class BaseGridMediatorWithPriceDropIndicatorsTest
@@ -383,101 +141,6 @@ TEST_F(BaseGridMediatorTest, CloseItemCommand) {
   [mediator_ closeItemWithID:identifier];
   EXPECT_EQ(2, browser_->GetWebStateList()->count());
   EXPECT_EQ(2UL, consumer_.items.count);
-}
-
-// Tests that the WebStateList and consumer's list are empty when
-// `-closeAllItems` is called. Tests that `-undoCloseAllItems` does not restore
-// the WebStateList.
-TEST_F(BaseGridMediatorTest, CloseAllItemsCommand) {
-  // Previously there were 3 items.
-  [mediator_ closeAllItems];
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
-  [mediator_ undoCloseAllItems];
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-}
-
-// Tests that the WebStateList and consumer's list are empty when
-// `-saveAndCloseAllItems` is called.
-TEST_F(BaseGridMediatorTest, SaveAndCloseAllItemsCommand) {
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
-}
-
-// Tests that the WebStateList is not restored to 3 items when
-// `-undoCloseAllItems` is called after `-discardSavedClosedItems` is called.
-TEST_F(BaseGridMediatorTest, DiscardSavedClosedItemsCommand) {
-  PrepareForRestoration();
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-  [mediator_ discardSavedClosedItems];
-  [mediator_ undoCloseAllItems];
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
-}
-
-// Tests that the WebStateList is restored to 3 items when
-// `-undoCloseAllItems` is called.
-TEST_F(BaseGridMediatorTest, UndoCloseAllItemsCommand) {
-  PrepareForRestoration();
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-  [mediator_ undoCloseAllItems];
-  EXPECT_EQ(3, browser_->GetWebStateList()->count());
-  EXPECT_EQ(3UL, consumer_.items.count);
-  EXPECT_TRUE([original_identifiers_ containsObject:consumer_.items[0]]);
-  EXPECT_TRUE([original_identifiers_ containsObject:consumer_.items[1]]);
-  EXPECT_TRUE([original_identifiers_ containsObject:consumer_.items[2]]);
-}
-
-// Tests that the WebStateList is restored to 3 items when
-// `-undoCloseAllItems` is called.
-TEST_F(BaseGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
-  PrepareForRestoration();
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-  // The three tabs created in the SetUp should be passed to the restore
-  // service.
-  EXPECT_EQ(3UL, tab_restore_service_->entries().size());
-  std::set<SessionID::id_type> ids;
-  for (auto& entry : tab_restore_service_->entries()) {
-    ids.insert(entry->id.id());
-  }
-  EXPECT_EQ(3UL, ids.size());
-  // There should be no tabs in the WebStateList.
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
-
-  // Add three new tabs.
-  auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state1),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
-  // Second tab is a NTP.
-  auto web_state2 = CreateFakeWebStateWithURL(GURL(kChromeUINewTabURL));
-  browser_->GetWebStateList()->InsertWebState(1, std::move(web_state2),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
-  auto web_state3 = CreateFakeWebStateWithURL(GURL("https://test/url2"));
-  browser_->GetWebStateList()->InsertWebState(2, std::move(web_state3),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
-  browser_->GetWebStateList()->ActivateWebStateAt(0);
-
-  [mediator_ saveAndCloseAllItems];
-  // The NTP should not be saved.
-  EXPECT_EQ(5UL, tab_restore_service_->entries().size());
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
-  [mediator_ undoCloseAllItems];
-  EXPECT_EQ(3UL, tab_restore_service_->entries().size());
-  EXPECT_EQ(3UL, consumer_.items.count);
-  // Check the session entries were not changed.
-  for (auto& entry : tab_restore_service_->entries()) {
-    EXPECT_EQ(1UL, ids.count(entry->id.id()));
-  }
 }
 
 // Tests that when `-addNewItem` is called, the WebStateList count is

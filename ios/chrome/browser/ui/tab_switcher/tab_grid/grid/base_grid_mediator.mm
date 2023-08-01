@@ -175,17 +175,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 @interface BaseGridMediator () <CRWWebStateObserver,
                                 SnapshotCacheObserver,
                                 WebStateListObserving>
-// The list from the browser.
-@property(nonatomic, assign) WebStateList* webStateList;
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<TabCollectionConsumer> consumer;
-// The saved session window just before close all tabs is called.
-@property(nonatomic, strong) SessionWindowIOS* closedSessionWindow;
-// The number of tabs in `closedSessionWindow` that are synced by
-// TabRestoreService.
-@property(nonatomic, assign) int syncedClosedTabsCount;
+
 @end
 
 @implementation BaseGridMediator {
@@ -641,81 +635,19 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)closeAllItems {
-  RecordTabGridCloseTabsCount(self.webStateList->count());
-  if (!self.browserState->IsOffTheRecord()) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridCloseAllIncognitoTabs"));
-  }
-  // This is a no-op if `webStateList` is already empty.
-  self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
-  SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 - (void)saveAndCloseAllItems {
-  RecordTabGridCloseTabsCount(self.webStateList->count());
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
-
-  if (self.webStateList->empty()) {
-    return;
-  }
-
-  int old_size =
-      self.tabRestoreService ? self.tabRestoreService->entries().size() : 0;
-
-  if (IsPinnedTabsEnabled()) {
-    BOOL hasPinnedWebStatesOnly =
-        self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
-        self.webStateList->count();
-
-    if (hasPinnedWebStatesOnly) {
-      return;
-    }
-
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      self.closedSessionWindow = SerializeWebStateList(self.webStateList);
-    }
-    self.webStateList->CloseAllNonPinnedWebStates(
-        WebStateList::CLOSE_USER_ACTION);
-  } else {
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      self.closedSessionWindow = SerializeWebStateList(self.webStateList);
-    }
-    self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
-  }
-
-  self.syncedClosedTabsCount =
-      self.tabRestoreService
-          ? self.tabRestoreService->entries().size() - old_size
-          : 0;
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 - (void)undoCloseAllItems {
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
-  if (!self.closedSessionWindow) {
-    return;
-  }
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent::FromBrowser(self.browser)
-        ->RestoreSessionWindow(self.closedSessionWindow,
-                               SessionRestorationScope::kRegularOnly);
-    self.closedSessionWindow = nil;
-  }
-  [self removeEntriesFromTabRestoreService];
-  self.syncedClosedTabsCount = 0;
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 - (void)discardSavedClosedItems {
-  if (!self.closedSessionWindow) {
-    return;
-  }
-  self.syncedClosedTabsCount = 0;
-  self.closedSessionWindow = nil;
-  SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 - (void)
@@ -1030,24 +962,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   for (int i = firstIndex; i < self.webStateList->count(); i++) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
     _scopedWebStateObservation->AddObservation(webState);
-  }
-}
-
-// Removes `self.syncedClosedTabsCount` most recent entries from the
-// TabRestoreService.
-- (void)removeEntriesFromTabRestoreService {
-  if (!self.tabRestoreService) {
-    return;
-  }
-  std::vector<SessionID> identifiers;
-  auto iter = self.tabRestoreService->entries().begin();
-  auto end = self.tabRestoreService->entries().end();
-  for (int i = 0; i < self.syncedClosedTabsCount && iter != end; i++) {
-    identifiers.push_back(iter->get()->id);
-    iter++;
-  }
-  for (const SessionID sessionID : identifiers) {
-    self.tabRestoreService->RemoveTabEntryById(sessionID);
   }
 }
 

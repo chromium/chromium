@@ -7,8 +7,15 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
+
 // Mediates between model layer and regular grid UI layer.
 @interface RegularGridMediator : BaseGridMediator
+
+// TabRestoreService holds the recently closed tabs.
+@property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
 
 @end
 

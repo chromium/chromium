@@ -15,10 +15,7 @@
 class Browser;
 @protocol GridMediatorDelegate;
 @protocol TabCollectionConsumer;
-
-namespace sessions {
-class TabRestoreService;
-}  // namespace sessions
+class WebStateList;
 
 // Mediates between model layer and tab grid UI layer.
 @interface BaseGridMediator : NSObject <GridCommands,
@@ -28,10 +25,10 @@ class TabRestoreService;
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;
-// TabRestoreService holds the recently closed tabs.
-@property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
 // Delegate to handle presenting the action sheet.
 @property(nonatomic, weak) id<GridMediatorDelegate> delegate;
+// The list from the browser.
+@property(nonatomic, assign) WebStateList* webStateList;
 
 // Initializer with `consumer` as the receiver of model layer updates.
 - (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer

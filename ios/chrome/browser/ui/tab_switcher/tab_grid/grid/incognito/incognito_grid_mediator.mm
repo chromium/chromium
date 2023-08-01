@@ -4,14 +4,43 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @implementation IncognitoGridMediator
+
+// TODO(crbug.com/1457146): Refactor the grid commands to have the same function
+// name to close all.
+#pragma mark - GridCommands
+
+- (void)closeAllItems {
+  RecordTabGridCloseTabsCount(self.webStateList->count());
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseAllIncognitoTabs"));
+  // This is a no-op if `webStateList` is already empty.
+  self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+}
+
+- (void)saveAndCloseAllItems {
+  NOTREACHED_NORETURN() << "Incognito tabs should not be saved before closing.";
+}
+
+- (void)undoCloseAllItems {
+  NOTREACHED_NORETURN() << "Incognito tabs are not saved before closing.";
+}
+
+- (void)discardSavedClosedItems {
+  NOTREACHED_NORETURN() << "Incognito tabs cannot be saved.";
+}
 
 #pragma mark - TabGridPageMutator
 
