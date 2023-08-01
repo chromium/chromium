@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -117,7 +116,8 @@ void CookieJar::SetCookie(const String& value) {
 
 void CookieJar::OnBackendDisconnect() {
   shared_memory_initialized_ = false;
-  InvalidateCache();
+  last_cookies_hash_.reset();
+  last_version_ = network::mojom::blink::kInvalidCookieVersion;
 }
 
 String CookieJar::Cookies() {
@@ -132,20 +132,15 @@ String CookieJar::Cookies() {
   base::ReadOnlySharedMemoryRegion new_mapped_region;
   const bool get_version_shared_memory = !shared_memory_initialized_;
 
-  // Store the latest cookie version to update |last_version_| after attempting
-  // to get the string. Will get updated once more by GetCookiesString() if an
-  // ipc is required.
-  uint64_t new_version = last_version_;
-  if (IPCNeeded()) {
-    backend_->GetCookiesString(
-        cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
-        document_->GetExecutionContext()->HasStorageAccess(),
-        get_version_shared_memory, &new_version, &new_mapped_region, &value);
-    last_cookies_ = value;
-  }
+  // Store the latest cookie version to update |last_version_| after getting the
+  // string.
+  const uint64_t new_version = GetSharedCookieVersion();
 
-  // TODO(crbug.com/1465996): Once determined whether getting an invalid region
-  // is possible add a DCHECK or comment depending.
+  backend_->GetCookiesString(
+      cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
+      document_->GetExecutionContext()->HasStorageAccess(),
+      get_version_shared_memory, &new_mapped_region, &value);
+
   if (!shared_memory_initialized_ && new_mapped_region.IsValid()) {
     mapped_region_ = std::move(new_mapped_region);
     mapping_ = mapped_region_.Map();
@@ -156,7 +151,7 @@ String CookieJar::Cookies() {
   UpdateCacheAfterGetRequest(cookie_url, value, new_version);
 
   last_operation_was_set_ = false;
-  return last_cookies_;
+  return value;
 }
 
 bool CookieJar::CookiesEnabled() {
@@ -184,8 +179,6 @@ void CookieJar::SetCookieManager(
 
 void CookieJar::InvalidateCache() {
   last_cookies_hash_.reset();
-  last_cookies_ = String();
-  last_version_ = network::mojom::blink::kInvalidCookieVersion;
 }
 
 uint64_t CookieJar::GetSharedCookieVersion() {
@@ -197,29 +190,6 @@ uint64_t CookieJar::GetSharedCookieVersion() {
         std::memory_order_relaxed);
   }
   return network::mojom::blink::kInvalidCookieVersion;
-}
-
-bool CookieJar::IPCNeeded() {
-  // Not under the experiment, always use IPCs.
-  if (!RuntimeEnabledFeatures::ReduceCookieIPCsEnabled()) {
-    return true;
-  }
-
-  // An IPC is needed if there is no cached version.
-  if (last_version_ == network::mojom::blink::kInvalidCookieVersion) {
-    return true;
-  }
-
-  // If there is a cached version, there should also be a cached string.
-  CHECK(!last_cookies_.IsNull());
-
-  // Cookie string has changed.
-  if (last_version_ < GetSharedCookieVersion()) {
-    return true;
-  }
-
-  // No IPC needed!
-  return false;
 }
 
 bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
