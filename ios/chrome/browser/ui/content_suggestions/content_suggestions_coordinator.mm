@@ -47,6 +47,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -491,9 +493,17 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
         }
       };
   AuthenticationOperation operation =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kSigninAndSyncWithTwoScreens;
+      AuthenticationOperation::kSigninAndSyncWithTwoScreens;
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // If there are 0 identities, kInstantSignin requires less taps.
+    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    operation =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
+                ->HasIdentities()
+            ? AuthenticationOperation::kSigninOnly
+            : AuthenticationOperation::kInstantSignin;
+  }
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil

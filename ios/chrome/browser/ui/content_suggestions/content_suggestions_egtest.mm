@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -445,14 +446,12 @@ void TapMoreButtonIfVisible() {
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
   // Verify the signin screen appears.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kWebSigninSkipButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Dismiss the signin view.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kWebSigninSkipButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
       performAction:grey_tap()];
   // Verify the signin item is complete.
   GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],

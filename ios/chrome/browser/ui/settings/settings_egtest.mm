@@ -14,6 +14,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -400,9 +401,8 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                   @"Settings should not register key commands when presented.");
 
   // Cancel the sign-in operation.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kWebSigninSkipButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
       performAction:grey_tap()];
 
   // Wait for UI to finish closing the Sign-in screen.

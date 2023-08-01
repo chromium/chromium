@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -56,6 +57,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
   }
   if ([self isRunningTest:@selector
             (testSigninRowOpensSheetIfSignedOutAndSomeDeviceAccounts)] ||
+      [self isRunningTest:@selector
+            (testSigninRowOpensAuthActivityIfSignedOutAndNoDeviceAccounts)] ||
       [self isRunningTest:@selector(testSigninRowNotDisabledBySyncPolicy)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
@@ -133,6 +136,24 @@ using chrome_test_util::SettingsSignInRowMatcher;
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// For a signed out user with no device accounts, tests that the sign-in row is
+// shown with the correct strings and opens the auth activity on tap.
+- (void)testSigninRowOpensAuthActivityIfSignedOutAndNoDeviceAccounts {
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthActivityViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -1969,12 +1970,17 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   DCHECK(!self.isSigninInProgress);
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
-  // TODO(crbug.com/1450861): Show the SSO screen directly if there are no
-  // device-level accounts.
-  AuthenticationOperation operation =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kSigninAndSync;
+  AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // If there are 0 identities, kInstantSignin requires less taps.
+    operation =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState)
+                ->HasIdentities()
+            ? AuthenticationOperation::kSigninOnly
+            : AuthenticationOperation::kInstantSignin;
+  }
+
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:identity

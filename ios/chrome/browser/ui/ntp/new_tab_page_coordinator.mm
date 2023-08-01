@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
@@ -817,12 +818,17 @@
                              syncer::kReplaceSyncPromosWithSignInPromos))) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else {
-    // TODO(crbug.com/1450861): Show the SSO screen directly if there are no
-    // device-level accounts.
-    const AuthenticationOperation operation =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? AuthenticationOperation::kSigninOnly
-            : AuthenticationOperation::kSigninAndSync;
+    // If there are 0 identities, kInstantSignin requires less taps.
+    AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      ChromeBrowserState* browserState = self.browser->GetBrowserState();
+      operation =
+          ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
+                  ->HasIdentities()
+              ? AuthenticationOperation::kSigninOnly
+              : AuthenticationOperation::kInstantSignin;
+    }
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
         initWithOperation:operation
               accessPoint:signin_metrics::AccessPoint::
@@ -1026,10 +1032,17 @@
       signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  AuthenticationOperation operation =
-      base::FeatureList::IsEnabled(feed::kFeedBottomSyncStringRemoval)
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kSigninAndSync;
+  // If there are 0 identities, kInstantSignin requires less taps.
+  AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    operation =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
+                ->HasIdentities()
+            ? AuthenticationOperation::kSigninOnly
+            : AuthenticationOperation::kInstantSignin;
+  }
   ShowSigninCommand* command =
       [[ShowSigninCommand alloc] initWithOperation:operation
                                        accessPoint:access_point];

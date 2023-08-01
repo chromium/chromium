@@ -206,7 +206,10 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
-  if ([self isRunningTest:@selector(testOpenSignInFromNTPIfHasDeviceAccount)] ||
+  if ([self isRunningTest:@selector
+            (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
+      [self isRunningTest:@selector
+            (testOpenAuthActivityFromNTPIfNoDeviceAccount)] ||
       [self isRunningTest:@selector
             (testOpenSignInFromNTPWhenSyncDisabledByPolicy)]) {
     config.features_enabled.push_back(
@@ -986,8 +989,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 }
 
-// Tests that a signed-out user can open "Sign in" sheet from the NTP.
-- (void)testOpenSignInFromNTPIfHasDeviceAccount {
+// Tests that a signed-out user with device accounts can open "Sign in" sheet
+// from the NTP.
+- (void)testOpenSigninSheetFromNTPIfHasDeviceAccount {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Select the identity disc particle.
@@ -1000,6 +1004,21 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityLabel(l10n_util::GetNSString(
                      IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a signed-out user with no device account can open the auth
+// activity from the NTP.
+- (void)testOpenAuthActivityFromNTPIfNoDeviceAccount {
+  // Select the identity disc particle.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+      performAction:grey_tap()];
+
+  // Ensure the auth activity is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthActivityViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
