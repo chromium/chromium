@@ -8,11 +8,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -318,6 +320,74 @@ TEST_F(HTMLSelectMenuElementTest, SuggestedValueClearedWhenValueSet) {
   selectmenu->setValue("Third");
   EXPECT_EQ(blink::WebAutofillState::kNotFilled,
             selectmenu->GetAutofillState());
+}
+
+Color GetBorderColorForSuggestedOptionPopover(HTMLSelectMenuElement* element) {
+  const ComputedStyle& popover_style =
+      element->SuggestedOptionPopoverForTesting()->ComputedStyleRef();
+  return popover_style.BorderTop().GetColor().GetColor();
+}
+
+// Test HTMLSelectMenuElement preview popover inherits border color from the
+// button when the <selectmenu> button has a custom color.
+TEST_F(HTMLSelectMenuElementTest, PreviewButtonHasCustomBorder) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      selectmenu::part(button) {
+        border-color:#00ff00;
+      }
+    </style>
+    <selectmenu id='selectmenu'>
+      <option>First</option>
+    </selectmenu>
+  )HTML");
+
+  HTMLSelectMenuElement* selectmenu =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+  selectmenu->SetSuggestedValue("First");
+
+  EXPECT_EQ(Color::FromRGB(0, 0xff, 0),
+            GetBorderColorForSuggestedOptionPopover(selectmenu));
+}
+
+// Test HTMLSelectMenuElement preview popover inherits border color from the
+// button when the <selectmenu> button has an autofill-specific custom color.
+TEST_F(HTMLSelectMenuElementTest, PreviewButtonHasCustomAutofillBorder) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      selectmenu::part(button):autofill {
+        border-color:#00ff00;
+      }
+    </style>
+    <selectmenu id='selectmenu'>
+      <option>First</option>
+    </selectmenu>
+  )HTML");
+
+  HTMLSelectMenuElement* selectmenu =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+  selectmenu->SetSuggestedValue("First");
+
+  EXPECT_EQ(Color::FromRGB(0, 0xff, 0),
+            GetBorderColorForSuggestedOptionPopover(selectmenu));
+}
+
+// Test HTMLSelectMenuElement preview popover uses default color and does not
+// inherit color from selectmenu button when selectmenu button does not specify
+// a custom border color.
+TEST_F(HTMLSelectMenuElementTest, PreviewButtonHasNoCustomBorder) {
+  SetHtmlInnerHTML(R"HTML(
+    <selectmenu id='selectmenu'>
+      <option>First</option>
+    </selectmenu>
+  )HTML");
+
+  HTMLSelectMenuElement* selectmenu =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+  selectmenu->SetSuggestedValue("First");
+
+  EXPECT_EQ(Color::FromRGBA(0, 0, 0, 0.15 * 255),
+            GetBorderColorForSuggestedOptionPopover(selectmenu));
 }
 
 }  // namespace blink

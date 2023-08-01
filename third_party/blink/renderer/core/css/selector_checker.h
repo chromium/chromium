@@ -323,6 +323,7 @@ class CORE_EXPORT SelectorChecker {
                                    const ContainerNode*,
                                    MatchResult&) const;
   bool CheckPseudoClass(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoAutofill(CSSSelector::PseudoType, Element&) const;
   bool CheckPseudoElement(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,
                                  MatchResult&) const;

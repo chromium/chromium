@@ -86,6 +86,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   HTMLElement* ButtonPart() const { return button_part_; }
   HTMLElement* ListBoxPart() const { return listbox_part_; }
+  HTMLElement* SuggestedOptionPopoverForTesting() const {
+    return suggested_option_popover_;
+  }
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 

@@ -120,10 +120,13 @@ selectmenu::-internal-selectmenu-preview {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
-  background-color: Field;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25em;
   padding: 0.25em 0;
+}
+
+selectmenu::-internal-selectmenu-listbox {
+  background-color: Field;
 }
 
 /* TODO(github.com/openui/open-ui/issues/645): We need a better way to correctly
@@ -161,5 +164,6 @@ selectmenu::-internal-selectmenu-preview {
   min-block-size: anchor-size(self-block);
   inset-block-start: anchor(auto-same);
   inset-inline-start: anchor(auto-same);
+  background-color: -internal-light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
 }
 

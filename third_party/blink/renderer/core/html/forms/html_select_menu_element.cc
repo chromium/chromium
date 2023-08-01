@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/css/properties/longhand.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -26,12 +29,72 @@
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
+namespace {
+class PreviewPopoverInnerElement : public HTMLDivElement {
+ public:
+  explicit PreviewPopoverInnerElement(Document& document)
+      : HTMLDivElement(document) {
+    SetHasCustomStyleCallbacks();
+  }
+
+ private:
+  scoped_refptr<const ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext& style_recalc_context) override {
+    HTMLSelectMenuElement* selectmenu =
+        DynamicTo<HTMLSelectMenuElement>(OwnerShadowHost());
+    if (!selectmenu || !selectmenu->ButtonPart()) {
+      return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
+    }
+
+    const ComputedStyle& button_style =
+        selectmenu->ButtonPart()->ComputedStyleRef();
+    scoped_refptr<const ComputedStyle> original_style =
+        OriginalStyleForLayoutObject(style_recalc_context);
+    ComputedStyleBuilder style_builder(*original_style);
+    if (button_style.HasAuthorBorderRadius()) {
+      style_builder.SetBorderBottomLeftRadius(
+          button_style.BorderBottomLeftRadius());
+      style_builder.SetBorderBottomRightRadius(
+          button_style.BorderBottomRightRadius());
+      style_builder.SetBorderTopLeftRadius(button_style.BorderTopLeftRadius());
+      style_builder.SetBorderTopRightRadius(
+          button_style.BorderTopRightRadius());
+    }
+    if (button_style.HasAuthorBorder()) {
+      style_builder.SetBorderBottomColor(
+          button_style.BorderBottom().GetColor());
+      style_builder.SetBorderLeftColor(button_style.BorderLeft().GetColor());
+      style_builder.SetBorderRightColor(button_style.BorderRight().GetColor());
+      style_builder.SetBorderTopColor(button_style.BorderTop().GetColor());
+
+      style_builder.SetBorderBottomWidth(button_style.BorderBottomWidth());
+      style_builder.SetBorderLeftWidth(button_style.BorderLeftWidth());
+      style_builder.SetBorderRightWidth(button_style.BorderRightWidth());
+      style_builder.SetBorderTopWidth(button_style.BorderTopWidth());
+
+      style_builder.SetBorderBottomStyle(button_style.BorderBottomStyle());
+      style_builder.SetBorderLeftStyle(button_style.BorderLeftStyle());
+      style_builder.SetBorderRightStyle(button_style.BorderRightStyle());
+      style_builder.SetBorderTopStyle(button_style.BorderTopStyle());
+    }
+
+    style_builder.SetPaddingBottom(button_style.PaddingBottom());
+    style_builder.SetPaddingLeft(button_style.PaddingLeft());
+    style_builder.SetPaddingRight(button_style.PaddingRight());
+    style_builder.SetPaddingTop(button_style.PaddingTop());
+
+    return style_builder.TakeStyle();
+  }
+};
+
+}  // anonymous namespace
 
 class HTMLSelectMenuElement::SelectMutationCallback
     : public GarbageCollected<HTMLSelectMenuElement::SelectMutationCallback>,
@@ -323,7 +386,8 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
       MakeGarbageCollected<HTMLSelectMenuElement::OptionPartEventListener>(
           this);
 
-  suggested_option_popover_ = MakeGarbageCollected<HTMLDivElement>(document);
+  suggested_option_popover_ =
+      MakeGarbageCollected<PreviewPopoverInnerElement>(document);
   suggested_option_popover_->setAttribute(html_names::kPopoverAttr,
                                           keywords::kManual);
   suggested_option_popover_->SetPopoverOwnerSelectMenuElement(this);

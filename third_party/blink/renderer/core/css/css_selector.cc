@@ -1405,7 +1405,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
-  if (Match() != CSSSelector::kPseudoElement) {
+  if (Match() != CSSSelector::kPseudoElement &&
+      Match() != CSSSelector::kPseudoClass) {
     return false;
   }
   // Everything that makes sense should work following ::part. This list
@@ -1413,6 +1414,9 @@ bool CSSSelector::IsAllowedAfterPart() const {
   switch (GetPseudoType()) {
     case kPseudoBefore:
     case kPseudoAfter:
+    case kPseudoAutofill:
+    case kPseudoAutofillPreviewed:
+    case kPseudoAutofillSelected:
     case kPseudoPlaceholder:
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:
@@ -1422,6 +1426,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
+    case kPseudoWebKitAutofill:
       return true;
     default:
       return false;

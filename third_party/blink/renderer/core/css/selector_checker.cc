@@ -1531,19 +1531,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
     }
     case CSSSelector::kPseudoAutofill:
-    case CSSSelector::kPseudoWebKitAutofill: {
-      auto* html_form_element = DynamicTo<HTMLFormControlElement>(&element);
-      return html_form_element && html_form_element->IsAutofilled();
-    }
-    case CSSSelector::kPseudoAutofillPreviewed: {
-      auto* html_form_element = DynamicTo<HTMLFormControlElement>(&element);
-      return html_form_element && html_form_element->GetAutofillState() ==
-                                      WebAutofillState::kPreviewed;
-    }
-    case CSSSelector::kPseudoAutofillSelected: {
-      auto* html_form_element = DynamicTo<HTMLFormControlElement>(&element);
-      return html_form_element && html_form_element->HighlightAutofilled();
-    }
+    case CSSSelector::kPseudoWebKitAutofill:
+    case CSSSelector::kPseudoAutofillPreviewed:
+    case CSSSelector::kPseudoAutofillSelected:
+      return CheckPseudoAutofill(selector.GetPseudoType(), element);
     case CSSSelector::kPseudoAnyLink:
     case CSSSelector::kPseudoWebkitAnyLink:
       return element.IsLink();
@@ -1945,6 +1936,37 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
 static bool MatchesUAShadowElement(Element& element, const AtomicString& id) {
   ShadowRoot* root = element.ContainingShadowRoot();
   return root && root->IsUserAgent() && element.ShadowPseudoId() == id;
+}
+
+bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
+                                          Element& element) const {
+  HTMLFormControlElement* html_form_element = nullptr;
+  HTMLSelectMenuElement* owner_html_select_menu_element =
+      HTMLSelectMenuElement::OwnerSelectMenu(&element);
+  if (owner_html_select_menu_element &&
+      owner_html_select_menu_element->AssignedPartType(&element) ==
+          HTMLSelectMenuElement::PartType::kButton) {
+    html_form_element = owner_html_select_menu_element;
+  } else {
+    html_form_element = DynamicTo<HTMLFormControlElement>(&element);
+  }
+
+  if (!html_form_element) {
+    return false;
+  }
+  switch (pseudo_type) {
+    case CSSSelector::kPseudoAutofill:
+    case CSSSelector::kPseudoWebKitAutofill:
+      return html_form_element->IsAutofilled();
+    case CSSSelector::kPseudoAutofillPreviewed:
+      return html_form_element->GetAutofillState() ==
+             WebAutofillState::kPreviewed;
+    case CSSSelector::kPseudoAutofillSelected:
+      return html_form_element->HighlightAutofilled();
+    default:
+      NOTREACHED();
+  }
+  return false;
 }
 
 bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
