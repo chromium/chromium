@@ -502,20 +502,76 @@ class BASE_EXPORT GSL_OWNER Value {
     // missing an entry while performing the path traversal. Will fail if any
     // non-last component of the path refers to an already-existing entry that
     // is not a dictionary. Returns `nullptr` on failure.
-    Value* SetByDottedPath(StringPiece path, Value&& value);
-    Value* SetByDottedPath(StringPiece path, bool value);
+    //
+    // Warning: repeatedly using this API to enter entries in the same nested
+    // dictionary is inefficient, so please do not write the following:
+    //
+    // bad_example.SetByDottedPath("a.nested.dictionary.field_1", 1);
+    // bad_example.SetByDottedPath("a.nested.dictionary.field_2", "value");
+    // bad_example.SetByDottedPath("a.nested.dictionary.field_3", 1);
+    //
+    Value* SetByDottedPath(StringPiece path, Value&& value) &;
+    Value* SetByDottedPath(StringPiece path, bool value) &;
     template <typename T>
-    Value* SetByDottedPath(StringPiece, const T*) = delete;
-    Value* SetByDottedPath(StringPiece path, int value);
-    Value* SetByDottedPath(StringPiece path, double value);
-    Value* SetByDottedPath(StringPiece path, StringPiece value);
-    Value* SetByDottedPath(StringPiece path, StringPiece16 value);
-    Value* SetByDottedPath(StringPiece path, const char* value);
-    Value* SetByDottedPath(StringPiece path, const char16_t* value);
-    Value* SetByDottedPath(StringPiece path, std::string&& value);
-    Value* SetByDottedPath(StringPiece path, BlobStorage&& value);
-    Value* SetByDottedPath(StringPiece path, Dict&& value);
-    Value* SetByDottedPath(StringPiece path, List&& value);
+    Value* SetByDottedPath(StringPiece, const T*) & = delete;
+    Value* SetByDottedPath(StringPiece path, int value) &;
+    Value* SetByDottedPath(StringPiece path, double value) &;
+    Value* SetByDottedPath(StringPiece path, StringPiece value) &;
+    Value* SetByDottedPath(StringPiece path, StringPiece16 value) &;
+    Value* SetByDottedPath(StringPiece path, const char* value) &;
+    Value* SetByDottedPath(StringPiece path, const char16_t* value) &;
+    Value* SetByDottedPath(StringPiece path, std::string&& value) &;
+    Value* SetByDottedPath(StringPiece path, BlobStorage&& value) &;
+    Value* SetByDottedPath(StringPiece path, Dict&& value) &;
+    Value* SetByDottedPath(StringPiece path, List&& value) &;
+
+    // Rvalue overrides of the `SetByDottedPath` methods, which allow you to
+    // construct a `Value::Dict` builder-style:
+    //
+    // Value::Dict result =
+    //     Value::Dict()
+    //         .SetByDottedPath("a.nested.dictionary.with.key-1", "first value")
+    //         .Set("local-key-1", 2));
+    //
+    // Each method returns a rvalue reference to `this`, so this is as efficient
+    // as (and less mistake-prone than) stand-alone calls to `Set`.
+    //
+    // Warning: repeatedly using this API to enter entries in the same nested
+    // dictionary is inefficient, so do not write this:
+    //
+    // Value::Dict bad_example =
+    //   Value::Dict()
+    //     .SetByDottedPath("nested.dictionary.key-1", "first value")
+    //     .SetByDottedPath("nested.dictionary.key-2", "second value")
+    //     .SetByDottedPath("nested.dictionary.key-3", "third value");
+    //
+    // Instead, simply write this
+    //
+    // Value::Dict good_example =
+    //   Value::Dict()
+    //     .Set("nested",
+    //          base::Value::Dict()
+    //            .Set("dictionary",
+    //                 base::Value::Dict()
+    //                   .Set(key-1", "first value")
+    //                   .Set(key-2", "second value")
+    //                   .Set(key-3", "third value")));
+    //
+    //
+    Dict&& SetByDottedPath(StringPiece path, Value&& value) &&;
+    Dict&& SetByDottedPath(StringPiece path, bool value) &&;
+    template <typename T>
+    Dict&& SetByDottedPath(StringPiece, const T*) && = delete;
+    Dict&& SetByDottedPath(StringPiece path, int value) &&;
+    Dict&& SetByDottedPath(StringPiece path, double value) &&;
+    Dict&& SetByDottedPath(StringPiece path, StringPiece value) &&;
+    Dict&& SetByDottedPath(StringPiece path, StringPiece16 value) &&;
+    Dict&& SetByDottedPath(StringPiece path, const char* value) &&;
+    Dict&& SetByDottedPath(StringPiece path, const char16_t* value) &&;
+    Dict&& SetByDottedPath(StringPiece path, std::string&& value) &&;
+    Dict&& SetByDottedPath(StringPiece path, BlobStorage&& value) &&;
+    Dict&& SetByDottedPath(StringPiece path, Dict&& value) &&;
+    Dict&& SetByDottedPath(StringPiece path, List&& value) &&;
 
     bool RemoveByDottedPath(StringPiece path);
 

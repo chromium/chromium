@@ -695,7 +695,7 @@ Value::List* Value::Dict::FindListByDottedPath(StringPiece path) {
   return v ? v->GetIfList() : nullptr;
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, Value&& value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, Value&& value) & {
   DCHECK(!path.empty());
   DCHECK(IsStringUTF8AllowingNoncharacters(path));
 
@@ -723,52 +723,118 @@ Value* Value::Dict::SetByDottedPath(StringPiece path, Value&& value) {
   }
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, bool value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, bool value) & {
   return SetByDottedPath(path, Value(value));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, int value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, int value) & {
   return SetByDottedPath(path, Value(value));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, double value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, double value) & {
   return SetByDottedPath(path, Value(value));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, StringPiece value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, StringPiece value) & {
   return SetByDottedPath(path, Value(value));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, StringPiece16 value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, StringPiece16 value) & {
   return SetByDottedPath(path, Value(value));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, const char* value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, const char* value) & {
   return SetByDottedPath(path, Value(value));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, const char16_t* value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, const char16_t* value) & {
   return SetByDottedPath(path, Value(value));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, std::string&& value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, std::string&& value) & {
   return SetByDottedPath(path, Value(std::move(value)));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, BlobStorage&& value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, BlobStorage&& value) & {
   return SetByDottedPath(path, Value(std::move(value)));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, Dict&& value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, Dict&& value) & {
   return SetByDottedPath(path, Value(std::move(value)));
 }
 
-Value* Value::Dict::SetByDottedPath(StringPiece path, List&& value) {
+Value* Value::Dict::SetByDottedPath(StringPiece path, List&& value) & {
   return SetByDottedPath(path, Value(std::move(value)));
 }
 
 bool Value::Dict::RemoveByDottedPath(StringPiece path) {
   return ExtractByDottedPath(path).has_value();
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, Value&& value) && {
+  SetByDottedPath(path, std::move(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, bool value) && {
+  SetByDottedPath(path, Value(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, int value) && {
+  SetByDottedPath(path, Value(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, double value) && {
+  SetByDottedPath(path, Value(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path,
+                                           StringPiece value) && {
+  SetByDottedPath(path, Value(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path,
+                                           StringPiece16 value) && {
+  SetByDottedPath(path, Value(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path,
+                                           const char* value) && {
+  SetByDottedPath(path, Value(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path,
+                                           const char16_t* value) && {
+  SetByDottedPath(path, Value(value));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path,
+                                           std::string&& value) && {
+  SetByDottedPath(path, Value(std::move(value)));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path,
+                                           BlobStorage&& value) && {
+  SetByDottedPath(path, Value(std::move(value)));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, Dict&& value) && {
+  SetByDottedPath(path, Value(std::move(value)));
+  return std::move(*this);
+}
+
+Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, List&& value) && {
+  SetByDottedPath(path, Value(std::move(value)));
+  return std::move(*this);
 }
 
 absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {

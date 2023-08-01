@@ -94,7 +94,7 @@ TEST(JsonWriterTest, KeysWithPeriods) {
             R"({"a.b":3,"c":2,"d.e.f":{"g.h.i.j":1}})");
 
   EXPECT_EQ(WriteJson(Value::Dict()  //
-                          .Set("a", Value::Dict().Set("b", 2))
+                          .SetByDottedPath("a.b", 2)
                           .Set("a.b", 1)),
             R"({"a":{"b":2},"a.b":1})");
 }
