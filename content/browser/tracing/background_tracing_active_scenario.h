@@ -58,8 +58,6 @@ class BackgroundTracingActiveScenario {
   // from the background tracing system.
   void OnFinalizeComplete();
 
-  size_t GetTraceUploadLimitKb() const;
-
   // For testing
   CONTENT_EXPORT void FireTimerForTesting();
   CONTENT_EXPORT void SetRuleTriggeredCallbackForTesting(

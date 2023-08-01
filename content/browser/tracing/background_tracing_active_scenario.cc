@@ -449,8 +449,4 @@ void BackgroundTracingActiveScenario::GenerateMetadataProto(
   last_triggered_rule_->GenerateMetadataProto(triggered_rule);
 }
 
-size_t BackgroundTracingActiveScenario::GetTraceUploadLimitKb() const {
-  return config_->GetTraceUploadLimitKb();
-}
-
 }  // namespace content

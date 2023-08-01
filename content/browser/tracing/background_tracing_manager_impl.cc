@@ -40,6 +40,7 @@
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "net/base/network_change_notifier.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -249,6 +250,13 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
     return false;
   }
 
+  if (config_impl->upload_limit_kb()) {
+    upload_limit_kb_ = *config_impl->upload_limit_kb();
+  }
+  if (config_impl->upload_limit_network_kb()) {
+    upload_limit_network_kb_ = *config_impl->upload_limit_network_kb();
+  }
+
   requires_anonymized_data_ = (data_filtering == ANONYMIZE_DATA);
   config_impl->set_requires_anonymized_data(requires_anonymized_data_);
 
@@ -352,13 +360,7 @@ bool BackgroundTracingManagerImpl::HasTraceToUpload() {
   if (trace_to_upload_.empty()) {
     return false;
   }
-  if (!legacy_active_scenario_) {
-    // TODO(crbug.com/1418116): Save the trace in local database and refactor
-    // upload policies for multi-scenario sessions.
-    return false;
-  }
-  if (trace_to_upload_.size() <=
-      legacy_active_scenario_->GetTraceUploadLimitKb() * 1024) {
+  if (trace_to_upload_.size() <= GetTraceUploadLimitKb() * 1024) {
     return true;
   }
   RecordMetric(Metrics::LARGE_UPLOAD_WAITING_TO_RETRY);
@@ -615,6 +617,16 @@ void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {
                                              std::move(pending_agent.second));
   }
   pending_agents_.clear();
+}
+
+size_t BackgroundTracingManagerImpl::GetTraceUploadLimitKb() const {
+#if BUILDFLAG(IS_ANDROID)
+  auto type = net::NetworkChangeNotifier::GetConnectionType();
+  if (net::NetworkChangeNotifier::IsConnectionCellular(type)) {
+    return upload_limit_network_kb_;
+  }
+#endif
+  return upload_limit_kb_;
 }
 
 }  // namespace content

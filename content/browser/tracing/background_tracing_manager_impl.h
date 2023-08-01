@@ -114,7 +114,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   void SetTraceToUpload(std::string trace_data);
   std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override;
-  size_t GetTraceUploadLimitKb() const;
 
   // Add/remove EnabledStateTestObserver.
   CONTENT_EXPORT void AddEnabledStateObserverForTesting(
@@ -143,6 +142,14 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
       std::unique_ptr<std::string> trace_data) override;
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  // ~1MB compressed size.
+  constexpr static int kUploadLimitKb = 5 * 1024;
+#else
+  // Less than 10MB compressed size.
+  constexpr static int kUploadLimitKb = 30 * 1024;
+#endif
+
   bool RequestActivateScenario();
 
   // Named triggers
@@ -160,6 +167,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   void MaybeConstructPendingAgents();
   void OnFinalizeComplete(bool success);
   void InitializeTraceReportDatabase();
+  size_t GetTraceUploadLimitKb() const;
 
   std::unique_ptr<TracingDelegate> delegate_;
   std::unique_ptr<BackgroundTracingActiveScenario> legacy_active_scenario_;
@@ -186,6 +194,12 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
 
   // This field contains serialized trace log proto.
   std::string trace_to_upload_;
+
+  // All the upload limits below are set for uncompressed trace log. On
+  // compression the data size usually reduces by 3x for size < 10MB, and the
+  // compression ratio grows up to 8x if the buffer size is around 100MB.
+  size_t upload_limit_network_kb_ = 1024;
+  size_t upload_limit_kb_ = kUploadLimitKb;
 
   base::WeakPtrFactory<BackgroundTracingManagerImpl> weak_factory_{this};
 };
