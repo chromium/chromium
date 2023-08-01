@@ -139,7 +139,7 @@ function getCSS() {
     }
 
     .queued {
-      stroke: var(--cros-sys-secondary);
+      stroke: currentColor
     }
 
     .edge {
