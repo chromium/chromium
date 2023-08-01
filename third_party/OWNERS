@@ -24,3 +24,6 @@ per-file .gitignore=*
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
+
+# temporary owner addition for landing conflicting presubmit changes only
+renewitt@google.com
