@@ -37,6 +37,11 @@ class PrerenderWebContentsDelegateImpl
       content::WebContents* portal_web_contents) override;
   void WebContentsBecamePortal(
       content::WebContents* portal_web_contents) override;
+  void OnDidBlockNavigation(
+      content::WebContents* web_contents,
+      const GURL& blocked_url,
+      const GURL& initiator_url,
+      blink::mojom::NavigationBlockedReason reason) override;
   std::unique_ptr<content::WebContents> ActivatePortalWebContents(
       content::WebContents* predecessor_contents,
       std::unique_ptr<content::WebContents> portal_contents) override;

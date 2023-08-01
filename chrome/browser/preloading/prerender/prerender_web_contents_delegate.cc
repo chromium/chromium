@@ -59,6 +59,16 @@ void PrerenderWebContentsDelegateImpl::WebContentsBecamePortal(
   NOTREACHED_NORETURN();
 }
 
+void PrerenderWebContentsDelegateImpl::OnDidBlockNavigation(
+    content::WebContents* web_contents,
+    const GURL& blocked_url,
+    const GURL& initiator_url,
+    blink::mojom::NavigationBlockedReason reason) {
+  // DCHECK against LifecycleState in RenderFrameHostImpl::DidBlockNavigation()
+  // ensures this is never called during prerendering.
+  NOTREACHED_NORETURN();
+}
+
 std::unique_ptr<content::WebContents>
 PrerenderWebContentsDelegateImpl::ActivatePortalWebContents(
     content::WebContents* predecessor_contents,
