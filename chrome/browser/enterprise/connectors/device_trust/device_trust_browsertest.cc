@@ -765,6 +765,51 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_user_inline_flow_enabled=*/testing::Values(true),
         /*is_unmanaged_device_feature_enabled=*/testing::Values(true)));
 
+class DeviceTrustBrowserTestSignalsContractForUnmanagedDevices
+    : public DeviceTrustBrowserTest {
+ protected:
+  DeviceTrustBrowserTestSignalsContractForUnmanagedDevices()
+      : DeviceTrustBrowserTest(DeviceTrustConnectorState({
+            .affiliated = false,
+            .cloud_user_management_level = DeviceTrustManagementLevel({
+                .is_managed = true,
+                .is_inline_policy_enabled = true,
+            }),
+        })) {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled, true);
+  }
+};
+
+// Tests that signal values respect the expected format and is filled-out
+// as expect, especially respective filtered stable device identifiers.
+IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTestSignalsContractForUnmanagedDevices,
+                       SignalsContract) {
+  auto* device_trust_service =
+      DeviceTrustServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(device_trust_service);
+
+  base::test::TestFuture<base::Value::Dict> future;
+  device_trust_service->GetSignals(future.GetCallback());
+
+  // This error most likely indicates that one of the signals decorators did
+  // not invoke its done_closure in time.
+  ASSERT_TRUE(future.Wait()) << "Timed out while collecting signals.";
+
+  const base::Value::Dict& signals_dict = future.Get();
+
+  const auto signals_contract_map =
+      device_signals::test::GetSignalsContractForUnmanagedDevices();
+  ASSERT_FALSE(signals_contract_map.empty());
+  for (const auto& signals_contract_entry : signals_contract_map) {
+    // First is the signal name.
+    // Second is the contract evaluation predicate.
+    EXPECT_TRUE(signals_contract_entry.second.Run(signals_dict))
+        << "Signals contract validation failed for: "
+        << signals_contract_entry.first;
+  }
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_connectors::test

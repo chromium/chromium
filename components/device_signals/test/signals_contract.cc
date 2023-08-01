@@ -84,6 +84,31 @@ bool VerifyUnset(const std::string& signal_name,
   return !signals.Find(signal_name);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChangeContractForUnmanagedDevices(
+    base::flat_map<std::string,
+                   base::RepeatingCallback<bool(const base::Value::Dict&)>>&
+        contract) {
+  contract[names::kDeviceAffiliationIds] =
+      base::BindRepeating(VerifyIsStringArray, names::kDeviceAffiliationIds,
+                          /*enforce_value=*/false);
+
+  // Signals containing stable device identifiers should be unset.
+  contract[names::kDisplayName] =
+      base::BindRepeating(VerifyUnset, names::kDisplayName);
+  contract[names::kSystemDnsServers] = base::BindRepeating(
+      base::BindRepeating(VerifyUnset, names::kSystemDnsServers));
+  contract[names::kSerialNumber] =
+      base::BindRepeating(VerifyUnset, names::kSerialNumber);
+  contract[names::kDeviceHostName] =
+      base::BindRepeating(VerifyUnset, names::kDeviceHostName);
+  contract[names::kMacAddresses] =
+      base::BindRepeating(VerifyUnset, names::kMacAddresses);
+  contract[names::kImei] = base::BindRepeating(VerifyUnset, names::kImei);
+  contract[names::kMeid] = base::BindRepeating(VerifyUnset, names::kMeid);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 base::flat_map<std::string,
@@ -211,5 +236,18 @@ GetSignalsContract() {
 
   return contract;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+base::flat_map<std::string,
+               base::RepeatingCallback<bool(const base::Value::Dict&)>>
+GetSignalsContractForUnmanagedDevices() {
+  base::flat_map<std::string,
+                 base::RepeatingCallback<bool(const base::Value::Dict&)>>
+      contract = GetSignalsContract();
+
+  ChangeContractForUnmanagedDevices(contract);
+  return contract;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace device_signals::test
