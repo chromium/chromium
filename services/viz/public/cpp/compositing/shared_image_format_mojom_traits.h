@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_SHARED_IMAGE_FORMAT_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_SHARED_IMAGE_FORMAT_MOJOM_TRAITS_H_
 
+#include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "services/viz/public/mojom/compositing/shared_image_format.mojom-shared.h"
 
@@ -61,6 +62,14 @@ struct StructTraits<
           format) {
     return format.channel_format;
   }
+
+#if BUILDFLAG(IS_OZONE)
+  static bool prefers_external_sampler(
+      viz::SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat
+          format) {
+    return format.prefers_external_sampler;
+  }
+#endif
 
   static bool Read(
       viz::mojom::MultiplanarFormatDataView data,

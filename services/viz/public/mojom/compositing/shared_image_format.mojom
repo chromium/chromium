@@ -22,6 +22,9 @@ struct MultiplanarFormat {
   PlaneConfig plane_config;
   Subsampling subsampling;
   ChannelFormat channel_format;
+
+  [EnableIf=use_ozone]
+  bool prefers_external_sampler;
 };
 
 // Corresponds to viz::SharedImageFormat. It can only be SingleplanarFormat or
