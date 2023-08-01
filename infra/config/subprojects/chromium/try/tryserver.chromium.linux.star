@@ -292,9 +292,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
         experiment_percentage = 10,
@@ -346,6 +343,39 @@ try_.compilator_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     ssd = True,
     main_list_view = "try",
+)
+
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# linux-wayland-rel to Siso.
+try_.orchestrator_builder(
+    name = "linux-wayland-siso-rel",
+    mirrors = [
+        "ci/Linux Builder (Wayland)",
+        "ci/Linux Tests (Wayland)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "linux-wayland-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "linux-wayland-siso-rel-compilator",
+    ssd = True,
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.builder(
@@ -471,6 +501,38 @@ try_.compilator_builder(
     name = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
+)
+
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# linux_chromium_asan_rel_ng to Siso.
+try_.orchestrator_builder(
+    name = "linux_chromium_asan_siso_rel_ng",
+    mirrors = [
+        "ci/Linux ASan LSan Builder",
+        "ci/Linux ASan LSan Tests (1)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "linux_chromium_asan_siso_rel_ng-compilator",
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+)
+
+try_.compilator_builder(
+    name = "linux_chromium_asan_siso_rel_ng-compilator",
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.builder(

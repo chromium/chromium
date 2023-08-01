@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -22,6 +22,9 @@ try_.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 consoles.list_view(
@@ -83,6 +86,37 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# android-12-x64-rel to Siso.
+try_.orchestrator_builder(
+    name = "android-12-x64-siso-rel",
+    mirrors = [
+        "ci/android-12-x64-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "android-12-x64-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+    use_java_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-12-x64-siso-rel-compilator",
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
 try_.builder(
     name = "android-12l-x64-dbg",
     mirrors = [
@@ -128,9 +162,43 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
     check_for_flakiness = True,
     main_list_view = "try",
+)
+
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# android-arm64-rel to Siso.
+try_.orchestrator_builder(
+    name = "android-arm64-siso-rel",
+    description_html = "This builder may trigger tests on multiple Android versions.",
+    mirrors = [
+        "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
+        "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    check_for_flakiness = True,
+    compilator = "android-arm64-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-arm64-siso-rel-compilator",
+    check_for_flakiness = True,
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 # TODO(crbug.com/1367523): Reeanble this builder once the reboot issue is resolved.
@@ -354,6 +422,41 @@ try_.builder(
 try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
+)
+
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# android-nougat-x86-rel to Siso.
+try_.orchestrator_builder(
+    name = "android-nougat-x86-siso-rel",
+    mirrors = [
+        "ci/android-nougat-x86-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    check_for_flakiness = True,
+    compilator = "android-nougat-x86-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+    use_java_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-nougat-x86-siso-rel-compilator",
+    cores = 64,
+    check_for_flakiness = True,
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.orchestrator_builder(

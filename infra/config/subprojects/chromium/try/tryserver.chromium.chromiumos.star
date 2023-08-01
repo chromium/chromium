@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -23,6 +23,9 @@ try_.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 consoles.list_view(
@@ -75,6 +78,31 @@ try_.compilator_builder(
     cores = "8|16",
     check_for_flakiness = True,
     main_list_view = "try",
+)
+
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# chromeos-amd64-generic-rel to Siso.
+try_.orchestrator_builder(
+    name = "chromeos-amd64-generic-siso-rel",
+    mirrors = ["ci/chromeos-amd64-generic-rel"],
+    check_for_flakiness = True,
+    compilator = "chromeos-amd64-generic-siso-rel-compilator",
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+)
+
+try_.compilator_builder(
+    name = "chromeos-amd64-generic-siso-rel-compilator",
+    check_for_flakiness = True,
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.builder(
@@ -266,6 +294,35 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# linux-chromeos-rel to Siso.
+try_.orchestrator_builder(
+    name = "linux-chromeos-siso-rel",
+    mirrors = [
+        "ci/linux-chromeos-rel",
+    ],
+    check_for_flakiness = True,
+    compilator = "linux-chromeos-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "linux-chromeos-siso-rel-compilator",
+    check_for_flakiness = True,
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
 try_.builder(
     name = "linux-lacros-dbg",
     # TODO(crbug.com/1233247) Adds the CI tester when it's available.
@@ -298,6 +355,33 @@ try_.compilator_builder(
     cores = 32,
     check_for_flakiness = True,
     main_list_view = "try",
+)
+
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# linux-lacros-rel to Siso.
+try_.orchestrator_builder(
+    name = "linux-lacros-siso-rel",
+    mirrors = [
+        "ci/linux-lacros-builder-rel",
+        "ci/linux-lacros-tester-rel",
+    ],
+    check_for_flakiness = True,
+    compilator = "linux-lacros-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 1,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "linux-lacros-siso-rel-compilator",
+    cores = 32,
+    check_for_flakiness = True,
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.builder(
