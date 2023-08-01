@@ -42,7 +42,6 @@ editor_tsconfig.py \
 ./out/Debug/gen/chrome/browser/resources/settings/tsconfig_build_ts.json
 $ ./chrome/browser/resources/ash/settings/os_languages_page/tools/\
 editor_tsconfig.py \
---root_dir=".." \
 --remove_lazy_load \
 ./out/Debug/gen/chrome/browser/resources/ash/settings/\
 tsconfig_build_ts.json
