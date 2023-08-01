@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
@@ -79,7 +80,7 @@
 #pragma mark - AddCreditCardMediatorDelegate
 
 - (void)creditCardMediatorDidFinish:(AutofillAddCreditCardMediator*)mediator {
-  [self stop];
+  [self.delegate autofillAddCreditCardCoordinatorWantsToBeStopped:self];
 }
 
 - (void)creditCardMediatorHasInvalidCardNumber:
@@ -136,7 +137,9 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
                 action:^{
-                  [weakSelf stop];
+                  [weakSelf.delegate
+                      autofillAddCreditCardCoordinatorWantsToBeStopped:
+                          weakSelf];
                   [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];

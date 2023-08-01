@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_card_item.h"
@@ -65,6 +66,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - AutofillCreditCardTableViewController
 
 @interface AutofillCreditCardTableViewController () <
+    AutofillAddCreditCardCoordinatorDelegate,
     PersonalDataManagerObserver,
     PopoverLabelViewControllerDelegate> {
   autofill::PersonalDataManager* _personalDataManager;
@@ -269,8 +271,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(!_settingsAreDismissed);
 
   _personalDataManager->RemoveObserver(_observer.get());
-  [self.addCreditCardCoordinator stop];
-  self.addCreditCardCoordinator = nil;
+  [self stopAutofillAddCreditCardCoordinator];
 
   // Remove observer bridges.
   _observer.reset();
@@ -561,7 +562,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.addCreditCardCoordinator = [[AutofillAddCreditCardCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser];
-
+  self.addCreditCardCoordinator.delegate = self;
   [self.addCreditCardCoordinator start];
 }
 
@@ -612,6 +613,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)addButtonCallback {
   [self handleAddPayment];
+}
+
+- (void)stopAutofillAddCreditCardCoordinator {
+  [self.addCreditCardCoordinator stop];
+  self.addCreditCardCoordinator.delegate = nil;
+  self.addCreditCardCoordinator = nil;
+}
+
+#pragma mark - AutofillAddCreditCardCoordinatorDelegate
+
+- (void)autofillAddCreditCardCoordinatorWantsToBeStopped:
+    (AutofillAddCreditCardCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.addCreditCardCoordinator);
+  [self stopAutofillAddCreditCardCoordinator];
 }
 
 @end

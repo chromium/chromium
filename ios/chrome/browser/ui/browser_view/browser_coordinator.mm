@@ -171,6 +171,7 @@
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
@@ -239,6 +240,7 @@ enum class ToolbarKind {
 }  // anonymous namespace
 
 @interface BrowserCoordinator () <
+    AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
     DefaultBrowserPromoCommands,
@@ -276,7 +278,6 @@ enum class ToolbarKind {
     URLLoadingDelegate,
     WebContentCommands,
     WebNavigationNTPDelegate>
-
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
 
@@ -662,6 +663,12 @@ enum class ToolbarKind {
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator.delegate = nil;
   self.passwordProtectionCoordinator = nil;
+}
+
+- (void)stopAutofillAddCreditCardCoordinator {
+  [self.addCreditCardCoordinator stop];
+  self.addCreditCardCoordinator.delegate = nil;
+  self.addCreditCardCoordinator = nil;
 }
 
 - (void)stopRepostFormCoordinator {
@@ -1166,10 +1173,6 @@ enum class ToolbarKind {
 
   /* SharingCoordinator is created and started by an ActivityServiceCommand */
 
-  self.addCreditCardCoordinator = [[AutofillAddCreditCardCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-
   self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -1309,8 +1312,7 @@ enum class ToolbarKind {
   [self.textZoomCoordinator stop];
   self.textZoomCoordinator = nil;
 
-  [self.addCreditCardCoordinator stop];
-  self.addCreditCardCoordinator = nil;
+  [self stopAutofillAddCreditCardCoordinator];
 
   [self.infobarBannerOverlayContainerCoordinator stop];
   self.infobarBannerOverlayContainerCoordinator = nil;
@@ -1629,6 +1631,10 @@ enum class ToolbarKind {
 }
 
 - (void)showAddCreditCard {
+  self.addCreditCardCoordinator = [[AutofillAddCreditCardCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.addCreditCardCoordinator.delegate = self;
   [self.addCreditCardCoordinator start];
 }
 
@@ -3008,6 +3014,14 @@ enum class ToolbarKind {
 - (void)storeKitCoordinatorWantsToStop:(StoreKitCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.storeKitCoordinator);
   [self stopStoreKitCoordinator];
+}
+
+#pragma mark - AutofillAddCreditCardCoordinatorDelegate
+
+- (void)autofillAddCreditCardCoordinatorWantsToBeStopped:
+    (AutofillAddCreditCardCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.addCreditCardCoordinator);
+  [self stopAutofillAddCreditCardCoordinator];
 }
 
 @end

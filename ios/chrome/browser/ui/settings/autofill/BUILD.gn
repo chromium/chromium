@@ -6,6 +6,7 @@ source_set("autofill") {
   sources = [
     "autofill_add_credit_card_coordinator.h",
     "autofill_add_credit_card_coordinator.mm",
+    "autofill_add_credit_card_coordinator_delegate.h",
     "autofill_add_credit_card_mediator.h",
     "autofill_add_credit_card_mediator.mm",
     "autofill_add_credit_card_mediator_delegate.h",
