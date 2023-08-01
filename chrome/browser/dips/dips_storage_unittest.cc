@@ -633,6 +633,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
+// TODO(crbug.com/1445107): Add a test for clearing popups table via history
+// deletion.
+
 TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");

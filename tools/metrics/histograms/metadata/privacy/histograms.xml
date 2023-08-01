@@ -225,12 +225,12 @@ reviewer.
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
-    Number of entries present in the user's DIPS database (where there is 1
-    entry per eTLD+1). For each user profile, reported at profile open (which
-    usually happens at startup). Also reported approximately once every 24 hours
-    thereafter, while the profile remains open and active. If the database is
-    new and therefore empty at startup, such as when a Guest or other OTR
-    profile is opened, a count of 0 will be reported.
+    Number of entries present in the `bounces` table of the user's DIPS database
+    (where there is 1 entry per eTLD+1). For each user profile, reported at
+    profile open (which usually happens at startup). Also reported approximately
+    once every 24 hours thereafter, while the profile remains open and active.
+    If the database is new and therefore empty at startup, such as when a Guest
+    or other OTR profile is opened, a count of 0 will be reported.
   </summary>
 </histogram>
 

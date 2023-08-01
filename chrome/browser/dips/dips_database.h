@@ -25,6 +25,10 @@ class DIPSDatabase {
   // The length of time that will be waited between emitting db health metrics.
   static const base::TimeDelta kMetricsInterval;
 
+  // How long DIPS maintains popups in storage (for recording Popup Heuristic
+  // storage accesses).
+  static const base::TimeDelta kPopupTtl;
+
   // Passing in an absl::nullopt `db_path` causes the db to be created in
   // memory. Init() must be called before using the DIPSDatabase to make sure it
   // is initialized.
@@ -52,6 +56,7 @@ class DIPSDatabase {
   // extra columns for recording the first and last time a web authn assertion
   // was called.
   bool MigrateToVersion3();
+  bool MigrateToVersion4();
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
@@ -61,6 +66,11 @@ class DIPSDatabase {
              const TimestampRange& bounce_times,
              const TimestampRange& web_authn_assertion_times);
 
+  bool WritePopup(const std::string& opener_site,
+                  const std::string& popup_site,
+                  const uint64_t access_id,
+                  const base::Time& popup_time);
+
   // This is implicitly `inline`. Don't move its definition to the .cc file.
   bool HasExpired(absl::optional<base::Time> time) {
     return time.has_value() &&
@@ -69,9 +79,12 @@ class DIPSDatabase {
 
   absl::optional<StateValue> Read(const std::string& site);
 
-  // Note: this doesn't clear expired interactions from the database unlike the
-  // other database querying methods.
-  std::vector<std::string> GetAllSitesForTesting();
+  absl::optional<PopupsStateValue> ReadPopup(const std::string& opener_site,
+                                             const std::string& popup_site);
+
+  // Note: this doesn't clear expired interactions from the database unlike
+  // the other database querying methods.
+  std::vector<std::string> GetAllSitesForTesting(const DIPSDatabaseTable table);
 
   // Returns the subset of sites in |sites| WITH user interaction or successful
   // web authn assertion recorded.
@@ -144,9 +157,10 @@ class DIPSDatabase {
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
-  bool RemoveRow(const std::string& site);
+  bool RemoveRow(const DIPSDatabaseTable table, const std::string& site);
 
-  bool RemoveRows(const std::vector<std::string>& sites);
+  bool RemoveRows(const DIPSDatabaseTable table,
+                  const std::vector<std::string>& sites);
 
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
@@ -164,7 +178,7 @@ class DIPSDatabase {
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
-  size_t GetEntryCount();
+  size_t GetEntryCount(const DIPSDatabaseTable table);
 
   // If the number of entries in the database is greater than
   // |GetMaxEntries()|, garbage collect. Returns the number of entries deleted
@@ -177,13 +191,14 @@ class DIPSDatabase {
   //
   // NOTE: The SQLITE sub-query in this method must match that of
   // `GetGarbageCollectOldestSitesForTesting()`'s query.
-  size_t GarbageCollectOldest(int purge_goal);
+  size_t GarbageCollectOldest(const DIPSDatabaseTable table, int purge_goal);
 
   // Used for testing the intended behavior `GarbageCollectOldest()`.
   //
   // NOTE: The SQLITE query in this method must match that of
   // `GarbageCollectOldest()`'s sub-query.
-  std::vector<std::string> GetGarbageCollectOldestSitesForTesting();
+  std::vector<std::string> GetGarbageCollectOldestSitesForTesting(
+      const DIPSDatabaseTable table);
 
   bool in_memory() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

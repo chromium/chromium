@@ -134,13 +134,19 @@ bool IsNullOrWithin(const TimestampRange& inner, const TimestampRange& outer);
 
 std::ostream& operator<<(std::ostream& os, TimestampRange type);
 
-// StateValue:
+// Values for a site in the `bounces` table.
 struct StateValue {
   TimestampRange site_storage_times;
   TimestampRange user_interaction_times;
   TimestampRange stateful_bounce_times;
   TimestampRange bounce_times;
   TimestampRange web_authn_assertion_times;
+};
+
+// Values for a 1P/3P site pair in the `popups` table.
+struct PopupsStateValue {
+  uint64_t access_id;
+  base::Time last_popup_time;
 };
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
@@ -279,6 +285,12 @@ enum class DIPSDeletionAction {
   kIgnored = 4,
   kExcepted = 5,
   kMaxValue = kExcepted,
+};
+
+enum class DIPSDatabaseTable {
+  kBounces = 1,
+  kPopups = 2,
+  kMaxValue = kPopups,
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

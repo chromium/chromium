@@ -147,7 +147,7 @@ void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  db_->RemoveRows(sites);
+  db_->RemoveRows(DIPSDatabaseTable::kBounces, sites);
 }
 
 void DIPSStorage::RemoveRowsWithoutInteractionOrWaa(

@@ -28,7 +28,6 @@
 #include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,8 +37,8 @@ class DIPSDatabase;
 
 namespace {
 
-const int kCurrentVersionNumber = 3;
-const int kCompatibleVersionNumber = 3;
+const int kCurrentVersionNumber = 4;
+const int kCompatibleVersionNumber = 4;
 
 class TestDatabase : public DIPSDatabase {
  public:
@@ -182,12 +181,12 @@ TEST_P(DIPSDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
       "INSERT INTO "
       "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
       "first_bounce_time,last_bounce_time) VALUES ('',2,4,1,5)"));
-  EXPECT_EQ(db_->GetEntryCount(), 1u);
+  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces), 1u);
   EXPECT_EQ(db_->Read(""), absl::nullopt);
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_EmptySite_InDb, 1);
   // Verify the entry was deleted during the read attempt.
-  EXPECT_EQ(db_->GetEntryCount(), 0u);
+  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces), 0u);
 }
 
 TEST_P(DIPSDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
@@ -335,7 +334,7 @@ TEST_P(DIPSDatabaseAllColumnTest, DeleteBounce) {
   EXPECT_TRUE(db_->Read(site).has_value());
 
   // Delete site's entry in bounces.
-  EXPECT_TRUE(db_->RemoveRow(site));
+  EXPECT_TRUE(db_->RemoveRow(DIPSDatabaseTable::kBounces, site));
 
   // Query the bounces for site, making sure there is no state now.
   EXPECT_FALSE(db_->Read(site).has_value());
@@ -356,7 +355,7 @@ TEST_P(DIPSDatabaseAllColumnTest, DeleteSeveralBounces) {
   EXPECT_TRUE(db_->Read(site2).has_value());
 
   // Delete site's entry in bounces.
-  EXPECT_TRUE(db_->RemoveRows({site1, site2}));
+  EXPECT_TRUE(db_->RemoveRows(DIPSDatabaseTable::kBounces, {site1, site2}));
 
   // Query the bounces for site, making sure there is no state now.
   EXPECT_FALSE(db_->Read(site1).has_value());
@@ -376,6 +375,117 @@ TEST_P(DIPSDatabaseAllColumnTest, ReadBounce) {
   EXPECT_FALSE(db_->Read(GetSiteForDIPS(GURL("https://www.not-in-db.com/")))
                    .has_value());
 }
+
+// Verifies actions on the `popups` table of the DIPS database.
+class DIPSDatabasePopupsTest : public DIPSDatabaseTest,
+                               public testing::WithParamInterface<bool> {
+ public:
+  DIPSDatabasePopupsTest() : DIPSDatabaseTest(GetParam()) {}
+};
+
+// Test adding entries in the `popups` table of the DIPSDatabase.
+TEST_P(DIPSDatabasePopupsTest, AddPopup) {
+  const std::string opener_site =
+      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string popup_site =
+      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+  uint64_t access_id = 123;
+  base::Time popup_time = Time::FromDoubleT(1);
+
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+
+  auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
+  ASSERT_TRUE(popups_state_value.has_value());
+  EXPECT_EQ(popups_state_value.value().access_id, access_id);
+  EXPECT_EQ(popups_state_value.value().last_popup_time, popup_time);
+}
+
+// Test updating entries in the `popups` table of the DIPSDatabase.
+TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
+  const std::string opener_site =
+      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string popup_site =
+      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+  uint64_t first_access_id = 123;
+  uint64_t second_access_id = 456;
+  base::Time first_popup_time = Time::FromDoubleT(1);
+  base::Time second_popup_time = Time::FromDoubleT(2);
+
+  // Write the initial entry and verify it was added to the db.
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, first_access_id,
+                              first_popup_time));
+  EXPECT_EQ(db_->ReadPopup(opener_site, popup_site)
+                .value_or(PopupsStateValue())
+                .last_popup_time,
+            first_popup_time);
+
+  // Update the entry with a new popup time of t = 2.
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, second_access_id,
+                              second_popup_time));
+
+  // Verify the new entry.
+  auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
+  ASSERT_TRUE(popups_state_value.has_value());
+  EXPECT_EQ(popups_state_value.value().access_id, second_access_id);
+  EXPECT_EQ(popups_state_value.value().last_popup_time, second_popup_time);
+}
+
+// Test deleting an entry from the `popups` table of the DIPSDatabase. An entry
+// should be deleted if the input site matches either opener_site or
+// popup_site.
+TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
+  const std::string opener_site =
+      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string popup_site =
+      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+  uint64_t access_id = 123;
+  base::Time popup_time = Time::FromDoubleT(1);
+
+  // Write the popup to db, and verify.
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
+
+  // Delete the entry in db by opener_site, and verify.
+  EXPECT_TRUE(db_->RemoveRow(DIPSDatabaseTable::kPopups, opener_site));
+  EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
+
+  // Write the popup to db, and verify.
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
+
+  // Delete the entry in db by popup_site, and verify.
+  EXPECT_TRUE(db_->RemoveRow(DIPSDatabaseTable::kPopups, popup_site));
+  EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
+}
+
+// Test deleting many entries from the `popups` table of the DIPSDatabase.
+TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
+  // Add popups to db.
+  const std::string opener_site_1 =
+      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string opener_site_2 =
+      GetSiteForDIPS(GURL("http://www.picasa.com/"));
+  const std::string popup_site =
+      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+  EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
+                              /*access_id=*/123, Time::FromDoubleT(1)));
+  EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
+                              /*access_id=*/456, Time::FromDoubleT(2)));
+
+  // Verify that both sites are in the `popups` table.
+  EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
+  EXPECT_TRUE(db_->ReadPopup(opener_site_2, popup_site).has_value());
+
+  // Delete site's entry in `popups`.
+  EXPECT_TRUE(db_->RemoveRows(DIPSDatabaseTable::kBounces,
+                              {opener_site_1, opener_site_2}));
+
+  // Verify that both sites are deleted from the `popups` table.
+  EXPECT_FALSE(db_->Read(opener_site_1).has_value());
+  EXPECT_FALSE(db_->Read(opener_site_2).has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, DIPSDatabasePopupsTest, ::testing::Bool());
 
 TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
   base::HistogramTester histograms;
@@ -470,31 +580,32 @@ class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
   base::Time dummy_time = Time::FromDoubleT(100);
 };
 
-TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRows) {
+TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromBouncesTable) {
   LoadDatabase();
 
   EXPECT_THAT(
-      db_->GetAllSitesForTesting(),
+      db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
   AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get());
   EXPECT_EQ(db_->ClearExpiredRows(), 0u);
   EXPECT_THAT(
-      db_->GetAllSitesForTesting(),
+      db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
   AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get() + tiny_delta);
   EXPECT_EQ(db_->ClearExpiredRows(), 4u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(),
+  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
               testing::UnorderedElementsAre("case2.test", "case6.test"));
 
   // Time travel to a point by which all interactions and WAAs should've
   // expired.
   AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get() + tiny_delta * 2);
   EXPECT_EQ(db_->ClearExpiredRows(), 1u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(), testing::ElementsAre("case6.test"));
+  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+              testing::ElementsAre("case6.test"));
 }
 
 TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
@@ -532,6 +643,48 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_EQ(db_->Read("case4.test"), absl::nullopt);
   EXPECT_EQ(db_->Read("case5.test"), absl::nullopt);
   EXPECT_TRUE(db_->Read("case6.test").has_value());
+}
+
+TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
+  // Add popups to db.
+  const std::string opener_site_1 =
+      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string opener_site_2 =
+      GetSiteForDIPS(GURL("http://www.picasa.com/"));
+  const std::string popup_site =
+      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+  const base::Time first_popup_time = Time::FromDoubleT(1);
+  const base::Time second_popup_time = Time::FromDoubleT(2);
+
+  EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
+                              /*access_id=*/123, first_popup_time));
+  EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
+                              /*access_id=*/456, second_popup_time));
+
+  // Advance to just before the first popup expires.
+  AdvanceTimeTo(first_popup_time + DIPSDatabase::kPopupTtl - tiny_delta);
+
+  // Verify that both sites are present.
+  EXPECT_EQ(db_->ClearExpiredRows(), 0u);
+  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+              testing::UnorderedElementsAre("youtube.com", "doubleclick.net",
+                                            "picasa.com", "doubleclick.net"));
+
+  // Advance to after the first popup expires.
+  AdvanceTimeTo(first_popup_time + DIPSDatabase::kPopupTtl + tiny_delta);
+
+  // Verify that only the first popup was removed from the db.
+  EXPECT_EQ(db_->ClearExpiredRows(), 1u);
+  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+              testing::UnorderedElementsAre("picasa.com", "doubleclick.net"));
+
+  // Advance to after the second popup expires.
+  AdvanceTimeTo(second_popup_time + DIPSDatabase::kPopupTtl + tiny_delta);
+
+  // Verify that both popups were removed from the db.
+  EXPECT_EQ(db_->ClearExpiredRows(), 1u);
+  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+              testing::IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseInteractionTest, ::testing::Bool());
@@ -935,12 +1088,20 @@ INSTANTIATE_TEST_SUITE_P(
                           DIPSTriggeringAction::kStorage,
                           DIPSTriggeringAction::kStatefulBounce)));
 
-// A test class that verifies DIPSDatabase garbage collection behavior.
+// A test class that verifies DIPSDatabase garbage collection behavior for both
+// tables.
 class DIPSDatabaseGarbageCollectionTest
     : public DIPSDatabaseTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<DIPSDatabaseTable> {
  public:
-  DIPSDatabaseGarbageCollectionTest() : DIPSDatabaseTest(true) {}
+  DIPSDatabaseGarbageCollectionTest() : DIPSDatabaseTest(true) {
+    table_ = GetParam();
+  }
+
+  explicit DIPSDatabaseGarbageCollectionTest(DIPSDatabaseTable table)
+      : DIPSDatabaseTest(true) {
+    table_ = table;
+  }
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
@@ -961,8 +1122,13 @@ class DIPSDatabaseGarbageCollectionTest
                 TimestampRange storage_times,
                 TimestampRange interaction_times,
                 TimestampRange waa_times) {
-    ASSERT_TRUE(
-        db_->Write(site, storage_times, interaction_times, {}, {}, waa_times));
+    if (table_ == DIPSDatabaseTable::kBounces) {
+      ASSERT_TRUE(db_->Write(site, storage_times, interaction_times, {}, {},
+                             waa_times));
+    } else {
+      ASSERT_TRUE(db_->WritePopup(site, "doubleclick.net", /*access_id=*/123,
+                                  interaction_times->second));
+    }
   }
 
   void BloatBouncesForGC(int num_recent_entries, int num_old_entries) {
@@ -986,27 +1152,50 @@ class DIPSDatabaseGarbageCollectionTest
                                   Now() + tiny_delta * 2};
 
     for (int i = 1; i <= 3; i++) {
-      AddEntry(base::StringPrintf("entry%d.test", 7 - i), ToRange(times[i % 3]),
-               ToRange(times[(i + 1) % 3]), ToRange(times[(i + 2) % 3]));
+      if (table_ == DIPSDatabaseTable::kBounces) {
+        ASSERT_TRUE(db_->Write(
+            base::StringPrintf("entry%d.test", 7 - i), ToRange(times[i % 3]),
+            ToRange(times[(i + 1) % 3]), {}, {}, ToRange(times[(i + 2) % 3])));
+      } else {
+        ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
+                                    "doubleclick.net", /*access_id=*/123,
+                                    times[(i + 1) % 3]));
+      }
       for (auto& time : times) {
         time += tiny_delta * 3;
       }
     }
     for (int i = 3; i <= 6; i++) {
-      AddEntry(base::StringPrintf("entry%d.test", 7 - i),
-               ToRange(times[(i + 2) % 3]), ToRange(times[(i + 1) % 3]),
-               ToRange(times[i % 3]));
+      if (table_ == DIPSDatabaseTable::kBounces) {
+        ASSERT_TRUE(db_->Write(base::StringPrintf("entry%d.test", 7 - i),
+                               ToRange(times[(i + 2) % 3]),
+                               ToRange(times[(i + 1) % 3]), {}, {},
+                               ToRange(times[i % 3])));
+      } else {
+        ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
+                                    "doubleclick.net", /*access_id=*/123,
+                                    times[(i + 1) % 3]));
+      }
       for (auto& time : times) {
         time += tiny_delta * 3;
       }
     }
-    EXPECT_THAT(
-        db_->GetAllSitesForTesting(),
-        testing::ElementsAre("entry1.test", "entry2.test", "entry3.test",
-                             "entry4.test", "entry5.test", "entry6.test"));
+    if (table_ == DIPSDatabaseTable::kBounces) {
+      EXPECT_THAT(
+          db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+          testing::ElementsAre("entry1.test", "entry2.test", "entry3.test",
+                               "entry4.test", "entry5.test", "entry6.test"));
+    } else {
+      EXPECT_THAT(
+          db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+          testing::IsSupersetOf({"entry1.test", "entry2.test", "entry3.test",
+                                 "entry4.test", "entry5.test", "entry6.test"}));
+    }
   }
 
  protected:
+  DIPSDatabaseTable table_;
+
   base::Time recent_interaction;
   base::Time old_interaction;
   base::Time storage = Time::FromDoubleT(2);
@@ -1021,7 +1210,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
   EXPECT_EQ(db_->GarbageCollect(),
             db_->GetMaxEntries() + db_->GetPurgeEntries());
 
-  EXPECT_EQ(db_->GetEntryCount(),
+  EXPECT_EQ(db_->GetEntryCount(GetParam()),
             db_->GetMaxEntries() - db_->GetPurgeEntries());
 }
 
@@ -1031,7 +1220,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesExpired_RemovesRecent_GT_Max) {
 
   EXPECT_EQ(db_->GarbageCollect(),
             db_->GetMaxEntries() * 2 + db_->GetPurgeEntries());
-  EXPECT_EQ(db_->GetEntryCount(),
+  EXPECT_EQ(db_->GetEntryCount(GetParam()),
             db_->GetMaxEntries() - db_->GetPurgeEntries());
 }
 
@@ -1045,7 +1234,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesUnderMax) {
 
   EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
 
-  EXPECT_EQ(db_->GetEntryCount(),
+  EXPECT_EQ(db_->GetEntryCount(GetParam()),
             (db_->GetMaxEntries() - db_->GetPurgeEntries()) / 2);
 }
 
@@ -1056,7 +1245,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesMax) {
                     /*num_old_entries=*/0);
 
   EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
-  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
+  EXPECT_EQ(db_->GetEntryCount(GetParam()), db_->GetMaxEntries());
 }
 
 TEST_P(DIPSDatabaseGarbageCollectionTest,
@@ -1065,24 +1254,44 @@ TEST_P(DIPSDatabaseGarbageCollectionTest,
                     /*num_old_entries=*/db_->GetMaxEntries());
 
   EXPECT_EQ(db_->GarbageCollect(), db_->GetMaxEntries());
-  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
+  EXPECT_EQ(db_->GetEntryCount(GetParam()), db_->GetMaxEntries());
 }
 
 TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest) {
   LoadDatabase();
 
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(),
+      db_->GetGarbageCollectOldestSitesForTesting(GetParam()),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 
-  EXPECT_EQ(db_->GarbageCollectOldest(3), static_cast<size_t>(3));
-  EXPECT_THAT(
-      db_->GetAllSitesForTesting(),
-      testing::ElementsAre("entry1.test", "entry2.test", "entry3.test"));
+  EXPECT_EQ(db_->GarbageCollectOldest(GetParam(), 3), static_cast<size_t>(3));
+  if (GetParam() == DIPSDatabaseTable::kBounces) {
+    EXPECT_THAT(
+        db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+        testing::ElementsAre("entry1.test", "entry2.test", "entry3.test"));
+  } else {
+    EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+                testing::ElementsAre("entry1.test", "doubleclick.net",
+                                     "entry2.test", "doubleclick.net",
+                                     "entry3.test", "doubleclick.net"));
+  }
 }
 
-TEST_P(DIPSDatabaseGarbageCollectionTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         DIPSDatabaseGarbageCollectionTest,
+                         ::testing::Values(DIPSDatabaseTable::kBounces,
+                                           DIPSDatabaseTable::kPopups));
+
+// These tests only apply to the `bounces` table.
+class DIPSDatabaseBounceTableGarbageCollectionTest
+    : public DIPSDatabaseGarbageCollectionTest {
+ public:
+  DIPSDatabaseBounceTableGarbageCollectionTest()
+      : DIPSDatabaseGarbageCollectionTest(DIPSDatabaseTable::kBounces) {}
+};
+
+TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
        GarbageCollectOldest_NullStorageTimes) {
   LoadDatabase();
 
@@ -1092,12 +1301,12 @@ TEST_P(DIPSDatabaseGarbageCollectionTest,
              state->user_interaction_times, state->web_authn_assertion_times);
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(),
+      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
 
-TEST_P(DIPSDatabaseGarbageCollectionTest,
+TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
        GarbageCollectOldest_NullInteractionTimes) {
   LoadDatabase();
 
@@ -1107,12 +1316,13 @@ TEST_P(DIPSDatabaseGarbageCollectionTest,
              {}, state->web_authn_assertion_times);
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(),
+      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
 
-TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest_NullWaaTimes) {
+TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
+       GarbageCollectOldest_NullWaaTimes) {
   LoadDatabase();
 
   for (int i = 1; i <= 6; i++) {
@@ -1121,7 +1331,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest_NullWaaTimes) {
              state->user_interaction_times, {});
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(),
+      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
@@ -1130,7 +1340,8 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest_NullWaaTimes) {
 // shouldn't alter the oldest site ordering of the garbage collection. In this
 // explicit case we only have user interaction times; we should expect the same
 // behavior for the other times.
-TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest_SingleNonNull) {
+TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
+       GarbageCollectOldest_SingleNonNull) {
   LoadDatabase();
 
   for (int i = 1; i <= 6; i++) {
@@ -1139,14 +1350,10 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest_SingleNonNull) {
              state->user_interaction_times, {});
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(),
+      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DIPSDatabaseGarbageCollectionTest,
-                         ::testing::Bool());
 
 // A test class that verifies DIPSDatabase database health metrics collection
 // behavior. Created on-disk so opening a corrupt database file can be tested.
@@ -1212,7 +1419,8 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
       "url1.test", {},
       /*interaction_times=*/{{Time::FromDoubleT(1), Time::FromDoubleT(1)}}, {},
       {}, {});
-  EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(1));
+  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces),
+            static_cast<size_t>(1));
 
   // Corrupt the database.
   db_.reset();
@@ -1227,7 +1435,8 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 2);
 
   // No data should be present as the database should have been razed.
-  EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(0));
+  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces),
+            static_cast<size_t>(0));
 
   // Verify that the corruption error was reported.
   EXPECT_TRUE(expecter.SawExpectedErrors());
@@ -1340,6 +1549,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateEmptyToCurrentVersion) {
     ASSERT_TRUE(db.Open(db_path()));
     EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
     EXPECT_TRUE(db.DoesTableExist("bounces"));
+    EXPECT_TRUE(db.DoesTableExist("popups"));
 
     // The "stateless_bounce" columns should be removed, and replaced by just
     // "bounce" columns.
@@ -1411,6 +1621,7 @@ TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
     EXPECT_EQ(GetDatabasePrepopulated(&db), 0);
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
 
     EXPECT_TRUE(
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
@@ -1432,6 +1643,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
     EXPECT_EQ(GetDatabaseVersion(&db), 1);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 1);
 
+    EXPECT_FALSE(db.DoesTableExist("popups"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "first_stateless_bounce_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
     EXPECT_FALSE(db.DoesColumnExist("bounces", "first_bounce_time"));
@@ -1493,6 +1705,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
 
     // The `kStatelessBounceTimesV1` columns should be removed, and replaced by
     // just `kBounceTimesV2ToV3` columns:
@@ -1566,6 +1779,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 2);
     EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
 
+    EXPECT_FALSE(db.DoesTableExist("popups"));
     EXPECT_FALSE(
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
     EXPECT_FALSE(
@@ -1590,10 +1804,58 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
     EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
 
     EXPECT_TRUE(
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
+
+    EXPECT_EQ(DbToString(&db),
+              "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
+              "stateful-bounce.test|||4|4|1|1||||\n"
+              "stateless-bounce.test|||4|4|||1|1||\n"
+              "storage.test|1|1|4|4||||||");
+  }
+}
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToCurrentVersion) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase("v3.sql"));
+
+  // Verify pre migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 3);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 3);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    EXPECT_FALSE(db.DoesTableExist("popups"));
+
+    EXPECT_EQ(DbToString(&db),
+              "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
+              "stateful-bounce.test|||4|4|1|1||||\n"
+              "stateless-bounce.test|||4|4|||1|1||\n"
+              "storage.test|1|1|4|4||||||");
+  }
+
+  MigrateDatabase();
+
+  // Verify post migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "opener_site"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "popup_site"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "access_id"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "last_popup_time"));
 
     EXPECT_EQ(DbToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
