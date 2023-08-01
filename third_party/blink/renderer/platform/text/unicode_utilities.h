@@ -34,6 +34,7 @@
 namespace blink {
 
 PLATFORM_EXPORT bool IsSeparator(UChar32);
+PLATFORM_EXPORT bool ContainsOnlySeparatorsOrEmpty(const String&);
 PLATFORM_EXPORT bool IsKanaLetter(UChar character);
 PLATFORM_EXPORT bool ContainsKanaLetters(const String&);
 PLATFORM_EXPORT void NormalizeCharactersIntoNFCForm(const UChar* characters,

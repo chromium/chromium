@@ -28,6 +28,8 @@
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 
 #include <unicode/normalizer2.h>
+#include <unicode/utf16.h>
+
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
@@ -80,8 +82,7 @@ void FoldQuoteMarksAndSoftHyphens(String& s) {
 
 static bool IsNonLatin1Separator(UChar32 character) {
   DCHECK_GE(character, 256);
-  return U_GET_GC_MASK(character) &
-         (U_GC_S_MASK | U_GC_P_MASK | U_GC_Z_MASK | U_GC_CF_MASK);
+  return U_GET_GC_MASK(character) & (U_GC_P_MASK | U_GC_Z_MASK | U_GC_CF_MASK);
 }
 
 bool IsSeparator(UChar32 character) {
@@ -115,6 +116,18 @@ bool IsSeparator(UChar32 character) {
     return static_cast<bool>(kLatin1SeparatorTable[character]);
 
   return IsNonLatin1Separator(character);
+}
+
+bool ContainsOnlySeparatorsOrEmpty(const String& pattern) {
+  unsigned index = 0;
+  while (index < pattern.length()) {
+    const UChar32 character = pattern.CharacterStartingAt(index);
+    if (!IsSeparator(character)) {
+      return false;
+    }
+    index += U16_LENGTH(character);
+  }
+  return true;
 }
 
 // ICU's search ignores the distinction between small kana letters and ones

@@ -48,7 +48,7 @@ UBool U_CALLCONV TestFirstAndLastCharsInCategory(const void* context,
                                                  UChar32 limit,
                                                  UCharCategory type) {
   if (start >= kMaxLatinCharCount &&
-      U_MASK(type) & (U_GC_S_MASK | U_GC_P_MASK | U_GC_Z_MASK | U_GC_CF_MASK) &&
+      U_MASK(type) & (U_GC_P_MASK | U_GC_Z_MASK | U_GC_CF_MASK) &&
       (!IsSeparator(start) || !IsSeparator(limit - 1))) {
     g_is_test_first_and_last_chars_in_category_failed = true;
 
