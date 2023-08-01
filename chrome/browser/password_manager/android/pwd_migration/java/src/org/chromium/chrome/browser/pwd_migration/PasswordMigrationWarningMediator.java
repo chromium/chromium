@@ -205,14 +205,14 @@ class PasswordMigrationWarningMediator
                 IdentityServicesProvider.get().getIdentityManager(profile);
         CoreAccountInfo coreAccountInfo =
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (coreAccountInfo == null) {
+        if (coreAccountInfo == null || coreAccountInfo.getEmail().isEmpty()) {
             return null;
         }
         @Nullable
         AccountInfo account =
                 identityManager.findExtendedAccountInfoByEmailAddress(coreAccountInfo.getEmail());
         if (account == null) {
-            return null;
+            return coreAccountInfo.getEmail();
         }
         boolean canHaveEmailAddressDisplayed =
                 account.getAccountCapabilities().canHaveEmailAddressDisplayed() != Tribool.FALSE;
