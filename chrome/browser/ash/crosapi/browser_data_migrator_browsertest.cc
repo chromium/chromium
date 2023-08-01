@@ -163,11 +163,7 @@ class BrowserDataMigratorMoveMigrateOnSignInByFeature
   ~BrowserDataMigratorMoveMigrateOnSignInByFeature() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
-
+    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
     BrowserDataMigratorOnSignIn::SetUp();
   }
 
@@ -326,11 +322,7 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByFeature
       default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
-
+    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
     BrowserDataMigratorRestartInSession::SetUp();
   }
 };
@@ -423,11 +415,7 @@ class BrowserDataMigratorForKiosk : public KioskBaseTest {
   ~BrowserDataMigratorForKiosk() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
-
+    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
     KioskBaseTest::SetUp();
   }
 

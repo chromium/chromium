@@ -10,10 +10,9 @@
 namespace ash::standalone_browser {
 
 const std::vector<base::test::FeatureRef>& GetFeatureRefs() {
-  static const base::NoDestructor<std::vector<base::test::FeatureRef>> result{{
-      ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-      ash::features::kLacrosOnly,
-      ash::features::kLacrosProfileMigrationForceOff}};
+  static const base::NoDestructor<std::vector<base::test::FeatureRef>> result{
+      {ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff}};
   return *result;
 }
 

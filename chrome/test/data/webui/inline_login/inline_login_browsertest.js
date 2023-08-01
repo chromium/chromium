@@ -64,8 +64,6 @@ var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'ash::features::kLacrosSupport',
-        'ash::features::kLacrosPrimary',
         'ash::features::kLacrosOnly',
         'ash::features::kLacrosProfileMigrationForceOff',
       ],
@@ -133,8 +131,6 @@ var InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'ash::features::kLacrosSupport',
-        'ash::features::kLacrosPrimary',
         'ash::features::kLacrosOnly',
         'ash::features::kLacrosProfileMigrationForceOff',
       ],
@@ -196,8 +192,6 @@ var InlineLoginArcAccountPickerBrowserTest =
   get featureList() {
     return {
       enabled: [
-        'ash::features::kLacrosSupport',
-        'ash::features::kLacrosPrimary',
         'ash::features::kLacrosOnly',
         'ash::features::kLacrosProfileMigrationForceOff',
       ],

@@ -227,10 +227,7 @@ TEST_F(AppMenuModelTest, Basics) {
   // becomes visible. Note that profile migration is only enabled if Lacros is
   // the only browser.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly},
-      {});
+  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
 #endif
 
   FakeIconDelegate fake_delegate;

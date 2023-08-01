@@ -402,10 +402,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   {
     // If Lacros is enabled, migration should run.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
+    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
     EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
@@ -419,10 +416,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
     // If copy migration is marked as completed then migration should not run
     // even if move migration is not completed.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
+    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
     EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
@@ -437,10 +431,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   {
     // If move migration is marked as completed, move migration should not run.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
+    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
     EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
@@ -458,10 +449,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateSecondaryUser) {
 
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
+    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
     // Migration should be triggered for the primary user.
     EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         primary_user->GetAccountId(), primary_user->username_hash(),

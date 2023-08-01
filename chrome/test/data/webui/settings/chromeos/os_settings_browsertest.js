@@ -729,19 +729,13 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'PeoplePageAccountManagerSubpage',
    'people_page_account_manager_subpage_test.js',
-   {
-     disabled: [
-       'ash::features::kLacrosSupport', 'ash::features::kLacrosPrimary',
-       'ash::features::kLacrosOnly'
-     ]
-   },
+   {disabled: ['ash::features::kLacrosOnly']},
  ],
  [
    'PeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
    'people_page_account_manager_subpage_test.js',
    {
      enabled: [
-       'ash::features::kLacrosSupport', 'ash::features::kLacrosPrimary',
        'ash::features::kLacrosOnly',
        'ash::features::kLacrosProfileMigrationForceOff'
      ]
