@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.{EnabledDuration}"
-    units="times" expires_after="2023-08-28">
+    units="times" expires_after="2024-02-28">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
