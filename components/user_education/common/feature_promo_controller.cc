@@ -142,40 +142,57 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
     FeaturePromoSpecification::FormatParameters title_params) {
   CHECK(anchor_element);
 
-  if (promos_blocked_for_testing_)
+  if (promos_blocked_for_testing_) {
     return false;
+  }
 
   // A normal promo cannot show if a critical promo is displayed. These
   // are not registered with |tracker_| so check here.
-  if (critical_promo_bubble_)
+  if (critical_promo_bubble_) {
     return false;
+  }
 
   // Some contexts and anchors are not appropriate for showing normal promos.
-  if (!CanShowPromo(anchor_element))
+  if (!CanShowPromo(anchor_element)) {
     return false;
+  }
+
+  // Can't show a standard promo if another help bubble is visible.
+  if (bubble_factory_registry_->is_any_bubble_showing()) {
+    return false;
+  }
 
   // Some checks should not be done in demo mode, because we absolutely want to
   // trigger the bubble if possible. Put any checks that should be bypassed in
   // demo mode in this block.
-  const base::Feature* feature = spec.feature();
+  const base::Feature* const feature = spec.feature();
   const bool feature_is_bypassing_tracker =
       feature == iph_feature_bypassing_tracker_;
-  if (!(base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode) ||
-        feature_is_bypassing_tracker) &&
-      snooze_service_->IsBlocked(*feature))
-    return false;
-
-  // Can't show a standard promo if another help bubble is visible.
-  if (bubble_factory_registry_->is_any_bubble_showing())
-    return false;
+  const bool is_demo_mode =
+      base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode);
+  if (!is_demo_mode && !feature_is_bypassing_tracker) {
+    // When not bypassing the normal gating systems, don't try to show promos
+    // for disabled features. This prevents us from calling into the Feature
+    // Engagement tracker more times than necessary, emitting unnecessary
+    // logging even when features are disabled.
+    if (!base::FeatureList::IsEnabled(*feature)) {
+      return false;
+    }
+    // Don't try to show promos on snooze cooldown or that have hit maximum
+    // snooze count.
+    if (snooze_service_->IsBlocked(*feature)) {
+      return false;
+    }
+  }
 
   // TODO(crbug.com/1258216): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
   const bool screen_reader_available = CheckScreenReaderPromptAvailable();
 
   if (!feature_is_bypassing_tracker &&
-      !feature_engagement_tracker_->ShouldTriggerHelpUI(*feature))
+      !feature_engagement_tracker_->ShouldTriggerHelpUI(*feature)) {
     return false;
+  }
 
   // If the tracker says we should trigger, but we have a promo
   // currently showing, there is a bug somewhere in here.
@@ -188,15 +205,17 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
       screen_reader_available, /* is_critical_promo =*/false);
   if (!promo_bubble_) {
     current_iph_feature_ = nullptr;
-    if (!feature_is_bypassing_tracker)
+    if (!feature_is_bypassing_tracker) {
       feature_engagement_tracker_->Dismissed(*feature);
+    }
     return false;
   }
 
   bubble_closed_callback_ = std::move(close_callback);
 
-  if (!feature_is_bypassing_tracker)
+  if (!feature_is_bypassing_tracker) {
     snooze_service_->OnPromoShown(*feature);
+  }
 
   return true;
 }

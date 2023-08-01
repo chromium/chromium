@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -40,6 +41,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/caption_util.h"
 #include "components/user_education/common/feature_promo_controller.h"
@@ -78,8 +80,11 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
   FeaturePromoDialogTest()
       : update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
             web_app::AppIdentityUpdate::kSkipped)) {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
+    feature_ = GetFeatureForTest();
+    scoped_feature_list_.InitAndEnableFeatures(
+        /* allow_and_enable_features =*/{*feature_},
+        /* disable_features =*/
+        {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
 
     // TODO(crbug.com/1141984): fix cause of bubbles overflowing the
     // screen and remove this.
@@ -124,30 +129,37 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
             ->GetFeaturePromoController();
     ASSERT_TRUE(promo_controller);
 
-    // Look up the IPH name and get the base::Feature.
+    // The browser may have already queued a promo for startup. Since the test
+    // uses a mock, cancel that and just show it directly.
+    const auto status = promo_controller->GetPromoStatus(*feature_);
+    if (status == user_education::FeaturePromoStatus::kQueuedForStartup)
+      promo_controller->EndPromo(*feature_);
+
+    // Set up mock tracker to allow the IPH, then attempt to show it.
+    EXPECT_CALL(*mock_tracker, ShouldTriggerHelpUI(Ref(*feature_)))
+        .Times(1)
+        .WillOnce(Return(true));
+    ASSERT_TRUE(promo_controller->MaybeShowPromo(
+        *feature_, base::DoNothing(), GetReplacementsForFeature(*feature_)));
+  }
+
+ private:
+  // Looks up the IPH name from the test name and returns the corresponding
+  // base::Feature.
+  const base::Feature* GetFeatureForTest() const {
+    const std::string full_name =
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+    const std::string name = full_name.substr(full_name.find('_') + 1);
     std::vector<const base::Feature*> iph_features =
         feature_engagement::GetAllFeatures();
     auto feature_it =
         base::ranges::find(iph_features, name, &base::Feature::name);
-    ASSERT_NE(feature_it, iph_features.end());
-    const base::Feature& feature = **feature_it;
-
-    // The browser may have already queued a promo for startup. Since the test
-    // uses a mock, cancel that and just show it directly.
-    const auto status = promo_controller->GetPromoStatus(feature);
-    if (status == user_education::FeaturePromoStatus::kQueuedForStartup)
-      promo_controller->EndPromo(feature);
-
-    // Set up mock tracker to allow the IPH, then attempt to show it.
-    EXPECT_CALL(*mock_tracker, ShouldTriggerHelpUI(Ref(feature)))
-        .Times(1)
-        .WillOnce(Return(true));
-    ASSERT_TRUE(promo_controller->MaybeShowPromo(
-        feature, base::DoNothing(), GetReplacementsForFeature(feature)));
+    CHECK(feature_it != iph_features.end());
+    return *feature_it;
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::raw_ptr<const base::Feature> feature_ = nullptr;
+  feature_engagement::test::ScopedIphFeatureList scoped_feature_list_;
   base::AutoReset<absl::optional<web_app::AppIdentityUpdate>>
       update_dialog_scope_;
 
