@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "components/crash/android/anr_build_id_provider.h"
 #include "components/crash/android/anr_skipped_reason.h"
 #include "components/minidump_uploader/minidump_uploader_jni_headers/CrashReportMimeWriter_jni.h"
 #include "components/version_info/android/channel_getter.h"
@@ -220,19 +221,24 @@ static void reportAnrUploadFailure(AnrSkippedReason reason) {
   UMA_HISTOGRAM_ENUMERATION("Crashpad.AnrUpload.Skipped", reason);
 }
 
-static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
-                           crashpad::FileWriter* writer,
-                           const std::string& version_number,
-                           const std::string& build_id,
-                           const std::string& anr_file_name) {
-  static constexpr char kAnrKey[] = "anr_data";
-
+void WriteAnrAsMime(crashpad::FileReader* anr_reader,
+                    crashpad::FileWriterInterface* writer,
+                    const std::string& version_number,
+                    const std::string& build_id,
+                    const std::string& anr_file_name) {
   crashpad::HTTPMultipartBuilder builder;
   builder.SetFormData("version", version_number);
   builder.SetFormData("product", "Chrome_Android");
   builder.SetFormData("channel", std::string(version_info::GetChannelString(
                                      version_info::android::GetChannel())));
-  if (!build_id.empty()) {
+  if (build_id.empty()) {
+    if (version_number == version_info::GetVersionNumber()) {
+      // We have an ANR where we didn't pre-set the build ID in the process
+      // state summary, but since we are currently on the same version we can
+      // just use our current one.
+      builder.SetFormData("elf_build_id", crash_reporter::GetElfBuildId());
+    }
+  } else {
     builder.SetFormData("elf_build_id", build_id);
   }
 
@@ -261,8 +267,10 @@ static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
                                        info->package_version_name() + ")");
   }
 
-  builder.SetFileAttachment(kAnrKey, anr_file_name, anr_reader,
-                            "application/octet-stream");
+  if (anr_reader != nullptr) {
+    builder.SetFileAttachment("anr_data", anr_file_name, anr_reader,
+                              "application/octet-stream");
+  }
   if (!WriteBodyToFile(builder.GetBodyStream().get(), writer)) {
     reportAnrUploadFailure(AnrSkippedReason::kFilesystemWriteFailure);
   }
