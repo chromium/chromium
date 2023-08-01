@@ -680,11 +680,6 @@ BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,
              "HttpsOnlyModeForAdvancedProtectionUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new implementation of HTTPS-First Mode.
-BASE_FEATURE(kHttpsFirstModeV2,
-             "HttpsFirstModeV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables HTTPS-First Mode for engaged sites. No-op if HttpsFirstModeV2 or
 // HTTPS-Upgrades is disabled.
 BASE_FEATURE(kHttpsFirstModeV2ForEngagedSites,

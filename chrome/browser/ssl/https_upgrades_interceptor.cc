@@ -191,8 +191,7 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
   }
   PrefService* prefs = profile->GetPrefs();
   bool https_first_mode_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
-      prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+      prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
   return std::make_unique<HttpsUpgradesInterceptor>(
       frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
 }

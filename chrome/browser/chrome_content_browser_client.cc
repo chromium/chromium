@@ -144,8 +144,6 @@
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_defaulted_callbacks.h"
-#include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
-#include "chrome/browser/ssl/https_only_mode_upgrade_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
@@ -5221,20 +5219,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       &throttles);
 #endif
 
-  if (profile && profile->GetPrefs()) {
-    if (base::FeatureList::IsEnabled(features::kHttpsFirstModeV2)) {
-      MaybeAddThrottle(
-          HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
-              handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
-              profile),
-          &throttles);
-    } else {
-      MaybeAddThrottle(
-          HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
-              handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
-              profile->GetPrefs()),
-          &throttles);
-    }
+  if (profile) {
+    MaybeAddThrottle(
+        HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
+            handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
+            profile),
+        &throttles);
   }
 
   MaybeAddThrottle(MaybeCreateNavigationAblationThrottle(handle), &throttles);
@@ -6223,16 +6213,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   interceptors.push_back(std::make_unique<SearchPrefetchURLLoaderInterceptor>(
       frame_tree_node_id, navigation_id, navigation_response_task_runner));
 
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeV2)) {
-    auto https_upgrades_interceptor =
-        HttpsUpgradesInterceptor::MaybeCreateInterceptor(frame_tree_node_id,
-                                                         navigation_ui_data);
-    if (https_upgrades_interceptor) {
-      interceptors.push_back(std::move(https_upgrades_interceptor));
-    }
-  } else {
-    interceptors.push_back(
-        std::make_unique<HttpsOnlyModeUpgradeInterceptor>(frame_tree_node_id));
+  auto https_upgrades_interceptor =
+      HttpsUpgradesInterceptor::MaybeCreateInterceptor(frame_tree_node_id,
+                                                       navigation_ui_data);
+  if (https_upgrades_interceptor) {
+    interceptors.push_back(std::move(https_upgrades_interceptor));
   }
 
   return interceptors;

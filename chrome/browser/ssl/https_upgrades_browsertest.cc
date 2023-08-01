@@ -13,8 +13,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
-#include "chrome/browser/ssl/https_only_mode_upgrade_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -77,10 +75,10 @@ using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
 // vs. HTTPS-Upgrades. These get parameterized so the tests run under both
 // versions on their own as well as when both HTTPS Upgrades and HTTPS-First
 // Mode are enabled (to test any interactions between the two upgrade modes).
-// The code also needs to be able to run safely when v2 is enabled, but neither
-// HTTPS-First Mode nor HTTPS-Upgrades are enabled.
+// The code also needs to be able to run safely when neither HTTPS-First Mode
+// nor HTTPS-Upgrades are enabled.
 enum class HttpsUpgradesTestType {
-  // Enables HFM pref. The feature flag is always enabled.
+  // Enables HFM pref.
   kHttpsFirstModeOnly,
   // Enables HTTPS Upgrades feature flag.
   kHttpsUpgradesOnly,
@@ -111,27 +109,24 @@ class HttpsUpgradesBrowserTest
   ~HttpsUpgradesBrowserTest() override = default;
 
   void SetUp() override {
-    // HFM feature flag is enabled in all cases. The actual feature is
-    // controlled by a pref.
+    // HFM is controlled by a pref (configured in SetUpOnMainThread).
     switch (https_upgrades_test_type()) {
       case HttpsUpgradesTestType::kHttpsFirstModeOnly:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsFirstModeV2},
+            /*enabled_features=*/{},
             /*disabled_features=*/{features::kHttpsUpgrades,
                                    features::kHttpsFirstModeV2ForEngagedSites});
         break;
 
       case HttpsUpgradesTestType::kHttpsUpgradesOnly:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsUpgrades,
-                                  features::kHttpsFirstModeV2},
+            /*enabled_features=*/{features::kHttpsUpgrades},
             /*disabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeAndHttpsUpgrades:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsUpgrades,
-                                  features::kHttpsFirstModeV2},
+            /*enabled_features=*/{features::kHttpsUpgrades},
             /*disabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites});
         break;
 
@@ -140,8 +135,7 @@ class HttpsUpgradesBrowserTest
         // HFM pref is disabled in SetUpOnMainThread.
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsUpgrades,
-                                  features::kHttpsFirstModeV2ForEngagedSites,
-                                  features::kHttpsFirstModeV2},
+                                  features::kHttpsFirstModeV2ForEngagedSites},
             /*disabled_features=*/{});
         break;
 
@@ -150,15 +144,15 @@ class HttpsUpgradesBrowserTest
         // HFM pref is enabled in SetUpOnMainThread.
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsUpgrades,
-                                  features::kHttpsFirstModeV2,
                                   features::kHttpsFirstModeV2ForEngagedSites},
             /*disabled_features=*/{});
         break;
 
-        // Enable HTTPS-Upgrades, HFM and HFM with Site Engagement heuristic.
+      // Disable HTTPS-Upgrades, HFM and HFM with Site Engagement heuristic.
+      // (HFM pref is disabled in SetUpOnMainThread.)
       case HttpsUpgradesTestType::kNeither:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsFirstModeV2},
+            /*enabled_features=*/{},
             /*disabled_features=*/{features::kHttpsUpgrades,
                                    features::kHttpsFirstModeV2ForEngagedSites});
         break;
@@ -2379,18 +2373,12 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
-// A simple test fixture that ensures the kHttpsFirstModeV2 feature is enabled
-// and constructs a HistogramTester (so that it gets initialized before browser
-// startup). Used for testing pref tracking logic.
+// A simple test fixture that constructs a HistogramTester (so that it gets
+// initialized before browser startup). Used for testing pref tracking logic.
 class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
  public:
   HttpsUpgradesPrefsBrowserTest() = default;
   ~HttpsUpgradesPrefsBrowserTest() override = default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHttpsFirstModeV2);
-    InProcessBrowserTest::SetUp();
-  }
 
  protected:
   void SetPref(bool enabled) {

@@ -10,7 +10,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"

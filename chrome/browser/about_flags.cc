@@ -9185,10 +9185,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kVmPerBootShaderCache)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"https-first-mode-v2", flag_descriptions::kHttpsFirstModeV2Name,
-     flag_descriptions::kHttpsFirstModeV2Description, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kHttpsFirstModeV2)},
-
     {"https-first-mode-v2-for-engaged-sites",
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesName,
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesDescription,
