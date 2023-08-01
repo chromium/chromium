@@ -17,19 +17,20 @@ selectmenu {
 }
 
 selectmenu::-internal-selectmenu-button {
-  display: inline-flex;
   align-items: center;
-  cursor: default;
   appearance: none;
   background-color: Field;
-  color: FieldText;
   border: 1px solid ButtonBorder;
   border-radius: 0.25em;
-  padding: 0.25em;
+  color: FieldText;
+  cursor: default;
+  display: inline-flex;
   flex-grow:1;
   flex-shrink:1;
+  font-size:inherit;
   overflow-x:hidden;
   overflow-y:hidden;
+  padding: 0.25em;
 }
 
 selectmenu::-internal-selectmenu-selected-value {

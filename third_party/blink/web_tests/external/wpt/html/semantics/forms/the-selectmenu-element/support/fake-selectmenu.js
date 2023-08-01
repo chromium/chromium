@@ -10,17 +10,18 @@ function createFakeSelectmenu(selectedValueText) {
     <div class="fake-selectmenu-internal-selectmenu-button-icon"></div>
     <style>
     .fake-selectmenu-internal-selectmenu-button {
-      display: inline-flex;
       align-items: center;
-      cursor: default;
       appearance: none;
       background-color: Field;
-      color: ButtonText;
       border: 1px solid ButtonBorder;
       border-radius: 0.25em;
-      padding: 0.25em;
+      color: ButtonText;
+      cursor: default;
+      display: inline-flex;
+      font-size: .875em;
       overflow-x:hidden;
       overflow-y:hidden;
+      padding: 0.25em;
     }
 
     .fake-selectmenu-selected-value {
