@@ -64,7 +64,7 @@ suite('ExtensionsReviewPanel', function() {
     // Verify that Remove All button exists.
     const removeAllButton = element.$.removeAllButton;
     assertTrue(!!removeAllButton);
-    assertEquals(removeAllButton.innerText, 'Remove All');
+    assertEquals(removeAllButton.innerText, 'Remove all');
   });
 
   test('CollapsibleList', function() {

@@ -19,6 +19,7 @@
    * in https://crrev.com/c/4579629 once its in. */
   .header-with-icon iron-icon {
     border-radius: 50%;
+    flex-shrink: 0;
     height: var(--cr-icon-size);
     padding: 6px;
     width: var(--cr-icon-size);
@@ -41,6 +42,7 @@
   }
 
   .header-icon {
+    align-items: center;
     background-color: var(--google-blue-50);
     fill: var(--google-blue-600);
   }
@@ -48,6 +50,7 @@
   @media (prefers-color-scheme: dark) {
     .header-icon {
       background-color: var(--google-blue-300);
+      fill: var(--review-panel-icon-color);
     }
   }
 
@@ -89,6 +92,7 @@
   }
 
   .cr-row.first {
+    padding-top: 5px;
     padding-left: 0px;
   }
 </style>
