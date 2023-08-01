@@ -1,9 +1,11 @@
 const STORE_URL = '/fenced-frame/resources/key-value-store.py';
 const BEACON_URL = '/fenced-frame/resources/automatic-beacon-store.py';
 const REMOTE_EXECUTOR_URL = '/fenced-frame/resources/remote-context-executor.https.html';
-const FLEDGE_BIDDING_URL = '/fenced-frame/resources/fledge-bidding-logic.js';
-const FLEDGE_BIDDING_WITH_SIZE_URL = '/fenced-frame/resources/fledge-bidding-logic-with-size.js';
-const FLEDGE_DECISION_URL = '/fenced-frame/resources/fledge-decision-logic.js';
+
+// If your test needs to modify FLEDGE bidding or decision logic, you should
+// update the generated JS in the corresponding handler below.
+const FLEDGE_BIDDING_URL = '/fenced-frame/resources/fledge-bidding-logic.py';
+const FLEDGE_DECISION_URL = '/fenced-frame/resources/fledge-decision-logic.py';
 
 // Creates a URL that includes a list of stash key UUIDs that are being used
 // in the test. This allows us to generate UUIDs on the fly and let anything
@@ -82,27 +84,27 @@ async function generateURNFromFledgeRawURL(href,
       { renderUrl: url }
   });
 
-  const interestGroup = ad_with_size ?
-    {
-      name: 'testAd1',
-      owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_WITH_SIZE_URL, location.origin),
-      ads: [{ renderUrl: href, sizeGroup: "group1", bid: 1 }],
-      userBiddingSignals: { biddingToken: bidding_token },
-      trustedBiddingSignalsKeys: ['key1'],
-      adComponents: ad_components_list,
-      adSizes: { "size1": { width: "100px", height: "50px" } },
-      sizeGroups: { "group1": ["size1"] }
-    } :
-    {
-      name: 'testAd1',
-      owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
-      ads: [{ renderUrl: href, bid: 1 }],
-      userBiddingSignals: { biddingToken: bidding_token },
-      trustedBiddingSignalsKeys: ['key1'],
-      adComponents: ad_components_list,
-    };
+  let interestGroup =
+      {
+        name: 'testAd1',
+        owner: location.origin,
+        biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
+        ads: [{renderUrl: href, bid: 1}],
+        userBiddingSignals: {biddingToken: bidding_token},
+        trustedBiddingSignalsKeys: ['key1'],
+        adComponents: ad_components_list,
+      };
+
+  if (ad_with_size) {
+    let params = new URLSearchParams(interestGroup.biddingLogicUrl.search);
+    params.set("ad-with-size", 1);
+    interestGroup.biddingLogicUrl.search = params;
+
+    interestGroup.ads[0].sizeGroup = 'group1';
+
+    interestGroup.adSizes = {'size1': {width: '100px', height: '50px'}};
+    interestGroup.sizeGroups = {'group1': ['size1']};
+  }
 
   // Pick an arbitrarily high duration to guarantee that we never leave the
   // ad interest group while the test runs.
