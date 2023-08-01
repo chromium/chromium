@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
@@ -354,9 +355,7 @@ const char* BufferFormatToString(BufferFormat format) {
     case BufferFormat::P010:
       return "P010";
   }
-  NOTREACHED()
-      << "Invalid BufferFormat: "
-      << static_cast<typename std::underlying_type<BufferFormat>::type>(format);
+  NOTREACHED() << "Invalid BufferFormat: " << base::to_underlying(format);
   return "Invalid Format";
 }
 
@@ -375,9 +374,7 @@ const char* BufferPlaneToString(BufferPlane format) {
     case BufferPlane::A:
       return "A";
   }
-  NOTREACHED() << "Invalid BufferPlane: "
-               << static_cast<typename std::underlying_type<BufferPlane>::type>(
-                      format);
+  NOTREACHED() << "Invalid BufferPlane: " << base::to_underlying(format);
   return "Invalid Plane";
 }
 
