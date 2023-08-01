@@ -8,14 +8,15 @@
 #include <cstdint>
 #include <string>
 
+#include "base/types/cxx23_to_underlying.h"
+
 namespace cast_channel {
 
 // Helper function to convert scoped enums to their underlying type, for use
 // with ostreams.
 template <typename Enumeration>
-auto AsInteger(Enumeration const value) ->
-    typename std::underlying_type<Enumeration>::type {
-  return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+auto AsInteger(Enumeration const value) {
+  return base::to_underlying(value);
 }
 
 enum class ReadyState {
