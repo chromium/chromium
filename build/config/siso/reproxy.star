@@ -150,6 +150,24 @@ def __use_remoteexec(ctx):
     return False
 
 def __step_config(ctx, step_config):
+    # New rules to convert commands calling rewrapper to use reproxy instead.
+    new_rules = [
+        # mojo/mojom_bindings_generator will not always have rewrapper args.
+        # Use this rule for commands with rewrapper args, the native remote rule is converted above.
+        {
+            "name": "mojo/mojom_bindings_generator_rewrapper",
+            "action": "mojom_(.*_)?__generator",
+            "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --cfg=",
+            "handler": "rewrite_action_remote_py",
+        },
+        # Handle generic action_remote calls.
+        {
+            "name": "action_remote",
+            "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
+            "handler": "rewrite_action_remote_py",
+        },
+    ]
+
     for rule in step_config["rules"]:
         # mojo/mojom_parser will always have rewrapper config when use_remoteexec=true.
         # Mutate the original step rule to rewrite rewrapper and convert its rewrapper config to reproxy config.
@@ -160,6 +178,7 @@ def __step_config(ctx, step_config):
                 "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
                 "handler": "rewrite_action_remote_py",
             })
+            new_rules.append(rule)
             continue
 
         # Replace nacl-clang/clang++ rules without command_prefix, because they will incorrectly match rewrapper.
@@ -170,8 +189,38 @@ def __step_config(ctx, step_config):
                 "action": rule["action"],
                 "handler": "rewrite_rewrapper",
             }
-            rule.clear()
-            rule.update(new_rule)
+            new_rules.append(new_rule)
+            continue
+
+        # clang will always have rewrapper config when use_remoteexec=true.
+        # Remove the native siso handling and replace with custom rewrapper-specific handling.
+        # All other rule values are not reused, instead use rewrapper config via handler.
+        if rule["name"].startswith("clang/") or rule["name"].startswith("clang-cl/"):
+            if not rule.get("action"):
+                fail("clang rule %s found without action" % rule["name"])
+            new_rule = {
+                "name": rule["name"],
+                "action": rule["action"],
+                "handler": "rewrite_rewrapper",
+            }
+            new_rules.append(new_rule)
+            continue
+
+        # clang-coverage will always have rewrapper config when use_remoteexec=true.
+        # Remove the native siso handling and replace with custom rewrapper-specific handling.
+        # All other rule values are not reused, instead use rewrapper config via handler.
+        # TODO(b/278225415): change gn so this wrapper (and by extension these rules) become unnecessary.
+        if rule["name"].startswith("clang-coverage"):
+            if rule["command_prefix"].find("../../build/toolchain/clang_code_coverage_wrapper.py") < 0:
+                fail("clang-coverage rule %s found without clang_code_coverage_wrapper.py in command_prefix" % rule["name"])
+            new_rule = {
+                "name": rule["name"],
+                "command_prefix": rule["command_prefix"],
+                "handler": "rewrite_clang_code_coverage_wrapper",
+            }
+            # Insert clang-coverage/ rules at the top.
+            # They are more specific than reproxy clang/ rules, therefore should not be placed after.
+            new_rules.insert(0, new_rule)
             continue
 
         # Other rules where it's enough to only convert native remote config to reproxy config.
@@ -197,60 +246,9 @@ def __step_config(ctx, step_config):
             "exec_timeout": rule.get("timeout", "10m"),
             "download_outputs": True,
         }
+        new_rules.append(rule)
 
-    # Other rules to convert commands calling rewrapper to use reproxy instead.
-    step_config["rules"].extend([
-        {
-            # mojo/mojom_bindings_generator will not always have rewrapper args.
-            # Use this rule for commands with rewrapper args, the native remote rule is converted above.
-            "name": "mojo/mojom_bindings_generator_rewrapper",
-            "action": "mojom_(.*_)?__generator",
-            "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --cfg=",
-            "handler": "rewrite_action_remote_py",
-        },
-        {
-            # TODO(b/278225415): change gn so this wrapper (and by extension this rule) becomes unnecessary.
-            "name": "clang-coverage/cxx",
-            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
-            "handler": "rewrite_clang_code_coverage_wrapper",
-        },
-        {
-            # TODO(b/278225415): change gn so this wrapper (and by extension this rule) becomes unnecessary.
-            "name": "clang-coverage-win/cxx",
-            "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
-            "handler": "rewrite_clang_code_coverage_wrapper",
-        },
-        {
-            "name": "action_remote",
-            "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
-            "handler": "rewrite_action_remote_py",
-        },
-        {
-            "name": "clang/cxx",
-            "action": "(.*_)?cxx",
-            "handler": "rewrite_rewrapper",
-        },
-        {
-            "name": "clang/cc",
-            "action": "(.*_)?cc",
-            "handler": "rewrite_rewrapper",
-        },
-        {
-            "name": "clang/objcxx",
-            "action": "(.*_)?objcxx",
-            "handler": "rewrite_rewrapper",
-        },
-        {
-            "name": "clang/objc",
-            "action": "(.*_)?objc",
-            "handler": "rewrite_rewrapper",
-        },
-        {
-            "name": "clang/asm",
-            "action": "(.*_)?asm",
-            "handler": "rewrite_rewrapper",
-        },
-    ])
+    step_config["rules"] = new_rules
     return step_config
 
 reproxy = module(
