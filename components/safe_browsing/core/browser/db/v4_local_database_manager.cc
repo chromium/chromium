@@ -406,8 +406,9 @@ V4LocalDatabaseManager::~V4LocalDatabaseManager() {
 
 void V4LocalDatabaseManager::CancelCheck(Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(enabled_);
-
+  // If we've stopped responding due to browser shutdown, it's possible that a
+  // client will call CancelCheck even though we're disabled.
+  DCHECK(enabled_ || is_shutdown_);
   auto pending_it =
       base::ranges::find(pending_checks_, client, &PendingCheck::client);
   if (pending_it != pending_checks_.end()) {
@@ -648,6 +649,7 @@ void V4LocalDatabaseManager::StartOnSBThread(
   SetupDatabase();
 
   enabled_ = true;
+  is_shutdown_ = false;
 
   current_local_database_manager_ = this;
 }
@@ -656,10 +658,16 @@ void V4LocalDatabaseManager::StopOnSBThread(bool shutdown) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   enabled_ = false;
+  is_shutdown_ = shutdown;
 
   current_local_database_manager_ = nullptr;
 
-  RespondSafeToQueuedAndPendingChecks();
+  // On shutdown, it's acceptable to fail to respond.
+  if (shutdown) {
+    DropQueuedAndPendingChecks();
+  } else {
+    RespondSafeToQueuedAndPendingChecks();
+  }
 
   // Delete the V4Database. Any pending writes to disk are completed.
   // This operation happens on the task_runner on which v4_database_ operates
@@ -1181,6 +1189,15 @@ void V4LocalDatabaseManager::RespondSafeToQueuedAndPendingChecks() {
     RespondToClientWithoutPendingCheckCleanup(it);
   }
 }
+
+void V4LocalDatabaseManager::DropQueuedAndPendingChecks() {
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+
+  queued_checks_.clear();
+  // Intentionally ignore the checks this method returns
+  CopyAndRemoveAllPendingChecks();
+}
+
 void V4LocalDatabaseManager::RespondToClient(
     std::unique_ptr<PendingCheck> check) {
   RespondToClientWithoutPendingCheckCleanup(check.get());

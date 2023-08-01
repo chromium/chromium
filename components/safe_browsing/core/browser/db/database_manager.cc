@@ -26,7 +26,8 @@ SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager(
               ? ui_task_runner
               : std::move(io_task_runner)),
       ui_task_runner_(std::move(ui_task_runner)),
-      enabled_(false) {}
+      enabled_(false),
+      is_shutdown_(false) {}
 
 SafeBrowsingDatabaseManager::~SafeBrowsingDatabaseManager() {
   DCHECK(!v4_get_hash_protocol_manager_);
