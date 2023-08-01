@@ -184,6 +184,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.PsrResult" enum="EnterpriseReportingPsrResult"
+    expires_after="2024-07-31">
+  <owner>xuhong@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Records the result of obtaining PSR info from healthd in the metrics
+    pipeline.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.RateLimitedEvents" units="BooleanAccepted"
     expires_after="2024-05-23">
   <owner>lbaraz@chromium.org</owner>

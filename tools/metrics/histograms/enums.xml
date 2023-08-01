@@ -33907,6 +33907,18 @@ Called by update_document_policy_enum.py.-->
   <int value="11" label="Browser crash event"/>
 </enum>
 
+<enum name="EnterpriseReportingPsrResult">
+  <summary>
+    Defined as code in
+    chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.cc
+  </summary>
+  <int value="0" label="OK"/>
+  <int value="1" label="Error getting PSR"/>
+  <int value="2" label="Unknown SystemResult type"/>
+  <int value="3" label="Null PsrInfo"/>
+  <int value="4" label="PSR is unsupported"/>
+</enum>
+
 <enum name="EnterpriseRetrievePolicyResponseType">
   <obsolete>
     Removed in M91 since the data is no longer monitored.
