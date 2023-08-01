@@ -21,6 +21,7 @@ import string
 import sys
 
 import buildbot_json_magic_substitutions as magic_substitutions
+import util
 
 # pylint: disable=super-with-arguments,useless-super-delegation
 
@@ -374,6 +375,18 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         help=
         'Write output files as .new.json. Useful during development so old and '
         'new files can be looked at side-by-side.')
+    parser.add_argument(
+        '--dimension-sets-handling',
+        choices=['restrict', 'convert', 'disable'],
+        default='restrict',
+        help=(
+            'Control the handling of dimension_sets fields. Must be one of:\n'
+            '* restrict (default) - Allow dimension_sets fields, and generate'
+            ' dimension_sets fields, but fail if any dimension_sets field or a'
+            ' generated test has multiple dimension sets\n'
+            '* convert - Convert any dimension_sets fields to dimensions'
+            ' fields\n'
+            '* disable - Fail if any dimension_sets fields are set\n'))
     parser.add_argument('-v',
                         '--verbose',
                         action='store_true',
@@ -739,7 +752,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # Ensure all Android Swarming tests run only on userdebug builds if another
     # build type was not specified.
     if 'swarming' in test and self.is_android(tester_config):
-      for d in test['swarming'].get('dimension_sets', []):
+      for d in util.get_dimension_sets(test):
         if d.get('os') == 'Android' and not d.get('device_os_type'):
           d['device_os_type'] = 'userdebug'
     self.replace_test_args(test, test_name, tester_name)
@@ -787,7 +800,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                                                True):
       # The presence of the "device_type" dimension indicates that the tests
       # are targeting CrOS hardware and so need the special trigger script.
-      dimension_sets = test['swarming']['dimension_sets']
+      dimension_sets = util.get_dimension_sets(test)
       if all('device_type' in ds for ds in dimension_sets):
         test['trigger_script'] = {
           'script': '//testing/trigger_scripts/chromeos_device_trigger.py',
@@ -942,7 +955,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.substitute_magic_args(result, tester_name, tester_config)
     return result
 
-  def substitute_gpu_args(self, tester_config, swarming_config, args):
+  def substitute_gpu_args(self, tester_config, test, args):
     substitutions = {
       # Any machine in waterfalls.pyl which desires to run GPU tests
       # must provide the os_type key.
@@ -950,11 +963,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       'gpu_vendor_id': '0',
       'gpu_device_id': '0',
     }
-    if swarming_config.get('dimension_sets'):
-      dimension_set = swarming_config['dimension_sets'][0]
-      if 'gpu' in dimension_set:
+    if dimension_sets := util.get_dimension_sets(test):
+      dimensions = dimension_sets[0]
+      if 'gpu' in dimensions:
         # First remove the driver version, then split into vendor and device.
-        gpu = dimension_set['gpu']
+        gpu = dimensions['gpu']
         if gpu != 'none':
           gpu = gpu.split('-')[0].split(':')
           substitutions['gpu_vendor_id'] = gpu[0]
@@ -1047,8 +1060,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         '--extra-browser-args=%s' % ' '.join(extra_browser_args),
     ] + args
     result['args'] = self.maybe_fixup_args_array(
-        self.substitute_gpu_args(tester_config, result.get('swarming', {}),
-                                 args))
+        self.substitute_gpu_args(tester_config, result, args))
     return result
 
   def get_default_isolate_name(self, tester_config, is_android_webview):
@@ -1310,11 +1322,68 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.variants = self.load_pyl_file(self.args.variants_pyl_path)
 
   def resolve_configuration_files(self):
+    self.resolve_dimension_sets()
     self.resolve_test_id_prefixes()
     self.resolve_composition_test_suites()
     self.resolve_matrix_compound_test_suites()
     self.flatten_test_suites()
     self.link_waterfalls_to_test_suites()
+
+  def forbid_multiple_element_dimension_sets(self, swarming, location):
+    dimension_sets = swarming['dimension_sets']
+    if len(dimension_sets) > 1:
+      raise BBGenErr(f'dimension_sets in {location} has multiple elements')
+
+  def convert_dimension_sets(self, swarming, location):
+    self.forbid_multiple_element_dimension_sets(swarming, location)
+    dimension_sets = swarming.pop('dimension_sets')
+    swarming.setdefault('dimensions', {}).update(dimension_sets[0])
+
+  def forbid_dimension_sets(self, swarming, location):
+    del swarming
+    raise BBGenErr('dimension_sets setting is disable,'
+                   f' but dimension_sets is set in {location}')
+
+  def resolve_dimension_sets(self):
+    dimension_sets_handler = {
+        'restrict': self.forbid_multiple_element_dimension_sets,
+        'convert': self.convert_dimension_sets,
+        'disable': self.forbid_dimension_sets,
+    }[self.args.dimension_sets_handling]
+
+    def definitions():
+      for suite_name, suite in self.test_suites.get('basic_suites', {}).items():
+        for test_name, test in suite.items():
+          yield test, f'test {test_name} in basic suite {suite_name}'
+
+      for mixin_name, mixin in self.mixins.items():
+        yield mixin, f'mixin {mixin_name}'
+
+      for waterfall in self.waterfalls:
+        for builder_name, builder in waterfall.get('machines', {}).items():
+          yield (
+              builder,
+              f'builder {builder_name} in waterfall {waterfall["name"]}',
+          )
+
+      for test_name, exceptions in self.exceptions.items():
+        modifications = exceptions.get('modifications', {})
+        for builder_name, mods in modifications.items():
+          yield (
+              mods,
+              f'exception for test {test_name} on builder {builder_name}',
+          )
+
+    for definition, location in definitions():
+      for swarming_attr in (
+          'swarming',
+          'android_swarming',
+          'chromeos_swarming',
+      ):
+        if (swarming :=
+            definition.get(swarming_attr)) and 'dimension_sets' in swarming:
+          dimension_sets_handler(definition[swarming_attr],
+                                 f'{swarming_attr} in {location}')
 
   def unknown_bot(self, bot_name, waterfall_name):
     return BBGenErr(
@@ -1439,10 +1508,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
             existing_dimension_sets.append(dimension_set)
         del swarming_mixin['dimension_sets']
       if 'dimensions' in swarming_mixin:
-        new_test['swarming'].setdefault('dimension_sets', [{}])
-        for dimension_set in new_test['swarming']['dimension_sets']:
-          dimension_set.update(swarming_mixin['dimensions'])
-        del swarming_mixin['dimensions']
+        if self.args.dimension_sets_handling == 'restrict':
+          new_test['swarming'].setdefault('dimension_sets', [{}])
+          for dimension_set in new_test['swarming']['dimension_sets']:
+            dimension_set.update(swarming_mixin['dimensions'])
+          del swarming_mixin['dimensions']
+        else:
+          new_test['swarming'].setdefault('dimensions', {}).update(
+              swarming_mixin.pop('dimensions'))
       if 'named_caches' in swarming_mixin:
         new_test['swarming'].setdefault('named_caches', []).extend(
             swarming_mixin['named_caches'])
@@ -1533,6 +1606,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       # specialization of isolated_scripts.
       new_tests = test_generator.generate(
         waterfall, name, config, input_tests)
+      for t in new_tests:
+        if len(util.get_dimension_sets(t)) > 1:
+          raise BBGenErr(
+              f'{t.get("name") or t["test"]} for builder {name}'
+              f' on waterfall {waterfall["name"]} has multiple dimension sets')
       remapped_test_type = test_type_remapper.get(test_type, test_type)
       tests[remapped_test_type] = test_generator.sort(
         tests.get(remapped_test_type, []) + new_tests)
@@ -2082,7 +2160,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # TODO(crbug.com/1203436): Ensure all swarming tests specify cpu, not
     # just mac tests.
     if 'swarming' in step_data:
-      dimension_sets = step_data['swarming'].get('dimension_sets')
+      dimension_sets = util.get_dimension_sets(step_data)
       if not dimension_sets:
         raise BBGenErr('%s: %s / %s : os must be specified for all '
                        'swarmed tests' % (filename, builder, step_name))

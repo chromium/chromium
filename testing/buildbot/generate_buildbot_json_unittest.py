@@ -3030,7 +3030,9 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE_NO_DIMENSIONS,
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_DIMENSION_SETS)
-    fbb.check_output_file_consistency(verbose=True)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                '.* has multiple dimension sets'):
+      fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
 TEST_SUITE_WITH_PARAMS = """\
@@ -4797,6 +4799,159 @@ class SwarmingTests(TestCase):
     with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
                                 'cpu must be specified for mac'):
       fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+
+MULTI_DIMENSION_SETS_WATERFALL = """\
+[
+  {
+    'project': 'chromium',
+    'bucket': 'ci',
+    'name': 'chromium.test',
+    'machines': {
+      'Mac': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Mac-foo',
+              'cpu': 'x86',
+            },
+            {
+              'os': 'Mac-bar',
+              'cpu': 'x86',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'foo_tests',
+        },
+      },
+    },
+  },
+]
+"""
+
+SINGLE_DIMENSION_SETS_WATERFALL = """\
+[
+  {
+    'project': 'chromium',
+    'bucket': 'ci',
+    'name': 'chromium.test',
+    'machines': {
+      'Mac': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Mac',
+              'cpu': 'x86',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'foo_tests',
+        },
+      },
+    },
+  },
+]
+"""
+
+SIMPLE_MIXINS_PYL = """\
+{
+  'foo-mixin': {
+    'swarming': {
+      'dimensions': {
+        'foo': 1,
+      },
+    },
+  },
+}
+"""
+
+SIMPLE_MIXIN_WATERFALL_PYL = """\
+[
+  {
+    'project': 'chromium',
+    'bucket': 'ci',
+    'name': 'chromium.test',
+    'mixins': ['foo-mixin'],
+    'machines': {
+      'Mac': {
+        'swarming': {
+          'dimensions': {
+            'os': 'Mac',
+            'cpu': 'x86',
+          },
+        },
+        'test_suites': {
+          'gtest_tests': 'foo_tests',
+        },
+      },
+    },
+  },
+]
+"""
+
+
+class DimensionSetsTests(TestCase):
+  def test_restrict_fails_on_multiple_elements(self):
+    fbb = FakeBBGen(self.args, MULTI_DIMENSION_SETS_WATERFALL, MAC_TEST_SUITE,
+                    MAC_LUCI_MILO_CFG)
+    fbb.check_input_file_consistency(verbose=True)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'dimension_sets in .* has multiple elements'):
+      fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_convert_fails_on_multiple_elements(self):
+    self.set_args('--dimension-sets-handling=convert')
+    fbb = FakeBBGen(self.args, MULTI_DIMENSION_SETS_WATERFALL, MAC_TEST_SUITE,
+                    MAC_LUCI_MILO_CFG)
+    fbb.check_input_file_consistency(verbose=True)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'dimension_sets in .* has multiple elements'):
+      fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_convert_converts_single_dimension_set_to_dimensions(self):
+    self.set_args('--dimension-sets-handling=convert')
+    fbb = FakeBBGen(self.args, SINGLE_DIMENSION_SETS_WATERFALL, MAC_TEST_SUITE,
+                    MAC_LUCI_MILO_CFG)
+    fbb.check_input_file_consistency(verbose=True)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_convert_with_mixin_generates_dimensions(self):
+    self.set_args('--dimension-sets-handling=convert')
+    fbb = FakeBBGen(self.args,
+                    SIMPLE_MIXIN_WATERFALL_PYL,
+                    MAC_TEST_SUITE,
+                    MAC_LUCI_MILO_CFG,
+                    mixins=SIMPLE_MIXINS_PYL)
+    fbb.check_input_file_consistency(verbose=True)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_disable_fails_on_dimension_sets(self):
+    self.set_args('--dimension-sets-handling=disable')
+    fbb = FakeBBGen(self.args, SINGLE_DIMENSION_SETS_WATERFALL, MAC_TEST_SUITE,
+                    MAC_LUCI_MILO_CFG)
+    fbb.check_input_file_consistency(verbose=True)
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
+        'dimension_sets setting is disable, but dimension_sets is set'):
+      fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_disable_with_mixin_generates_dimensions(self):
+    self.set_args('--dimension-sets-handling=disable')
+    fbb = FakeBBGen(self.args,
+                    SIMPLE_MIXIN_WATERFALL_PYL,
+                    MAC_TEST_SUITE,
+                    MAC_LUCI_MILO_CFG,
+                    mixins=SIMPLE_MIXINS_PYL)
+    fbb.check_input_file_consistency(verbose=True)
+    fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
 
