@@ -9,14 +9,26 @@
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './safety_hub_card.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
+import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 
+import {CardInfo, CardState, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_page.html.js';
+
+export interface SettingsSafetyHubPageElement {
+  $: {
+    passwords: HTMLElement,
+    safeBrowsing: HTMLElement,
+    version: HTMLElement,
+  };
+}
 
 const SettingsSafetyHubPageElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
@@ -33,23 +45,14 @@ export class SettingsSafetyHubPageElement extends
 
   static get properties() {
     return {
-      // The string for the header of Passsword Check card.
-      passwordStateHeader_: String,
+      // The object that holds data of Password Check card.
+      passwordCardData_: Object,
 
-      // The string for the subheader of Password Check card.
-      passwordStateSubheader_: String,
+      // The object that holds data of Version Check card.
+      versionCardData_: Object,
 
-      // The string for the header of Version Check card.
-      versionStateHeader_: String,
-
-      // The string for the subheader of Version Check card.
-      versionStateSubheader_: String,
-
-      // The string for the header of Safe Browsing card.
-      safeBrowsingHeader_: String,
-
-      // The string for the subheader of Safe Browsing card.
-      safeBrowsingSubheader_: String,
+      // The object that holds data of Safe Browsing card.
+      safeBrowsingCardData_: Object,
 
       // Whether Unused Site Permissions module should be visible.
       showUnusedSitePermissions_: {
@@ -59,25 +62,40 @@ export class SettingsSafetyHubPageElement extends
     };
   }
 
-  private passwordStateHeader_: string;
-  private passwordStateSubheader_: string;
-  private versionStateHeader_: string;
-  private versionStateSubheader_: string;
-  private safeBrowsingHeader_: string;
-  private safeBrowsingSubheader_: string;
+  private passwordCardData_: CardInfo;
+  private versionCardData_: CardInfo;
+  private safeBrowsingCardData_: CardInfo;
   private showUnusedSitePermissions_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    // TODO(crbug.com/1443466): Replace strings with the real values.
-    this.passwordStateHeader_ = this.i18n('privacyPageTitle');
-    this.passwordStateSubheader_ = this.i18n('privacyPageTitle');
-    this.versionStateHeader_ = this.i18n('privacyPageTitle');
-    this.versionStateSubheader_ = this.i18n('privacyPageTitle');
-    this.safeBrowsingHeader_ = this.i18n('privacyPageTitle');
-    this.safeBrowsingSubheader_ = this.i18n('privacyPageTitle');
+    this.initializeCards_();
+    this.initializeModules_();
+  }
 
+  private initializeCards_() {
+    // TODO(crbug.com/1443466): Replace dummy values with the real values.
+    const dummyText = this.i18n('privacyPageTitle');
+    this.passwordCardData_ = {
+      header: dummyText,
+      subheader: dummyText,
+      state: CardState.INFO,
+    };
+    this.versionCardData_ = {
+      header: dummyText,
+      subheader: dummyText,
+      state: CardState.INFO,
+    };
+
+    this.safeBrowsingCardData_ = {
+      header: dummyText,
+      subheader: dummyText,
+      state: CardState.INFO,
+    };
+  }
+
+  private initializeModules_() {
     this.addWebUiListener(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         (sites: UnusedSitePermissions[]) =>
@@ -88,6 +106,23 @@ export class SettingsSafetyHubPageElement extends
         .then(
             (sites: UnusedSitePermissions[]) =>
                 this.onUnusedSitePermissionListChanged_(sites));
+  }
+
+  private onPasswordsClick_() {
+    PasswordManagerImpl.getInstance().showPasswordManager(
+        PasswordManagerPage.CHECKUP);
+  }
+
+  private onVersionClick_() {
+    Router.getInstance().navigateTo(
+        routes.ABOUT, /* dynamicParams= */ undefined,
+        /* removeSearch= */ true);
+  }
+
+  private onSafeBrowsingClick_() {
+    Router.getInstance().navigateTo(
+        routes.SECURITY, /* dynamicParams= */ undefined,
+        /* removeSearch= */ true);
   }
 
   private onUnusedSitePermissionListChanged_(permissions:

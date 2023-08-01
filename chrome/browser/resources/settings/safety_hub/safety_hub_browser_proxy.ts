@@ -26,19 +26,35 @@ export enum SafetyHubEvent {
       'notification-permission-review-list-maybe-changed',
 }
 
-/**
- * The notification permission information passed from
- * site_settings_permissions_handler.cc.
- */
+// The notification permission information passed from safety_hub_handler.cc.
 export interface NotificationPermission {
   origin: string;
   notificationInfoString: string;
 }
 
+// The unused site permission information passed from safety_hub_handler.cc.
 export interface UnusedSitePermissions {
   origin: string;
   permissions: ContentSettingsTypes[];
   expiration: string;
+}
+
+// The information for top cards in Safety Hub page.
+export interface CardInfo {
+  header: string;
+  subheader: string;
+  state: CardState;
+}
+
+/**
+ * A Safety Hub card has 4 different states as represented below. Depending on
+ * the card state, the card will be updated.
+ */
+export enum CardState {
+  WARNING,
+  WEAK,
+  INFO,
+  SAFE,
 }
 
 export interface SafetyHubBrowserProxy {
