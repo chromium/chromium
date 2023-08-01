@@ -27,6 +27,9 @@ PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
   NodeCloningData data{CloneOption::kIncludeDescendants,
                        CloneOption::kPreserveDOMParts};
   Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data);
+  // clone may be null and can be hit by clusterfuzz: http://crbug.com/1467847
+  if (!clone)
+    return nullptr;
   DocumentPartRoot* part_root =
       clone->IsDocumentNode() ? &To<Document>(clone)->getPartRoot()
                               : &To<DocumentFragment>(clone)->getPartRoot();
