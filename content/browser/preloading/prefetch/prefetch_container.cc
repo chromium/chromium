@@ -810,7 +810,6 @@ void PrefetchContainer::OnReceivedHead() {
 
 void PrefetchContainer::SetOnReceivedHeadCallback(
     base::OnceClosure on_received_head_callback) {
-  DCHECK(!on_received_head_callback_);
   on_received_head_callback_ = std::move(on_received_head_callback);
 }
 
@@ -864,7 +863,6 @@ bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
 
 void PrefetchContainer::TakeBlockUntilHeadTimer(
     std::unique_ptr<base::OneShotTimer> block_until_head_timer) {
-  CHECK(!block_until_head_timer_);
   block_until_head_timer_ = std::move(block_until_head_timer);
 }
 
