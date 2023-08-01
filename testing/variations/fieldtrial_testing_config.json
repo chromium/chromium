@@ -15370,6 +15370,26 @@
             ]
         }
     ],
+    "V8MinorMS": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kV8MinorMS"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8SlowHistograms": [
         {
             "platforms": [
