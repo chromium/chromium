@@ -22,13 +22,13 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/ipp_client_info_calculator.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
@@ -41,7 +41,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
@@ -181,24 +180,6 @@ class FakePpdProvider : public chromeos::PpdProvider {
   ~FakePpdProvider() override = default;
 };
 
-class FakeUser : public user_manager::User {
- public:
-  FakeUser()
-      : user_manager::User(
-            AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName)) {
-  }
-  FakeUser(const FakeUser&) = delete;
-  FakeUser& operator=(const FakeUser&) = delete;
-  ~FakeUser() override = default;
-
-  using user_manager::User::set_display_email;
-
-  // User:
-  user_manager::UserType GetType() const override {
-    return user_manager::USER_TYPE_REGULAR;
-  }
-};
-
 class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
  public:
   TestLocalPrinterAshWithPrinterConfigurer(
@@ -239,7 +220,9 @@ class LocalPrinterAshTestBase : public testing::Test {
   }
 
   void SetUsername(const std::string& username) {
-    user_.set_display_email(username);
+    fake_user_manager_->SaveUserDisplayEmail(
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName),
+        username);
   }
 
   // Indicate if calls to print backend should be made using a service instead
@@ -255,7 +238,8 @@ class LocalPrinterAshTestBase : public testing::Test {
   }
 
   void SetUp() override {
-    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
+    fake_user_manager_->AddUser(
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName));
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     // Choose between running with local test runner or via a service.
@@ -314,8 +298,6 @@ class LocalPrinterAshTestBase : public testing::Test {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     PrintBackendServiceManager::ResetForTesting();
 #endif
-    ash::ProfileHelper::Get()->RemoveUserFromListForTesting(
-        user_.GetAccountId());
   }
 
  protected:
@@ -375,7 +357,14 @@ class LocalPrinterAshTestBase : public testing::Test {
 
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
+  ash::FakeChromeUserManager* fake_user_manager() {
+    return fake_user_manager_.Get();
+  }
+
  private:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+
   // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
 
@@ -397,8 +386,6 @@ class LocalPrinterAshTestBase : public testing::Test {
   std::unique_ptr<PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-
-  FakeUser user_;
 };
 
 // Testing class to cover `LocalPrinterAsh` handling using a local
@@ -1283,16 +1270,11 @@ class LocalPrinterAshWithIppClientInfoTest : public LocalPrinterAshTest {
   ~LocalPrinterAshWithIppClientInfoTest() override = default;
 
   void SetUp() override {
-    user_manager_ = new user_manager::FakeUserManager();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_.get()));
-    user_manager_->AddUserWithAffiliation(kAffiliatedUserAccountId,
-                                          /*is_affiliated*/ true);
-    user_manager_->AddUserWithAffiliation(kUnaffiliatedUserAccountId,
-                                          /*is_affiliated*/ false);
+    fake_user_manager()->AddUserWithAffiliation(kAffiliatedUserAccountId,
+                                                /*is_affiliated=*/true);
+    fake_user_manager()->AddUserWithAffiliation(kUnaffiliatedUserAccountId,
+                                                /*is_affiliated=*/false);
     SetActiveUser(kUnaffiliatedUserAccountId);
-    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
-        &primary_user_);
     auto ppd_provider = base::MakeRefCounted<FakePpdProvider>();
     ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactoryAndUse(
         &profile_,
@@ -1309,7 +1291,7 @@ class LocalPrinterAshWithIppClientInfoTest : public LocalPrinterAshTest {
   }
 
   void SetActiveUser(AccountId account_id) {
-    user_manager_->SwitchActiveUser(account_id);
+    fake_user_manager()->SwitchActiveUser(account_id);
   }
 
  protected:
@@ -1327,11 +1309,8 @@ class LocalPrinterAshWithIppClientInfoTest : public LocalPrinterAshTest {
   }
 
  private:
-  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   // Must outlive `printers_manager_`.
   TestingProfile profile_;
-  FakeUser primary_user_;
   raw_ptr<ash::FakeCupsPrintersManager, ExperimentalAsh> printers_manager_ =
       nullptr;
   NiceMock<MockIppClientInfoCalculator> client_info_calculator_;

@@ -493,7 +493,12 @@ std::u16string FakeChromeUserManager::GetUserDisplayName(
 void FakeChromeUserManager::SaveUserDisplayEmail(
     const AccountId& account_id,
     const std::string& display_email) {
-  NOTREACHED();
+  user_manager::User* user = FindUserAndModify(account_id);
+  if (!user) {
+    LOG(ERROR) << "User not found: " << account_id.GetUserEmail();
+    return;
+  }
+  user->set_display_email(display_email);
 }
 
 void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
