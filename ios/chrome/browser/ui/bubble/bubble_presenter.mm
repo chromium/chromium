@@ -587,7 +587,7 @@ const CGFloat kBubblePresentationDelay = 1;
                           direction:arrowDirection
                           alignment:BubbleAlignmentTrailing
                                text:text
-              voiceOverAnnouncement:nil
+              voiceOverAnnouncement:text
                         anchorPoint:newTabButtonAnchor
                       presentAction:presentAction
                       dismissAction:dismissAction];
@@ -644,7 +644,7 @@ const CGFloat kBubblePresentationDelay = 1;
                           direction:arrowDirection
                           alignment:BubbleAlignmentTrailing
                                text:text
-              voiceOverAnnouncement:nil
+              voiceOverAnnouncement:text
                         anchorPoint:tabGridButtonAnchor
                       presentAction:presentAction
                       dismissAction:dismissAction];
