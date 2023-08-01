@@ -40,8 +40,8 @@ absl::optional<GURL> FakePdfStreamDelegate::MapToOriginalUrl(
 }
 
 absl::optional<PdfStreamDelegate::StreamInfo>
-FakePdfStreamDelegate::GetStreamInfo(content::RenderFrameHost* embedder_frame) {
-  EXPECT_TRUE(embedder_frame);
+FakePdfStreamDelegate::GetStreamInfo(content::WebContents* contents) {
+  EXPECT_TRUE(contents);
   return stream_info_;
 }
 

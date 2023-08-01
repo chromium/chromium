@@ -18,7 +18,7 @@ absl::optional<GURL> PdfStreamDelegate::MapToOriginalUrl(
 }
 
 absl::optional<PdfStreamDelegate::StreamInfo> PdfStreamDelegate::GetStreamInfo(
-    content::RenderFrameHost* embedder_frame) {
+    content::WebContents* contents) {
   return absl::nullopt;
 }
 

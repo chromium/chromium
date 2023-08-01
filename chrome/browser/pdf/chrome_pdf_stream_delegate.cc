@@ -17,11 +17,9 @@
 #include "chrome/grit/pdf_resources.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
@@ -56,30 +54,29 @@ bool ShouldEnableSkiaRenderer(content::WebContents* contents) {
       chrome_pdf::features::kPdfUseSkiaRenderer);
 }
 
-// Associates a `pdf::PdfStreamDelegate::StreamInfo` with the PDF extension's
-// or Print Preview's `blink::Document`.
+// Associates a `pdf::PdfStreamDelegate::StreamInfo` with a `WebContents`.
 // `ChromePdfStreamDelegate::MapToOriginalUrl()` initializes this in
 // `PdfNavigationThrottle`, and then `ChromePdfStreamDelegate::GetStreamInfo()`
 // returns the stashed result to `PdfURLLoaderRequestInterceptor`.
-class StreamInfoHelper : public content::DocumentUserData<StreamInfoHelper> {
+class StreamInfoHelper : public content::WebContentsUserData<StreamInfoHelper> {
  public:
   absl::optional<pdf::PdfStreamDelegate::StreamInfo> TakeStreamInfo() {
     return std::move(stream_info_);
   }
 
  private:
-  friend class content::DocumentUserData<StreamInfoHelper>;
-  DOCUMENT_USER_DATA_KEY_DECL();
+  friend class content::WebContentsUserData<StreamInfoHelper>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  StreamInfoHelper(content::RenderFrameHost* embedder_frame,
+  StreamInfoHelper(content::WebContents* contents,
                    pdf::PdfStreamDelegate::StreamInfo stream_info)
-      : content::DocumentUserData<StreamInfoHelper>(embedder_frame),
+      : content::WebContentsUserData<StreamInfoHelper>(*contents),
         stream_info_(std::move(stream_info)) {}
 
   absl::optional<pdf::PdfStreamDelegate::StreamInfo> stream_info_;
 };
 
-DOCUMENT_USER_DATA_KEY_IMPL(StreamInfoHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(StreamInfoHelper);
 
 }  // namespace
 
@@ -88,13 +85,10 @@ ChromePdfStreamDelegate::~ChromePdfStreamDelegate() = default;
 
 absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     content::NavigationHandle& navigation_handle) {
-  // The embedder frame's `Document` is used to store `StreamInfoHelper`.
-  content::RenderFrameHost* embedder_frame = navigation_handle.GetParentFrame();
-
-  StreamInfoHelper* helper =
-      StreamInfoHelper::GetForCurrentDocument(embedder_frame);
+  content::WebContents* contents = navigation_handle.GetWebContents();
+  StreamInfoHelper* helper = StreamInfoHelper::FromWebContents(contents);
   if (helper) {
-    // PDF viewer and Print Preview only do this once per `blink::Document`.
+    // PDF viewer and Print Preview only do this once per WebContents.
     return absl::nullopt;
   }
 
@@ -102,13 +96,9 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
   StreamInfo info;
 
   const GURL& stream_url = navigation_handle.GetURL();
-  content::WebContents* contents = navigation_handle.GetWebContents();
   extensions::MimeHandlerViewGuest* guest =
       extensions::MimeHandlerViewGuest::FromWebContents(contents);
   if (guest) {
-    CHECK(embedder_frame->GetLastCommittedURL().host() ==
-          extension_misc::kPdfExtensionId);
-
     base::WeakPtr<extensions::StreamContainer> stream =
         guest->GetStreamWeakPtr();
     if (!stream || stream->extension_id() != extension_misc::kPdfExtensionId ||
@@ -126,9 +116,6 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else if (stream_url.GetWithEmptyPath() ==
              chrome::kChromeUIUntrustedPrintURL) {
-    CHECK(embedder_frame->GetLastCommittedURL().host() ==
-          chrome::kChromeUIPrintHost);
-
     // Print Preview doesn't have access to `chrome.mimeHandlerPrivate`, so just
     // use values that match those set by `PDFViewerPPElement`.
     original_url = stream_url;
@@ -148,23 +135,15 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
   info.stream_url = stream_url;
   info.original_url = original_url;
   info.injected_script = injected_script.get();
-
-  StreamInfoHelper::CreateForCurrentDocument(embedder_frame, std::move(info));
+  StreamInfoHelper::CreateForWebContents(contents, std::move(info));
   return original_url;
 }
 
 absl::optional<pdf::PdfStreamDelegate::StreamInfo>
-ChromePdfStreamDelegate::GetStreamInfo(
-    content::RenderFrameHost* embedder_frame) {
-  if (!embedder_frame) {
+ChromePdfStreamDelegate::GetStreamInfo(content::WebContents* contents) {
+  StreamInfoHelper* helper = StreamInfoHelper::FromWebContents(contents);
+  if (!helper)
     return absl::nullopt;
-  }
-
-  StreamInfoHelper* helper =
-      StreamInfoHelper::GetForCurrentDocument(embedder_frame);
-  if (!helper) {
-    return absl::nullopt;
-  }
 
   // Only the call immediately following `MapToOriginalUrl()` requires a valid
   // `StreamInfo`; subsequent calls should just get nothing.

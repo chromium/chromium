@@ -14,7 +14,7 @@
 
 namespace content {
 class NavigationHandle;
-class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace pdf {
@@ -53,17 +53,15 @@ class PdfStreamDelegate {
   virtual ~PdfStreamDelegate();
 
   // Maps the navigation to the original URL. This method should associate a
-  // `StreamInfo` with the `blink::Document` for `navigation_handle`'s parent
-  // `RenderFrameHost`, for later retrieval by `GetStreamInfo()`.
+  // `StreamInfo` with the `WebContents` in `navigation_handle`, for later
+  // retrieval by `GetStreamInfo()`.
   virtual absl::optional<GURL> MapToOriginalUrl(
       content::NavigationHandle& navigation_handle);
 
-  // Gets the stream information associated with the given `RenderFrameHost`.
-  // The frame must be a PDF extension frame or Print Preview's frame.
-  // Returns null if there is no associated stream or if `embedder_frame` is
-  // `nullptr`.
+  // Gets the stream information associated with the given `WebContents`.
+  // Returns null if there is no associated stream.
   virtual absl::optional<StreamInfo> GetStreamInfo(
-      content::RenderFrameHost* embedder_frame);
+      content::WebContents* contents);
 };
 
 }  // namespace pdf

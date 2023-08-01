@@ -18,7 +18,7 @@ class ChromePdfStreamDelegate : public pdf::PdfStreamDelegate {
   absl::optional<GURL> MapToOriginalUrl(
       content::NavigationHandle& navigation_handle) override;
   absl::optional<StreamInfo> GetStreamInfo(
-      content::RenderFrameHost* embedder_frame) override;
+      content::WebContents* contents) override;
 };
 
 #endif  // CHROME_BROWSER_PDF_CHROME_PDF_STREAM_DELEGATE_H_
