@@ -93,8 +93,8 @@ after the include block:
 ```
 
 Now that ARC is enabled by default, this boilerplate is not needed, and is
-currently in the [process of being removed](https://crbug.com/733237). Please do
-not add this boilerplate to new files.
+currently in the [process of being removed](https://crbug.com/1468376). Please
+do not add this boilerplate to new files.
 
 ### Header files {#convention-headers}
 
@@ -106,8 +106,7 @@ Header files can be:
 2. _Only included in Objective-C implementation files compiled with ARC._
    Because ARC is the default compilation mode, this will be common. For these
    headers, qualify the ownership of Objective-C object pointers with `__strong`
-   and `__weak`, and add the [ARC boilerplate](#convention-boilerplate) at the
-   top to ensure that they are only included by files compiled with ARC.
+   and `__weak`.
 3. _Included in Objective-C implementation files compiled with a mix of ARC and
    non-ARC._ Because ARC is the default compilation mode, this situation should
    be rare. For this situation, treat the non-ARC compiled files as if they were

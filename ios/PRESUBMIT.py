@@ -16,11 +16,6 @@ BUG_PATTERN = r'(crbug\.com|b)/\d+$'
 INCLUDE_PATTERN = r'^#include'
 PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
 IOS_PACKAGE_PATTERN = r'^ios'
-ARC_COMPILE_GUARD = [
-    '#if !defined(__has_feature) || !__has_feature(objc_arc)',
-    '#error "This file requires ARC support."',
-    '#endif',
-]
 BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 
 def IsSubListOf(needle, hay):
@@ -30,35 +25,6 @@ def IsSubListOf(needle, hay):
             if needle == hay[i:i + len(needle)]:
                 return True
     return False
-
-
-def _CheckARCCompilationGuard(input_api, output_api):
-    """ Checks whether new objc files have proper ARC compile guards."""
-    files_without_headers = []
-    for f in input_api.AffectedFiles():
-        if f.Action() != 'A':
-            continue
-
-        _, ext = os.path.splitext(f.LocalPath())
-        if ext not in ('.m', '.mm'):
-            continue
-
-        if not IsSubListOf(ARC_COMPILE_GUARD, f.NewContents()):
-            files_without_headers.append(f.LocalPath())
-
-    if not files_without_headers:
-        return []
-
-    plural_suffix = '' if len(files_without_headers) == 1 else 's'
-    error_message = '\n'.join([
-        'Found new Objective-C implementation file%(plural)s without compile'
-        ' guard%(plural)s. Please use the following compile guard'
-        ':' % {
-            'plural': plural_suffix
-        }
-    ] + ARC_COMPILE_GUARD + files_without_headers) + '\n'
-
-    return [output_api.PresubmitError(error_message)]
 
 
 def _CheckNullabilityAnnotations(input_api, output_api):
@@ -210,7 +176,6 @@ def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
     results.extend(_CheckNullabilityAnnotations(input_api, output_api))
-    results.extend(_CheckARCCompilationGuard(input_api, output_api))
     results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
     results.extend(_CheckHasNoPipeInComment(input_api, output_api))
     results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
