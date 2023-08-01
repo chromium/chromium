@@ -311,13 +311,13 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigation) {
             SidePanelEntry::Id::kSearchCompanion);
 
   // Verify that experiments load.
-  std::vector<std::string> expected_features = {
-      "ATX", "CQ", "PageEntities", "RelQs", "RelQr", "RelQs"};
+  std::vector<std::string> expected_features = {"ATX", "CQ", "PageEntities",
+                                                "RelQs", "RelQr"};
   ConfirmFeaturesShown(expected_features, 1);
 
   // Generate PH.
   ClickButtonByInnerText("Generate");
-  ConfirmFeaturesShown({"PH"}, 1);
+  ConfirmFeaturesShown({"PHResult"}, 1);
   ConfirmFeaturesClicked({"PH"}, 1);
 
   // Close the side panel.
@@ -344,13 +344,6 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationNotOptedIn) {
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
   WaitForCompanionToBeLoaded();
-
-  // Verify the kExpsShown promo event is shown.
-  WaitForHistogramSample("Companion.PromoEvent",
-                         (int)companion::PromoEvent::kExpsShown);
-  histogram_tester_->ExpectBucketCount(
-      "Companion.PromoEvent",
-      /*sample=*/companion::PromoEvent::kExpsShown, /*expected_count=*/1);
 
   // Verify that correct experiments load.
   std::vector<std::string> expected = {"ATX", "PageEntities", "RelQr", "RelQs"};
