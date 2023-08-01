@@ -685,7 +685,16 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
- ['OsSettingsMenu', 'os_settings_menu/os_settings_menu_test.js'],
+ [
+   'OsSettingsMenu',
+   'os_settings_menu/os_settings_menu_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsMenuRevamp',
+   'os_settings_menu/os_settings_menu_revamp_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  [
    'OsSettingsUiAboutPage',
@@ -700,6 +709,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsSettingsUiPageVisibility',
    'os_settings_ui/os_settings_ui_page_visibility_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsSettingsUiScrollRestoration',

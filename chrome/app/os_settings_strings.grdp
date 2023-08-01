@@ -5675,5 +5675,10 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE" desc="Label for the dropdown menu which enables the do not restore option, which means not restore apps or pages on startup.">
     Off
   </message>
+
+  <!-- System Preferences Page -->
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE" desc="The title of the System Preferences page and respective menu item.">
+    System Preferences
+  </message>
 </if>
 </grit-part>

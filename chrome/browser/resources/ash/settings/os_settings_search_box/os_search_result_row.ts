@@ -763,6 +763,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:stylus';
       case SearchResultIcon.kSync:
         return 'os-settings:sync';
+      case SearchResultIcon.kSystemPreferences:
+        return 'os-settings:system-preferences';
       case SearchResultIcon.kWallpaper:
         return 'os-settings:wallpaper';
       case SearchResultIcon.kWifi:

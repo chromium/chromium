@@ -58,6 +58,7 @@ enum SearchResultIcon {
   kStylus,
   kSwitchAccess,
   kSync,
+  kSystemPreferences,
   kWallpaper,
   kWifi
 };

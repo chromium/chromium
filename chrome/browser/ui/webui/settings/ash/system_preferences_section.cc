@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/ash/system_preferences_section.h"
 
+#include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
+
 namespace ash::settings {
 
 namespace mojom {
@@ -22,8 +26,10 @@ SystemPreferencesSection::~SystemPreferencesSection() {}
 
 void SystemPreferencesSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  // TODO(b/292678609) Add load time data.
-  NOTIMPLEMENTED();
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"systemPreferencesTitle", IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void SystemPreferencesSection::AddHandlers(content::WebUI* web_ui) {
@@ -32,9 +38,7 @@ void SystemPreferencesSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int SystemPreferencesSection::GetSectionNameMessageId() const {
-  // TODO(b/292678609) Define string and reference here.
-  NOTIMPLEMENTED();
-  return 0;
+  return IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE;
 }
 
 mojom::Section SystemPreferencesSection::GetSection() const {
@@ -42,8 +46,7 @@ mojom::Section SystemPreferencesSection::GetSection() const {
 }
 
 mojom::SearchResultIcon SystemPreferencesSection::GetSectionIcon() const {
-  // TODO(b/292678609) Update search result icon.
-  return mojom::SearchResultIcon::kMagnifyingGlass;
+  return mojom::SearchResultIcon::kSystemPreferences;
 }
 
 std::string SystemPreferencesSection::GetSectionPath() const {
