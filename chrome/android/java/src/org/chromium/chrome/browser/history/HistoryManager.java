@@ -39,7 +39,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.ClusterVisit;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
@@ -836,7 +835,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         recordUserAction("ClearBrowsingData");
         recordClearBrowsingDataMetric();
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(mActivity, ClearBrowsingDataTabsFragment.class);
+        settingsLauncher.launchSettingsActivity(
+                mActivity, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
     }
 
     // HistoryContentManager.Observer

@@ -153,7 +153,8 @@ public class OmniboxActionDelegateImplUnitTest {
     public void openClearBrowsingData() {
         mDelegate.handleClearBrowsingData();
         verify(mMockSettingsLauncher)
-                .launchSettingsActivity(mContext, SettingsFragment.CLEAR_BROWSING_DATA);
+                .launchSettingsActivity(
+                        mContext, SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
     }
 
     @Test

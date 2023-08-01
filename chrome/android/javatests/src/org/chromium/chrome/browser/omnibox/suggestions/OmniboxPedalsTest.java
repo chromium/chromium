@@ -47,7 +47,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
@@ -191,7 +191,7 @@ public class OmniboxPedalsTest {
     public void testClearBrowsingData() throws InterruptedException {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
         clickOnPedalToSettings(
-                () -> mOmniboxUtils.clickOnAction(0, 0), ClearBrowsingDataTabsFragment.class);
+                () -> mOmniboxUtils.clickOnAction(0, 0), ClearBrowsingDataFragmentAdvanced.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         OmniboxPedalId.CLEAR_BROWSING_DATA, /*position=*/0, /*executed=*/true);
