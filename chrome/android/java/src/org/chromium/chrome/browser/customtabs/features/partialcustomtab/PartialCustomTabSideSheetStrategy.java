@@ -208,19 +208,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private void onMaximizeEnd() {
         setContentVisible(false);
         if (isMaximized()) {
-            if (mSheetOnRight) {
-                configureLayoutBeyondScreen(false);
-                maybeResetTalkbackFocus();
-            }
+            if (mSheetOnRight) configureLayoutBeyondScreen(false);
+            maybeResetTalkbackFocus();
             maybeInvokeResizeCallback();
             setContentVisible(true);
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
-                if (mSheetOnRight) {
-                    configureLayoutBeyondScreen(false);
-                    maybeResetTalkbackFocus();
-                }
+                if (mSheetOnRight) configureLayoutBeyondScreen(false);
+                maybeResetTalkbackFocus();
                 initializeSize();
                 if (shouldDrawDividerLine()) drawDividerLine();
                 // We have a delay before showing the resized web contents so it has to be done
