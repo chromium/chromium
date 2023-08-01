@@ -658,8 +658,12 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
 }
 
 void UnifiedSystemTray::HandleLocaleChange() {
+  // Re-adds the child views to force the layer's bounds to be updated
+  // (`SetLayerBounds`) for text direction (if needed).
+  tray_container()->RemoveAllChildViewsWithoutDeleting();
   for (TrayItemView* item : tray_items_) {
     item->HandleLocaleChange();
+    tray_container()->AddChildView(item);
   }
 }
 
