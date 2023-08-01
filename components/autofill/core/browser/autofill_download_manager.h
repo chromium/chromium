@@ -203,7 +203,7 @@ class AutofillDownloadManager {
   const std::string api_key_;
 
   // Access to leave log messages for chrome://autofill-internals, may be null.
-  const raw_ptr<LogManager, DanglingUntriaged> log_manager_;  // WEAK
+  const raw_ptr<LogManager> log_manager_;  // WEAK
 
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.
