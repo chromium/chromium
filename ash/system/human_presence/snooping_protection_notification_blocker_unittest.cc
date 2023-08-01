@@ -71,7 +71,8 @@ void AddNotification(const std::string& notification_id,
           ? message_center::NotifierId(
                 message_center::NotifierType::SYSTEM_COMPONENT, "system",
                 NotificationCatalogName::kHPSNotify)
-          : message_center::NotifierId(/*url=*/GURL(), notifier_title);
+          : message_center::NotifierId(/*url=*/GURL(), notifier_title,
+                                       /*web_app_id=*/absl::nullopt);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
@@ -538,7 +539,8 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, WebsiteNotifierTitles) {
 
   // Website with a trusted title uses the title.
   const message_center::NotifierId trusted_notifier(
-      GURL("https://trusted.com:443"), u"Trusted");
+      GURL("https://trusted.com:443"), u"Trusted",
+      /*web_app_id=*/absl::nullopt);
   const std::u16string trusted_title =
       hps_internal::GetNotifierTitle<FakeAppRegistryCache>(trusted_notifier,
                                                            AccountId());

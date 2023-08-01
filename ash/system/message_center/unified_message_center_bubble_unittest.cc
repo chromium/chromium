@@ -50,7 +50,8 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id, u"title", u"message",
         ui::ImageModel(), std::u16string(), GURL(),
-        message_center::NotifierId(GURL(u"example.com"), u"webpagetitle"),
+        message_center::NotifierId(GURL(u"example.com"), u"webpagetitle",
+                                   /*web_app_id=*/absl::nullopt),
         message_center::RichNotificationData(), /*delegate=*/nullptr));
     return id;
   }

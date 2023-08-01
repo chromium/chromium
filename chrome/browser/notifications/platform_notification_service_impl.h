@@ -17,6 +17,7 @@
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_trigger_scheduler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -136,7 +137,12 @@ class PlatformNotificationServiceImpl
   // Returns a display name for an origin, to be used in the context message
   std::u16string DisplayNameForContextMessage(const GURL& origin) const;
 
-  // Finds the icon and title associated with |web_app_hint_url| when this
+  // Finds the AppId associated with |web_app_hint_url| when this is part of
+  // an installed experience, and the notification can be attributed as such.
+  absl::optional<web_app::AppId> FindWebAppId(
+      const GURL& web_app_hint_url) const;
+
+  // Finds the icon and title associated with |web_app_id| when this
   // is part of an installed experience, and the notification can be attributed
   // as such.
   absl::optional<WebAppIconAndTitle> FindWebAppIconAndTitle(

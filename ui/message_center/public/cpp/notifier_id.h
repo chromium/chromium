@@ -56,7 +56,9 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   // Constructor for WEB_PAGE type. The |title| must only be populated when a
   // trust relationship has been established, and it is appropriate to display
   // this instead of the |url|'s origin for attribution.
-  NotifierId(const GURL& url, absl::optional<std::u16string> title);
+  NotifierId(const GURL& url,
+             absl::optional<std::u16string> title,
+             absl::optional<std::string> web_app_id);
 
   NotifierId(const NotifierId& other);
   ~NotifierId();
@@ -84,6 +86,9 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   // The title provided by the app identifier. This is used by desktop web
   // applications.
   absl::optional<std::u16string> title;
+
+  // Optional web app identifier for type WEB_PAGE.
+  absl::optional<std::string> web_app_id;
 
   // The identifier of the profile where the notification is created. This is
   // used for ChromeOS multi-profile support and can be empty.
