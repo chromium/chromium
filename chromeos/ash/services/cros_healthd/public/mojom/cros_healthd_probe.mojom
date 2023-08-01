@@ -757,9 +757,9 @@ union StatefulPartitionResult {
 // NextMinVersion: 1, NextIndex: 4
 [Stable]
 struct StatefulPartitionInfo {
-  // Available space for user data storage in the device in bytes.
+  // Available space in bytes for stateful partition.
   uint64 available_space@0;
-  // Total space for user data storage in the device in bytes.
+  // Total space in bytes for stateful partition.
   uint64 total_space@1;
   // File system on stateful partition. e.g. ext4.
   string filesystem@2;
