@@ -177,7 +177,11 @@ std::vector<std::string> GetSupportedLinksForPWAs(
     return std::vector<std::string>();
   }
 
-  std::string scope_str = app_scope.host() + app_scope.path();
+  std::string scope_str(app_scope.host());
+  if (app_scope.has_port()) {
+    scope_str += ":" + app_scope.port();
+  }
+  scope_str += app_scope.path();
   if (scope_str.back() == '/') {
     scope_str = scope_str + "*";
   } else {

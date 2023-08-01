@@ -139,6 +139,87 @@ TEST_F(AppManagementPageHandlerTestBase, GetPreferredAppTest) {
               testing::Contains("example.com/abc/*"));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(AppManagementPageHandlerTestBase, SupportedLinksWithPort) {
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info->title = u"app_name";
+  web_app_info->start_url = GURL("https://example.com/index.html");
+  web_app_info->scope = GURL("https://example:8080/abc/");
+
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  base::test::TestFuture<app_management::mojom::AppPtr> result;
+  handler()->GetApp(app_id, result.GetCallback());
+
+  EXPECT_THAT(result.Get()->supported_links,
+              testing::Contains("example:8080/abc/*"));
+}
+
+TEST_F(AppManagementPageHandlerTestBase, PreferredAppNonOverlappingScopePort) {
+  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info1->title = u"App 1";
+  web_app_info1->start_url = GURL("https://example.com/index.html");
+  web_app_info1->scope = GURL("https://example:8080/");
+
+  std::string app_id1 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
+
+  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info2->title = u"App 2";
+  web_app_info2->start_url = GURL("https://example.com/abc/index.html");
+  web_app_info2->scope = GURL("https://example:9090/");
+
+  std::string app_id2 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
+  EXPECT_FALSE(IsAppPreferred(app_id1));
+  EXPECT_FALSE(IsAppPreferred(app_id2));
+
+  // app_id1 is set to preferred, app_id2 is not affected.
+  handler()->SetPreferredApp(app_id1, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+  EXPECT_TRUE(IsAppPreferred(app_id1));
+  EXPECT_FALSE(IsAppPreferred(app_id2));
+
+  // app_id2 is set as preferred, app_id1 is not affected.
+  handler()->SetPreferredApp(app_id2, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+  EXPECT_TRUE(IsAppPreferred(app_id1));
+  EXPECT_TRUE(IsAppPreferred(app_id2));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(AppManagementPageHandlerTestBase, PreferredAppOverlappingScopePort) {
+  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info1->title = u"App 1";
+  web_app_info1->start_url = GURL("https://example.com/index.html");
+  web_app_info1->scope = GURL("https://example:8080/");
+
+  std::string app_id1 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
+
+  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info2->title = u"App 2";
+  web_app_info2->start_url = GURL("https://example.com/abc/index.html");
+  web_app_info2->scope = GURL("https://example:8080/abc");
+
+  std::string app_id2 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
+  EXPECT_FALSE(IsAppPreferred(app_id1));
+  EXPECT_FALSE(IsAppPreferred(app_id2));
+
+  // Setting app_id1 as preferred should set app_id2 as not preferred.
+  handler()->SetPreferredApp(app_id1, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+  EXPECT_TRUE(IsAppPreferred(app_id1));
+  EXPECT_FALSE(IsAppPreferred(app_id2));
+
+  // Setting app_id2 as preferred should set app_id1 as not preferred.
+  handler()->SetPreferredApp(app_id2, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+  EXPECT_FALSE(IsAppPreferred(app_id1));
+  EXPECT_TRUE(IsAppPreferred(app_id2));
+}
+
 TEST_F(AppManagementPageHandlerTestBase,
        GetPreferredAppDifferentScopesNotReset) {
   // Install app1 and mark it as preferred.
