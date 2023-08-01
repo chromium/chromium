@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.page_insights;
 
+import static androidx.annotation.VisibleForTesting.PRIVATE;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -29,15 +31,24 @@ import java.util.Optional;
  * to keep it in sync with the actual status.
  */
 public class PageInsightsSwaaChecker {
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting(otherwise = PRIVATE)
     static final long REFRESH_PERIOD_MS = DateUtils.MINUTE_IN_MILLIS * 5;
-    private static final int MSG_REFRESH = 37; // random msg ID
+
+    private static final long[] RETRY_PERIODS_MS = new long[] {5 * DateUtils.SECOND_IN_MILLIS,
+            10 * DateUtils.SECOND_IN_MILLIS, 30 * DateUtils.SECOND_IN_MILLIS};
+
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final int MSG_REFRESH = 37; // randomly chosen msg ID
+
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final int MSG_RETRY = 41; // randomly chosen msg ID
 
     private final Runnable mActivateCallback;
     private final Profile mProfile;
-    private final Handler mHandler;
 
+    private Handler mHandler;
     private Supplier<Long> mElapsedRealtime;
+    private int mRetryCount;
 
     PageInsightsSwaaChecker(Profile profile, Runnable activateCallback) {
         mElapsedRealtime = SystemClock::elapsedRealtime;
@@ -46,7 +57,12 @@ public class PageInsightsSwaaChecker {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                if (msg != null && msg.what == MSG_REFRESH) sendQuery();
+                if (msg == null) return;
+                if (msg.what == MSG_REFRESH || msg.what == MSG_RETRY) {
+                    if (msg.what == MSG_REFRESH) mRetryCount = 0;
+                    sendQuery();
+                    scheduleRetry();
+                }
             }
         };
     }
@@ -64,7 +80,7 @@ public class PageInsightsSwaaChecker {
     void start() {
         Optional<Boolean> swaaStatus = isSwaaEnabled();
         if (!swaaStatus.isPresent()) {
-            sendQuery();
+            mHandler.sendEmptyMessage(MSG_REFRESH);
         } else if (!isUpdateScheduled()) {
             mHandler.sendEmptyMessageDelayed(
                     MSG_REFRESH, REFRESH_PERIOD_MS - timeSinceLastUpdateMs());
@@ -75,7 +91,12 @@ public class PageInsightsSwaaChecker {
      * Stop periodic querying of supplemental Web and App Activity setting.
      */
     void stop() {
+        removeAllMessages();
+    }
+
+    private void removeAllMessages() {
         mHandler.removeMessages(MSG_REFRESH);
+        mHandler.removeMessages(MSG_RETRY);
     }
 
     private long timeSinceLastUpdateMs() {
@@ -86,14 +107,25 @@ public class PageInsightsSwaaChecker {
     }
 
     private void sendQuery() {
-        // TODO(b/282739536): Retry if we do not get a response (within a few seconds?).
         PageInsightsSwaaCheckerJni.get().queryStatus(this, mProfile);
         mHandler.sendEmptyMessageDelayed(MSG_REFRESH, REFRESH_PERIOD_MS);
+    }
+
+    private void scheduleRetry() {
+        mHandler.removeMessages(MSG_RETRY);
+        if (mRetryCount < RETRY_PERIODS_MS.length) {
+            mHandler.sendEmptyMessageDelayed(MSG_RETRY, RETRY_PERIODS_MS[mRetryCount]);
+            mRetryCount++;
+        } else {
+            // Stop retrying.
+            mRetryCount = 0;
+        }
     }
 
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void onSwaaResponse(boolean enabled) {
+        mHandler.removeMessages(MSG_RETRY);
         if (enabled) mActivateCallback.run();
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         prefs.writeLong(ChromePreferenceKeys.SWAA_TIMESTAMP, mElapsedRealtime.get());
@@ -114,24 +146,37 @@ public class PageInsightsSwaaChecker {
         return Optional.empty();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = PRIVATE)
     boolean isUpdateScheduled() {
         return mHandler.hasMessages(MSG_REFRESH);
     }
 
+    @VisibleForTesting(otherwise = PRIVATE)
+    boolean isRetryScheduled() {
+        return mHandler.hasMessages(MSG_RETRY);
+    }
+
     void onSignedIn() {
-        mHandler.removeMessages(MSG_REFRESH);
+        removeAllMessages();
         invalidateCache();
-        sendQuery();
+        mHandler.sendEmptyMessage(MSG_REFRESH);
     }
 
     void onSignedOut() {
-        mHandler.removeMessages(MSG_REFRESH);
+        removeAllMessages();
         invalidateCache();
     }
 
     void setElapsedRealtimeSupplierForTesting(Supplier<Long> elapsedRealtime) {
         mElapsedRealtime = elapsedRealtime;
+    }
+
+    Handler getHandlerForTesting() {
+        return mHandler;
+    }
+
+    void setHandlerForTesting(Handler handler) {
+        mHandler = handler;
     }
 
     @NativeMethods

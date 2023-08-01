@@ -7,9 +7,20 @@ package org.chromium.chrome.browser.page_insights;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker.MSG_REFRESH;
+import static org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker.MSG_RETRY;
+import static org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker.REFRESH_PERIOD_MS;
+
+import android.os.Handler;
+import android.os.Message;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +55,9 @@ public class PageInsightsSwaaCheckerUnitTest {
     @Mock
     private Runnable mActivateCallback;
 
+    @Mock
+    private Handler mHandler;
+
     private SharedPreferencesManager mSharedPreferencesManager;
 
     private PageInsightsSwaaChecker mSwaaChecker;
@@ -56,6 +70,8 @@ public class PageInsightsSwaaCheckerUnitTest {
         mSharedPreferencesManager.disableKeyCheckerForTesting();
 
         mSwaaChecker = new PageInsightsSwaaChecker(mProfile, mActivateCallback);
+        mHandler = spy(mSwaaChecker.getHandlerForTesting());
+        mSwaaChecker.setHandlerForTesting(mHandler);
     }
 
     @After
@@ -84,12 +100,12 @@ public class PageInsightsSwaaCheckerUnitTest {
         assertTrue(mSwaaChecker.isSwaaEnabled().get());
 
         // Returns the cached value
-        long timeNow2 = timeNow + PageInsightsSwaaChecker.REFRESH_PERIOD_MS / 2;
+        long timeNow2 = timeNow + REFRESH_PERIOD_MS / 2;
         mSwaaChecker.setElapsedRealtimeSupplierForTesting(() -> timeNow2);
         assertTrue(mSwaaChecker.isSwaaEnabled().get());
 
         // Cache expired.
-        long timeNow3 = timeNow + PageInsightsSwaaChecker.REFRESH_PERIOD_MS + 1;
+        long timeNow3 = timeNow + REFRESH_PERIOD_MS + 1;
         mSwaaChecker.setElapsedRealtimeSupplierForTesting(() -> timeNow3);
         assertFalse(mSwaaChecker.isSwaaEnabled().isPresent());
     }
@@ -108,28 +124,29 @@ public class PageInsightsSwaaCheckerUnitTest {
         mSwaaChecker.setElapsedRealtimeSupplierForTesting(() -> timeNow);
         mSwaaChecker.start();
 
-        // Send a query when there is no cached data.
-        verify(mPageInsightsSwaaCheckerJni).queryStatus(mSwaaChecker, mProfile);
+        // Verify we send a query when there is no cached data.
+        verifyRequestSent();
         mSwaaChecker.onSwaaResponse(true);
         assertTrue(mSwaaChecker.isSwaaEnabled().get());
         mSwaaChecker.onSwaaResponse(false);
         assertFalse(mSwaaChecker.isSwaaEnabled().get());
         assertTrue(mSwaaChecker.isUpdateScheduled());
-        clearInvocations(mPageInsightsSwaaCheckerJni);
 
         // The 2nd CCT instance picks up the cached value without sending a new query
         // if the cache is valid. Verify the handler has an update scheduled.
-        long timeNow2 = timeNow + PageInsightsSwaaChecker.REFRESH_PERIOD_MS / 2;
+        long timeNow2 = timeNow + REFRESH_PERIOD_MS / 2;
         mSwaaChecker.setElapsedRealtimeSupplierForTesting(() -> timeNow2);
         mSwaaChecker.start();
-        verify(mPageInsightsSwaaCheckerJni, never()).queryStatus(any(), any());
+        verify(mHandler, never()).sendEmptyMessage(eq(MSG_REFRESH));
+        verify(mHandler, never()).sendEmptyMessageDelayed(eq(MSG_REFRESH), anyInt());
         assertTrue(mSwaaChecker.isUpdateScheduled());
     }
 
     @Test
     public void testReactToSignIn() throws Exception {
         mSwaaChecker.start();
-        verify(mPageInsightsSwaaCheckerJni).queryStatus(any(), any());
+        verifyRequestSent();
+
         mSwaaChecker.onSwaaResponse(false);
         assertFalse(mSwaaChecker.isSwaaEnabled().get());
         clearInvocations(mPageInsightsSwaaCheckerJni);
@@ -140,6 +157,54 @@ public class PageInsightsSwaaCheckerUnitTest {
 
         // On signing in, a new query is made to update the cache immediately.
         mSwaaChecker.onSignedIn();
+        verifyRequestSent();
+    }
+
+    private void verifyRequestSent() {
+        verify(mHandler).sendEmptyMessage(eq(MSG_REFRESH));
+        // sendEmptyMessage sends the request immediately. Simulate that.
+        handleMessage(MSG_REFRESH);
         verify(mPageInsightsSwaaCheckerJni).queryStatus(any(), any());
+        assertTrue(mSwaaChecker.isUpdateScheduled());
+        clearInvocations(mHandler);
+        clearInvocations(mPageInsightsSwaaCheckerJni);
+    }
+
+    private void handleMessage(int msgId) {
+        mHandler.handleMessage(Message.obtain(null, msgId));
+    }
+
+    @Test
+    public void retrySucceeds() throws Exception {
+        mSwaaChecker.start();
+        verifyRequestSent();
+        assertTrue(mSwaaChecker.isRetryScheduled());
+
+        handleMessage(MSG_RETRY); // 1st retry
+        verify(mPageInsightsSwaaCheckerJni).queryStatus(any(), any());
+        assertTrue(mSwaaChecker.isRetryScheduled());
+
+        // Got a response for the retry. No more retry scheduled.
+        mSwaaChecker.onSwaaResponse(true);
+        assertFalse(mSwaaChecker.isRetryScheduled());
+    }
+
+    @Test
+    public void retryAllFail() throws Exception {
+        mSwaaChecker.start();
+        verifyRequestSent();
+        assertTrue(mSwaaChecker.isRetryScheduled());
+
+        handleMessage(MSG_RETRY); // 1st retry
+        verify(mPageInsightsSwaaCheckerJni).queryStatus(any(), any());
+        assertTrue(mSwaaChecker.isRetryScheduled());
+
+        handleMessage(MSG_RETRY); // 2nd retry
+        verify(mPageInsightsSwaaCheckerJni, times(2)).queryStatus(any(), any());
+        assertTrue(mSwaaChecker.isRetryScheduled());
+
+        handleMessage(MSG_RETRY); // 3rd retry
+        verify(mPageInsightsSwaaCheckerJni, times(3)).queryStatus(any(), any());
+        assertFalse(mSwaaChecker.isRetryScheduled()); // No more retry scheduled
     }
 }
