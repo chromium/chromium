@@ -73,6 +73,22 @@ avifenc command line:
 avifenc -r f -d  8 -y 420 -s 0 --nclx 1/13/1 silver.png silver-full-range-srgb-420-8bpc.avif
 ```
 
+### silver-400-matrix-6.avif
+This is generated from silver.png (3x3 rgb(192, 192, 192)) with the appropriate
+avifenc command line:
+
+```
+avifenc -s 0 -q 99 -y 400 silver.png silver-400-matrix-6.avif
+```
+
+### silver-400-matrix-0.avif
+This is generated from silver.png (3x3 rgb(192, 192, 192)) with the appropriate
+avifenc command line:
+
+```
+avifenc -s 0 -q 99 -y 400 --cicp 1/13/0 silver.png silver-400-matrix-0.avif
+```
+
 ### red-full-range-angle-(0|1|2|3)-mode-(0|1)-420-8bpc.avif
 These are all generated from red.png with the appropriate avifenc command line:
 

@@ -94,7 +94,8 @@ gfx::ColorSpace GetColorSpace(const avifImage* image) {
                             ? AVIF_TRANSFER_CHARACTERISTICS_SRGB
                             : image->transferCharacteristics;
   const auto matrix =
-      image->matrixCoefficients == AVIF_MATRIX_COEFFICIENTS_UNSPECIFIED
+      (image->yuvFormat == AVIF_PIXEL_FORMAT_YUV400 ||
+       image->matrixCoefficients == AVIF_MATRIX_COEFFICIENTS_UNSPECIFIED)
           ? AVIF_MATRIX_COEFFICIENTS_BT601
           : image->matrixCoefficients;
   const auto range = image->yuvRange == AVIF_RANGE_FULL
