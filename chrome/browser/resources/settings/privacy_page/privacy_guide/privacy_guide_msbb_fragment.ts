@@ -54,6 +54,11 @@ export class PrivacyGuideMsbbFragmentElement extends
   }
 
   override focus() {
+    // The fragment element is focused when it becomes visible. Move the focus
+    // to the fragment header, so that the newly shown content of the fragment
+    // is downwards from the focus position. This allows users of screen readers
+    // to continue navigating the screen reader position downwards through the
+    // newly visible content.
     this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
