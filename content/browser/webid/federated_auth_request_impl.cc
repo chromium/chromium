@@ -1158,7 +1158,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   bool auto_reauthn_enabled =
       mediation_requirement_ != MediationRequirement::kRequired;
 
-  auto_reauthn_ = auto_reauthn_enabled;
+  dialog_type_ = auto_reauthn_enabled ? kAutoReauth : kSelectAccount;
   bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
   absl::optional<base::TimeDelta> time_from_embargo;
@@ -1189,15 +1189,18 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     // are signing in.
     has_single_returning_account =
         GetSingleReturningAccount(&auto_reauthn_idp, &auto_reauthn_account);
-    auto_reauthn_ &= !requires_user_mediation &&
-                     is_auto_reauthn_setting_enabled &&
-                     !is_auto_reauthn_embargoed && has_single_returning_account;
+    if (dialog_type_ == kAutoReauth &&
+        (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
+         is_auto_reauthn_embargoed || !has_single_returning_account)) {
+      dialog_type_ = kSelectAccount;
+    }
     if (!has_single_returning_account &&
         mediation_requirement_ == MediationRequirement::kSilent) {
       fedcm_metrics_->RecordAutoReauthnMetrics(
-          has_single_returning_account, auto_reauthn_account, auto_reauthn_,
-          !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-          time_from_embargo, requires_user_mediation);
+          has_single_returning_account, auto_reauthn_account,
+          dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
+          is_auto_reauthn_embargoed, time_from_embargo,
+          requires_user_mediation);
 
       // By this moment we know that the user has granted permission in the past
       // for the RP/IdP. Because otherwise we have returned already in
@@ -1218,7 +1221,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       return;
     }
 
-    if (auto_reauthn_) {
+    if (dialog_type_ == kAutoReauth) {
       IdentityRequestAccount account{*auto_reauthn_account};
       IdentityProviderData idp{*auto_reauthn_idp};
       idp.accounts = {account};
@@ -1256,7 +1259,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   request_dialog_controller_->ShowAccountsDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
-      auto_reauthn_ ? SignInMode::kAuto : SignInMode::kExplicit,
+      (dialog_type_ == kAutoReauth) ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -1264,7 +1267,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr()));
   devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host());
 
-  if (!auto_reauthn_) {
+  if (dialog_type_ != kAutoReauth) {
     // We omit recording the accounts dialog shown metric for auto re-authn
     // because the metric is used to detect IDPs flashing UI. Auto re-authn
     // verifying UI cannot be flashed since it is destroyed automatically after
@@ -1279,9 +1282,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
-        has_single_returning_account, auto_reauthn_account, auto_reauthn_,
-        !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-        time_from_embargo, requires_user_mediation);
+        has_single_returning_account, auto_reauthn_account,
+        dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
+        is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
   }
 }
 
@@ -1553,7 +1556,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     return;
   }
 
-  if (auto_reauthn_) {
+  if (dialog_type_ == kAutoReauth) {
     // Embargo auto re-authn to mitigate a deadloop where an auto
     // re-authenticated user gets auto re-authenticated again soon after logging
     // out of the active session.
@@ -1962,6 +1965,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   idp_order_.clear();
   metrics_endpoints_.clear();
   token_request_get_infos_.clear();
+  dialog_type_ = kNone;
 }
 
 void FederatedAuthRequestImpl::AddDevToolsIssue(
