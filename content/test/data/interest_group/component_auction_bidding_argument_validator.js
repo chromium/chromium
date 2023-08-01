@@ -193,7 +193,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWinsMs.length !== 0)
       throw 'Wrong prevWinsMs ' + JSON.stringify(browserSignals.prevWinsMs);
   } else {
-    if (Object.keys(browserSignals).length !== 16) {
+    if (Object.keys(browserSignals).length !== 15) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -219,8 +219,6 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     }
     if (browserSignals.adCost !== 3)
       throw 'Wrong adCost ' + browserSignals.adCost;
-    if (!browserSignals.hasOwnProperty("kAnonStatus"))
-      throw 'Missing kAnonStatus';
   }
 }
 

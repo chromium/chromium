@@ -725,20 +725,24 @@ void BidderWorklet::V8State::ReportWin(
   }
 
   std::string kanon_status;
-  if (kanon_mode == mojom::KAnonymityBidMode::kEnforce) {
-    // If k-anon was truly enforced and it passed.
-    kanon_status = "passedAndEnforced";
-  } else if (kanon_mode == mojom::KAnonymityBidMode::kSimulate) {
-    if (bid_is_kanon) {
-      // If K-anon can determine the value and kSimulate is on.
-      kanon_status = "passedNotEnforced";
-    } else {
-      // Number of ad was below the threshold and kSimulate is on.
-      kanon_status = "belowThreshold";
-    }
-  } else if (kanon_mode == mojom::KAnonymityBidMode::kNone) {
-    // K-anon cannot determine the theoretical outcome.
-    kanon_status = "notCalculated";
+  switch (kanon_mode) {
+    case mojom::KAnonymityBidMode::kEnforce:
+      // If k-anon was truly enforced and it passed.
+      kanon_status = "passedAndEnforced";
+      break;
+    case mojom::KAnonymityBidMode::kSimulate:
+      if (bid_is_kanon) {
+        // If K-anon can determine the value and kSimulate is on.
+        kanon_status = "passedNotEnforced";
+      } else {
+        // Number of ad was below the threshold and kSimulate is on.
+        kanon_status = "belowThreshold";
+      }
+      break;
+    case mojom::KAnonymityBidMode::kNone:
+      // K-anon cannot determine the theoretical outcome.
+      kanon_status = "notCalculated";
+      break;
   }
 
   if (!browser_signals_dict.Set("topWindowHostname",
@@ -782,7 +786,9 @@ void BidderWorklet::V8State::ReportWin(
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value())) ||
-      (!kanon_status.empty() &&
+      (base::FeatureList::IsEnabled(
+           blink::features::kFledgePassKAnonStatusToReportWin) &&
+       !kanon_status.empty() &&
        !browser_signals_dict.Set("kAnonStatus", kanon_status))) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,

@@ -5433,7 +5433,27 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRecency) {
       GURL("https://jumboshrimp.test"));
 }
 
-TEST_F(BidderWorkletTest, ReportWinBrowserSignalKAnonStatus) {
+TEST_F(BidderWorkletTest, ReportWinSignalKAnonStatusNotExposedByDefault) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (!("kAnonStatus" in browserSignals))
+            sendReportTo('https://pass.test');)",
+      GURL("https://pass.test"));
+}
+
+class BidderWorkletReportWinSignalKAnonStatusEnableTest
+    : public BidderWorkletTest {
+ public:
+  BidderWorkletReportWinSignalKAnonStatusEnableTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgePassKAnonStatusToReportWin);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BidderWorkletReportWinSignalKAnonStatusEnableTest,
+       KAnonStatusSignalExposed) {
   kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
   bid_is_kanon_ = true;
   RunReportWinWithFunctionBodyExpectingResult(
