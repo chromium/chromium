@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    >
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:layout_marginTop="36dp"
+        app:elevation="0dp"
+        >
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/collapsingToolbar"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/transparent"
+            app:contentScrim="@color/transparent">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="140dp"/>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                app:layout_collapseMode="pin"
+                android:layout_width="match_parent"
+                app:title="下载管理"
+                app:contentInsetStartWithNavigation="0dp"
+                app:titleMarginStart="0dp"
+                app:navigationIcon="@drawable/btn_back"
+                android:minHeight="?android:attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
+                app:titleTextColor="@color/colorPrimary">
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="end"
+                app:layout_collapseMode="pin">
+
+                <ImageButton
+                    android:id="@+id/btn_edit"
+                    android:layout_width="?android:attr/actionBarSize"
+                    android:layout_height="?android:attr/actionBarSize"
+                    android:src="@drawable/ic_edit_24dp"
+                    android:tint="?attr/textColorMajor"
+                    android:background="?android:attr/actionBarItemBackground"
+                    />
+
+                <ImageButton
+                    android:id="@+id/btn_more"
+                    android:layout_width="?android:attr/actionBarSize"
+                    android:layout_height="?android:attr/actionBarSize"
+                    android:src="@drawable/ic_more"
+                    android:background="?android:attr/actionBarItemBackground"
+                    />
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginHorizontal="24dp"
+            app:cardBackgroundColor="?attr/backgroundColorAccent"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+
+                <!--            android:background="@drawable/round_rect_search"-->
+
+                <ImageView
+                    android:id="@+id/btn_qsb_search"
+                    android:layout_width="36dp"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/actionBarItemBackground"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_search_v2"
+                    android:tint="@color/colorPrimary"
+                    android:layout_marginStart="6dp"
+                    />
+
+                <TextView
+                    android:id="@+id/btn_qsb_text"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:text="搜索下载任务"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="?attr/textColorNormal"
+                    />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="72dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp"
+            >
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_filter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingVertical="8dp"
+                android:layout_marginStart="16dp"/>
+
+            <ImageView
+                android:id="@+id/iv_expand"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_enter_arrow"
+                android:padding="12dp"
+                android:tint="?attr/textColorMinor"
+                />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+    <TextView android:id="@+id/storage_info"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:text="可用:1GB / 总共:128GB"
+        android:textSize="12sp"
+        android:textColor="?attr/textColorMinor"
+        android:gravity="center"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="?attr/backgroundColor"
+        />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

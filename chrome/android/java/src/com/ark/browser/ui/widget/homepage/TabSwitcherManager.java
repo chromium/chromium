@@ -32,7 +32,7 @@ import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
-import com.ark.browser.ui.fragment.download.DownloadFragment;
+import com.ark.browser.ui.fragment.download.DownloadFragment2;
 import com.ark.browser.ui.fragment.manager.ManagerFragment;
 import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.fragment.settings.SettingsFragment;
@@ -94,7 +94,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
                             new MainMenuDialog().show(mContext);
                             break;
                         case HomepageUtils.DEEPLINK_DOWNLOADS:
-                            DownloadFragment.newInstance(true).show(mContext);
+                            new DownloadFragment2().show(mContext);
                             break;
                         case HomepageUtils.DEEPLINK_SETTINGS:
                             new SettingsFragment().show(mContext);

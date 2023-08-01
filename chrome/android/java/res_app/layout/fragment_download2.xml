@@ -1,0 +1,110 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    android:orientation="vertical"
+    >
+
+    <com.ark.browser.ui.widget.StatusBarView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:gravity="center_vertical"
+        >
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
+            android:src="@drawable/btn_back"
+            android:background="?android:attr/actionBarItemBackground"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="下载管理"
+            android:textColor="?attr/textColorMajor"
+            android:textSize="18sp"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="-1"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_edit"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
+            android:src="@drawable/ic_edit_24dp"
+            android:tint="?attr/textColorMajor"
+            android:background="?android:attr/actionBarItemBackground"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_more"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
+            android:src="@drawable/ic_more"
+            android:background="?android:attr/actionBarItemBackground"
+            />
+
+    </LinearLayout>
+
+    <com.ark.browser.ui.widget.SearchBar
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginHorizontal="28dp"
+        android:layout_marginVertical="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_filter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingVertical="8dp"
+            android:layout_marginStart="16dp"/>
+
+        <ImageView
+            android:id="@+id/iv_expand"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_enter_arrow"
+            android:padding="12dp"
+            android:tint="?attr/textColorMinor"
+            />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+    <TextView android:id="@+id/storage_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="可用:1GB / 总共:128GB"
+        android:padding="8dp"
+        android:textSize="12sp"
+        android:textColor="?attr/textColorMinor"
+        android:gravity="center"
+        />
+
+</LinearLayout>

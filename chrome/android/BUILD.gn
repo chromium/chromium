@@ -242,6 +242,8 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/fragment_dialog_share.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_tool_box.xml",
     "//chrome/android/java/res_app/layout/fragment_download.xml",
+    "//chrome/android/java/res_app/layout/fragment_download2.xml",
+    "//chrome/android/java/res_app/layout/fragment_download3.xml",
     "//chrome/android/java/res_app/layout/fragment_download_child.xml",
     "//chrome/android/java/res_app/layout/fragment_download_detail.xml",
     "//chrome/android/java/res_app/layout/fragment_download_search.xml",

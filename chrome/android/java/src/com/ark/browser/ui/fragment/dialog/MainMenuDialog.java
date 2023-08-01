@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
-import com.ark.browser.ui.fragment.download.DownloadFragment;
+import com.ark.browser.ui.fragment.download.DownloadFragment2;
 import com.ark.browser.ui.fragment.manager.ManagerFragment;
 import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.DrawableTintTextView;
@@ -145,7 +145,7 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
             start(CollectionFragment.newInstance(0));
 //            BookmarkManagerDialog.show((ArkBrowserActivity) context);
         } else if (R.id.tv_download == id) {
-            start(DownloadFragment.newInstance(true));
+            start(new DownloadFragment2());
         } else if (R.id.tv_manager == id) {
             start(new ManagerFragment());
         } else if (R.id.tv_exit == id) {

@@ -60,6 +60,7 @@ public class SettingsFragment extends BaseSwipeBackFragment
 //        toolBar.setCenterText("设置");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> pop());
         toolbar.setTitle("设置");
 
         int textColor = SkinEngine.getColor(context, R.attr.textColorMajor);
