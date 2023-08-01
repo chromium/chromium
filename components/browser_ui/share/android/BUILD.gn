@@ -49,6 +49,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.browser_ui.share"
 }

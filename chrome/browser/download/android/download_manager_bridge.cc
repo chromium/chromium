@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/download/android/jni_headers/DownloadManagerBridge_jni.h"
 #include "components/download/public/common/download_features.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::ConvertUTF8ToJavaString;
@@ -46,10 +47,10 @@ void DownloadManagerBridge::AddCompletedDownload(
   ScopedJavaLocalRef<jstring> jfile_path =
       ConvertUTF8ToJavaString(env, download->GetTargetFilePath().value());
   int64_t file_size = download->GetReceivedBytes();
-  ScopedJavaLocalRef<jstring> joriginal_url =
-      ConvertUTF8ToJavaString(env, download->GetOriginalUrl().spec());
-  ScopedJavaLocalRef<jstring> jreferer = base::android::ConvertUTF8ToJavaString(
-      env, download->GetReferrerUrl().spec());
+  ScopedJavaLocalRef<jobject> joriginal_url =
+      url::GURLAndroid::FromNativeGURL(env, download->GetOriginalUrl());
+  ScopedJavaLocalRef<jobject> jreferer =
+      url::GURLAndroid::FromNativeGURL(env, download->GetReferrerUrl());
   ScopedJavaLocalRef<jstring> jdownload_guid =
       base::android::ConvertUTF8ToJavaString(env, download->GetGuid());
 

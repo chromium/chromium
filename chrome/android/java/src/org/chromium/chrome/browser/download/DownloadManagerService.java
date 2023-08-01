@@ -488,12 +488,10 @@ public class DownloadManagerService implements DownloadController.Observer,
                                 ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
                         && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q);
                 if (!success && shouldAddCompletedDownload) {
-                    // TODO(https://crbug.com/783819): Migrate mReferrer and mOriginalUrl to GURL
-                    long systemDownloadId =
-                            DownloadManagerBridge.addCompletedDownload(info.getFileName(),
-                                    info.getDescription(), info.getMimeType(), info.getFilePath(),
-                                    info.getBytesReceived(), info.getOriginalUrl().getSpec(),
-                                    info.getReferrer().getSpec(), info.getDownloadGuid());
+                    long systemDownloadId = DownloadManagerBridge.addCompletedDownload(
+                            info.getFileName(), info.getDescription(), info.getMimeType(),
+                            info.getFilePath(), info.getBytesReceived(), info.getOriginalUrl(),
+                            info.getReferrer(), info.getDownloadGuid());
                     success = systemDownloadId != DownloadConstants.INVALID_DOWNLOAD_ID;
                     if (success) item.setSystemDownloadId(systemDownloadId);
                 }
