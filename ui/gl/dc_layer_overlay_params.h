@@ -27,8 +27,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   ~DCLayerOverlayParams();
 
   // Image to display in overlay - could be hardware or software video frame,
-  // swap chain, or dcomp surface. If |background_color| is present, this is
-  // ignored and can be null.
+  // swap chain, or dcomp surface. If null and |background_color| is present,
+  // then this overlay will represents a solid color quad. If both this and
+  // |background_color| are null, this overlay will not have any visible output.
   absl::optional<DCLayerOverlayImage> overlay_image;
 
   // Stacking order relative to backbuffer which has z-order 0.
@@ -56,7 +57,8 @@ struct GL_EXPORT DCLayerOverlayParams {
   // The rounded corner bounds, in root target space
   gfx::RRectF rounded_corner_bounds;
 
-  // If present, this overlay represents a solid color quad.
+  // If present, the overlay will contain this color as a background fill,
+  // blended behind |overlay_image|.
   absl::optional<SkColor4f> background_color;
 
   //

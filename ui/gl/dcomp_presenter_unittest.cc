@@ -1996,6 +1996,31 @@ TEST_F(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
   PresentAndCheckScreenshot();
 }
 
+// Check that an overlay with a non-opaque image can show a background color.
+TEST_F(DCompPresenterSkiaGoldTest, ImageWithBackgroundColor) {
+  InitializeTest(gfx::Size(100, 100));
+
+  InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
+
+  auto overlay = std::make_unique<DCLayerOverlayParams>();
+  overlay->content_rect = gfx::Rect(100, 50);
+  overlay->quad_rect = gfx::Rect(100, 50);
+  overlay->overlay_image = CreateDCompSurface(
+      gfx::Size(100, 50), SkColors::kTransparent,
+      {
+          {gfx::Rect(5, 5, 20, 20),
+           SkColor4f::FromColor(SkColorSetA(SK_ColorRED, 0x80))},
+          {gfx::Rect(15, 15, 20, 20),
+           SkColor4f::FromColor(SkColorSetA(SK_ColorBLUE, 0x80))},
+      });
+  overlay->background_color = SkColors::kGreen;
+  overlay->z_order = 1;
+
+  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+
+  PresentAndCheckScreenshot();
+}
+
 class DCompPresenterBufferCountTest : public DCompPresenterTest,
                                       public testing::WithParamInterface<bool> {
  public:
