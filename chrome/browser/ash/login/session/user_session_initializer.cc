@@ -280,6 +280,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   // created one per user in a multiprofile session.
   CalendarKeyedServiceFactory::GetInstance()->GetService(profile);
 
+  // Ensure that the `GlanceablesKeyedService` for `profile` is created. It is
+  // created one per user in a multiprofile session.
+  GlanceablesKeyedServiceFactory::GetInstance()->GetService(profile);
+
   screen_ai::dlc_installer::ManageInstallation(
       g_browser_process->local_state());
 
@@ -290,11 +294,6 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
       // Must be called after CalenderKeyedServiceFactory is initialized.
       ChromeGlanceablesDelegate::Get()->OnPrimaryUserSessionStarted(profile);
     }
-
-    // Ensure that the `GlanceablesKeyedService` for `primary_profile_` is
-    // created.
-    GlanceablesKeyedServiceFactory::GetInstance()->GetService(primary_profile_);
-
     // Ensure that PhoneHubManager and EcheAppManager are created for the
     // primary profile.
     phonehub::PhoneHubManagerFactory::GetForProfile(profile);

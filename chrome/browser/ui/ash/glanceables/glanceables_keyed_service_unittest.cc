@@ -86,29 +86,37 @@ TEST_F(GlanceablesKeyedServiceTest, RegistersClientsInAsh) {
   EXPECT_FALSE(controller->GetTasksClient());
 }
 
-TEST_F(GlanceablesKeyedServiceTest,
-       DoesNotRegisterClientsInAshForNonPrimaryUser) {
+TEST_F(GlanceablesKeyedServiceTest, RegisterClientsInAshForNonPrimaryUser) {
   auto* const controller = Shell::Get()->glanceables_v2_controller();
   auto service = std::make_unique<GlanceablesKeyedService>(profile());
-  EXPECT_TRUE(controller->GetClassroomClient());
-  EXPECT_TRUE(controller->GetTasksClient());
+  auto* const classroom_client_primary = controller->GetClassroomClient();
+  auto* const tasks_client_primary = controller->GetTasksClient();
+  EXPECT_TRUE(classroom_client_primary);
+  EXPECT_TRUE(tasks_client_primary);
 
   const auto first_account_id = AccountId::FromUserEmail(kPrimaryProfileName);
   const auto second_account_id =
       AccountId::FromUserEmail(kSecondaryProfileName);
   fake_chrome_user_manager()->AddUser(second_account_id);
   fake_chrome_user_manager()->LoginUser(second_account_id);
-  profile_manager()->CreateTestingProfile(kSecondaryProfileName,
-                                          /*is_main_profile=*/false);
+  auto* secondary_profile =
+      profile_manager()->CreateTestingProfile(kSecondaryProfileName,
+                                              /*is_main_profile=*/false);
   session_controller_client()->AddUserSession(kSecondaryProfileName);
-
+  auto service_secondary =
+      std::make_unique<GlanceablesKeyedService>(secondary_profile);
   session_controller_client()->SwitchActiveUser(second_account_id);
-  EXPECT_FALSE(controller->GetClassroomClient());
-  EXPECT_FALSE(controller->GetTasksClient());
+
+  auto* const classroom_client_secondary = controller->GetClassroomClient();
+  auto* const tasks_client_secondary = controller->GetTasksClient();
+  EXPECT_TRUE(classroom_client_secondary);
+  EXPECT_TRUE(tasks_client_secondary);
+  EXPECT_NE(classroom_client_primary, classroom_client_secondary);
+  EXPECT_NE(tasks_client_primary, tasks_client_secondary);
 
   session_controller_client()->SwitchActiveUser(first_account_id);
-  EXPECT_TRUE(controller->GetClassroomClient());
-  EXPECT_TRUE(controller->GetTasksClient());
+  EXPECT_EQ(classroom_client_primary, controller->GetClassroomClient());
+  EXPECT_EQ(tasks_client_primary, controller->GetTasksClient());
 }
 
 TEST_F(GlanceablesKeyedServiceTest,
