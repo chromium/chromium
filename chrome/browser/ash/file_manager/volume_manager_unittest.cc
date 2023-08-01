@@ -335,6 +335,8 @@ class VolumeManagerTest : public testing::Test {
   };
 
   void SetUp() override {
+    FuseBoxDaemon::Initialize();
+
     // Set up an Arc service manager with a fake file system. This must be done
     // before initializing VolumeManager() to make its dependency
     // DocumentsProviderRootManager work.
@@ -365,6 +367,8 @@ class VolumeManagerTest : public testing::Test {
         &file_system_instance_);
     chromeos::PowerManagerClient::Shutdown();
     task_environment_.RunUntilIdle();
+
+    FuseBoxDaemon::Shutdown();
   }
 
   void EnableArcForProfile() {
