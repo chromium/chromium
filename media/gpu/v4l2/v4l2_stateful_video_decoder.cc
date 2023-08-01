@@ -319,32 +319,13 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  // Ideally we should be able to get some resources back (dequeued) that were
-  // queued in during a previous Decode().
-  if (!DrainOUTPUTQueue()) {
-    LOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
-  }
   PrintOutQueueStatesForVLOG(FROM_HERE);
 
-  absl::optional<V4L2WritableBufferRef> v4l2_buffer =
-      OUTPUT_queue_->GetFreeBuffer();
-  if (!v4l2_buffer) {
-    // |OUTPUT_queue_| has no free slots. Store |buffer| and |decode_cb| and
-    // try again later.
-    NOTIMPLEMENTED();
-    return;
-  }
-
-  CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
-  uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
-  CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), buffer->data_size());
-  memcpy(dst, buffer->data(), buffer->data_size());
-  v4l2_buffer->SetPlaneBytesUsed(0, buffer->data_size());
-  v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(buffer->timestamp()));
-
-  if (!std::move(*v4l2_buffer).QueueMMap()) {
-    LOG(ERROR) << "Error while queuing input buffer!";
-    std::move(decode_cb).Run(DecoderStatus::Codes::kPlatformDecodeFailure);
+  decoder_buffer_and_callbacks_.emplace(std::move(buffer),
+                                        std::move(decode_cb));
+  if (!TryAndEnqueueOUTPUTQueueBuffers()) {
+    // All accepted entries in |decoder_buffer_and_callbacks_| must have had
+    // their |decode_cb|s Run() from inside TryAndEnqueueOUTPUTQueueBuffers().
     return;
   }
 
@@ -355,8 +336,6 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     CHECK(event_task_runner_);
   }
   RearmCAPTUREQueueMonitoring();
-
-  std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
@@ -699,7 +678,7 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       CHECK(video_frame);
       video_frame->set_timestamp(
           TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
-      VLOGF(4) << video_frame->AsHumanReadableString();
+      VLOGF(3) << video_frame->AsHumanReadableString();
 
       //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to
       //  return |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled".
@@ -728,6 +707,12 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       } else {
         output_cb_.Run(std::move(video_frame));
       }
+
+      // We just dequeued one decoded |video_frame|; try to reclaim
+      // |OUTPUT_queue| resources that might just have been released.
+      if (!DrainOUTPUTQueue()) {
+        LOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
+      }
     }
   }
   LOG_IF(ERROR, !success) << "Failed dequeueing from |CAPTURE_queue_|";
@@ -736,6 +721,8 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
   // There might be available resources for |CAPTURE_queue_| from previous
   // cycles; try and make them available for the driver.
   TryAndEnqueueCAPTUREQueueBuffers();
+
+  TryAndEnqueueOUTPUTQueueBuffers();
 
   RearmCAPTUREQueueMonitoring();
 }
@@ -787,6 +774,39 @@ bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
     PrintOutQueueStatesForVLOG(FROM_HERE);
   }
   return success;
+}
+
+bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(OUTPUT_queue_) << "|OUTPUT_queue_| must be created at this point";
+
+  for (absl::optional<V4L2WritableBufferRef> v4l2_buffer =
+           OUTPUT_queue_->GetFreeBuffer();
+       v4l2_buffer && !decoder_buffer_and_callbacks_.empty();
+       v4l2_buffer = OUTPUT_queue_->GetFreeBuffer()) {
+    PrintOutQueueStatesForVLOG(FROM_HERE);
+
+    auto media_buffer = std::move(decoder_buffer_and_callbacks_.front().first);
+    auto media_decode_cb =
+        std::move(decoder_buffer_and_callbacks_.front().second);
+    decoder_buffer_and_callbacks_.pop();
+
+    CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
+    uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
+    CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->data_size());
+    memcpy(dst, media_buffer->data(), media_buffer->data_size());
+    v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->data_size());
+    v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
+
+    if (!std::move(*v4l2_buffer).QueueMMap()) {
+      LOG(ERROR) << "Error while queuing input |media_buffer|!";
+      std::move(media_decode_cb)
+          .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
+      return false;
+    }
+    std::move(media_decode_cb).Run(DecoderStatus::Codes::kOk);
+  }
+  return true;
 }
 
 void V4L2StatefulVideoDecoder::PrintOutQueueStatesForVLOG(

@@ -7,6 +7,7 @@
 
 #include <linux/videodev2.h>
 
+#include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -112,6 +113,11 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // Returns false if any ioctl fails, true otherwise.
   bool DrainOUTPUTQueue();
 
+  // Tries to "enqueue" all encoded chunks in |decoder_buffer_and_callbacks_|
+  // in |OUTPUT_queue_|, Run()nning their respective DecodeCBs. Returns false if
+  // any enqueueing operation's ioctl fails, true otherwise.
+  bool TryAndEnqueueOUTPUTQueueBuffers();
+
   // Prints a VLOG with the state of |OUTPUT_queue| and |CAPTURE_queue_| for
   // debugging, preceded with |from_here|s function name.
   void PrintOutQueueStatesForVLOG(const base::Location& from_here);
@@ -127,6 +133,11 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
   OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Holds pairs of encoded chunk (DecoderBuffer) and associated DecodeCB for
+  // decoding via TryAndEnqueueOUTPUTQueueBuffers().
+  base::queue<std::pair<scoped_refptr<DecoderBuffer>, DecodeCB>>
+      decoder_buffer_and_callbacks_;
 
   // OUTPUT in V4L2 terminology is the queue holding encoded chunks of
   // bitstream. CAPTURE is the queue holding decoded pictures. See e.g. [1].
