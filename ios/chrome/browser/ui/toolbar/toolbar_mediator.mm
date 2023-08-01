@@ -6,8 +6,11 @@
 
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/stl_util.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
+#import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -15,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/toolbar/public/omnibox_position_metrics.h"
@@ -26,6 +30,61 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+/// The time delta for a user to be considered as a new user.
+const base::TimeDelta kNewUserTimeDelta = base::Days(60);
+
+/// Returns wheter the user has seen first run recently (`kNewUserTimeDelta`).
+BOOL IsNewUser() {
+  // Use the first_run age to determine the user is new on this device.
+  BOOL isFirstRun = FirstRun::IsChromeFirstRun() ||
+                    experimental_flags::AlwaysDisplayFirstRun();
+  if (isFirstRun) {
+    return YES;
+  }
+  absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+  if (!info.has_value()) {
+    return NO;
+  }
+  base::Time first_run_time = info.value().creation_time;
+  BOOL isFirstRunRecent =
+      base::Time::Now() - first_run_time < kNewUserTimeDelta;
+  return isFirstRunRecent;
+}
+
+/// Returns whether classification `result` should have bottom omnibox by
+/// default.
+BOOL ShouldSwitchOmniboxToBottom(
+    const segmentation_platform::ClassificationResult& result) {
+  CHECK(result.status == segmentation_platform::PredictionStatus::kSucceeded);
+  if (result.ordered_labels.empty()) {
+    DUMP_WILL_BE_CHECK(!result.ordered_labels.empty());
+    return NO;
+  }
+
+  if (!IsNewUser()) {
+    return NO;
+  }
+
+  std::vector<std::string> excludedLabels = {
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
+      segmentation_platform::DeviceSwitcherModel::kAndroidTabletLabel,
+      segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel,
+      segmentation_platform::DeviceSwitcherModel::kIosTabletLabel};
+  std::sort(excludedLabels.begin(), excludedLabels.end());
+
+  auto sortedLabels = std::vector<std::string>(result.ordered_labels);
+  std::sort(sortedLabels.begin(), sortedLabels.end());
+
+  std::vector<std::string> intersection =
+      base::STLSetIntersection<std::vector<std::string>>(sortedLabels,
+                                                         excludedLabels);
+  return intersection.empty();
+}
+
+}  // namespace
 
 @interface ToolbarMediator () <BooleanObserver,
                                CRWWebStateObserver,
@@ -270,8 +329,9 @@
   } else if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
     segmentation_platform::ClassificationResult result =
         self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
-    if (result.status == segmentation_platform::PredictionStatus::kSucceeded) {
-      // TODO(crbug.com/1467244): Check if result IsSafariSwitcher.
+    if (result.status == segmentation_platform::PredictionStatus::kSucceeded &&
+        ShouldSwitchOmniboxToBottom(result)) {
+      bottomOmniboxEnabledByDefault = YES;
     }
   } else if (featureParam == kBottomOmniboxDefaultSettingParamTop) {
     bottomOmniboxEnabledByDefault = NO;
