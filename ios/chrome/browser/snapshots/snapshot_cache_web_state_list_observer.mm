@@ -23,23 +23,27 @@ SnapshotCacheWebStateListObserver::SnapshotCacheWebStateListObserver(
 SnapshotCacheWebStateListObserver::~SnapshotCacheWebStateListObserver() =
     default;
 
-void SnapshotCacheWebStateListObserver::WebStateActivatedAt(
+#pragma mark - WebStateListObserver
+
+void SnapshotCacheWebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  if (reason == ActiveWebStateChangeReason::Replaced)
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  if (!status.active_web_state_change() ||
+      change.type() == WebStateListChange::Type::kReplace) {
     return;
+  }
 
   NSMutableSet<NSString*>* set = [NSMutableSet set];
-  if (active_index > 0) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(active_index - 1);
+  if (status.active_index > 0) {
+    web::WebState* web_state =
+        web_state_list->GetWebStateAt(status.active_index - 1);
     [set addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
 
-  if (active_index + 1 < web_state_list->count()) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(active_index + 1);
+  if (status.active_index + 1 < web_state_list->count()) {
+    web::WebState* web_state =
+        web_state_list->GetWebStateAt(status.active_index + 1);
     [set addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
 
