@@ -57,4 +57,11 @@ void LogMandatoryReauthOptInOrOutUpdateEvent(
   base::UmaHistogramEnumeration(histogram_name, event);
 }
 
+void LogMandatoryReauthSettingsPageEditCardEvent(
+    MandatoryReauthAuthenticationFlowEvent event) {
+  std::string histogram_name =
+      "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
+  base::UmaHistogramEnumeration(histogram_name, event);
+}
+
 }  // namespace autofill::autofill_metrics

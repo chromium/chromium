@@ -53,6 +53,7 @@ namespace autofill_private = extensions::api::autofill_private;
 namespace addressinput = i18n::addressinput;
 
 using autofill::autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent;
+using autofill::autofill_metrics::LogMandatoryReauthSettingsPageEditCardEvent;
 using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
 using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
@@ -857,7 +858,8 @@ AutofillPrivateAuthenticateUserToEditLocalCardFunction::Run() {
 
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
-
+    LogMandatoryReauthSettingsPageEditCardEvent(
+        MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
     // Based on the result of the auth, we will be asynchronously returning if
     // the user can edit the local card.
     client->GetOrCreatePaymentsMandatoryReauthManager()
@@ -878,9 +880,13 @@ AutofillPrivateAuthenticateUserToEditLocalCardFunction::Run() {
   return RespondNow(WithArguments(true));
 }
 
-// Return the auth result for showing the edit card for local card.
+// Return the auth result for showing the edit card dialog for local card. We
+// also log whether the auth was successful or not.
 void AutofillPrivateAuthenticateUserToEditLocalCardFunction::
     CanShowEditDialogForLocalCard(bool can_show) {
+  LogMandatoryReauthSettingsPageEditCardEvent(
+      can_show ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
+               : MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
   if (can_show) {
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));

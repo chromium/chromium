@@ -68962,6 +68962,13 @@ from previous Chrome versions.
   <int value="17" label="Shared Passwords Notification Bubble"/>
 </enum>
 
+<enum name="MandatoryReauthAuthEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Flow started"/>
+  <int value="2" label="Flow succeeded"/>
+  <int value="3" label="Flow failed"/>
+</enum>
+
 <enum name="MandatoryReauthOptInBubbleOffer">
   <int value="0" label="Shown"/>
 </enum>
@@ -68978,13 +68985,6 @@ from previous Chrome versions.
 <enum name="MandatoryReauthOptInConfirmationBubbleMetric">
   <int value="0" label="Shown"/>
   <int value="1" label="Settings link clicked"/>
-</enum>
-
-<enum name="MandatoryReauthOptInOrOutUpdateEvent">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Flow started"/>
-  <int value="2" label="Flow succeeded"/>
-  <int value="3" label="Flow failed"/>
 </enum>
 
 <enum name="ManifestFetchResultType">

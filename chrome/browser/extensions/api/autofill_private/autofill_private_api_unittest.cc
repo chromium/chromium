@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_api.h"
 
+#include <vector>
+
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -16,6 +18,8 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
+
 // There are 2 boolean params set in the test suites.
 // The first param can be retrieved via `IsFeatureTurnedOn()` which determines
 // if the toggle is currently turned on or off. The second param can be
@@ -68,7 +72,7 @@ class MandatoryReauthSettingsPageMetricsTest
 // This tests the logging for mandatory reauth opt-in / opt-out flows when
 // triggered from the settings page.
 IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
-                       SettingPageMandatoryReauthToggleSwitching) {
+                       SettingsPageMandatoryReauthToggleSwitching) {
   base::HistogramTester histogram_tester;
 
   ON_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
@@ -89,16 +93,45 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(histogram_name),
       testing::ElementsAre(
-          base::Bucket(autofill::autofill_metrics::
-                           MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
-                       1),
+          base::Bucket(MandatoryReauthAuthenticationFlowEvent::kFlowStarted, 1),
           base::Bucket(
               IsUserAuthSuccessful()
-                  ? autofill::autofill_metrics::
-                        MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
-                  : autofill::autofill_metrics::
-                        MandatoryReauthAuthenticationFlowEvent::kFlowFailed,
+                  ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
+                  : MandatoryReauthAuthenticationFlowEvent::kFlowFailed,
               1)));
+}
+
+IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
+                       SettingsPageMandatoryReauthEditLocalCard) {
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
+              autofill_client()->GetOrCreatePaymentsMandatoryReauthManager()),
+          AuthenticateWithMessage)
+      .WillByDefault(
+          testing::WithArg<1>([auth_success = IsUserAuthSuccessful()](
+                                  base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(auth_success);
+          }));
+
+  RunAutofillSubtest("authenticateUserToEditLocalCard");
+
+  std::string histogram_name =
+      "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
+
+  std::vector<base::Bucket> expected_histogram_buckets;
+  if (IsFeatureTurnedOn()) {
+    expected_histogram_buckets = {
+        base::Bucket(MandatoryReauthAuthenticationFlowEvent::kFlowStarted, 1),
+        base::Bucket(
+            IsUserAuthSuccessful()
+                ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
+                : MandatoryReauthAuthenticationFlowEvent::kFlowFailed,
+            1)};
+  }
+
+  EXPECT_EQ(histogram_tester.GetAllSamples(histogram_name),
+            expected_histogram_buckets);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

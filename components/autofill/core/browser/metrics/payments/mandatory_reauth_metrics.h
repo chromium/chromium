@@ -94,6 +94,11 @@ void LogMandatoryReauthOptInOrOutUpdateEvent(
     bool opt_in,
     MandatoryReauthAuthenticationFlowEvent event);
 
+// Logs the status of a mandatory reauth occurrence, such as flow
+// started/succeeded/failed, when the user tries to edit a local card.
+void LogMandatoryReauthSettingsPageEditCardEvent(
+    MandatoryReauthAuthenticationFlowEvent event);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_MANDATORY_REAUTH_METRICS_H_
