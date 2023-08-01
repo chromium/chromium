@@ -212,10 +212,8 @@ base::trace_event::TraceConfig GetTracingConfig() {
 
 }  // namespace
 
-// static
 base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
-    Profile* profile,
-    const std::string& title) {
+    std::string_view title) {
   constexpr size_t kMaxNameSize = 32;
   char normalized_name[kMaxNameSize];
   size_t index = 0;
@@ -231,10 +229,9 @@ base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
       normalized_name[index++] = c;
   }
   normalized_name[index] = 0;
-  return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
+  return GetDownloadsFolder().AppendASCII(
       base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
-                         normalized_name,
-                         (base::Time::Now() - base::Time()).InSeconds()));
+                         normalized_name, Now().since_origin().InSeconds()));
 }
 
 ArcGraphicsTracingHandler::ArcGraphicsTracingHandler()
@@ -359,6 +356,15 @@ void ArcGraphicsTracingHandler::DiscardActiveArcWindow() {
   arc_active_window_ = nullptr;
 }
 
+base::Time ArcGraphicsTracingHandler::Now() {
+  return base::Time::Now();
+}
+
+base::FilePath ArcGraphicsTracingHandler::GetDownloadsFolder() {
+  return file_manager::util::GetDownloadsFolderForProfile(
+      Profile::FromWebUI(web_ui()));
+}
+
 void ArcGraphicsTracingHandler::Activate() {
   aura::Window* const window =
       web_ui()->GetWebContents()->GetTopLevelNativeWindow();
@@ -444,9 +450,7 @@ void ArcGraphicsTracingHandler::OnTracingStopped(
   std::string string_data;
   string_data.swap(*trace_data);
 
-  Profile* const profile = Profile::FromWebUI(web_ui());
-  const base::FilePath model_path =
-      GetModelPathFromTitle(profile, active_task_title_);
+  const base::FilePath model_path = GetModelPathFromTitle(active_task_title_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},

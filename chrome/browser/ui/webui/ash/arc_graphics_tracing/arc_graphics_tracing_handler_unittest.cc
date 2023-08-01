@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
+
 #include "base/files/file_path.h"
-#include "base/time/time_override.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/test/base/testing_profile.h"
+#include "base/time/time.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
+#include "components/exo/wm_helper.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,40 +16,80 @@ namespace ash {
 
 namespace {
 
-class ArcGraphicsTracingHandlerTest : public testing::Test {
+class TestHandler : public ArcGraphicsTracingHandler {
  public:
-  ArcGraphicsTracingHandlerTest() = default;
+  void set_downloads_folder(const base::FilePath& downloads_folder) {
+    downloads_folder_ = downloads_folder;
+  }
+
+  void set_now(base::Time now) { now_ = now; }
+
+ private:
+  base::FilePath GetDownloadsFolder() override { return downloads_folder_; }
+  base::Time Now() override { return now_; }
+
+  base::FilePath downloads_folder_;
+  base::Time now_;
+};
+
+class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
+ public:
+  ArcGraphicsTracingHandlerTest()
+      : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+
   ~ArcGraphicsTracingHandlerTest() override = default;
 
   ArcGraphicsTracingHandlerTest(const ArcGraphicsTracingHandlerTest&) = delete;
   ArcGraphicsTracingHandlerTest& operator=(
       const ArcGraphicsTracingHandlerTest&) = delete;
 
- protected:
-  // NOTE: The initialization order of these members matters.
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* profile() { return &profile_; }
+  void SetUp() override {
+    ChromeAshTestBase::SetUp();
 
- private:
-  TestingProfile profile_;
+    // WMHelper constructor sets a global instance which the Handler constructor
+    // requires.
+    wm_helper_ = std::make_unique<exo::WMHelper>();
+    handler_ = std::make_unique<TestHandler>();
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    wm_helper_.reset();
+
+    ChromeAshTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<exo::WMHelper> wm_helper_;
+  std::unique_ptr<TestHandler> handler_;
 };
 
 TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
-  base::subtle::ScopedTimeClockOverrides time_override(
-      []() { return base::Time::UnixEpoch() + base::Seconds(1); }, nullptr,
-      nullptr);
+  base::FilePath download_path = base::FilePath::FromASCII("/mnt/downloads");
+  handler_->set_downloads_folder(download_path);
 
-  const base::FilePath download_path =
-      file_manager::util::GetDownloadsFolderForProfile(profile());
+  handler_->set_now(base::Time::UnixEpoch() + base::Seconds(1));
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_test_title_1_11644473601.json"),
-            ArcGraphicsTracingHandler::GetModelPathFromTitle(profile(),
-                                                             "Test Title #:1"));
+            handler_->GetModelPathFromTitle("Test Title #:1"));
   EXPECT_EQ(
       download_path.AppendASCII(
           "overview_tracing_0123456789012345678901234567890_11644473601.json"),
-      ArcGraphicsTracingHandler::GetModelPathFromTitle(
-          profile(), "0123456789012345678901234567890123456789"));
+      handler_->GetModelPathFromTitle(
+          "0123456789012345678901234567890123456789"));
+
+  handler_->set_now(base::Time::UnixEpoch() + base::Days(50));
+  EXPECT_EQ(
+      download_path.AppendASCII("overview_tracing_xyztitle_11648793600.json"),
+      handler_->GetModelPathFromTitle("xyztitle"));
+
+  download_path = base::FilePath::FromASCII("/var/DownloadFolder");
+  handler_->set_downloads_folder(download_path);
+  EXPECT_EQ(
+      download_path.AppendASCII("overview_tracing_secret_app_11648793600.json"),
+      handler_->GetModelPathFromTitle("Secret App"));
 }
 
 }  // namespace

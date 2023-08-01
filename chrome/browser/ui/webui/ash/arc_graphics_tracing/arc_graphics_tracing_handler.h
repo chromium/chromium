@@ -21,8 +21,6 @@
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-class Profile;
-
 namespace arc {
 class ArcGraphicsJankDetector;
 class ArcSystemStatCollector;
@@ -45,8 +43,7 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
                                   public ui::EventHandler,
                                   public exo::SurfaceObserver {
  public:
-  static base::FilePath GetModelPathFromTitle(Profile* profile,
-                                              const std::string& title);
+  base::FilePath GetModelPathFromTitle(std::string_view title);
 
   ArcGraphicsTracingHandler();
 
@@ -78,6 +75,16 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void OnCommit(exo::Surface* surface) override;
 
  private:
+  // For testing. This lets tests avoid casting from BrowserContext to Profile.
+  virtual base::FilePath GetDownloadsFolder();
+
+  // There is a ScopedTimeClockOverrides for tests that makes this seem
+  // redundant, but it is rather awkward to have a single test base which
+  // utilizes either system time or mock time, as this must be specified in
+  // the constructor, and the childmost test class constructor must be
+  // parameterless.
+  virtual base::Time Now();
+
   void Activate();
   void StartTracing();
   void StopTracing();
