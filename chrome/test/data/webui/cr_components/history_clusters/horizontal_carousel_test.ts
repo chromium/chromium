@@ -38,7 +38,8 @@ suite('HorizontalCarouselTest', () => {
 
     await new Promise<void>((resolve) => {
       const observer = new ResizeObserver(() => {
-        if (carousel.offsetWidth === 60) {
+        /* Includes 2px padding on either side */
+        if (carousel.offsetWidth === 64) {
           resolve();
           observer.unobserve(carousel);
         }

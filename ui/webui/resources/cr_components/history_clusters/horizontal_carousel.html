@@ -1,33 +1,71 @@
 <style include="history-clusters-shared-style cr-icons">
   :host {
     display: flex;
+    isolation: isolate;
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel]) {
+  :host-context([chrome-refresh-2023]) {
     --cr-icon-button-margin-start: 0px;
     --pill-height_: 28px;
     --icon-radius_: calc(var(--pill-height_) / 2);
-    margin: 16px;
+    --button-size: calc(var(--pill-height_) + 2px);
+    --button-position: calc(var(--icon-radius_) - 4px);
     position: relative;
-    padding: 0;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:hover) .carousel-button-container {
+    display: block;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:hover) #carouselContainer {
+    border-radius: var(--pill-height_);
+  }
+
+  :host-context([chrome-refresh-2023]):host([show-back-button_]:hover)
+    #carouselContainer {
+    -webkit-mask-image: linear-gradient(to right,
+        transparent var(--button-position), black 40px);
+  }
+
+  :host-context([chrome-refresh-2023]):host([show-forward-button_]:hover)
+    #carouselContainer {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px),
+        transparent  calc(100% - var(--button-position)));
+  }
+
+  :host-context([chrome-refresh-2023])
+  :host([show-back-button_][show-forward-button_]:hover) #carouselContainer {
+    -webkit-mask-image: linear-gradient(to right,
+        transparent var(--button-position), black 40px,
+        black calc(100% - 40px),
+        transparent calc(100% - var(--button-position)));
   }
 
   :host-context([chrome-refresh-2023]) .carousel-button-container {
-    --cr-icon-button-size: var(--pill-height_);
-    background-color: var(--color-side-panel-content-background);
+    /* Add 2px to cover focus outline */
+    --cr-icon-button-size: var(--button-size);
+    background-color: var(--color-button-background-tonal);
     border-radius: 50%;
+    display: none;
+    margin: 0;
     position: absolute;
+    /* To center button given 2px remaining outline from increased size */
+    top: 1px;
     /* Set z-index so the buttons hide the overflowing text that have z-index
-       of 1. */
-    z-index: 2;
+       of 1 and the fade which has a z-index of 2. */
+    z-index: 3;
   }
 
   :host-context([chrome-refresh-2023]) #carouselForwardButton {
-    right: 8px;
+    /* Shift to right to account for 2px padding and mismatching
+       border radii */
+    right: -4px;
   }
 
-  :host-context([chrome-refresh-2023]) .carousel-button-icon {
-    margin: auto;
+  :host-context([chrome-refresh-2023]) #carouselBackButton {
+    /* Shift to left to account for 2px padding and mismatching
+       border radii */
+    left: -4px;
   }
 
   #carouselContainer {
@@ -38,30 +76,55 @@
 
   :host-context([chrome-refresh-2023]) #carouselContainer {
     flex-wrap: nowrap;
+    padding: 2px; /* To account for 2px focus outline on pills */
     min-width: 0;
     overflow-x: hidden;
   }
 
-  :host-context([chrome-refresh-2023]):host([show-forward-button_]) #carouselContainer {
-    border-bottom-right-radius: var(--icon-radius_);
-    border-top-right-radius: var(--icon-radius_);
+  .hover-layer {
+    display: none;
   }
 
-  :host-context([chrome-refresh-2023]):host([show-back-button_]) #carouselContainer {
-    border-bottom-left-radius: var(--icon-radius_);
-    border-top-left-radius: var(--icon-radius_);
+  :host-context([chrome-refresh-2023]) .hover-layer {
+    background: var(--cr-hover-background-color);
+    border-radius: 50%;
+    content: '';
+    height: var(--button-size);
+    width: var(--button-size);
+    pointer-events: none;
+    position: absolute;
+    top: 1px;
+    z-index: 4;
+  }
+
+  #hoverLayerForward {
+    right: -4px;
+  }
+
+  #carouselForwardButton:hover ~ #hover-layer-forward {
+    display: block;
+  }
+
+  #hoverLayerBack {
+    left: -4px;
+  }
+
+  #carouselBackButton:hover ~ #hover-layer-back {
+    display: block;
   }
 </style>
 <cr-icon-button id="carouselBackButton" class="carousel-button-container"
-                on-click="onCarouselBackClick_" iron-icon="cr:chevron-left"
-                hidden$="[[!showBackButton_]]">
-  <div class="cr-icon carousel-button-icon"></div>
+    on-click="onCarouselBackClick_" iron-icon="cr:chevron-left"
+    hidden$="[[!showBackButton_]]" tabindex="-1">
 </cr-icon-button>
+<div id="hoverLayerBack" class="hover-layer"></div>
+
 <cr-icon-button id="carouselForwardButton" class="carousel-button-container"
-                on-click="onCarouselForwardClick_" iron-icon="cr:chevron-right"
-                hidden$="[[!showForwardButton_]]">
-  <div class="cr-icon carousel-button-icon"></div>
+    on-click="onCarouselForwardClick_" iron-icon="cr:chevron-right"
+    hidden$="[[!showForwardButton_]]" tabindex="-1">
 </cr-icon-button>
+<div id="hoverLayerForward" class="hover-layer"></div>
+
 <div id="carouselContainer">
   <slot></slot>
 </div>

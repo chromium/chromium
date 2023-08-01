@@ -30,6 +30,11 @@
     padding: 0;
   }
 
+  :host-context(.focus-outline-visible) history-cluster:focus,
+  history-cluster:focus-visible {
+    outline: none;
+  }
+
   :host([in-side-panel_]) history-cluster {
     border-bottom: 4px solid var(--cr-separator-color);
   }
@@ -58,6 +63,10 @@
     justify-content: center;
     padding:
         0 var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
+  }
+
+  :host-context([chrome-refresh-2023]) #footer {
+    padding-top: var(--cluster-padding-vertical);
   }
 </style>
 <div id="placeholder" hidden="[[!placeholderText_]]">

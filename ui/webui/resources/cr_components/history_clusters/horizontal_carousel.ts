@@ -6,6 +6,7 @@ import './history_clusters_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './horizontal_carousel.html.js';
@@ -61,6 +62,7 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
   //============================================================================
 
   private resizeObserver_: ResizeObserver|null = null;
+  private eventTracker_: EventTracker = new EventTracker();
   private showBackButton_: boolean;
   private showForwardButton_: boolean;
 
@@ -75,6 +77,7 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
     });
 
     this.resizeObserver_.observe(this.$.carouselContainer);
+    this.eventTracker_.add(this, 'keyup', this.onTabFocus_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -104,6 +107,15 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
         targetPosition + this.$.carouselContainer.clientWidth <
         this.$.carouselContainer.scrollWidth;
     this.showBackButton_ = true;
+  }
+
+  private onTabFocus_(event: KeyboardEvent) {
+    const element = event.target as HTMLElement;
+    if (event.code === 'Tab') {
+      // -2px as offsetLeft includes padding
+      this.$.carouselContainer.scrollTo(
+          {left: element.offsetLeft - 2, behavior: 'smooth'});
+    }
   }
 
   //============================================================================
