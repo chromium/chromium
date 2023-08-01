@@ -86,6 +86,12 @@
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
+crbug.com/1469275 [ ventura intel-0x3e9b angle-metal asan ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
