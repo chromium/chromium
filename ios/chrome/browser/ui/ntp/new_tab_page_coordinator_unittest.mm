@@ -267,15 +267,20 @@ TEST_F(NewTabPageCoordinatorTest, StartOffTheRecord) {
 TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   CreateCoordinator(/*off_the_record=*/false);
   SetupCommandHandlerMocks();
-  // Swizzle out `-configureNTPViewController` since it leaves a dangling
-  // pointer somewhere, and UI code does not need to be spun up for this test.
   void (^swizzle_block)() = ^void() {
     // no-op
   };
-  std::unique_ptr<ScopedBlockSwizzler> service_swizzler =
+  // Swizzle out `-configureNTPViewController` since UI code does not need to be
+  // spun up for this test.
+  std::unique_ptr<ScopedBlockSwizzler> configureNTPVCSwizzler =
       std::make_unique<ScopedBlockSwizzler>(
           [NewTabPageCoordinator class], @selector(configureNTPViewController),
           swizzle_block);
+  // Swizzle out `-restoreNTPState` to prevent NTP VC's view from being loaded.
+  std::unique_ptr<ScopedBlockSwizzler> restoreNTPStateSwizzler =
+      std::make_unique<ScopedBlockSwizzler>([NewTabPageCoordinator class],
+                                            @selector(restoreNTPState),
+                                            swizzle_block);
 
   id coordinator_mock = OCMClassMock([ContentSuggestionsCoordinator class]);
   ContentSuggestionsCoordinator* mockContentSuggestionsCoordinator =
@@ -575,4 +580,38 @@ TEST_F(NewTabPageCoordinatorTest, IsNTPCleanOnStop) {
   EXPECT_EQ(nil, coordinator_.feedTopSectionCoordinator);
   EXPECT_EQ(nil, coordinator_.feedHeaderViewController);
   EXPECT_FALSE(coordinator_.started);
+}
+
+// Tests that the state of an NTP is saved and restored when leaving an NTP and
+// navigating back to it in the same web state.
+TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:web_state_];
+
+  // Check that initial NTP is scrolled to top.
+  EXPECT_LE(coordinator_.NTPViewController.scrollPosition,
+            -[coordinator_.NTPViewController heightAboveFeed]);
+
+  // Change the selected feed and set some scroll position.
+  [coordinator_ selectFeedType:FeedTypeFollowing];
+  [coordinator_.NTPViewController setContentOffsetToTopOfFeed:500];
+
+  FeedType selectedFeed = coordinator_.selectedFeed;
+  CGFloat scrollPosition = coordinator_.NTPViewController.scrollPosition;
+
+  // Navigate away from the NTP and stop the coordinator.
+  [coordinator_ didNavigateAwayFromNTP];
+  [coordinator_ stop];
+
+  // Navigate to another NTP in the same web state.
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:web_state_];
+
+  // Check that newly opened NTP restores saved state.
+  EXPECT_EQ(coordinator_.selectedFeed, selectedFeed);
+  EXPECT_EQ(coordinator_.NTPViewController.scrollPosition, scrollPosition);
+
+  [coordinator_ stop];
 }

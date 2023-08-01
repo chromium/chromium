@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -32,7 +33,7 @@ NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
   active_ = IsUrlNtp(web_state_->GetVisibleURL());
-  next_ntp_feed_type_ = DefaultFeedType();
+  ntp_state_ = [[NewTabPageState alloc] init];
 }
 
 #pragma mark - Static
@@ -42,10 +43,6 @@ void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
     item->SetVirtualURL(GURL(kChromeUINewTabURL));
     item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
   }
-}
-
-FeedType NewTabPageTabHelper::DefaultFeedType() {
-  return FeedTypeDiscover;
 }
 
 #pragma mark - Public
@@ -73,34 +70,13 @@ bool NewTabPageTabHelper::IsActive() const {
   return active_;
 }
 
-FeedType NewTabPageTabHelper::GetNextNTPFeedType() {
-  return next_ntp_feed_type_;
+void NewTabPageTabHelper::SetNTPState(NewTabPageState* ntpState) {
+  ntp_state_.scrollPosition = ntpState.scrollPosition;
+  ntp_state_.selectedFeed = ntpState.selectedFeed;
 }
 
-void NewTabPageTabHelper::SetNextNTPFeedType(FeedType feed_type) {
-  next_ntp_feed_type_ = feed_type;
-}
-
-bool NewTabPageTabHelper::GetNextNTPScrolledToFeed() {
-  bool scrolled_ = next_ntp_scrolled_to_feed_;
-  // Resets next_ntp_scrolled_to_feed_ in case it was overriden by
-  // SetNextNTPScrolledToFeed.
-  next_ntp_scrolled_to_feed_ = NO;
-  return scrolled_;
-}
-
-void NewTabPageTabHelper::SetNextNTPScrolledToFeed(bool scrolled_to_feed) {
-  next_ntp_scrolled_to_feed_ = scrolled_to_feed;
-}
-
-void NewTabPageTabHelper::SaveNTPState(CGFloat scroll_position,
-                                       FeedType feed_type) {
-  saved_scroll_position_ = scroll_position;
-  SetNextNTPFeedType(feed_type);
-}
-
-CGFloat NewTabPageTabHelper::ScrollPositionFromSavedState() {
-  return saved_scroll_position_;
+NewTabPageState* NewTabPageTabHelper::GetNTPState() {
+  return ntp_state_;
 }
 
 #pragma mark - WebStateObserver

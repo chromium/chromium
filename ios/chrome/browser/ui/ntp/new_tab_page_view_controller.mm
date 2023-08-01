@@ -216,7 +216,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   // Scroll to the top before coming into view to minimize sudden visual jerking
   // for startup instances showing the NTP.
-  if (!self.viewDidAppear) {
+  if (!self.viewDidAppear && !self.hasSavedOffsetFromPreviousScrollState) {
     [self setContentOffsetToTop];
   }
 

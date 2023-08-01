@@ -6,6 +6,8 @@ source_set("ntp") {
   sources = [
     "browser_policy_new_tab_page_rewriter.h",
     "browser_policy_new_tab_page_rewriter.mm",
+    "new_tab_page_state.h",
+    "new_tab_page_state.mm",
     "new_tab_page_tab_helper.h",
     "new_tab_page_tab_helper.mm",
     "new_tab_page_tab_helper_delegate.h",

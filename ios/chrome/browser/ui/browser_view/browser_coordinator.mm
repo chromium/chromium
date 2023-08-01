@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/follow/followed_web_site.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
@@ -2702,7 +2703,9 @@ enum class ToolbarKind {
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(activeWebState);
   if (NTPHelper) {
-    NTPHelper->SetNextNTPFeedType(feedType);
+    NewTabPageState* ntpState = NTPHelper->GetNTPState();
+    ntpState.selectedFeed = feedType;
+    NTPHelper->SetNTPState(ntpState);
     // TODO(crbug.com/1329173): Scroll into feed.
   }
 
