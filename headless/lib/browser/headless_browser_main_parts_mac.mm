@@ -16,8 +16,6 @@
 namespace headless {
 
 void HeadlessBrowserMainParts::PreCreateMainMessageLoop() {
-  // Force hide dock and menu bar.
-  NSApp.activationPolicy = NSApplicationActivationPolicyAccessory;
   if (!geolocation_manager_)
     geolocation_manager_ =
         device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac();
