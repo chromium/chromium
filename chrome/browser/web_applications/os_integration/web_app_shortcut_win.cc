@@ -22,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -221,8 +220,8 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     shortcut_properties.set_dual_mode(false);
     if (!base::PathExists(shortcut_file.DirName()) &&
         !base::CreateDirectory(shortcut_file.DirName())) {
-      NOTREACHED();
-      return false;
+      success = false;
+      break;
     }
     success = base::win::CreateOrUpdateShortcutLink(
                   shortcut_file, shortcut_properties,
