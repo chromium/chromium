@@ -30,6 +30,9 @@ namespace {
 // The minimum delay between the presentation of two tab pickup banners.
 const base::TimeDelta kDelayBetweenTwoBanners = base::Hours(2);
 
+// The maximum length of the last distant tab URL.
+size_t kMaxLengthLastDistantTabURL = 2 * 1024;
+
 }  // namespace
 
 BROWSER_USER_DATA_KEY_IMPL(TabPickupBrowserAgent)
@@ -151,9 +154,13 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
 void TabPickupBrowserAgent::SetupInfoBarDelegate() {
   CHECK(IsTabPickupEnabled());
   CHECK(!IsTabPickupDisabledByUser());
-  infobar_in_progress_ = true;
 
   delegate_ = std::make_unique<TabPickupInfobarDelegate>(browser_, session_);
+  if (!UpdateNewDistantTab(delegate_->GetTabURL())) {
+    return;
+  }
+
+  infobar_in_progress_ = true;
   delegate_->FetchFavIconImage(^{
     // Once the favicon image is fetched, display the infobar.
     ShowInfoBar();
@@ -196,6 +203,26 @@ bool TabPickupBrowserAgent::CanShowTabPickupBanner() {
       base::Time::Now() - GetApplicationContext()->GetLocalState()->GetTime(
                               prefs::kTabPickupLastDisplayedTime);
   return kDelayBetweenTwoBanners < time_since_last_display;
+}
+
+bool TabPickupBrowserAgent::UpdateNewDistantTab(GURL distant_tab_url) {
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+
+  std::string distant_tab_without_ref =
+      GURL(distant_tab_url).GetWithoutRef().spec();
+  if (distant_tab_without_ref.length() > kMaxLengthLastDistantTabURL) {
+    distant_tab_without_ref =
+        distant_tab_without_ref.substr(0, kMaxLengthLastDistantTabURL);
+  }
+  std::string previous_tab_with_no_ref =
+      prefs->GetString(prefs::kTabPickupLastDisplayedURL);
+
+  if (distant_tab_without_ref.compare(previous_tab_with_no_ref) == 0) {
+    return false;
+  }
+
+  prefs->SetString(prefs::kTabPickupLastDisplayedURL, distant_tab_without_ref);
+  return true;
 }
 
 void TabPickupBrowserAgent::RecordTransitionTime() {

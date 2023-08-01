@@ -19,13 +19,13 @@
                                            numberOfTabs:
                                                (NSUInteger)numberOfTabs {
   NSMutableArray<FakeDistantTab*>* fakeTabs = [NSMutableArray array];
-  for (NSUInteger i = 0; i < numberOfTabs; ++i) {
+  for (int i = numberOfTabs - 1; i >= 0; --i) {
     FakeDistantTab* tab = [[FakeDistantTab alloc] init];
     const GURL& tabURL =
         serverURL.Resolve("/distant_tab_" + base::NumberToString(i) + ".html");
     NSString* stringTabURL = base::SysUTF8ToNSString(tabURL.spec());
 
-    tab.title = [NSString stringWithFormat:@"Tab %ld", i];
+    tab.title = [NSString stringWithFormat:@"Tab %d", i];
     tab.URL = stringTabURL;
     [fakeTabs addObject:tab];
   }

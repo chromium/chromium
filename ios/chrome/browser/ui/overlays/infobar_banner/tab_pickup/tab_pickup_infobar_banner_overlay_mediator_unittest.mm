@@ -70,6 +70,8 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
     local_state_.Get()->SetBoolean(prefs::kTabPickupEnabled, true);
     local_state_.Get()->SetTime(prefs::kTabPickupLastDisplayedTime,
                                 base::Time());
+    local_state_.Get()->SetString(prefs::kTabPickupLastDisplayedURL,
+                                  std::string());
 
     synced_sessions::DistantSession& session = CreateDistantSession();
     std::unique_ptr<TabPickupInfobarDelegate> delegate =

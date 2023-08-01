@@ -260,8 +260,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Default to 0 which is the unassigned value.
   registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
 
+  // Preferences related to the tab pickup feature.
   registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
+  registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
+                               std::string());
 
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
