@@ -159,6 +159,8 @@ buckets are added later.
 *In C++*, define an `enum class` with a `kMaxValue` enumerator:
 
 ```c++
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class NewTabPageAction {
   kUseOmnibox = 0,
   kClickTitle = 1,
