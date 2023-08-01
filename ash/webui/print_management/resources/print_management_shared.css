@@ -68,6 +68,28 @@
   padding: 0;
 }
 
+/** TODO(b/293601228): Remove CSS rules for cr-button once the element is
+    replaced with cros-button which already handles this styling. **/
+:host-context(body.jelly-enabled) :host([is-setup-assistance-enabled])
+    cr-button {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  border-radius: 18px;
+  height: 36px;
+  padding-inline: 16px;
+}
+
+:host-context(body.jelly-enabled) :host([is-setup-assistance-enabled])
+    cr-button[slot="prefix-icon"] {
+  padding-inline: 12px 16px;
+}
+
+:host-context(body.jelly-enabled) :host([is-setup-assistance-enabled])
+    cr-button[slot="suffix-icon"] {
+  padding-inline: 16px 12px;
+}
+
+
 .flex-center {
   align-items: center;
   display: flex;
