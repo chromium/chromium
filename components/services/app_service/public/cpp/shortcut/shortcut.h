@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/types/strong_alias.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,6 +68,19 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // 'shortcut_id' is generated from the hash of 'host_app_id' and 'local_id',
   // these value should not be updated separately.
   const ShortcutId shortcut_id;
+};
+
+// A view class to reduce the risk of lifetime issues by preventing
+// long-term storage on the heap.
+class COMPONENT_EXPORT(SHORTCUT) ShortcutView {
+ public:
+  explicit ShortcutView(const Shortcut* shortcut) : shortcut_(shortcut) {}
+  const Shortcut* operator->() const { return shortcut_.get(); }
+  explicit operator bool() const { return shortcut_; }
+
+ private:
+  const raw_ptr<const Shortcut> shortcut_;
+  STACK_ALLOCATED();
 };
 
 using ShortcutPtr = std::unique_ptr<Shortcut>;

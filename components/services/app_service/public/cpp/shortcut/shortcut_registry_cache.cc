@@ -66,11 +66,11 @@ bool ShortcutRegistryCache::HasShortcut(const ShortcutId& shortcut_id) {
   return base::Contains(states_, shortcut_id);
 }
 
-std::vector<ShortcutPtr> ShortcutRegistryCache::GetAllShortcuts() {
+std::vector<ShortcutView> ShortcutRegistryCache::GetAllShortcuts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<ShortcutPtr> shortcuts;
+  std::vector<ShortcutView> shortcuts;
   for (const auto& [shortcut_id, shortcut] : states_) {
-    shortcuts.push_back(shortcut.get()->Clone());
+    shortcuts.emplace_back(shortcut.get());
   }
   return shortcuts;
 }
