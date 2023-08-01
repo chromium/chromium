@@ -140,12 +140,12 @@ base::FilePath GetCurrentInstallPathFromRegistry(bool system_install) {
 
 namespace installer {
 
-base::FilePath GetChromeInstallPath(bool system_install) {
-  base::FilePath install_path =
-      GetCurrentInstallPathFromRegistry(system_install);
-  if (install_path.empty())
-    install_path = GetDefaultChromeInstallPathChecked(system_install);
-  return install_path;
+base::FilePath GetInstalledDirectory(bool system_install) {
+  return GetCurrentInstallPathFromRegistry(system_install);
+}
+
+base::FilePath GetDefaultChromeInstallPath(bool system_install) {
+  return GetDefaultChromeInstallPathChecked(system_install);
 }
 
 base::FilePath GetChromeInstallPathWithPrefs(bool system_install,

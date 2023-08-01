@@ -13,15 +13,20 @@ namespace installer {
 
 class InitialPreferences;
 
-// Returns Chrome's install path for either a per-user or a per-machine install.
-// If Chrome is installed at the level specified by `system_install` (as
-// indicated by the presence of a valid version value), the install path derived
-// from the value in the Windows registry at
+// Returns the install directory for an existing per-user or per-machine
+// install; or an empty path if Chrome is not installed at the given level. In
+// particular: if Chrome is installed at the level specified by `system_install`
+// (as indicated by the presence of a valid version value), the install path
+// derived from the value in the Windows registry at
 // [HKLM|HKCU]\Software\Google\Update\ClientState\{appguid}\UninstallString is
 // returned if it is absolute and exists. Otherwise, the path
 // ([%ProgramFiles%|%LOCALAPPDATA%]\[Company\]Product\Application) is returned,
 // provided that the expanded variable yields an absolute path that exists.
-base::FilePath GetChromeInstallPath(bool system_install);
+base::FilePath GetInstalledDirectory(bool system_install);
+
+// Returns the default install directory for either a per-user or a per-machine
+// install.
+base::FilePath GetDefaultChromeInstallPath(bool system_install);
 
 // Returns a path to the directory holding chrome.exe for either a system wide
 // or user specific install. The returned path will be one of:

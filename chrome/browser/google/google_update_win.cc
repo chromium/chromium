@@ -102,16 +102,17 @@ GoogleUpdateErrorCode CanUpdateCurrentChrome(
     const base::FilePath& chrome_exe_path,
     bool system_level_install) {
   DCHECK_NE(InstallUtil::IsPerUserInstall(), system_level_install);
-  base::FilePath user_exe_path = installer::GetChromeInstallPath(false);
-  base::FilePath machine_exe_path = installer::GetChromeInstallPath(true);
-  if (!base::FilePath::CompareEqualIgnoreCase(chrome_exe_path.value(),
-                                        user_exe_path.value()) &&
-      !base::FilePath::CompareEqualIgnoreCase(chrome_exe_path.value(),
-                                        machine_exe_path.value())) {
-    return CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY;
-  }
 
-  return GOOGLE_UPDATE_NO_ERROR;
+  // The currently-running browser can only be updated by Google Update if it
+  // is running from the same directory as the currently-installed browser
+  // being managed by Google Update at the desired install level.
+  const base::FilePath install_dir =
+      installer::GetInstalledDirectory(system_level_install);
+  return (!install_dir.empty() &&
+          base::FilePath::CompareEqualIgnoreCase(chrome_exe_path.value(),
+                                                 install_dir.value()))
+             ? GOOGLE_UPDATE_NO_ERROR
+             : CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY;
 }
 
 // Explicitly allow the Google Update service to impersonate the client since

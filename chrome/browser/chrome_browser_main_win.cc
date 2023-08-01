@@ -723,9 +723,10 @@ bool ChromeBrowserMainPartsWin::CheckMachineLevelInstall() {
   if (version.IsValid()) {
     base::FilePath exe_path;
     base::PathService::Get(base::DIR_EXE, &exe_path);
-    std::wstring exe = exe_path.value();
-    base::FilePath user_exe_path(installer::GetChromeInstallPath(false));
-    if (base::FilePath::CompareEqualIgnoreCase(exe, user_exe_path.value())) {
+    const base::FilePath user_exe_path(
+        installer::GetInstalledDirectory(/*system_install=*/false));
+    if (base::FilePath::CompareEqualIgnoreCase(exe_path.value(),
+                                               user_exe_path.value())) {
       base::CommandLine uninstall_cmd(
           InstallUtil::GetChromeUninstallCmd(false));
       if (!uninstall_cmd.GetProgram().empty()) {
