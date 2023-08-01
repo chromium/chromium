@@ -29,13 +29,8 @@ template("in_process_fuzzer") {
       # As these are full browser tests, we have crashpad running,
       # and we can't intercept signals that crashpad needs.
       asan_options = [
-        "handle_sigtrap=0",
-        "handle_abort=0",
-        "handle_segv=0",
-        "handle_sigbus=0",
-        "handle_sigfpe=0",
-        "handle_sigill=0",
-        "handle_sigtrap=0",
+        "allow_user_segv_handler=1",
+        "handle_sigtrap=1",
 
         # Browser tests store arbitrary data in globals; leak
         # detection will come up with lots of false positives.
