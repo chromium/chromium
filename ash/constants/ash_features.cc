@@ -1258,11 +1258,6 @@ BASE_FEATURE(kHandwritingLibraryDlc,
              "HandwritingLibraryDlc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the ChromeOS Apps Discovery experience in the Help App.
-BASE_FEATURE(kHelpAppAppsDiscovery,
-             "HelpAppAppsDiscovery",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the logic that auto triggers the install dialog during the web app
 // install flow initiated from the Help App.
 BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
