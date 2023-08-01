@@ -361,16 +361,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.{Time}"
+    name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}"
     units="Unique Setting(s) Changed" expires_after="2024-05-16">
   <owner>moteva@google.com</owner>
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
     Records the total number of unique settings changed by a user over a
-    device's lifetime. It is triggered when the user closes the Settings app. It
-    will not record the number if the user did not make any new unique changes
-    in the session.
+    device's lifetime, regardless of whether they have changed a unique Setting
+    or not. The recording takes place periodically.
   </summary>
   <token key="Time">
     <variant name="FirstWeek"

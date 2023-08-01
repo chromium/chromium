@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 
 #include <set>
 
@@ -61,8 +61,8 @@ class PerSessionSettingsUserActionTracker {
   // Clears the pref kTotalUniqueOsSettingsChanged after 7 days have passed
   // since the user finished OOBE. We will track the changes made within the
   // first week in
-  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek, and
-  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.SubsequentWeeks
+  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek, and
+  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.SubsequentWeeks
   // for the weeks following the first week.
   void ClearTotalUniqueSettingsChangedPref();
 
@@ -71,13 +71,11 @@ class PerSessionSettingsUserActionTracker {
   // which is set once the user finished the OOBE.
   bool IsTodayInFirst7Days();
 
-  // Returns the size of the pref dict ::prefs::kTotalUniqueOsSettingsChanged
-  // after user-used unique Settings have been added to it.
-  int UpdateSettingsPrefTotalUniqueChanged();
-
-  bool HasUserMetricsConsent();
-  void RecordTotalLifetimeMetric();
+  void RecordLifetimeMetricToPref();
   void ResetMetricsCountersAndTimestamp();
+  void UpdateSettingsPrefTotalUniqueChanged();
+  void SetHasUserEverRevokedMetricsConsent();
+  bool HasUserMetricsConsent();
 
   // Time at which the last setting change metric was recorded since the window
   // has been focused, or null if no setting change has been recorded since the
@@ -117,4 +115,4 @@ class PerSessionSettingsUserActionTracker {
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_

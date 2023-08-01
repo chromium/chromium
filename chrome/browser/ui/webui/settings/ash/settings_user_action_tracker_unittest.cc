@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/webui/settings/ash/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
+#include "chrome/browser/ui/webui/settings/ash/per_session_settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/settings/ash/search/mojom/user_action_recorder.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/search/per_session_settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -119,17 +119,7 @@ class SettingsUserActionTrackerTest : public testing::Test {
   }
 
   void TearDown() override {
-    tracker_.reset();
-
     TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
-    test_metrics_service_.reset();
-    test_metrics_service_client_.reset();
-    test_metrics_state_manager_.reset();
-    test_enabled_state_provider_.reset();
-    local_state_.reset();
-    test_pref_service_ = nullptr;
-    testing_profile_ = nullptr;
-    profile_manager_.reset();
   }
 
   // TestingProfile is bound to the IO thread:
@@ -150,10 +140,10 @@ class SettingsUserActionTrackerTest : public testing::Test {
 
   // MetricsService.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
-  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::TestEnabledStateProvider>
       test_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
+  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 };
 

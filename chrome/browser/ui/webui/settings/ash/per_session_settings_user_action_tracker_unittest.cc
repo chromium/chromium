@@ -2,23 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/search/per_session_settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/settings/ash/per_session_settings_user_action_tracker.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_metrics_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "components/account_id/account_id.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using chromeos::settings::mojom::Setting;
@@ -53,10 +60,19 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
   ~PerSessionSettingsUserActionTrackerTest() override = default;
 
   void SetUp() override {
+    std::unique_ptr<FakeChromeUserManager> user_manager =
+        std::make_unique<FakeChromeUserManager>();
+    FakeChromeUserManager* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
+    LoginState::Initialize();
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
+    LoginTestUser(fake_user_manager);
+
     test_pref_service_ = testing_profile_->GetPrefs();
 
     // MetricsService.
@@ -81,20 +97,32 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
 
     tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
         test_pref_service_);
+
+    tracker_metrics_provider_ = std::make_unique<OsSettingsMetricsProvider>();
   }
 
   void TearDown() override {
-    tracker_.reset();
-
     TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
-    test_metrics_service_.reset();
-    test_metrics_service_client_.reset();
-    test_metrics_state_manager_.reset();
-    test_enabled_state_provider_.reset();
-    local_state_.reset();
-    test_pref_service_ = nullptr;
-    testing_profile_ = nullptr;
-    profile_manager_.reset();
+
+    LoginState::Shutdown();
+  }
+
+  // Creates regular_user profile and user then sets that account to active.
+  void LoginTestUser(FakeChromeUserManager* fake_user_manager) {
+    const AccountId id = AccountId::FromUserEmail(kProfileName);
+    auto* user = fake_user_manager->AddUser(id);
+    testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            testing_profile_);
+    LoginAndSetActiveUserInUserManager(id, fake_user_manager);
+  }
+
+  // Helper to set active user in the UserManager.
+  void LoginAndSetActiveUserInUserManager(
+      const AccountId& id,
+      FakeChromeUserManager* fake_user_manager) {
+    fake_user_manager->LoginUser(id);
+    fake_user_manager->SwitchActiveUser(id);
   }
 
   std::string SettingAsIntString(Setting setting) {
@@ -108,6 +136,8 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
   raw_ptr<TestingProfile> testing_profile_;
   raw_ptr<PrefService> test_pref_service_;
   std::unique_ptr<PerSessionSettingsUserActionTracker> tracker_;
+  std::unique_ptr<OsSettingsMetricsProvider> tracker_metrics_provider_;
+  metrics::ChromeUserMetricsExtension uma_proto_;
 
   // This needs to be initialized before any tasks running on other threads
   // access the feature list, and destroyed after |task_environment_|, to avoid
@@ -116,11 +146,12 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
 
   // MetricsService.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
-  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::TestEnabledStateProvider>
       test_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
+  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
@@ -373,7 +404,7 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   std::set<std::string> expected_set;
 
   // We will record the total number of unique Settings changed to the histogram
-  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.{Time}
+  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}
   // every time a user changes a Setting, no matter if the number of unique
   // Settings used has increased or not.
 
@@ -384,23 +415,31 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   expected_set = {SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
-  // Destruct tracker_ to trigger recording the data to the histogram.
+  // Destruct tracker_.
   tracker_.reset();
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .FirstWeek and .Total histogram.
+  //
+  // .FirstWeek: 1 total unique settings changed with 1 count.
+  //
+  // .Total: 1 total unique settings changed with 1 count.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   // The time is still in the first week, so the data gets recorded to
   // .FirstWeek histogram.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   // There are no data in the .SubsequentWeeks histogram.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/1,
       /*count=*/0);
   // Overall total unique Settings changed in the lifetime of the Device.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/1,
       /*count=*/1);
 
@@ -426,21 +465,31 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   expected_set = {SettingAsIntString(Setting::kDoNotDisturbOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
-  // Destruct tracker_ to trigger recording the data to the histogram.
+  // Destruct tracker_ to simulate Settings app closing.
   tracker_.reset();
+
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .SubsequentWeeks and .Total histogram.
+  //
+  // .SubsequentWeeks: 1 total unique settings changed with 1 count.
+  //
+  // .Total: We are recording that 1 unique settings has changed, so the count
+  // for sample 1 is now accumulated to 2.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   // .FirstWeek will not change
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/1,
       /*count=*/1);
   // Overall total unique Settings changed in the lifetime of the Device.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/1,
       /*count=*/2);
 
@@ -453,6 +502,17 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   expected_set = {};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
+  // Simulate that metrics provider uploads the data.
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .SubsequentWeeks and .Total histogram.
+  //
+  // .SubsequentWeeks: 1 total unique settings changed with accumulated 2
+  // counts.
+  //
+  // .Total: We are recording that 1 unique settings has changed, so the count
+  // for sample 1 is now accumulated to 3.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   // Flip the Do Not Disturb and WiFi toggles in Settings, this is a unique
   // Setting that is changing so the number of unique settings that have been
   // changed increases by 1. Note that we are still past the 1 week point, so we
@@ -463,30 +523,41 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
                   SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
-  // Destruct tracker_ to trigger recording the data to the histogram.
+  // Destruct tracker_.
   tracker_.reset();
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .SubsequentWeeks and .Total histogram.
+  //
+  // .SubsequentWeeks: We will now have a new sample since we have 2 different
+  // unique settings, so sample 1 remains at 2, and sample 2 now has a new count
+  // of 1.
+  //
+  // .Total: We are recording that 1 unique settings has changed, so the count
+  // for sample 1 remains at 3, and sample 2 is now 1.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   // .FirstWeek will not change
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/1,
       /*count=*/2);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/2,
       /*count=*/1);
   // Overall total unique Settings changed in the lifetime of the Device.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/1,
       /*count=*/3);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/2,
       /*count=*/1);
 
@@ -500,37 +571,64 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   // unique settings that have been changed does not increase. The bucket sample
   // 2 should now have 2 counts.
   tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+
+  // Simulate that metrics provider uploads the data.
+  //
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .SubsequentWeeks and .Total histogram.
+  //
+  // .SubsequentWeeks: No new unique change has been made, so sample 1 remains
+  // at 2, and sample 2 now has a new count of 2.
+  //
+  // .Total: No new unique change has been made, so the count for sample 1
+  // remains at 3, and sample 2 has a new count of 2.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
+  // User is still in the current Settings  session.
   tracker_->RecordSettingChange(Setting::kWifiOnOff);
   tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+
   // expected_set will not change
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
-  // Destruct tracker_ to trigger recording the data to the histogram.
+  // Destruct tracker_ to simulate Settings app closing.
   tracker_.reset();
 
+  // Simulate that metrics provider uploads the data.
+  //
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .SubsequentWeeks and .Total histogram.
+  //
+  // .SubsequentWeeks: No new unique change has been made, so sample 1 remains
+  // at 2, and sample 2 now has a new count of 3.
+  //
+  // .Total: No new unique change has been made, so the count for sample 1
+  // remains at 3, and sample 2 has a new count of 3.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/1,
       /*count=*/2);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/2,
-      /*count=*/4);
+      /*count=*/3);
   // Overall total unique Settings changed in the lifetime of the Device.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/1,
       /*count=*/3);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/2,
-      /*count=*/4);
+      /*count=*/3);
 }
 
 TEST_F(PerSessionSettingsUserActionTrackerTest,
@@ -551,21 +649,29 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
                   SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
-  // Destruct tracker_ to trigger recording the data to the histogram.
+  // Destruct tracker_.
   tracker_.reset();
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .FirstWeek and .Total histogram.
+  //
+  // .FirstWeek: 2 total unique settings changed with 1 count.
+  //
+  // .Total: 2 total unique settings changed with 1 count.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/2,
       /*count=*/1);
   // This is within the first week, no data should be recorded in the
   // .SubsequentWeeks histogram
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/2,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/2,
       /*count=*/1);
 }
@@ -591,21 +697,30 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
                   SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
-  // Destruct tracker_ to trigger recording the data to the histogram.
+  // Destruct tracker_.
   tracker_.reset();
-  histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
-      "SubsequentWeeks",
-      /*sample=*/2,
-      /*count=*/1);
+
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .SubsequentWeeks and .Total histogram.
+  //
+  // .SubsequentWeeks: 2 total unique settings changed with 2 count.
+  //
+  // .Total: 2 total unique settings changed with 2 count.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   // This is after the first week, no data should be recorded in the
   // .FirstWeek histogram
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/2,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "SubsequentWeeks",
+      /*sample=*/2,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.Total",
       /*sample=*/2,
       /*count=*/1);
 }
@@ -724,14 +839,17 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 }
 
 TEST_F(PerSessionSettingsUserActionTrackerTest,
-       TestRecordedDataWhenUMAConsentRevokedAndGranted) {
+       TestRecordedDataWhenUMAConsentRevokedAndRegrantedWithSettingsChange) {
   // Simulate that the user has taken OOBE.
   test_pref_service_->SetTime(::ash::prefs::kOobeOnboardingTime,
                               base::Time::Now());
   // Simulate the initial state, ie the user has not yet set their consent pref.
   test_pref_service_->SetBoolean(::prefs::kHasEverRevokedMetricsConsent, false);
 
-  // Simulate that the user has granted UMA consent initially
+  // Simulate that the user has granted UMA consent initially.
+  // NOTE: revoking UMA consent will clear the pref that stores the current
+  // unique settings that the user has used. Now that the consent has been
+  // granted, we will record that Settings changes to .DeviceLifetime histogram.
   test_metrics_service_client_->UpdateCurrentUserMetricsConsent(true);
   std::set<std::string> expected_set;
 
@@ -743,39 +861,48 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   expected_set = {SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
-  // Destruct tracker_ to trigger recording the data to the histogram.
-  // NOTE: revoking UMA consent will clear the pref that stores the current
-  // unique settings that the user has used. Now that the consent has been
-  // granted, we will record that a single Setting has changed in
-  // .DeviceLifetime histogram.
+  // Destruct tracker_ to simulate Settings app closing.
   tracker_.reset();
+
+  // Simulate that metrics provider uploads the data.
+  //
+  // Trigger recording the data to the histogram. We will now record the unique
+  // changes made to .FirstWeek and .Total histogram.
+  //
+  // .FirstWeek: 1 unique change has been made, so sample 1 will have a count
+  // of 1.
+  // .Total: 1 unique change has been made, so sample 1 will have a count of 1.
+  //
+  // Other samples in the three histograms .FirstWeek, .SubsequentWeeks, and
+  // .Total should have a count of 0 since no data has been recorded to them.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/2,
       /*count=*/0);
   // This is within the first week, no data should be recorded in the
   // .SubsequentWeeks histogram
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/1,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/2,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "Total",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "Total",
       /*sample=*/2,
       /*count=*/0);
@@ -785,8 +912,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   tracker_ =
       std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
 
-  // Simulate that the user has revoked UMA consent, no data will be recorded to
-  // UMA.
+  // Simulate that the user has revoked UMA consent, no data will be recorded
+  // to UMA.
   test_metrics_service_client_->UpdateCurrentUserMetricsConsent(false);
 
   // Flip the WiFi toggle in Settings, the is a unique Setting that is changing
@@ -797,36 +924,39 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Destruct tracker_.
   tracker_.reset();
+  // The metrics provider only gets called to upload the data when the user has
+  // granted UMA consent.
 
-  // the data in the histogram does not change since the user has not consented
-  // to sharing their info to UMA.
+  // UMA consent has been revoked so no recording should take place and the
+  // histogram data should not change. the data in the histogram does not change
+  // since the user has not consented to sharing their info to UMA.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/2,
       /*count=*/0);
   // This is within the first week, no data should be recorded in the
   // .SubsequentWeeks histogram
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/1,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/2,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "Total",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "Total",
       /*sample=*/2,
       /*count=*/0);
@@ -837,9 +967,106 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
       std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
 
   // Simulate that the user has re-granted UMA consent, no data will be recorded
+  // to UMA because they have previously revoked their consent and have made a
+  // change in Settings. The data we are recording is no longer accurate so we
+  // will no longer record the data to UMA. See
+  // ::prefs::kHasEverRevokedMetricsConsent for more information.
+  test_metrics_service_client_->UpdateCurrentUserMetricsConsent(true);
+
+  // Flip the WiFi toggle in Settings, the is a unique Setting that is changing
+  // so the number of unique settings that have been changed is 1.
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  expected_set = {SettingAsIntString(Setting::kWifiOnOff)};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Destruct tracker_.
+  tracker_.reset();
+  // Simulate that metrics provider uploads the data.
+  //
+  // Trigger recording the data to the histogram. UMA consent has been revoked
+  // before, so no recording should take place and the histogram data should not
+  // change.
+  //
+  // .FirstWeek: Sample 1 will remain at count of 1.
+  // .Total: Sample 1 will remain at count of 1.
+  //
+  // Other samples in the three histograms .FirstWeek, .SubsequentWeeks, and
+  // .Total should have a count of 0 since no data has been recorded to them.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
+  // the data in the histogram does not change since the user has revoked their
+  // consent for UMA at least once in the lifetime of their device.
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
+      /*sample=*/0,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
+      /*sample=*/1,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
+      /*sample=*/2,
+      /*count=*/0);
+  // This is within the first week, no data should be recorded in the
+  // .SubsequentWeeks histogram
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "SubsequentWeeks",
+      /*sample=*/0,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "SubsequentWeeks",
+      /*sample=*/1,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "SubsequentWeeks",
+      /*sample=*/2,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "Total",
+      /*sample=*/0,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "Total",
+      /*sample=*/1,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "Total",
+      /*sample=*/2,
+      /*count=*/0);
+}
+
+TEST_F(PerSessionSettingsUserActionTrackerTest,
+       TestRecordedDataWhenUMAConsentRevokedAndRegrantedWithoutSettingsChange) {
+  // Simulate that the user has taken OOBE.
+  test_pref_service_->SetTime(::ash::prefs::kOobeOnboardingTime,
+                              base::Time::Now());
+  // Simulate the initial state, ie the user has not yet set their consent pref.
+  test_pref_service_->SetBoolean(::prefs::kHasEverRevokedMetricsConsent, false);
+
+  // Simulate that the user has granted UMA consent initially.
+  // NOTE: revoking UMA consent will clear the pref that stores the current
+  // unique settings that the user has used. Now that the consent has been
+  // granted, we will record that Settings changes to .DeviceLifetime histogram.
+  test_metrics_service_client_->UpdateCurrentUserMetricsConsent(true);
+  std::set<std::string> expected_set;
+
+  // Simulate that the user has revoked UMA consent, the function
+  // ProvideCurrentSessionData will not get called and no data will be recorded
+  // to UMA.
+  test_metrics_service_client_->UpdateCurrentUserMetricsConsent(false);
+
+  // Simulate that the user has re-granted UMA consent, no data will be recorded
   // to UMA because they have previously revoked their consent. Once a user
-  // revokes their consent, re-granting it will not result in recording of their
-  // data. See ::prefs::kHasEverRevokedMetricsConsent for more information.
+  // revokes their consent, re-granting it without making a Setting change will
+  // result in recording of their data, since we will not have any discrepancy
+  // in the data we are recording.
   test_metrics_service_client_->UpdateCurrentUserMetricsConsent(true);
 
   // Flip the WiFi toggle in Settings, the is a unique Setting that is changing
@@ -851,38 +1078,47 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   // Destruct tracker_.
   tracker_.reset();
 
+  // Simulate that metrics provider uploads the data.
+  //
+  // .FirstWeek: Sample 1 will have a count of 1
+  // .Total: Sample 1 will have a count of 1.
+  //
+  // All other samples in the three histograms .FirstWeek, .SubsequentWeeks, and
+  // .Total should have a count of 0 since no data has been recorded to them.
+  tracker_metrics_provider_->ProvideCurrentSessionData(&uma_proto_);
+
   // the data in the histogram does not change since the user has revoked their
   // consent for UMA at least once in the lifetime of their device.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
+      /*sample=*/0,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
-  histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
-      /*sample=*/2,
-      /*count=*/0);
   // This is within the first week, no data should be recorded in the
   // .SubsequentWeeks histogram
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "SubsequentWeeks",
+      /*sample=*/0,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "SubsequentWeeks",
       /*sample=*/1,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
-      "SubsequentWeeks",
-      /*sample=*/2,
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
+      "Total",
+      /*sample=*/0,
       /*count=*/0);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2."
       "Total",
       /*sample=*/1,
       /*count=*/1);
-  histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
-      "Total",
-      /*sample=*/2,
-      /*count=*/0);
 }
 
 }  // namespace ash::settings
