@@ -63,7 +63,13 @@ TEST_F(AssistiveTechnologyControllerTest, DisablesDisabledFeatures) {
 }
 
 // Enables one feature several times in a row to ensure it doesn't cause issues.
-TEST_F(AssistiveTechnologyControllerTest, EnablesEnabledFeatures) {
+// TODO(b/262637071) Fails on Fuchsia ASAN.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+#define MAYBE_EnablesEnabledFeatures DISABLED_EnablesEnabledFeatures
+#else
+#define MAYBE_EnablesEnabledFeatures EnablesEnabledFeatures
+#endif  // BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+TEST_F(AssistiveTechnologyControllerTest, MAYBE_EnablesEnabledFeatures) {
   AssistiveTechnologyControllerImpl at_controller;
   std::vector<mojom::AssistiveTechnologyType> enabled_features;
 
@@ -84,7 +90,13 @@ TEST_F(AssistiveTechnologyControllerTest, EnablesEnabledFeatures) {
 }
 
 // Toggles all features.
-TEST_F(AssistiveTechnologyControllerTest, EnableAndDisableAllFeatures) {
+// TODO(b/262637071) Fails on Fuchsia ASAN.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+#define MAYBE_EnableAndDisableAllFeatures DISABLED_EnableAndDisableAllFeatures
+#else
+#define MAYBE_EnableAndDisableAllFeatures EnableAndDisableAllFeatures
+#endif  // BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+TEST_F(AssistiveTechnologyControllerTest, MAYBE_EnableAndDisableAllFeatures) {
   AssistiveTechnologyControllerImpl at_controller;
   // Turn everything on.
   std::vector<mojom::AssistiveTechnologyType> enabled_features;
