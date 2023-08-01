@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "url/gurl.h"
+
 namespace companion {
 
 std::string GetHomepageURLForCompanion();
@@ -15,6 +17,7 @@ bool ShouldEnableOpenCompanionForImageSearch();
 bool ShouldEnableOpenCompanionForWebSearch();
 bool ShouldOpenLinksInCurrentTab();
 std::string GetExpsRegistrationSuccessPageURLs();
+bool IsSafeURLFromCompanion(const GURL& url);
 
 }  // namespace companion
 

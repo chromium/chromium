@@ -4,6 +4,7 @@
 
 #include "chrome/browser/companion/core/utils.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 
@@ -75,6 +76,25 @@ std::string GetExpsRegistrationSuccessPageURLs() {
   return base::GetFieldTrialParamValueByFeature(
       features::internal::kCompanionEnabledByObservingExpsNavigations,
       "exps-registration-success-page-urls");
+}
+
+// Checks to see if the page url is safe to open in Chrome.
+bool IsSafeURLFromCompanion(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  static constexpr auto chrome_domain_allowlists =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"chrome://settings/syncSetup"});
+  base::StringPiece url_string(url.spec());
+
+  if (!url.SchemeIsHTTPOrHTTPS() &&
+      !chrome_domain_allowlists.contains(url_string)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace companion
