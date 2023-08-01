@@ -463,13 +463,8 @@ void PrintBrowserTest::SetUpOnMainThread() {
   PrintingContext::SetPrintingContextFactoryForTest(
       &test_printing_context_factory_);
 
-  // Safe to use `base::Unretained(this)` since this testing class
-  // necessarily must outlive all interactions from the tests which will
-  // run through the printing stack using derivatives of
-  // `PrintViewManagerBase` and `PrintPreviewHandler`, which can trigger
-  // this callback.
   SetShowPrintErrorDialogForTest(base::BindRepeating(
-      &PrintBrowserTest::ShowPrintErrorDialog, base::Unretained(this)));
+      &PrintBrowserTest::ShowPrintErrorDialog, weak_factory_.GetWeakPtr()));
 
   host_resolver()->AddRule("*", "127.0.0.1");
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -605,7 +600,7 @@ void PrintBrowserTest::CreateTestPrintRenderFrame(
       frame_host, std::make_unique<TestPrintRenderFrame>(
                       frame_host, web_contents, kDefaultDocumentCookie,
                       base::BindRepeating(&PrintBrowserTest::CheckForQuit,
-                                          base::Unretained(this))));
+                                          weak_factory_.GetWeakPtr())));
   OverrideBinderForTesting(frame_host);
 }
 
