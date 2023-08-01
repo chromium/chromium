@@ -12,9 +12,12 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -210,10 +213,21 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
          GetBubble()->GetAnchorView()->GetWidget() == GetWidget();
 }
 
-void CookieControlsIconView::OnExecuting(
-    PageActionIconView::ExecuteSource source) {
+void CookieControlsIconView::ShowCookieControlsBubble() {
   bubble_coordinator_->ShowBubble(
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
+}
+
+void CookieControlsIconView::OnExecuting(
+    PageActionIconView::ExecuteSource source) {
+  ShowCookieControlsBubble();
+  Browser* const browser = chrome::FindBrowserWithWebContents(GetWebContents());
+  CHECK(browser != nullptr);
+  CHECK(browser->window() != nullptr);
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHCookieControlsFeature);
+  browser->window()->NotifyFeatureEngagementEvent(
+      feature_engagement::events::kCookieControlsBubbleShown);
   RecordOpenedActionForConfidence(confidence_);
 }
 

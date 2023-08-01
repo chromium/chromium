@@ -148,6 +148,21 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHCookieControlsFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // Show promo up to 3 times per year and only if user hasn't interacted with
+    // the cookie controls bubble in the last week.
+    config->trigger = EventConfig("iph_cookie_controls_triggered",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->used =
+        EventConfig(feature_engagement::events::kCookieControlsBubbleShown,
+                    Comparator(EQUAL, 0), 7, 7);
+    return config;
+  }
+
   if (kIPHBatterySaverModeFeature.name == feature->name) {
     // Show promo once a year when the battery saver toolbar icon is visible.
     absl::optional<FeatureConfig> config = FeatureConfig();

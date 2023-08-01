@@ -38627,6 +38627,7 @@ should be able to be added at any place in this file.
       label="For ContextualSearchWebSearch feature."/>
   <suffix name="ContextualSuggestions"
       label="For ContextualSuggestions feature."/>
+  <suffix name="CookieControls" label="For CookieControls feature."/>
   <suffix name="Crow" label="For Crow feature."/>
   <suffix name="DataSaverDetail" label="For DataSaverDetail feature."/>
   <suffix name="DataSaverMilestonePromo"

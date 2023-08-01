@@ -38,6 +38,8 @@ class CookieControlsIconView : public PageActionIconView,
       CookieControlsBreakageConfidenceLevel level) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
+  void ShowCookieControlsBubble();
+
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;

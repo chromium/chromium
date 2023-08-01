@@ -111,6 +111,8 @@ chromium-metrics-reviews@google.com.
                order to get better translations"/>
   <variant name="IPH_ContextualSearchWebSearch"
       summary="contextual search for users who use web search"/>
+  <variant name="IPH_CookieControls"
+      summary="promo for third-party cookie blocking and controls"/>
   <variant name="IPH_DataSaverDetail" summary="data saver detail"/>
   <variant name="IPH_DataSaverMilestonePromo"
       summary="data saver milestone promo"/>

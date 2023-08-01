@@ -3873,6 +3873,18 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are blocked on the current site.">
         Third-party cookies blocked
       </message>
+      <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" translateable="false" desc="">
+        Third-party cookies blocked
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_PROMO_TEXT" translateable="false" desc="">
+        If you visit a site that uses cookies, you may need to temporarily enable cookies to make all site features work.
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT" translateable="false" desc="">
+        Close
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_PROMO_SEE_HOW_BUTTON_TEXT" translateable="false" desc="">
+        See how
+      </message>
 
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">

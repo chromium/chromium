@@ -87,6 +87,9 @@ extern const char kExtensionsMenuOpenedWhileExtensionHasAccess[];
 // Th user clicked the extensions request access button in the toolbar.
 extern const char kExtensionsRequestAccessButtonClicked[];
 
+// The user has opened the cookie controls bubble.
+extern const char kCookieControlsBubbleShown[];
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

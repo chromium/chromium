@@ -326,6 +326,7 @@ DEFINE_VARIATION_PARAM(kIPHWebUiHelpBubbleTestFeature,
 DEFINE_VARIATION_PARAM(kIPHPriceTrackingInSidePanelFeature,
                        "IPH_PriceTrackingInSidePanel");
 DEFINE_VARIATION_PARAM(kIPHBackNavigationMenuFeature, "IPH_BackNavigationMenu");
+DEFINE_VARIATION_PARAM(kIPHCookieControlsFeature, "IPH_CookieControls");
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

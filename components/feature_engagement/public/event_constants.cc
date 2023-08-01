@@ -57,6 +57,8 @@ const char kExtensionsMenuOpenedWhileExtensionHasAccess[] =
 const char kExtensionsRequestAccessButtonClicked[] =
     "extensions_request_access_button_clicked";
 
+const char kCookieControlsBubbleShown[] = "cookie_controls_bubble_shown";
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

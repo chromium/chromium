@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -428,6 +431,30 @@ void MaybeRegisterChromeFeaturePromos(
       IDS_PROFILE_SWITCH_PROMO_SCREENREADER,
       FeaturePromoSpecification::AcceleratorInfo()));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // kIPHCookieControlsFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHCookieControlsFeature,
+          kCookieControlsIconElementId, IDS_COOKIE_CONTROLS_PROMO_TEXT,
+          IDS_COOKIE_CONTROLS_PROMO_SEE_HOW_BUTTON_TEXT,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* cookie_controls_icon_view =
+                    views::ElementTrackerViews::GetInstance()
+                        ->GetFirstMatchingViewAs<CookieControlsIconView>(
+                            kCookieControlsIconElementId, ctx);
+                if (cookie_controls_icon_view != nullptr) {
+                  cookie_controls_icon_view->ShowCookieControlsBubble();
+                }
+              }))
+          .SetBubbleTitleText(IDS_COOKIE_CONTROLS_PROMO_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(
+              IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT)));
 
   // kIPHReadingListDiscoveryFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
