@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -74,6 +76,14 @@ class AutofillSuggestionGenerator {
       bool& should_display_gpay_logo,
       bool& with_offer,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
+
+  // Generates suggestions for standalone CVC fields. These only apply to
+  // virtual cards that are saved on file to a merchant. In these cases,
+  // we only display the virtual card option and do not show FPAN option.
+  std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
+      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+      base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
+          virtual_card_guid_to_last_four_map);
 
   // Generates a separator suggestion.
   static Suggestion CreateSeparator();

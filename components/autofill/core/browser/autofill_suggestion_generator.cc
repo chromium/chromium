@@ -230,6 +230,44 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   return suggestions;
 }
 
+std::vector<Suggestion>
+AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+    base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
+        virtual_card_guid_to_last_four_map) {
+  // TODO(crbug.com/1453739): Refactor credit card suggestion code by moving
+  // duplicate logic to helper functions.
+  std::vector<Suggestion> suggestions;
+  std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
+      autofill_client_, /*suppress_disused_cards=*/true);
+  metadata_logging_context =
+      autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
+
+  for (const CreditCard& credit_card : cards_to_suggest) {
+    auto it = virtual_card_guid_to_last_four_map.find(credit_card.guid());
+    if (it == virtual_card_guid_to_last_four_map.end()) {
+      continue;
+    }
+    const std::u16string& virtual_card_last_four = *it->second;
+
+    Suggestion suggestion;
+    suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
+    suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
+    suggestion.payload = Suggestion::BackendId(credit_card.guid());
+    SetCardArtURL(suggestion, credit_card, /*virtual_card_option=*/true);
+    suggestion.main_text.value =
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE) +
+        u" " +
+        CreditCard::GetObfuscatedStringForCardDigits(/*obfuscation_length=*/4,
+                                                     virtual_card_last_four);
+    suggestion.labels = {
+        {Suggestion::Text(credit_card.CardNameForAutofillDisplay())}};
+    suggestions.push_back(suggestion);
+  }
+  return suggestions;
+}
+
 // static
 Suggestion AutofillSuggestionGenerator::CreateSeparator() {
   Suggestion suggestion;

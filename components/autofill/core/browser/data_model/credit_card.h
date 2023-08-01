@@ -107,6 +107,12 @@ class CreditCard : public AutofillDataModel {
   static std::unique_ptr<CreditCard> CreateVirtualCardWithGuidSuffix(
       const CreditCard& card);
 
+  // Generates a string of `obfuscation_length` bullets and appends `digits` to
+  // it.
+  static std::u16string GetObfuscatedStringForCardDigits(
+      int obfuscation_length,
+      const std::u16string& digits);
+
   CreditCard(const std::string& guid, const std::string& origin);
 
   // Creates a server card. The type must be MASKED_SERVER_CARD or

@@ -576,7 +576,7 @@ class BrowserAutofillManager : public AutofillManager,
   // have usage data on the webpage and the VCN last four was found on webpage
   // DOM.
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin& origin);
+  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin& origin) const;
 
   // If |initial_interaction_timestamp_| is unset or is set to a later time than
   // |interaction_timestamp|, updates the cached timestamp.  The latter check is

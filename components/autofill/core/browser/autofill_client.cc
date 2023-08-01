@@ -49,6 +49,10 @@ AutofillDownloadManager* AutofillClient::GetDownloadManager() {
   return nullptr;
 }
 
+const PersonalDataManager* AutofillClient::GetPersonalDataManager() const {
+  return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
+}
+
 AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
     const {
   return nullptr;

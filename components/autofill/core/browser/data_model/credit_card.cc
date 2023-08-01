@@ -128,19 +128,6 @@ std::u16string AddWhiteSpaceSeparatorForNumber(const std::u16string& number,
 
 }  // namespace
 
-namespace internal {
-
-std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
-                                                int obfuscation_length) {
-  std::u16string obfuscated_string =
-      CreditCard::GetMidlineEllipsisDots(obfuscation_length);
-  obfuscated_string.append(digits);
-  base::i18n::WrapStringWithLTRFormatting(&obfuscated_string);
-  return obfuscated_string;
-}
-
-}  // namespace internal
-
 // static
 CreditCard CreditCard::CreateVirtualCard(const CreditCard& card) {
   // Virtual cards can be created only from masked server cards.
@@ -161,6 +148,17 @@ std::unique_ptr<CreditCard> CreditCard::CreateVirtualCardWithGuidSuffix(
   // server card.
   virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
   return virtual_card;
+}
+
+// static
+std::u16string CreditCard::GetObfuscatedStringForCardDigits(
+    int obfuscation_length,
+    const std::u16string& digits) {
+  std::u16string obfuscated_string =
+      CreditCard::GetMidlineEllipsisDots(obfuscation_length);
+  obfuscated_string.append(digits);
+  base::i18n::WrapStringWithLTRFormatting(&obfuscated_string);
+  return obfuscated_string;
 }
 
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
@@ -1051,8 +1049,7 @@ std::u16string CreditCard::NetworkForDisplay() const {
 
 std::u16string CreditCard::ObfuscatedNumberWithVisibleLastFourDigits(
     int obfuscation_length) const {
-  return internal::GetObfuscatedStringForCardDigits(LastFourDigits(),
-                                                    obfuscation_length);
+  return GetObfuscatedStringForCardDigits(obfuscation_length, LastFourDigits());
 }
 
 std::u16string
@@ -1078,7 +1075,7 @@ std::u16string CreditCard::NetworkAndLastFourDigits(
 
   // TODO(estade): i18n?
   const std::u16string obfuscated_string =
-      internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
+      GetObfuscatedStringForCardDigits(obfuscation_length, digits);
   return network.empty() ? obfuscated_string
                          : network + u"  " + obfuscated_string;
 }
@@ -1093,7 +1090,7 @@ std::u16string CreditCard::CardNameAndLastFourDigits(
     return card_name;
 
   std::u16string obfuscated_last_four =
-      internal::GetObfuscatedStringForCardDigits(last_four, obfuscation_length);
+      GetObfuscatedStringForCardDigits(obfuscation_length, last_four);
   return card_name.empty()
              ? obfuscated_last_four
              : base::StrCat({card_name, u"  ", obfuscated_last_four});
@@ -1250,8 +1247,7 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
     return customized_nickname.empty() ? nickname_ : customized_nickname;
 
   return (customized_nickname.empty() ? nickname_ : customized_nickname) +
-         u"  " +
-         internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
+         u"  " + GetObfuscatedStringForCardDigits(obfuscation_length, digits);
 }
 
 void CreditCard::SetNumber(const std::u16string& number) {

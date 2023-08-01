@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -411,6 +412,28 @@ TEST_F(AutofillSuggestionGeneratorTest,
             Suggestion::BackendId("00000000-0000-0000-0000-000000000003"));
   EXPECT_EQ(suggestions[2].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
+}
+
+// Ensures we appropriately generate suggestions for virtual cards on a
+// standalone CVC field.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetSuggestionsForVirtualCardStandaloneCvc) {
+  personal_data()->ClearCreditCards();
+  CreditCard virtual_card = test::GetVirtualCard();
+  virtual_card.set_guid("1234");
+  personal_data()->AddServerCreditCard(virtual_card);
+
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      virtual_card_guid_to_last_four_map;
+  virtual_card_guid_to_last_four_map.insert(
+      {virtual_card.guid(),
+       VirtualCardUsageData::VirtualCardLastFour(u"1234")});
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  auto suggestions =
+      suggestion_generator()->GetSuggestionsForVirtualCardStandaloneCvc(
+          metadata_logging_context, virtual_card_guid_to_last_four_map);
+
+  ASSERT_EQ(suggestions.size(), 1U);
 }
 
 // Verifies that the `should_display_gpay_logo` is set correctly.
@@ -856,15 +879,16 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
   ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
-            internal::GetObfuscatedStringForCardDigits(
-                u"1111", ios_obfuscation_length()));
+            CreditCard::GetObfuscatedStringForCardDigits(
+                ios_obfuscation_length(), u"1111"));
 #else
   if (keyboard_accessory_enabled()) {
     // There should be only 1 line of label: obfuscated last 4 digits "..1111".
     ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
     ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
     EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
-              internal::GetObfuscatedStringForCardDigits(u"1111", 2));
+              CreditCard::GetObfuscatedStringForCardDigits(
+                  /*obfuscation_length=*/2, u"1111"));
   } else {
     // There should be 2 lines of labels:
     // 1. Card name + obfuscated last 4 digits "CardName  ....1111". Card name
@@ -874,7 +898,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
     ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 2U);
     EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value, u"Visa");
     EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][1].value,
-              internal::GetObfuscatedStringForCardDigits(u"1111", 4));
+              CreditCard::GetObfuscatedStringForCardDigits(
+                  /*obfuscation_length=*/4, u"1111"));
   }
 #endif
 
@@ -902,9 +927,10 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
 #if BUILDFLAG(IS_IOS)
   // Only card number is displayed on the first line.
-  EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
-            base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
-                                         u"1111", ios_obfuscation_length())}));
+  EXPECT_EQ(
+      virtual_card_number_field_suggestion.main_text.value,
+      base::StrCat({u"Visa  ", CreditCard::GetObfuscatedStringForCardDigits(
+                                   ios_obfuscation_length(), u"1111")}));
   EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value, u"");
 #else
   if (keyboard_accessory_enabled()) {
@@ -914,12 +940,14 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
     EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
               u"Virtual card  Visa");
     EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
-              internal::GetObfuscatedStringForCardDigits(u"1111", 2));
+              CreditCard::GetObfuscatedStringForCardDigits(
+                  /*obfuscation_length=*/2, u"1111"));
   } else {
     // Card name and the obfuscated last four digits are shown separately.
     EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
     EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
-              internal::GetObfuscatedStringForCardDigits(u"1111", 4));
+              CreditCard::GetObfuscatedStringForCardDigits(
+                  /*obfuscation_length=*/4, u"1111"));
   }
 #endif
 
@@ -957,15 +985,16 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
   ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
-            internal::GetObfuscatedStringForCardDigits(
-                u"1111", ios_obfuscation_length()));
+            CreditCard::GetObfuscatedStringForCardDigits(
+                ios_obfuscation_length(), u"1111"));
 #else
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, the label is "..1111".
     ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
     ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
     EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
-              internal::GetObfuscatedStringForCardDigits(u"1111", 2));
+              CreditCard::GetObfuscatedStringForCardDigits(
+                  /*obfuscation_length=*/2, u"1111"));
   } else {
     // For Desktop/Android, the label is "CardName  ....1111". Card name and
     // last four are shown separately.
@@ -973,7 +1002,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
     ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 2U);
     EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value, u"Visa");
     EXPECT_EQ(real_card_name_field_suggestion.labels[0][1].value,
-              internal::GetObfuscatedStringForCardDigits(u"1111", 4));
+              CreditCard::GetObfuscatedStringForCardDigits(
+                  /*obfuscation_length=*/4, u"1111"));
   }
 #endif
 }
@@ -993,17 +1023,19 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
 #if BUILDFLAG(IS_IOS)
   // Only the card number is displayed on the first line.
-  EXPECT_EQ(real_card_number_field_suggestion.main_text.value,
-            base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
-                                         u"1111", ios_obfuscation_length())}));
+  EXPECT_EQ(
+      real_card_number_field_suggestion.main_text.value,
+      base::StrCat({u"Visa  ", CreditCard::GetObfuscatedStringForCardDigits(
+                                   ios_obfuscation_length(), u"1111")}));
   EXPECT_EQ(real_card_number_field_suggestion.minor_text.value, u"");
 #else
   // For Desktop/Android, split the first line and populate the card name and
   // the last 4 digits separately.
   EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
   EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
-            internal::GetObfuscatedStringForCardDigits(
-                u"1111", keyboard_accessory_enabled() ? 2 : 4));
+            CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/keyboard_accessory_enabled() ? 2 : 4,
+                u"1111"));
 #endif
 
   // The label is the expiration date formatted as mm/yy.
@@ -1054,8 +1086,8 @@ TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
   ASSERT_EQ(card_name_field_suggestion.labels.size(), 1U);
   ASSERT_EQ(card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(card_name_field_suggestion.labels[0][0].value,
-            internal::GetObfuscatedStringForCardDigits(
-                u"1111", expected_obfuscation_length()));
+            CreditCard::GetObfuscatedStringForCardDigits(
+                expected_obfuscation_length(), u"1111"));
 
   // Card number field suggestion.
   Suggestion card_number_field_suggestion =
@@ -1066,8 +1098,8 @@ TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
 
   EXPECT_EQ(
       card_number_field_suggestion.main_text.value,
-      base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
-                                   u"1111", expected_obfuscation_length())}));
+      base::StrCat({u"Visa  ", CreditCard::GetObfuscatedStringForCardDigits(
+                                   expected_obfuscation_length(), u"1111")}));
 }
 
 #endif  // BUILDFLAG(IS_IOS)

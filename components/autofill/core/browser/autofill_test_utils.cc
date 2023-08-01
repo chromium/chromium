@@ -890,8 +890,8 @@ void GenerateTestAutofillPopup(
 
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,
                                        int obfuscation_length) {
-  return base::UTF16ToUTF8(internal::GetObfuscatedStringForCardDigits(
-      base::ASCIIToUTF16(str), obfuscation_length));
+  return base::UTF16ToUTF8(CreditCard::GetObfuscatedStringForCardDigits(
+      obfuscation_length, base::ASCIIToUTF16(str)));
 }
 
 std::string NextMonth() {

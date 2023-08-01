@@ -96,8 +96,8 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
       CreditCard::GetMidlineEllipsisDots(4) + digits +
       base::i18n::kPopDirectionalFormatting;
-  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
-                          digits, /*obfuscation_length=*/4));
+  EXPECT_EQ(expected, CreditCard::GetObfuscatedStringForCardDigits(
+                          /*obfuscation_length=*/4, digits));
 }
 
 // Tests credit card summary string generation.  This test simulates a variety
@@ -2060,27 +2060,27 @@ TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
   ASSERT_EQ(std::u16string(), card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
-                std::u16string(), /*obfuscation_length=*/4),
+  ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/4, std::u16string()),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
                           "2010", "1");
   ASSERT_EQ(u"3489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
-                u"3489", /*obfuscation_length=*/4),
+  ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/4, u"3489"),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
   ASSERT_EQ(u"3489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
-                u"3489", /*obfuscation_length=*/4),
+  ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/4, u"3489"),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"489");
   ASSERT_EQ(u"489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
-                u"489", /*obfuscation_length=*/4),
+  ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/4, u"489"),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
 }
 
@@ -2232,8 +2232,8 @@ TEST(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
       CreditCard::GetMidlineEllipsisDots(2) + digits +
       base::i18n::kPopDirectionalFormatting;
 
-  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
-                          digits, /*obfuscation_length=*/2));
+  EXPECT_EQ(expected, CreditCard::GetObfuscatedStringForCardDigits(
+                          /*obfuscation_length=*/2, digits));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

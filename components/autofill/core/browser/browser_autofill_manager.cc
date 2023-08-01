@@ -1384,7 +1384,13 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
   credit_card_ = credit_card ? *credit_card : CreditCard();
   bool is_preview = action != mojom::RendererFormDataAction::kFill;
-  bool should_fetch_card = !is_preview && WillFillCreditCardNumber(form, field);
+  bool is_virtual_card_standalone_cvc =
+      credit_card->record_type() == CreditCard::VIRTUAL_CARD &&
+      (autofill_field->Type().GetStorableType() ==
+       CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
+  bool should_fetch_card =
+      !is_preview &&
+      (WillFillCreditCardNumber(form, field) || is_virtual_card_standalone_cvc);
 
   if (should_fetch_card) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(
@@ -2830,9 +2836,23 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   bool with_offer = false;
   autofill_metrics::CardMetadataLoggingContext context;
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
-    suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-        field, type, app_locale_, should_display_gpay_logo, with_offer,
-        context);
+    if ((type.GetStorableType() == CREDIT_CARD_STANDALONE_VERIFICATION_CODE) &&
+        !four_digit_combinations_in_dom_.empty()) {
+      base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+          virtual_card_guid_to_last_four_map =
+              GetVirtualCreditCardsForStandaloneCvcField(field.origin);
+      if (!virtual_card_guid_to_last_four_map.empty()) {
+        suggestions =
+            suggestion_generator_->GetSuggestionsForVirtualCardStandaloneCvc(
+                context, virtual_card_guid_to_last_four_map);
+        // Always display GPay logo for virtual card suggestions.
+        should_display_gpay_logo = true;
+      }
+    } else {
+      suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
+          field, type, app_locale_, should_display_gpay_logo, with_offer,
+          context);
+    }
   }
 
   credit_card_form_event_logger_->OnDidFetchSuggestion(suggestions, with_offer,
@@ -2842,7 +2862,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
 base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
 BrowserAutofillManager::GetVirtualCreditCardsForStandaloneCvcField(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
   const std::vector<CreditCard*> cards =

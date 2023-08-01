@@ -145,8 +145,12 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // suggestions.
   has_autofill_suggestions_ = false;
   for (auto& suggestion : suggestions) {
+    // Virtual cards can appear on their own when filling the CVC for a card
+    // that a merchant has saved. This indicates there could be Autofill
+    // suggestions related to standalone CVC fields.
     if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
-        suggestion.popup_item_id == PopupItemId::kCreditCardEntry) {
+        suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||
+        suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
       has_autofill_suggestions_ = true;
       break;
     }

@@ -85,6 +85,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kCreditCard;
 
     case IBAN_VALUE:
@@ -112,7 +113,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case UPI_VPA:
-    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kNoGroup;
 
     case MAX_VALID_FIELD_TYPE:

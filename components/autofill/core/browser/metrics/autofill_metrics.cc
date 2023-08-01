@@ -380,6 +380,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
           group = GROUP_CREDIT_CARD_DATE;
           break;
         case CREDIT_CARD_VERIFICATION_CODE:
+        case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
           group = GROUP_CREDIT_CARD_VERIFICATION;
           break;
         default:
