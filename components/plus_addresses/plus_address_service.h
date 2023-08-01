@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "base/time/time.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plus_addresses {
@@ -19,11 +20,11 @@ struct PlusProfile {
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
-class PlusAddressService {
+class PlusAddressService : public KeyedService {
  public:
   // Default constructor/destructor only, for now.
   PlusAddressService();
-  ~PlusAddressService();
+  ~PlusAddressService() override;
 
   // Returns `true` when plus addresses are supported. Currently requires only
   // that the `kPlusAddressesEnabled` base::Feature is enabled.

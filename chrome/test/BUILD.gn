@@ -1458,6 +1458,7 @@ if (!is_android) {
       "//chrome/browser/notifications/scheduler/test:test_support",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/persisted_state_db",
+      "//chrome/browser/plus_addresses:browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/preloading/prerender:browser_tests",

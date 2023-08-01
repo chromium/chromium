@@ -9,8 +9,9 @@ source_set("plus_addresses") {
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
-  public_deps = [
+  deps = [
     "//base",
+    "//components/keyed_service/core",
     "//third_party/abseil-cpp:absl",
   ]
 }
