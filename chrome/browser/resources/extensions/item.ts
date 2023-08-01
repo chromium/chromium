@@ -174,9 +174,11 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   private onRemoveClick_() {
-    if (this.safetyCheckShowing && !this.data.safetyCheckText) {
-      chrome.metricsPrivate.recordUserAction(
-          'SafetyCheck.NonTriggeringExtensionRemoved');
+    if (this.safetyCheckShowing) {
+      const actionToRecord = this.data.safetyCheckText ?
+          'SafetyCheck.ReviewPanelRemoveClicked' :
+          'SafetyCheck.NonTriggeringExtensionRemoved';
+      chrome.metricsPrivate.recordUserAction(actionToRecord);
     }
     this.delegate.deleteItem(this.data.id);
   }

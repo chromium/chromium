@@ -115,6 +115,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
   delegate: ItemDelegate&ReviewItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
   private hasChangeBeenMade_: boolean;
+  private completionMetricLogged_: boolean;
   private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[];
   private headerString_: string;
   private subtitleString_: string;
@@ -152,7 +153,10 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
     const updatedUnsafeExtensions =
         this.getUnsafeExtensions_(this.extensions) || [];
     if (this.hasChangeBeenMade_ && updatedUnsafeExtensions.length === 0) {
-      chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewCompletion');
+      if (!this.completionMetricLogged_) {
+        this.completionMetricLogged_ = true;
+        chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewCompletion');
+      }
       return true;
     } else {
       return false;
@@ -166,6 +170,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
       if (!this.shouldShowUnsafeExtensions_) {
         chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewPanelShown');
       }
+      this.completionMetricLogged_ = false;
       return true;
     } else {
       return false;
