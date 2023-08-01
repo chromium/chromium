@@ -1055,6 +1055,9 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
           NotificationHandler::Type::TRANSIENT, *notification, nullptr);
 
       // Disable bulk-pinning.
+      base::UmaHistogramBoolean(
+          "FileBrowser.GoogleDrive.BulkPinning.StateWhenCacheVolumeRemoved",
+          GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled));
       GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, false);
     }
   }

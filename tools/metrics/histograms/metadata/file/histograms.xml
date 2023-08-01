@@ -612,6 +612,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FileBrowser.GoogleDrive.BulkPinning.StateWhenCacheVolumeRemoved"
+    units="BooleanEnabled" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    If the LVM cache volume was identified as having been removed, this metric
+    is emitted with the current state of bulk pinning (regardless of the state
+    it will get disabled, this just captures the state at the time).
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.Syncing.Error"
     enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-06-01">
   <owner>simmonsjosh@google.com</owner>
