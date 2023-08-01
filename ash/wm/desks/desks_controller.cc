@@ -1410,7 +1410,8 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
             }
             break;
           case chromeos::WindowStateType::kFloated: {
-            const WMEvent event(WM_EVENT_FLOAT);
+            const WindowFloatWMEvent event(
+                chromeos::FloatStartLocation::kBottomRight);
             window_state->OnWMEvent(&event);
             break;
           }

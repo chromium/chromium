@@ -134,6 +134,9 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
                   window_state->window())
             : FloatController::GetFloatWindowClamshellBounds(
                   window_state->window(),
+                  // TODO(b/292579250): Add a mechanism to float as close to the
+                  // previous bounds in the event of a workspace event. For now,
+                  // use the default float location.
                   chromeos::FloatStartLocation::kBottomRight);
     delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                    bounds, window_state->GetDisplay().id());
@@ -361,7 +364,7 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
       } else {
         CHECK(event->IsSnapEvent());
         window_state->RecordWindowSnapActionSource(
-            static_cast<const WindowSnapWMEvent*>(event)->snap_action_source());
+            event->AsSnapEvent()->snap_action_source());
       }
 
       // Get the desired window bounds for the snap state.
@@ -402,7 +405,9 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
           Shell::Get()->tablet_mode_controller()->InTabletMode()
               ? FloatController::GetFloatWindowTabletBounds(window)
               : FloatController::GetFloatWindowClamshellBounds(
-                    window, chromeos::FloatStartLocation::kBottomRight);
+                    window, event_type == WM_EVENT_FLOAT
+                                ? event->AsFloatEvent()->float_start_location()
+                                : chromeos::FloatStartLocation::kBottomRight);
 
       window_state->UpdateWindowPropertiesFromStateType();
       VLOG(1) << "Processing State Transtion: event=" << event_type

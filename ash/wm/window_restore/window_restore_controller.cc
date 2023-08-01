@@ -559,7 +559,8 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
         window_state->OnWMEvent(&snap_event);
       }
       if (*state_type == chromeos::WindowStateType::kFloated) {
-        const WMEvent float_event(WM_EVENT_FLOAT);
+        const WindowFloatWMEvent float_event(
+            chromeos::FloatStartLocation::kBottomRight);
         window_state->OnWMEvent(&float_event);
       }
     }

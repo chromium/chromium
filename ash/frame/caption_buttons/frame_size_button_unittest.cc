@@ -1034,6 +1034,36 @@ TEST_F(MultitaskMenuTest, ReversePartialButton) {
             GetWidget()->GetWindowBoundsInScreen().width());
 }
 
+// Tests that the float button is horizontally flipped when the `Alt` key is
+// pressed while the menu is shown.
+TEST_F(MultitaskMenuTest, ReverseFloatButton) {
+  const gfx::Rect work_area_bounds_in_screen =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const gfx::Rect original_bounds = window_state()->window()->bounds();
+
+  // Reverse the menu and press the float button. Test that the window is
+  // floated and is roughly on the left edge (there is some padding).
+  ShowMultitaskMenu();
+  PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
+  MultitaskMenuViewTestApi test_api(GetMultitaskMenu()->multitask_menu_view());
+  ASSERT_TRUE(test_api.GetIsReversed());
+  LeftClickOn(test_api.GetFloatButton());
+  EXPECT_EQ(WindowStateType::kFloated, window_state()->GetStateType());
+  EXPECT_EQ(
+      work_area_bounds_in_screen.x() + chromeos::wm::kFloatedWindowPaddingDp,
+      GetWidget()->GetWindowBoundsInScreen().x());
+
+  // Tests that the float button unfloats if reversed and the window is already
+  // floated.
+  ShowMultitaskMenu();
+  PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
+  MultitaskMenuViewTestApi test_api2(GetMultitaskMenu()->multitask_menu_view());
+  ASSERT_TRUE(test_api2.GetIsReversed());
+  LeftClickOn(test_api2.GetFloatButton());
+  EXPECT_EQ(WindowStateType::kNormal, window_state()->GetStateType());
+  EXPECT_EQ(original_bounds, window_state()->window()->bounds());
+}
+
 // Tests that pressing on the size button and then dragging and releasing on a
 // multitask menu button will trigger it.
 TEST_F(MultitaskMenuTest, PressOnSizeButtonReleaseOnMultitaskMenu) {

@@ -872,7 +872,8 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
   ASSERT_EQ(true, Shell::Get()->tablet_mode_controller()->InTabletMode());
 
   // Float window.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
   ApplyPendingRequestedBounds();
   state()->EnterNextState(window_state(), delegate()->new_state());
@@ -924,7 +925,8 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
   // Float window.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
   ApplyPendingRequestedBounds();
   state()->EnterNextState(window_state(), delegate()->new_state());
@@ -974,7 +976,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
   // Float window.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
   ApplyPendingRequestedBounds();
   state()->EnterNextState(window_state(), delegate()->new_state());
@@ -1044,7 +1047,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
   // Test float.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
   EXPECT_EQ(InTabletMode()
                 ? FloatController::GetFloatWindowTabletBounds(window())

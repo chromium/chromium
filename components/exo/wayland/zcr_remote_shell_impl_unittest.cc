@@ -523,14 +523,15 @@ TEST_F(WaylandRemoteShellTest, FloatSurface) {
   SetImplementation(wl_remote_surface(), /*implementation=*/nullptr,
                     std::move(shell_surface));
 
-  // Emitting float event
-  const ash::WMEvent float_event(ash::WM_EVENT_FLOAT);
+  // Emitting float event.
+  const ash::WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state->OnWMEvent(&float_event);
   ASSERT_EQ(1UL, remote_shell_requested_bounds_changes().size());
   ASSERT_EQ(remote_shell_requested_bounds_changes()[0].reason,
             ZCR_REMOTE_SURFACE_V2_BOUNDS_CHANGE_REASON_FLOAT);
 
-  // Set float state from clients
+  // Set float state from clients.
   zcr_remote_shell::remote_surface_set_float(wl_client(), wl_remote_surface());
   surface->Commit();
   EXPECT_TRUE(window_state->IsFloated());

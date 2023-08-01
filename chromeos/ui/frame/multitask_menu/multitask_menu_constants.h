@@ -8,15 +8,17 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace chromeos {
 
 constexpr gfx::Size kMultitaskButtonLandscapeSize(108, 72);
 constexpr gfx::Size kMultitaskButtonPortraitSize(72, 108);
-constexpr gfx::Insets kMultitaskBaseButtonMargin(4);
+constexpr gfx::Size kFloatPatternSize(32, 44);
 constexpr int kMultitaskBaseButtonBorderRadius = 7;
 constexpr int kButtonBorderSize = 1;
 constexpr int kButtonCornerRadius = 4;
+constexpr float kButtonPadding = 4.f;
 constexpr SkAlpha kMultitaskDefaultButtonOpacity = SK_AlphaOPAQUE * 0.21;
 constexpr SkAlpha kMultitaskHoverButtonOpacity = SK_AlphaOPAQUE * 0.40;
 constexpr SkAlpha kMultitaskHoverBackgroundOpacity = SK_AlphaOPAQUE * 0.12;

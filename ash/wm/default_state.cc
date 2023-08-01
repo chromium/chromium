@@ -439,8 +439,11 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     }
   }
 
-  EnterToNextState(window_state, next_state_type,
-                   /*float_start_location=*/absl::nullopt);
+  absl::optional<chromeos::FloatStartLocation> float_start_location =
+      event->AsFloatEvent()
+          ? absl::make_optional(event->AsFloatEvent()->float_start_location())
+          : absl::nullopt;
+  EnterToNextState(window_state, next_state_type, float_start_location);
 }
 
 bool DefaultState::SetMaximizedOrFullscreenBounds(WindowState* window_state) {
@@ -676,11 +679,14 @@ void DefaultState::UpdateBoundsFromState(
       // When a floated window is previously minimized, un-minimize will restore
       // the float state with previous floated bounds, without re-calculating
       // preferred bounds.
-      bounds_in_parent =
-          previous_state_type == WindowStateType::kMinimized
-              ? window->bounds()
-              : Shell::Get()->float_controller()->GetFloatWindowClamshellBounds(
-                    window, chromeos::FloatStartLocation::kBottomRight);
+      if (previous_state_type == WindowStateType::kMinimized) {
+        bounds_in_parent = window->bounds();
+      } else {
+        bounds_in_parent =
+            Shell::Get()->float_controller()->GetFloatWindowClamshellBounds(
+                window, float_start_location.value_or(
+                            chromeos::FloatStartLocation::kBottomRight));
+      }
       break;
     }
     case WindowStateType::kInactive:
