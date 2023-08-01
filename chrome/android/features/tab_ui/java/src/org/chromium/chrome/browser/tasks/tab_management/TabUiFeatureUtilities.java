@@ -15,7 +15,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.DoubleCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -39,11 +38,6 @@ public class TabUiFeatureUtilities {
     public static final BooleanCachedFieldTrialParameter GTS_ACCESSIBILITY_LIST_MODE =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
                     GTS_ACCESSIBILITY_LIST_MODE_PARAM, false);
-
-    public static final String THUMBNAIL_ASPECT_RATIO_PARAM = "thumbnail_aspect_ratio";
-    public static final DoubleCachedFieldTrialParameter THUMBNAIL_ASPECT_RATIO =
-            new DoubleCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, THUMBNAIL_ASPECT_RATIO_PARAM, 0.85);
 
     // Field trial parameter for the minimum physical memory size to enable zooming animation.
     private static final String MIN_MEMORY_MB_PARAM = "zooming-min-memory-mb";
@@ -172,13 +166,6 @@ public class TabUiFeatureUtilities {
     public static boolean isTabGroupsAndroidContinuationEnabled(Context context) {
         return isTabGroupsAndroidEnabled(context)
                 && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled();
-    }
-
-    /**
-     * @return Whether the thumbnail_aspect_ratio field trail is set.
-     */
-    public static boolean isTabThumbnailAspectRatioNotOne() {
-        return Double.compare(1.0, THUMBNAIL_ASPECT_RATIO.getValue()) != 0;
     }
 
     /**

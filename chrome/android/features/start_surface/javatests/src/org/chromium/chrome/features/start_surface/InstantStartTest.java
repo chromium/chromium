@@ -160,8 +160,7 @@ public class InstantStartTest {
     @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
     // clang-format off
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            "force-fieldtrial-params=Study.Group:thumbnail_aspect_ratio/2.0"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
     public void fetchThumbnailsPreNativeTest() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);

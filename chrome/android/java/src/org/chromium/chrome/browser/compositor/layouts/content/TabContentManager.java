@@ -625,11 +625,8 @@ public class TabContentManager {
                         bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             } else {
                 resized = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                        TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                                ? Math.min(bitmap.getHeight(),
-                                        (int) ((float) bitmap.getWidth()
-                                                / getTabCaptureAspectRatio()))
-                                : min(bitmap.getWidth(), bitmap.getHeight()),
+                        Math.min(bitmap.getHeight(),
+                                (int) ((float) bitmap.getWidth() / getTabCaptureAspectRatio())),
                         matrix, true);
             }
             callback.onResult(resized);

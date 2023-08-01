@@ -113,7 +113,6 @@ public class ChromeCachedFlags {
                 TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM,
                 TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY, TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
-                TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO,
                 TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR,
                 TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE,
                 TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,

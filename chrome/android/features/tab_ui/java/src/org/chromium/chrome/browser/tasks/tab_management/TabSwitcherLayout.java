@@ -483,11 +483,10 @@ public class TabSwitcherLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT, sourceLayoutTab.getUnclampedOriginalContentHeight(),
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne() ? Math.min(getWidth()
+                Math.min(getWidth()
                                 / TabUtils.getTabThumbnailAspectRatio(
                                         getContext(), mBrowserControlsStateProvider),
-                        sourceLayoutTab.getUnclampedOriginalContentHeight())
-                                                                        : getWidth(),
+                        sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
         CompositorAnimator backgroundAlpha =
@@ -553,11 +552,10 @@ public class TabSwitcherLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT,
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne() ? Math.min(getWidth()
+                Math.min(getWidth()
                                 / TabUtils.getTabThumbnailAspectRatio(
                                         getContext(), mBrowserControlsStateProvider),
-                        sourceLayoutTab.getUnclampedOriginalContentHeight())
-                                                                        : getWidth(),
+                        sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
