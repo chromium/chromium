@@ -3052,6 +3052,16 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     return;
   }
 
+  // Mock objects are created by, owned and dependent on their parents.
+  // If the mock object's values change, recompute the parent's as well.
+  // Note: The only remaining use of mock objects is AXMenuListPopup.
+  // TODO(accessibility) Remove this when we remove AXMenuList* and create the
+  // AX hierarchy for <select> from the shadow dom instead.
+  if (IsMockObject()) {
+    DCHECK(parent_);
+    parent_->UpdateCachedAttributeValuesIfNeeded();
+  }
+
   if (!cached_values_need_update_) {
     return;
   }
@@ -3076,18 +3086,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   if (IsMissingParent())
     RepairMissingParent();
-
-  // Mock objects are created by, owned and dependent on their parents.
-  // If the mock object's values change, recompute the parent's as well.
-  // Note: The only remaining use of mock objects is AXMenuListPopup.
-  // TODO(accessibility) Remove this when we remove AXMenuList* and create the
-  // AX hierarchy for <select> from the shadow dom instead.
-  // TODO(accessibility) Can this be fixed by instead invalidating the parent
-  // when invalidating the child?
-  if (IsMockObject()) {
-    DCHECK(parent_);
-    parent_->UpdateCachedAttributeValuesIfNeeded();
-  }
 
   const ComputedStyle* style = GetComputedStyle();
 
@@ -3216,7 +3214,10 @@ bool AXObject::ComputeAccessibilityIsIgnored(
 
 bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  DCHECK(!cached_values_need_update_);
+  DCHECK(!cached_values_need_update_)
+      << "Tried to compute ignored value without up-to-date hidden/inert "
+         "values on "
+      << GetNode();
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
@@ -5678,6 +5679,14 @@ void AXObject::SetNeedsToUpdateChildren() const {
   DCHECK(!AXObjectCache().IsFrozen());
   DCHECK(!AXObjectCache().HasBeenDisposed());
   if (children_dirty_) {
+#if DCHECK_IS_ON()
+    // Make sure cached included parent has dirty descendants flag set.
+    AXObject* ancestor = CachedParentObject();
+    while (ancestor && !ancestor->LastKnownIsIncludedInTreeValue()) {
+      ancestor = ancestor->CachedParentObject();
+    }
+    DCHECK(!ancestor || ancestor->HasDirtyDescendants());
+#endif
     return;
   }
   children_dirty_ = true;

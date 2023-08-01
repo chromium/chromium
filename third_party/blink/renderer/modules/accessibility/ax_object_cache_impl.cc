@@ -1338,6 +1338,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
          DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle "
       << GetDocument().Lifecycle().ToString();
+  DCHECK(!has_been_disposed_);
 #endif  // DCHECK_IS_ON()
 
   // Determine the type of accessibility object to be created.
@@ -1398,6 +1399,8 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
       return nullptr;
     }
   }
+
+  DCHECK(!IsFrozen()) << "Can't create AXObject while tree is frozen: " << node;
 
   AXID axid = GenerateAXID();
   DCHECK(objects_.find(axid) == objects_.end());
@@ -1554,6 +1557,8 @@ void AXObjectCacheImpl::Remove(AXObject* object, bool notify_parent) {
 // - When layout for a subtree is detached, it is called on layout objects,
 //   starting with leaves and moving upward, ending with the subtree root.
 void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
+  DCHECK(!IsFrozen());
+
   if (!ax_id)
     return;
 
@@ -1798,12 +1803,14 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
     return;
   }
 
-  // Remove children found through flat traversal.
-  for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
-       child_node;
-       child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
-    RemoveSubtreeWithFlatTraversal(child_node, /* remove_root */ true,
-                                   /* notify_parent */ false);
+  if (!IsA<ShadowRoot>(node)) {
+    // Remove children found through flat traversal.
+    for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
+         child_node;
+         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+      RemoveSubtreeWithFlatTraversal(child_node, /* remove_root */ true,
+                                     /* notify_parent */ false);
+    }
   }
 
   if (!object) {
@@ -3202,17 +3209,19 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
   Node* node = tree_update->node;
   DCHECK(node);
 
-  if (AXObject* ax_object = Get(node)) {
-    if (!AXObject::IsConnectedIncludingShadowHosts(tree_update->node)) {
-      return;
-    }
-    // Update cached attributes for all changed nodes before serialization,
-    // because updating ignored/included can cause tree structure changes, and
-    // the tree structure needs to be stable before serialization begins.
-    ax_object->UpdateCachedAttributeValuesIfNeeded();
-    if (ax_object->IsDetached()) {
-      return;
-    }
+  if (!AXObject::IsConnectedIncludingShadowHosts(tree_update->node)) {
+    return;
+  }
+
+  AXObject* ax_object = GetOrCreate(tree_update->node);
+  if (!ax_object) {
+    return;
+  }
+  DCHECK(!ax_object->IsDetached());
+
+  ax_object->UpdateCachedAttributeValuesIfNeeded();
+  if (ax_object->IsDetached()) {
+    return;
   }
 
   switch (tree_update->update_reason) {
