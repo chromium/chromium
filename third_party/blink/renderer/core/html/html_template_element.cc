@@ -47,7 +47,7 @@ HTMLTemplateElement::HTMLTemplateElement(Document& document)
 HTMLTemplateElement::~HTMLTemplateElement() = default;
 
 DocumentFragment* HTMLTemplateElement::ContentInternal() const {
-  DCHECK(!declarative_shadow_root_);
+  CHECK(!declarative_shadow_root_);
   if (!content_ && GetExecutionContext())
     content_ = MakeGarbageCollected<TemplateContentDocumentFragment>(
         GetDocument().EnsureTemplateDocument(),
@@ -57,12 +57,12 @@ DocumentFragment* HTMLTemplateElement::ContentInternal() const {
 }
 
 DocumentFragment* HTMLTemplateElement::content() const {
-  DCHECK(!declarative_shadow_root_);
+  CHECK(!declarative_shadow_root_);
   return IsDeclarativeShadowRoot() ? nullptr : ContentInternal();
 }
 
 DocumentFragment* HTMLTemplateElement::DeclarativeShadowContent() const {
-  DCHECK(IsNonStreamingDeclarativeShadowRoot());
+  CHECK(IsNonStreamingDeclarativeShadowRoot());
   return IsDeclarativeShadowRoot() ? ContentInternal() : nullptr;
 }
 
