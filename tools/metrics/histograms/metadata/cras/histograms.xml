@@ -733,13 +733,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cras.StreamConnectError" enum="CrasStreamConnectError"
-    expires_after="2023-03-26">
+<histogram name="Cras.StreamConnectStatus" enum="CrasStreamConnectStatus"
+    expires_after="2024-08-01">
+  <owner>yuhsuan@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
-    Record the errors happen when CRAS server handles the client requests to
-    connect new streams.
+    Record the status when CRAS server handles the client requests to connect
+    new streams.
   </summary>
 </histogram>
 

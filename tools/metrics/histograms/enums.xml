@@ -22109,25 +22109,26 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="CRAS_STREAM_ADD_OTHER_ERR">Other errors.</int>
 </enum>
 
-<enum name="CrasStreamConnectError">
+<enum name="CrasStreamConnectStatus">
   <summary>
-    List of errors could thrown when client requests to connect a stream to
-    CRAS. Cras side definition in
+    List of status when client requests to connect a stream to CRAS. Cras side
+    definition in
     https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
   </summary>
-  <int value="0" label="CRAS_STREAM_CONN_INVALID_FORMAT">
+  <int value="0" label="CRAS_STREAM_CONN_SUCCESS"/>
+  <int value="1" label="CRAS_STREAM_CONN_INVALID_FORMAT">
     The requested format is invalid.
   </int>
-  <int value="1" label="CRAS_STREAM_CONN_INVALID_SHM_SIZE">
+  <int value="2" label="CRAS_STREAM_CONN_INVALID_SHM_SIZE">
     The shared memory size is invalid.
   </int>
-  <int value="2" label="CRAS_STREAM_CONN_INVALID_SHM_FDS">
+  <int value="3" label="CRAS_STREAM_CONN_INVALID_SHM_FDS">
     Fails to get shm fds.
   </int>
-  <int value="3" label="CRAS_STREAM_CONN_ADD_FAIL">
+  <int value="4" label="CRAS_STREAM_CONN_ADD_FAIL">
     Fails to add stream to stream_list at CRAS server side.
   </int>
-  <int value="4" label="CRAS_STREAM_CONN_REPLY_FAIL">
+  <int value="5" label="CRAS_STREAM_CONN_REPLY_FAIL">
     Fails to send reply to CRAS client.
   </int>
 </enum>
