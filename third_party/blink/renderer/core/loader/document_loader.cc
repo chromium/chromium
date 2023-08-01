@@ -151,6 +151,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
@@ -1910,12 +1911,26 @@ void DocumentLoader::DidCommitNavigation() {
   if (commit_reason_ != CommitReason::kRegular)
     return;
 
+  // When committing a new document, the FrameScheduler might need to carry over
+  // the previous document's FrameScheduler's `unreported_task_time()`, as that
+  // value should be aggregated across all documents that ever committed in the
+  // same frame.
+  base::TimeDelta previous_document_unreported_task_time =
+      static_cast<scheduler::FrameSchedulerImpl*>(frame_->GetFrameScheduler())
+          ->unreported_task_time();
+  if (OldDocumentInfoForCommit* old_document_info =
+          ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()) {
+    previous_document_unreported_task_time =
+        old_document_info->frame_scheduler_unreported_task_time;
+  }
   WebHistoryCommitType commit_type = LoadTypeToCommitType(load_type_);
   frame_->GetFrameScheduler()->DidCommitProvisionalLoad(
       commit_type == kWebHistoryInertCommit,
       load_type_ == WebFrameLoadType::kReload
           ? FrameScheduler::NavigationType::kReload
-          : FrameScheduler::NavigationType::kOther);
+          : FrameScheduler::NavigationType::kOther,
+      {previous_document_unreported_task_time});
+
   if (response_.CacheControlContainsNoCache()) {
     GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
         SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,

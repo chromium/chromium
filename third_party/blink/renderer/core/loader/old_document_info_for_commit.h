@@ -30,6 +30,9 @@ struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
   // Whether the previous document in the frame had sticky activation before
   // the commit.
   bool had_sticky_activation_before_navigation = false;
+  // The `unreported_task_time` accumulated by the FrameSchedulerImpl, which
+  // needs to be carried over in case of subframe navigations.
+  base::TimeDelta frame_scheduler_unreported_task_time;
 };
 
 // Owns the OldDocumentInfoForCommit and exposes it through `info_`

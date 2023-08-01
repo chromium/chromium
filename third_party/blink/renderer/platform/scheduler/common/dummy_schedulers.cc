@@ -101,8 +101,9 @@ class DummyFrameScheduler : public FrameScheduler {
     return WebScopedVirtualTimePauser();
   }
   void DidStartProvisionalLoad() override {}
-  void DidCommitProvisionalLoad(bool, FrameScheduler::NavigationType) override {
-  }
+  void DidCommitProvisionalLoad(bool,
+                                FrameScheduler::NavigationType,
+                                DidCommitProvisionalLoadParams) override {}
   void OnFirstContentfulPaintInMainFrame() override {}
   void OnFirstMeaningfulPaint() override {}
   void OnMainFrameInteractive() override {}

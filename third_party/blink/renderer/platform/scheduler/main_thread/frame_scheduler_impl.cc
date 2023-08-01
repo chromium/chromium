@@ -333,10 +333,10 @@ void FrameSchedulerImpl::AddTaskTime(base::TimeDelta time) {
       base::Milliseconds(100);
   if (!delegate_)
     return;
-  task_time_ += time;
-  if (task_time_ >= kTaskDurationSendThreshold) {
-    delegate_->UpdateTaskTime(task_time_);
-    task_time_ = base::TimeDelta();
+  unreported_task_time_ += time;
+  if (unreported_task_time_ >= kTaskDurationSendThreshold) {
+    delegate_->UpdateTaskTime(unreported_task_time_);
+    unreported_task_time_ = base::TimeDelta();
   }
 }
 
@@ -562,7 +562,8 @@ void FrameSchedulerImpl::DidStartProvisionalLoad() {
 
 void FrameSchedulerImpl::DidCommitProvisionalLoad(
     bool is_web_history_inert_commit,
-    NavigationType navigation_type) {
+    NavigationType navigation_type,
+    DidCommitProvisionalLoadParams params) {
   bool is_outermost_main_frame =
       GetFrameType() == FrameType::kMainFrame && !is_in_embedded_frame_tree_;
   bool is_same_document = navigation_type == NavigationType::kSameDocument;
@@ -573,7 +574,9 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
   }
 
   if (is_outermost_main_frame && !is_same_document) {
-    task_time_ = base::TimeDelta();
+    unreported_task_time_ = base::TimeDelta();
+  } else {
+    unreported_task_time_ = params.previous_document_unreported_task_time;
   }
 
   main_thread_scheduler_->DidCommitProvisionalLoad(

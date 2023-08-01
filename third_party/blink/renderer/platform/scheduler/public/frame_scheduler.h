@@ -121,10 +121,20 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   virtual void DidStartProvisionalLoad() = 0;
 
   // Tells the scheduler that a provisional load has committed, the scheduler
-  // may reset the task cost estimators and the UserModel. Must be called from
-  // the main thread.
-  virtual void DidCommitProvisionalLoad(bool is_web_history_inert_commit,
-                                        NavigationType navigation_type) = 0;
+  // may reset the task cost estimators and the UserModel.
+  // `DidCommitProvisionalLoadParams` contains information from the old
+  // FrameScheduler that this one's replacing (if it exists) that the new one
+  // might carry over, e.g. the unreported task time, which is aggregated
+  // per-frame and thus needs to be carried over after cross-document
+  // navigations.
+  // Must be called from the main thread.
+  struct DidCommitProvisionalLoadParams {
+    base::TimeDelta previous_document_unreported_task_time;
+  };
+  virtual void DidCommitProvisionalLoad(
+      bool is_web_history_inert_commit,
+      NavigationType navigation_type,
+      DidCommitProvisionalLoadParams params = {base::TimeDelta()}) = 0;
 
   // Tells the scheduler that the first contentful paint has occurred for this
   // frame. Only for main frames.
