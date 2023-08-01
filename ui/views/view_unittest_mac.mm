@@ -11,10 +11,6 @@
 #include "ui/events/gesture_event_details.h"
 #include "ui/views/test/widget_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // We can't create NSEventTypeSwipe using normal means, and rely on duck typing
 // instead.
 @interface FakeSwipeEvent : NSEvent

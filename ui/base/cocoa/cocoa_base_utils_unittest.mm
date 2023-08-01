@@ -13,10 +13,6 @@
 #include "ui/events/event_constants.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // We provide a donor class with a specially modified |modifierFlags|
 // implementation that we swap with NSEvent's. This is because we can't create a
 // NSEvent that represents a middle click with modifiers.

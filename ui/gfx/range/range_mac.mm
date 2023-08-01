@@ -11,10 +11,6 @@
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace gfx {
 
 Range::Range(const NSRange& range) {

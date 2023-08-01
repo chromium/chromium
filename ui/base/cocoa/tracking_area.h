@@ -9,10 +9,6 @@
 
 #include "base/component_export.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The CrTrackingArea can be used in place of an NSTrackingArea to shut off
 // messaging to the |owner| at a specific point in time.
 COMPONENT_EXPORT(UI_BASE)

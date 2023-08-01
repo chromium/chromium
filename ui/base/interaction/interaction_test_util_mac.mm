@@ -9,10 +9,6 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/models/menu_model.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui::test {
 
 InteractionTestUtilSimulatorMac::InteractionTestUtilSimulatorMac() = default;

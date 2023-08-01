@@ -7,10 +7,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/cocoa_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using ViewTreeValidatorTest = ui::CocoaTest;
 
 namespace {

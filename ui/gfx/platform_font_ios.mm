@@ -18,10 +18,6 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/ios/NSString+CrStringDrawing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace gfx {
 
 #if BUILDFLAG(USE_BLINK)

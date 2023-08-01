@@ -9,10 +9,6 @@
 #include "ui/base/cocoa/base_view.h"
 #import "ui/base/test/cocoa_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class BaseViewTest : public ui::CocoaTest {

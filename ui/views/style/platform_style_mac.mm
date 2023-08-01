@@ -13,10 +13,6 @@
 #include "ui/views/controls/button/label_button.h"
 #import "ui/views/controls/scrollbar/cocoa_scroll_bar.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 extern "C" {
 // From CFString private headers.
 typedef CF_ENUM(CFIndex, CFStringCharacterClusterType) {

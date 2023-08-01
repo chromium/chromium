@@ -12,10 +12,6 @@
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/platform_font_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Max visual tooltip width in DIPs. Beyond this, Cocoa will wrap text.

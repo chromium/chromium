@@ -23,10 +23,6 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CrPasteboardItemWrapper : NSObject <NSPasteboardWriting>
 - (instancetype)initWithPasteboardItem:(NSPasteboardItem*)pasteboardItem;
 @end

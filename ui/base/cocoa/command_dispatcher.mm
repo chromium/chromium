@@ -10,10 +10,6 @@
 #include "base/trace_event/trace_event.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Expose -[NSWindow hasKeyAppearance], which determines whether the traffic
 // lights on the window are "lit". CommandDispatcher uses this property on a
 // parent window to decide whether keys and commands should bubble up.

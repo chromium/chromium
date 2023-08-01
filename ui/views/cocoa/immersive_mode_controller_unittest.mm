@@ -16,10 +16,6 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #import "ui/base/test/cocoa_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const double kBrowserHeight = 200;
 const double kBrowserWidth = 400;

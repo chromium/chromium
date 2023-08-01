@@ -13,10 +13,6 @@
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui {
 
 // static

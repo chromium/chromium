@@ -7,10 +7,6 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace views {
 
 // static

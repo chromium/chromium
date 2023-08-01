@@ -19,10 +19,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // AcceleratedTestView provides an NSView class that delegates drawing to a
 // ui::Compositor delegate, setting up the NSOpenGLContext as required.
 @interface AcceleratedTestView : NSView {

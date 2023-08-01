@@ -13,10 +13,6 @@
 #import "testing/platform_test.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const int kTestWidth = 320;
 const int kTestHeight = 200;
 

@@ -19,10 +19,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // error: 'accessibilityAttributeNames' is deprecated: first deprecated in
 // macOS 10.10 - Use the NSAccessibility protocol methods instead (see
 // NSAccessibilityProtocols.h

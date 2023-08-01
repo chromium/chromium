@@ -14,10 +14,6 @@
 #include "base/notreached.h"
 #include "ui/gfx/animation/tween.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The window animations in this file use private APIs as described here:
 // https://github.com/MarkVillacampa/undocumented-goodness/blob/master/CoreGraphics/CGSPrivate.h
 // There are two important things to keep in mind when modifying this file:

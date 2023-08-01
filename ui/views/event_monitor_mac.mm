@@ -17,10 +17,6 @@
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace views {
 
 // static

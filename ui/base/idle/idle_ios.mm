@@ -9,10 +9,6 @@
 #include "base/notreached.h"
 #include "ui/base/idle/idle_internal.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface IOSScreenMonitor : NSObject
 
 @property(readonly, nonatomic, getter=isAppInBackground) BOOL appInBackground;

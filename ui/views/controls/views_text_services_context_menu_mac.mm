@@ -18,10 +18,6 @@
 #include "ui/views/controls/views_text_services_context_menu_base.h"
 #include "ui/views/widget/widget.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace views {
 
 namespace {

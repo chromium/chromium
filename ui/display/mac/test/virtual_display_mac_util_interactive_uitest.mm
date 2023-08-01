@@ -9,10 +9,6 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/size.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
  public:
   VirtualDisplayMacUtilInteractiveUitest(

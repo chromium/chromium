@@ -8,10 +8,6 @@
 
 #import "ui/base/test/cocoa_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This class runs an animation for exactly two frames then end it.
 @interface ConstrainedWindowAnimationTestDelegate
     : NSObject<NSAnimationDelegate> {

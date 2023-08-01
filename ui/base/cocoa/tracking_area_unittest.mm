@@ -5,10 +5,6 @@
 #import "ui/base/cocoa/tracking_area.h"
 #import "ui/base/test/cocoa_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A test object that counts the number of times a message is sent to it.
 @interface TestTrackingAreaOwner : NSObject {
  @private

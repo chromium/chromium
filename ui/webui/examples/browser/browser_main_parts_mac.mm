@@ -11,10 +11,6 @@
 #include "ui/webui/examples/browser/browser_main_parts.h"
 #import "ui/webui/examples/browser/ui/cocoa/content_ns_window.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace webui_examples {
 
 class BrowserMainPartsMac : public BrowserMainParts {

@@ -25,10 +25,6 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface RedView : NSView
 @end
 @implementation RedView

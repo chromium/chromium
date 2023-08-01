@@ -24,10 +24,6 @@
 #include "testing/platform_test.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #define EXPECT_EQ_BOOL(a, b) \
   EXPECT_EQ(static_cast<bool>(a), static_cast<bool>(b))
 

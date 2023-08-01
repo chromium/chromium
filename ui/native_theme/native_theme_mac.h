@@ -11,10 +11,6 @@
 #include "ui/native_theme/native_theme_base.h"
 #include "ui/native_theme/native_theme_export.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class NativeThemeEffectiveAppearanceObserver;
 
 namespace ui {

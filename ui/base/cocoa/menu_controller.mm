@@ -22,10 +22,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Called when an empty submenu is created. This inserts a menu item labeled

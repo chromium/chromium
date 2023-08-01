@@ -11,10 +11,6 @@
 #include "base/check.h"
 #include "ui/gfx/ios/uikit_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation NSString (CrStringDrawing)
 
 - (CGRect)cr_boundingRectWithSize:(CGSize)size

@@ -7,10 +7,6 @@
 #include "base/check.h"
 #import "ui/base/cocoa/nsmenuitem_additions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 void (^g_pre_search_block)(void);

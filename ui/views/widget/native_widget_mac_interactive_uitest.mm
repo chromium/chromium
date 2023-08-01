@@ -18,10 +18,6 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace views::test {
 
 // Tests for NativeWidgetMac that rely on global window manager state, and can

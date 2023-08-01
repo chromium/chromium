@@ -11,10 +11,6 @@
 #include <utility>
 #include <vector>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"

@@ -11,10 +11,6 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/base/cocoa/animation_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui {
 
 CALayerTreeCoordinator::CALayerTreeCoordinator(

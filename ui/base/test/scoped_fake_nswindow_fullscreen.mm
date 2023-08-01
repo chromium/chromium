@@ -14,10 +14,6 @@
 #include "base/task/current_thread.h"
 #include "ui/base/cocoa/nswindow_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui::test {
 
 ScopedFakeNSWindowFullscreen::ScopedFakeNSWindowFullscreen() {

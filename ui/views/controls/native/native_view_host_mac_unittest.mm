@@ -17,10 +17,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class TestViewsHostable : public ui::ViewsHostableView {
  public:
   id parent_accessibility_element() const {

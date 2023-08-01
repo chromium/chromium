@@ -16,10 +16,6 @@
 #import <UIKit/UIKit.h>
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace gfx::test {
 
 // The |x| and |y| coordinates are interpreted as scale-independent on the Mac

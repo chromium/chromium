@@ -8,10 +8,6 @@
 #include "ui/gfx/image/image_util.h"
 #include "ui/gfx/image/resize_image_dimensions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Copied from GTMUIImage+Resize in //third_party/google_toolbox_for_mac to
 // avoid depending on other GTM* classes unnecessarily.

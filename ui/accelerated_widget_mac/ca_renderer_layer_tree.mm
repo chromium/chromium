@@ -29,10 +29,6 @@
 #include "ui/gfx/hdr_metadata_mac.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui {
 
 // Transitioning between AVSampleBufferDisplayLayer and CALayer with IOSurface

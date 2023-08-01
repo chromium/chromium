@@ -9,10 +9,6 @@
 #include "base/check_op.h"
 #include "base/mac/scoped_cftyperef.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Used to protect from out-of-order calls to enabling/disabling functions.

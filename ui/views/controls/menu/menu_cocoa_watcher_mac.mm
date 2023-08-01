@@ -13,10 +13,6 @@
 namespace views {
 namespace {
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Returns the global notification filter.
 MacNotificationFilter& NotificationFilterInternal() {
   static MacNotificationFilter filter =

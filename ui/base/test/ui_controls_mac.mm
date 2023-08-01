@@ -20,10 +20,6 @@
 #include "ui/gfx/geometry/point.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Implementation details: We use [NSApplication sendEvent:] instead
 // of [NSApplication postEvent:atStart:] so that the event gets sent
 // immediately.  This lets us run the post-event task right

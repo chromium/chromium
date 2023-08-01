@@ -10,10 +10,6 @@
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Simple test view that counts calls to -[NSView mouseDown:].
 @interface CocoaMouseCaptureTestView : NSView
 @property(readonly, nonatomic) int mouseDownCount;
