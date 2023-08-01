@@ -832,7 +832,7 @@ void PaintArtifactCompositor::Update(
   CHECK(painted_scroll_translations_.empty());
 
   // Make compositing decisions, storing the result in |pending_layers_|.
-  CollectPendingLayers(std::move(artifact));
+  CollectPendingLayers(artifact);
   PendingLayer::DecompositeTransforms(pending_layers_);
 
   LayerListBuilder layer_list_builder;
@@ -961,6 +961,15 @@ void PaintArtifactCompositor::Update(
   needs_update_ = false;
 
   g_s_property_tree_sequence_number++;
+
+  if (RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled()) {
+    // For information about |sequence_number|, see:
+    // PaintPropertyNode::changed_sequence_number_|;
+    for (auto& chunk : artifact->PaintChunks()) {
+      chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
+          g_s_property_tree_sequence_number);
+    }
+  }
 
   DVLOG(2) << "PaintArtifactCompositor::Update() done\n"
            << "Composited layers:\n"
@@ -1280,6 +1289,7 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
 }
 
 void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
+  CHECK(!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled());
   // For information about |sequence_number|, see:
   // PaintPropertyNode::changed_sequence_number_|;
   static int changed_sequence_number = 1;

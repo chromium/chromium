@@ -158,7 +158,10 @@ class PaintArtifactCompositorTest : public testing::Test,
   }
 
   void ClearPropertyTreeChangedState() {
-    paint_artifact_compositor_->ClearPropertyTreeChangedState();
+    if (!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled()) {
+      paint_artifact_compositor_->ClearPropertyTreeChangedState();
+    }
+    // Otherwise PaintArtifactCompositor::Update() clears the changed state.
   }
 
   void WillBeRemovedFromFrame() {
