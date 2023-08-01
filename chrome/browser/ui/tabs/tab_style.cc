@@ -23,10 +23,9 @@ constexpr int kChromeRefreshSeparatorHeight = 16;
 // TODO (crbug.com/1451400): This constant should be in LayoutConstants.
 constexpr int kChromeRefreshTabHeight = 34;
 
-// TODO (crbug.com/1451400): This constant should be in LayoutConstants.
-// Size in dips of the extension of the frame grab area into inactive tabs.
-// The value of 6 matches the value in GM2 (for non-touch - touch was 7).
-constexpr int kChromeRefreshDragHandleExtension = 6;
+// The padding from the top of the tab to the content area.
+constexpr int kChromeRefreshTabVerticalPadding = 6;
+constexpr int kChromeRefreshTabHorizontalPadding = 8;
 
 class GM2TabStyle : public TabStyle {
  public:
@@ -232,12 +231,16 @@ gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
 }
 
 gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets() const {
-  return gfx::Insets::TLBR(6, GetBottomCornerRadius() + 8, 12,
-                           GetBottomCornerRadius() + 8);
+  return gfx::Insets::TLBR(
+      kChromeRefreshTabVerticalPadding,
+      GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding,
+      kChromeRefreshTabVerticalPadding + GetLayoutConstant(TAB_STRIP_PADDING),
+      GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding);
 }
 
 gfx::Insets ChromeRefresh2023TabStyle::GetSeparatorMargins() const {
-  return gfx::Insets::TLBR(0, kChromeRefreshSeparatorHorizontalMargin, 6,
+  return gfx::Insets::TLBR(0, kChromeRefreshSeparatorHorizontalMargin,
+                           GetLayoutConstant(TAB_STRIP_PADDING),
                            kChromeRefreshSeparatorHorizontalMargin);
 }
 
@@ -246,7 +249,7 @@ int ChromeRefresh2023TabStyle::GetSeparatorCornerRadius() const {
 }
 
 int ChromeRefresh2023TabStyle::GetDragHandleExtension(int height) const {
-  return kChromeRefreshDragHandleExtension;
+  return 6;
 }
 
 SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(

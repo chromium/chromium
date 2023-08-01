@@ -1138,7 +1138,6 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
       path_type == TabStyle::PathType::kInteriorClip) {
     // TODO (crbug.com/1451400): This constant should be unified with
     // kCRtabstripRegionViewControlPadding in tab_strip_region_view.
-    constexpr int kChromeRefreshDetachedTabBottomPadding = 6;
 
     gfx::RectF aligned_bounds =
         ScaleAndAlignBounds(tab()->bounds(), scale, stroke_thickness);
@@ -1155,7 +1154,7 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
     // interior clip needs to extend the entire height of the toolbar to support
     // this. Detached tab shapes do not need to respect this.
     if (path_type != TabStyle::PathType::kInteriorClip) {
-      tab_height -= kChromeRefreshDetachedTabBottomPadding * scale;
+      tab_height -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
     }
 
     int left = aligned_bounds.x() + extension_corner_radius;

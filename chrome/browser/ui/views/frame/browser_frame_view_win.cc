@@ -72,8 +72,6 @@ constexpr int kMaximizedLeftMargin = 2;
 
 constexpr int kIconTitleSpacing = 5;
 
-constexpr int kCR23TopAreaHeight = 6;
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -520,7 +518,9 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
 
 int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
   if (frame()->IsFullscreen() && !restored) {
-    return features::IsChromeRefresh2023() ? kCR23TopAreaHeight : 0;
+    return features::IsChromeRefresh2023()
+               ? GetLayoutConstant(TAB_STRIP_PADDING)
+               : 0;
   }
 
   const bool maximized = IsMaximized() && !restored;
@@ -535,7 +535,7 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
   }
 
   if (features::IsChromeRefresh2023()) {
-    return top + kCR23TopAreaHeight;
+    return top + GetLayoutConstant(TAB_STRIP_PADDING);
   }
 
   // In maximized mode, we do not add any additional thickness to the grab

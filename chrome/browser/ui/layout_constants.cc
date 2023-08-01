@@ -92,6 +92,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 24 : 16;
     case TAB_HEIGHT:
       return (touch_ui ? 41 : 34) + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+    case TAB_STRIP_PADDING:
+      return 6;
     case TAB_SEPARATOR_HEIGHT:
       // TODO (crbug.com/1451400): ChromeRefresh2023 needs different values for
       // this constant.

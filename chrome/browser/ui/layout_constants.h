@@ -107,6 +107,10 @@ enum LayoutConstant {
   // drawn as a 1-px line flush with the bottom of the tab's topmost DIP.
   TAB_HEIGHT,
 
+  // The padding value shared between the area above the tab, the bottom of the
+  // detached tab, and on all sides of the controls padding.
+  TAB_STRIP_PADDING,
+
   // The height of a separator in the tabstrip.
   TAB_SEPARATOR_HEIGHT,
 

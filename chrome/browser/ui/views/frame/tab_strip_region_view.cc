@@ -49,10 +49,6 @@
 
 namespace {
 
-// TODO (1451400): This const should replace
-// TABSTRIP_REGION_VIEW_CONTROL_PADDING once ChromeRefresh launched.
-constexpr int kCRtabstripRegionViewControlPadding = 6;
-
 class FrameGrabHandle : public views::View {
  public:
   METADATA_HEADER(FrameGrabHandle);
@@ -190,9 +186,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       tab_search_button_->SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(0, 0,
-                            kCRtabstripRegionViewControlPadding +
+                            GetLayoutConstant(TAB_STRIP_PADDING) +
                                 GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
-                            kCRtabstripRegionViewControlPadding));
+                            GetLayoutConstant(TAB_STRIP_PADDING)));
     } else {
       const auto control_padding = gfx::Insets::TLBR(
           0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING));
@@ -214,7 +210,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       layout_manager_->SetChildViewIgnoredByLayout(new_tab_button_, true);
 
       tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
-                               kCRtabstripRegionViewControlPadding;
+                               GetLayoutConstant(TAB_STRIP_PADDING);
     } else {
       UpdateNewTabButtonBorder();
     }
@@ -233,8 +229,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     // should have 6 px of padding between it and the tab_search button (not
     // including the corner radius).
     tab_strip_left_margin = tab_search_button_size.width() +
-                            kCRtabstripRegionViewControlPadding +
-                            kCRtabstripRegionViewControlPadding -
+                            GetLayoutConstant(TAB_STRIP_PADDING) +
+                            GetLayoutConstant(TAB_STRIP_PADDING) -
                             TabStyle::Get()->GetBottomCornerRadius();
   }
 
@@ -335,7 +331,7 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
 void TabStripRegionView::Layout() {
   views::AccessiblePaneView::Layout();
 
-  const int bottom_padding = (kCRtabstripRegionViewControlPadding +
+  const int bottom_padding = (GetLayoutConstant(TAB_STRIP_PADDING) +
                               GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
 
   if (tab_search_button_ && render_tab_search_before_tab_strip_) {
@@ -346,7 +342,7 @@ void TabStripRegionView::Layout() {
     // tab (not including bottom corner radius)
     const int x =
         tab_strip_container_->x() + TabStyle::Get()->GetBottomCornerRadius() -
-        kCRtabstripRegionViewControlPadding - tab_search_button_size.width();
+        GetLayoutConstant(TAB_STRIP_PADDING) - tab_search_button_size.width();
 
     // The y position is measured from the bottom of the tabstrip, and then
     // pading and button height are removed.
@@ -369,7 +365,7 @@ void TabStripRegionView::Layout() {
     gfx::Point new_tab_button_new_position =
         gfx::Point(tab_strip_container_->bounds().right() -
                        TabStyle::Get()->GetBottomCornerRadius() +
-                       kCRtabstripRegionViewControlPadding,
+                       GetLayoutConstant(TAB_STRIP_PADDING),
                    tab_strip_container_->y() + tab_strip_container_->height() -
                        bottom_padding - new_tab_button_size.height());
 
