@@ -7235,6 +7235,21 @@
             ]
         }
     ],
+    "IOSAppStoreRatingLoosenedTriggers": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppStoreRatingLoosenedTriggers"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillBranding": [
         {
             "platforms": [
