@@ -743,6 +743,9 @@ enum class ToolbarKind {
   self.viewController.active = NO;
   self.viewController.webUsageEnabled = NO;
 
+  [self.contextMenuProvider stop];
+  self.contextMenuProvider = nil;
+
   // TODO(crbug.com/1415244): Remove when BVC will no longer handle commands.
   [self.dispatcher stopDispatchingToTarget:self.viewController];
   [self.viewController shutdown];

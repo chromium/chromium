@@ -29,6 +29,9 @@ class GURL;
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params;
 
+// Stops the provider.
+- (void)stop;
+
 // The URL to be loaded when the user taps on the preview. Empty URL if there is
 // nothing to load.
 @property(nonatomic, assign, readonly) GURL URLToLoad;

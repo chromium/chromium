@@ -101,6 +101,17 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   return self;
 }
 
+- (void)stop {
+  _browser = nil;
+  _baseViewController = nil;
+  _imageSaver = nil;
+  _imageCopier = nil;
+}
+
+- (void)dealloc {
+  CHECK(!_browser);
+}
+
 // TODO(crbug.com/1318432): rafactor long method.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
