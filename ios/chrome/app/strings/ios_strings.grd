@@ -4437,11 +4437,11 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TOOLBAR_SHOW_TAB_GRID" desc="The accessibility label for the toolbar show tab grid button [iOS only].">
         Show Tab Grid
       </message>
-      <message name="IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX" desc="The iOS menu item for moving the address bar to the top of the screen [iOS only].">
-        Show Top Address Bar
+      <message name="IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX" desc="The iOS menu item for moving the address bar to the top of the screen [iOS only]. In title case.">
+        Move Address Bar To Top
       </message>
-      <message name="IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX" desc="The iOS menu item for moving the address bar to the bottom of the screen [iOS only].">
-        Show Bottom Address Bar
+      <message name="IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX" desc="The iOS menu item for moving the address bar to the bottom of the screen [iOS only]. In title case.">
+        Move Address Bar To Bottom
       </message>
       <message name="IDS_IOS_TOOLS_MENU" desc="The accessibility label for the iOS tools menu [iOS only]">
         Tools Menu

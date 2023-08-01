@@ -18411,6 +18411,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.OmniboxContextMenu.MoveAddressBarToBottom">
+  <owner>christianxu@google.com</owner>
+  <description>
+    User pressed 'Move Address Bar To Bottom' in the omnibox context menu (iOS
+    only).
+  </description>
+</action>
+
+<action name="Mobile.OmniboxContextMenu.MoveAddressBarToTop">
+  <owner>christianxu@google.com</owner>
+  <description>
+    User pressed 'Move Address Bar To Top' in the omnibox context menu (iOS
+    only).
+  </description>
+</action>
+
 <action name="Mobile.OmniboxContextMenu.SearchCopiedImage">
   <owner>rkgibson@google.com</owner>
   <owner>stkhapugin@google.com</owner>

@@ -750,6 +750,14 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   if (_prefService) {
     _prefService->SetBoolean(prefs::kBottomOmnibox,
                              toolbarType == ToolbarType::kSecondary);
+
+    if (toolbarType == ToolbarType::kPrimary) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToTop"));
+    } else {
+      RecordAction(UserMetricsAction(
+          "Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
+    }
   }
 }
 
