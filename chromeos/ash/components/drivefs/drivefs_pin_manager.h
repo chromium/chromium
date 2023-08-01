@@ -177,7 +177,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
  public:
   using Path = base::FilePath;
 
-  PinManager(Path profile_path, Path mount_path, mojom::DriveFs* drivefs);
+  PinManager(Path profile_path,
+             Path mount_path,
+             mojom::DriveFs* drivefs,
+             int64_t max_queue_size);
 
   PinManager(const PinManager&) = delete;
   PinManager& operator=(const PinManager&) = delete;
@@ -445,16 +448,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
         [](const Files::value_type& entry) { return entry.second.pinned; });
   }
 
-  // Maximum number of items that can be pinned but not cached yet at the same
-  // time.
-  static constexpr int kMaxQueueSize = 200;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   const Path profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   const Path mount_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Maximum number of items that can be pinned but not cached yet at the same
+  // time.
+  const int64_t max_queue_size_ GUARDED_BY_CONTEXT(sequence_checker_) = 200;
 
   // Is the device connected to a suitable network? Assume it is online for
   // tests.

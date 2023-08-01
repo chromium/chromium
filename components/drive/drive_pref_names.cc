@@ -40,4 +40,9 @@ const char kDriveFsMirrorSyncMachineRootId[] =
 // the user.
 const char kDriveFsBulkPinningEnabled[] = "drivefs.bulk_pinning_enabled";
 
+// The maximum number of items that the bulk pinning feature will try to keep
+// track of.
+const char kDriveFsBulkPinningMaxQueueSize[] =
+    "drivefs.bulk_pinning.max_queue_size";
+
 }  // namespace drive::prefs

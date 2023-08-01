@@ -18,6 +18,7 @@ extern const char kDriveFsWasLaunchedAtLeastOnce[];
 extern const char kDriveFsEnableMirrorSync[];
 extern const char kDriveFsMirrorSyncMachineRootId[];
 extern const char kDriveFsBulkPinningEnabled[];
+extern const char kDriveFsBulkPinningMaxQueueSize[];
 
 }  // namespace drive::prefs
 

@@ -636,10 +636,12 @@ bool PinManager::Update(Files::value_type& entry,
 
 PinManager::PinManager(Path profile_path,
                        Path mount_path,
-                       mojom::DriveFs* const drivefs)
+                       mojom::DriveFs* const drivefs,
+                       int64_t max_queue_size)
     : profile_path_(std::move(profile_path)),
       mount_path_(std::move(mount_path)),
       drivefs_(drivefs),
+      max_queue_size_(max_queue_size),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
   ash::UserDataAuthClient::Get()->AddObserver(this);
@@ -1200,7 +1202,7 @@ void PinManager::PinSomeFiles() {
     return NotifyProgress();
   }
 
-  while (progress_.syncing_files < kMaxQueueSize && !files_to_pin_.empty()) {
+  while (progress_.syncing_files < max_queue_size_ && !files_to_pin_.empty()) {
     const Id id = files_to_pin_.extract(files_to_pin_.begin()).value();
     const Files::iterator it = files_to_track_.find(id);
     DCHECK(it != files_to_track_.end()) << "Not tracked: " << id;

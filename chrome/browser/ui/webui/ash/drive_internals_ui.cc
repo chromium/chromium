@@ -377,6 +377,11 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
         "loadAccountSettings",
         base::BindRepeating(&DriveInternalsWebUIHandler::LoadAccountSettings,
                             weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "updateBulkPinningMaxQueueSize",
+        base::BindRepeating(
+            &DriveInternalsWebUIHandler::UpdateBulkPinningMaxQueueSize,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Called when the page is first loaded.
@@ -620,6 +625,11 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     MaybeCallJavascript(
         "updateBulkPinning",
         Value(GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)));
+
+    MaybeCallJavascript("onUpdateMaxQueueSize",
+                        /*status=*/Value(""),
+                        Value(GetPrefs()->GetInteger(
+                            drive::prefs::kDriveFsBulkPinningMaxQueueSize)));
 
     if (PinManager* const manager = service->GetPinManager()) {
       OnBulkPinProgress(manager->GetProgress());
@@ -972,6 +982,30 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void ResetFinished(bool success) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     MaybeCallJavascript("updateResetStatus", Value(success));
+  }
+
+  void UpdateBulkPinningMaxQueueSize(const Value::List& args) {
+    AllowJavascript();
+
+    if (args.size() != 1 || !args[0].is_int()) {
+      MaybeCallJavascript("onUpdateMaxQueueSize", Value("invalid queue size"),
+                          Value(GetPrefs()->GetInteger(
+                              drive::prefs::kDriveFsBulkPinningMaxQueueSize)));
+      return;
+    }
+
+    const int max_queue_size = args[0].GetInt();
+    if (max_queue_size < 1 || max_queue_size > 200) {
+      MaybeCallJavascript("onUpdateMaxQueueSize", Value("invalid queue size"),
+                          Value(GetPrefs()->GetInteger(
+                              drive::prefs::kDriveFsBulkPinningMaxQueueSize)));
+      return;
+    }
+
+    GetPrefs()->SetInteger(drive::prefs::kDriveFsBulkPinningMaxQueueSize,
+                           max_queue_size);
+    MaybeCallJavascript("onUpdateMaxQueueSize", Value("success"),
+                        Value(max_queue_size));
   }
 
   Profile* profile() { return Profile::FromWebUI(web_ui()); }
