@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
@@ -41,9 +40,6 @@ public class HomeButton extends ListMenuButton {
 
     public HomeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        final int homeButtonIcon = R.drawable.btn_toolbar_home;
-        setImageDrawable(ContextCompat.getDrawable(context, homeButtonIcon));
     }
 
     /**
