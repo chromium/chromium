@@ -37,10 +37,10 @@ class SafeBrowsingApiHandlerBridge {
   // Returns a reference to the singleton.
   static SafeBrowsingApiHandlerBridge& GetInstance();
 
-  // Makes Native-to-Java call to check the URL against Safe Browsing lists.
-  void StartURLCheck(std::unique_ptr<ResponseCallback> callback,
-                     const GURL& url,
-                     const SBThreatTypeSet& threat_types);
+  // Makes Native-to-Java call to perform the hash-prefix database check.
+  void StartHashDatabaseUrlCheck(std::unique_ptr<ResponseCallback> callback,
+                                 const GURL& url,
+                                 const SBThreatTypeSet& threat_types);
 
   bool StartCSDAllowlistCheck(const GURL& url);
 
@@ -49,9 +49,14 @@ class SafeBrowsingApiHandlerBridge {
   }
 
  private:
+  // Makes Native-to-Java call to check the URL through GMSCore SafetyNet API.
+  void StartUrlCheckBySafetyNet(std::unique_ptr<ResponseCallback> callback,
+                                const GURL& url,
+                                const SBThreatTypeSet& threat_types);
+
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
-  // reputation from GmsCore.
-  jlong next_callback_id_ = 0;
+  // reputation from GmsCore SafetyNet API.
+  jlong next_safety_net_callback_id_ = 0;
 
   raw_ptr<UrlCheckInterceptor> interceptor_for_testing_ = nullptr;
 };

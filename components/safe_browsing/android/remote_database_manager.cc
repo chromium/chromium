@@ -218,8 +218,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
   auto callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
           base::BindOnce(&ClientRequest::OnRequestDoneWeak, req->GetWeakPtr()));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartURLCheck(std::move(callback),
-                                                            url, threat_types);
+  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
+      std::move(callback), url, threat_types);
 
   current_requests_.push_back(req.release());
 
@@ -283,7 +283,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   auto callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
           base::BindOnce(&ClientRequest::OnRequestDoneWeak, req->GetWeakPtr()));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartURLCheck(
+  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
       std::move(callback), url,
       CreateSBThreatTypeSet(
           {SB_THREAT_TYPE_SUBRESOURCE_FILTER, SB_THREAT_TYPE_URL_PHISHING}));

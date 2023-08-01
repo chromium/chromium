@@ -93,12 +93,13 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    static void setExpectedThreatsOfInterest(String uri, int[] threatsOfInterest) {
+    static void setExpectedSafetyNetApiHandlerThreatsOfInterest(
+            String uri, int[] threatsOfInterest) {
         MockSafetyNetApiHandler.setExpectedThreatsOfInterest(uri, threatsOfInterest);
     }
 
     @CalledByNative
-    static void setMetadata(String uri, String metadata) {
+    static void setSafetyNetApiHandlerMetadata(String uri, String metadata) {
         MockSafetyNetApiHandler.setMetadata(uri, metadata);
     }
 
@@ -108,7 +109,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    static void setResult(int result) {
+    static void setSafetyNetApiHandlerResult(int result) {
         MockSafetyNetApiHandler.setResult(result);
     }
 }

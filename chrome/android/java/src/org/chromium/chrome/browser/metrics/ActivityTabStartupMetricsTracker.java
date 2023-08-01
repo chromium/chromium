@@ -76,18 +76,19 @@ public class ActivityTabStartupMetricsTracker {
     // foreground. Used for investigating crbug.com/1273097.
     private boolean mRegisteredFirstPaintPreForeground;
 
-    // The time it took for SafeBrowsing to respond for the first time. The SB request is on the
-    // critical path to navigation commit, and the response may be severely delayed by GmsCore
-    // (see http://crbug.com/1296097). The value is recorded only when the navigation commits
-    // successfully. Updating the value atomically from another thread to provide a simpler
-    // guarantee that the value is not lost after posting a few tasks.
+    // The time it took for SafetyNet API to return a Safe Browsing response for the first time. The
+    // SB request is on the critical path to navigation commit, and the response may be severely
+    // delayed by GmsCore (see http://crbug.com/1296097). The value is recorded only when the
+    // navigation commits successfully. Updating the value atomically from another thread to provide
+    // a simpler guarantee that the value is not lost after posting a few tasks.
     private final AtomicLong mFirstSafeBrowsingResponseTimeMicros = new AtomicLong();
 
     public ActivityTabStartupMetricsTracker(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         tabModelSelectorSupplier.addObserver(this::registerObservers);
-        SafeBrowsingApiBridge.setOneTimeUrlCheckObserver(this::updateSafeBrowsingCheckTime);
+        SafeBrowsingApiBridge.setOneTimeSafetyNetApiUrlCheckObserver(
+                this::updateSafeBrowsingCheckTime);
     }
 
     private void updateSafeBrowsingCheckTime(long urlCheckTimeDeltaMicros) {

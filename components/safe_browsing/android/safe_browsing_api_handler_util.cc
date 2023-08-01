@@ -24,25 +24,6 @@ namespace {
 const char kJsonKeyMatches[] = "matches";
 const char kJsonKeyThreatType[] = "threat_type";
 
-// Do not reorder or delete.  Make sure changes are reflected in
-// SB2RemoteCallThreatSubType.
-enum UmaThreatSubType {
-  UMA_THREAT_SUB_TYPE_NOT_SET = 0,
-  UMA_THREAT_SUB_TYPE_POTENTIALLY_HALMFUL_APP_LANDING = 1,
-  UMA_THREAT_SUB_TYPE_POTENTIALLY_HALMFUL_APP_DISTRIBUTION = 2,
-  UMA_THREAT_SUB_TYPE_UNKNOWN = 3,
-  UMA_THREAT_SUB_TYPE_SOCIAL_ENGINEERING_ADS = 4,
-  UMA_THREAT_SUB_TYPE_SOCIAL_ENGINEERING_LANDING = 5,
-  UMA_THREAT_SUB_TYPE_PHISHING = 6,
-
-  // DEPRECATED.
-  UMA_THREAT_SUB_TYPE_BETTER_ADS = 7,
-  UMA_THREAT_SUB_TYPE_ABUSIVE = 8,
-  UMA_THREAT_SUB_TYPE_ALL_ADS = 9,
-
-  UMA_THREAT_SUB_TYPE_MAX_VALUE
-};
-
 // Parse the optional "UserPopulation" key from the metadata.
 // Returns empty string if none was found.
 std::string ParseUserPopulation(const base::Value::Dict& match) {
@@ -76,7 +57,7 @@ SubresourceFilterMatch ParseSubresourceFilterMatch(
 
 // Returns the severity level for a given SafeBrowsing list. The lowest value is
 // 0, which represents the most severe list.
-int GetThreatSeverity(JavaThreatTypes threat_type) {
+int GetThreatSeverity(SafetyNetJavaThreatTypes threat_type) {
   switch (threat_type) {
     case JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION:
       return 0;
@@ -97,7 +78,7 @@ int GetThreatSeverity(JavaThreatTypes threat_type) {
   return std::numeric_limits<int>::max();
 }
 
-SBThreatType JavaToSBThreatType(int java_threat_num) {
+SBThreatType SafetyNetJavaToSBThreatType(int java_threat_num) {
   switch (java_threat_num) {
     case JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION:
       return SB_THREAT_TYPE_URL_MALWARE;
@@ -150,7 +131,7 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
   }
 
   // Go through each matched threat type and pick the most severe.
-  JavaThreatTypes worst_threat_type = JAVA_THREAT_TYPE_MAX_VALUE;
+  SafetyNetJavaThreatTypes worst_threat_type = JAVA_THREAT_TYPE_MAX_VALUE;
   const base::Value::Dict* worst_match = nullptr;
   for (const base::Value& match_value : *matches) {
     const base::Value::Dict* match = match_value.GetIfDict();
@@ -166,7 +147,8 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
       continue;  // Skip malformed list entries.
     }
 
-    JavaThreatTypes threat_type = static_cast<JavaThreatTypes>(threat_type_num);
+    SafetyNetJavaThreatTypes threat_type =
+        static_cast<SafetyNetJavaThreatTypes>(threat_type_num);
     if (threat_type > JAVA_THREAT_TYPE_MAX_VALUE) {
       threat_type = JAVA_THREAT_TYPE_MAX_VALUE;
     }
@@ -176,7 +158,7 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
     }
   }
 
-  *worst_sb_threat_type = JavaToSBThreatType(worst_threat_type);
+  *worst_sb_threat_type = SafetyNetJavaToSBThreatType(worst_threat_type);
   if (*worst_sb_threat_type == SB_THREAT_TYPE_SAFE || !worst_match)
     return UMA_STATUS_JSON_UNKNOWN_THREAT;
 

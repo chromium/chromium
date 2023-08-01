@@ -13,8 +13,8 @@
 
 namespace safe_browsing {
 
-// These match what SafeBrowsingApiHandler.java uses for |resultStatus|
-enum RemoteCallResultStatus {
+// These match what SafetyNetApiHandler.java uses for |resultStatus|
+enum SafetyNetRemoteCallResultStatus {
   RESULT_STATUS_INTERNAL_ERROR = -1,
   RESULT_STATUS_SUCCESS = 0,
   RESULT_STATUS_TIMEOUT = 1,
@@ -22,14 +22,13 @@ enum RemoteCallResultStatus {
 
 // Threat types as per the Java code.
 // This must match those in GMS's SafeBrowsingThreat.java.
-enum JavaThreatTypes {
+enum SafetyNetJavaThreatTypes {
   JAVA_THREAT_TYPE_UNWANTED_SOFTWARE = 3,
   JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION = 4,
   JAVA_THREAT_TYPE_SOCIAL_ENGINEERING = 5,
   JAVA_THREAT_TYPE_SUBRESOURCE_FILTER = 13,
   JAVA_THREAT_TYPE_BILLING = 15,
-  // TODO(crbug.com/999344): temp magic number, update once GMSCore is
-  // available.
+  // Magic numbers for allowlists. Not actually used by GMSCore.
   JAVA_THREAT_TYPE_CSD_ALLOWLIST = 16,
   JAVA_THREAT_TYPE_MAX_VALUE
 };

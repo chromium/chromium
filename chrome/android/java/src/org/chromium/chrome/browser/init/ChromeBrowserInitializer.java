@@ -209,7 +209,7 @@ public class ChromeBrowserInitializer {
         ThreadUtils.assertOnUiThread();
         if (mPreInflationStartupComplete) return;
 
-        new Thread(SafeBrowsingApiBridge::ensureInitialized).start();
+        new Thread(SafeBrowsingApiBridge::ensureSafetyNetApiInitialized).start();
 
         // Ensure critical files are available, so they aren't blocked on the file-system
         // behind long-running accesses in next phase.
