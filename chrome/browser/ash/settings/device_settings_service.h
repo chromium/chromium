@@ -316,6 +316,8 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   base::WeakPtrFactory<DeviceSettingsService> weak_factory_{this};
 };
 
+std::ostream& operator<<(std::ostream&, DeviceSettingsService::OwnershipStatus);
+
 // Helper class for tests. Initializes the DeviceSettingsService singleton on
 // construction and tears it down again on destruction.
 class ScopedTestDeviceSettingsService {

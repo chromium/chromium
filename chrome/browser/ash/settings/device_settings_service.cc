@@ -352,6 +352,13 @@ void DeviceSettingsService::HandleCompletedOperation(
 
   public_key_ = scoped_refptr<PublicKey>(operation->public_key());
   if (GetOwnershipStatus() != previous_ownership_status_) {
+    // TODO(b/293598969): Investigate onwerhip status condition to prevent the
+    // bugs in future. Check whether ownership status goes to kOwnershipTaken in
+    // the end. Remove this when it's resolved.
+    LOG(WARNING) << "Ownership status is changed from "
+                 << previous_ownership_status_ << " to "
+                 << GetOwnershipStatus();
+
     previous_ownership_status_ = GetOwnershipStatus();
     NotifyOwnershipStatusChanged();
   }
@@ -379,6 +386,18 @@ void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   callbacks.swap(pending_ownership_status_callbacks_);
   for (auto& callback : callbacks) {
     std::move(callback).Run(GetOwnershipStatus());
+  }
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         DeviceSettingsService::OwnershipStatus status) {
+  switch (status) {
+    case DeviceSettingsService::OwnershipStatus::kOwnershipUnknown:
+      return ostream << "kOwnershipUnknown";
+    case DeviceSettingsService::OwnershipStatus::kOwnershipNone:
+      return ostream << "kOwnershipNone";
+    case DeviceSettingsService::OwnershipStatus::kOwnershipTaken:
+      return ostream << "kOwnershipTaken";
   }
 }
 
