@@ -36,6 +36,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFrag
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -50,15 +51,17 @@ public class OmniboxActionDelegateImplUnitTest {
     private @Mock Runnable mMockOpenPasswordSettings;
     private @Mock SettingsLauncher mMockSettingsLauncher;
     private @Mock Tab mTab;
+    private AtomicReference<Tab> mTabReference = new AtomicReference<>();
     private Context mContext;
     private OmniboxActionDelegateImpl mDelegate;
 
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
+        mTabReference.set(mTab);
         mDelegate = new OmniboxActionDelegateImpl(mContext,
                 ()
-                        -> mTab,
+                        -> mTabReference.get(),
                 mMockSettingsLauncher, mMockOpenUrl, mMockOpenIncognitoPage,
                 mMockOpenPasswordSettings, mMockOpenHistoryClustersUi);
     }
@@ -103,6 +106,9 @@ public class OmniboxActionDelegateImplUnitTest {
 
         doReturn(false).when(mTab).isIncognito();
         assertFalse(mDelegate.isIncognito());
+
+        mTabReference.set(null);
+        assertFalse(mDelegate.isIncognito());
     }
 
     @Test
@@ -123,6 +129,14 @@ public class OmniboxActionDelegateImplUnitTest {
         mDelegate.loadPageInCurrentTab("url");
 
         verify(mTab, times(1)).isUserInteractable();
+        verifyNoMoreInteractions(mTab);
+        verify(mMockOpenUrl).accept("url");
+    }
+
+    @Test
+    public void loadPageInCurrentTab_openNewTabIfNoTabs() {
+        mTabReference.set(null);
+        mDelegate.loadPageInCurrentTab("url");
         verifyNoMoreInteractions(mTab);
         verify(mMockOpenUrl).accept("url");
     }
