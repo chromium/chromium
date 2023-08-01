@@ -19,14 +19,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 FakeBoundSessionRefreshCookieFetcher::FakeBoundSessionRefreshCookieFetcher(
-    SigninClient* client,
+    network::mojom::CookieManager* cookie_manager,
     const GURL& url,
     base::flat_set<std::string> cookie_names,
     absl::optional<base::TimeDelta> unlock_automatically_in)
-    : client_(client),
+    : cookie_manager_(cookie_manager),
       url_(url),
       cookie_names_(std::move(cookie_names)),
-      unlock_automatically_in_(unlock_automatically_in) {}
+      unlock_automatically_in_(unlock_automatically_in) {
+  CHECK(cookie_manager_);
+}
 
 FakeBoundSessionRefreshCookieFetcher::~FakeBoundSessionRefreshCookieFetcher() =
     default;
@@ -76,7 +78,7 @@ void FakeBoundSessionRefreshCookieFetcher::OnRefreshCookieCompleted(
 
 void FakeBoundSessionRefreshCookieFetcher::InsertCookieInCookieJar(
     std::unique_ptr<net::CanonicalCookie> cookie) {
-  DCHECK(client_);
+  DCHECK(cookie_manager_);
   base::OnceCallback<void(net::CookieAccessResult)> callback =
       base::BindOnce(&FakeBoundSessionRefreshCookieFetcher::OnCookieSet,
                      weak_ptr_factory_.GetWeakPtr());
@@ -85,7 +87,7 @@ void FakeBoundSessionRefreshCookieFetcher::InsertCookieInCookieJar(
   // Permit it to set a SameSite cookie if it wants to.
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-  client_->GetCookieManager()->SetCanonicalCookie(
+  cookie_manager_->SetCanonicalCookie(
       *cookie, url_, options,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback),

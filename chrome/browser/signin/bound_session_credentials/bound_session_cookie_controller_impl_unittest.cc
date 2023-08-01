@@ -8,7 +8,6 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -29,6 +28,7 @@
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -98,13 +98,13 @@ class BoundSessionCookieControllerImplTest
 
   std::unique_ptr<BoundSessionRefreshCookieFetcher>
   CreateBoundSessionRefreshCookieFetcher(
-      SigninClient* client,
+      network::mojom::CookieManager* cookie_manager,
       const GURL& url,
       base::flat_set<std::string> cookie_names) {
     // `SimulateCompleteRefreshRequest()` must be called for the
     // refresh request to complete.
     auto fetcher = std::make_unique<FakeBoundSessionRefreshCookieFetcher>(
-        client, url, std::move(cookie_names));
+        cookie_manager, url, std::move(cookie_names));
     cookie_fetcher_ = fetcher.get();
     return fetcher;
   }

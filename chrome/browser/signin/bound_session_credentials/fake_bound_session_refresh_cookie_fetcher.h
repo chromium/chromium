@@ -15,13 +15,15 @@
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class SigninClient;
+namespace network::mojom {
+class CookieManager;
+}
 
 class FakeBoundSessionRefreshCookieFetcher
     : public BoundSessionRefreshCookieFetcher {
  public:
   FakeBoundSessionRefreshCookieFetcher(
-      SigninClient* client,
+      network::mojom::CookieManager* cookie_manager,
       const GURL& url,
       base::flat_set<std::string> cookie_names,
       absl::optional<base::TimeDelta> unlock_automatically_in = absl::nullopt);
@@ -46,7 +48,7 @@ class FakeBoundSessionRefreshCookieFetcher
   void OnCookieSet(net::CookieAccessResult access_result);
   void ResetCallbackCounter();
 
-  const raw_ptr<SigninClient> client_;
+  const raw_ptr<network::mojom::CookieManager> cookie_manager_;
   const GURL url_;
   const base::flat_set<std::string> cookie_names_;
   RefreshCookieCompleteCallback callback_;

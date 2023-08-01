@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace unexportable_keys {
@@ -54,7 +55,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   // `BoundSessionRefreshCookieFetcher`.
   using RefreshCookieFetcherFactoryForTesting =
       base::RepeatingCallback<std::unique_ptr<BoundSessionRefreshCookieFetcher>(
-          SigninClient* client,
+          network::mojom::CookieManager* cookie_manager,
           const GURL& url,
           base::flat_set<std::string> cookie_names)>;
 

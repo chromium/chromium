@@ -119,7 +119,7 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
                    *wait_for_network_callback_helper_, *session_binding_helper_,
                    url_, std::move(cookie_names))
              : refresh_cookie_fetcher_factory_for_testing_.Run(
-                   client_, url_, std::move(cookie_names));
+                   client_->GetCookieManager(), url_, std::move(cookie_names));
 }
 
 bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
