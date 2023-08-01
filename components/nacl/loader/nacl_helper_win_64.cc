@@ -69,12 +69,10 @@ int NaClWin64Main() {
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
   base::FieldTrialList field_trial_list;
-  base::FieldTrialList::CreateTrialsFromCommandLine(*command_line,
-                                                    /*unused_fd_key=*/0);
-
+  base::FieldTrialList::CreateTrialsInChildProcess(*command_line,
+                                                   /*unused_fd_key=*/0);
   auto feature_list = std::make_unique<base::FeatureList>();
-  base::FieldTrialList::CreateFeaturesFromCommandLine(*command_line,
-                                                      feature_list.get());
+  base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
   // Copy what ContentMain() does.

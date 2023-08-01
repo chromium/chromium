@@ -17,8 +17,7 @@ import xml_utils
 # The allowlist of namespaces (histogram prefixes, case insensitive) that are
 # split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
-    'ash', 'autocomplete', 'childprocess', 'chromeos', 'fcminvalidations',
-    'graphics', 'launch'
+    'ash', 'autocomplete', 'chromeos', 'fcminvalidations', 'graphics', 'launch'
 ]
 
 

@@ -7,8 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/base_switches.h"
-#include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,10 +25,6 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
   // So we need to create a new scope with empty feature and field trial lists.
   scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
 
-  // We don't use the descriptor here anyways so it's ok to pass -1.
-  base::FieldTrialList::CreateTrialsFromCommandLine(
-      *base::CommandLine::ForCurrentProcess(), -1);
-
   base::FieldTrial* trial1 = base::FieldTrialList::CreateFieldTrial("A", "G1");
   base::FieldTrial* trial2 = base::FieldTrialList::CreateFieldTrial("B", "G2");
   base::FieldTrial* trial3 = base::FieldTrialList::CreateFieldTrial("C", "G3");
@@ -39,9 +33,6 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
 
   std::string states_string;
   base::FieldTrialList::AllStatesToString(&states_string);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kForceFieldTrials, states_string);
   EXPECT_EQ("*A/G1/B/G2/C/G3/", states_string);
 
   // Active trial 2 before creating the syncer.
@@ -53,11 +44,13 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
         observed_trial_names.push_back(trial_name);
       });
 
-  ChildProcessFieldTrialSyncer::CreateInstance(callback);
+  std::set<std::string> initially_active_trials = {"A"};
+  ChildProcessFieldTrialSyncer::CreateInstanceForTesting(
+      initially_active_trials, callback);
 
-  // The callback should be invoked for activated trials that were not specified
-  // on the command line. In this case, trial 2. (Trial 1 was already active via
-  // command line and so its state shouldn't be notified.)
+  // The callback should be invoked for activated trials that were not initially
+  // active, but were activated later. In this case, trial 2. (Trial 1 was
+  // already active and so its state shouldn't be notified.)
   EXPECT_THAT(observed_trial_names, testing::ElementsAre("B"));
 
   // Now, activate trial 3, which should also get reflected.
