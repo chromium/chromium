@@ -125,17 +125,16 @@ absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
   return odfs_infos[0];
 }
 
-absl::optional<ProvidedFileSystemInterface*> GetODFS(Profile* profile) {
+ProvidedFileSystemInterface* GetODFS(Profile* profile) {
   Service* service = Service::Get(profile);
   ProviderId provider_id =
       ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
   auto odfs_info = GetODFSInfo(profile);
-  if (!odfs_info.has_value()) {
-    return absl::nullopt;
+  if (!odfs_info) {
+    return nullptr;
   }
-  auto* file_system =
-      service->GetProvidedFileSystem(provider_id, odfs_info->file_system_id());
-  return file_system;
+  return service->GetProvidedFileSystem(provider_id,
+                                        odfs_info->file_system_id());
 }
 
 // Convert |actions| to |ODFSMetadata| and pass the result to |callback|.

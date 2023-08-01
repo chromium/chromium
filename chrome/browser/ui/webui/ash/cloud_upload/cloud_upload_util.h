@@ -110,9 +110,8 @@ UploadType GetUploadType(Profile* profile,
 absl::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
     Profile* profile);
 
-// Get currently provided ODFS.
-absl::optional<file_system_provider::ProvidedFileSystemInterface*> GetODFS(
-    Profile* profile);
+// Get currently provided ODFS, or null if not mounted.
+file_system_provider::ProvidedFileSystemInterface* GetODFS(Profile* profile);
 
 // Get ODFS metadata as actions by doing a special GetActions request (for the
 // root directory) and return the actions to |OnODFSMetadataActions| which will

@@ -234,15 +234,15 @@ void OneDriveUploadHandler::OnGetReauthenticationRequired(
 }
 
 void OneDriveUploadHandler::ShowAccessDeniedError() {
-  absl::optional<file_system_provider::ProvidedFileSystemInterface*>
-      file_system = GetODFS(profile_);
-  if (!file_system.has_value()) {
+  file_system_provider::ProvidedFileSystemInterface* file_system =
+      GetODFS(profile_);
+  if (!file_system) {
     OnEndUpload(base::unexpected(GetGenericErrorMessage()),
                 OfficeFilesUploadResult::kCloudAuthError);
     return;
   }
   GetODFSMetadata(
-      file_system.value(),
+      file_system,
       base::BindOnce(&OneDriveUploadHandler::OnGetReauthenticationRequired,
                      this));
 }

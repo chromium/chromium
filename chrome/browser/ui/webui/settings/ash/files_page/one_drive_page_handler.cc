@@ -71,15 +71,14 @@ OneDrivePageHandler::~OneDrivePageHandler() {
 
 void OneDrivePageHandler::GetUserEmailAddress(
     GetUserEmailAddressCallback callback) {
-  absl::optional<file_system_provider::ProvidedFileSystemInterface*>
-      file_system = cloud_upload::GetODFS(profile_);
-  if (!file_system.has_value()) {
+  file_system_provider::ProvidedFileSystemInterface* file_system =
+      cloud_upload::GetODFS(profile_);
+  if (!file_system) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
   cloud_upload::GetODFSMetadata(
-      file_system.value(),
-      base::BindOnce(&OnGetEmailAddress, std::move(callback)));
+      file_system, base::BindOnce(&OnGetEmailAddress, std::move(callback)));
 }
 
 void OneDrivePageHandler::ConnectToOneDrive(

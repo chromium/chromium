@@ -241,13 +241,13 @@ void OnGetReauthenticationRequired(
 // Request ODFS metadata and show the correct notification in the
 // |OnGetReauthenticationRequired| callback.
 void ShowAccessDeniedNotification(Profile* profile) {
-  absl::optional<file_system_provider::ProvidedFileSystemInterface*>
-      file_system = GetODFS(profile);
-  if (!file_system.has_value()) {
+  file_system_provider::ProvidedFileSystemInterface* file_system =
+      GetODFS(profile);
+  if (!file_system) {
     ShowUnableToOpenNotification(profile, /*reauthentication_required=*/false);
     return;
   }
-  GetODFSMetadata(file_system.value(),
+  GetODFSMetadata(file_system,
                   base::BindOnce(&OnGetReauthenticationRequired, profile));
 }
 
