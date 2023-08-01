@@ -2064,6 +2064,9 @@
       status: "stable",
     },
     {
+      name: "LayoutNewGridStaticPosition",
+    },
+    {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
       depends_on: ["LayoutNGNoLocation", "ScrollableAreaNoSnapping"],

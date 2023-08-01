@@ -4059,7 +4059,8 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     //
     // [1] https://github.com/w3c/csswg-drafts/issues/7661
     // [2] https://chromium-review.googlesource.com/c/chromium/src/+/3927797
-    if (out_of_flow_item.IsGridContainingBlock()) {
+    if (!RuntimeEnabledFeatures::LayoutNewGridStaticPositionEnabled() &&
+        out_of_flow_item.IsGridContainingBlock()) {
       containing_block_rect = ComputeOutOfFlowItemContainingRect(
           placement_data, layout_data, container_style,
           container_builder_.Borders(), total_fragment_size, &out_of_flow_item);
