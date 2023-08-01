@@ -8,7 +8,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicyScope, PolicySource, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
+import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicyScope, PolicySource, PresetAtrributes, Presets, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
 import {getTemplate} from './policy_test_row.html.js';
 
 export class PolicyTestRowElement extends CustomElement {
@@ -108,6 +108,58 @@ export class PolicyTestRowElement extends CustomElement {
     }
   }
 
+  // Helper method for disabling/enabling the source, scope and level dropdowns
+  // if disabled is true/false and setting their values to those given in
+  // presetAttributes.
+  private changeAttributesFromPreset_(
+      disabled: boolean, presetAttributes?: PresetAtrributes) {
+    ['.source', '.scope', '.level'].forEach((attributeSelector: string) => {
+      const attributeDropdown =
+          this.getRequiredElement<HTMLSelectElement>(attributeSelector);
+      attributeDropdown.disabled = disabled;
+      if (presetAttributes) {
+        attributeDropdown.value = String(Object.values(
+            presetAttributes)[Object.keys(presetAttributes)
+                                  .indexOf(attributeSelector.substring(1))]);
+      }
+    });
+  }
+
+  // Event listener method for changing the selected values in the source, scope
+  // and level dropdowns when the user selects a preset.
+  private changePreset_(event: Event) {
+    const selectElement = event.target! as HTMLSelectElement;
+    const presetToApply = parseInt(selectElement.value);
+    switch (presetToApply) {
+      case Presets.PRESET_CUSTOM:
+        this.changeAttributesFromPreset_(false);
+        break;
+      case Presets.PRESET_CBCM:
+        this.changeAttributesFromPreset_(true, {
+          source: PolicySource.SOURCE_CLOUD_VAL,
+          scope: PolicyScope.SCOPE_DEVICE_VAL,
+          level: PolicyLevel.LEVEL_MANDATORY_VAL,
+        });
+        break;
+      case Presets.PRESET_LOCAL_MACHINE:
+        this.changeAttributesFromPreset_(true, {
+          source: PolicySource.SOURCE_PLATFORM_VAL,
+          scope: PolicyScope.SCOPE_DEVICE_VAL,
+          level: PolicyLevel.LEVEL_MANDATORY_VAL,
+        });
+        break;
+      case Presets.PRESET_CLOUD_ACCOUNT:
+        this.changeAttributesFromPreset_(true, {
+          source: PolicySource.SOURCE_CLOUD_VAL,
+          scope: PolicyScope.SCOPE_USER_VAL,
+          level: PolicyLevel.LEVEL_MANDATORY_VAL,
+        });
+        break;
+      default:
+        assertNotReached();
+    }
+  }
+
   // Function that initializes the policy selection dropdowns and delete
   // button for the current row.
   private initialize_() {
@@ -129,12 +181,19 @@ export class PolicyTestRowElement extends CustomElement {
     this.getRequiredElement('.remove-btn')
         .addEventListener('click', this.remove.bind(this));
 
-    // Set the value attributes of the policy type dropdown options.
+    // Add event listeners for this row's preset select options.
+    const policyPresetDropdown =
+        this.getRequiredElement<HTMLSelectElement>('.preset');
+    policyPresetDropdown.addEventListener(
+        'change', this.changePreset_.bind(this));
+
+    // Set the value attributes of the policy type and preset dropdown options.
     const idToValue = [
       {id: 'scopeUser', value: PolicyScope.SCOPE_USER_VAL},
       {id: 'scopeDevice', value: PolicyScope.SCOPE_DEVICE_VAL},
       {id: 'levelRecommended', value: PolicyLevel.LEVEL_RECOMMENDED_VAL},
-      {id: 'levelMandatory', value: PolicyLevel.LEVEL_MANDATORY_VAL}, {
+      {id: 'levelMandatory', value: PolicyLevel.LEVEL_MANDATORY_VAL},
+      {
         id: 'sourceEnterpriseDefault',
         value: PolicySource.SOURCE_ENTERPRISE_DEFAULT_VAL,
       },
@@ -156,6 +215,10 @@ export class PolicyTestRowElement extends CustomElement {
             PolicySource.SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL,
       },
       // </if>
+      {id: 'custom', value: Presets.PRESET_CUSTOM},
+      {id: 'cbcm', value: Presets.PRESET_CBCM},
+      {id: 'localMachine', value: Presets.PRESET_LOCAL_MACHINE},
+      {id: 'cloudAccount', value: Presets.PRESET_CLOUD_ACCOUNT},
     ];
 
     for (const pair of idToValue) {

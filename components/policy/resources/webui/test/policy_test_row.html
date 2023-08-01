@@ -13,6 +13,8 @@
     width: 100%;
     box-sizing: border-box;
     padding: 3px;
+    border: none;
+    background: none;
   }
 
   .error {
@@ -25,8 +27,18 @@
   </select>
 </div>
 <div role="cell">
+  <input type="text" class="value">
+</div>
+<div role="cell">
+  <select class="preset">
+    <option id="custom">$i18n{testTablePresetCustom}</option>
+    <option id="cbcm">CBCM</option>
+    <option id="localMachine">$i18n{testTablePresetLocalMachine}</option>
+    <option id="cloudAccount">$i18n{testTablePresetCloudAccount}</option>
+  </select>
+</div>
+<div role="cell">
   <select class="source">
-    <option selected disabled hidden>$i18n{testSourceSelect}</option>
     <option title="POLICY_SOURCE_ENTERPRISE_DEFAULT"
         id="sourceEnterpriseDefault">
       $i18n{sourceEnterpriseDefault}
@@ -62,7 +74,6 @@
 </div>
 <div role="cell">
   <select class="scope">
-    <option selected disabled hidden>$i18n{testTargetSelect}</option>
     <option title="POLICY_SCOPE_USER" id="scopeUser">
       $i18n{scopeUser}
     </option>
@@ -73,17 +84,13 @@
 </div>
 <div role="cell">
   <select class="level">
-    <option selected disabled hidden>$i18n{testLevelSelect}</option>
-    <option title="POLICY_LEVEL_RECOMMENDED" id="levelRecommended">
-      $i18n{levelRecommended}
-    </option>
     <option title="POLICY_LEVEL_MANDATORY" id="levelMandatory">
       $i18n{levelMandatory}
     </option>
+    <option title="POLICY_LEVEL_RECOMMENDED" id="levelRecommended">
+      $i18n{levelRecommended}
+    </option>
   </select>
-</div>
-<div role="cell">
-  <input type="text" class="value">
 </div>
 <div role="cell">
   <button class="remove-btn">$i18n{testTableRemove}</button>

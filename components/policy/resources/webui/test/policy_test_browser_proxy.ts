@@ -28,6 +28,13 @@ export enum PolicySource {
   SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL = 9,
 }
 
+export enum Presets {
+  PRESET_CUSTOM,
+  PRESET_CBCM,
+  PRESET_LOCAL_MACHINE,
+  PRESET_CLOUD_ACCOUNT,
+}
+
 // Object mapping policy information types to their values.
 export interface PolicyInfo {
   name: string;
@@ -43,6 +50,14 @@ export interface PolicyInfoForExport {
   scope: string;
   level: string;
   value: any;
+}
+
+// Object mapping details that need to be copied between policy rows to their
+// enum values.
+export interface PresetAtrributes {
+  source: PolicySource;
+  scope: PolicyScope;
+  level: PolicyLevel;
 }
 
 // Object mapping policy names to their corresponding PolicyDetails objects.

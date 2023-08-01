@@ -193,9 +193,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
         {"testTableRemove", IDS_REMOVE},
         {"testAdd", IDS_POLICY_TEST_ADD},
         {"testNameSelect", IDS_POLICY_SELECT_NAME},
-        {"testSourceSelect", IDS_POLICY_SELECT_SOURCE},
-        {"testTargetSelect", IDS_POLICY_SELECT_TARGET},
-        {"testLevelSelect", IDS_POLICY_SELECT_LEVEL},
+        {"testTablePreset", IDS_POLICY_TEST_TABLE_PRESET},
+        {"testTablePresetCustom", IDS_POLICY_TEST_PRESET_CUSTOM},
+        {"testTablePresetLocalMachine", IDS_POLICY_TEST_PRESET_LOCAL_MACHINE},
+        {"testTablePresetCloudAccount", IDS_POLICY_TEST_PRESET_CLOUD_ACCOUNT},
     };
 
     source->AddLocalizedStrings(kPolicyTestStrings);

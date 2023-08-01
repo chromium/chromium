@@ -30,8 +30,23 @@ export class PolicyTestTableElement extends CustomElement {
   // Event listener function that adds a new PolicyTestRowElement to the table
   // when the Add Policy button is clicked.
   addEmptyRow() {
-    this.getRequiredElement('.table').appendChild(
-        document.createElement('policy-test-row'));
+    const newRow = document.createElement('policy-test-row');
+    // If there is a row before this one, copy its source, scope, level and
+    // preset values.
+    const rows = this.shadowRoot!.querySelectorAll('policy-test-row');
+    if (rows.length > 0) {
+      const lastRow = rows[rows.length - 1];
+      const attributesToCopy = ['.source', '.scope', '.level', '.preset'];
+      attributesToCopy.forEach((attribute: string) => {
+        const currSelectElement =
+            newRow.getRequiredElement<HTMLSelectElement>(attribute);
+        const prevSelectElement =
+            lastRow!.getRequiredElement<HTMLSelectElement>(attribute);
+        currSelectElement.value = prevSelectElement.value;
+        currSelectElement.disabled = prevSelectElement.disabled;
+      });
+    }
+    this.getRequiredElement('.table').appendChild(newRow);
   }
 
   // Method for adding a row with the initial values in initialValues.
