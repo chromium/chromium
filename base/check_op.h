@@ -13,7 +13,6 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/debugging_buildflags.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/to_string.h"
 #include "base/types/supports_ostream_operator.h"

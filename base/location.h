@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/debug/debugging_buildflags.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
