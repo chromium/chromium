@@ -78390,6 +78390,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Unfocus."/>
   <int value="13" label="Query tiles NTP omnibox tapped."/>
   <int value="14" label="Focus restored on fold configuration change."/>
+  <int value="15" label="Drag and drop on the omnibox."/>
 </enum>
 
 <enum name="OmniboxFocusType">

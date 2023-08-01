@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
         OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD, OmniboxFocusReason.SEARCH_QUERY,
         OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION,
         OmniboxFocusReason.UNFOCUS, OmniboxFocusReason.QUERY_TILES_NTP_TAP,
-        OmniboxFocusReason.FOLD_TRANSITION_RESTORATION})
+        OmniboxFocusReason.FOLD_TRANSITION_RESTORATION, OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX})
 @Retention(RetentionPolicy.SOURCE)
 public @interface OmniboxFocusReason {
     int OMNIBOX_TAP = 0;
@@ -37,5 +37,6 @@ public @interface OmniboxFocusReason {
     int UNFOCUS = 12;
     int QUERY_TILES_NTP_TAP = 13;
     int FOLD_TRANSITION_RESTORATION = 14;
-    int NUM_ENTRIES = 15;
+    int DRAG_DROP_TO_OMNIBOX = 15;
+    int NUM_ENTRIES = 16;
 }

@@ -4,42 +4,63 @@
 
 package org.chromium.chrome.browser.dragdrop.toolbar;
 
+import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.widget.FrameLayout;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.Toast;
 
 /**
  * ToolbarDragDrop Coordinator owns the view and the model change processor.
  */
 public class ToolbarDragDropCoordinator implements OnDragListener {
-    private static final String TEXT_MIME_TYPE = "text/plain";
+    // TODO(crbug.com/1469224): Swap error message to a translated string.
+    private static final String ERROR_MESSAGE = "Unable to handle drop";
+    private AutocompleteDelegate mAutocompleteDelegate;
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private FrameLayout mTargetView;
     private TargetViewDragListener mTargetViewDragListener;
     private PropertyModel mModel;
+    private OmniboxStub mOmniboxStub;
+
+    interface OnDropCallback {
+        /**
+         * Handles parsing DragEvents on a drop to the Omnibox
+         */
+        void parseDragEvent(DragEvent event);
+    }
 
     /**
      * Create the Coordinator of TargetView that owns the view and the change process.
      *
-     * @param targetView is the view displayed during the drag and drop process
-     * @param autocompleteDelegate Used to navigate on a successful drop.
+     * @param targetView is the view displayed during the drag and drop process.
+     * @param autocompleteDelegate Used to navigate on a successful link drop.
+     * @param omniboxStub Used to navigate a successful text drop.
      */
-    public ToolbarDragDropCoordinator(
-            FrameLayout targetView, AutocompleteDelegate autocompleteDelegate) {
+    public ToolbarDragDropCoordinator(FrameLayout targetView,
+            AutocompleteDelegate autocompleteDelegate, OmniboxStub omniboxStub) {
         // TargetView is inflated in order to have the onDragListener attached before it is visible
         mTargetView = targetView;
         mModel = new PropertyModel.Builder(TargetViewProperties.ALL_KEYS)
                          .with(TargetViewProperties.TARGET_VIEW_VISIBLE, View.GONE)
                          .build();
-        mTargetViewDragListener = new TargetViewDragListener(mModel, autocompleteDelegate);
+        mAutocompleteDelegate = autocompleteDelegate;
+        mTargetViewDragListener = new TargetViewDragListener(mModel, this::parseDragEvent);
         mModel.set(TargetViewProperties.ON_DRAG_LISTENER, mTargetViewDragListener);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mModel, mTargetView, new TargetViewBinder());
+        mOmniboxStub = omniboxStub;
     }
 
     @Override
@@ -70,6 +91,46 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
 
     // Checks if the dragged object is supported for dragging into Omnibox
     public static boolean isValidMimeType(DragEvent event) {
-        return event.getClipDescription().filterMimeTypes(TEXT_MIME_TYPE) != null;
+        return event.getClipDescription().filterMimeTypes(MimeTypeUtils.TEXT_MIME_TYPE) != null;
+    }
+
+    /**
+     * Handles parsing DragEvents on a drop to the Omnibox.
+     */
+    @VisibleForTesting
+    void parseDragEvent(DragEvent event) {
+        if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TEXT)) {
+            mOmniboxStub.setUrlBarFocus(true,
+                    event.getClipData()
+                            .getItemAt(0)
+                            .coerceToText(mTargetView.getContext())
+                            .toString(),
+                    OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX);
+        } else if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK)) {
+            /**
+             * This parsing is based on the implementation in
+             * DragAndDropDelegateImpl#BuildClipData. Ideally we should handle build / parsing
+             * in a similar place to keep things consistent.
+             * TODO(crbug.com/1469084): Build ClipData and parse link URL using a static helper
+             * method
+             */
+            String url = event.getClipData().getItemAt(0).getIntent().getData().toString();
+            mAutocompleteDelegate.loadUrl(url, PageTransition.TYPED, SystemClock.uptimeMillis());
+        } else {
+            // case where dragged object is not from Chrome
+            event.getClipDescription().filterMimeTypes(MimeTypeUtils.TEXT_MIME_TYPE);
+            if (event.getClipData() == null) {
+                Toast errorMessage =
+                        Toast.makeText(mTargetView.getContext(), ERROR_MESSAGE, Toast.LENGTH_SHORT);
+                errorMessage.show();
+            } else {
+                mOmniboxStub.setUrlBarFocus(true,
+                        event.getClipData()
+                                .getItemAt(0)
+                                .coerceToText(mTargetView.getContext())
+                                .toString(),
+                        OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX);
+            }
+        }
     }
 }

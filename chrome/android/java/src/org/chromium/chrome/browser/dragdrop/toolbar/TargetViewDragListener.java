@@ -4,36 +4,31 @@
 
 package org.chromium.chrome.browser.dragdrop.toolbar;
 
-import android.content.ClipData;
-import android.content.Context;
 import android.content.res.ColorStateList;
-import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
-import org.chromium.ui.base.PageTransition;
+import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator.OnDropCallback;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 /**
  * A drag listener for the target view that handles events during drag and drop to Omnibox
  */
 class TargetViewDragListener implements OnDragListener {
-    private AutocompleteDelegate mAutocompleteDelegate;
+    private OnDropCallback mOnDropCallback;
     private PropertyModel mModel;
 
     /**
      * Create the drag listener for the target view.
      *
      * @param model {@link PropertyModel} built with {@link TargetViewProperties}
-     * @param autocompleteDelegate Used to navigate on a successful drop.
+     * @param onDropCallback Used to navigate on a successful drop.
      */
-    public TargetViewDragListener(PropertyModel model, AutocompleteDelegate autocompleteDelegate) {
+    public TargetViewDragListener(PropertyModel model, OnDropCallback onDropCallback) {
         mModel = model;
-        mAutocompleteDelegate = autocompleteDelegate;
+        mOnDropCallback = onDropCallback;
     }
 
     @Override
@@ -50,19 +45,10 @@ class TargetViewDragListener implements OnDragListener {
                 mModel.set(TargetViewProperties.TARGET_VIEW_COLOR, null);
                 break;
             case DragEvent.ACTION_DROP:
-                String url = getUrlFromClipData(event.getClipData(), v.getContext());
-                // TODO(https://crbug.com/1465940): Handle invalid url and fix parsing
-                mAutocompleteDelegate.loadUrl(
-                        url, PageTransition.TYPED, SystemClock.uptimeMillis());
+                mOnDropCallback.parseDragEvent(event);
                 mModel.set(TargetViewProperties.TARGET_VIEW_COLOR, null);
                 return true;
         }
         return false;
-    }
-
-    public static String getUrlFromClipData(ClipData clipData, Context context) {
-        String text = clipData.getItemAt(0).coerceToText(context).toString();
-        GURL gurl = new GURL(text);
-        return gurl.isValid() ? gurl.getSpec() : "";
     }
 }

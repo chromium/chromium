@@ -30,6 +30,11 @@ public class MimeTypeUtils {
     public static final String CHROME_MIMETYPE_LINK = "chrome/link";
 
     /**
+     * The MIME type for text.
+     */
+    public static final String TEXT_MIME_TYPE = "text/plain";
+
+    /**
      * A set of known mime types.
      */
     // Note: these values must match the AndroidUtilsMimeTypes enum in enums.xml.

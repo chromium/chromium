@@ -690,8 +690,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 ViewStub targetViewStub =
                         ((ViewStub) mActivity.findViewById(R.id.target_view_stub));
                 assert targetViewStub != null;
-                mToolbarDragDropCoordinator = new ToolbarDragDropCoordinator(
-                        (FrameLayout) targetViewStub.inflate(), locationBarCoordinator);
+                mToolbarDragDropCoordinator =
+                        new ToolbarDragDropCoordinator((FrameLayout) targetViewStub.inflate(),
+                                locationBarCoordinator, locationBarCoordinator.getOmniboxStub());
                 mControlContainer.setOnDragListener(mToolbarDragDropCoordinator);
             }
         }
