@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
@@ -107,15 +108,17 @@ void GameDashboardToolbarView::AddShortcutTiles() {
 
   MayAddGameControlsTile();
 
-  // TODO(b/273641250): Filter out record game button based on device info.
-  record_game_button_ = AddChildView(CreateIconButton(
-      base::BindRepeating(&GameDashboardToolbarView::OnRecordButtonPressed,
-                          base::Unretained(this)),
-      &kGdRecordGameIcon,
-      base::to_underlying(ToolbarViewId::kScreenRecordButton),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
-      /*is_togglable=*/false));
+  if (base::FeatureList::IsEnabled(
+          features::kFeatureManagementGameDashboardRecordGame)) {
+    record_game_button_ = AddChildView(CreateIconButton(
+        base::BindRepeating(&GameDashboardToolbarView::OnRecordButtonPressed,
+                            base::Unretained(this)),
+        &kGdRecordGameIcon,
+        base::to_underlying(ToolbarViewId::kScreenRecordButton),
+        l10n_util::GetStringUTF16(
+            IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
+        /*is_togglable=*/false));
+  }
 
   AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnScreenshotButtonPressed,

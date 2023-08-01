@@ -426,9 +426,12 @@ TEST_P(GameTypeGameDashboardContextTest,
                               ArcGameControlsFlag::kKnown);
   }
   test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
 
   // Verify that the record game tile is unavailable in the main menu.
   EXPECT_FALSE(test_api_->GetMainMenuRecordGameTile());
+  // Verify that the record game button is unavailable in the toolbar.
+  EXPECT_FALSE(test_api_->GetToolbarRecordGameButton());
 }
 
 // Verifies the main menu screenshot tile will take a screenshot of the game
