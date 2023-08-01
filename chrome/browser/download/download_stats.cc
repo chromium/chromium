@@ -164,6 +164,7 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::REVIEW:
     case DownloadCommands::Command::RETRY:
     case DownloadCommands::Command::CANCEL_DEEP_SCAN:
+    case DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED:
       NOTREACHED();
       return DownloadShelfContextMenuAction::kNotReached;
   }

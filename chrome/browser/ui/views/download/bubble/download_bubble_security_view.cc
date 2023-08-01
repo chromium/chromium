@@ -324,6 +324,7 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
     checkbox_->SetText(ui_info.checkbox_label);
   }
 
+  // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
   if (model_->GetDangerType() == download::DownloadDangerType::
                                      DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
       base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
@@ -341,6 +342,26 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
     deep_scanning_link_->SizeToFit(GetMinimumLabelWidth());
   } else {
     deep_scanning_link_->SetVisible(false);
+  }
+
+  if (ui_info.learn_more_link) {
+    learn_more_link_->SetText(ui_info.learn_more_link->label_and_link_text);
+    size_t link_start_offset =
+        ui_info.learn_more_link->linked_range.start_offset;
+    gfx::Range link_range{
+        link_start_offset,
+        link_start_offset + ui_info.learn_more_link->linked_range.length};
+    views::StyledLabel::RangeStyleInfo link_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &DownloadBubbleUIController::ProcessDownloadButtonPress,
+            bubble_controller_, model_.get(),
+            ui_info.learn_more_link->linked_range.command,
+            /*is_main_view=*/false));
+    learn_more_link_->AddStyleRange(link_range, link_style);
+    learn_more_link_->SetVisible(true);
+    learn_more_link_->SizeToFit(GetMinimumLabelWidth());
+  } else {
+    learn_more_link_->SetVisible(false);
   }
 }
 
@@ -442,6 +463,7 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   // Set min height for checkbox, so that it can layout label accordingly.
   checkbox_->SetMinSize(gfx::Size(0, kCheckboxHeight));
 
+  // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
   deep_scanning_link_ =
       wrapper->AddChildView(std::make_unique<views::StyledLabel>());
   deep_scanning_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
@@ -450,6 +472,15 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   // paragraph spacing between them.
   deep_scanning_link_->SetProperty(
       views::kMarginsKey, gfx::Insets().set_top(kAfterParagraphSpacing));
+
+  learn_more_link_ =
+      wrapper->AddChildView(std::make_unique<views::StyledLabel>());
+  learn_more_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  learn_more_link_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  // `learn_more_link_` is after `paragraphs_`, and we should have the
+  // paragraph spacing between them.
+  learn_more_link_->SetProperty(views::kMarginsKey,
+                                gfx::Insets().set_top(kAfterParagraphSpacing));
 }
 
 void DownloadBubbleSecurityView::AddSecondaryIconAndText() {

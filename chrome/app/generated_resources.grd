@@ -3006,6 +3006,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary text for a download item when the downloaded file may hide malware.">
         This file may hide malware
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LABEL"
+               desc="Sentence including the link to the help page about why Chrome blocks some downloaded files, indicating to the user that they can learn more by clicking on the link.">
+        Learn why <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK">$1<ex>Chrome blocks some downloads</ex></ph>
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS"
                desc="Dangerous warning for the user.">
         Dangerous

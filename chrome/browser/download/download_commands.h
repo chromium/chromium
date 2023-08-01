@@ -33,6 +33,7 @@ class DownloadCommands {
     LEARN_MORE_SCANNING,  // Show information about download scanning.
     LEARN_MORE_INTERRUPTED,  // Show information about interrupted downloads.
     LEARN_MORE_INSECURE_DOWNLOAD,  // Show info about insecure downloads.
+    LEARN_MORE_DOWNLOAD_BLOCKED,   // Show info about blocked downloads.
     COPY_TO_CLIPBOARD,             // Copy the contents to the clipboard.
     DEEP_SCAN,             // Send file to Safe Browsing for deep scanning.
     BYPASS_DEEP_SCANNING,  // Bypass the prompt to deep scan.

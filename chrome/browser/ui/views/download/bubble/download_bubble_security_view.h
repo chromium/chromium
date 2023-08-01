@@ -117,7 +117,9 @@ class DownloadBubbleSecurityView : public views::View,
   raw_ptr<views::ImageView> secondary_icon_ = nullptr;
   raw_ptr<views::StyledLabel> secondary_styled_label_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
+  // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
   raw_ptr<views::StyledLabel> deep_scanning_link_ = nullptr;
+  raw_ptr<views::StyledLabel> learn_more_link_ = nullptr;
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
   absl::optional<base::Time> warning_time_;
   bool did_log_action_ = false;

@@ -135,6 +135,25 @@ class DownloadUIModel {
                   const gfx::VectorIcon* icon);
     };
 
+    struct LabelWithLink {
+      struct LinkedRange {
+        // The offset where the link text (i.e. "Chrome blocks some downloads")
+        // starts, with respect to the label string containing it.
+        size_t start_offset = 0;
+        // Link text length.
+        size_t length = 0;
+        // Action to perform when the link is clicked.
+        DownloadCommands::Command command = DownloadCommands::Command::MAX;
+      };
+
+      // The entire label string with link, i.e. "Learn why Chrome blocks some
+      // downloads".
+      std::u16string label_and_link_text;
+      // The link info. Note this assumes that the text contains exactly one
+      // link.
+      LinkedRange linked_range;
+    };
+
     // has a progress bar and a cancel button.
     bool has_progress_bar = false;
     bool is_progress_bar_looping = false;
@@ -170,6 +189,10 @@ class DownloadUIModel {
     // Subpage buttons
     std::vector<SubpageButton> subpage_buttons;
 
+    // Text with link to go at the bottom of the subpage summary, such as "Learn
+    // why Chrome blocks some downloads".
+    absl::optional<LabelWithLink> learn_more_link;
+
     BubbleUIInfo();
     ~BubbleUIInfo();
     BubbleUIInfo(const BubbleUIInfo&);
@@ -196,6 +219,12 @@ class DownloadUIModel {
     BubbleUIInfo& AddQuickAction(DownloadCommands::Command command,
                                  const std::u16string& label,
                                  const gfx::VectorIcon* icon);
+    // Add a learn_more_link with the specified message ids and command when
+    // clicked. Assumes that the message given by label_text_id has a
+    // placeholder where the message specified by link_text_id should go.
+    BubbleUIInfo& AddLearnMoreLink(int label_text_id,
+                                   int link_text_id,
+                                   DownloadCommands::Command command);
 
     // Set common characteristics for dangerous or suspicious downloads.
     static BubbleUIInfo DangerousUiPattern(

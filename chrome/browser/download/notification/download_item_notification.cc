@@ -200,6 +200,7 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     // Not actually displayed in notification, so should never be reached.
     case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
@@ -922,6 +923,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
 #endif
     case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:

@@ -152,6 +152,9 @@ extern const char kDownloadInterruptedLearnMoreURL[];
 // The URL for the "Learn more" page for download scanning.
 extern const char kDownloadScanningLearnMoreURL[];
 
+// The URL for the "Learn more" page for blocked downloads.
+extern const char kDownloadBlockedLearnMoreURL[];
+
 // "Learn more" URL for the Settings API, NTP bubble and other settings bubbles
 // showing which extension is controlling them.
 extern const char kExtensionControlledSettingLearnMoreURL[];

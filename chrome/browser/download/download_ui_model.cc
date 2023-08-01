@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_utils.h"
@@ -25,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/google/core/common/google_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -631,6 +633,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
@@ -662,6 +665,7 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
@@ -704,6 +708,14 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
       download_commands->GetBrowser()->OpenURL(content::OpenURLParams(
           GURL(chrome::kInsecureDownloadBlockingLearnMoreUrl),
+          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, false));
+      break;
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
+      download_commands->GetBrowser()->OpenURL(content::OpenURLParams(
+          google_util::AppendGoogleLocaleParam(
+              GURL(chrome::kDownloadBlockedLearnMoreURL),
+              g_browser_process->GetApplicationLocale()),
           content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK, false));
       break;
@@ -820,11 +832,29 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddQuickAction(
   return *this;
 }
 
+DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddLearnMoreLink(
+    int label_text_id,
+    int link_text_id,
+    DownloadCommands::Command command) {
+  size_t link_start_offset = 0;
+  std::u16string link_text = l10n_util::GetStringUTF16(link_text_id);
+  std::u16string label_and_link_text =
+      l10n_util::GetStringFUTF16(label_text_id, link_text, &link_start_offset);
+  learn_more_link = LabelWithLink{
+      label_and_link_text, LabelWithLink::LinkedRange{
+                               link_start_offset, link_text.length(), command}};
+  return *this;
+}
+
 // static
 DownloadUIModel::BubbleUIInfo DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
     const std::u16string& subpage_summary) {
   return DownloadUIModel::BubbleUIInfo()
       .AddSubpageSummary(subpage_summary)
+      .AddLearnMoreLink(
+          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LABEL,
+          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK,
+          DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED)
       .AddIconAndColor(features::IsChromeRefresh2023()
                            ? vector_icons::kDangerousChromeRefreshIcon
                            : vector_icons::kDangerousIcon,
@@ -846,6 +876,10 @@ DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
                            ? kDownloadWarningIcon
                            : vector_icons::kNotSecureWarningIcon,
                        kColorDownloadItemIconWarning)
+      .AddLearnMoreLink(
+          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LABEL,
+          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK,
+          DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED)
       .AddSecondaryTextColor(kColorDownloadItemTextWarning)
       .AddPrimarySubpageButton(
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE_FROM_HISTORY),
