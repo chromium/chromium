@@ -8,6 +8,7 @@ source_set("recent_tabs") {
     "closed_tabs_observer_bridge.mm",
     "recent_tabs_coordinator.h",
     "recent_tabs_coordinator.mm",
+    "recent_tabs_coordinator_delegate.h",
     "recent_tabs_mediator.h",
     "recent_tabs_mediator.mm",
     "recent_tabs_menu_helper.h",

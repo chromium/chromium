@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
@@ -160,7 +162,7 @@
 
 - (void)dismissButtonTapped {
   base::RecordAction(base::UserMetricsAction("MobileRecentTabsClose"));
-  [self stop];
+  [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
 }
 
 #pragma mark - RecentTabsPresentationDelegate
@@ -184,7 +186,7 @@
 - (void)showActiveRegularTabFromRecentTabs {
   // Stopping this coordinator reveals the tab UI underneath.
   self.completion = nil;
-  [self stop];
+  [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
 }
 
 - (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
@@ -197,7 +199,7 @@
     [handler showHistory];
     weakSelf.completion = nil;
   };
-  [self stop];
+  [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
 }
 
 #pragma mark - RecentTabsContextMenuDelegate

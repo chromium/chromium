@@ -163,6 +163,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
@@ -260,6 +261,7 @@ enum class ToolbarKind {
                                   PolicyChangeCommands,
                                   PreloadControllerDelegate,
                                   ReadingListCoordinatorDelegate,
+                                  RecentTabsCoordinatorDelegate,
                                   RepostFormCoordinatorDelegate,
                                   RepostFormTabHelperDelegate,
                                   SigninPresenter,
@@ -651,6 +653,7 @@ enum class ToolbarKind {
 
 #pragma mark - Private
 
+// Stops the password protection coordinator.
 - (void)stopPasswordProtectionCoordinator {
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator.delegate = nil;
@@ -661,6 +664,13 @@ enum class ToolbarKind {
   [self.repostFormCoordinator stop];
   self.repostFormCoordinator.delegate = nil;
   self.repostFormCoordinator = nil;
+}
+
+// Stops the recent tabs coordinator
+- (void)stopRecentTabsCoordinator {
+  [self.recentTabsCoordinator stop];
+  self.recentTabsCoordinator.delegate = nil;
+  self.recentTabsCoordinator = nil;
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
@@ -1259,8 +1269,7 @@ enum class ToolbarKind {
   self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
 
-  [self.recentTabsCoordinator stop];
-  self.recentTabsCoordinator = nil;
+  [self stopRecentTabsCoordinator];
 
   [self stopRepostFormCoordinator];
 
@@ -1558,15 +1567,14 @@ enum class ToolbarKind {
   // require finding a way to stop this coordinator so that the mediator is
   // properly disconnected and destroyed and does not live longer than its
   // associated VC.
-  if (self.recentTabsCoordinator) {
-    [self.recentTabsCoordinator stop];
-    self.recentTabsCoordinator = nil;
-  }
+  [self.recentTabsCoordinator stop];
+  self.recentTabsCoordinator = nil;
 
   self.recentTabsCoordinator = [[RecentTabsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   self.recentTabsCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
+  self.recentTabsCoordinator.delegate = self;
   [self.recentTabsCoordinator start];
 }
 
@@ -2954,6 +2962,14 @@ enum class ToolbarKind {
     (RepostFormCoordinator*)coordinator {
   CHECK_EQ(self.repostFormCoordinator, coordinator);
   [self stopRepostFormCoordinator];
+}
+
+#pragma mark - RecentTabsCoordinatorDelegate
+
+- (void)recentTabsCoordinatorWantsToBeDismissed:
+    (RecentTabsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.recentTabsCoordinator);
+  [self stopRecentTabsCoordinator];
 }
 
 @end
