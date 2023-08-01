@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -612,6 +613,8 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
 
 std::vector<std::unique_ptr<DeviceInfo>>
 DeviceInfoSyncBridge::GetAllDeviceInfo() const {
+  TRACE_EVENT1("sync", "DeviceInfoSyncBridge::GetAllDeviceInfo", "size",
+               all_data_.size());
   std::vector<std::unique_ptr<DeviceInfo>> list;
   for (const auto& [cache_guid, specifics] : all_data_) {
     if (IsChromeClient(*specifics)) {
