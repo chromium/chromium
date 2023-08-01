@@ -16,6 +16,13 @@ GEN('#include "content/public/test/browser_test.h"');
 const ROOT_PAGE = 'chrome://personalization/';
 const DEFAULT_WALLPAPER_NAME = 'Default Wallpaper';
 
+// See ash/public/cpp/personalization_app/time_of_day_test_utils.h/cc.
+const TIME_OF_DAY_DISABLED_FEATURES = [
+  'ash::features::kTimeOfDayWallpaper', 'ash::features::kTimeOfDayScreenSaver',
+  'ash::features::kFeatureManagementTimeOfDayWallpaper',
+  'ash::features::kFeatureManagementTimeOfDayScreenSaver'
+];
+
 /**
  * Wait until `func` returns a truthy value.
  * If `timeoutMs` milliseconds elapse, will reject with `message`.
@@ -353,7 +360,7 @@ class PersonalizationAppWallpaperSubpageBrowserTest extends
       // is irrelevant for these test cases. It must explicitly be disabled
       // here.
       // TODO(b/292651329) enable this.
-      disabled: ['ash::features::kTimeOfDayWallpaper'],
+      disabled: TIME_OF_DAY_DISABLED_FEATURES,
     };
   }
 }
@@ -619,10 +626,7 @@ class PersonalizationAppDynamicColorEnabledBrowserTest extends
         'chromeos::features::kJelly',
       ],
       // TODO(b/292651329) enable these.
-      disabled: [
-        'ash::features::kTimeOfDayWallpaper',
-        'ash::features::kTimeOfDayScreenSaver',
-      ],
+      disabled: TIME_OF_DAY_DISABLED_FEATURES,
     };
   }
 }

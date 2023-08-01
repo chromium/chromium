@@ -85,6 +85,7 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/public/cpp:test_support",
     "//ash/webui/personalization_app/search:mojo_bindings",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",

@@ -553,6 +553,8 @@ source_set("accelerator_actions") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "personalization_app/time_of_day_test_utils.cc",
+    "personalization_app/time_of_day_test_utils.h",
     "test/in_process_image_decoder.cc",
     "test/in_process_image_decoder.h",
     "test/mock_in_session_auth_token_provider.cc",
@@ -586,6 +588,7 @@ source_set("test_support") {
   deps = [
     ":cpp",
     "//base",
+    "//base/test:test_support",
     "//components/access_code_cast/common:metrics",
     "//mojo/public/cpp/bindings",
     "//services/data_decoder/public/cpp:service_provider",

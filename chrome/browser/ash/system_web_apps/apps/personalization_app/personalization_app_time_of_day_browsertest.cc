@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
@@ -111,12 +112,7 @@ class PersonalizationAppTimeOfDayBrowserTest
  public:
   PersonalizationAppTimeOfDayBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {
-            ::ash::features::kTimeOfDayWallpaper,
-            ::ash::features::kFeatureManagementTimeOfDayWallpaper,
-            ::chromeos::features::kJelly,
-        },
-        {});
+        personalization_app::GetTimeOfDayEnabledFeatures(), {});
     base::Time start_time = StartTime();
     clock_.SetNow(start_time);
     tick_clock_.SetNowTicks(base::TimeTicks() + (start_time - base::Time()));

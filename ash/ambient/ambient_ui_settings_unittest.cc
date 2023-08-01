@@ -9,6 +9,7 @@
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -40,12 +41,10 @@ TEST_F(AmbientUiSettingsTest, DefaultConstructor) {
 }
 
 TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
-  std::vector<base::test::FeatureRef> time_of_day_features = {
-      features::kTimeOfDayScreenSaver, features::kTimeOfDayWallpaper,
-      features::kFeatureManagementTimeOfDayScreenSaver,
-      features::kFeatureManagementTimeOfDayWallpaper};
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({}, time_of_day_features);
+  scoped_feature_list.InitWithFeatures(
+      {}, personalization_app::GetTimeOfDayDisabledFeatures());
+
   ASSERT_FALSE(features::IsTimeOfDayScreenSaverEnabled());
 
   // No prior set up for kAmbientUiSettings prefs. Without TOD features,
@@ -57,7 +56,8 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
       Eq(kDefaultAmbientTheme));
 
   scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(time_of_day_features, {});
+  scoped_feature_list.InitWithFeatures(
+      personalization_app::GetTimeOfDayEnabledFeatures(), {});
   ASSERT_TRUE(features::IsTimeOfDayScreenSaverEnabled());
   // No prior set up for kAmbientUiSettings prefs. With TOD features, kVideo is
   // set as default.

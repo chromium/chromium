@@ -14,6 +14,7 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
+#include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
@@ -170,11 +171,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
                 base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kTimeOfDayWallpaper,
-         ash::features::kTimeOfDayScreenSaver,
-         ash::features::kFeatureManagementTimeOfDayWallpaper,
-         ash::features::kFeatureManagementTimeOfDayScreenSaver},
-        {});
+        personalization_app::GetTimeOfDayEnabledFeatures(), {});
   }
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;

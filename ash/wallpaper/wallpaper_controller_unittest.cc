@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -786,18 +787,32 @@ class WallpaperControllerTestBase : public AshTestBase {
   TestImageDecoder decoder_;
 };
 
-class WallpaperControllerTest : public WallpaperControllerTestBase,
-                                public testing::WithParamInterface<bool> {
+// All possible feature combinations that can occur in the real world.
+enum class JellyFeatureCombination {
+  kDisabled,
+  kEnabled,
+  kEnabledWithTimeOfDay
+};
+
+class WallpaperControllerTest
+    : public WallpaperControllerTestBase,
+      public testing::WithParamInterface<JellyFeatureCombination> {
  public:
   WallpaperControllerTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kTimeOfDayWallpaper,
-        features::kFeatureManagementTimeOfDayWallpaper};
+    std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (IsJellyEnabled()) {
-      enabled_features.push_back(chromeos::features::kJelly);
-    } else {
-      disabled_features.push_back(chromeos::features::kJelly);
+    switch (GetParam()) {
+      case JellyFeatureCombination::kDisabled:
+        disabled_features = personalization_app::GetTimeOfDayDisabledFeatures();
+        disabled_features.push_back(chromeos::features::kJelly);
+        break;
+      case JellyFeatureCombination::kEnabled:
+        disabled_features = personalization_app::GetTimeOfDayDisabledFeatures();
+        enabled_features.push_back(chromeos::features::kJelly);
+        break;
+      case JellyFeatureCombination::kEnabledWithTimeOfDay:
+        enabled_features = personalization_app::GetTimeOfDayEnabledFeatures();
+        break;
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -807,13 +822,38 @@ class WallpaperControllerTest : public WallpaperControllerTestBase,
 
   ~WallpaperControllerTest() override = default;
 
-  bool IsJellyEnabled() { return GetParam(); }
+  bool IsJellyEnabled() const {
+    switch (GetParam()) {
+      case JellyFeatureCombination::kDisabled:
+        return false;
+      case JellyFeatureCombination::kEnabled:
+      case JellyFeatureCombination::kEnabledWithTimeOfDay:
+        return true;
+    }
+  }
+
+  bool IsTimeOfDayEnabled() const {
+    switch (GetParam()) {
+      case JellyFeatureCombination::kDisabled:
+      case JellyFeatureCombination::kEnabled:
+        return false;
+      case JellyFeatureCombination::kEnabledWithTimeOfDay:
+        return true;
+    }
+  }
 
   // Populate meaningful test suffixes instead of /0, /1, etc.
   struct PrintToStringParamName {
     std::string operator()(
         const testing::TestParamInfo<ParamType>& info) const {
-      return info.param ? "JellyOn" : "JellyOff";
+      switch (info.param) {
+        case JellyFeatureCombination::kDisabled:
+          return "JellyOff";
+        case JellyFeatureCombination::kEnabled:
+          return "JellyOn";
+        case JellyFeatureCombination::kEnabledWithTimeOfDay:
+          return "JellyOnWithTimeOfDay";
+      }
     }
   };
 
@@ -825,7 +865,9 @@ INSTANTIATE_TEST_SUITE_P(
     // Empty to simplify gtest output
     ,
     WallpaperControllerTest,
-    testing::Bool(),
+    ::testing::Values(JellyFeatureCombination::kDisabled,
+                      JellyFeatureCombination::kEnabled,
+                      JellyFeatureCombination::kEnabledWithTimeOfDay),
     WallpaperControllerTest::PrintToStringParamName());
 
 TEST_P(WallpaperControllerTest, Client) {
@@ -1498,6 +1540,9 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaper) {
 }
 
 TEST_P(WallpaperControllerTest, SetTimeOfDayWallpaper) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
   auto images = TimeOfDayImageSet();
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
@@ -1537,6 +1582,9 @@ TEST_P(WallpaperControllerTest, SetTimeOfDayWallpaper) {
 
 TEST_P(WallpaperControllerTest,
        ActiveUserPrefServiceChanged_SetTimeOfDayWallpaper) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
   auto images = TimeOfDayImageSet();
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
@@ -1557,6 +1605,9 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        TimeOfDayWallpaper_ReplacedByUserWallpaper_DuringOobe) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
   auto images = TimeOfDayImageSet();
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
@@ -1589,6 +1640,9 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        ActiveUserPrefServiceChanged_OOBEForSecondUser_SetTimeOfDayWallpaper) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
   auto images = TimeOfDayImageSet();
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
@@ -1611,6 +1665,9 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        ActiveUserPrefServiceChanged_NonOOBE_SetTimeOfDayWallpaper) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
   auto images = TimeOfDayImageSet();
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
@@ -3850,7 +3907,7 @@ class WallpaperControllerPrefTest : public AshTestBase {
  public:
   WallpaperControllerPrefTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kJelly, features::kTimeOfDayWallpaper}, {});
+        personalization_app::GetTimeOfDayEnabledFeatures(), {});
     base::Value::Dict property;
     property.Set("rotation", static_cast<int>(display::Display::ROTATE_90));
     property.Set("width", 800);

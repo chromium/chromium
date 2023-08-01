@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
@@ -163,10 +164,7 @@ TEST_F(ColorPaletteControllerTest,
        ExpectedColorScheme_TimeOfDay_UsesDefaultScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kTimeOfDayWallpaper,
-       ash::features::kFeatureManagementTimeOfDayWallpaper,
-       chromeos::features::kJelly},
-      {});
+      personalization_app::GetTimeOfDayEnabledFeatures(), {});
   EXPECT_EQ(kDefaultColorScheme,
             color_palette_controller()->GetColorScheme(kAccountId));
 }
@@ -923,10 +921,7 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccount_TimeOfDayScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kTimeOfDayWallpaper,
-       ash::features::kFeatureManagementTimeOfDayWallpaper,
-       chromeos::features::kJelly},
-      {});
+      personalization_app::GetTimeOfDayEnabledFeatures(), {});
   // Sets the current wallpaper to be ToD.
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.ShowWallpaperImage(CreateTimeOfDayWallpaperInfo(),
