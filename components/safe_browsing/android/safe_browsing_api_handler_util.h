@@ -14,37 +14,37 @@
 namespace safe_browsing {
 
 // These match what SafetyNetApiHandler.java uses for |resultStatus|
-enum SafetyNetRemoteCallResultStatus {
-  RESULT_STATUS_INTERNAL_ERROR = -1,
-  RESULT_STATUS_SUCCESS = 0,
-  RESULT_STATUS_TIMEOUT = 1,
+enum class SafetyNetRemoteCallResultStatus {
+  INTERNAL_ERROR = -1,
+  SUCCESS = 0,
+  TIMEOUT = 1,
 };
 
 // Threat types as per the Java code.
-// This must match those in GMS's SafeBrowsingThreat.java.
-enum SafetyNetJavaThreatTypes {
-  JAVA_THREAT_TYPE_UNWANTED_SOFTWARE = 3,
-  JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION = 4,
-  JAVA_THREAT_TYPE_SOCIAL_ENGINEERING = 5,
-  JAVA_THREAT_TYPE_SUBRESOURCE_FILTER = 13,
-  JAVA_THREAT_TYPE_BILLING = 15,
+// This must match those in SafeBrowsingThreat.java in GMS's SafetyNet API.
+enum class SafetyNetJavaThreatType {
+  UNWANTED_SOFTWARE = 3,
+  POTENTIALLY_HARMFUL_APPLICATION = 4,
+  SOCIAL_ENGINEERING = 5,
+  SUBRESOURCE_FILTER = 13,
+  BILLING = 15,
   // Magic numbers for allowlists. Not actually used by GMSCore.
-  JAVA_THREAT_TYPE_CSD_ALLOWLIST = 16,
-  JAVA_THREAT_TYPE_MAX_VALUE
+  CSD_ALLOWLIST = 16,
+  MAX_VALUE
 };
 
 // Do not reorder or delete entries, and make sure changes here are reflected
 // in SB2RemoteCallResult histogram.
-enum UmaRemoteCallResult {
-  UMA_STATUS_INTERNAL_ERROR = 0,
-  UMA_STATUS_TIMEOUT = 1,
-  UMA_STATUS_SAFE = 2,
-  UMA_STATUS_MATCH = 3,
-  UMA_STATUS_JSON_EMPTY = 4,
-  UMA_STATUS_JSON_FAILED_TO_PARSE = 5,
-  UMA_STATUS_JSON_UNKNOWN_THREAT = 6,
-  UMA_STATUS_UNSUPPORTED = 7,
-  UMA_STATUS_MAX_VALUE
+enum class UmaRemoteCallResult {
+  INTERNAL_ERROR = 0,
+  TIMEOUT = 1,
+  SAFE = 2,
+  MATCH = 3,
+  JSON_EMPTY = 4,
+  JSON_FAILED_TO_PARSE = 5,
+  JSON_UNKNOWN_THREAT = 6,
+  UNSUPPORTED = 7,
+  MAX_VALUE
 };
 
 // This parses the JSON from the GMSCore API and then:

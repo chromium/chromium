@@ -32,10 +32,12 @@ namespace {
 // SafeBrowsingApiHandlerBridgeNativeUnitTestHelper.
 constexpr int kExpectedCheckDeltaMs = 10;
 
-constexpr int kAllThreatsOfInterest[] = {
-    JAVA_THREAT_TYPE_UNWANTED_SOFTWARE,
-    JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION,
-    JAVA_THREAT_TYPE_SOCIAL_ENGINEERING, JAVA_THREAT_TYPE_BILLING};
+std::vector<SafetyNetJavaThreatType> GetAllSafetyNetThreatsOfInterest() {
+  return {SafetyNetJavaThreatType::UNWANTED_SOFTWARE,
+          SafetyNetJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION,
+          SafetyNetJavaThreatType::SOCIAL_ENGINEERING,
+          SafetyNetJavaThreatType::BILLING};
+}
 
 SBThreatTypeSet GetAllThreatTypes() {
   return CreateSBThreatTypeSet(
@@ -60,19 +62,24 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
  protected:
   void AddSafetyNetBlocklistResponse(const GURL& url,
                                      const std::string& metadata,
-                                     const int* expected_threats_of_interest,
-                                     const size_t expected_threat_size) {
+                                     const std::vector<SafetyNetJavaThreatType>&
+                                         expected_threats_of_interest) {
     ScopedJavaLocalRef<jstring> j_url =
         ConvertUTF8ToJavaString(env_, url.spec());
+    int int_threats_of_interest[expected_threats_of_interest.size()];
+    int* itr = &int_threats_of_interest[0];
+    for (auto threat_type : expected_threats_of_interest) {
+      *itr++ = static_cast<int>(threat_type);
+    }
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setExpectedSafetyNetApiHandlerThreatsOfInterest(
         env_, j_url,
-        ToJavaIntArray(env_, expected_threats_of_interest,
-                       expected_threat_size));
+        ToJavaIntArray(env_, int_threats_of_interest,
+                       expected_threats_of_interest.size()));
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetApiHandlerMetadata(
         env_, j_url, ConvertUTF8ToJavaString(env_, metadata));
   }
 
-  void CheckHistogramValues(int expected_result) {
+  void CheckHistogramValues(UmaRemoteCallResult expected_result) {
     histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.CheckDelta",
                                          /*sample=*/kExpectedCheckDeltaMs,
                                          /*expected_bucket_count=*/1);
@@ -88,8 +95,8 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Safe) {
   GURL url("https://example.com");
-  AddSafetyNetBlocklistResponse(url, /*metadata=*/"{}", kAllThreatsOfInterest,
-                                /*expected_threat_size=*/4);
+  AddSafetyNetBlocklistResponse(url, /*metadata=*/"{}",
+                                GetAllSafetyNetThreatsOfInterest());
 
   auto callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
@@ -101,7 +108,8 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Safe) {
       std::move(callback), url, GetAllThreatTypes());
   task_environment_.RunUntilIdle();
 
-  CheckHistogramValues(/*expected_result=*/UMA_STATUS_SAFE);
+  CheckHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::SAFE);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -110,8 +118,8 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   GURL url("https://example.com");
   // threat_type: 3 is unwanted.
   std::string metadata = "{\"matches\":[{\"threat_type\":\"3\"}]}";
-  AddSafetyNetBlocklistResponse(url, metadata, kAllThreatsOfInterest,
-                                /*expected_threat_size=*/4);
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                GetAllSafetyNetThreatsOfInterest());
 
   auto callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
@@ -123,7 +131,8 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       std::move(callback), url, GetAllThreatTypes());
   task_environment_.RunUntilIdle();
 
-  CheckHistogramValues(/*expected_result=*/UMA_STATUS_MATCH);
+  CheckHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::MATCH);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -131,8 +140,8 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   GURL url("https://example.com");
   std::string metadata =
       "{\"matches\":[{\"threat_type\":\"4\"}, {\"threat_type\":\"5\"}]}";
-  AddSafetyNetBlocklistResponse(url, metadata, kAllThreatsOfInterest,
-                                /*expected_threat_size=*/4);
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                GetAllSafetyNetThreatsOfInterest());
 
   auto callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
@@ -147,19 +156,18 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       std::move(callback), url, GetAllThreatTypes());
   task_environment_.RunUntilIdle();
 
-  CheckHistogramValues(/*expected_result=*/UMA_STATUS_MATCH);
+  CheckHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::MATCH);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
        HashDatabaseUrlCheck_ThreatMatchWithSubresourceFilter) {
   GURL url("https://example.com");
-  const int expected_java_threat_types[] = {
-      JAVA_THREAT_TYPE_SUBRESOURCE_FILTER};
   std::string metadata =
       "{\"matches\":[{\"threat_type\":\"13\", "
       "\"sf_absv\":\"enforce\"}]}";
-  AddSafetyNetBlocklistResponse(url, metadata, expected_java_threat_types,
-                                /*expected_threat_size=*/1);
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                {SafetyNetJavaThreatType::SUBRESOURCE_FILTER});
 
   auto callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
@@ -177,23 +185,20 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       CreateSBThreatTypeSet({SB_THREAT_TYPE_SUBRESOURCE_FILTER}));
   task_environment_.RunUntilIdle();
 
-  CheckHistogramValues(/*expected_result=*/UMA_STATUS_MATCH);
+  CheckHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::MATCH);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
        HashDatabaseUrlCheck_MultipleRequests) {
   GURL unsafe_url("https://unsafe.com");
   GURL safe_url("https://safe.com");
-  const int expected_java_threat_types[] = {
-      JAVA_THREAT_TYPE_SOCIAL_ENGINEERING};
   std::string metadata_unsafe = "{\"matches\":[{\"threat_type\":\"5\"}]}";
   std::string metadata_safe = "{}";
   AddSafetyNetBlocklistResponse(unsafe_url, metadata_unsafe,
-                                expected_java_threat_types,
-                                /*expected_threat_size=*/1);
+                                {SafetyNetJavaThreatType::SOCIAL_ENGINEERING});
   AddSafetyNetBlocklistResponse(safe_url, metadata_safe,
-                                expected_java_threat_types,
-                                /*expected_threat_size=*/1);
+                                {SafetyNetJavaThreatType::SOCIAL_ENGINEERING});
 
   auto unsafe_callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
@@ -219,16 +224,16 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
                                        /*sample=*/kExpectedCheckDeltaMs,
                                        /*expected_bucket_count=*/2);
   histogram_tester_.ExpectBucketCount("SB2.RemoteCall.Result",
-                                      /*sample=*/UMA_STATUS_MATCH,
+                                      /*sample=*/UmaRemoteCallResult::MATCH,
                                       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount("SB2.RemoteCall.Result",
-                                      /*sample=*/UMA_STATUS_SAFE,
+                                      /*sample=*/UmaRemoteCallResult::SAFE,
                                       /*expected_count=*/1);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
   Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetApiHandlerResult(
-      env_, RESULT_STATUS_TIMEOUT);
+      env_, static_cast<int>(SafetyNetRemoteCallResultStatus::TIMEOUT));
   GURL url("https://example.com");
 
   auto callback =
@@ -241,7 +246,8 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
       std::move(callback), url, GetAllThreatTypes());
   task_environment_.RunUntilIdle();
 
-  CheckHistogramValues(/*expected_result=*/UMA_STATUS_TIMEOUT);
+  CheckHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::TIMEOUT);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {

@@ -46,30 +46,31 @@ void RunCallbackOnSBThread(
       FROM_HERE, base::BindOnce(std::move(*callback), threat_type, metadata));
 }
 
-void ReportUmaResult(safe_browsing::UmaRemoteCallResult result) {
+void ReportUmaResult(UmaRemoteCallResult result) {
   UMA_HISTOGRAM_ENUMERATION("SB2.RemoteCall.Result", result,
-                            safe_browsing::UMA_STATUS_MAX_VALUE);
+                            UmaRemoteCallResult::MAX_VALUE);
 }
 
 // Convert a SBThreatType to a Java SafetyNet API threat type.  We only support
 // a few.
-int SBThreatTypeToSafetyNetJavaThreatType(const SBThreatType& sb_threat_type) {
+SafetyNetJavaThreatType SBThreatTypeToSafetyNetJavaThreatType(
+    const SBThreatType& sb_threat_type) {
   switch (sb_threat_type) {
     case SB_THREAT_TYPE_BILLING:
-      return safe_browsing::JAVA_THREAT_TYPE_BILLING;
+      return SafetyNetJavaThreatType::BILLING;
     case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-      return safe_browsing::JAVA_THREAT_TYPE_SUBRESOURCE_FILTER;
+      return SafetyNetJavaThreatType::SUBRESOURCE_FILTER;
     case SB_THREAT_TYPE_URL_PHISHING:
-      return safe_browsing::JAVA_THREAT_TYPE_SOCIAL_ENGINEERING;
+      return SafetyNetJavaThreatType::SOCIAL_ENGINEERING;
     case SB_THREAT_TYPE_URL_MALWARE:
-      return safe_browsing::JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION;
+      return SafetyNetJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION;
     case SB_THREAT_TYPE_URL_UNWANTED:
-      return safe_browsing::JAVA_THREAT_TYPE_UNWANTED_SOFTWARE;
+      return SafetyNetJavaThreatType::UNWANTED_SOFTWARE;
     case SB_THREAT_TYPE_CSD_ALLOWLIST:
-      return safe_browsing::JAVA_THREAT_TYPE_CSD_ALLOWLIST;
+      return SafetyNetJavaThreatType::CSD_ALLOWLIST;
     default:
       NOTREACHED();
-      return 0;
+      return SafetyNetJavaThreatType::MAX_VALUE;
   }
 }
 
@@ -82,7 +83,8 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafetyNetJavaArray(
   int int_threat_types[threat_types.size()];
   int* itr = &int_threat_types[0];
   for (auto threat_type : threat_types) {
-    *itr++ = SBThreatTypeToSafetyNetJavaThreatType(threat_type);
+    *itr++ =
+        static_cast<int>(SBThreatTypeToSafetyNetJavaThreatType(threat_type));
   }
   return ToJavaIntArray(env, int_threat_types, threat_types.size());
 }
@@ -116,7 +118,8 @@ bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
   }
 
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
-  int j_threat_type = SBThreatTypeToSafetyNetJavaThreatType(sb_threat_type);
+  int j_threat_type =
+      static_cast<int>(SBThreatTypeToSafetyNetJavaThreatType(sb_threat_type));
   return Java_SafeBrowsingApiBridge_startAllowlistLookup(env, j_url,
                                                          j_threat_type);
 }
@@ -133,10 +136,10 @@ SafeBrowsingApiHandlerBridge& SafeBrowsingApiHandlerBridge::GetInstance() {
 // stored in |pending_safety_net_callbacks|.
 //   |callback_id| is an int form of pointer to a ::ResponseCallback
 //                 that will be called and then deleted here.
-//   |result_status| is one of those from SafeBrowsingApiHandlerBridge.java
+//   |j_result_status| is one of those from SafeBrowsingApiHandlerBridge.java
 //   |metadata| is a JSON string classifying the threat if there is one.
 void OnUrlCheckDoneOnSBThreadBySafetyNetApi(jlong callback_id,
-                                            jint result_status,
+                                            jint j_result_status,
                                             const std::string metadata) {
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                           ? content::BrowserThread::UI
@@ -153,12 +156,14 @@ void OnUrlCheckDoneOnSBThreadBySafetyNetApi(jlong callback_id,
       std::move((pending_callbacks)[callback_id]);
   pending_callbacks.erase(callback_id);
 
-  if (result_status != RESULT_STATUS_SUCCESS) {
-    if (result_status == RESULT_STATUS_TIMEOUT) {
-      ReportUmaResult(UMA_STATUS_TIMEOUT);
+  SafetyNetRemoteCallResultStatus result_status =
+      static_cast<SafetyNetRemoteCallResultStatus>(j_result_status);
+  if (result_status != SafetyNetRemoteCallResultStatus::SUCCESS) {
+    if (result_status == SafetyNetRemoteCallResultStatus::TIMEOUT) {
+      ReportUmaResult(UmaRemoteCallResult::TIMEOUT);
     } else {
-      DCHECK_EQ(result_status, RESULT_STATUS_INTERNAL_ERROR);
-      ReportUmaResult(UMA_STATUS_INTERNAL_ERROR);
+      DCHECK_EQ(result_status, SafetyNetRemoteCallResultStatus::INTERNAL_ERROR);
+      ReportUmaResult(UmaRemoteCallResult::INTERNAL_ERROR);
     }
     std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
@@ -166,7 +171,7 @@ void OnUrlCheckDoneOnSBThreadBySafetyNetApi(jlong callback_id,
 
   // Shortcut for safe, so we don't have to parse JSON.
   if (metadata == "{}") {
-    ReportUmaResult(UMA_STATUS_SAFE);
+    ReportUmaResult(UmaRemoteCallResult::SAFE);
     std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
   } else {
     // Unsafe, assuming we can parse the JSON.
@@ -244,7 +249,7 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
     // have sideloaded Chrome w/o PlayStore should land here.
     RunCallbackOnSBThread(std::move(callback), SB_THREAT_TYPE_SAFE,
                           ThreatMetadata());
-    ReportUmaResult(UMA_STATUS_UNSUPPORTED);
+    ReportUmaResult(UmaRemoteCallResult::UNSUPPORTED);
     return;
   }
 

@@ -28,46 +28,46 @@ class SafeBrowsingApiHandlerUtilTest : public ::testing::Test {
 };
 
 TEST_F(SafeBrowsingApiHandlerUtilTest, BadJson) {
-  EXPECT_EQ(UMA_STATUS_JSON_EMPTY, ResetAndParseJson(""));
+  EXPECT_EQ(UmaRemoteCallResult::JSON_EMPTY, ResetAndParseJson(""));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 
-  EXPECT_EQ(UMA_STATUS_JSON_FAILED_TO_PARSE, ResetAndParseJson("{"));
+  EXPECT_EQ(UmaRemoteCallResult::JSON_FAILED_TO_PARSE, ResetAndParseJson("{"));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 
-  EXPECT_EQ(UMA_STATUS_JSON_FAILED_TO_PARSE, ResetAndParseJson("[]"));
+  EXPECT_EQ(UmaRemoteCallResult::JSON_FAILED_TO_PARSE, ResetAndParseJson("[]"));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 
-  EXPECT_EQ(UMA_STATUS_JSON_FAILED_TO_PARSE,
+  EXPECT_EQ(UmaRemoteCallResult::JSON_FAILED_TO_PARSE,
             ResetAndParseJson("{\"matches\":\"foo\"}"));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 
-  EXPECT_EQ(UMA_STATUS_JSON_UNKNOWN_THREAT,
+  EXPECT_EQ(UmaRemoteCallResult::JSON_UNKNOWN_THREAT,
             ResetAndParseJson("{\"matches\":[{}]}"));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 
-  EXPECT_EQ(UMA_STATUS_JSON_UNKNOWN_THREAT,
+  EXPECT_EQ(UmaRemoteCallResult::JSON_UNKNOWN_THREAT,
             ResetAndParseJson("{\"matches\":[{\"threat_type\":\"junk\"}]}"));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 
-  EXPECT_EQ(UMA_STATUS_JSON_UNKNOWN_THREAT,
+  EXPECT_EQ(UmaRemoteCallResult::JSON_UNKNOWN_THREAT,
             ResetAndParseJson("{\"matches\":[{\"threat_type\":\"999\"}]}"));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 }
 
 TEST_F(SafeBrowsingApiHandlerUtilTest, BasicThreats) {
-  EXPECT_EQ(UMA_STATUS_MATCH,
+  EXPECT_EQ(UmaRemoteCallResult::MATCH,
             ResetAndParseJson("{\"matches\":[{\"threat_type\":\"4\"}]}"));
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, threat_);
   EXPECT_EQ(empty_meta_, meta_);
 
-  EXPECT_EQ(UMA_STATUS_MATCH,
+  EXPECT_EQ(UmaRemoteCallResult::MATCH,
             ResetAndParseJson("{\"matches\":[{\"threat_type\":\"5\"}]}"));
   EXPECT_EQ(SB_THREAT_TYPE_URL_PHISHING, threat_);
   EXPECT_EQ(empty_meta_, meta_);
@@ -75,7 +75,7 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, BasicThreats) {
 
 TEST_F(SafeBrowsingApiHandlerUtilTest, MultipleThreats) {
   EXPECT_EQ(
-      UMA_STATUS_MATCH,
+      UmaRemoteCallResult::MATCH,
       ResetAndParseJson(
           "{\"matches\":[{\"threat_type\":\"4\"}, {\"threat_type\":\"5\"}]}"));
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, threat_);
@@ -85,7 +85,7 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, MultipleThreats) {
 TEST_F(SafeBrowsingApiHandlerUtilTest, PopulationId) {
   ThreatMetadata expected;
 
-  EXPECT_EQ(UMA_STATUS_MATCH,
+  EXPECT_EQ(UmaRemoteCallResult::MATCH,
             ResetAndParseJson("{\"matches\":[{\"threat_type\":\"4\", "
                               "\"UserPopulation\":\"foobarbazz\"}]}"));
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, threat_);
@@ -136,7 +136,7 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
                               put_kv("sf_bas", test_case.bas_type).c_str());
     SCOPED_TRACE(testing::Message() << json);
 
-    ASSERT_EQ(UMA_STATUS_MATCH, ResetAndParseJson(json));
+    ASSERT_EQ(UmaRemoteCallResult::MATCH, ResetAndParseJson(json));
     EXPECT_EQ(SB_THREAT_TYPE_SUBRESOURCE_FILTER, threat_);
 
     ThreatMetadata expected;
