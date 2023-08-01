@@ -293,11 +293,9 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(1, updatedAcceleratorElements.length);
 
     // Verify conflict error message is displayed.
-    // TODO(jimmyxgong): This error message is not final, update with final
-    // string format.
     const expectedErrorMessage =
-        'Shortcut is used by "TestConflictDescription". Remove or edit to ' +
-        'resolve the conflict.';
+        'Shortcut is being used for "TestConflictDescription". Edit or ' +
+        'remove to resolve the conflict.';
     const statusMessageElement =
         updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
             '#acceleratorInfoText') as HTMLDivElement;
@@ -530,8 +528,8 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect error message is still present.
     const expectedErrorMessage =
-        'Shortcut is used by "TestConflictDescription". Remove or edit to ' +
-        'resolve the conflict.';
+        'Shortcut is being used for "TestConflictDescription". Edit or ' +
+        'remove to resolve the conflict.';
     const statusMessageElement =
         updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
             '#acceleratorInfoText') as HTMLDivElement;

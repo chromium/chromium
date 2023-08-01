@@ -4008,70 +4008,55 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS" desc="Label for link to open keyboard settings in the Settings app.">
           Keyboard settings
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ADD_SHORTCUT" desc="Button label to add a new shortcut for a specific action" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ADD_SHORTCUT" desc="Button label to add a new shortcut for a specific action">
           Add shortcut
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULTS" desc="Button label to restore a specific action to its default shortcuts" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULTS" desc="Button label to restore a specific action to its default shortcuts">
           Restore defaults
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_DIALOG_DONE" desc="Used to close edit shortcuts modal dialog" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_DIALOG_DONE" desc="Used to close edit shortcuts modal dialog">
           Done
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL" desc="Used to cancel action in various modals" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL" desc="Used to cancel action in various modals">
           Cancel
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE" desc="Instructions to user when they're inputting a new shortcut" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE" desc="Instructions to user when they're inputting a new shortcut">
           Press 1-4 modifiers and 1 other key on your keyboard
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULT_ERROR_MESSAGE" desc="Description text shown to users that their default shortcut is used by another shortcut action" translateable="false">
-          Shortcut is used by "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Remove or edit to resolve the conflict.
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULT_ERROR_MESSAGE" desc="Description text shown to users that their default shortcut is used by another shortcut action">
+          Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Edit or remove to resolve the conflict.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS" desc="Button label to reset all shortcuts in the app to their default values">
           Reset all shortcuts
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_ALL_SHORTCUTS_TITLE" desc="Title of the modal shown when user clicks button to reset all shortcuts" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_ALL_SHORTCUTS_TITLE" desc="Title of the modal shown when user clicks button to reset all shortcuts">
           Reset all shortcuts to defaults?
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_SHORTCUTS_BUTTON" desc="Button label for action that confirms resetting all shortcuts to their default values" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_SHORTCUTS_BUTTON" desc="Button label for action that confirms resetting all shortcuts to their default values">
           Reset
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_LOCKED_SHORTCUT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override a locked accelerator" translateable="false">
-          Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut to replace.
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_LOCKED_SHORTCUT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override a locked accelerator">
+          Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut.
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator" translateable="false">
-          Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut or press the same one again to use it for this action instead.
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator">
+          Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut. To replace the original shortcut, press this shortcut again.
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT" desc="The hint message that displays when there are five accelerators in the dialog" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT" desc="The hint message that displays when there are five accelerators in the dialog">
           You can only customize 5 shortcuts. Delete a shortcut to add a new one.
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHIFT_ONLY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
-            that use only 'shift' as modifier" translateable="false">
-          Shortcut is not valid. Shift can not be used as the only modifier key. Press a new shortcut.
+            that use only 'shift' as modifier">
+          Shortcut not available. Press a new shortcut using shift and 1 more modifier key (ctrl, alt, search, or launcher).
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_MISSING_MODIFIER_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
-            that does not include a modifier key." translateable="false">
-          Shortcut is not valid. Must include at least one modifier key. Press a new shortcut.
+            that does not include a modifier key.">
+          Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift, search, or launcher).
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
-            that includes a top row key but does not include the search key"
-            translateable="false">
+            that includes a top row key but does not include the search key">
           Shortcut with top row keys need to include the search key.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
@@ -4089,8 +4074,7 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result.">
           Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Open new tab, ctrl T</ex></ph>. Press Enter to navigate to shortcut.
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_NO_SHORTCUT_ASSIGNED" desc="The text shown when no shortcut is enabled with the accelerator" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_NO_SHORTCUT_ASSIGNED" desc="The text shown when no shortcut is enabled with the accelerator">
           No shortcut assigned
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">

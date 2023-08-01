@@ -496,9 +496,9 @@ suite('shortcutCustomizationAppTest', function() {
 
     assertTrue(editElement.hasError);
     const expected_error_message =
-        'Shortcut is used by TestConflictName. Press a new shortcut or press ' +
-        'the same one again to use it for this action instead.';
-
+        'Shortcut is being used for "TestConflictName". Press a new ' +
+        'shortcut. To replace the original shortcut, press this shortcut ' +
+        'again.';
     assertEquals(
         expected_error_message,
         editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
@@ -524,9 +524,7 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     const expected_error_message2 =
-        'Shortcut is used by TestConflictName. Press a new shortcut to ' +
-        'replace.';
-
+        'Shortcut is being used for "TestConflictName". Press a new shortcut.';
     assertEquals(
         expected_error_message2,
         editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
@@ -569,8 +567,9 @@ suite('shortcutCustomizationAppTest', function() {
     const acceleratorConfigResult =
         AcceleratorConfigResult.kShiftOnlyNotAllowed;
     const expectedErrorMessage =
-        'Shortcut is not valid. Shift can not be used as the only modifier ' +
-        'key. Press a new shortcut.';
+        'Shortcut not available. Press a new shortcut using shift and 1 ' +
+        'more modifier key (ctrl, alt, search, or launcher).';
+
     await validateAcceleratorInDialog(
         acceleratorConfigResult, expectedErrorMessage);
   });
@@ -578,8 +577,8 @@ suite('shortcutCustomizationAppTest', function() {
   test('ValidateAcceleratorMissingAccelerator', async () => {
     const acceleratorConfigResult = AcceleratorConfigResult.kMissingModifier;
     const expectedErrorMessage =
-        'Shortcut is not valid. Must include at least one modifier key. ' +
-        'Press a new shortcut.';
+        'Shortcut not available. Press a new shortcut using a modifier key ' +
+        '(ctrl, alt, shift, search, or launcher).';
     await validateAcceleratorInDialog(
         acceleratorConfigResult, expectedErrorMessage);
   });
@@ -595,7 +594,7 @@ suite('shortcutCustomizationAppTest', function() {
   test('ValidateAcceleratorConflict', async () => {
     const acceleratorConfigResult = AcceleratorConfigResult.kConflict;
     const expectedErrorMessage =
-        'Shortcut is used by BRIGHTNESS_UP. Press a new shortcut to replace.';
+        'Shortcut is being used for "BRIGHTNESS_UP". Press a new shortcut.';
     await validateAcceleratorInDialog(
         acceleratorConfigResult, expectedErrorMessage);
   });
@@ -604,8 +603,8 @@ suite('shortcutCustomizationAppTest', function() {
     const acceleratorConfigResult =
         AcceleratorConfigResult.kConflictCanOverride;
     const expectedErrorMessage =
-        'Shortcut is used by BRIGHTNESS_UP. Press a new shortcut or press ' +
-        'the same one again to use it for this action instead.';
+        'Shortcut is being used for "BRIGHTNESS_UP". Press a new shortcut. ' +
+        'To replace the original shortcut, press this shortcut again.';
     await validateAcceleratorInDialog(
         acceleratorConfigResult, expectedErrorMessage);
   });
