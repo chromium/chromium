@@ -132,7 +132,6 @@ missing_new_fields,chrome/browser/preloading/prefetch/search_prefetch/search_pre
 missing_new_fields,chrome/browser/profile_resetter/brandcode_config_fetcher.cc
 missing_new_fields,chrome/browser/profile_resetter/reset_report_uploader.cc
 missing_new_fields,chrome/browser/profiles/profile_avatar_downloader.cc
-missing_new_fields,chrome/browser/profiles/profile_downloader.cc
 missing_new_fields,chrome/browser/renderer_context_menu/render_view_context_menu.cc
 missing_new_fields,chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.cc
 missing_new_fields,chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.cc

@@ -188,6 +188,16 @@ void ProfileDownloader::FetchImageData() {
           trigger: "User signs into a Profile."
           data: "Filename of the png to download and Google OAuth bearer token."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//chrome/browser/profiles/OWNERS"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: FILE_DATA
+          }
+          last_reviewed: "2023-07-31"
         }
         policy {
           cookies_allowed: NO
