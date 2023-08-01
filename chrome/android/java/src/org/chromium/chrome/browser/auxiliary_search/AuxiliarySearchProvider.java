@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import android.text.TextUtils;
 import android.util.Pair;
 
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
@@ -11,6 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,11 @@ public class AuxiliarySearchProvider {
         // tabs, and then another's.
         for (int i = firstTabIndex; i <= end; i++) {
             Tab tab = tabList.getTabAt(i);
-            tabsList.add(new Pair<>(tab.getTitle(), tab.getUrl().getSpec()));
+            String title = tab.getTitle();
+            GURL url = tab.getUrl();
+            if (TextUtils.isEmpty(title) || url == null || !url.isValid()) continue;
+
+            tabsList.add(new Pair<>(title, url.getSpec()));
         }
         return tabsList;
     }
