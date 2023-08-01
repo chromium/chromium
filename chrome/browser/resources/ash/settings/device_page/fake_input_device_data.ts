@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionChoice, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, Touchpad} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -302,29 +302,129 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
     id: 15,
     deviceKey: 'test:key',
     name: 'Wacom Cintiq 16',
+    tabletButtonRemappings: [
+      {
+        name: 'Back Button',
+        button: {
+          vkey: Vkey.kNum0,
+        },
+        remappingAction: {
+          action: AcceleratorAction.kCycleBackwardMru,
+        },
+      },
+      {
+        name: 'Forward Button',
+        button: {
+          vkey: Vkey.kNum1,
+        },
+        remappingAction: {
+          action: AcceleratorAction.kCycleForwardMru,
+        },
+      },
+    ],
+    penButtonRemappings: [
+      {
+        name: 'Undo',
+        button: {
+          vkey: Vkey.kNum2,
+        },
+        remappingAction: {
+          keyEvent: {
+            vkey: Vkey.kKeyZ,
+            domCode: 0,
+            domKey: 0,
+            modifiers: 4,
+          },
+        },
+      },
+      {
+        name: 'Redo',
+        button: {
+          vkey: Vkey.kNum3,
+        },
+        remappingAction: {
+          keyEvent: {
+            vkey: Vkey.kKeyZ,
+            domCode: 0,
+            domKey: 0,
+            modifiers: 6,
+          },
+        },
+      },
+    ],
   },
   {
     id: 16,
     deviceKey: 'test:key',
     name: 'XPPen Artist13.3 Pro',
+    tabletButtonRemappings: [
+      {
+        name: 'Brightness Up',
+        button: {
+          vkey: Vkey.kNum0,
+        },
+        remappingAction: {
+          action: AcceleratorAction.kBrightnessUp,
+        },
+      },
+      {
+        name: 'Brightness down',
+        button: {
+          vkey: Vkey.kNum1,
+        },
+        remappingAction: {
+          action: AcceleratorAction.kBrightnessDown,
+        },
+      },
+    ],
+    penButtonRemappings: [
+      {
+        name: 'Copy',
+        button: {
+          vkey: Vkey.kNum2,
+        },
+        remappingAction: {
+          keyEvent: {
+            vkey: Vkey.kKeyC,
+            domCode: 0,
+            domKey: 0,
+            modifiers: 4,
+          },
+        },
+      },
+      {
+        name: 'Paste',
+        button: {
+          vkey: Vkey.kNum3,
+        },
+        remappingAction: {
+          keyEvent: {
+            vkey: Vkey.kKeyV,
+            domCode: 0,
+            domKey: 0,
+            modifiers: 4,
+          },
+        },
+      },
+    ],
   },
 ];
 
 export const fakeMouseButtonActions: ActionChoice[] = [
-  {actionId: 3, name: 'Back'},
-  {actionId: 4, name: 'Forward'},
-  {actionId: 43, name: 'Lock screen'},
-  {actionId: 99, name: 'Open clipboard'},
-  {actionId: 103, name: 'Fullscreen'},
-  {actionId: 126, name: 'Mute'},
-  {actionId: 130, name: 'Minimize window'},
+  {actionId: AcceleratorAction.kCycleBackwardMru, name: 'Back'},
+  {actionId: AcceleratorAction.kCycleForwardMru, name: 'Forward'},
+  {actionId: AcceleratorAction.kLockScreen, name: 'Lock screen'},
+  {actionId: AcceleratorAction.kToggleClipboardHistory, name: 'Open clipboard'},
+  {actionId: AcceleratorAction.kToggleFullscreen, name: 'Fullscreen'},
+  {actionId: AcceleratorAction.kVolumeMute, name: 'Mute'},
+  {actionId: AcceleratorAction.kWindowMinimize, name: 'Minimize window'},
 ];
 
 export const fakeGraphicsTabletButtonActions: ActionChoice[] = [
-  {actionId: 1, name: 'Brightness down'},
-  {actionId: 2, name: 'Brightness up'},
-  {actionId: 3, name: 'Back'},
-  {actionId: 4, name: 'Forward'},
-  {actionId: 44, name: 'Zoom in'},
-  {actionId: 45, name: 'Zoom out'},
+  {actionId: AcceleratorAction.kBrightnessDown, name: 'Brightness down'},
+  {actionId: AcceleratorAction.kBrightnessUp, name: 'Brightness up'},
+  {actionId: AcceleratorAction.kCycleBackwardMru, name: 'Back'},
+  {actionId: AcceleratorAction.kCycleForwardMru, name: 'Forward'},
+  {actionId: AcceleratorAction.kMagnifierZoomIn, name: 'Zoom in'},
+  {actionId: AcceleratorAction.kMagnifierZoomOut, name: 'Zoom out'},
 ];

@@ -13,3 +13,9 @@
 <div id="header">
   <div id="description">[[selectedTablet.name]]</div>
 </div>
+<div class="subsection">
+  <template is="dom-repeat" items="[[selectedTablet.penButtonRemappings]]"
+      as="remapping">
+    <div>[[remapping.name]]</div>
+  </template>
+</div>
