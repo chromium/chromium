@@ -33,7 +33,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_log.h"
-#include "components/metrics/metrics_log_manager.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_provider.h"
@@ -252,7 +251,7 @@ class MetricsService {
   // Test hook to safely stage the current log in the log store.
   bool StageCurrentLogForTest();
 
-  MetricsLog* GetCurrentLogForTest() { return log_manager_.current_log(); }
+  MetricsLog* GetCurrentLogForTest() { return current_log_.get(); }
 
   DelegatingProvider* GetDelegatingProviderForTesting() {
     return &delegating_provider_;
@@ -617,8 +616,8 @@ class MetricsService {
   // Sub-service for uploading logs.
   MetricsReportingService reporting_service_;
 
-  // Manager for the various in-flight logs.
-  MetricsLogManager log_manager_;
+  // The log that we are still appending to.
+  std::unique_ptr<MetricsLog> current_log_;
 
   // Used to manage various metrics reporting state prefs, such as client id,
   // low entropy source and whether metrics reporting is enabled. Weak pointer.

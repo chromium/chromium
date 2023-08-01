@@ -128,8 +128,6 @@ if (!is_cronet_build || is_ios) {
       "metrics_features.h",
       "metrics_log.cc",
       "metrics_log.h",
-      "metrics_log_manager.cc",
-      "metrics_log_manager.h",
       "metrics_log_store.cc",
       "metrics_log_store.h",
       "metrics_log_uploader.h",
