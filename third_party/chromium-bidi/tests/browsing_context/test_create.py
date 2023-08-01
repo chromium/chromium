@@ -14,8 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, get_tree,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, read_JSON_message, send_JSON_command,
+                          subscribe)
 
 
 @pytest.mark.asyncio
@@ -174,16 +175,12 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_withUserGesture_eventsEmitted(
-        websocket, context_id, html, read_sorted_messages):
+        websocket, context_id, html):
+    blank_url = "https://example.com/"
     LINK_WITH_BLANK_TARGET = html(
-        '<a href="https://example.com" target="_blank">new tab</a>')
+        f'''<a href="{blank_url}" target="_blank">new tab</a>''')
 
-    await subscribe(websocket, [
-        "browsingContext.contextCreated",
-        "browsingContext.domContentLoaded",
-        "browsingContext.load",
-    ])
-    command_id = await send_JSON_command(
+    await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
@@ -193,19 +190,11 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             }
         })
 
-    [
-        command_result,
-        dom_content_loaded_event,
-        load_event,
-    ] = await read_sorted_messages(3)
-    assert command_result == AnyExtending({
-        "id": command_id,
-        "type": "success",
-        "result": ANY_DICT,
-    })
-    assert dom_content_loaded_event == AnyExtending(
-        {"method": "browsingContext.domContentLoaded"})
-    assert load_event == AnyExtending({"method": "browsingContext.load"})
+    await subscribe(websocket, [
+        "browsingContext.contextCreated",
+        "browsingContext.domContentLoaded",
+        "browsingContext.load",
+    ])
 
     command_id = await send_JSON_command(
         websocket, {
@@ -220,20 +209,10 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             }
         })
 
-    [
-        command_result,
-        context_created_event,
-        dom_content_loaded_event,
-        load_event,
-    ] = await read_sorted_messages(4)
-
-    assert command_result == AnyExtending({
-        "id": command_id,
-        "type": "success",
-        "result": ANY_DICT
-    })
-
-    assert context_created_event == {
+    response = await read_JSON_message(websocket)
+    new_context_id = response["params"]["context"]
+    assert new_context_id != context_id
+    assert response == {
         'type': 'event',
         "method": "browsingContext.contextCreated",
         "params": {
@@ -244,10 +223,18 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
         }
     }
 
-    new_context_id = context_created_event["params"]["context"]
-    assert new_context_id != context_id
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        "id": command_id,
+        "type": "success",
+        "result": ANY_DICT
+    })
 
-    assert dom_content_loaded_event == {
+    # TODO: CDP sends Lifecycle events when we send Lifecycle event enable
+    # These events correspond to the initial about:blank creation
+    # We should try to ignore the from Mapper.
+    response = await read_JSON_message(websocket)
+    assert response == {
         'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
@@ -258,13 +245,26 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
         }
     }
 
-    assert load_event == {
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": new_context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": blank_url
+        }
+    }
+
+    response = await read_JSON_message(websocket)
+    assert response == {
         'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": new_context_id,
             "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
-            "url": "https://example.com/"
+            "url": blank_url
         }
     }

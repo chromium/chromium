@@ -98,8 +98,7 @@ async def goto_url(
         websocket,
         context_id: str,
         url: str,
-        wait: Literal["none", "interactive",
-                      "complete"] = "interactive") -> dict:
+        wait: Literal["none", "interactive", "complete"] = "complete") -> dict:
     """Open given URL in the given context."""
     return await execute_command(
         websocket, {

@@ -389,9 +389,6 @@ export class BrowsingContextImpl {
 
         switch (params.name) {
           case 'DOMContentLoaded':
-            this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.resolve(
-              params
-            );
             this.#eventManager.registerEvent(
               {
                 type: 'event',
@@ -406,10 +403,12 @@ export class BrowsingContextImpl {
               },
               this.id
             );
+            this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.resolve(
+              params
+            );
             break;
 
           case 'load':
-            this.#deferreds.Page.lifecycleEvent.load.resolve(params);
             this.#eventManager.registerEvent(
               {
                 type: 'event',
@@ -423,6 +422,7 @@ export class BrowsingContextImpl {
               },
               this.id
             );
+            this.#deferreds.Page.lifecycleEvent.load.resolve(params);
             break;
         }
       }

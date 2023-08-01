@@ -21,6 +21,8 @@ from test_helpers import (ANY_TIMESTAMP, get_tree, goto_url, read_JSON_message,
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitNone_navigated(
         websocket, context_id, html):
+    url = html("<h2>test</h2>")
+
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
@@ -30,7 +32,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
             "id": 13,
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<h2>test</h2>"),
+                "url": url,
                 "wait": "none",
                 "context": context_id
             }
@@ -44,20 +46,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
         "type": "success",
         "result": {
             "navigation": navigation_id,
-            "url": html("<h2>test</h2>")
-        }
-    }
-
-    # Wait for `browsingContext.load` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        'type': 'event',
-        "method": "browsingContext.load",
-        "params": {
-            "context": context_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": url
         }
     }
 
@@ -66,6 +55,19 @@ async def test_browsingContext_navigateWaitNone_navigated(
     assert resp == {
         'type': 'event',
         "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url
+        }
+    }
+
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        'type': 'event',
+        "method": "browsingContext.load",
         "params": {
             "context": context_id,
             "navigation": navigation_id,
@@ -78,6 +80,8 @@ async def test_browsingContext_navigateWaitNone_navigated(
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitInteractive_navigated(
         websocket, context_id, html):
+    url = html("<h2>test</h2>")
+
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
@@ -87,28 +91,15 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
             "id": 14,
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<h2>test</h2>"),
+                "url": url,
                 "wait": "interactive",
                 "context": context_id
             }
         })
 
-    # Wait for `browsingContext.load` event.
-    resp = await read_JSON_message(websocket)
-    navigation_id = resp["params"]["navigation"]
-    assert resp == {
-        'type': 'event',
-        "method": "browsingContext.load",
-        "params": {
-            "context": context_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
-        }
-    }
-
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
+    navigation_id = resp["params"]["navigation"]
     assert resp == {
         'type': 'event',
         "method": "browsingContext.domContentLoaded",
@@ -116,7 +107,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>"),
+            "url": url,
         }
     }
 
@@ -131,10 +122,25 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         }
     }
 
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        'type': 'event',
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url
+        }
+    }
+
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitComplete_navigated(
         websocket, context_id, html):
+    url = html("<h2>test</h2>")
+
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
@@ -144,15 +150,28 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "id": 15,
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<h2>test</h2>"),
+                "url": url,
                 "wait": "complete",
                 "context": context_id
             }
         })
 
-    # Wait for `browsingContext.load` event.
+    # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
     navigation_id = resp["params"]["navigation"]
+    assert resp == {
+        'type': 'event',
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
+            "url": html("<h2>test</h2>")
+        }
+    }
+
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
     assert resp == {
         'type': 'event',
         "method": "browsingContext.load",
@@ -160,7 +179,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": url
         }
     }
 
@@ -171,20 +190,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
         "type": "success",
         "result": {
             "navigation": navigation_id,
-            "url": html("<h2>test</h2>")
-        }
-    }
-
-    # Wait for `browsingContext.domContentLoaded` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        'type': 'event',
-        "method": "browsingContext.domContentLoaded",
-        "params": {
-            "context": context_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": url
         }
     }
 

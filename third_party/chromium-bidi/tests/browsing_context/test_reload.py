@@ -26,7 +26,7 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await goto_url(websocket, context_id, url)
+    await goto_url(websocket, context_id, url, "complete")
 
     await send_JSON_command(
         websocket, {
@@ -41,11 +41,11 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
     response = await read_JSON_message(websocket)
     assert response["result"] == {}
 
-    # Wait for `browsingContext.load` event.
+    # Wait for `browsingContext.domContentLoaded` event.
     response = await read_JSON_message(websocket)
     assert response == {
         'type': 'event',
-        "method": "browsingContext.load",
+        "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
             "navigation": ANY_STR,
@@ -54,11 +54,11 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
         }
     }
 
-    # Wait for `browsingContext.domContentLoaded` event.
+    # Wait for `browsingContext.load` event.
     response = await read_JSON_message(websocket)
     assert response == {
         'type': 'event',
-        "method": "browsingContext.domContentLoaded",
+        "method": "browsingContext.load",
         "params": {
             "context": context_id,
             "navigation": ANY_STR,
@@ -77,7 +77,7 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await goto_url(websocket, context_id, url)
+    await goto_url(websocket, context_id, url, "complete")
 
     await send_JSON_command(
         websocket, {
@@ -87,20 +87,6 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
                 "wait": "interactive",
             }
         })
-
-    # Wait for `browsingContext.load` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.load",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_STR,
-            "timestamp": ANY_TIMESTAMP,
-            "url": url,
-        }
-    }
-
     # Wait for `browsingContext.domContentLoaded` event.
     response = await read_JSON_message(websocket)
     assert response == {
@@ -117,6 +103,19 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
     # Assert command done.
     response = await read_JSON_message(websocket)
     assert response["result"] == {}
+
+    # Wait for `browsingContext.load` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
 
 
 @pytest.mark.asyncio
@@ -128,7 +127,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await goto_url(websocket, context_id, url)
+    await goto_url(websocket, context_id, url, "complete")
 
     await send_JSON_command(
         websocket, {
@@ -138,6 +137,19 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
                 "wait": "complete",
             }
         })
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
 
     # Wait for `browsingContext.load` event.
     response = await read_JSON_message(websocket)
@@ -155,19 +167,6 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
     # Assert command done.
     response = await read_JSON_message(websocket)
     assert response["result"] == {}
-
-    # Wait for `browsingContext.domContentLoaded` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.domContentLoaded",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_STR,
-            "timestamp": ANY_TIMESTAMP,
-            "url": url,
-        }
-    }
 
 
 @pytest.mark.asyncio
