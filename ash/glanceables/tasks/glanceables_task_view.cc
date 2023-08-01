@@ -59,6 +59,14 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
   return date_helper->GetFormattedTime(&formatter, due);
 }
 
+void SetupButtonContents(views::ImageButton* button, bool checked) {
+  button->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          checked ? ash::kHollowCheckCircleIcon : ash::kHollowCircleIcon,
+          cros_tokens::kFocusRingColor, kIconSize));
+}
+
 }  // namespace
 
 namespace ash {
@@ -75,10 +83,7 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   button_ =
       AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
           &GlanceablesTaskView::ButtonPressed, base::Unretained(this))));
-  button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kHollowCircleIcon,
-                                     cros_tokens::kFocusRingColor, kIconSize));
+  SetupButtonContents(button_, /*checked=*/false);
   // TODO(b:277268122): set accessible name once spec is available.
   button_->SetAccessibleName(u"Glanceables Task View Button");
   button_->SetProperty(views::kMarginsKey, kButtonMargin);
@@ -155,6 +160,9 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
 GlanceablesTaskView::~GlanceablesTaskView() = default;
 
 void GlanceablesTaskView::ButtonPressed() {
+  // Visually mark the task as completed.
+  SetupButtonContents(button_, /*checked=*/true);
+
   ash::Shell::Get()
       ->glanceables_v2_controller()
       ->GetTasksClient()
@@ -165,14 +173,10 @@ void GlanceablesTaskView::ButtonPressed() {
 
 void GlanceablesTaskView::MarkedAsCompleted(bool success) {
   if (!success) {
-    return;
+    // Uncheck button if the tasks is not successfully marked as completed.
+    SetupButtonContents(button_, /*checked=*/false);
   }
   completed_ = true;
-  // TODO(b:277268122): Update icons and styling.
-  button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kHollowCheckCircleIcon,
-                                     cros_tokens::kFocusRingColor, kIconSize));
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)
