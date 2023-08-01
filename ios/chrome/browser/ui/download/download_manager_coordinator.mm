@@ -190,6 +190,12 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   DCHECK(self.presenter);
   DCHECK(self.browser);
 
+  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+  [defaultCenter addObserver:self
+                    selector:@selector(applicationDidEnterBackground:)
+                        name:UIApplicationDidEnterBackgroundNotification
+                      object:nil];
+
   _viewController = [[DownloadManagerViewController alloc] init];
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
@@ -452,6 +458,14 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
       registerForInstallationNotifications:self
                               withSelector:@selector(didInstallGoogleDriveApp)
                                  forScheme:kGoogleDriveAppURLScheme];
+}
+
+#pragma mark - Notification callback
+
+- (void)applicationDidEnterBackground:(NSNotification*)note {
+  [_openInController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 @end
