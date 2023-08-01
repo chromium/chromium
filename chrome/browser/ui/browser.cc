@@ -968,8 +968,15 @@ void Browser::OnWindowClosing() {
 
   BrowserList::NotifyBrowserCloseStarted(this);
 
-  if (!tab_strip_model_->empty())
+  if (!tab_strip_model_->empty()) {
+    // Closing all the tabs results in eventually calling back to
+    // OnWindowClosing() again.
     tab_strip_model_->CloseAllTabs();
+  } else {
+    // If there are no tabs, then a task will be scheduled (by views) to delete
+    // this Browser.
+    is_delete_scheduled_ = true;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1303,14 +1310,10 @@ void Browser::TabGroupedStateChanged(
 }
 
 void Browser::TabStripEmpty() {
-  // This function is often called with various Browser related classes on the
-  // stack. Calling code can't handle Browser being deleted here (because it
-  // may delete the classes on the stack calling into this function). Because of
-  // this, BrowserWindow::Close() is used, instead of CloseNow(). CloseNow()
-  // immediately deletes, where was Close() is a hide, and then delete after
-  // posting a task.
+  // Note: even though the tab strip is empty, the call to Close() may not
+  // result in closing this Browser. This can happen in the case of closing
+  // the last Browser with ongoing downloads.
   window_->Close();
-  is_delete_scheduled_ = true;
 
   // Instant may have visible WebContents that need to be detached before the
   // window system closes.
