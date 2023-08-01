@@ -122,21 +122,21 @@ inline constexpr char kIbanValue_1[] = "CH56 0483 5012 3456 7800 9";
 inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 
 // Provides a quick way to populate a `FormFieldData`.
-FormFieldData CreateTestFormField(std::string_view label,
-                                  std::string_view name,
-                                  std::string_view value,
-                                  std::string_view type);
+[[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
+                                                std::string_view name,
+                                                std::string_view value,
+                                                std::string_view type);
 void CreateTestFormField(std::string_view label,
                          std::string_view name,
                          std::string_view value,
                          std::string_view type,
                          FormFieldData* field);
 
-FormFieldData CreateTestFormField(std::string_view label,
-                                  std::string_view name,
-                                  std::string_view value,
-                                  std::string_view type,
-                                  std::string_view autocomplete);
+[[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
+                                                std::string_view name,
+                                                std::string_view value,
+                                                std::string_view type,
+                                                std::string_view autocomplete);
 void CreateTestFormField(std::string_view label,
                          std::string_view name,
                          std::string_view value,
@@ -144,12 +144,12 @@ void CreateTestFormField(std::string_view label,
                          std::string_view autocomplete,
                          FormFieldData* field);
 
-FormFieldData CreateTestFormField(std::string_view label,
-                                  std::string_view name,
-                                  std::string_view value,
-                                  std::string_view type,
-                                  std::string_view autocomplete,
-                                  uint64_t max_length);
+[[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
+                                                std::string_view name,
+                                                std::string_view value,
+                                                std::string_view type,
+                                                std::string_view autocomplete,
+                                                uint64_t max_length);
 void CreateTestFormField(std::string_view label,
                          std::string_view name,
                          std::string_view value,
@@ -159,22 +159,25 @@ void CreateTestFormField(std::string_view label,
                          FormFieldData* field);
 
 // Provides a quick way to populate a select field.
-FormFieldData CreateTestSelectField(std::string_view label,
-                                    std::string_view name,
-                                    std::string_view value,
-                                    const std::vector<const char*>& values,
-                                    const std::vector<const char*>& contents);
+[[nodiscard]] FormFieldData CreateTestSelectField(
+    std::string_view label,
+    std::string_view name,
+    std::string_view value,
+    const std::vector<const char*>& values,
+    const std::vector<const char*>& contents);
 
-FormFieldData CreateTestSelectField(std::string_view label,
-                                    std::string_view name,
-                                    std::string_view value,
-                                    std::string_view autocomplete,
-                                    const std::vector<const char*>& values,
-                                    const std::vector<const char*>& contents);
+[[nodiscard]] FormFieldData CreateTestSelectField(
+    std::string_view label,
+    std::string_view name,
+    std::string_view value,
+    std::string_view autocomplete,
+    const std::vector<const char*>& values,
+    const std::vector<const char*>& contents);
 
-FormFieldData CreateTestSelectField(const std::vector<const char*>& values);
+[[nodiscard]] FormFieldData CreateTestSelectField(
+    const std::vector<const char*>& values);
 
-FormFieldData CreateTestSelectOrSelectMenuField(
+[[nodiscard]] FormFieldData CreateTestSelectOrSelectMenuField(
     std::string_view label,
     std::string_view name,
     std::string_view value,
@@ -184,23 +187,24 @@ FormFieldData CreateTestSelectOrSelectMenuField(
     std::string_view field_type);
 
 // Provides a quick way to populate a datalist field.
-FormFieldData CreateTestDatalistField(std::string_view label,
-                                      std::string_view name,
-                                      std::string_view value,
-                                      const std::vector<const char*>& values,
-                                      const std::vector<const char*>& labels);
+[[nodiscard]] FormFieldData CreateTestDatalistField(
+    std::string_view label,
+    std::string_view name,
+    std::string_view value,
+    const std::vector<const char*>& values,
+    const std::vector<const char*>& labels);
 
 // Populates `form` with data corresponding to a simple personal information
 // form, including name and email, but no address-related fields.
-FormData CreateTestPersonalInformationFormData();
+[[nodiscard]] FormData CreateTestPersonalInformationFormData();
 void CreateTestPersonalInformationFormData(FormData* form);
 
 // Populates `form` with data corresponding to a simple credit card form.
 // Note that this actually appends fields to the form data, which can be
 // useful for building up more complex test forms.
-FormData CreateTestCreditCardFormData(bool is_https,
-                                      bool use_month_type,
-                                      bool split_names = false);
+[[nodiscard]] FormData CreateTestCreditCardFormData(bool is_https,
+                                                    bool use_month_type,
+                                                    bool split_names = false);
 void CreateTestCreditCardFormData(FormData* form,
                                   bool is_https,
                                   bool use_month_type,
@@ -209,7 +213,8 @@ void CreateTestCreditCardFormData(FormData* form,
 // Populates `form_data` with data corresponding to an IBAN form (a form with a
 // single IBAN field). Note that this actually appends fields to the form data,
 // which can be useful for building up more complex test forms.
-FormData CreateTestIbanFormData(std::string_view value = kIbanValue);
+[[nodiscard]] FormData CreateTestIbanFormData(
+    std::string_view value = kIbanValue);
 void CreateTestIbanFormData(FormData* form_data,
                             std::string_view value = kIbanValue);
 
