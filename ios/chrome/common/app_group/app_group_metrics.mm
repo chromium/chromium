@@ -59,9 +59,6 @@ NSString* const kCredentialExtensionKeychainSavePasswordFailureCount =
 NSString* const kCredentialExtensionSaveCredentialFailureCount =
     @"CredentialExtensionSaveCredentialFailureCount";
 
-NSString* const kCredentialExtensionConsentVerifiedCount =
-    @"CredentialExtensionConsentVerifiedCount";
-
 NSString* HistogramCountKey(NSString* histogram, int bucket) {
   return [NSString stringWithFormat:@"%@.%i", histogram, bucket];
 }

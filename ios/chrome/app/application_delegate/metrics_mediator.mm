@@ -272,8 +272,6 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
         @"IOS.CredentialExtension.KeychainSavePasswordFailureCount",
     app_group::kCredentialExtensionSaveCredentialFailureCount :
         @"IOS.CredentialExtension.SaveCredentialFailureCount",
-    app_group::kCredentialExtensionConsentVerifiedCount :
-        @"IOS.CredentialExtension.ConsentVerifiedCount",
   };
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();

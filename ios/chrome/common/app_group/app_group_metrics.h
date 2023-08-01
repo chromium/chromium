@@ -77,9 +77,6 @@ extern NSString* const kCredentialExtensionKeychainSavePasswordFailureCount;
 // An app_group key for the number of times saving a new credential failed.
 extern NSString* const kCredentialExtensionSaveCredentialFailureCount;
 
-// An app_group key for the number of times the consent verified view shows.
-extern NSString* const kCredentialExtensionConsentVerifiedCount;
-
 // Returns the app_group key containing the number of times the given histogram
 // bucket was fired.
 NSString* HistogramCountKey(NSString* histogram, int bucket);
