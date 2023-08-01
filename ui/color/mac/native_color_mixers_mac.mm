@@ -114,7 +114,11 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
     mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
         NSColor.alternatingContentBackgroundColors[1])};
-
+    if (!key.user_color.has_value()) {
+      mixer[kColorSysStateFocusRing] = {SkColorSetA(
+          skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
+          0x66)};
+    }
     if (!features::IsChromeRefresh2023()) {
       SkColor menu_separator_color =
           properties.dark ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
