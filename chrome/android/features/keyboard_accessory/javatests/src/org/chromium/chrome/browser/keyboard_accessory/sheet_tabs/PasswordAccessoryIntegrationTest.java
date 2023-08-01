@@ -74,6 +74,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky, see crbug.com/1469373")
     public void testPasswordSheetDisplaysProvidedItems() throws TimeoutException {
         mHelper.loadTestPage(false);
         mHelper.cacheCredentials("mayapark@gmail.com", "SomeHiddenPassword");
