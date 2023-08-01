@@ -8699,11 +8699,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
             You can access it on Google Password Manager.
           </message>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_GENERIC" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: download Chrome for iOS and sync their account.">
-            To use your saved passwords on your phone, download Chrome for iOS and sync your account.
+          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_GENERIC" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: download Chrome for iOS and sign in to their account.">
+            To use your saved passwords on your phone, download Chrome for iOS and sign in to your Google Account.
           </message>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sync their account.">
-            To use your saved passwords on your phone, follow the QR code, download Chrome for iOS and sync your account.
+          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+            To use your saved passwords on your phone, follow the QR code, download Chrome for iOS and sign in to your Google Account.
           </message>
         </if>
       </if>
