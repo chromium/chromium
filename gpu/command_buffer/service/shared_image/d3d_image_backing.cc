@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
@@ -111,28 +112,6 @@ viz::SharedImageFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
   return format;
 }
 
-wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
-  switch (dxgi_format) {
-    case DXGI_FORMAT_R8G8B8A8_UNORM:
-      return wgpu::TextureFormat::RGBA8Unorm;
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-      return wgpu::TextureFormat::BGRA8Unorm;
-    case DXGI_FORMAT_R8_UNORM:
-      return wgpu::TextureFormat::R8Unorm;
-    case DXGI_FORMAT_R8G8_UNORM:
-      return wgpu::TextureFormat::RG8Unorm;
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return wgpu::TextureFormat::RGBA16Float;
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-      return wgpu::TextureFormat::RGB10A2Unorm;
-    case DXGI_FORMAT_NV12:
-      return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
-    default:
-      NOTREACHED();
-      return wgpu::TextureFormat::Undefined;
-  }
-}
-
 gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
                     const gfx::Size& size,
                     size_t plane) {
@@ -176,6 +155,13 @@ bool BindEGLImageToTexture(GLenum texture_target, void* egl_image) {
     return false;
   }
   return true;
+}
+
+bool CanTextureBeUsedByANGLE(
+    const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture) {
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  d3d11_texture->GetDevice(&d3d11_device);
+  return gl::QueryD3D11DeviceObjectFromANGLE() == d3d11_device;
 }
 
 }  // namespace
@@ -321,8 +307,9 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders;
   // Do not cache GL textures in the backing if it could be owned by Dawn, or
   // the video decoder, since there could be no GL context to MakeCurrent in the
-  // destructor.
-  if (!dxgi_shared_handle_state && !has_video_decode_usage) {
+  // destructor. And the d3d11_texture is created with d3d11 device in ANGLE.
+  if (!dxgi_shared_handle_state && !has_video_decode_usage &&
+      CanTextureBeUsedByANGLE(d3d11_texture)) {
     for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
       gfx::Size plane_size = format.GetPlaneSize(plane, size);
       // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
@@ -436,16 +423,18 @@ D3DImageBacking::D3DImageBacking(
       array_slice_(array_slice),
       plane_index_(plane_index),
       swap_chain_(std::move(swap_chain)),
-      is_back_buffer_(is_back_buffer) {
-  const bool has_video_decode_usage =
-      !!(usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
-  CHECK(has_video_decode_usage || dxgi_shared_handle_state_ ||
-        !gl_texture_holders_.empty());
+      is_back_buffer_(is_back_buffer),
+      angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()) {
   if (d3d11_texture_) {
     d3d11_texture_->GetDevice(&texture_d3d11_device_);
     d3d11_texture_->GetDesc(&d3d11_texture_desc_);
   }
-  angle_d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
+
+  const bool has_video_decode_usage =
+      !!(usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
+  CHECK(has_video_decode_usage || dxgi_shared_handle_state_ ||
+        angle_d3d11_device_ != texture_d3d11_device_ ||
+        !gl_texture_holders_.empty());
 }
 
 D3DImageBacking::~D3DImageBacking() {
@@ -630,50 +619,6 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
-wgpu::TextureUsage D3DImageBacking::GetAllowedDawnUsages(
-    const wgpu::Device& device,
-    const wgpu::TextureFormat wgpu_format) const {
-  // TODO(crbug.com/2709243): Figure out other SI flags, if any.
-  const wgpu::TextureUsage kBasicUsage =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
-      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
-  switch (wgpu_format) {
-    case wgpu::TextureFormat::R8Unorm:
-    case wgpu::TextureFormat::RG8Unorm:
-      return kBasicUsage;
-    case wgpu::TextureFormat::BGRA8Unorm: {
-      if (usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
-        if (device.HasFeature(wgpu::FeatureName::BGRA8UnormStorage)) {
-          return kBasicUsage | wgpu::TextureUsage::StorageBinding;
-        } else {
-          // We cannot use BGRA8Unorm textures as storage textures when
-          // the feature BGRA8UnormStorage is not enabled.
-          LOG(ERROR) << "StorageBinding is not supported for "
-                     << static_cast<int>(wgpu::TextureFormat::BGRA8Unorm)
-                     << " when the feature "
-                     << static_cast<int>(wgpu::FeatureName::BGRA8UnormStorage)
-                     << " is not enabled";
-          return wgpu::TextureUsage::None;
-        }
-      } else {
-        return kBasicUsage;
-      }
-    }
-    case wgpu::TextureFormat::RGBA8Unorm:
-    case wgpu::TextureFormat::RGBA16Float: {
-      if (usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
-        return kBasicUsage | wgpu::TextureUsage::StorageBinding;
-      } else {
-        return kBasicUsage;
-      }
-    }
-    case wgpu::TextureFormat::R8BG8Biplanar420Unorm:
-      return wgpu::TextureUsage::TextureBinding;
-    default:
-      return wgpu::TextureUsage::None;
-  }
-}
-
 std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -706,87 +651,27 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     return nullptr;
   }
 
-  const wgpu::TextureFormat wgpu_format =
-      DXGIToWGPUFormat(d3d11_texture_desc_.Format);
-  if (wgpu_format == wgpu::TextureFormat::Undefined) {
-    LOG(ERROR) << "Unsupported DXGI_FORMAT found: "
-               << d3d11_texture_desc_.Format;
-    return nullptr;
-  }
-
-  // The below usages are not supported for multiplanar formats in Dawn.
-  // TODO(crbug.com/1451784): Use read/write intent instead of format to get
-  // correct usages. This needs support in Skia to loosen TextureUsage
-  // validation. Alternatively, add support in Dawn for multiplanar formats to
-  // be Renderable.
-  const wgpu::TextureUsage allowed_usage =
-      GetAllowedDawnUsages(device, wgpu_format);
-  if (allowed_usage == wgpu::TextureUsage::None) {
-    LOG(ERROR)
-        << "Allowed wgpu::TextureUsage is unknown for wgpu::TextureFormat: "
-        << static_cast<int>(wgpu_format);
-    return nullptr;
-  }
-
-  // We need to have an internal usage of CopySrc in order to use
-  // CopyTextureToTextureInternal if texture format allows these usage.
-  const wgpu::TextureUsage internal_usage =
-      (wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::RenderAttachment |
-       wgpu::TextureUsage::TextureBinding) &
-      allowed_usage;
-
-  wgpu::TextureDescriptor wgpu_texture_desc;
-  wgpu_texture_desc.format = wgpu_format;
-  wgpu_texture_desc.usage = allowed_usage;
-  wgpu_texture_desc.dimension = wgpu::TextureDimension::e2D;
-  wgpu_texture_desc.size = {static_cast<uint32_t>(size().width()),
-                            static_cast<uint32_t>(size().height()), 1};
-  wgpu_texture_desc.mipLevelCount = 1;
-  wgpu_texture_desc.sampleCount = 1;
-  wgpu_texture_desc.viewFormatCount =
-      static_cast<uint32_t>(view_formats.size());
-  wgpu_texture_desc.viewFormats = view_formats.data();
-
-  // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
-  // if texture format allows these usages.
-  wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
-  internal_usage_desc.internalUsage = internal_usage;
-  wgpu_texture_desc.nextInChain = &internal_usage_desc;
-
   // Persistently open the shared handle by caching it on this backing.
   auto& external_image = GetDawnExternalImage(device.Get());
   if (!external_image) {
-    ExternalImageDescriptorDXGISharedHandle external_image_shared_handle_desc;
-    ExternalImageDescriptorD3D11Texture external_image_d3d11_texture_desc;
-    const ExternalImageDescriptor* external_image_desc = nullptr;
-
     Microsoft::WRL::ComPtr<ID3D11Device> dawn_d3d11_device;
     if (backend_type == wgpu::BackendType::D3D11) {
       dawn_d3d11_device = dawn::native::d3d11::GetD3D11Device(device.Get());
     }
     if (dawn_d3d11_device == texture_d3d11_device_) {
-      external_image_d3d11_texture_desc.cTextureDescriptor =
-          reinterpret_cast<WGPUTextureDescriptor*>(&wgpu_texture_desc);
-      external_image_d3d11_texture_desc.texture = d3d11_texture_;
-      external_image_desc = &external_image_d3d11_texture_desc;
+      external_image = CreateDawnExternalImageDXGI(
+          device, usage(), d3d11_texture_desc_, d3d11_texture_, view_formats);
     } else {
       CHECK(dxgi_shared_handle_state_);
       const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
       CHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
-      external_image_shared_handle_desc.cTextureDescriptor =
-          reinterpret_cast<WGPUTextureDescriptor*>(&wgpu_texture_desc);
-      external_image_shared_handle_desc.sharedHandle = shared_handle;
-      external_image_desc = &external_image_shared_handle_desc;
+      external_image = CreateDawnExternalImageDXGI(
+          device, usage(), d3d11_texture_desc_, shared_handle, view_formats);
     }
 
-    external_image =
-        ExternalImageDXGI::Create(device.Get(), external_image_desc);
     if (!external_image) {
-      LOG(ERROR) << "Failed to create external image";
       return nullptr;
     }
-    DCHECK(external_image->IsValid());
   }
 
   return std::make_unique<DawnD3DImageRepresentation>(manager, this, tracker,
