@@ -44,6 +44,8 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -4021,6 +4023,91 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestDisabledZoomMode) {
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestZoomBeforeNavigation) {
   TestHelper("testZoomBeforeNavigation", "web_view/shim", NO_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  LoadAppWithGuest("web_view/simple");
+
+  const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
+  content::NavigationController* guest_controller =
+      &GetGuestView()->GetController();
+  LoginPromptBrowserTestObserver login_observer;
+  login_observer.Register(
+      content::Source<content::NavigationController>(guest_controller));
+  WindowedAuthNeededObserver auth_needed(guest_controller);
+  WindowedAuthSuppliedObserver auth_supplied(guest_controller);
+  // There are two navigations occurring here. The first fails due to the need
+  // for auth. After it's supplied, a second navigation will succeed.
+  content::TestNavigationObserver nav_observer(GetGuestWebContents(), 2);
+  nav_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
+  EXPECT_TRUE(
+      content::ExecJs(GetGuestRenderFrameHost(),
+                      content::JsReplace("location.href = $1;", auth_url)));
+  auth_needed.Wait();
+
+  LoginHandler* login_handler = login_observer.handlers().front();
+  login_handler->SetAuth(u"basicuser", u"secret");
+  auth_supplied.Wait();
+  nav_observer.WaitForNavigationFinished();
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  LoadAppWithGuest("web_view/simple");
+
+  const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
+  content::NavigationController* guest_controller =
+      &GetGuestView()->GetController();
+  content::NavigationController* tab_controller =
+      &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
+  LoginPromptBrowserTestObserver login_observer;
+  login_observer.Register(
+      content::Source<content::NavigationController>(guest_controller));
+  login_observer.Register(
+      content::Source<content::NavigationController>(tab_controller));
+  WindowedAuthNeededObserver guest_auth_needed(guest_controller);
+  WindowedAuthNeededObserver tab_auth_needed(tab_controller);
+  WindowedAuthSuppliedObserver guest_auth_supplied(guest_controller);
+  // There are two navigations occurring here. The first fails due to the need
+  // for auth. After it's supplied, a second navigation will succeed.
+  content::TestNavigationObserver guest_nav_observer(GetGuestWebContents(), 2);
+  guest_nav_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
+  EXPECT_TRUE(
+      content::ExecJs(GetGuestRenderFrameHost(),
+                      content::JsReplace("location.href = $1;", auth_url)));
+  guest_auth_needed.Wait();
+
+  // While the login UI is showing for the app, navigate a tab to the same URL
+  // requiring auth.
+  tab_controller->LoadURL(auth_url, content::Referrer(),
+                          ui::PAGE_TRANSITION_TYPED, std::string());
+  tab_auth_needed.Wait();
+
+  // Both the guest and the tab should be prompting for credentials and the auth
+  // challenge should be the same. Normally, the login code de-duplicates
+  // identical challenges if multiple prompts are shown for them. However,
+  // credentials can't be shared across StoragePartitions. So providing
+  // credentials within the guest should not affect the tab.
+  ASSERT_EQ(2u, login_observer.handlers().size());
+  LoginHandler* guest_login_handler = login_observer.handlers().front();
+  LoginHandler* tab_login_handler = login_observer.handlers().back();
+  EXPECT_EQ(tab_controller,
+            &tab_login_handler->web_contents()->GetController());
+  EXPECT_TRUE(guest_login_handler->auth_info().MatchesExceptPath(
+      tab_login_handler->auth_info()));
+
+  guest_login_handler->SetAuth(u"basicuser", u"secret");
+  guest_auth_supplied.Wait();
+  guest_nav_observer.WaitForNavigationFinished();
+
+  // The tab should still be prompting for credentials.
+  ASSERT_EQ(1u, login_observer.handlers().size());
+  EXPECT_EQ(tab_login_handler, login_observer.handlers().front());
 }
 
 namespace {
