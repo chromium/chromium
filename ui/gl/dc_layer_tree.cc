@@ -19,6 +19,7 @@
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/swap_chain_presenter.h"
 
 namespace gl {
@@ -106,6 +107,27 @@ bool DCLayerTree::Initialize(
 
   hr = dcomp_device_->CreateVisual(&dcomp_root_visual_);
   CHECK_EQ(hr, S_OK);
+
+  if (base::FeatureList::IsEnabled(features::kDCompDebugVisualization)) {
+    Microsoft::WRL::ComPtr<IDCompositionDeviceDebug> debug_device;
+    hr = dcomp_device_.As(&debug_device);
+    CHECK_EQ(hr, S_OK);
+    CHECK(debug_device);
+    DLOG(WARNING) << "DComp debug counters enabled, visible in the top right.";
+    DLOG(WARNING) << "  - left: The composition engine FPS, averaged over the "
+                     "last 60 composition frames";
+    DLOG(WARNING) << "  - right: The overall CPU usage of the composition "
+                     "thread, in milliseconds";
+    hr = debug_device->EnableDebugCounters();
+    CHECK_EQ(hr, S_OK);
+
+    Microsoft::WRL::ComPtr<IDCompositionVisualDebug> debug_visual;
+    hr = dcomp_root_visual_.As(&debug_visual);
+    CHECK_EQ(hr, S_OK);
+    CHECK(debug_visual);
+    hr = debug_visual->EnableRedrawRegions();
+    CHECK_EQ(hr, S_OK);
+  }
 
   dcomp_target_->SetRoot(dcomp_root_visual_.Get());
   // A visual inherits the interpolation mode of the parent visual by default.
