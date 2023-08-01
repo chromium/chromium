@@ -114,6 +114,9 @@ class H265Decoder : public VideoDecoder {
                         const H265PPS* pps,
                         const H265SliceHeader* slice_hdr);
 
+  // Notifies client that a picture is ready for output.
+  void OutputPic(scoped_refptr<H265Picture> pic);
+
   // Performs DPB management operations for |curr_pic_| by removing no longer
   // needed entries from the DPB and outputting pictures from the DPB. |sps|
   // should be the corresponding SPS for |curr_pic_|.
@@ -152,6 +155,27 @@ class H265Decoder : public VideoDecoder {
   // Global state values needed for decoding. See spec.
   scoped_refptr<H265Picture> prev_tid0_pic_;
   int max_pic_order_cnt_lsb_;
+  bool curr_delta_poc_msb_present_flag_[kMaxDpbSize];
+  bool foll_delta_poc_msb_present_flag_[kMaxDpbSize];
+  int num_poc_st_curr_before_;
+  int num_poc_st_curr_after_;
+  int num_poc_st_foll_;
+  int num_poc_lt_curr_;
+  int num_poc_lt_foll_;
+  int poc_st_curr_before_[kMaxDpbSize];
+  int poc_st_curr_after_[kMaxDpbSize];
+  int poc_st_foll_[kMaxDpbSize];
+  int poc_lt_curr_[kMaxDpbSize];
+  int poc_lt_foll_[kMaxDpbSize];
+  H265Picture::Vector ref_pic_list0_;
+  H265Picture::Vector ref_pic_list1_;
+  H265Picture::Vector ref_pic_set_lt_curr_;
+  H265Picture::Vector ref_pic_set_st_curr_after_;
+  H265Picture::Vector ref_pic_set_st_curr_before_;
+
+  // |ref_pic_list_| is the collection of all pictures from StCurrBefore,
+  // StCurrAfter, StFoll, LtCurr and LtFoll.
+  H265Picture::Vector ref_pic_list_;
 
   // Currently active SPS and PPS.
   int curr_sps_id_ = -1;
