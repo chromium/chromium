@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -65,6 +67,17 @@ PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
   return PageMeasurementBackgroundState::kBackground;
 }
 
+bool CheckPageNodeTypeForBug1468730(const PageNode* page_node,
+                                    PageType expected_type = PageType::kTab) {
+  if (page_node->GetType() == expected_type) {
+    return true;
+  }
+  SCOPED_CRASH_KEY_NUMBER("pm", "timeline-page-node-type",
+                          static_cast<int>(page_node->GetType()));
+  base::debug::DumpWithoutCrashing();
+  return false;
+}
+
 }  // namespace
 
 PageTimelineMonitor::PageTimelineMonitor()
@@ -116,7 +129,15 @@ void PageTimelineMonitor::CollectPageResourceUsage() {
 
   const auto now = base::TimeTicks::Now();
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
-    CHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
+    // TODO(crbug.com/1468730): Convert this back to
+    //
+    // CHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
+    //
+    // once the cause of the CHECK failures is found.
+    if (!CheckPageNodeTypeForBug1468730(page_node)) {
+      continue;
+    }
+
     const ukm::SourceId source_id = page_node->GetUkmSourceID();
 
     ukm::builders::PerformanceManager_PageResourceUsage(source_id)
@@ -154,7 +175,14 @@ void PageTimelineMonitor::CollectSlice() {
     const PageNode* page_node = pair.first;
     const std::unique_ptr<PageNodeInfo>& curr_info = pair.second;
 
-    DCHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
+    // TODO(crbug.com/1468730): Convert this back to
+    //
+    // CHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
+    //
+    // once the cause of the CHECK failures is found.
+    if (!CheckPageNodeTypeForBug1468730(page_node)) {
+      continue;
+    }
 
     const PageNode::LifecycleState lifecycle_state =
         page_node->GetLifecycleState();
@@ -266,7 +294,13 @@ void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
 }
 
 void PageTimelineMonitor::OnPageNodeAdded(const PageNode* page_node) {
-  DCHECK_EQ(page_node->GetType(), performance_manager::PageType::kUnknown);
+  // TODO(crbug.com/1468730): Convert this to
+  //
+  // CHECK_EQ(page_node->GetType(), performance_manager::PageType::kUnknown);
+  //
+  // After validating DumpWithoutCrashing results.
+  CheckPageNodeTypeForBug1468730(page_node,
+                                 performance_manager::PageType::kUnknown);
 }
 
 void PageTimelineMonitor::OnBeforePageNodeRemoved(const PageNode* page_node) {
@@ -331,12 +365,29 @@ void PageTimelineMonitor::OnPageLifecycleStateChanged(
 }
 
 void PageTimelineMonitor::OnTypeChanged(const PageNode* page_node,
-                                        PageType previous_state) {
+                                        PageType previous_type) {
   // If a PageNode already has a PageNodeInfo, its only valid state is
   // `kDiscarded` and a new PageNodeInfo shouldn't be created for it.
   if (base::Contains(page_node_info_map_, page_node)) {
-    DCHECK_EQ(page_node_info_map_[page_node]->current_lifecycle,
-              mojom::LifecycleState::kDiscarded);
+    // TODO(crbug.com/1468730): Decide how `page_node` should be handled if this
+    // check finds that its type isn't kTab any more. Also convert the lifecycle
+    // check to
+    //
+    // CHECK_EQ(page_node_info_map_[page_node]->current_lifecycle,
+    //          mojom::LifecycleState::kDiscarded);
+    //
+    // after the investigation.
+    SCOPED_CRASH_KEY_NUMBER("pm", "timeline-prev-page-node-type",
+                            static_cast<int>(previous_type));
+    SCOPED_CRASH_KEY_NUMBER(
+        "pm", "timeline-page-node-lifecycle",
+        static_cast<int>(page_node_info_map_[page_node]->current_lifecycle));
+    if (CheckPageNodeTypeForBug1468730(page_node) &&
+        page_node_info_map_[page_node]->current_lifecycle !=
+            mojom::LifecycleState::kDiscarded) {
+      // Already dumped if CheckPageNodeTypeForBug1468730() returned false.
+      base::debug::DumpWithoutCrashing();
+    }
     return;
   }
 
@@ -360,13 +411,21 @@ void PageTimelineMonitor::OnTypeChanged(const PageNode* page_node,
 void PageTimelineMonitor::OnAboutToBeDiscarded(const PageNode* page_node,
                                                const PageNode* new_page_node) {
   auto old_it = page_node_info_map_.find(page_node);
-  DCHECK(old_it != page_node_info_map_.end());
+  CHECK(old_it != page_node_info_map_.end());
   old_it->second->current_lifecycle = mojom::LifecycleState::kDiscarded;
+
+  // TODO(crbug.com/1468730): Decide how `new_page_node` should be handled if
+  // this check finds that the type isn't kTab.
+  CheckPageNodeTypeForBug1468730(new_page_node);
 
   bool inserted =
       page_node_info_map_.emplace(new_page_node, std::move(old_it->second))
           .second;
-  DCHECK(inserted);
+  // TODO(crbug.com/1468730): Convert to "CHECK(inserted)" after validating
+  // DumpWithoutCrashing results.
+  if (!inserted) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   page_node_info_map_.erase(old_it);
 }
