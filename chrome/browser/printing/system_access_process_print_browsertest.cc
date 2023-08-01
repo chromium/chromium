@@ -2816,6 +2816,13 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
                        SystemPrintFromPrintPreview) {
   AddPrinter("printer_name");
 
+  if (UseService() && !ContentAnalysisAllowsPrint()) {
+    // This results in a stranded context left in the Print Backend service.
+    // It will persist harmlessly until the service terminates after a short
+    // period of no printing activity.
+    SkipPersistentContextsCheckOnShutdown();
+  }
+
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2879,8 +2886,18 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
   } else {
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/1457901): Re-enable this test.
-    GTEST_SKIP();
+    if (UseService()) {
+      // The expected events for this are:
+      // 1.  Update print settings.
+      // 2.  The print job is cancelled.
+      // 3.  The print job is destroyed.
+      SetNumExpectedMessages(/*num=*/3);
+    } else {
+      // The expected events for this are:
+      // 1.  The print job is cancelled.
+      // 2.  The print job is destroyed.
+      SetNumExpectedMessages(/*num=*/2);
+    }
 #else
     if (UseService()) {
       // Expect an extra message for the print job created after content
@@ -2900,14 +2917,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
       // 4.  The print job used for scanning is destroyed.
       SetNumExpectedMessages(/*num=*/4);
     }
-    SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 #endif  // BUILDFLAG(IS_WIN)
+    SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
   }
 
   ASSERT_TRUE(print_view_manager->preview_allowed());
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1457901): Update these assertions once all Windows cases for
-  // this test are re-enabled.
   EXPECT_EQ(composited_for_content_analysis_count(), 0);
   EXPECT_EQ(print_job_destruction_count(), 1);
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 0);

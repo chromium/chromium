@@ -271,6 +271,13 @@ void PrintJob::Cancel() {
   is_canceling_ = false;
 }
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+void PrintJob::CleanupAfterContentAnalysisDenial() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  worker_->CleanupAfterContentAnalysisDenial();
+}
+#endif
+
 bool PrintJob::FlushJob(base::TimeDelta timeout) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

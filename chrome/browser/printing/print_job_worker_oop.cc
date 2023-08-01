@@ -111,6 +111,13 @@ void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
                                 document_name));
 }
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+void PrintJobWorkerOop::CleanupAfterContentAnalysisDenial() {
+  PrintJobWorker::CleanupAfterContentAnalysisDenial();
+  UnregisterServiceManagerClient();
+}
+#endif
+
 void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != mojom::ResultCode::kSuccess) {

@@ -1341,6 +1341,7 @@ void PrintViewManagerBase::CompletePrintDocumentAfterContentAnalysis(
     bool allowed) {
   if (!allowed || IsCrashed()) {
     ReleasePrinterQuery();
+    print_job_->CleanupAfterContentAnalysisDenial();
     TerminatePrintJob(/*cancel=*/true);
     return;
   }
