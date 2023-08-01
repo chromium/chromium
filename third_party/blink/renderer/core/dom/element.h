@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
@@ -467,7 +468,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   String nodeName() const override;
 
-  Element& CloneWithChildren(NodeCloningData& data, Document* = nullptr) const;
+  Element& CloneWithChildren(NodeCloningData& data,
+                             Document*,
+                             ContainerNode*,
+                             ExceptionState& = ASSERT_NO_EXCEPTION) const;
   Element& CloneWithoutChildren(NodeCloningData& data,
                                 Document* = nullptr) const;
   Element& CloneWithoutChildren() const;
@@ -1508,7 +1512,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Clone is private so that non-virtual CloneElementWithChildren and
   // CloneElementWithoutChildren are used instead.
-  Node* Clone(Document&, NodeCloningData&) const override;
+  Node* Clone(Document& factory,
+              NodeCloningData& data,
+              ContainerNode* append_to,
+              ExceptionState& append_exception_state) const override;
+
   virtual Element& CloneWithoutAttributesAndChildren(Document& factory) const;
 
   QualifiedName tag_name_;

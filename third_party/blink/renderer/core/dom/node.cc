@@ -1003,7 +1003,7 @@ Node* Node::cloneNode(bool deep, ExceptionState& exception_state) const {
       data.Put(CloneOption::kIncludeShadowRoots);
     }
   }
-  return Clone(GetDocument(), data);
+  return Clone(GetDocument(), data, /*append_to*/ nullptr);
 }
 
 Node* Node::cloneNode(bool deep) const {

@@ -254,9 +254,14 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
 }
 
 Node* CharacterData::Clone(Document& factory,
-                           NodeCloningData& cloning_data) const {
+                           NodeCloningData& cloning_data,
+                           ContainerNode* append_to,
+                           ExceptionState& append_exception_state) const {
   CharacterData* clone = CloneWithData(factory, data());
   clone->ClonePartsFrom(*this, cloning_data);
+  if (append_to) {
+    append_to->AppendChild(clone, append_exception_state);
+  }
   return clone;
 }
 

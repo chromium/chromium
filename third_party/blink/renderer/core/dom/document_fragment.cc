@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
@@ -60,7 +61,12 @@ bool DocumentFragment::ChildTypeAllowed(NodeType type) const {
   }
 }
 
-Node* DocumentFragment::Clone(Document& factory, NodeCloningData& data) const {
+Node* DocumentFragment::Clone(Document& factory,
+                              NodeCloningData& data,
+                              ContainerNode* append_to,
+                              ExceptionState&) const {
+  DCHECK_EQ(append_to, nullptr)
+      << "DocumentFragment::Clone() doesn't support append_to";
   DocumentFragment* clone = Create(factory);
   clone->ClonePartsFrom(*this, data);
   if (data.Has(CloneOption::kIncludeDescendants)) {

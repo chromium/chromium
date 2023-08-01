@@ -100,7 +100,10 @@ void ShadowRoot::DidChangeHostChildSlotName(const AtomicString& old_value,
   slot_assignment_->DidChangeHostChildSlotName(old_value, new_value);
 }
 
-Node* ShadowRoot::Clone(Document&, NodeCloningData&) const {
+Node* ShadowRoot::Clone(Document&,
+                        NodeCloningData&,
+                        ContainerNode*,
+                        ExceptionState&) const {
   NOTREACHED() << "ShadowRoot nodes are not clonable.";
   return nullptr;
 }

@@ -66,16 +66,15 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   auto* fragment = To<DocumentFragment>(DocumentFragment::Create(document));
   NodeCloningData data{CloneOption::kPreserveDOMParts};
   data.ConnectPartRootToClone(*root(), fragment->getPartRoot());
-  ContainerNode* new_parent =
-      To<ContainerNode>(parentNode()->Clone(document, data));
-  fragment->appendChild(new_parent, exception_state);
+  ContainerNode* new_parent = To<ContainerNode>(
+      parentNode()->Clone(document, data, fragment, exception_state));
   if (exception_state.HadException()) {
     return nullptr;
   }
   data.Put(CloneOption::kIncludeDescendants);
   Node* node = previous_sibling_;
   while (true) {
-    new_parent->appendChild(node->Clone(document, data), exception_state);
+    node->Clone(document, data, new_parent, exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }

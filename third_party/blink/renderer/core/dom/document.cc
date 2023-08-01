@@ -1357,7 +1357,7 @@ Node* Document::importNode(Node* imported_node,
       data.Put(CloneOption::kIncludeShadowRoots);
     }
   }
-  return imported_node->Clone(*this, data);
+  return imported_node->Clone(*this, data, /*append_to*/ nullptr);
 }
 
 Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
@@ -4923,10 +4923,14 @@ bool Document::CanAcceptChild(const Node& new_child,
   return true;
 }
 
-Node* Document::Clone(Document& factory, NodeCloningData& data) const {
+Node* Document::Clone(Document& factory,
+                      NodeCloningData& data,
+                      ContainerNode* append_to,
+                      ExceptionState& append_exception_state) const {
   DCHECK_EQ(this, &factory)
       << "Document::Clone() doesn't support importNode mode.";
-
+  DCHECK_EQ(append_to, nullptr)
+      << "Document::Clone() doesn't support append_to";
   if (!execution_context_)
     return nullptr;
   Document* clone = CloneDocumentWithoutChildren();

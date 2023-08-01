@@ -1057,6 +1057,17 @@
     "expires": "Feb 1, 2024"
   },
   {
+    "prefix": "optimized-node-cloning-disabled",
+    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/dom/nodes/Node-cloneNode.html",
+      "external/wpt/dom/parts/basic-dom-part-objects.tentative.html"
+    ],
+    "args": ["--disable-features=OptimizedNodeCloneOrder"],
+    "expires": "Feb 1, 2024"
+  },
+  {
     "prefix": "backface-visibility-interop",
     "owners": ["dbaron@chromium.org", "paint-dev@chromium.org"],
     "platforms": ["Linux"],

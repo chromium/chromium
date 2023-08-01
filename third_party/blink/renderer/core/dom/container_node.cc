@@ -1121,7 +1121,7 @@ void ContainerNode::CloneChildNodesFrom(const ContainerNode& node,
                                         NodeCloningData& data) {
   CHECK(data.Has(CloneOption::kIncludeDescendants));
   for (const Node& child : NodeTraversal::ChildrenOf(node)) {
-    AppendChild(child.Clone(GetDocument(), data));
+    child.Clone(GetDocument(), data, this);
   }
 }
 

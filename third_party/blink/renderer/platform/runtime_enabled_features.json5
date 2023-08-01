@@ -2426,6 +2426,13 @@
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
     },
+    // This is an optimization that should not be observable, but just in case,
+    // this is a killswitch. This can be removed once M117 ships to stable and
+    // no regressions are reported.
+    {
+      name: "OptimizedNodeCloneOrder",
+      status: "stable",
+    },
     {
       name: "OrientationEvent",
       status: {"Android": "stable"},
