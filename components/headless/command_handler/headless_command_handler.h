@@ -74,6 +74,7 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
   void WriteFile(base::FilePath file_path, std::string base64_file_data);
   void OnWriteFileDone(bool success);
 
+  void PostDone();
   void Done();
 
   SimpleDevToolsProtocolClient devtools_client_;
