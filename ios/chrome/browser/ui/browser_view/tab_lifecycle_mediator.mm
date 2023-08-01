@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
@@ -122,7 +123,7 @@
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(_repostFormDelegate);
 
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
-  if (followTabHelper) {
+  if (followTabHelper && IsWebChannelsEnabled()) {
     DCHECK(_followIPHPresenter);
     followTabHelper->set_follow_iph_presenter(_followIPHPresenter);
   }
