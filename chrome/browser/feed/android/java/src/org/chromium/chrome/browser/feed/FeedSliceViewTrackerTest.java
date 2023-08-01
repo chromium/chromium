@@ -578,6 +578,55 @@ public class FeedSliceViewTrackerTest {
         verify(mObserver, times(2)).reportLoadMoreIndicatorVisible();
     }
 
+    @Test
+    @SmallTest
+    public void testReportLoadMoreAwayFromIndicator() {
+        mContentManager.addContents(0,
+                Arrays.asList(new FeedListContentManager.FeedContent[] {
+                        new FeedListContentManager.NativeViewContent(
+                                0, "load-more-spinner1", mChildA),
+                        new FeedListContentManager.NativeViewContent(
+                                1, "load-more-spinner2", mChildB),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+        doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
+
+        mockViewportRect(0, 0, 500, 500);
+        mockViewDimensions(mChildA, 100, 100);
+        mockViewDimensions(mChildB, 100, 100);
+
+        // Report visible when 5% visible.
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 5);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
+        verify(mObserver, times(0)).reportLoadMoreUserScrolledAwayFromIndicator();
+
+        // Report away when not visible.
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 0);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
+        verify(mObserver, times(1)).reportLoadMoreUserScrolledAwayFromIndicator();
+
+        // No more report when further away.
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, -10);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
+        verify(mObserver, times(1)).reportLoadMoreUserScrolledAwayFromIndicator();
+
+        // Report for another indicator.
+        mockGetChildVisibleRect(mChildB, 0, 0, 100, 5);
+        mTracker.onPreDraw();
+        verify(mObserver, times(2)).reportLoadMoreIndicatorVisible();
+        verify(mObserver, times(1)).reportLoadMoreUserScrolledAwayFromIndicator();
+
+        mockGetChildVisibleRect(mChildB, 0, 0, 100, 0);
+        mTracker.onPreDraw();
+        verify(mObserver, times(2)).reportLoadMoreIndicatorVisible();
+        verify(mObserver, times(2)).reportLoadMoreUserScrolledAwayFromIndicator();
+    }
+
     void mockViewDimensions(View view, int width, int height) {
         when(view.getWidth()).thenReturn(width);
         when(view.getHeight()).thenReturn(height);

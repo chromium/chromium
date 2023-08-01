@@ -367,7 +367,7 @@ public class FeedStream implements Stream {
                 if (!workPending) {
                     PostTask.postTask(TaskTraits.UI_DEFAULT, mDelegate);
                     mWorkPending.removeObserver(this);
-                };
+                }
             }
         }
         private void finishWork(int workId) {
@@ -1327,6 +1327,12 @@ public class FeedStream implements Stream {
         public void reportLoadMoreIndicatorVisible() {
             if (mReliabilityLogger != null) {
                 mReliabilityLogger.onPaginationIndicatorShown();
+            }
+        }
+        @Override
+        public void reportLoadMoreUserScrolledAwayFromIndicator() {
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onPaginationUserScrolledAwayFromIndicator();
             }
         }
     }

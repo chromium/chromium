@@ -60,6 +60,9 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     private HashSet<String> mContentKeysBarelyVisible = new HashSet<>();
     // The set of content keys for load-more indicators already reported as visible (5% threshold).
     private HashSet<String> mLoadMoreIndicatorContentKeys = new HashSet<>();
+    // The set of content keys for load-more indicators already reported as that the user scrolled
+    // away from the indicator.
+    private HashSet<String> mLoadMoreAwayFromIndicatorContentKeys = new HashSet<>();
     private boolean mFeedContentVisible;
     @Nullable
     private Observer mObserver;
@@ -89,6 +92,8 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         void reportViewFirstRendered(View view);
         // Called the first time a loading indicator for load-more is 5% visible.
         void reportLoadMoreIndicatorVisible();
+        // Called the first time the user scrolled away from the loading indicator for load-more.
+        void reportLoadMoreUserScrolledAwayFromIndicator();
     }
 
     public FeedSliceViewTracker(@NonNull RecyclerView rootView, @NonNull Activity activity,
@@ -198,11 +203,18 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
 
             // Loading spinner slices come with a fixed prefix and a different ID after it.
             if (mWatchForUserInteractionReliabilityReport
-                    && contentKey.startsWith("load-more-spinner")
-                    && !mLoadMoreIndicatorContentKeys.contains(contentKey)
-                    && isViewVisible(childView, VISIBLE_CHANGE_LOG_THRESHOLD)) {
-                mLoadMoreIndicatorContentKeys.add(contentKey);
-                mObserver.reportLoadMoreIndicatorVisible();
+                    && contentKey.startsWith("load-more-spinner")) {
+                if (!mLoadMoreIndicatorContentKeys.contains(contentKey)
+                        && isViewVisible(childView, VISIBLE_CHANGE_LOG_THRESHOLD)) {
+                    mLoadMoreIndicatorContentKeys.add(contentKey);
+                    mObserver.reportLoadMoreIndicatorVisible();
+                }
+                if (!mLoadMoreAwayFromIndicatorContentKeys.contains(contentKey)
+                        && mLoadMoreIndicatorContentKeys.contains(contentKey)
+                        && !isViewVisible(childView, VISIBLE_CHANGE_LOG_THRESHOLD)) {
+                    mLoadMoreAwayFromIndicatorContentKeys.add(contentKey);
+                    mObserver.reportLoadMoreUserScrolledAwayFromIndicator();
+                }
             }
 
             // Feed content slices come with a 'c/' prefix. Ignore everything else.
