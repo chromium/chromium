@@ -1641,6 +1641,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxDefaultSetting,
                                     kBottomOmniboxDefaultSettingVariations,
                                     "BottomOmniboxDefaultSetting")},
+    {"tab-pickup-minimum-delay", flag_descriptions::kTabPickupMinimumDelayName,
+     flag_descriptions::kTabPickupMinimumDelayDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabPickupMinimumDelay)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

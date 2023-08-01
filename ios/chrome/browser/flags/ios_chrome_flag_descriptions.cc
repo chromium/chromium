@@ -1099,6 +1099,12 @@ const char kTabInactivityThresholdDescription[] =
     "IMPORTANT: If you ever used the in-app settings for Inactive Tabs, this "
     "flag is never read again.";
 
+const char kTabPickupMinimumDelayName[] =
+    "Add delay between tab pickup banners";
+const char kTabPickupMinimumDelayDescription[] =
+    "When enabled, adds a 2h delay between the presentation of two tab pickup "
+    "banners.";
+
 const char kTabPickupThresholdName[] = "Enable and change tab pickup threshold";
 const char kTabPickupThresholdDescription[] =
     "When enabled, an infobar will be displayed when the latest tab used from "

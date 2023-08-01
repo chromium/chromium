@@ -19,6 +19,10 @@ BASE_FEATURE(kTabPickupThreshold,
              "TabPickupThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabPickupMinimumDelay,
+             "TabPickupMinimumDelay",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kTabPickupThresholdParameterName[] = "variant";
 const char kTabPickupThresholdTenMinutesParam[] =
     "tab-pickup-threshold-ten-minutes";
@@ -28,6 +32,11 @@ const char kTabPickupThresholdTwoHoursParam[] =
 
 bool IsTabPickupEnabled() {
   return base::FeatureList::IsEnabled(kTabPickupThreshold);
+}
+
+bool IsTabPickupMinimumDelayEnabled() {
+  CHECK(IsTabPickupEnabled());
+  return base::FeatureList::IsEnabled(kTabPickupMinimumDelay);
 }
 
 const base::TimeDelta TabPickupTimeThreshold() {

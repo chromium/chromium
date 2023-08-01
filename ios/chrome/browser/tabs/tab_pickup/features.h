@@ -16,6 +16,9 @@ class TimeDelta;
 // Feature flag that sets the tab pickup threshold.
 BASE_DECLARE_FEATURE(kTabPickupThreshold);
 
+// Flag that adds delay between tab pickup banners.
+BASE_DECLARE_FEATURE(kTabPickupMinimumDelay);
+
 // Feature parameters for the tab pickup feature. If no parameter is set, the
 // default (10 minutes) threshold will be used.
 extern const char kTabPickupThresholdParameterName[];
@@ -25,6 +28,10 @@ extern const char kTabPickupThresholdTwoHoursParam[];
 
 // Convenience method for determining if the tab pickup feature is available.
 bool IsTabPickupEnabled();
+
+// Convenience method for determining if the tab pickup minimum delay flag is
+// enabled.
+bool IsTabPickupMinimumDelayEnabled();
 
 // Convenience method for determining if the tab pickup feature has been
 // disabled by the user.

@@ -949,6 +949,11 @@ extern const char kTabGridNewTransitionsDescription[];
 extern const char kTabInactivityThresholdName[];
 extern const char kTabInactivityThresholdDescription[];
 
+// Title and description for the flag that adds delay between tab pickup
+// banners.
+extern const char kTabPickupMinimumDelayName[];
+extern const char kTabPickupMinimumDelayDescription[];
+
 // Title and description for the flag to enable tab pickup.
 extern const char kTabPickupThresholdName[];
 extern const char kTabPickupThresholdDescription[];

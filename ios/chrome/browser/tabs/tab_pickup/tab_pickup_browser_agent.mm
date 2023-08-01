@@ -199,6 +199,10 @@ bool TabPickupBrowserAgent::CanShowTabPickupBanner() {
     return false;
   }
 
+  if (!IsTabPickupMinimumDelayEnabled()) {
+    return true;
+  }
+
   const base::TimeDelta time_since_last_display =
       base::Time::Now() - GetApplicationContext()->GetLocalState()->GetTime(
                               prefs::kTabPickupLastDisplayedTime);
