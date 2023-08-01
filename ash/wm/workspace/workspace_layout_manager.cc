@@ -74,6 +74,7 @@ void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowVisibilityChanged(
 
 void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowDestroying(
     aura::Window* window) {
+  workspace_layout_manager_->NotifySystemUiAreaChanged();
   StopOberservingWindow(window);
 }
 
@@ -95,7 +96,6 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
     : window_(window),
       root_window_(window->GetRootWindow()),
       root_window_controller_(RootWindowController::ForWindow(root_window_)),
-      floating_window_observer_(this),
       work_area_in_parent_(
           screen_util::GetDisplayWorkAreaBoundsInParent(window_)),
       is_fullscreen_(GetWindowForFullscreenModeForContext(window) != nullptr) {
@@ -103,6 +103,7 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
   Shell::Get()->activation_client()->AddObserver(this);
   root_window_->AddObserver(this);
   backdrop_controller_ = std::make_unique<BackdropController>(window_);
+  floating_window_observer_ = std::make_unique<FloatingWindowObserver>(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
   settings_bubble_container_ = window->GetRootWindow()->GetChildById(
       kShellWindowId_SettingBubbleContainer);
@@ -261,10 +262,11 @@ void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
 void WorkspaceLayoutManager::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   if (params.new_parent) {
-    if (params.new_parent == settings_bubble_container_.get() ||
-        params.new_parent == accessibility_bubble_container_.get() ||
-        IsPopupNotificationWindow(params.target)) {
-      floating_window_observer_.ObserveWindow(params.target);
+    if (floating_window_observer_ &&
+        (params.new_parent == settings_bubble_container_.get() ||
+         params.new_parent == accessibility_bubble_container_.get() ||
+         IsPopupNotificationWindow(params.target))) {
+      floating_window_observer_->ObserveWindow(params.target);
     }
   }
   // The window should have a parent (unless it's being removed), so we can
@@ -297,10 +299,11 @@ void WorkspaceLayoutManager::OnWindowHierarchyChanged(
 }
 
 void WorkspaceLayoutManager::OnWindowAdded(aura::Window* window) {
-  if (window->parent() == settings_bubble_container_ ||
-      window->parent() == accessibility_bubble_container_ ||
-      IsPopupNotificationWindow(window)) {
-    floating_window_observer_.ObserveWindow(window);
+  if (floating_window_observer_ &&
+      (window->parent() == settings_bubble_container_ ||
+       window->parent() == accessibility_bubble_container_ ||
+       IsPopupNotificationWindow(window))) {
+    floating_window_observer_->ObserveWindow(window);
   }
 }
 
@@ -472,6 +475,7 @@ void WorkspaceLayoutManager::OnPinnedStateChanged(aura::Window* pinned_window) {
 
 void WorkspaceLayoutManager::OnShellDestroying() {
   Shell::Get()->app_list_controller()->RemoveObserver(this);
+  floating_window_observer_.reset();
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -189,7 +189,6 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   raw_ptr<aura::Window, ExperimentalAsh> window_;
   raw_ptr<aura::Window, ExperimentalAsh> root_window_;
   raw_ptr<RootWindowController, ExperimentalAsh> root_window_controller_;
-  FloatingWindowObserver floating_window_observer_;
   raw_ptr<aura::Window, ExperimentalAsh> settings_bubble_container_;
   raw_ptr<aura::Window, ExperimentalAsh> accessibility_bubble_container_;
   raw_ptr<aura::Window, ExperimentalAsh> shelf_container_;
@@ -214,6 +213,8 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // A window which covers the full container and which gets inserted behind the
   // topmost visible window.
   std::unique_ptr<BackdropController> backdrop_controller_;
+
+  std::unique_ptr<FloatingWindowObserver> floating_window_observer_;
 };
 
 }  // namespace ash

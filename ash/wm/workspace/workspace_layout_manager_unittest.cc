@@ -34,6 +34,8 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
@@ -90,6 +92,7 @@ namespace ash {
 namespace {
 
 using ::chromeos::WindowStateType;
+const char kTestAppId[] = "test-app-id";
 
 class MaximizeDelegateView : public views::WidgetDelegateView {
  public:
@@ -1012,6 +1015,57 @@ TEST_F(WorkspaceLayoutManagerTest,
             secondary_shelf->auto_hide_behavior());
   EXPECT_TRUE(window_state->IsMaximized());
   EXPECT_EQ(gfx::Rect(800, 0, 900, 700), window->GetBoundsInScreen());
+}
+
+TEST_F(WorkspaceLayoutManagerTest,
+       PipReturnsToPositionAfterNotificationIsDismissed) {
+  // Create a new PiP window using TestWindowBuilder().
+  // Set SetShow to false upon creation to simulate the window being created
+  // as a PiP rather than being changed to PiP.
+  std::unique_ptr<aura::Window> pip_window(
+      TestWindowBuilder()
+          .AllowAllWindowStates()
+          .SetBounds(gfx::Rect(432, 416, 360, 128))
+          .SetShow(false)
+          .Build()
+          .release());
+  WindowState* window_state = WindowState::Get(pip_window.get());
+  const WMEvent enter_pip(WM_EVENT_PIP);
+  window_state->OnWMEvent(&enter_pip);
+  pip_window->SetProperty(aura::client::kZOrderingKey,
+                          ui::ZOrderLevel::kFloatingWindow);
+  EXPECT_TRUE(window_state->IsPip());
+  gfx::Rect old_bounds = pip_window->GetBoundsInScreen();
+  pip_window->Show();
+
+  // Create a new popup notification window.
+  std::string notification_id("notification_id");
+  const message_center::NotifierId notifier_id(
+      message_center::NotifierType::APPLICATION, kTestAppId);
+  std::unique_ptr<message_center::Notification> notification =
+      std::make_unique<message_center::Notification>(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+          u"Test Web Notification", u"Notification message body.",
+          ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
+          message_center::RichNotificationData(), /*delegate=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+  MessagePopupAnimationWaiter(
+      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      .Wait();
+
+  // PiP window has moved due to the popup notification window.
+  EXPECT_NE(old_bounds, pip_window->GetBoundsInScreen());
+
+  // Remove the popup notification window.
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/true);
+  MessagePopupAnimationWaiter(
+      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      .Wait();
+
+  // Now, the PiP window has returned to its original position.
+  EXPECT_EQ(old_bounds, pip_window->GetBoundsInScreen());
 }
 
 // Following "Solo" tests were originally written for BaseLayoutManager.

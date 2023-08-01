@@ -1335,7 +1335,13 @@ void WindowState::OnWindowParentChanged(aura::Window* window,
 
 void WindowState::OnWindowVisibilityChanged(aura::Window* window,
                                             bool visible) {
-  // We are only interested if the parent visibility changes, i.e. desk changes.
+  // If this window is a PiP and its SnapFraction is null.
+  if (window == window_ && visible && IsPip() &&
+      !PipPositioner::HasSnapFraction(this)) {
+    PipPositioner::SaveSnapFraction(this, window_->GetBoundsInScreen());
+  }
+  // From here, we are only interested if the parent visibility changes, i.e.
+  // desk changes.
   if (window != window_->parent()) {
     return;
   }

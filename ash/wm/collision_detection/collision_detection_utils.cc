@@ -38,6 +38,12 @@ DEFINE_UI_CLASS_PROPERTY_KEY(
 bool ShouldIgnoreWindowForCollision(
     const aura::Window* window,
     CollisionDetectionUtils::RelativePriority priority) {
+  if (!window->IsVisible() && !window->GetTargetBounds().IsEmpty()) {
+    return true;
+  }
+  if (window->is_destroying()) {
+    return true;
+  }
   if (window->GetProperty(kIgnoreForWindowCollisionDetection))
     return true;
 
